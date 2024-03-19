@@ -1,0 +1,78 @@
+<div class="container-flex bg-body">
+<table id="tablaObras{{object.id}}" class="table">
+    <thead>
+        <tr>
+            <th scope="col">ID#</th>
+            <th scope="col">Obra</th>
+            <th scope="col">Soluciones</th>
+            <th scope="col">Localidad</th>
+            <th scope="col">Contratista</th>
+            <th scope="col">Programa</th>
+            <th scope="col">Convenio</th>
+            <th scope="col">Expediente</th>
+            <th scope="col">Monto Pesos</th>
+            <th scope="col">Monto UVI</th>
+            <th scope="col">% Ultimo Mes</th>
+            <th scope="col">Acumulado</th>
+            <th scope="col">Acumulado en Pesos</th>
+            <th scope="col">Acumulado en UVI</th>
+            <th scope="col">Link</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if object.obra_inspector.all %}
+            {% for instance in object.obra_inspector.all %}
+                {% include "partials/obra-body-partial.html"%}
+            {% endfor %}
+        {% endif %}
+        {% if object.obra_departamento.all %}
+            {% for instance in object.obra_departamento.all %}
+                {% include "partials/obra-body-partial.html"%}
+            {% endfor %}
+        {% endif %}
+        {% if object.obra_set.all %}
+            {% for instance in object.obra_set.all %}
+                {% include "partials/obra-body-partial.html"%}
+            {% endfor %}
+        {% endif %}
+        {% if object.obra_localidad.all %}
+            {% for instance in object.obra_localidad.all %}
+                {% include "partials/obra-body-partial.html"%}
+            {% endfor %}
+        {% endif %}
+        {% if object.obra_municipio.all %}
+            {% for instance in object.obra_municipio.all %}
+                {% include "partials/obra-body-partial.html"%}
+            {% endfor %}
+        {% endif %}
+    </tbody>
+    <tfoot>
+        
+        <tr>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th id="totalSoluciones{{object.id}}" scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col">Totales</th>
+            <th id="totalPesos{{object.id}}" scope="col"></th>
+            <th id="totalUVI{{object.id}}" scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th id="acumuladoPesos{{object.id}}" scope="col"></th>
+            <th id="acumuladoUVI{{object.id}}" scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+    </tfoot>
+</table>
+</div>
+
+<script>
+    sumaColumna("tablaObras{{object.id}}",2, "totalSoluciones{{object.id}}")
+    sumaColumnaPesos("tablaObras{{object.id}}", 8, "totalPesos{{object.id}}");
+    sumaColumnaUvi("tablaObras{{object.id}}", 9, "totalUVI{{object.id}}");
+    sumaColumnaPesos("tablaObras{{object.id}}", 12, "acumuladoPesos{{object.id}}");
+    sumaColumnaUvi("tablaObras{{object.id}}", 13, "acumuladoUVI{{object.id}}");
+</script>

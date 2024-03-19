@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+{% block title %}<title>Lista Certificados</title>{% endblock title%}
+
+  <table id="tableCertificados" width="auto" class="table table-bordered">
+  </table>
+
+
+<script language="javascript">
+
+  $(document).ready(function() {
+      AjaxDatatableViewUtils.initialize_table(
+          $('#tableCertificados'),
+          "{% url 'carga:lista-certificados-datatables' %}",
+          {
+              // extra_options (example)
+              processing: false,
+              autoWidth: false,
+              full_row_select: true,
+              scrollX: false
+          }, {
+              // extra_data
+              // ...
+          },
+      );
+  });
+
+</script>
+
+{% endblock %}

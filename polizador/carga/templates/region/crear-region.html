@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+{%block title%}<title>{{title}}</title>{%endblock title%}
+
+<div class="container">
+    <form action="{% url "carga:crear-region"%}" method="POST">
+        {% csrf_token %}
+        {% for hidden in form.hidden_fields %}
+          {{ hidden }}
+        {% endfor %}
+    
+        {{form.as_div}}
+
+        <input type='submit' value='Guardar' class="btn" />
+    </form>
+</div>
+
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+{% block content %}
+{% block title %}<title>{{object.id}}-{{object.departamento_nombre}}</title>{% endblock title%}
+
+{% load humanize %}
+
+<div class="container">
+<div class="row">
+    <div class="col">
+        <p class="poliza-e-p"><b>ID:</b> {{object.id}}</p>
+        <p class="poliza-e-p"><b>Departamento:</b> {{object.departamento_nombre}}</p>
+    </div>
+    <div class="col">
+        <p class="poliza-e-p"><b>Municipios:</b> 
+            {% for municipios in object.municipio_set.all %}
+                <p class="poliza-e-p">{{municipios|join:", "}}</p>
+            {% endfor %} 
+        </p>
+    </div>
+    <div class="col">
+        <p class="poliza-e-p"><b>Localidades:</b> 
+            {% for municipios in object.municipio_set.all %}
+                {% for localidades in municipios.localidad_set.all %}
+                    {% if localidades.localidad_funcion == "CABECERA_DEPARTAMENTO" %}
+                        <p class="poliza-e-p">{{localidades}} (Cabecera de Departamento)</p>
+                    {% else %}
+                        <p class="poliza-e-p">{{localidades|join:", "}}</p>
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+        </p>
+    </div>
+</div>
+
+    {% if object.obra_departamento.all %}
+        {% include "partials/lista-obra-partial.html" %}
+    {% endif %}
+
+{% endblock %}

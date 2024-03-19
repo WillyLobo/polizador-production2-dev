@@ -1,0 +1,16 @@
+<tr>
+    {% load humanize %}
+    {% load static %}
+    <th scope="row">{{instance.poliza_numero}}</th>
+    <th>{{instance.poliza_obra.obra_expediente}}</th>
+    <td>{{instance.poliza_obra.obra_nombre}}</td>
+    <td>{{instance.poliza_obra.lista_localidades}}
+    </td>
+    <td>{{instance.poliza_obra.obra_empresa.empresa_nombre}}</td>
+    <td>{{instance.poliza_obra.obra_programa}}</td>
+    <td>{{instance.poliza_obra.obra_convenio|default_if_none:"-"}}</td>
+    <td>{{instance.poliza_obra.obra_expediente}}</td>
+    <td>{{instance.poliza_obra.obra_contrato_total_pesos}}</td>
+    <td>{{instance.poliza_obra.obra_contrato_total_uvi}}</td>
+    <td class="d-print-none" ><a href="{% url "carga:estado-obra" instance.poliza_obra.id %}">{{detalleimglink|safe}}</a></td>
+</tr>

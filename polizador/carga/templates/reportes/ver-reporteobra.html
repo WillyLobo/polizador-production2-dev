@@ -1,0 +1,127 @@
+{% extends "base.html"%}
+
+{% block content %}
+{% load static%}
+{%block title%}<title>Reporte</title>{%endblock title%}
+
+<style>
+    @import url("https://fonts.googleapis.com/css?family=Lato:400,400i,700");
+    table {
+        table-layout: fixed;
+        text-align: center;
+        padding: 0.25em 0.5em 0.25em 1em;
+        font-family: Lato, Arial, sans-serif;
+    }
+    thead tr:nth-child(1) th{
+        background: rgba(230,230,230,1);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+    td:nth-of-type(7) {
+        text-align: left !important;
+    }
+    td:nth-of-type(8),
+    td:nth-of-type(9),
+    td:nth-of-type(10),
+    td:nth-of-type(11),
+    td:nth-of-type(12),
+    td:nth-of-type(13) {
+        text-align: right !important;
+    }
+    tr,
+    td{
+        padding: 0.25em 0.5em 0.25em 1em;
+        vertical-align: text-top;
+        text-align: left;
+    }
+    th {
+        font-size: 110%;
+        padding: 0.25em 0.5em 0.25em 1em;
+    }
+    tr:nth-child(even) {
+        background-color: rgba(255,255,255,1);
+    }
+    tr:nth-child(odd) {
+        background-color: rgba(240,240,240,1);
+    }
+</style>
+
+<table class="cabecera" id="tablaObras">
+    <thead>
+        <tr>
+            <th scope="col">ID#</th>
+            <th scope="col">Obra</th>
+            <th scope="col">Soluciones</th>
+            <th scope="col">Localidad</th>
+            <th scope="col">Contratista</th>
+            <th scope="col">Programa</th>
+            <th scope="col">Convenio</th>
+            <th scope="col">Expediente</th>
+            <th scope="col">Monto Pesos</th>
+            <th scope="col">Monto UVI</th>
+            <th scope="col">Saldo UVI</th>
+            <th scope="col">% Ultimo Mes</th>
+            <th scope="col">Acumulado</th>
+            <th scope="col">Acumulado en Pesos</th>
+            <th scope="col">Acumulado en UVI</th>
+            <th scope="col">Link</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for instance in object_list %}
+        <tr>
+            {% load humanize %}
+            <th class="border" scope="row">{{instance.id}}</th>
+            <td class="border">{{instance.obra_nombre}}</td>
+            <td class="border">{{instance.obra_soluciones|default_if_none:"-"}}</td>
+            <td class="border">{{instance.lista_localidades}}</td>
+            <td class="border">{{instance.obra_empresa.empresa_nombre}}</td>
+            <td class="border">{{instance.obra_programa}}</td>
+            <td class="border">{{instance.obra_convenio|default_if_none:"-"}}</td>
+            <td class="border">{{instance.obra_expediente}}</td>
+            <td class="border">{{instance.obra_contrato_total_pesos}}</td>
+            <td class="border">{{instance.obra_contrato_total_uvi}}</td>
+            <td class="border">{{instance.saldo_uvi|default_if_none:0}}</td>
+            <td class="border">{{instance.certificado_set.latest.certificado_mes_pct|default:0}}</td>
+            <td class="border">{{instance.certificado_set.latest.certificado_acum_pct|default:0}}</td>
+            <td class="border">{{instance.obra_acum_pesos.certificado_monto_cobrar__sum|default_if_none:0}}</td>
+            <td class="border">{{instance.obra_acum_uvi.certificado_monto_cobrar_uvi__sum|default_if_none:0}}</td>
+            <td class="d-print-none" ><a href="{% url "carga:estado-obra" instance.id %}">{{detalleimglink|safe}}</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th id="totalSoluciones" scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th id="totalPesos" scope="col"></th>
+            <th id="totalUVI" scope="col"></th>
+            <th id="saldoUVI" scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th id="acumuladoPesos" scope="col"></th>
+            <th id="acumuladoUVI" scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+    </tfoot>
+</table>
+        
+<script>
+$(document).ready(function () {
+    sumaColumna("tablaObras",2, "totalSoluciones")
+    sumaColumnaPesos("tablaObras", 8, "totalPesos");
+    sumaColumnaUvi("tablaObras", 9, "totalUVI");
+    sumaColumnaUvi("tablaObras", 10, "saldoUVI");
+    sumaColumnaPesos("tablaObras", 13, "acumuladoPesos");
+    sumaColumnaUvi("tablaObras", 14, "acumuladoUVI");
+});
+</script>
+
+{%endblock content%}

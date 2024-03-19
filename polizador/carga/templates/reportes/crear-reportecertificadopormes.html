@@ -1,0 +1,121 @@
+{% extends "base.html"%}
+
+{% block content %}
+{% load static%}
+{% load l10n %}
+{%block title%}<title>Crear Reporte Certificados</title>{%endblock title%}
+
+<form action="{% url "carga:ver-reporte-certificado" %}" method="get">
+  <!-- Select Fecha-->
+  <div class="input-group">
+    <div class="input-group-prepend">
+      <label class="input-group-text" for="inputGroupSelectMes">Mes</label>
+    </div>
+    <select name="mes" class="custom-select customSelect2" id="inputGroupSelectMes" multiple>
+      <option value="1">Enero</option>
+      <option value="2">Febrero</option>
+      <option value="3">Marzo</option>
+      <option value="4">Abril</option>
+      <option value="5">Mayo</option>
+      <option value="6">Junio</option>
+      <option value="7">Julio</option>
+      <option value="8">Agosto</option>
+      <option value="9">Septiembre</option>
+      <option value="10">Octubre</option>
+      <option value="11">Noviembre</option>
+      <option value="12">Diciembre</option>
+    </select>
+    <div class="input-group-prepend">
+      <label class="input-group-text" for="inputGroupSelectAno">Año</label>
+    </div>
+      <select name="ano" class="custom-select customSelect2" id="inputGroupSelectAno">
+        <option value="2012">2012</option>
+        <option value="2013">2013</option>
+        <option value="2014">2014</option>
+        <option value="2015">2015</option>
+        <option value="2016">2016</option>
+        <option value="2017">2017</option>
+        <option value="2018">2018</option>
+        <option value="2019">2019</option>
+        <option value="2020">2020</option>
+        <option value="2021">2021</option>
+        <option value="2022">2022</option>
+        <option value="2023" selected>2023</option>
+      </select>
+  </div>
+{% comment "P/H" %}
+<!-- Select Localidad -->
+  <div class="input-group mb-3">
+    <div class="input-group-prepend">
+      <label class="input-group-text" for="inputGroupSelectLocalidad">Localidad</label>
+    </div>
+    <select name="localidad" vclass="custom-select" id="inputGroupSelectLocalidad" multiple>
+      {% for localidad in localidades %}
+      <option value="{{localidad.id|unlocalize}}">{{localidad.localidad_nombre}}</option>
+      {%endfor%}
+    </select>
+  </div>
+<!-- Select Empresa -->
+  <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <label class="input-group-text" for="inputGroupSelectEmpresa">Empresa</label>
+      </div>
+      <select name="empresa" vclass="custom-select" id="inputGroupSelectEmpresa" multiple>
+        {% for empresa in empresas %}
+        <option value="{{empresa.id|unlocalize}}">{{empresa.empresa_nombre}}</option>
+        {%endfor%}
+      </select>
+  </div>
+  <!-- Select Programa-->
+  <div class="input-group mb-3">
+      <div class="input-group-prepend">
+        <label class="input-group-text" for="inputGroupSelectPrograma">Programa</label>
+      </div>
+      <select name="programa" vclass="custom-select" id="inputGroupSelectPrograma" multiple>
+        {% for programa in programas %}
+        <option value="{{programa.id|unlocalize}}">{{programa.programa_nombre}}</option>
+        {%endfor%}
+      </select>
+  </div>
+  <!-- Select Rubro-->
+  <div class="input-group">
+      <div class="input-group-prepend">
+          <label class="input-group-text" for="inputGroupSelectRubro">Rubro</label>
+      </div>
+      <select name="rubro" vclass="custom-select" id="inputGroupSelectRubro" multiple>
+          <option value="1" selected>Vivienda</option>
+          <option value="2">Infraestructura Frentista</option>
+          <option value="3">Terreno</option>
+          <option value="4">Redeterminación</option>
+          <option value="5">Nexos y Redes</option>
+          <option value="8">Reconocimiento de Trabajos</option>
+          <option value="9">Ampliación de Contrato</option>
+      </select>
+      <div class="input-group-prepend">
+          <label class="input-group-text" for="inputGroupFinanciamiento">Financiamiento</label>
+      </div>
+          <select name="financiamiento" vclass="custom-select" id="inputGroupFinanciamiento">
+              <option value="1" selected>Nación</option>
+              <option value="2">Provincia</option>
+              <option value="3">Otros</option>
+          </select>
+      </div>
+  <!-- Filtro Porcentual -->
+  <div class="input-group">
+      <div class="input-group-prepend">
+        <span class="input-group-text" id="">% Avance</span>
+      </div>
+      <select name="tipodefiltro" vclass="custom-select" id="inputGroupTipodeFiltro">
+          <option value="1">Igual a</option>
+          <option value="2">Menor a</option>
+          <option value="3" selected>Mayor a</option>
+      </select>
+      <input type="number" class="form-control" name="pctavance" placeholder="Porcentaje">
+  </div>
+  {% endcomment %}
+      <input type='submit' value='Buscar' class="btn" />
+</form>
+
+
+
+{%endblock content%}

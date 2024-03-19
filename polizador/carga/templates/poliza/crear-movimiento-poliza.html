@@ -1,0 +1,51 @@
+
+{% extends "base.html" %}
+{% block content %}
+{%block title%}<title>{{title}}</title>{%endblock title%}
+
+<!-- XDSoft DateTimePicker -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
+
+<div class="container">
+    <form action="{% url "carga:crear-poliza-movimiento"%}" method="POST">
+        {% load widget_tweaks %}
+    
+        {% csrf_token %}
+    
+        {% for hidden in form.hidden_fields %}
+          {{ hidden }}
+        {% endfor %}
+        
+        <div class="form-floating">
+            {% render_field form.poliza_movimiento_fecha class="form-control" autocomplete="off" placeholder=field.label %}
+            <label for="{{form.poliza_movimiento_fecha.auto_id}}">{{form.poliza_movimiento_fecha.label}}</label>
+        </div>
+        <div class="input-group">
+            <label class="input-group-text" for="{{form.poliza_movimiento_receptor.auto_id}}">{{form.poliza_movimiento_receptor.label}}</label>
+            {% render_field form.poliza_movimiento_receptor|append_attr:"class:form-control"%}
+        </div>
+        <div class="input-group">
+            <label class="input-group-text" for="{{form.poliza_movimiento_area.auto_id}}">{{form.poliza_movimiento_area.label}}</label>
+            {% render_field form.poliza_movimiento_area|append_attr:"class:form-control"%}
+        </div>
+        <div class="d-none">
+            <select id="id_poliza_movimiento_numero" name="poliza_movimiento_numero">
+                <option value="{{ request.session.poliza_id }}">{{ request.session.poliza_id }}</option>
+            </select>
+        </div>
+            <input type='submit' value='Guardar' class="btn" />
+        </form>
+        </div>
+
+<script>
+$(function () {
+    $.datetimepicker.setLocale('es');
+    $("#id_poliza_movimiento_fecha").datetimepicker({
+    timepicker:false,
+    format: 'd/m/Y',
+    });
+  });
+</script>
+
+{% endblock %}

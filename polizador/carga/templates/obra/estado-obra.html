@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% block content %}
+{%block title%}<title>{{object.id}}-{{object.obra_nombre}}</title>{%endblock title%}
+
+{% include "ajax_datatable/carga/obra/render_row_details.html" %}
+
+{% endblock %}

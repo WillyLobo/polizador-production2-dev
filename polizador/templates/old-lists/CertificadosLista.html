@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid">
+      <table id="lista-certificados" class="table table-striped table-bordered align-middle" style="width:100%">
+          <thead>
+              <tr>
+                <th></th>
+                <th> Programa </th>
+                <th> Convenio </th>
+                <th> Empresa </th>
+                <th> Soluciones </th>
+                <th> Obra </th>
+                <th> Localidad </th>
+                <th> Expediente </th>
+                <th> AntN° </th>
+                <th> ObN° </th>
+                <th> DevN° </th>
+                <th> Periodo </th>
+                <th> Monto Pesos </th>
+                <th> Mes % </th>
+                <th> Anterior % </th>
+                <th> Acumulado % </th>
+                <th> Financiamiento </th>
+                <th> Monto Devolucion </th>
+                <th> Monto a Cobrar </th>
+                <th> Monto UVI </th>
+                <th> ID </th>
+                
+              </tr>
+          </thead>
+          <tfoot>
+            <tr>
+                <th></th>
+                <th> Programa </th>
+                <th> Convenio </th>
+                <th> Empresa </th>
+                <th> Soluciones </th>
+                <th> Obra </th>
+                <th> Localidad </th>
+                <th> Expediente </th>
+                <th> AntN° </th>
+                <th> ObN° </th>
+                <th> DevN° </th>
+                <th> Periodo </th>
+                <th> Monto Pesos </th>
+                <th> Mes % </th>
+                <th> Anterior % </th>
+                <th> Acumulado % </th>
+                <th> Financiamiento </th>
+                <th> Monto Devolucion </th>
+                <th> Monto UVI </th>
+                <th> Monto a Cobrar </th>
+                <th> ID </th>
+                
+            </tr>
+        </tfoot>
+      </table>
+</div>
+
+<script>
+$(document).ready( function() {
+  var TableCertificado = $('#lista-certificados').DataTable({
+    serverSide: true,
+    processing: true,
+    scrollX: true,
+    dom: '<fl<t>ip>B',
+      buttons: [
+        {extend: 'excel', text: "Exportar a Excel"}
+    ],
+    lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "All"]],
+    "language": {"url": 'https://cdn.datatables.net/plug-ins/1.12.1/i18n/es-AR.json'},
+    "ajax": { "url": '/api/api/certificados/?format=datatables', "format": "GET", },
+    order: [[12, "desc"]],
+    columnDefs: [
+    {
+      "className": "dt-center", "targets": "_all" 
+    },
+    {"targets": 0, "data": "id", "render": function ( data, type, row, meta ) 
+		{ return '<a href="/polizas/crear/certificado/'+data+'"><img src="/static/edit.png" title="Editar" width="30" heigth="30 /"></a> <a href="/polizas/crear/certificado/detalle/'+data+'"><img src="/static/print.png" title="Detalle" width="30" heigth="30 /"></a>'
+    ;} },
+    {"targets": -1, "data": "id", "render": function ( data, type, row, meta ) 
+		{ return '<a href="/polizas/crear/obra/estado/'+data+'"><img src="/static/search.svg" title="Ver Obra" width="30" heigth="30 /"></a>'
+    ;} },
+    {
+      targets: 5,
+      render: $.fn.dataTable.render.ellipsis(50),
+    },
+  //  {targets: 5, data:"certificado_obra.id", render: function(data, type, row, meta)
+  //  { return data }  }
+    ],
+    "columns": [
+            {"data": "id", searchable: false},
+            {"data": "certificado_obra.obra_programa.programa_nombre", "name": "certificado_obra.obra_programa.programa_nombre", orderable: false},
+            {"data": "certificado_obra.obra_convenio", "name": "certificado_obra.obra_convenio", orderable: false},
+            {"data": "certificado_obra.obra_empresa.empresa_nombre", "name": "certificado_obra.obra_empresa.empresa_nombre", orderable: false},
+            {"data": "certificado_obra.obra_soluciones", "name": "certificado_obra.obra_soluciones", searchable: false, orderable: false},
+            {"data": "certificado_obra.obra_nombre", "name": "certificado_obra.obra_nombre", orderable: false},
+            {"data": "certificado_obra.obra_localidad_m", "name": "certificado_obra.obra_localidad_m.localidad_nombre"},
+            {"data": "certificado_expediente", orderable: false},
+            {"data": "certificado_rubro_anticipo", orderable: false},
+            {"data": "certificado_rubro_obra", orderable: false},
+            {"data": "certificado_rubro_devanticipo", orderable: false},
+            {"data": "certificado_fecha", 
+              render: $.fn.dataTable.render.moment("YYYY-MM-DD","MMMM/YY","es")
+          },
+            {"data": "certificado_monto_pesos",
+            'render': function (certificado_monto_pesos) {  
+              return '$' + certificado_monto_pesos;
+              }, searchable: false, orderable: false},
+            {"data": "certificado_mes_pct",
+            'render': function (certificado_mes_pct) {  
+              return certificado_mes_pct + "%";
+              }, searchable: false, orderable: false},
+            {"data": "certificado_ante_pct",
+            'render': function (certificado_ante_pct) {  
+              return certificado_ante_pct + "%";
+              }, searchable: false, orderable: false},
+            {"data": "certificado_acum_pct",
+            'render': function (certificado_acum_pct) {  
+              return certificado_acum_pct + "%";
+              }, searchable: false, orderable: false},
+            {"data": "certificado_financiamiento", orderable: false},
+            {"data": "certificado_devolucion_monto",
+            'render': function (certificado_devolucion_monto) {  
+              return '$' + certificado_devolucion_monto;
+              }, searchable: false, orderable: false},
+            {"data": "certificado_monto_cobrar",
+            'render': function (certificado_monto_cobrar) {  
+              return '$' + certificado_monto_cobrar;
+              }, searchable: false, orderable: false},
+              {"data": "certificado_monto_uvi", searchable: false, orderable: false},
+              {"data": "certificado_obra.id", searchable: false, orderable: false},
+            ]
+      });
+      TableCertificado.buttons().container()
+    .appendTo( $('.col-sm-6:eq(0)', TableCertificado.table().container() ) );
+      });
+</script>
+
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid">
+      <table id="lista-polizas" class="table table-striped table-bordered align-middle" style="width:100%">
+          <thead>
+              <tr>
+                <th> Acciones </th>
+                <th> Fecha </th>
+                <th> Expediente </th>
+                <th> Número de Póliza </th>
+                <th> Concepto de Póliza </th>
+                <th> Anexo de Póliza </th>
+                <th> Recibo de Pago </th>
+                <th> Entidad Aseguradora </th>
+                <th> Empresa/Tomador </th>
+                <th> Obra </th>
+                <th> Programa </th>
+                <th> Monto Sustituido(Pesos) </th>
+                <th> Monto Sustituido(UVI) </th>
+                <th> Editor </th>
+                <th> Ultimo Editor </th>
+              </tr>
+          </thead>
+          <tfoot>
+            <tr>
+              <th> Acciones </th>
+              <th> Fecha </th>
+              <th> Expediente </th>
+              <th> Número de Póliza </th>
+              <th> Concepto de Póliza </th>
+              <th> Anexo de Póliza </th>
+              <th> Recibo de Pago </th>
+              <th> Entidad Aseguradora </th>
+              <th> Empresa/Tomador </th>
+              <th> Obra </th>
+              <th> Programa </th>
+              <th> Monto Sustituido(Pesos) </th>
+              <th> Monto Sustituido(UVI) </th>
+              <th> Editor </th>
+              <th> Ultimo Editor </th>
+            </tr>
+        </tfoot>
+      </table>
+</div>
+
+<script>
+  $(document).ready( function() {
+      'use strict';
+      var TablePoliza
+      TablePoliza = $('#lista-polizas').DataTable({
+      serverSide: true,
+      processing: true,
+      scrollX: true,
+      dom: '<fl<t>ip>B',
+      buttons: [
+        {extend: 'excel', text: "Exportar a Excel"}
+    ],
+      order: [[0, "desc"]],
+      lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "All"]],
+      "language": {"url": 'https://cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json'},
+      "ajax": {"url": "/api/api/polizas/?format=datatables"},
+      columnDefs: [
+      {"targets": 0, 
+        "data": "id", 
+        "render": function(data, type, row, meta) 
+        {return '<a href="/polizas/crear/poliza/'+data+'"><img src="/static/edit.png" title="Editar" width="30" height="30"/></a><a href="/polizas/crear/poliza/estado/'+data+'"><img src="/static/print.png" title="Pases" width="30" height="30"/></a>';} 
+      },
+      {
+        targets: 9,
+        render: $.fn.dataTable.render.ellipsis(75),
+      },
+    ],
+      columns: [
+        {"data":"id", searchable: false, orderable: false},
+        {"data":"poliza_fecha"},
+        {"data":"poliza_expediente", orderable: false},
+        {"data":"poliza_numero", render: $.fn.dataTable.render.number('.', ',', 0)},
+        {"data":"poliza_concepto", searchable: false, orderable: false},
+        {"data":"poliza_anexo", searchable: false, orderable: false},
+        {"data":"poliza_recibo"},
+        {"data":"poliza_aseguradora.aseguradora_nombre", "name":"poliza_aseguradora.aseguradora_nombre", orderable: false},
+        {"data":"poliza_tomador.empresa_nombre", "name":"poliza_tomador.empresa_nombre"},
+        {"data":"poliza_obra.obra_nombre", "name":"poliza_obra.obra_nombre"},
+        {"data":"poliza_obra.obra_programa.programa_nombre", "name":"poliza_obra.obra_programa.programa_nombre"},
+        {"data":"poliza_monto_pesos", 'render': function (poliza_monto_pesos) {  
+          return '$' + poliza_monto_pesos;
+          }, searchable: false, orderable: false},
+        {"data":"poliza_monto_uvi"},
+        {"data":"poliza_creador", searchable: false},
+        {"data":"poliza_editor", searchable: false},
+      ],
+    });
+    TablePoliza.buttons().container()
+    .appendTo( $('.col-sm-6:eq(0)', TablePoliza.table().container() ) );
+    yadcf.init(TablePoliza, [
+        {
+          // Aseguradora
+          column_number: 7,
+          filter_type: "select",
+          filter_default_label: "Filtrar"
+        },
+        {
+          // Empresa
+          column_number: 8,
+          filter_type: "select",
+          filter_default_label: "Filtrar"
+        },
+        ],
+        "footer",
+        );
+});
+  </script>
+
+{% endblock %}

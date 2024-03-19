@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid">
+      <table id="lista-empresas" class="table table-striped table-bordered align-middle" style="width:100%">
+          <thead>
+              <tr>
+                <th> ID </th>
+                <th> Nombre </th>
+                <th> CUIT </th>
+                <th> Titular </th>
+                <th> Caracter </th>
+                <th> DNI </th>
+                <th> Dirección </th>
+                <th> Correo Primario </th>
+                <th> Correo Secundario </th>
+                <th> Registro </th>
+                <th> Acciones </th>
+              </tr>
+          </thead>
+          <tfoot>
+            <tr>
+              <th> ID </th>
+              <th> Nombre </th>
+              <th> CUIT </th>
+              <th> Titular </th>
+              <th> Caracter </th>
+              <th> DNI </th>
+              <th> Dirección </th>
+              <th> Correo Primario </th>
+              <th> Correo Secundario </th>
+              <th> Registro </th>
+              <th> Acciones </th>
+            </tr>
+        </tfoot>
+      </table>
+</div>
+</thead>
+
+<script>
+$(document).ready( function() {
+    'use strict';
+    var TableEmpresa;
+    TableEmpresa = $('#lista-empresas').DataTable({
+		serverSide: true,
+    processing: true,
+    scrollX: true,
+    dom: '<fl<t>ip>B',
+      buttons: [
+        {extend: 'excel', text: "Exportar a Excel"}
+    ],
+    lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "All"]],
+    "language": {"url": 'https://cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json'},
+		"ajax": {"url": "/api/api/empresas/?format=datatables"},
+		columnDefs: [{"targets": -1, "data": "id", "render": function ( data, type, row, meta ) 
+		{ return '<a href="/polizas/crear/empresa/'+data+'"><img src="/static/edit.png" title="Editar" width="30" height="30" /></a> <a href="/polizas/crear/empresa/obra/'+data+'"><img src="/static/print.png" title="Detalle" width="30" heigth="30 /"></a>'
+    ;} }],
+    columns: [
+      {"data": "id", searchable: false},
+      {"data": "empresa_nombre"},
+      {"data": "empresa_cuit"},
+      {"data": "empresa_titular_nombre"},
+      {"data": "empresa_titular_titulo"},
+      {"data": "empresa_titular_dni"},
+      {"data": "empresa_direccion"},
+      {"data": "empresa_correo_p"},
+      {"data": "empresa_correo_s"},
+      {"data": "empresa_inscripcion"},
+      {"data": "id", searchable: false},
+    ],
+    });
+    TablePoliza.buttons().container()
+    .appendTo( $('.col-sm-6:eq(0)', TablePoliza.table().container() ) );
+    //yadcf.init(TableEmpresa, [
+    //    {
+    //      column_number: 1,
+		//			filter_type: "select",
+    //      filter_default_label: "Filtrar"
+    //    },
+    //    {
+    //      column_number: 2,
+    //      filter_type: "select",
+    //      filter_default_label: "Filtrar"
+    //    }
+    //    ],
+    //    "footer",
+    //    );
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,116 @@
+{% extends "base.html"%}
+
+{% block content %}
+{%block title%}<title>{{periodo}}</title>{%endblock title%}
+
+{% load humanize %}
+{% load static%}
+<style>
+    @import url("https://fonts.googleapis.com/css?family=Lato:400,400i,700");
+    table {
+        table-layout: fixed;
+        text-align: center;
+        padding: 0.25em 0.5em 0.25em 1em;
+        font-family: Lato, Arial, sans-serif;
+    }
+    thead tr:nth-child(1) th{
+        background: rgba(230,230,230,1);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+    td:nth-of-type(7) {
+        width: 8%;
+        text-align: right !important;
+        font-size: 100%;
+      }
+    td:nth-of-type(11),td:nth-of-type(12) {
+    text-align: right !important;
+    }
+    tr,
+    td{
+        padding: 0.25em 0.5em 0.25em 1em;
+        vertical-align: text-top;
+        text-align: left;
+    }
+    th {
+        font-size: 110%;
+        padding: 0.25em 0.5em 0.25em 1em;
+    }
+    tr:nth-child(even) {
+        background-color: rgba(255,255,255,1);
+    }
+    tr:nth-child(odd) {
+        background-color: rgba(240,240,240,1);
+    }
+    </style>
+
+<TABLE class="cabecera" id="tablaReporte">
+    <THEAD>
+        <TR>
+            <TH>Programa</TH>
+            <TH>Convenio</TH>
+            <TH>Empresa</TH>
+            <TH>Obra</TH>
+            <TH>Localidad</TH>
+            <TH>Expediente</TH>
+            <TH>Certificado</TH>
+            <TH>Período</TH>
+            <TH>Mes %</TH>
+            <TH>Acum %</TH>
+            <TH>Monto a Cobrar($)</TH>
+            <TH>Monto a Cobrar(UVI)</TH>
+            <TH class="d-print-none">PDF</TH>
+        </TR>
+    </THEAD>
+    <TBODY>
+        {%for object in object_list%}
+        <TR id="{{object.id}}">
+            <TD class="col border align-middle">{{object.certificado_obra.obra_programa}}</TD>
+            <TD class="col border align-middle">{{object.certificado_obra.obra_convenio|default_if_none:"-"}}</TD>
+            <TD class="col border align-middle">{{object.certificado_obra.obra_empresa}}</TD>
+            <TD class="col border align-middle">{{object.certificado_obra.obra_nombre}}</TD>
+            <TD class="col border align-middle">{{object.certificado_obra.lista_localidades}}</TD>
+            <TD class="col border align-middle"><a href="{% url "carga:update-certificado" object.id %}">{{object.certificado_expediente}}</a></TD>
+            <TD class="col border align-middle">Anticipo N°: {{object.certificado_rubro_anticipo}}<br>
+                                Obra N°: {{object.certificado_rubro_obra}}<br>
+                                Dev. Anticipo N°: {{object.certificado_rubro_devanticipo}} 
+            </TD>
+            <TD class="col border align-middle">{{object.certificado_fecha|date:"F/Y"|capfirst}}</TD>
+            <TD class="col border align-middle">{{object.certificado_mes_pct}}</TD>
+            <TD class="col border align-middle">{{object.certificado_acum_pct}}</TD>
+            <TD class="col border align-middle">{{object.certificado_monto_cobrar}}</TD>
+            <TD class="col border align-middle">{{object.certificado_monto_cobrar_uvi}}</TD>
+            {% if object.certificado_digital %}
+            <td class="col border align-middle d-print-none"><a href="{{object.certificado_digital.url}}">{{pdfimglink|safe}}</a></td>
+            {% else %}
+            <td class="col border align-middle d-print-none">{{nofileimglink|safe}}</td>
+            {% endif %}
+        </TR>
+        {%endfor%}
+    <TFOOT>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col">Totales</th>
+            <th scope="col" id="sumaMontoPesos"></th>
+            <th scope="col" id="sumaMontoUVI"></th>
+            <th class="d-print-none" scope="col"></th>
+        </tr>
+</TABLE>
+
+<script>
+$(document).ready(function () {
+    sumaColumnaPesos("tablaReporte", 10,"sumaMontoPesos")
+    sumaColumnaUvi("tablaReporte", 11, "sumaMontoUVI")
+});
+</script>
+
+{% endblock %}

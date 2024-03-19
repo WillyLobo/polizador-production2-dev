@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<!--
+<!doctype html>
+<html lang="es">
+-->
+{% load numletras %}
+{% load humanize %}
+<script>
+    function Imprimir(){
+        window.print();
+    }
+</script>
+<button onclick="Imprimir()"class="d-print-none"> Imprimir</button>
+<p></p>
+<p></p>
+<p style="text-align: right;font-size: 12px;">Resistencia, <strong>{{object.legacy_poliza_fecha}}</strong></p>
+<p style="text-align: right;font-size: 12px;"><strong></strong></p>
+<p style="text-align: left;font-size: 12px;">{{object.legacy_poliza_area}}</p>
+<p style="text-align: left;font-size: 12px;">{{object.legacy_poliza_receptor}}</p>
+<p style="text-align: left;font-size: 12px;"><span style="text-decoration: underline;">Su Despacho:</span></p>
+<p style="text-align: right;font-size: 12px;"><span style="text-decoration: underline;">REF:</span> Expediente N&deg; {{object.legacy_poliza_expediente}}</p>
+<p style="text-align: right;font-size: 12px;"></p>
+<p style="text-align: left;font-size: 12px;"></p>
+<p lang="es-ES" class="western" align="justify" style="font-size:12px;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Adjunto a la presente, remito a Ud. el Expediente de referencia, conteniendo <b>P&oacute;liza de Seguro de Cauci&oacute;n <span>{{object.get_legacy_poliza_concepto_display}}</span>&nbsp;Obra P&uacute;blica</b> conforme a las siguientes especificaciones:</p>
+<br></br>
+<p align="justify" style="font-size: 12px;"><span><u><b>PÓLIZA N°:</u> {{object.legacy_poliza_numero}} - {{object.legacy_poliza_anexo|default_if_none:' '}}</span></b></p>
+<p align="justify" style="font-size: 12px;"><span><u><b>RECIBO DE PAGO N°:</u> {{object.legacy_poliza_recibo}} ({{object.legacy_poliza_aseguradora}}) ORIGINAL.</span></b></p>
+<p align="justify" style="font-size: 12px;"><span><u><b>OBJETO DE LA POLIZA - OBRA:</u> {{object.legacy_poliza_obra_nombre}} </span></b></p>
+<p align="justify" style="font-size: 12px;"><span><u><b>EXPEDIENTE DE LA OBRA N°:</u> {{object.legacy_poliza_obra_expediente|default_if_none:"-"}}</span></b></p>
+<p align="justify" style="font-size: 12px;"><span><u><b>CONVENIO ESPECIFICO:</u> {{object.legacy_poliza_obra_convenio|default_if_none:"-"}}</span></b></p>
+<p align="justify" style="font-size: 12px;"><span><u><b>ENTIDAD / TOMADOR:</b></u> {{object.legacy_poliza_tomador}} <b>CUIT:</b> {{object.legacy_poliza_tomador.empresa_cuit|cuit}}</span></p>
+<p align="justify" style="font-size: 12px;"><span><u><b>SUMA SUSTITUIDA POR LA POLIZA:</b></u></span><span style="text-transform: uppercase"> ${{object.legacy_poliza_monto_pesos}} ({{object.legacy_poliza_monto_pesos|nummoneda}})</span></p>
+<p align="justify" style="font-size: 12px;"><span><u><b>SUMA SUSTITUIDA POR LA POLIZA(UVI):</b></u></span><span style="text-transform: uppercase"> {{object.legacy_poliza_monto_uvi|default_if_none:'-'}} ({{object.legacy_poliza_monto_uvi|numletras|default_if_none:'-'}})</span></p>
+<br></br>
+{% if object.legacy_poliza_concepto == "C" %}
+    <p align="justify" style="font-size: 12px;"><span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Se informa que, dicha Poliza, alcanza la cobertura del 5% del monto contractual requerido. </span></p>
+{% elif object.legacy_poliza_concepto == "F" %}
+    <p align="justify" style="font-size: 12px;"><span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Se informa que, dicha Poliza, alcanza la cobertura del 5% del monto requerido. </span></p>
+{% elif object.legacy_poliza_concepto == "A" %}
+    <p align="justify" style="font-size: 12px;"><span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Se informa que, dicha Poliza, alcanza la cobertura del total del monto certificado en el anticipo. </span></p>
+    {% endif %}
+<br></br>
+<p></p>
+<p align="justify" style="text-align: center; font-size: 12px;">Atentamente.-</p>
+<br></br>
+<br></br>
+<br></br>
+<table border="0" style="border-collapse: collapse; width: 100%;">
+<tbody>
+<tr>
+<td style="width: 50%;">
+<p style="text-align: center; font-size: 12px;">{{request.user.first_name}} {{request.user.last_name}}<br /> Departamento de Certificaciones<br />GERENCIA OPERATIVA<br />I.P.D.U.V.</p>
+</td>
+<td style="width: 50%;">
+<p style="text-align: center; font-size: 12px;">Sr. Ameri Osvaldo R.<br />Jefe de Departamento<br />Certificados de Obra<br />GERENCIA OPERATIVA - I.P.D.U.V.</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+<!-- </html> -->
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+{%block title%}<title>{{object.id}}-{{object.programa_nombre}}</title>{%endblock title%}
+
+
+{% load humanize %}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <p class="poliza-e-p"><b>ID:</b> {{object.id}}</p>
+            <p class="poliza-e-p"><b>Programa:</b> {{object.programa_nombre}}</p>
+        </div>
+        <div class="col">
+            <p class="poliza-e-p"><b>#:</b></p>
+            <p class="poliza-e-p"><b>#:</b></p>
+        </div>
+    </div>
+</div>
+    
+    {% if object.obra_set.all %}
+        {% include "partials/lista-obra-partial.html" %}
+    {% endif %}
+
+{% endblock %}

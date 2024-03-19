@@ -1,0 +1,14 @@
+{% load humanize %}
+{% load static %}
+
+<div class="container-flex bg-body">
+    {% include "partials/ficha-obra.html" %}
+</div>
+{% if object.obra_madre.all %}
+    <div class="container-flex bg-body">
+        <h2> Adicionales: </h2>
+            {% for object in object.obra_madre.all %}
+                {% include "partials/ficha-obra.html" %}
+            {% endfor %}
+    </div>
+{%endif%}

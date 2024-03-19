@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container-fluid">
+    <table id="lista-obras" class="table table-striped table-bordered align-middle" style="width:100%">
+      <thead>
+        <tr class="border border-dark">
+          <th> Acciones </th>
+          <th> Nombre </th>
+          <th> Soluciones </th>
+          <th> Empresa </th>
+          <th> Región </th>
+          <th> Departamento </th>
+          <th> Municipio </th>
+          <th> Localidad </th>
+          <th> Grupo </th>
+          <th> Plazo </th>
+          <th> Programa </th>
+          <th> Convenio </th>
+          <th> Expediente </th>
+          <th> Resolución </th>
+          <th> Lic. Tipo </th>
+          <th> Lic. Número</th>
+          <th> Lic. Año </th>
+          <th> Monto Nacion Pesos </th>
+          <th> Monto Nacion UVI </th>
+          <th> Fecha UVI Nacion</th>
+          <th> Monto Prov. Pesos </th>
+          <th> Monto Prov. UVI </th>
+          <th> Fecha UVI Prov.</th>
+          <th> Nomenclatura </th>
+          <th> N° Plano </th>
+          <th> Inspector </th>
+          <th> Fecha de Contrato </th>
+          <th> Acumulado </th>
+          <th> Observaciones </th>
+        </tr>
+      </thead>
+      <tfoot>
+        <tr>
+          <th> Acciones </th>
+          <th> Nombre </th>
+          <th> Soluciones </th>
+          <th> Empresa </th>
+          <th> Región </th>
+          <th> Departamento </th>
+          <th> Municipio </th>
+          <th> Localidad </th>
+          <th> Grupo </th>
+          <th> Plazo </th>
+          <th> Programa </th>
+          <th> Convenio </th>
+          <th> Expediente </th>
+          <th> Resolución </th>
+          <th> Lic. Tipo </th>
+          <th> Lic. Número</th>
+          <th> Lic. Año </th>
+          <th> Monto Nacion Pesos </th>
+          <th> Monto Nacion UVI </th>
+          <th> Fecha UVI Nacion</th>
+          <th> Monto Prov. Pesos </th>
+          <th> Monto Prov. UVI </th>
+          <th> Fecha UVI Prov.</th>
+          <th> Nomenclatura </th>
+          <th> N° Plano </th>
+          <th> Inspector </th>
+          <th> Fecha de Contrato </th>
+          <th> Acumulado </th>
+          <th> Observaciones </th>
+        </tr>
+      </tfoot>
+    </table>
+</div>
+
+<script>
+  $(document).ready( function() {
+      'use strict';
+      var TableObra
+      TableObra = $('#lista-obras').DataTable({
+      serverSide: true,
+      processing: true,
+      scrollX: true,
+      dom: '<fl<t>ip>B',
+        buttons: [
+          {extend: 'excel', text: "Exportar a Excel"}
+      ],
+      order: [[0, "desc"]],
+      lengthMenu: [[50, 100, -1], [50, 100, "All"]],
+      "language": {"url": 'https://cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json'},
+      "ajax": {"url": "/api/api/obras/?format=datatables"},
+      dataSrc: function(data){
+        if(data.data == null){
+            return [];
+        } else {
+            return data.data;
+        }
+      },
+      columnDefs: [
+      {
+        "className": "dt-center", "targets": "_all" 
+      },
+      {
+        "targets": 0, 
+        "data": "id", 
+        "render": function ( data, type, row, meta ) 
+		  { 
+        return '<a href="/polizas/crear/obra/'+data+'"><img src="/static/edit.png" title="Editar" width="30" height="30" /></a><a href="/polizas/crear/obra/estado/'+data+'"><img src="/static/file-bar-graph.svg" title="Estado" width="30" heigth="30" /></a>';
+      }
+      },
+      {
+        targets: 1,
+        render: $.fn.dataTable.render.ellipsis(150),
+      },
+      {
+        targets: 3,
+        render: $.fn.dataTable.render.ellipsis(50),
+      },
+      {
+        targets: 23,
+        render: $.fn.dataTable.render.ellipsis(50),
+      },
+      {
+        "targets": -1,
+        "render": $.fn.dataTable.render.ellipsis(50),
+      }
+      ],
+      columns: [
+        {"data":"id", orderable: false, searchable: false},
+        {"data":"obra_nombre"},
+        {"data":"obra_soluciones"},
+        {"data":"obra_empresa.empresa_nombre", "name":"obra_empresa.empresa_nombre"},
+        {"data":"obra_region.region_numero", "name":"obra_region.region_numero", defaultContent:'-'},
+        {"data":"obra_departamento_m", "name":"obra_departamento_m.departamento_nombre"},
+        {"data":"obra_municipio_m", "name":"obra_municipio_m.municipio_nombre"},
+        {"data":"obra_localidad_m", "name":"obra_localidad_m.localidad_nombre"},
+        {"data":"obra_grupo", orderable: false, searchable: false},
+        {"data":"obra_plazo", orderable: false, searchable: false},
+        {"data":"obra_programa.programa_nombre", "name":"obra_programa.programa_nombre"},
+        {"data":"obra_convenio", orderable: false, defaultContent:'-'},
+        {"data":"obra_expediente", orderable: false},
+        {"data":"obra_resolucion", orderable: false},
+        {"data":"obra_licitacion_tipo", orderable: false},
+        {"data":"obra_licitacion_numero", orderable: false},
+        {"data":"obra_licitacion_ano", orderable: false},
+        {"data":"obra_contrato_nacion_pesos", 'render': function (obra_contrato_nacion_pesos) {  
+          return '$' + obra_contrato_nacion_pesos;
+          }, searchable: false, orderable: false},
+        {"data":"obra_contrato_nacion_uvi"},
+        {"data":"obra_contrato_nacion_uvi_fecha", orderable: false, searchable: false},
+        {"data":"obra_contrato_provincia_pesos", 'render': function (obra_contrato_provincia_pesos) {  
+          return '$' + obra_contrato_provincia_pesos;
+          }, searchable: false, orderable: false},
+        {"data":"obra_contrato_provincia_uvi"},
+        {"data":"obra_contrato_provincia_uvi_fecha", orderable: false, searchable: false},
+        {"data":"obra_nomenclatura", orderable: false},
+        {"data":"obra_nomenclatura_plano", orderable: false},
+        {"data":"obra_inspector", "name":"obra_inspector", searchable: false},
+        {"data":"obra_fecha_contrato"},
+        {"data":"obra_acum", "name":"obra_acum", orderable: false, searchable: false},
+        {"data":"obra_observaciones", orderable: false},
+      ],
+      });
+      TableObra.buttons().container()
+    .appendTo( $('.col-sm-6:eq(0)', TableObra.table().container() ) );
+      // 24 Columnas
+      yadcf.init(TableObra, [
+          {
+            column_number: 1,
+            filter_type: "select",
+            filter_default_label: "Filtrar",
+          },
+          {
+            column_number: 3,
+            filter_type: "select",
+            filter_default_label: "Filtrar"
+          },
+          {
+            column_number: 4,
+            filter_type: "select",
+            filter_default_label: "Filtrar"
+          },
+          {
+          column_number: 5,
+          filter_type: "select",
+          filter_default_label: "Filtrar"
+          },
+          {
+          column_number: 6,
+          filter_type: "select",
+          filter_default_label: "Filtrar"
+          },
+          {
+          column_number: 7,
+          filter_type: "select",
+          filter_default_label: "Filtrar"
+          },
+
+          {
+          column_number: 10,
+          filter_type: "select",
+          filter_default_label: "Filtrar"
+          },
+          ],
+          "footer",
+          );
+  });
+</script>
+
+{% endblock %}

@@ -1,0 +1,32 @@
+<tr>
+    <th scope="row">{{instance.id}}</th>
+    <td>{{instance.certificado_expediente}}</td>
+    <td>{{instance.certificado_rubro_anticipo}}</td>
+    <td>{{instance.certificado_rubro_obra}}</td>
+    <td>{{instance.certificado_rubro_devanticipo}}</td>
+    <td>{{instance.certificado_fecha|date:"M-Y"}}</td>
+    <td>{{instance.certificado_mes_pct}}</td>
+    <td>{{instance.certificado_ante_pct}}</td>
+    <td>{{instance.certificado_acum_pct}}</td>
+    <td>{{instance.certificado_rubro_db.certificadorubro_nombre}}</td>
+    <td>{{instance.get_certificado_financiamiento_display}}</td>
+    <td>{{instance.certificado_monto_pesos}}</td>
+    <td>{{instance.certificado_devolucion_monto}}</td>
+    <td>{{instance.certificado_monto_uvi}}</td>
+    <td>{{instance.certificado_devolucion_monto_uvi}}</td>
+    <td>{{instance.certificado_monto_cobrar}}</td>
+    <td>{{instance.certificado_monto_cobrar_uvi}}</td>
+    {% if instance.certificado_digital %}
+    <td class="d-print-none"><a href="{{instance.certificado_digital.url}}">{{pdfimglink|safe}}</a></td>
+    {% else %}
+    <td>{{nofileimglink|safe}}</td>
+    {% endif %}
+    <td class="d-print-none">
+        {% if perms.carga.change_certificado %}
+          <a href="{% url "carga:update-certificado" instance.id %}">{{editimglink|safe}}</a>
+        {% endif %}
+        {% if perms.carga.delete_certificado %}
+          <a href="{% url "carga:eliminar-certificado" instance.id %}">{{eliminarimglink|safe}}</a>
+        {% endif %}
+    </td>
+</tr>

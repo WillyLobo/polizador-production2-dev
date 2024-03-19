@@ -1,0 +1,75 @@
+{% extends "base.html"%}
+
+{% block content %}
+{% load static%}
+{% load l10n %}
+
+{%block title%}<title>Crear Reporte UVI</title>{%endblock title%}
+
+<!-- XDSoft DateTimePicker -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
+
+
+<form action="{% url "carga:crear-lista-uvi" %}" method="get">
+  <div class="row">
+  
+  <!-- Fecha Inicial -->
+  <div class="form-floating col-3">
+    <input type="text" name="fecha_inicial" placeholder="Fecha Inicial" rows="3" autocomplete="off" class="form-control" id="id_fecha_inicial">
+    <label for="id_fecha_inicial">Fecha Desde</label>
+  </div>
+  <!-- Select Final-->
+  <div class="form-floating col-3">
+    <input type="text" name="fecha_final" placeholder="Fecha Final" rows="3" autocomplete="off" class="form-control" id="id_fecha_final">
+    <label for="id_fecha_final">Fecha Hasta(Fecha mas actual)</label>
+  </div>
+</div>
+  <input type='submit' value='Buscar' class="btn" />
+</form>
+
+
+<TABLE class="cabecera" id="tablaReporte">
+  <THEAD>
+      <TR>
+          <TH>Fecha</TH>
+          <TH>Valor</TH>
+      </TR>
+  </THEAD>
+  <TBODY>
+      {%for object in object_list%}
+      <TR id="{{object.id}}">
+          <TD class="col border align-middle">{{object.uvi_fecha}}</TD>
+          <TD class="col border align-middle">{{object.uvi_valor}}</TD>
+      </TR>
+      {%endfor%}
+  <TFOOT>
+      <tr>
+          <th scope="col"></th>
+          <th scope="col"></th>
+      </tr>
+</TABLE>
+
+{{ form.media.js }}
+<script>
+  $(function () {
+      $.datetimepicker.setLocale('es');
+      $("#id_fecha_inicial").datetimepicker({
+      timepicker:false,
+      format: 'd/m/Y',
+      minDate:'2016/03/31',//yesterday is minimum date(for today use 0 or -1970/01/01)
+      maxDate:'0'//tomorrow is maximum date calendar
+      });
+      //31-03-2016
+      $.datetimepicker.setLocale('es');
+      $("#id_fecha_final").datetimepicker({
+      timepicker:false,
+      format: 'd/m/Y',
+      minDate:'2016/03/31',//yesterday is minimum date(for today use 0 or -1970/01/01)
+      maxDate:'0'//tomorrow is maximum date calendar
+      });
+    });
+  
+  </script>
+
+{%endblock content%}

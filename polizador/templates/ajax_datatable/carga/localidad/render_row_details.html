@@ -1,0 +1,22 @@
+{% load humanize %}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <p class="poliza-e-p"><b>ID:</b> {{object.id}}</p>
+            <p class="poliza-e-p"><b>Localidad:</b> {{object.localidad_nombre}}</p>
+            <p class="poliza-e-p"><b>Municipio:</b> {{object.localidad_municipio.municipio_nombre}}</p>
+            <p class="poliza-e-p"><b>Departamento:</b> {{object.localidad_departamento.departamento_nombre}}</p>
+            <p class="poliza-e-p"><b>Región:</b> {{object.localidad_municipio.municipio_region.region_numero}}</p>
+        </div>
+        <div class="col">
+            <p class="poliza-e-p"><b>Función:</b> {{object.localidad_funcion}}</p>
+            <p class="poliza-e-p"><b>Centroide(Latitud):</b> {{object.localidad_centroide_lat}}</p>
+            <p class="poliza-e-p"><b>Centroide(Longitud):</b> {{object.localidad_centroide_lon}}</p>
+        </div>
+    </div>
+</div>
+    
+    {% if object.obra_localidad.all %}
+        {% include "partials/lista-obra-partial.html" %}
+    {% endif %}

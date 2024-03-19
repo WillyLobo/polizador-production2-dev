@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{%block title%}<title>{{object.id}}-{{object.poliza_numero}}({{object.poliza_aseguradora}})</title>{%endblock title%}
+
+{% block content %}
+{% load static %}
+<div class="container-fluid">
+<div class="row">
+<div class="col">
+    <p class="poliza-e-p"><b>ID: </b>{{object.id}}</p>
+    <p class="poliza-e-p"><b>Fecha de Carga: </b>{{object.poliza_fecha}}</p>
+    <p class="poliza-e-p"><b>Número de Actuación: </b>{{object.poliza_expediente}}</p>
+    <p class="poliza-e-p"><b>Número de Póliza: </b>{{object.poliza_numero}}</p>
+    <p class="poliza-e-p"><b>Concepto: </b>{{object.get_poliza_concepto_display}}</p>
+    <p class="poliza-e-p"><b>Anexo: </b>{{object.poliza_anexo}}</p>
+    <p class="poliza-e-p"><b>Número de Recibo: </b>{{object.poliza_recibo}}</p>
+    <p class="poliza-e-p"><b>Aseguradora: </b>{{object.poliza_aseguradora}}</p>
+    <p class="poliza-e-p"><b>Tomador: </b>{{object.poliza_tomador}}</p>
+    <p class="poliza-e-p"><b>Monto Asegurado en Pesos: </b>${{object.poliza_monto_pesos}}</p>
+    <p class="poliza-e-p"><b>Monto Asegurado en UVIs: </b>{{object.poliza_monto_uvi}} (UVI)</p>
+</div>
+<div class="col">
+    <p class="poliza-e-p"><b><u>Obra: </u></b></p>
+    <p class="poliza-e-p"><b>Programa: </b>{{object.poliza_obra.obra_programa}}</p>
+    <p class="poliza-e-p"><b>Convenio: </b>{{object.poliza_obra.obra_convenio}}</p>
+    <p class="poliza-e-p"><b>Expediente Madre: </b>{{object.poliza_obra.obra_expediente}}</p>
+    <p class="poliza-e-p"><b>Resolución de Adjudicación: </b>N°{{object.poliza_obra.obra_resolucion}}</p>
+    <p class="poliza-e-p"><b>Firma de Contrato: </b>{{object.poliza_obra.obra_fecha_contrato}}</p>
+    <p class="poliza-e-p"><b>Nombre: </b>{{object.poliza_obra.obra_nombre}}</p>
+    <p class="poliza-e-p"><b>Compulsa: </b>{{object.poliza_obra.get_obra_licitacion_tipo_display}} N°{{object.poliza_obra.obra_licitacion_numero}}/{{object.poliza_obra.obra_licitacion_ano}}</p>
+    <p class="poliza-e-p"><b>Monto Contrato(Pesos): </b>${{object.poliza_obra.obra_contrato_total_pesos}}</p>
+    <p class="poliza-e-p"><b>Monto Contrato(UVI): </b>{{object.poliza_obra.obra_contrato_total_uvi}}</p>
+    {% if object.poliza_digital %}
+    <a href="{{object.poliza_digital.url}}">Descargar poliza{{pdfimglink|safe}}</a>
+    {% endif %}
+</div>
+</div>
+{% if perms.carga.add_poliza_movimiento %}<a style="float: right" href="{% url "carga:crear-poliza-movimiento"%}">{{agregarimglink|safe}}</a>{% endif %}
+<table class="table table-striped table-hover border border-dark">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Fecha</th>
+            <th scope="col">Receptor</th>
+            <th scope="col">Area</th>
+            <th scope="col">Enviado por:</th>
+            <th scope="col">Editar</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for instance in object.poliza_movimiento_set.all %}
+        <tr>
+            <th scope="row">{{instance.id}}</th>
+            <th scope="row">{{instance.poliza_movimiento_fecha|date:"d-m-Y"}}</th>
+            <td>{{instance.poliza_movimiento_receptor}}</td>
+            <td>{{instance.poliza_movimiento_area}}</td>
+            <td>{{instance.poliza_movimiento_editor}}</td>
+            <td>
+                {% if perms.carga.change_poliza_movimiento %}<a href="{% url "carga:update-poliza-movimiento" instance.id %}">{{editimglink|safe}}</a>{% endif %}
+                {% if perms.carga.delete_poliza_movimiento %}<a href="{% url "carga:eliminar-poliza-movimiento" instance.id %}">{{eliminarimglink|safe}}</a>{% endif %}
+                <a href="{% url "carga:imprimir-poliza-movimiento" instance.id %}">{{imprimirimglink|safe}}</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

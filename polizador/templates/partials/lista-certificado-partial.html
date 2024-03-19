@@ -1,0 +1,92 @@
+{% load static %}
+<table id="tablaCertificados{{object.id}}" class="table">
+    <thead>
+        <tr>
+            <th scope="col">ID#</th>
+            <th scope="col">Expediente</th>
+            <th scope="col">A.</th>
+            <th scope="col">O.</th>
+            <th scope="col">D.A.</th>
+            <th scope="col">Periodo</th>
+            <th scope="col">Mes %</th>
+            <th scope="col">Ant %</th>
+            <th scope="col">Acu %</th>
+            <th scope="col">Rubro</th>
+            <th scope="col">Financiamiento</th>
+            <th scope="col">Monto $</th>
+            <th scope="col">Dev. $</th>
+            <th scope="col">Monto UVI</th>
+            <th scope="col">Dev. UVI</th>
+            <th scope="col">Total $</th>
+            <th scope="col">Total UVI</th>
+            <th scope="col d-print-none">Acción</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for instance in object.certificado_set.all|dictsort:"certificado_fecha" %}
+        <tr>
+            <td class="p-0 mt-0">{{instance.id}}</th>
+            <td class="p-0 mt-0">{{instance.certificado_expediente}}</td>
+            <td class="p-0 mt-0">{{instance.certificado_rubro_anticipo}}</td>
+            <td class="p-0 mt-0">{{instance.certificado_rubro_obra}}</td>
+            <td class="p-0 mt-0">{{instance.certificado_rubro_devanticipo}}</td>
+            <td class="p-0 mt-0">{{instance.certificado_fecha|date:"M-Y"}}</td>
+            <td class="p-0 mt-0">{{instance.certificado_mes_pct}}</td>
+            <td class="p-0 mt-0">{{instance.certificado_ante_pct}}</td>
+            <td class="p-0 mt-0">{{instance.certificado_acum_pct}}</td>
+            <td class="p-0 mt-0">{{instance.certificado_rubro_db.certificadorubro_nombre}}</td>
+            <td class="p-0 mt-0">{{instance.get_certificado_financiamiento_display}}</td>
+            <td class="p-0 mt-0">{{instance.certificado_monto_pesos}}</td>
+            <td class="p-0 mt-0">{{instance.certificado_devolucion_monto}}</td>
+            <td class="p-0 mt-0">{{instance.certificado_monto_uvi}}</td>
+            <td class="p-0 mt-0">{{instance.certificado_devolucion_monto_uvi}}</td>
+            <td class="p-0 mt-0">{{instance.certificado_monto_cobrar}}</td>
+            <td class="p-0 mt-0">{{instance.certificado_monto_cobrar_uvi}}</td>
+            <td class="p-0 mt-0 d-print-none">
+                {% if instance.certificado_digital %}
+                    <a href="{{instance.certificado_digital.url}}">{{pdfimglink|safe}}</a>
+                {% else %}
+                    {{nofileimglink|safe}}
+                {% endif %}
+                    {% if perms.carga.change_certificado %}
+                  <a href="{% url "carga:update-certificado" instance.id %}">{{editimglink|safe}}</a>
+                {% endif %}
+                {% if perms.carga.delete_certificado %}
+                  <a href="{% url "carga:eliminar-certificado" instance.id %}">{{eliminarimglink|safe}}</a>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col">Totales</th>
+            <th id="totalPesos{{object.id}}" scope="col">Monto $</th>
+            <th id="totalDevolucion{{object.id}}" scope="col">Devolucion</th>
+            <th id="totalUvi{{object.id}}" scope="col">Monto UVI</th>
+            <th id="totalDevolucionUvi{{object.id}}" scope="col">Devolucion UVI</th>
+            <th id="montoCobrar{{object.id}}" scope="col">Monto a Cobrar</th>
+            <th id="montoCobrarUvi{{object.id}}" scope="col">Monto a Cobrar UVI</th>
+            <th scope="col d-print-none"> </th>
+        </tr>
+    </tfoot>
+</table>
+
+<script>
+    sumaColumnaPesos("tablaCertificados{{object.id}}", 11, "totalPesos{{object.id}}");
+    sumaColumnaPesos("tablaCertificados{{object.id}}", 12, "totalDevolucion{{object.id}}");
+    sumaColumnaUvi("tablaCertificados{{object.id}}", 13, "totalUvi{{object.id}}");
+    sumaColumnaUvi("tablaCertificados{{object.id}}", 14, "totalDevolucionUvi{{object.id}}");
+    sumaColumnaPesos("tablaCertificados{{object.id}}", 15, "montoCobrar{{object.id}}");
+    sumaColumnaUvi("tablaCertificados{{object.id}}", 16, "montoCobrarUvi{{object.id}}");
+</script>

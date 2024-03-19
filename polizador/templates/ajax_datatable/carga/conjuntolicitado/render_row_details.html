@@ -1,0 +1,25 @@
+{% load humanize %}
+
+<div class="container">
+<div class="row">
+    <div class="col">
+        <p class="poliza-e-p"><b>Conjunto:</b> {{object.conjunto_nombre}}</p>
+    </div>
+    <div class="col">
+        <p class="poliza-e-p"><b>Resolución:</b> {{object.conjunto_resolucion}}</p>
+        </p>
+    </div>
+</div>
+<div class="container">
+    {% if object.conjuntolicitado_set.all %}
+        {% for object in object.conjuntolicitado_set.all %}
+            <h5>{{object.conjunto_nombre}}</h5>
+            {% include "partials/lista-obra-partial.html" %}
+        {%endfor%}
+    {% endif %}
+</div>
+<div class="container">
+    {% if object.obra_set.all %}
+        {% include "partials/lista-obra-partial.html" %}
+    {% endif %}
+</div>

@@ -1,0 +1,22 @@
+{% load humanize %}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <p class="poliza-e-p"><b>ID:</b> {{object.id}}</p>
+            <p class="poliza-e-p"><b>Nombre:</b> {{object.empresa_nombre}}</p>
+            <p class="poliza-e-p"><b>Dirección:</b> {{object.empresa_direccion}}</p>
+            <p class="poliza-e-p"><b>CUIT:</b> {%if object.empresa_cuit == "None" %} - {% else %} {{object.empresa_cuit}} {% endif %} </p>
+            <p class="poliza-e-p"><b>Titular:</b> {{object.empresa_titular_nombre}} ({{object.empresa_titular_titulo}})</p>
+        </div>
+        <div class="col">
+            <p class="poliza-e-p"><b>Correo Primario:</b> {{object.empresa_correo_p}}</p>
+            <p class="poliza-e-p"><b>Correo Secundario:</b> {{object.empresa_correo_s}}</p>
+            <p class="poliza-e-p"><b>Inscipción:</b> {{object.empresa_inscripcion}}</p>
+        </div>
+    </div>
+</div>
+
+    {% if object.obra_set.all %}
+        {% include "partials/lista-obra-partial.html" %}
+    {% endif %}

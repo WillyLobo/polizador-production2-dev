@@ -1,0 +1,22 @@
+{% load humanize %}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <p class="poliza-e-p"><b>ID:</b> {{object.id}}</p>
+            <p class="poliza-e-p"><b>Municipio:</b> {{object.municipio_nombre}}</p>
+            <p class="poliza-e-p"><b>Departamento:</b> {{object.municipio_departamento.departamento_nombre}}</p>
+            <p class="poliza-e-p"><b>Región:</b> {{object.municipio_region.region_numero}}</p>
+        </div>
+        <div class="col">
+            <p class="poliza-e-p"><b>Localidades:</b>{% for localidades in object.localidad_set.all %}
+                                                        <p class="poliza-e-p">{{localidades|join:", "}}</p>
+                                                    {% endfor %}
+            </p>
+        </div>
+    </div>
+</div>
+
+    {% if object.obra_municipio.all %}
+        {% include "partials/lista-obra-partial.html" %}
+    {% endif %}

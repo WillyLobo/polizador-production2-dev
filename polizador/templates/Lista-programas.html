@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+{% block title %}<title>Lista Programas</title>{% endblock title%}
+
+  <table id="tableProgramas" width="100%" class="table table-striped table-bordered align-middle">
+  </table>
+
+
+<script language="javascript">
+
+  $(document).ready(function() {
+      AjaxDatatableViewUtils.initialize_table(
+          $('#tableProgramas'),
+          "{% url 'carga:lista-programas-datatables' %}",
+          {
+              // extra_options (example)
+              processing: false,
+              autoWidth: false,
+              full_row_select: true,
+              scrollX: false
+          }, {
+              // extra_data
+              // ...
+          },
+      );
+  });
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block content %}
+{%block title%}<title>{{title}}</title>{%endblock title%}
+
+
+<!-- XDSoft DateTimePicker -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
+
+{{ form.media.css }}
+
+<div class="container">
+  <form id="contrato-form" action="{% url "carga:crear-contrato"%}" method="POST">
+
+    {% csrf_token %}
+    {% for hidden in form.hidden_fields %}
+      {{ hidden }}
+    {% endfor %}
+
+    {{form.as_div}}
+    {{contratomonto_formset.management_form}}
+    <span class="fs-4 p-0">Monto</span>
+
+    <div class="contratomonto-form">
+      {%for form in contratomonto_formset%}
+      <div class="row">  
+
+      {% csrf_token %}
+      {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+      {% endfor %}
+   
+      {{form.as_div}}
+      </div>
+      {%endfor%}
+      {% for dict in formset.errors %}
+        {% for error in dict.values %}
+          {{ error }}
+        {% endfor %}
+      {% endfor %}
+    </div>
+    
+    <input type='button' class="px-5 btn btn-info" id='addForm' value='Agregar Nuevo Rubro'>
+    
+    <div class="mt-3 mb-5">
+      <button type="submit" class="px-5 btn btn-info">Guardar</button>
+    </div>
+  
+  </form>
+</div>
+
+{{ form.media.js }}
+
+<script>
+  $('#addForm').click(function() {
+  cloneMore("div.contratomonto-form:last", "contratomonto_set")
+  });
+</script>
+
+<script>
+$(function () {
+    $.datetimepicker.setLocale('es');
+    $("#id_certificado_fecha").datetimepicker({
+    timepicker:false,
+    format: 'd/m/Y',
+    });
+  });
+$("#customSelect2").select2({
+  theme: "bootstrap-5"
+});
+
+</script>
+
+
+
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block content %}
+{%block title%}<title>{{object.poliza_movimiento_numero.poliza_tomador}} - {{object.poliza_movimiento_numero.poliza_numero}}({{object.poliza_movimiento_numero.poliza_aseguradora}})</title>{%endblock title%}
+
+<!--
+<!doctype html>
+<html lang="es">
+-->
+{% load numletras %}
+{% load humanize %}
+<script>
+    function Imprimir(){
+        window.print();
+    }
+</script>
+<button onclick="Imprimir()"class="d-print-none"> Imprimir</button>
+<p></p>
+<p></p>
+<p style="text-align: right;font-size: 12px;">Resistencia, <strong>{{object.poliza_movimiento_fecha|date:"d E Y"}}</strong></p>
+<p style="text-align: right;font-size: 12px;"><strong></strong></p>
+<p style="text-align: left;font-size: 12px;">{{object.poliza_movimiento_area.area_nombre}}</p>
+<p style="text-align: left;font-size: 12px;">{{object.poliza_movimiento_receptor.receptor_nombre}}</p>
+<p style="text-align: left;font-size: 12px;"><span style="text-decoration: underline;">Su Despacho:</span></p>
+<p style="text-align: right;font-size: 12px;"><span style="text-decoration: underline;">REF:</span> Expediente N&deg; {{object.poliza_movimiento_numero.poliza_expediente}}</p>
+<p style="text-align: right;font-size: 12px;"></p>
+<p style="text-align: left;font-size: 12px;"></p>
+<p lang="es-ES" class="western" align="justify" style="font-size:12px;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Adjunto a la presente, remito a Ud. el Expediente de referencia, conteniendo <b>Póliza de Seguro de Caución <span>{{object.poliza_movimiento_numero.get_poliza_concepto_display}}</span>&nbsp;Obra Pública</b> conforme a las siguientes especificaciones:</p>
+<br></br>
+<p align="justify" style="font-size: 12px;"><span><u><b>PÓLIZA N°:</u> {{object.poliza_movimiento_numero.poliza_numero}} - {{object.poliza_movimiento_numero.poliza_anexo|default_if_none:' '}}</span></b></p>
+<p align="justify" style="font-size: 12px;"><span><u><b>RECIBO DE PAGO N°:</u> {{object.poliza_movimiento_numero.poliza_recibo}} ({{object.poliza_movimiento_numero.poliza_aseguradora}}) ORIGINAL.</span></b></p>
+<p align="justify" style="font-size: 12px;"><span><u><b>OBJETO DE LA POLIZA - OBRA:</u> {{object.poliza_movimiento_numero.poliza_obra.obra_nombre}} </span></b></p>
+<p align="justify" style="font-size: 12px;"><span><u><b>EXPEDIENTE DE LA OBRA N°:</u> {{object.poliza_movimiento_numero.poliza_obra.obra_expediente|default_if_none:"-"}}</span></b></p>
+<p align="justify" style="font-size: 12px;"><span><u><b>CONVENIO ESPECIFICO:</u> {{object.poliza_movimiento_numero.poliza_obra.obra_convenio|default_if_none:"-"}}</span></b></p>
+<p align="justify" style="font-size: 12px;"><span><u><b>ENTIDAD / TOMADOR:</b></u> {{object.poliza_movimiento_numero.poliza_tomador.empresa_nombre}} <b>CUIT:</b> {{object.poliza_movimiento_numero.poliza_tomador.empresa_cuit|cuit}}</span></p>
+<p align="justify" style="font-size: 12px;"><span><u><b>SUMA SUSTITUIDA POR LA POLIZA:</b></u></span><span style="text-transform: uppercase"> ${{object.poliza_movimiento_numero.poliza_monto_pesos}} ({{object.poliza_movimiento_numero.poliza_monto_pesos|nummoneda}})</span></p>
+<p align="justify" style="font-size: 12px;"><span><u><b>SUMA SUSTITUIDA POR LA POLIZA(UVI):</b></u></span><span style="text-transform: uppercase"> {{object.poliza_movimiento_numero.poliza_monto_uvi|default_if_none:'-'}} ({{object.poliza_movimiento_numero.poliza_monto_uvi|numletras|default_if_none:'-'}})</span></p>
+<br></br>
+{% if object.poliza_movimiento_numero.poliza_concepto == "C" %}
+    <p align="justify" style="font-size: 12px;"><span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Se informa que, dicha Poliza, alcanza la cobertura del 5% del monto contractual requerido. </span></p>
+{% elif object.poliza_movimiento_numero.poliza_concepto == "F" %}
+    <p align="justify" style="font-size: 12px;"><span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Se informa que, dicha Poliza, alcanza la cobertura del 5% del monto requerido. </span></p>
+{% elif object.poliza_movimiento_numero.poliza_concepto == "A" %}
+    <p align="justify" style="font-size: 12px;"><span>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; Se informa que, dicha Poliza, alcanza la cobertura del total del monto certificado en el anticipo. </span></p>
+    {% endif %}
+<br></br>
+<p></p>
+<p align="justify" style="text-align: center; font-size: 12px;">Atentamente.-</p>
+<br></br>
+<br></br>
+<br></br>
+<table border="0" style="border-collapse: collapse; width: 100%;">
+<tbody>
+    {% if request.user.username == "willylobo" %}
+<tr>
+    <td style="width: 50%;">
+        <p style="text-align: center; font-size: 12px;">{{request.user.first_name}} {{request.user.last_name}}<br />A/C Dirección de Certificaciones<br />GERENCIA OPERATIVA<br />I.P.D.U.V.</p>
+    </td>
+</tr>
+    {%else%}
+<tr>
+    <td style="width: 50%;">
+        <p style="text-align: center; font-size: 12px;">{{request.user.first_name}} {{request.user.last_name}}<br /> Departamento de Certificaciones<br />GERENCIA OPERATIVA<br />I.P.D.U.V.</p>
+    </td>
+    <td style="width: 50%;">
+        <p style="text-align: center; font-size: 12px;">Sr. Ameri Osvaldo R.<br />Jefe de Departamento<br />Certificados de Obra<br />GERENCIA OPERATIVA - I.P.D.U.V.</p>
+    </td>
+</tr>
+    {%endif%}    
+</tbody>
+</table>
+
+<!-- </html> -->
+{% endblock %}

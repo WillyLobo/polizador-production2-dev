@@ -1,0 +1,46 @@
+<div class="container">
+    {% if object.poliza_set.all %}
+    <table id="tablaObraPolizas{{object.id}}" class="table table-bordered table-sm table-hover align-middle border border-dark data dataTables_wrapper">
+        <thead>
+            <tr>
+                <th scope="col">Poliza</th>
+                <th scope="col">Expediente Poliza</th>
+                <th scope="col">Obra</th>
+                <th scope="col">Localidad</th>
+                <th scope="col">Contratista</th>
+                <th scope="col">Programa</th>
+                <th scope="col">Convenio</th>
+                <th scope="col">Expediente Obra</th>
+                <th scope="col">Monto Pesos</th>
+                <th scope="col">Monto UVI</th>
+                <th scope="col">Link</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for instance in object.poliza_set.all %}
+                {% include "partials/polizas-body-partial.html"%}
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col">Totales</th>
+                <th id="totalPesos{{object.id}}" scope="col"></th>
+                <th id="totalUVI{{object.id}}" scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+        </tfoot>
+    </table>
+    {% endif %}
+    </div>
+    
+    <script>
+        sumaColumnaPesos("tablaObraPolizas{{object.id}}", 8, "totalPesos{{object.id}}");
+        sumaColumnaUvi("tablaObraPolizas{{object.id}}", 9, "totalUVI{{object.id}}");
+    </script>

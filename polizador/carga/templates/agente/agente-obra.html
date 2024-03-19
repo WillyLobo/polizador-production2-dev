@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+{%block title%}<title>{{object.id}}-{{object.agente_nombre_completo}}</title>{%endblock title%}
+
+{% load humanize %}
+{% load widget_tweaks %}
+
+<div class="container">
+    <div class="row">
+        <div class="col">
+            <div class="input-group input-group-sm g-3">
+                <span class="input-group-text"><b>ID:</b></span>
+                <input class="form-control" type="text" value="{{object.id}}" readonly>
+            </div>
+            <div class="input-group input-group-sm g-3">
+                <span class="input-group-text"><b>Nombre:</b></span>
+                <input class="form-control" type="text" value="{{object.agente_nombre}} {{object.agente_apellido}}" readonly>
+            </div>
+            <div class="input-group input-group-sm g-3">
+                <span class="input-group-text"><b>DNI:</b></span>
+                <input class="form-control" type="text" value="{{object.agente_dni}}" readonly>
+            </div>
+            <div class="input-group input-group-sm g-3">
+                <span class="input-group-text"><b>Profesión:</b></span>
+                <input class="form-control" type="text" value="{{object.get_agente_profesion_display}}" readonly>
+            </div>
+            <div class="input-group input-group-sm g-3">
+                <span class="input-group-text"><b>Matrícula:</b></span>
+                <input class="form-control" type="text" value="{{object.agente_matricula}}" readonly>
+            </div>
+        </div>
+        <div class="col">
+            <div class="input-group input-group-sm g-3">
+                <span class="input-group-text"><b>Teléfono:</b></span>
+                <input class="form-control" type="text" value="{{object.agente_telefono}}" readonly>
+            </div>
+            <div class="input-group input-group-sm g-3">
+                <span class="input-group-text"><b>Email:</b></span>
+                <input class="form-control" type="text" value="{{object.agente_email}}" readonly>
+            </div>
+        </div>
+    </div>
+</div>
+
+    {% if object.obra_inspector.all %}
+        {% include "partials/lista-obra-partial.html" %}
+    {% endif %}
+
+{% endblock %}

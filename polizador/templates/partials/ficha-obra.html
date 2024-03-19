@@ -1,0 +1,215 @@
+<div class="row g-0">
+    <div class="col border">
+        <div class="row g-0">
+            <div class="col border"><b>ID:</b></div>
+            <div class="col border">{{object.id}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Programa:</b></div>
+            <div class="col border">{{object.obra_programa}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Convenio:</b></div>
+            <div class="col border">{{object.obra_convenio|default_if_none:"-"}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Concepto:</b></div>
+            <div class="col border">{{object.obra_nombre}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Grupo:</b></div>
+            <div class="col border">{{object.obra_grupo|default_if_none:"-"}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Localidad:</b></div>
+            <div class="col border">{% for localidad in object.obra_localidad_m.all %} {{localidad|join:", "}} {%endfor%}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Contratista:</b></div>
+            <div class="col border">{{object.obra_empresa.empresa_nombre}}</div>
+        </div>
+    </div>    
+    <div class="col">
+        <div class="row g-0">
+            <div class="col border"><b>Expediente:</b></div>
+            <div class="col border">{{object.obra_expediente}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Compulsa:</b></div>
+            <div class="col border">{{object.get_obra_licitacion_tipo_display}} N°{{object.obra_licitacion_numero}}/{{object.obra_licitacion_ano}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Resolución:</b></div>
+            <div class="col border">{{object.obra_resolucion}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Fecha de Contrato:</b></div>
+            <div class="col border">{{object.obra_fecha_contrato}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Nomenclatura Catastral:</b></div>
+            <div class="col border">{{object.obra_nomenclatura|default_if_none:"-"}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Plazo de Ejecución:</b></div>
+            <div class="col border">{{object.obra_plazo}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Inspector:</b></div>
+            <div class="col border">{%for inspector in object.obra_inspector.all%}{{inspector|join:", "}}<br>{%endfor%}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Observaciones:</b></div>
+            <div class="col border">{{object.obra_observaciones}}</div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="row g-0">
+            <div class="col border"><b>Monto Contrato Total(Pesos):</b></div>
+            <div class="col border">${{object.obra_contrato_total_pesos|default_if_none:"-"}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Monto Contrato Total(UVI):</b></div>
+            <div class="col border">{{object.obra_contrato_total_uvi|default_if_none:"-"}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Monto Nación(Pesos):</b></div>
+            <div class="col border">${{object.obra_contrato_nacion_pesos|default_if_none:"-"}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Monto Nación(UVI):</b></div>
+            <div class="col border">{{object.obra_contrato_nacion_uvi|default_if_none:"-"}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Fecha UVI:</b></div>
+            <div class="col border">{{object.obra_contrato_nacion_uvi_fecha|default_if_none:"-"}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Monto Provincia(Pesos):</b></div>
+            <div class="col border">${{object.obra_contrato_provincia_pesos|default_if_none:"-"}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Monto Provincia(UVI):</b></div>
+            <div class="col border">{{object.obra_contrato_provincia_uvi|default_if_none:"-"}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Fecha UVI:</b></div>
+            <div class="col border">{{object.obra_contrato_provincia_uvi_fecha|default_if_none:"-"}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><br></div>
+            <div class="col border"></div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Ultimo Acumulado en Pesos:</b></div>
+            <div class="col border">{{object.obra_acum_pesos.certificado_monto_cobrar__sum|default_if_none:"-"}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Ultimo Acumulado en UVI:</b></div>
+            <div class="col border">{{object.obra_acum_uvi.certificado_monto_cobrar_uvi__sum|default_if_none:"-"}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Saldo en UVI:</b></div>
+            <div class="col border">{{object.saldo_uvi|default_if_none:"-"}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border"><b>Ultimo Acumulado Porcentual:</b></div>
+            <div class="col border">{{object.certificado_set.latest.certificado_acum_pct|default_if_none:"-"}}</div>
+        </div>
+    </div>
+</div>
+<div>
+    <div class="col">
+        <div class="row border-bottom border-dark text-center"> <h6>Montos de Contrato</h6></div>
+    </div>   
+    {%for contrato in object.contrato_set.all%}
+        <div class="col">
+            <div class="row g-0">
+                <div class="col border"><b>Fecha de Firma:</b></div><div class="col border">{{contrato.contrato_fecha}}</div>
+                <div class="col border"><b>Objeto:</b></div><div class="col border">{{contrato.contrato_descripcion}}</div>
+                <div class="col border"><b>Resolución:</b></div><div class="col border">{{contrato.contrato_resolucion}}</div>
+                <div class="col border"><b>Importado:</b></div><div class="col border">{{contrato.contrato_autocarga}}</div>
+                <div class="col border"><b>Decreto Aprobatorio:</b></div><div class="col border">{{contrato.contrato_decreto|default_if_none:"-"}}</div>
+                <div class="col border"><b>Editar:</b></div><div class="col border"><a href="{% url "carga:update-contrato" contrato.id %}">{{editimglink|safe}}</a></div>
+            </div>
+        </div>
+        {%for contratomonto in contrato.contratomonto_set.all%}
+            <div class="col">
+                <div class="row g-0">
+                    <div class="col border"><b>Rubro:</b></div><div class="col border">{{contratomonto.contratomonto_rubro}}</div>
+                    <div class="col border"><b>Financiamiento:</b></div><div class="col border">{{contratomonto.contratomonto_financiamiento}}</div>
+                    <div class="col border"><b>Monto Pesos:</b></div><div class="col border">{{contratomonto.contratomonto_pesos}}</div>
+                    <div class="col border"><b>Monto UVI:</b></div><div class="col border">{{contratomonto.contratomonto_uvi}}</div>
+                    <div class="col border"><b>Fecha UVI:</b></div><div class="col border">{{contratomonto.contratomonto_uvi_fecha|default_if_none:"-"}}</div>
+                    <div class="col border"><b>Editar:</b></div><div class="col border"><a href="{% url "carga:update-contrato" contrato.id %}">{{editimglink|safe}}</a></div>
+                </div>
+            </div>
+        {%endfor%}
+    {%endfor%}
+</div>
+<br>
+<div> <!-- Documentos Digitales-->
+    {% if object.obra_contratos.all or object.obra_resoluciones.all %}
+        <div class="col">
+            <div class="row border-bottom border-dark text-center"> <h6>Documentación Digital</h6></div>
+        </div>
+        {% if object.obra_contratos.all %}
+            <div class="col">
+                <div class="border-bottom border-dark text-center"> <h6>Contratos</h6></div>
+            </div>   
+            {%for documento in object.obra_contratos.all%}
+                <div class="row g-0">
+                    <div class="col border"><b>Rubro:</b></div><div class="col border">{{documento.contratodigital_tipo.contratorubro_tipo}}</div>
+                    <div class="col border"><b>Descripción:</b></div><div class="col border">{{documento.contratodigital_descripcion}}</div>
+                    <div class="col border"><b>Archivo:</b></div><div class="col border">
+                        {% if documento.contratodigital_archivo %}
+                            <a href="{{documento.contratodigital_archivo.url}}">{{pdfimglink|safe}}</a>
+                        {% endif%}
+                        {% if perms.carga.change_certificado %}
+                            <a href="{% url "carga:update-contrato-digital" documento.id %}">{{editimglink|safe}}</a>
+                        {% endif %}
+                        {% if perms.carga.delete_certificado %}
+                            <a href="{% url "carga:eliminar-contrato-digital" documento.id %}">{{eliminarimglink|safe}}</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {%endfor%}
+        {%endif%}
+        <br>
+        {% if object.obra_resoluciones.all %}
+            <div class="col">
+                <div class="border-bottom border-dark text-center"> <h6>Resoluciones</h6></div>
+            </div>   
+            {%for documento in object.obra_resoluciones.all%}
+                <div class="row g-0">
+                    <div class="col border"><b>Número:</b></div><div class="col border">{{documento.resoluciondigital_numero}}</div>
+                    <div class="col border"><b>Descripción:</b></div><div class="col border">{{documento.resoluciondigital_descripcion}}</div>
+                    <div class="col border"><b>Archivo:</b></div><div class="col border">
+                        {% if documento.resoluciondigital_archivo %}
+                            <a href="{{documento.resoluciondigital_archivo.url}}">{{pdfimglink|safe}}</a>
+                        {% endif%}
+                        {% if perms.carga.change_certificado %}
+                            <a href="{% url "carga:update-resolucion-digital" documento.id %}">{{editimglink|safe}}</a>
+                        {% endif %}
+                        {% if perms.carga.delete_certificado %}
+                            <a href="{% url "carga:eliminar-resolucion-digital" documento.id %}">{{eliminarimglink|safe}}</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {%endfor%}
+        {%endif%}
+        <br>
+    {%endif%}
+</div>
+
+{% if object.certificado_set.all %}
+    <div class="container-flex bg-body">
+        <div class="col">
+            <div class="border-bottom border-dark text-center"> <h6>Certificados Emitidos</h6></div>
+        </div>   
+
+        {% include "partials/lista-certificado-partial.html" %}
+    </div>
+{% endif %}
+
+

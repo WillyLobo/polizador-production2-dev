@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+{%block title%}<title>{{object.id}}-{{object.certificado_obra}}</title>{%endblock title%}
+
+{% load numletras %}
+
+<div class="container-flex border border-dark">
+    <div class="row">
+      <div class="col">
+        <p><b>INSTITUTO PROVINCIAL DE DESARROLLO URBANO Y VIVIENDA DEL CHACO</b></p>
+      </div>
+      <div class="col border border-dark">
+        <p><h4>{{object.certificado_obra.obra_convenio}}</h4></p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <p class="poliza-e-p"><b>PROGRAMA: </b>{{object.certificado_obra.obra_programa}}</p>
+        <p class="poliza-e-p"><b>OBRA ADJUDICADA: </b>{{object.certificado_obra.obra_nombre}}</p>
+        <p class="poliza-e-p"><b>LOCALIDAD: </b> {{object.certificado_obra.obra_localidad.localidad_nombre}} - Departamento {{object.certificado_obra.obra_localidad.localidad_departamento.departamento_nombre}} </p>
+        <p class="poliza-e-p"><b>RESOLUCION DE ADJUCICACION:</b> N°{{object.certificado_obra.obra_resolucion}} </p>
+        <p class="poliza-e-p"><b>CONTRATISTA:</b> {{object.certificado_obra.obra_empresa.empresa_nombre}} </p>
+        <p class="poliza-e-p"><b>CUIT:</b> {{object.certificado_obra.obra_empresa.empresa_cuit|cuit}} </p>
+      </div>
+      <div class="col">
+        <p class="poliza-e-p"><b>FUENTE DE FINANCIAMIENTO:</b> {{object.get_certificado_financiamiento_display}} </p>
+        <p class="poliza-e-p"><b>COMPULSA:</b> {{object.certificado_obra.get_obra_licitacion_tipo_display}} N°{{object.certificado_obra.obra_licitacion_numero}}/{{object.certificado_obra.obra_licitacion_ano}} </p>
+        <p class="poliza-e-p"><b>SISTEMA DE CONTRATO:</b> AJUSTE ALZADO</p>
+        <p class="poliza-e-p"><b>FIRMA DE CONTRATO:</b> {{object.certificado_obra.obra_fecha_contrato}}</p>
+        <p class="poliza-e-p"><b>PLAZO DE EJECUCION:</b> {{object.certificado_obra.obra_plazo}}</p>
+      </div>
+    </div>
+    <div class="row border border-dark">
+        <div class="col">
+            <p><b>RESUMEN DE LA CERTIFICACION DEL MES</b></p>
+        </div>
+        <div class="col">
+            <p><b>PERIODO:</b> {{object.certificado_fecha|date:"M-Y"}}</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-3 border border-dark"><p>DESCRIPCION DE RUBROS</p></div>
+        <div class="col-2 border border-dark"><p>Acumulados del Mes</p></div>
+        <div class="col-1 border border-dark"><p> % </p></div>
+        <div class="col-2 border border-dark"><p>Acumulado Anterior</p></div>
+        <div class="col-1 border border-dark"><p> % </p></div>
+        <div class="col-2 border border-dark"><p>Acumulado Total</p></div>
+        <div class="col-1 border border-dark"><p> % </p></div>
+    </div>
+    <div class="row border border-dark">
+        <div class="col-3 border border-dark"><p>CERTIFICADO PARCIAL PROVINCIAL DE OBRA</p></div>
+        <div class="col-2 border col-lg-2-border-dark"><p>{{object.certificado_monto_uvi}}</p></div>
+        <div class="col-1 border col-lg-2-border-dark"><p>{{object.certificado_mes_pct}}</p></div>
+        <div class="col-2 border col-lg-2-border-dark"><p>{{object.certificado_monto_uvi}}</p></div>
+        <div class="col-1 border col-lg-2-border-dark"><p>{{object.certificado_ante_pct}}</p></div>
+        <div class="col-2 border col-lg-2-border-dark"><p>{{object.certificado_monto_uvi}}</p></div>
+        <div class="col-1 border col-lg-2-border-dark"><p>{{object.certificado_acum_pct}}</p></div>
+    </div>
+</div>
+
+{% endblock %}
