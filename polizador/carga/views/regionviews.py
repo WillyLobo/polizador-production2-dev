@@ -81,15 +81,15 @@ def PaginaListaRegiones(request):
 class ListaRegionesView(AjaxDatatableView):
 	model = Region
 	title = "Regiones"
-	initial_order = [["id", "asc"], ]
+	initial_order = [["region_numero", "asc"], ]
 	length_menu = [[50, 100, -1], [50, 100, "all"]]
 	search_values_separator = "+"
 
 	column_defs = [
 		AjaxDatatableView.render_row_tools_column_def(),
-		{'name': 'edit', 'title': '', 'placeholder': True, 'searchable': False, 'orderable': False},
-		{"name": "id","title":"ID", "visible": True},
-		{"name": "region_numero"},
+		{'name': 'edit', 'title': '', 'placeholder': True, 'searchable': False, 'orderable': False, "width":81},
+		{"name": "id","title":"ID", "visible": False},
+		{"name": "region_numero", 'className': 'align-left'},
 	]
 
 	def customize_row(self, row, obj):

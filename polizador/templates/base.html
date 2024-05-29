@@ -5,38 +5,40 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
   {% load static %}
-  <link rel="shortcut icon" href="https://storage.cloud.google.com/polizador_static_files/favicon.ico">
+  <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
   <!-- Bootstrap & Popper JS-->
-  <link rel="stylesheet" type="text/css" href="https://storage.cloud.google.com/polizador_static_files/Bootstrap5/css/bootstrap.min.css">
-  <script src="https://storage.cloud.google.com/polizador_static_files/Bootstrap5/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="{% static 'Bootstrap5/css/bootstrap.min.css' %}">
+  <script src="{% static 'Bootstrap5/js/bootstrap.bundle.min.js' %}"></script>
   <!-- DataTables -->
-	<link rel="stylesheet" type="text/css" href="https://storage.cloud.google.com/polizador_static_files/css/dataTables.bootstrap5.min.css">
-  <script type="text/javascript" charset="utf8" src="https://storage.cloud.google.com/polizador_static_files/DataTables/datatables.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="{% static 'css/dataTables.bootstrap5.min.css' %}">
+  <script type="text/javascript" charset="utf8" src="{% static 'DataTables/datatables.min.js' %}"></script>
   <!-- YADCF & Ellipsis -->
-  <script type="text/javascript" charset="utf8" src="https://storage.cloud.google.com/polizador_static_files/DataTables/yadcf-ellipsis.js"></script>
+  <script type="text/javascript" charset="utf8" src="{% static 'DataTables/yadcf-ellipsis.js' %}"></script>
   <!-- Select2 plugin CSS -->
-	<link rel="stylesheet" type="text/css" href="https://storage.cloud.google.com/polizador_static_files/select2/select2.min.css">
-  <link rel="stylesheet" type="text/css" href="https://storage.cloud.google.com/polizador_static_files/Bootstrap5/css/select2-bootstrap-5-theme.css">
+	<link rel="stylesheet" type="text/css" href="{% static 'select2/select2.min.css' %}">
+  <link rel="stylesheet" type="text/css" href="{% static 'Bootstrap5/css/select2-bootstrap-5-theme.css' %}">
 	<!-- Select2 plugin JS -->
-	<script src="https://storage.cloud.google.com/polizador_static_files/select2/select2.min.js"></script>
+	<script src="{% static 'select2/select2.min.js' %}"></script>
   <!-- Moment.js -->
-  <script src="https://storage.cloud.google.com/polizador_static_files/moment/moment.js"></script>
-  <script src="https://storage.cloud.google.com/polizador_static_files/moment/es.js"></script>
-  <script src="https://storage.cloud.google.com/polizador_static_files/moment/datetime.js"></script>
+  <script src="{% static 'moment/moment.js' %}"></script>
+  <script src="{% static 'moment/es.js' %}"></script>
+  <script src="{% static 'moment/datetime.js' %}"></script>
   <!-- HTMX --> 
-  <script src="https://storage.cloud.google.com/polizador_static_files/htmx/htmx.min.js"></script>
+  <script src="{% static 'htmx/htmx.min.js' %}"></script>
   <!-- CSS Modifications -->
-  <link href="https://storage.cloud.google.com/polizador_static_files/style.css" rel="stylesheet">
+  <link href="{% static 'style.css' %}" rel="stylesheet">
   <!-- sumaColumna -->
-  <script src="https://storage.cloud.google.com/polizador_static_files/js/sumacolumna.js"></script>
+  <script src="{% static 'js/sumacolumna.js' %}"></script>
 
-  <script type="text/javascript" src="https://storage.cloud.google.com/polizador_static_files/ajax_datatable/js/utils.js"></script>
+  <script type="text/javascript" src="{% static 'ajax_datatable/js/utils.js' %}"></script>
 
 {% block title %}<title>Polizador V3.0</title>{% endblock title %}
 
 </head>
-<body>
-<div class="d-print-none">
+{%comment%}Padding required to avoid navbar overlaping content{%endcomment%}
+<body style="padding-top: 60px !important;">
+
+<div class="container">
 	{% include "navbar.html" %}
 </div>
 
@@ -44,7 +46,6 @@
   {% block style %}   {%endblock%}
 	{% block content %} {% endblock %}
 </div>
-
 
 </body>
 
@@ -68,6 +69,5 @@
     }
   });
 </script>
-
 
 </html>

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+{% block title %}<title>Lista Comisionados</title>{% endblock title%}
+
+  <table id="tableComisionados" width="auto" class="table table-bordered">
+  </table>
+
+
+<script language="javascript">
+
+  $(document).ready(function() {
+      AjaxDatatableViewUtils.initialize_table(
+          $('#tableComisionados'),
+          "{% url 'secretariador:lista-comisionados-datatables' %}",
+          {
+              // extra_options (example)
+              processing: false,
+              autoWidth: false,
+              full_row_select: true,
+              scrollX: false,
+              dom: "<'row'<'col-sm-12 col-md-4'><'col-sm-12 col-md-4'f><'col-sm-12 col-md-4'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+              // language: {
+              // url: "/static/DataTables/DataTables-1.11.5/i18n/es-AR.json",
+              // },
+          }, {
+              // extra_data
+              // ...
+          },
+      );
+  });
+
+</script>
+
+{% endblock %}

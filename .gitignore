@@ -5,7 +5,7 @@ media/*
 scripts/*.xls
 scripts/*.csv
 *.DS_Store
-static/*
+polizador/static/*
 polizador/static_files
 polizador-production.json
 

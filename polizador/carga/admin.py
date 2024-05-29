@@ -29,6 +29,10 @@ class LegacyPolizaAdmin(ImportExportMixin, admin.ModelAdmin):
 class ProgramaAdmin(ImportExportMixin, admin.ModelAdmin):
 	resource_class = resources.ProgramaResource
 
+class ProvinciaResourceAdmin(ImportExportMixin, admin.ModelAdmin):
+    model = models.Provincia
+    resource_class = resources.ProvinciaResource
+
 class DepartamentoAdmin(ImportExportMixin, admin.ModelAdmin):
 	resource_class = resources.DepartamentoResource
 	list_display = ("id", "departamento_nombre")
@@ -95,12 +99,16 @@ class ContratoDigitalAdmin(admin.ModelAdmin):
 class ResolucionDigitalAdmin(admin.ModelAdmin):
 	resource_class = resources.ResolucionDigitalResource
 
+class UviAdmin(ImportExportMixin, admin.ModelAdmin):
+	resource_class = resources.UviResource
+
 admin.site.register(models.Receptor, ReceptorAdmin)
 admin.site.register(models.Area, AreaAdmin)
 admin.site.register(models.Aseguradora, AseguradoraAdmin)
 admin.site.register(models.Empresa, EmpresaAdmin)
 admin.site.register(models.LegacyPoliza, LegacyPolizaAdmin)
 admin.site.register(models.Programa, ProgramaAdmin)
+admin.site.register(models.Provincia, ProvinciaResourceAdmin)
 admin.site.register(models.Departamento, DepartamentoAdmin)
 admin.site.register(models.Localidad, LocalidadAdmin)
 admin.site.register(models.Municipio, MunicipioAdmin)
@@ -120,3 +128,4 @@ admin.site.register(models.ContratoMonto, ContratoMontoAdmin)
 admin.site.register(models.ContratoRubro, ContratoRubroAdmin)
 admin.site.register(models.ContratosDigitales, ContratoDigitalAdmin)
 admin.site.register(models.ResolucionesDigitales, ResolucionDigitalAdmin)
+admin.site.register(models.Uvi, UviAdmin)

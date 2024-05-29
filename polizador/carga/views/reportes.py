@@ -169,10 +169,13 @@ class CrearListaUvi(PermissionRequiredMixin, generic.ListView):
 	
 	def get_queryset(self, **kwargs):
 		"""
-		Prueba inicial de busqueda por rango de fecha...
-		MOVER A FORMULARIO CON EL POST DE RANGO DE BUSQUEDA!!!
-		"""
+		Returns a queryset of Uvi objects based on the dates provided in the request.GET parameters. 
+		If no parameters are provided, it fetches Uvi objects within a default date range and orders them by date.
+		If parameters are provided, it fetches Uvi objects within the specified date range and orders them by date.
 		
+		:param kwargs: Additional keyword arguments
+		:return: A queryset of Uvi objects filtered and ordered based on the request parameters
+		"""		
 		if not self.request.GET:
 			fecha_final = datetime.today()
 			fecha_final += timedelta(days=10)

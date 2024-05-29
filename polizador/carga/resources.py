@@ -20,11 +20,9 @@ class EmpresaResource(resources.ModelResource):
 		model = models.Empresa
 
 class PolizaResource(resources.ModelResource):
-	poliza_obra			= fields.Field(column_name="Obra", attribute="obra_nombre", widget=ForeignKeyWidget(models.Obra,"obra_nombre",))
-	poliza_aseguradora	= fields.Field(column_name="Aseguradora", attribute="aseguradora_nombre", widget=ForeignKeyWidget(models.Aseguradora, "aseguradora_nombre",))
-	poliza_tomador		= fields.Field(column_name="Tomador", attribute="tomador_nombre", widget=ForeignKeyWidget(models.Empresa, "empresa_nombre"))
 
 	class Meta:
+		model = models.Poliza
 		fields = (
 			"poliza_fecha",
 			"poliza_expediente",
@@ -40,6 +38,11 @@ class PolizaResource(resources.ModelResource):
 			"poliza_creador",
 			"poliza_editor",
 		)
+
+	poliza_obra			= fields.Field(column_name="obra_nombre", attribute="poliza_obra", widget=ForeignKeyWidget(models.Obra,"obra_nombre",))
+	poliza_aseguradora	= fields.Field(column_name="aseguradora_nombre", attribute="poliza_aseguradora", widget=ForeignKeyWidget(models.Aseguradora, "aseguradora_nombre",))
+	poliza_tomador		= fields.Field(column_name="tomador_nombre", attribute="poliza_tomador", widget=ForeignKeyWidget(models.Empresa, "empresa_nombre"))
+
 class LegacyPolizaResource(resources.ModelResource):
 	legacy_poliza_receptor 		= fields.Field(column_name="legacy_poliza_receptor", attribute="legacy_poliza_receptor", widget=ForeignKeyWidget(models.Receptor, 'receptor_nombre',))
 	legacy_poliza_area			= fields.Field(column_name="legacy_poliza_area", attribute="legacy_poliza_area", widget=ForeignKeyWidget(models.Area, 'area_nombre',))
@@ -111,7 +114,11 @@ class CertificadoResource(resources.ModelResource):
 class ConjuntoLicitadoResource(resources.ModelResource):
 	class Meta:
 		model = models.ConjuntoLicitado
-		
+
+class ProvinciaResource(resources.ModelResource):
+	class Meta:
+		model = models.Provincia
+
 class RegionResource(resources.ModelResource):
 	class Meta:
 		model = models.Region
@@ -147,3 +154,7 @@ class ContratoDigitalResource(resources.ModelResource):
 class ResolucionDigitalResource(resources.ModelResource):
 	class Meta:
 		model = models.ResolucionesDigitales
+
+class UviResource(resources.ModelResource):
+	class Meta:
+		model = models.Uvi

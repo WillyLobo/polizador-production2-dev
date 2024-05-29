@@ -46,7 +46,7 @@ class ObraForm(forms.ModelForm):
 			"obra_principal",
 		)
 		
-		localized_fields = "__all__"
+		# localized_fields = "__all__"
 		widgets = {
 			"obra_nombre": forms.TextInput(attrs={
 				"class": "form-control", 
@@ -126,7 +126,6 @@ class ObraForm(forms.ModelForm):
 			}),
 			"obra_contrato_nacion_pesos": forms.NumberInput(attrs={
 				"class": "form-control",
-				"placeholder": "0"
 			}),
 			"obra_contrato_nacion_uvi": forms.NumberInput(attrs={
 				"class": "form-control",

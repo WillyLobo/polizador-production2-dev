@@ -1,0 +1,92 @@
+{% load humanize %}
+{% load static %}
+<div class="container-sm bg-body">
+<div class="row g-0">
+    <div class="col border">
+        <div class="row g-0">
+            <div class="col border align-left"><b>Actuación Electrónica:</b></div>
+            <div class="col border align-left">{{object.solicitud_actuacion}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border align-left"><b>Solicitante:</b></div>
+            <div class="col border align-left">{{object.solicitud_solicitante}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border align-left"><b>Fechas:</b></div>
+            <div class="col border align-left">{%for fecha in object.solicitud_fechas %}{{fecha}}{%if not forloop.last %}, {%endif%} {%endfor%}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border align-left"><b>Localidades:</b></div>
+            <div class="col border align-left">{%for localidad in object.solicitud_localidades.all %}{{localidad}}{%if not forloop.last %}, {%endif%} {%endfor%}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border align-left"><b>Tareas:</b></div>
+            <div class="col border align-left">{{object.solicitud_tareas|capfirst}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border align-left"><b>Vehículo:</b></div>
+            <div class="col border align-left">{{object.solicitud_vehiculo}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border align-left"><b>Decretos Regulatorios:</b></div>
+            {%if object.solicitud_decreto_viaticos%}
+            <div class="col border align-left">
+                <a href="{{object.solicitud_decreto_viaticos.instrumentolegaldecretos.url}}">{{object.solicitud_decreto_viaticos}}</a>
+            </div>
+            {%else%}
+                <div class="col border align-left text-danger">Decreto digital no disponible.</div>
+            {%endif%}
+        </div>
+        <div class="row g-0">
+            <div class="col border align-left"><b>Resolución aprobatoria:</b></div>
+            {%if object.solicitud_resolucion%}
+            <div class="col border align-left"><a href="{{object.solicitud_resolucion.instrumentolegalresoluciones.url}}">{{object.solicitud_resolucion}}</a></div>
+            {%else%}
+            <div class="col border align-left">Resolución digital no disponible.</div>
+            {%endif%}
+        </div>
+
+    </div>
+</div>
+    <table id="tablaSolicitud{{object.id}}" class="table">
+        <thead>
+            <tr>
+                <th scope="col">Agentes</th>
+                <th scope="col">Cant. días</th>
+                <th scope="col">Viáticos</th>
+                <th scope="col">Gastos</th>
+                <th scope="col">Combustible</th>
+                <th scope="col">Total</th>
+                <th scope="col">Link</th>
+            </tr>
+        </thead>
+        <tbody>
+            {%for agente in object.comisionadosolicitud_set.all %}
+            <tr>
+                <th class="align-left" scope="row">{{agente.comisionadosolicitud_nombre.comisionado_abreviatura}} {{agente.comisionadosolicitud_nombre.comisionado_nombre}}</td>
+                <td class="align-left">{{object.cantidad_de_dias}}</td>
+                <td class="align-left">{{agente.viaticos_computado}}</td>
+                <td class="align-left">{{agente.comisionadosolicitud_gastos}}</td>
+                <td class="align-left">{{agente.comisionadosolicitud_combustible}}</td>
+                <td class="align-left">{{agente.viaticos_total}}</td>
+                <td class="d-print-none align-right" ><a href="{% url 'secretariador:update-comisionado' agente.id %}">{{editimglink|safe}}</a></td>
+            </tr>
+            {%endfor%}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col">Totales</th>
+                <th id="totalViaticos{{object.id}}" scope="col"></th>
+                <th id="totalGastos{{object.id}}" scope="col"></th>
+                <th id="totalCombustible{{object.id}}" scope="col"></th>
+                <th id="totalTotal{{object.id}}" scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<script>
+    sumaColumnaPesos("tablaSolicitud{{object.id}}", 5, "totalTotal{{object.id}}");
+</script>

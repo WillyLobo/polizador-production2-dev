@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+{%block content%}
+<!-- VIATICOS -->
+<div class="list-group">
+    <h5>Viáticos:</h5>
+    {% if perms.secretariador.add_solicitud %}
+    <a href="{% url "secretariador:crear-solicitud" %}" class="list-group-item list-group-item-action list-group-item-info viaticos-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Solicitud de Viáticos</a>
+    {% if perms.secretariador.add_comisionado %}
+    <a href="{% url "secretariador:crear-comisionado" %}" class="list-group-item list-group-item-action list-group-item-info viaticos-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Agente Comisionado</a>
+    {% if perms.secretariador.add_vehiculo %}
+    <a href="{% url "secretariador:crear-vehiculo" %}" class="list-group-item list-group-item-action list-group-item-info viaticos-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Vehiculo</a>
+    {% if perms.secretariador.add_instrumentoslegalesdecretos %}
+    <a href="{% url "secretariador:crear-decreto" %}" class="list-group-item list-group-item-action list-group-item-info viaticos-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Decreto</a>
+    {% if perms.secretariador.add_instrumentoslegalesresoluciones %}
+    <a href="{% url "secretariador:crear-resolucion" %}" class="list-group-item list-group-item-action list-group-item-info viaticos-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Resolucion</a>
+    {% if perms.secretariador.add_montoviaticodiario %}
+    <a href="{% url "secretariador:crear-montoviaticodiario" %}" class="list-group-item list-group-item-action list-group-item-info viaticos-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Montos Viáticos</a>
+</div>
+<!-- END-VIATICOS -->
+<!-- POLIZADOR -->
+<div class="list-group">
+    <h5>Polizas(Obra):</h5>
+    {% if perms.carga.add_poliza %}
+    <a href="{% url "carga:crear-poliza" %}" class="list-group-item list-group-item-action list-group-item-secondary polizas-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Póliza</a>
+    {% if perms.carga.add_receptor %}
+    <a href="{% url "carga:crear-receptor" %}"" class="list-group-item list-group-item-action list-group-item-secondary polizas-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Receptor</a>
+    {% if perms.carga.add_area %}
+    <a href="{% url "carga:crear-area" %}" class="list-group-item list-group-item-action list-group-item-secondary polizas-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Area</a>
+    {% if perms.carga.add_aseguradora %}
+    <a href="{% url "carga:crear-aseguradora" %}" class="list-group-item list-group-item-action list-group-item-secondary polizas-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Crear Aseguradora</a>
+</div>
+    <!-- END-POLIZADOR -->
+<!-- POLIZADOR.Localidades -->
+<div class="list-group">
+    <h5>Localidades:</h5>
+    {% if perms.carga.add_region %}
+    <a href="{% url "carga:crear-region" %}" class="list-group-item list-group-item-action list-group-item-secondary localidades-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Región</a>
+    {% if perms.carga.add_departamento %}
+    <a href="#" class="list-group-item list-group-item-action list-group-item-secondary localidades-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Departamento</a>
+    {% if perms.carga.add_municipio %}
+    <a href="{% url "carga:crear-municipio" %}" class="list-group-item list-group-item-action list-group-item-secondary localidades-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Municipio</a>
+    {% if perms.carga.add_localidad %}
+    <a href="{% url "carga:crear-localidad" %}" class="list-group-item list-group-item-action list-group-item-secondary localidades-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Localidad</a>
+</div>
+<!-- END-POLIZADOR.Localidades -->
+<!-- OBRAS -->
+<div class="list-group">
+    <h5>Obras:</h5>
+    {% if perms.carga.add_empresa %}
+    <a href="{% url "carga:crear-empresa" %}" class="list-group-item list-group-item-action list-group-item-secondary obras-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Empresa</a>
+    {% if perms.carga.add_conjunto %}
+    <a href="{% url "carga:crear-conjunto" %}" class="list-group-item list-group-item-action list-group-item-secondary obras-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Conjunto</a>
+    {% if perms.carga.add_programa %}
+    <a href="{% url "carga:crear-programa" %}" class="list-group-item list-group-item-action list-group-item-secondary obras-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Programa</a>
+    {% if perms.carga.add_obra %}
+    <a href="{% url "carga:crear-obra" %}" class="list-group-item list-group-item-action list-group-item-secondary obras-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Obra</a>
+    {% if perms.carga.add_contrato %}
+    <a href="{% url "carga:crear-contrato" %}" class="list-group-item list-group-item-action list-group-item-secondary obras-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Contrato de Obra</a>
+    {% if perms.carga.add_contratosdigitales %}
+    <a href="{% url "carga:crear-contrato-digital" %}" class="list-group-item list-group-item-action list-group-item-secondary obras-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Subir Documentos(Contrato) de Obra</a>
+    {% if perms.carga.add_resolucionesdigitales %}
+    <a href="{% url "carga:crear-resolucion-digital" %}" class="list-group-item list-group-item-action list-group-item-secondary obras-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Subir Documentos(Resolucion) de Obra</a>
+    {% if perms.carga.add_certificado %}
+    <a href="{% url "carga:crear-certificado" %}" class="list-group-item list-group-item-action list-group-item-secondary obras-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Certificado de Obra</a>
+    {% if perms.carga.add_agente %}
+    <a href="{% url "carga:crear-agente" %}" class="list-group-item list-group-item-action list-group-item-secondary obras-menu">
+    {%else%}
+    <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+    {%endif%}Cargar Agente(Inspección)</a>
+</div>
+<!-- END-OBRAS -->
+
+{%endblock%}

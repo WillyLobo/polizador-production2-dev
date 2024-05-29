@@ -65,9 +65,10 @@ class UpdateObra(PermissionRequiredMixin, generic.UpdateView):
 	success_url = reverse_lazy("carga:lista-obras")
 
 @method_decorator(login_required, name="dispatch")
-class EstadoObra(generic.DetailView):
+class EstadoObra(PermissionRequiredMixin, generic.DetailView):
 	login_url = "/"
 	redirect_field_name = "login"
+	permission_required = "carga.view_obra"
 	
 	model = Obra
 	template_name = "obra/estado-obra.html"

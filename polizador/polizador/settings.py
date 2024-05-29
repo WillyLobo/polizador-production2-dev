@@ -9,29 +9,35 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+import environ
+import os
 from pathlib import Path
 from google.oauth2 import service_account
 
+env = environ.Env(
+	DEBUG=(bool, False)
+)
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# "Secret" Variables.
-with open("SECRET.TXT") as f:
-	SECRET_KEY = f.read().strip()
-with open("DBSECRET.TXT") as f:
-	DBSECRET = f.read().strip()
+# Take environment variables from .env file
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
+# "Secret" Variables.
+SECRET_KEY = env('SECRET_KEY')
+DBHOST=env("DBHOST")
+DBUSER=env("DBUSER")
+DBNAME=env("DBNAME")
+DBSECRET=env("DBPASSWORD")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = [
-	"vh.willylobo.net.ar",
-	"ipduv.gov.ar",
+	"www.willylobo.net.ar",
 	"127.0.0.1"
 	]
 
@@ -52,13 +58,20 @@ INSTALLED_APPS = [
 	"import_export",
     'easyaudit',
 	"widget_tweaks",
+	"extra_views",
+	"django.forms",
 
     "carga",
 	"secretariador",
+    "fallout",
 ]
+
+# Widget template override. Place "widgetX.html" into "templates/django/forms/widgets/"
+FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+	"whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
 	'easyaudit.middleware.easyaudit.EasyAuditMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -99,10 +112,10 @@ WSGI_APPLICATION = 'polizador.wsgi.application'
 DATABASES = {
     'default': {
         "ENGINE": "django.db.backends.postgresql",
-        "HOST": "127.0.0.1",
-        "USER": "willy",
+        "HOST": DBHOST,
+        "USER": DBUSER,
 	    "PASSWORD":DBSECRET,
-        "NAME":"polizadordb",
+        "NAME":DBNAME,
     }
 }
 
@@ -126,7 +139,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
-LANGUAGE_CODE = 'es-ar'
+LANGUAGE_CODE = 'es-AR'
 
 DATETIME_FORMAT="%d-%B-%Y" # "Dia en Numeros" - "Nombre Completo del Mes" - "Número Completo del Año"
 
@@ -138,18 +151,6 @@ USE_L10N = True
 
 USE_TZ = True
 USE_THOUSAND_SEPARATOR = True
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.0/howto/static-files/
-
-STATIC_URL = '/static/'
-STATIC_ROOT = BASE_DIR / "static"
-STATIC_FILES_DIRS = [
-    BASE_DIR / "static_files",
-]
-
-MEDIA_URL  = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
 
 # Cloud Storage
 
@@ -165,4 +166,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Redirects after Authentication
 
 LOGOUT_REDIRECT_URL = '/'
-LOGIN_REDIRECT_URL = "/polizas/listas/polizas"
+LOGIN_REDIRECT_URL = "/home/"
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.0/howto/static-files/
+
+STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / "static_files/static"
+STATIC_FILES_DIRS = [
+    BASE_DIR / "static_files",
+]
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+
+MEDIA_URL  = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{{ form.media.css }}
+<div class="container">
+  <form method="post">{% csrf_token %}
+    <p>Confirma que desea eliminar <b>{{ object }}</b>?</p>
+    <p>Se eliminarán también las siguientes relaciones:</p>
+    <table>
+      <tr>
+        <th>Nombre</th>
+        <th>Cantidad</th>
+      </tr>
+      {%for model_name, object_count in model_count%}
+      <tr>
+        <td>{{model_name|capfirst}}</td>
+        <td>{{object_count}}</td>
+      </tr>
+      {%endfor%}
+    </table>
+    <p>
+      <ul>{{deletable_objects|unordered_list}}</ul>
+    </p>
+    {{ form }}
+    <input class="btnwarning" type="submit" value="Confirmar">
+</form>
+</div>
+
+{{ form.media.js }}
+
+{% endblock %}

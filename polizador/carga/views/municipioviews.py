@@ -87,11 +87,11 @@ class ListaMunicipiosView(AjaxDatatableView):
 
 	column_defs = [
 		AjaxDatatableView.render_row_tools_column_def(),
-		{'name': 'edit', 'title': '', 'placeholder': True, 'searchable': False, 'orderable': False},
-		{"name": "id","title":"ID", "visible": True},
-		{"name": "municipio_nombre"},
-		{"name": "municipio_departamento", "foreign_field":"municipio_departamento__departamento_nombre"},
-		{"name": "municipio_region", "foreign_field":"municipio_region__region_numero"},
+		{'name': 'edit', 'title': '', 'placeholder': True, 'searchable': False, 'orderable': False, "width":81},
+		{"name": "id","title":"ID", "visible": True, "width":100},
+		{"name": "municipio_nombre", "className":"align-left", "title":"Municipio"},
+		{"name": "municipio_departamento", "foreign_field":"municipio_departamento__departamento_nombre", "className":"align-right", "title":"Departamento"},
+		{"name": "municipio_region", "foreign_field":"municipio_region__region_numero", "className":"align-right", "title":"Región"},
 	]
 	def customize_row(self, row, obj):
 		id = str(obj.id)

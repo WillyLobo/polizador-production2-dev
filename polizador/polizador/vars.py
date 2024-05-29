@@ -1,3 +1,5 @@
-editlinkimg = "<img src='https://storage.cloud.google.com/polizador_static_files/pencil-square.svg' title='Editar' />"
-detallelinkimg = "<img src='https://storage.cloud.google.com/polizador_static_files/search.svg' title='Detalles' />"
-eliminarlinkimg = "<img src='https://storage.cloud.google.com/polizador_static_files/trash3.svg' title='Eliminar' />"
+editlinkimg     = "<img src='/static/images/pencil-square.svg' title='Editar' />"
+detallelinkimg  = "<img src='/static/images/search.svg' title='Detalles' />"
+eliminarlinkimg = "<img src='/static/images/trash3.svg' title='Eliminar' />"
+generarlinkimg  = "<img src='/static/images/file-earmark-word.svg' title='Generar Documento' />"
+pdflinkimg      = "<img src='/static/images/filetype-pdf.svg' title='Descargar PDF' />"

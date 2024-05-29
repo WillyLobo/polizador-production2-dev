@@ -72,15 +72,15 @@ def PaginaListaAseguradoras(request):
 class ListaAseguradorasView(AjaxDatatableView):
 	model = Aseguradora
 	title = "Aseguradoras"
-	initial_order = [["id", "asc"], ]
+	initial_order = [["aseguradora_nombre", "asc"], ]
 	length_menu = [[50, 100, -1], [50, 100, "all"]]
 	search_values_separator = "+"
 
 	column_defs = [
 		AjaxDatatableView.render_row_tools_column_def(),
-		{'name': 'edit', 'title': '', 'placeholder': True, 'searchable': False, 'orderable': False},
-		{"name": "aseguradora_nombre"},
-		{"name": "id","title":"ID", "visible": True},
+		{'name': 'edit', 'title': '', 'placeholder': True, 'searchable': False, 'orderable': False, "width":81},
+		{"name": "aseguradora_nombre", "className":"align-left", "title":"Aseguradora"},
+		{"name": "id","title":"ID", "visible": False},
 		]
 
 	def customize_row(self, row, obj):

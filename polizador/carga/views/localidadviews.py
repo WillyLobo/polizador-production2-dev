@@ -81,18 +81,18 @@ def PaginaListaLocalidad(request):
 class ListaLocalidadesView(AjaxDatatableView):
 	model = Localidad
 	title = "Localidades"
-	initial_order = [["id", "asc"], ]
+	initial_order = [["localidad_nombre", "asc"], ]
 	length_menu = [[50, 100, -1], [50, 100, "all"]]
 	search_values_separator = "+"
 
 	column_defs = [
 		AjaxDatatableView.render_row_tools_column_def(),
-		{'name': 'edit', 'title': '', 'placeholder': True, 'searchable': False, 'orderable': False},
-		{"name": "id","title":"ID", "visible": True},
-		{"name": "localidad_nombre"},
-		{"name": "localidad_municipio", "foreign_field":"localidad_municipio__municipio_nombre"},
-		{"name": "localidad_departamento", "foreign_field":"localidad_departamento__departamento_nombre"},
-		{"name": "localidad_funcion"},
+		{'name': 'edit', 'title': '', 'placeholder': True, 'searchable': False, 'orderable': False, "width":81},
+		{"name": "id","title":"ID", "visible": True, "width":100},
+		{"name": "localidad_nombre", "className":"align-left", "title":"Localidad"},
+		{"name": "localidad_municipio", "foreign_field":"localidad_municipio__municipio_nombre", "className":"align-right", "title":"Municipio"},
+		{"name": "localidad_departamento", "foreign_field":"localidad_departamento__departamento_nombre", "className":"align-right", "title":"Departamento"},
+		{"name": "localidad_funcion", "className":"align-right", "title":"Función", "choices": True, "autofilter":True},
 	]
 
 	def customize_row(self, row, obj):

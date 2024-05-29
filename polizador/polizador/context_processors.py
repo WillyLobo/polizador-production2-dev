@@ -15,18 +15,13 @@ def obra_por_programa(request):
         "lista_url" : lista_url_programa
     }
 
-# def obra_acumulado(request):
-#     # .certificado_set.aggregate(Sum(F("certificado_monto_pesos"), output_field=FloatField())
-#     print(request)
-
-
 def imglinks(request):
     return {
-        "detalleimglink" : "<img class='img-small' src='https://storage.cloud.google.com/polizador_static_files/search.svg' title='Ver Detalle'/>",
-        "editimglink" : "<img class='img-small' src='https://storage.cloud.google.com/polizador_static_files/pencil-square.svg' title='Editar' />",
-        "pdfimglink" : "<img class='img-small' src='https://storage.cloud.google.com/polizador_static_files/filetype-pdf.svg' title='Descargar PDF' />",
-        "eliminarimglink" : "<img class='img-small' src='https://storage.cloud.google.com/polizador_static_files/trash3.svg' title='Eliminar' />",
-        "nofileimglink" : "<img class='img-small' src='https://storage.cloud.google.com/polizador_static_files/file-x.svg' title='' />",
-        "imprimirimglink" : "<img class='img-small' src='https://storage.cloud.google.com/polizador_static_files/printer.svg' title='Imprimir' />",
-        "agregarimglink" : "<img src='https://storage.cloud.google.com/polizador_static_files/clipboard-plus.svg' title='Agregar' width='30' heigth='30' />",
+        "detalleimglink" : "<img class='img-small' src='/static/images/search.svg' title='Ver Detalle'/>",
+        "editimglink" : "<img class='img-small' src='/static/images/pencil-square.svg' title='Editar' />",
+        "pdfimglink" : "<img class='img-small' src='/static/images/filetype-pdf.svg' title='Descargar PDF' />",
+        "eliminarimglink" : "<img class='img-small' src='/static/images/trash3.svg' title='Eliminar' />",
+        "nofileimglink" : "<img class='img-small' src='/static/images/file-x.svg' title='' />",
+        "imprimirimglink" : "<img class='img-small' src='/static/images/printer.svg' title='Imprimir' />",
+        "agregarimglink" : "<img src='/static/images/clipboard-plus.svg' title='Agregar' width='30' heigth='30' />",
         }

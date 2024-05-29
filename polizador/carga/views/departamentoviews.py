@@ -9,6 +9,7 @@ from django.urls import reverse_lazy
 from carga.models import Departamento
 from carga.forms.departamentoforms import *
 from carga.views.generics import get_deleted_objects
+from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg
 
 @method_decorator(login_required, name="dispatch")
 class EliminarDepartamento(PermissionRequiredMixin, generic.DeleteView):
@@ -87,9 +88,26 @@ class ListaDepartamentosView(AjaxDatatableView):
 
 	column_defs = [
 		AjaxDatatableView.render_row_tools_column_def(),
-		{"name":"id", "title":"ID"},
-		{"name":"departamento_nombre"},
+		{'name': 'edit', 'title': '', 'placeholder': True, 'searchable': False, 'orderable': False, "width":81},
+		{"name":"id", "title":"ID", "width":100, "visible": True},
+		{"name":"departamento_nombre", "className": "align-left", "title":"Departamento"},
 	]
+
+	def customize_row(self, row, obj):
+		id = str(obj.id)
+				
+		editarlink = f'<a href="/polizas/crear/departamento/{id}">{editlinkimg}</a>'
+		detallelink = f'<a href="/viaticos/crearsolicitud/ver/{id}">{detallelinkimg}</a>'
+		eliminarlink = f'<a href="/viaticos/eliminar/solicitud/{id}">{eliminarlinkimg}</a>'
+		
+		if self.request.user.has_perm("carga.delete_departamento"):
+			row["edit"] = f"{editarlink}{detallelink}{eliminarlink}"
+		elif self.request.user.has_perm("carga.change_departamento"):
+			row["edit"] = f"{editarlink}{detallelink}"
+		else:
+			row["edit"] = f"{detallelink}"
+
+		return
 
 	def render_row_details(self, pk, request=None):
 

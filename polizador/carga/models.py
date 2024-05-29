@@ -197,7 +197,19 @@ class Programa(models.Model):
     
     def get_absolute_url(self):
         return f"/polizas/crear/programa/{self.id}"
+
+class Provincia(models.Model):
+    class Meta:
+        ordering = ["provincia_nombre"]
+        verbose_name = "Provincia"
+        verbose_name_plural = "Provincias"
     
+    id = models.IntegerField(unique=True, primary_key=True)
+    provincia_nombre = models.CharField("Nombre Provincia", max_length=33)
+
+    def __str__(self):
+        return f"{self.provincia_nombre}"
+
 class Region(models.Model):
     class Meta:
         ordering = ["region_numero"]

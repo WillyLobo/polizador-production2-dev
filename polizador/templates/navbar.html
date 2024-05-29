@@ -1,17 +1,26 @@
+{% load static %}
 <!-- Barra de naufragación -->
-<nav class="navbar navbar-expand navbar-light d-print-none">
+<nav class="navbar navbar-expand fixed-top navbar-light bg-light d-print-none">
 	<div class="container-fluid">
 		<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainnavbar">
 		  <span class="navbar-toggler-icon"></span>
 		</button>
   
 <div class="collapse navbar-collapse justify-content-md-center" id="mainnavbar">
-	<ul class="navbar-nav">
+	<div class="nav pull-left p-2">
+		<a href="{% url "home" %}">
+			<img src='{% static "images/house-add.svg" %}' title='Home' width='30' heigth='30' />
+		</a>
+	</div>
+
+<ul class="navbar-nav">
 <!-- Polizas Menu -->
+{%if perms.carga.view_poliza or perms.carga.add_aseguradora%}
 <li class="nav-item dropdown">
-	<a href="#" id="menu" data-bs-toggle="dropdown" class="nav-link active dropdown-toggle" data-bs-display="static">Polizas</a>
+	<a href="#" id="menu" data-bs-toggle="dropdown" class="nav-link active dropdown-toggle border border-3 rounded-pill border-dark" data-bs-display="static">Polizas</a>
 	<ul class="dropdown-menu">
 		<!-- Submenu Polizas Starts -->
+		{% if perms.carga.view_poliza %}
 		<li class="dropdown-submenu">
 			<a href="#" data-bs-toggle="dropdown" class="dropdown-item dropdown-toggle">Pólizas</a>
 			<ul class="dropdown-menu">
@@ -19,6 +28,7 @@
 				{% if perms.carga.add_poliza %}<li><a href="{% url "carga:crear-poliza" %}" class="dropdown-item">Crear Póliza</a></li>{% endif %}
 			</ul>
 		</li>
+		{% endif %}
 		<!-- Submenu Polizas Ends -->
 		<!-- Submenu Receptor Starts -->
 		{% if perms.carga.add_receptor %}
@@ -50,19 +60,23 @@
 		</li>
 		<!-- Submenu Aseguradora Ends -->
 		<!-- Submenu Legacy Polizas Starts -->
+		{% if perms.carga.view_legacypolizas %}
 		<li class="dropdown-submenu">
 			<a href="#" data-bs-toggle="dropdown" class="dropdown-item dropdown-toggle">Legacy Polizas</a>
 			<ul class="dropdown-menu">
 				<li> <a href="{% url "carga:lista-legacy-polizas" %}" class="dropdown-item">Lista Polizas(Viejo)</a></li>
 			</ul>
 		</li>
+		{% endif %}
 		<!-- Submenu Legacy Polizas Ends -->
 	</ul>
 </li>
+{%endif%}
 <!-- Polizas Menu Ends -->
 <!-- Localidades Menu -->
+{%if perms.carga.view_localidad%}
 		<li class="nav-item dropdown">
-			<a href="#" id="menu" data-bs-toggle="dropdown" class="nav-link active dropdown-toggle" data-bs-display="static">Localidades</a>
+			<a href="#" id="menu" data-bs-toggle="dropdown" class="nav-link active dropdown-toggle border border-3 rounded-pill border-dark" data-bs-display="static">Localidades</a>
 			<ul class="dropdown-menu">
 				<!-- Submenu Region Starts -->
 				<li class="dropdown-submenu">
@@ -102,9 +116,12 @@
 				<!-- Submenu Localidad Ends -->
 			</ul>
 		</li>
+{%endif%}
+<!-- Localidades Menu Ends -->
 <!-- Empresa Menu -->
+{% if perms.carga.view_empresa %}
 <li class="nav-item dropdown">
-	<a href="#" id="menu" data-bs-toggle="dropdown" class="nav-link active dropdown-toggle" data-bs-display="static">Empresa</a>
+	<a href="#" id="menu" data-bs-toggle="dropdown" class="nav-link active dropdown-toggle border border-3 rounded-pill border-dark" data-bs-display="static">Empresa</a>
 	<ul class="dropdown-menu">
 		<!-- Submenu Empresa Starts -->
 		<li class="dropdown-submenu">
@@ -117,10 +134,12 @@
 		<!-- Submenu Empresa Ends -->
 	</ul>
 </li>
+{% endif %}
 <!-- Empresa Menu Ends -->
 <!-- Obra Menu -->
+{% if perms.carga.view_obra %}
 <li class="nav-item dropdown">
-	<a href="#" id="menu" data-bs-toggle="dropdown" class="nav-link active dropdown-toggle" data-bs-display="static">Obra</a>
+	<a href="#" id="menu" data-bs-toggle="dropdown" class="nav-link active dropdown-toggle border border-3 rounded-pill border-dark" data-bs-display="static">Obra</a>
 	<ul class="dropdown-menu">
 		<!-- Submenu Obra Starts -->
 		<li class="dropdown-submenu">
@@ -128,9 +147,9 @@
 			<ul class="dropdown-menu">
 				<li> <a href="{% url "carga:lista-obras" %}" class="dropdown-item">Lista Obras</a></li>
 				{% if perms.carga.add_obra %}<li><a href="{% url "carga:crear-obra" %}" class="dropdown-item">Crear Obra</a></li>{% endif %}
-				{% if perms.carga.add_obra %}<li><a href="{% url "carga:crear-contrato" %}" class="dropdown-item">Crear Contrato</a></li>{% endif %}
-				{% if perms.carga.add_certificado %}<li><a href="{% url "carga:crear-contrato-digital" %}" class="dropdown-item">Subir Documentos(Contrato)</a></li>{% endif %}
-				{% if perms.carga.add_certificado %}<li><a href="{% url "carga:crear-resolucion-digital" %}" class="dropdown-item">Subir Documentos(Resolucion)</a></li>{% endif %}
+				{% if perms.carga.add_contrato %}<li><a href="{% url "carga:crear-contrato" %}" class="dropdown-item">Crear Contrato</a></li>{% endif %}
+				{% if perms.carga.add_contratosdigitales %}<li><a href="{% url "carga:crear-contrato-digital" %}" class="dropdown-item">Subir Documentos(Contrato)</a></li>{% endif %}
+				{% if perms.carga.add_resolucionesdigitales %}<li><a href="{% url "carga:crear-resolucion-digital" %}" class="dropdown-item">Subir Documentos(Resolucion)</a></li>{% endif %}
 
 				<li> <a href="{% url "carga:lista-obras-extendida" %}" class="dropdown-item">Lista Extendida Obras</a></li>
 			</ul>
@@ -172,41 +191,138 @@
 			</ul>
 		</li>
 		<!-- Submenu Agente Ends -->
+		<!-- Lista Uvi -->
+		<li><a class="nav-link active" href="{% url "carga:crear-lista-uvi" %}"> UVI </a></li>
+		<!-- Fin Lista Uvi-->
+</ul>
+</li>
+{%endif%}
+<!-- Obra Menu Ends -->
+<!-- VIATICOS Menu -->
+{%if perms.secretariador.view_solicitud%}
+<li class="nav-item dropdown">
+	<a href="#" id="menu" data-bs-toggle="dropdown" class="nav-link active dropdown-toggle border border-3 rounded-pill border-dark" data-bs-display="static">Viáticos</a>
+	<ul class="dropdown-menu">
+		<!-- Submenu Solicitud Starts -->
+		<li class="dropdown-submenu">
+			<a href="#" data-bs-toggle="dropdown" class="dropdown-item dropdown-toggle">Comisionados</a>
+			<ul class="dropdown-menu">
+				<li> <a href="{% url "secretariador:lista-comisionados" %}" class="dropdown-item">Lista Agentes Comisionados</a></li>
+				{% if perms.secretariador.add_comisionado %}<li><a href="{% url "secretariador:crear-comisionado" %}" class="dropdown-item">Crear Agente Comisionado</a></li>{% endif %}
+			</ul>
+		</li>
+		<!-- Submenu Solicitud Ends -->
+		<!-- Submenu Comisionados Starts -->
+		<li class="dropdown-submenu">
+			<a href="#" data-bs-toggle="dropdown" class="dropdown-item dropdown-toggle">Solicitud</a>
+			<ul class="dropdown-menu">
+				<li> <a href="{% url "secretariador:lista-solicitudes" %}" class="dropdown-item">Lista Solicitudes</a></li>
+				{% if perms.secretariador.add_solicitud %}<li><a href="{% url "secretariador:crear-solicitud" %}" class="dropdown-item">Crear Solicitud</a></li>{% endif %}
+			</ul>
+		</li>
+		<!-- Submenu Comisionados Ends -->
+		<!-- Submenu Vehiculos Starts -->
+		<li class="dropdown-submenu">
+			<a href="#" data-bs-toggle="dropdown" class="dropdown-item dropdown-toggle">Vehiculos</a>
+			<ul class="dropdown-menu">
+				<li> <a href="{% url "secretariador:lista-vehiculos" %}" class="dropdown-item">Lista Vehiculos</a></li>
+				{% if perms.secretariador.add_vehiculo %}<li><a href="{% url "secretariador:crear-vehiculo" %}" class="dropdown-item">Crear Vehiculo</a></li>{% endif %}
+			</ul>
+		</li>
+		<!-- Submenu Vehiculos Ends -->
+		<!-- Submenu Instrumentos Legales Starts -->
+		<li class="dropdown-submenu">
+			<a href="#" data-bs-toggle="dropdown" class="dropdown-item dropdown-toggle">Instrumentos Legales</a>
+		<!-- Decretos Menu Starts -->
+		<ul class="dropdown-menu">
+			<li> <a href="{% url "secretariador:lista-decretos" %}" class="dropdown-item">Lista Decretos</a></li>
+			{% if perms.secretariador.add_instrumentoslegalesdecretos %}<li><a href="{% url "secretariador:crear-decreto" %}" class="dropdown-item">Cargar Decreto</a></li>{% endif %}
+		<!-- Decretos Menu Ends -->
+		<!-- Resoluciones Menu Starts -->
+			<li> <a href="{% url "secretariador:lista-resoluciones" %}" class="dropdown-item">Lista Resoluciones</a></li>
+			{% if perms.secretariador.add_instrumentoslegalesresoluciones %}<li><a href="{% url "secretariador:crear-resolucion" %}" class="dropdown-item">Cargar Resolucion</a></li>{% endif %}
+		<!-- Resoluciones Menu Ends -->
+		<!-- Resoluciones Menu Starts -->
+			{% if perms.secretariador.add_montoviaticodiario %}<li><a href="{% url "secretariador:crear-montoviaticodiario" %}" class="dropdown-item">Cargar Montos Viáticos</a></li>{% endif %}
+		</ul>
+		<!-- Resoluciones Menu Ends -->
+
+	</li>
+		<!-- Submenu Instrumentos Legales Ends -->
+		
+{%endif%}
+<!-- VIATICOS Menu Ends -->
+{%comment%}		
+		<!-- Submenu Certificado Starts -->
+		<li class="dropdown-submenu">
+			<a href="#" data-bs-toggle="dropdown" class="dropdown-item dropdown-toggle">Certificados</a>
+			<ul class="dropdown-menu">
+				<li> <a href="{% url "carga:lista-certificados" %}" class="dropdown-item">Lista Certificados</a></li>
+				{% if perms.carga.add_certificado %}<li><a href="{% url "carga:crear-certificado" %}" class="dropdown-item">Crear Certificado</a></li>{% endif %}
+			</ul>
+		</li>
+		<!-- Submenu Certificado Ends -->
+		<!-- Submenu Conjunto Starts -->
+		<li class="dropdown-submenu">
+			<a href="#" data-bs-toggle="dropdown" class="dropdown-item dropdown-toggle">Conjunto</a>
+			<ul class="dropdown-menu">
+				<li> <a href="{% url "carga:lista-conjuntos" %}" class="dropdown-item">Lista Conjunto</a></li>
+				{% if perms.carga.add_conjunto %}<li><a href="{% url "carga:crear-conjunto" %}" class="dropdown-item">Crear Conjunto</a></li>{% endif %}
+			</ul>
+		</li>
+		<!-- Submenu Conjunto Ends -->
+		<!-- Submenu Programa Starts -->
+		<li class="dropdown-submenu">
+			<a href="#" data-bs-toggle="dropdown" class="dropdown-item dropdown-toggle">Programa</a>
+			<ul class="dropdown-menu">
+				<li> <a href="{% url "carga:lista-programas" %}" class="dropdown-item">Lista Programas</a></li>
+				{% if perms.carga.add_programa %}<li><a href="{% url "carga:crear-programa" %}" class="dropdown-item">Crear Programa</a></li>{% endif %}
+			</ul>
+		</li>
+		<!-- Submenu Programa Ends -->
+		<!-- Submenu Agente Starts -->
+		<li class="dropdown-submenu">
+			<a href="#" data-bs-toggle="dropdown" class="dropdown-item dropdown-toggle">Agente</a>
+			<ul class="dropdown-menu">
+				<li> <a href="{% url "carga:lista-agentes" %}" class="dropdown-item">Lista Agentes</a></li>
+				{% if perms.carga.add_agente %}<li><a href="{% url "carga:crear-agente" %}" class="dropdown-item">Crear Agente</a></li>{% endif %}
+			</ul>
+		</li>
+		<!-- Submenu Agente Ends -->
+{%endcomment%}
 	</ul>
 </li>
-<!-- Obra Menu Ends -->
+<!-- VIATICOS Menu Ends -->
+
 <!-- Reportes Menu -->
+{%if perms.carga.add_certificado%}
 <li class="nav-item dropdown">
-	<a href="#" id="menu" data-bs-toggle="dropdown" class="nav-link active dropdown-toggle" data-bs-display="static">Reportes</a>
+	<a href="#" id="menu" data-bs-toggle="dropdown" class="nav-link active dropdown-toggle border border-3 rounded-pill border-dark" data-bs-display="static">Reportes</a>
 	<ul class="dropdown-menu">
 		<!-- Submenu Crear Reporte Starts -->
-		{% if perms.carga.view_certificado %}<li><a href="{% url "carga:crear-reporte" %}" class="dropdown-item">Crear Reporte</a></li>{% endif %}
+		{% if perms.carga.add_certificado %}<li><a href="{% url "carga:crear-reporte" %}" class="dropdown-item">Crear Reporte</a></li>{% endif %}
 		<!-- Submenu Crear Reporte Ends -->
 		<!-- Submenu Crear Reporte Certificado Mes Starts -->
-		{% if perms.carga.view_certificado %}<li><a href="{% url "carga:crear-reporte-certificado" %}" class="dropdown-item">Crear Reporte Certificados	</a></li>{% endif %}
+		{% if perms.carga.add_certificado %}<li><a href="{% url "carga:crear-reporte-certificado" %}" class="dropdown-item">Crear Reporte Certificados	</a></li>{% endif %}
 		<!-- Submenu Crear Reporte Certificado Mes Ends -->
 	</ul>
 </li>
+{%endif%}
 <!-- Reportes Menu Ends -->
-<!-- Lista Uvi -->
-<li><a class="nav-link active" href="{% url "carga:crear-lista-uvi" %}"> UVI </a></li>
-<!-- Fin Lista Uvi-->
 <!-- Next Menu -->		
 <!-- Login/Logout -->
 		{% if request.user.is_authenticated %}
 		<li class="nav-item dropdown">
-				<a class="nav-link active dropdown-toggle" href="#" data-bs-toggle="dropdown"> {{ request.user.first_name }} {{request.user.last_name }} </a>
+				<a class="nav-link active dropdown-toggle border border-3 rounded-pill border-dark" href="#" data-bs-toggle="dropdown"> {%if request.user.first_name or request.user.last_name %} {{ request.user.first_name }} {{request.user.last_name }} {%else%} {{ request.user.username }} {%endif%}</a>
 			<ul class="dropdown-menu">
-				{% if request.user.username == "cacosta" %}
-				<li><a class="dropdown-item" href="{% url "logout" %}"> Salir </a></li>
-				{% else %}
 				<li><a class="dropdown-item" href="{% url "password_change" %}"> Cambiar contraseña </a></li>
-				<li><a class="dropdown-item" href="{% url "logout" %}"> Salir </a></li>
-				{% endif %}
 			</ul>
 		</li>
-		{% else %}
-			<li class="nav-item"><a class="nav-link" href="{% url "login" %}"> Ingresar </a></li>
+		<!-- Django 5.0 requiere que el pedido de logout se envíe a través de un POST request -->
+		<form action="{% url 'logout' %}" method="post">
+			{% csrf_token %}
+			<button class="nav-link active border border-3 rounded-pill border-danger" type="submit"><span class="fw-bold">Salir</span></button>
+		</form>
 		{% endif %}
 <!-- Login/Logout Ends -->
 	</ul>
