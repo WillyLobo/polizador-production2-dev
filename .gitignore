@@ -8,6 +8,7 @@ scripts/*.csv
 polizador/static/*
 polizador/static_files
 polizador-production.json
+*.sock
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
