@@ -20,7 +20,7 @@ def render_docx(request, pk):
 	jinja_env = jinja2.Environment()
 	jinja_env.trim_blocks = True
 	jinja_env.lstrip_blocks = True
-	doc = DocxTemplate("secretariador/media/template.docx")
+	doc = DocxTemplate("secretariador/media/solicitud_template.docx")
 	solicitud = Solicitud.objects.get(pk=pk)
 	context = {
 	"solicitud":solicitud

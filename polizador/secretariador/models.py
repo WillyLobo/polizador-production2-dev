@@ -202,7 +202,12 @@ class Solicitud(models.Model):
     class Meta:
         verbose_name = "Solicitud"
         verbose_name_plural = "Solicitudes"
-
+        constraints = [
+            models.UniqueConstraint(
+                fields=["solicitud_actuacion"],
+                name='unique_solicitud_1'
+            ),
+        ]
     solicitud_actuacion = models.CharField("Actuación", max_length=18)
     solicitud_solicitante = models.ForeignKey("Comisionado", on_delete=models.CASCADE) # Encargado del area solicitante
     solicitud_provincia = models.ForeignKey("carga.Provincia", on_delete=models.CASCADE)
@@ -235,6 +240,9 @@ class Solicitud(models.Model):
     def get_comisionados(self):
         serialized_q = self.comisionadosolicitud_set.values_list("comisionadosolicitud_nombre__comisionado_nombreyapellido", flat=True)
         return list(serialized_q)
+
+    def clean(self):
+        self.solicitud_actuacion = self.solicitud_actuacion.upper()
 
     def __str__(self):
         return f"{self.solicitud_actuacion}"

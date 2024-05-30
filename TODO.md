@@ -1,26 +1,34 @@
 [+] Add permission checks to the navbar.html menu.
 
+[ ] Create model Incorporacion.
+    - Model will allow to insert comisionados into a previously approved executive order.
+    [ ] Fields: comisionado, actuacion_electronica, resolucion
+    
 [+] Build create/update templates.
     [+] InstrumentosLegalesDecretos.
     [+] InstrumentosLegalesResoluciones.
     [+] Vehiculos
     [+] Montos viaticos diarios.
+    [ ] Incorporacion
 
 [+] Create concatenated fields for display.
     [+] Vehículos= vehiculo_str(TextField)
     [+] Comisionados= comisionado_nombreyapellido(TextField)
+    [ ] Solicitud= get_comisionados(TextField)
 
 [+] Build Create/Update/Delete/List views.
     [+] InstrumentosLegalesDecretos.
     [+] InstrumentosLegalesResoluciones.
     [+] Vehiculos
     [+] Montos viaticos diarios.
+    [ ] Incorporacion
 
 [+] Add navbar links.
     [+] InstrumentosLegalesDecretos.
     [+] InstrumentosLegalesResoluciones.
     [+] Vehiculos
     [+] Montos viaticos diarios
+    [ ] Incorporacion
 
 [ ] Create detail templates.
     [ ] ListaComisionadosView
@@ -28,6 +36,9 @@
     [ ] ListaVehiculosView
     [ ] ListaInstrumentosLegalesDecretosView
     [ ] ListaInstrumentosLegalesResolucionesView
+
+[ ] Create reportes views for solicitudes.
+    [ ] Filter by solicitud.solicitud_solicitante.
 
 [+] Move Provincia model to carga_app.
     # Number of provinces remain static, no need to implement.
@@ -37,6 +48,10 @@
 [+] Test form date validators.
 [+] Create CuitValidator validator.
 [+] Create FileValidator validator, to check for file types and size on upload.
+[ ] Add model constraints.
+[ ] Add default values in model.save method to avoid blank form fields.
+[ ] solicitud.actuacion_electronica should be capitalized on model.clean method.
+[ ] Add field fecha de firma to instrumentoslegales models.
 
 [+] Agregar campos aseguradora y número de póliza al modelo Vehiculo.
 
@@ -47,6 +62,9 @@
 
 [ ] Add a way to update template.docx(ej: upload and overwrite the original file).
 [ ] Add logic to template.docx for allowance payments outside the province.
+[ ] Check order of comisionados in template.docx
+
+[ ] Add a right-side frame to form templates to provide help-text.
 
 [ ] Generate cron shell script to backup database.
 
