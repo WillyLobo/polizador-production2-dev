@@ -12,6 +12,7 @@ class InstrumentosLegalesDecretosForm(forms.ModelForm):
             "instrumentolegaldecretos_tipo",
             "instrumentolegaldecretos_numero",
             "instrumentolegaldecretos_ano",
+            "instrumentolegaldecretos_fecha_aprobacion",
             "instrumentolegaldecretos_descripcion",
             "instrumentolegaldecretos",
         )
@@ -25,6 +26,10 @@ class InstrumentosLegalesDecretosForm(forms.ModelForm):
             "instrumentolegaldecretos_ano":forms.TextInput(attrs={
                 "class":"form-control"
             }),
+            "instrumentolegaldecretos_fecha_aprobacion":forms.DateInput(attrs={
+                "class":"form-control",
+                "autocomplete":"off"
+                }),
             "instrumentolegaldecretos_descripcion":forms.TextInput(attrs={
                 "class":"form-control"
             }),
@@ -43,6 +48,7 @@ class InstrumentosLegalesResolucionesForm(forms.ModelForm):
             "instrumentolegalresoluciones_tipo",
             "instrumentolegalresoluciones_numero",
             "instrumentolegalresoluciones_ano",
+            "instrumentolegalresoluciones_fecha_aprobacion",
             "instrumentolegalresoluciones_descripcion",
             "instrumentolegalresoluciones",
         )
@@ -56,6 +62,10 @@ class InstrumentosLegalesResolucionesForm(forms.ModelForm):
             "instrumentolegalresoluciones_ano":forms.TextInput(attrs={
                 "class":"form-control"
             }),
+            "instrumentolegalresoluciones_fecha_aprobacion":forms.DateInput(attrs={
+                "class":"form-control",
+                "autocomplete":"off"
+                }),
             "instrumentolegalresoluciones_descripcion":forms.TextInput(attrs={
                 "class":"form-control"
             }),

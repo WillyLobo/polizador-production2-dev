@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block content %}
+{%block title%}<title>{{title}}</title>{%endblock title%}
+
+<!-- XDSoft DateTimePicker -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
+
+{{ form.media.css }}
+
+<div class="container">
+  <form action='{% url "secretariador:crear-incorporacion" %}' method="POST" enctype="multipart/form-data"> 
+    {% csrf_token %}
+
+    {% for hidden in form.hidden_fields %}
+      {{ hidden }}
+    {% endfor %}
+
+    {{form.as_div}}
+    {{comisionadosformset.management_form}}
+    <span class="fs-4 p-0">Comisionados</span>
+
+    <div id="comisionadosolicitud-form" class="comisionadosolicitud-form">
+      {%for form in comisionadosformset%}
+        <div class="row">  
+
+          {% csrf_token %}
+          {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+          {% endfor %}
+      
+          {{form.as_div}}
+
+        </div>
+      {%endfor%}
+      {% for dict in formset.errors %}
+        {% for error in dict.values %}
+          {{ error }}
+        {% endfor %}
+      {% endfor %}
+
+    </div>
+    
+    <input type='button' class="px-5 btn btn-info" id='addForm' value='Agregar Nuevo Comisionado'>
+    <input type='submit' value='Guardar' class="btn" />
+  </form>
+</div>
+<div id="empty_form" style="display:none">
+  <div class="row">
+    {{comisionadosformset.empty_form.as_div}}
+  </div>
+</div>
+
+{{ form.media.js }}
+
+<script>
+  $('#addForm').click(function() {
+	var form_idx = $('#id_comisionadosolicitud_set-TOTAL_FORMS').val();
+	$('#comisionadosolicitud-form').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
+	$('#id_comisionadosolicitud_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+});
+</script>
+
+{%comment%}
+<script>
+  $('#addForm').click(function() {
+  cloneMore("div.comisionadosolicitud-form:last", "comisionadosolicitud_set")
+  });
+</script>
+{%endcomment%}
+</script>
+{% endblock %}

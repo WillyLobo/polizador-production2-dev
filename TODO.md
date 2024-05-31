@@ -2,7 +2,7 @@
 
 [ ] Create model Incorporacion.
     - Model will allow to insert comisionados into a previously approved executive order.
-    [ ] Fields: comisionado, actuacion_electronica, resolucion
+    [+] Fields: comisionado, actuacion_electronica, resolucion
     
 [+] Build create/update templates.
     [+] InstrumentosLegalesDecretos.
@@ -21,14 +21,14 @@
     [+] InstrumentosLegalesResoluciones.
     [+] Vehiculos
     [+] Montos viaticos diarios.
-    [ ] Incorporacion
+    [+] Incorporacion
 
 [+] Add navbar links.
     [+] InstrumentosLegalesDecretos.
     [+] InstrumentosLegalesResoluciones.
     [+] Vehiculos
     [+] Montos viaticos diarios
-    [ ] Incorporacion
+    [+] Incorporacion
 
 [ ] Create detail templates.
     [ ] ListaComisionadosView
@@ -51,7 +51,7 @@
 [ ] Add model constraints.
 [ ] Add default values in model.save method to avoid blank form fields.
 [ ] solicitud.actuacion_electronica should be capitalized on model.clean method.
-[ ] Add field fecha de firma to instrumentoslegales models.
+[+] Add field fecha de firma to instrumentoslegales models.
 
 [+] Agregar campos aseguradora y número de póliza al modelo Vehiculo.
 
@@ -59,10 +59,11 @@
 
 [+] Fix form_invalid() in UpdateSolicitud view.
 [ ] Fix form_invalid() in CrearSolitidud view.
+[+] Fix allowances for vocal in organigrama model.
 
 [ ] Add a way to update template.docx(ej: upload and overwrite the original file).
 [ ] Add logic to template.docx for allowance payments outside the province.
-[ ] Check order of comisionados in template.docx
+[+] Check order of comisionados in template.docx
 
 [ ] Add a right-side frame to form templates to provide help-text.
 

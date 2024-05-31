@@ -212,6 +212,15 @@
 			</ul>
 		</li>
 		<!-- Submenu Solicitud Ends -->
+		<!-- Submenu Incorporacion Starts -->
+		<li class="dropdown-submenu">
+			<a href="#" data-bs-toggle="dropdown" class="dropdown-item dropdown-toggle">Incorporaciones</a>
+			<ul class="dropdown-menu">
+				<li> <a href="{% url "secretariador:lista-incorporaciones" %}" class="dropdown-item">Lista Agentes Incorporados</a></li>
+				{% if perms.secretariador.add_incorporaciones %}<li><a href="{% url "secretariador:crear-incorporacion" %}" class="dropdown-item">Incorporar Agente a Comision</a></li>{% endif %}
+			</ul>
+		</li>
+		<!-- Submenu Incorporacion Ends -->
 		<!-- Submenu Comisionados Starts -->
 		<li class="dropdown-submenu">
 			<a href="#" data-bs-toggle="dropdown" class="dropdown-item dropdown-toggle">Solicitud</a>

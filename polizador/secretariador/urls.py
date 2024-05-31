@@ -5,6 +5,7 @@ from secretariador.views.comisionadoviews import *
 from secretariador.views.instrumentolegalviews import *
 from secretariador.views.vehiculoviews import *
 from secretariador.views.montoviaticodiarioviews import *
+from secretariador.views.incorporacionviews import *
 
 app_name = "secretariador"
 
@@ -44,6 +45,11 @@ comisionado_patterns = [
     path("crearcomisionado/<pk>", UpdateComisionado.as_view(), name="update-comisionado"),
     path("eliminar/comisionado/<pk>", EliminarComisionado.as_view(), name="eliminar-comisionado"),
 ]
+incorporacion_patterns = [
+    path("crearincorporacion/", CrearIncorporacion.as_view(), name="crear-incorporacion"),
+    path("crearincorporacion/<pk>", UpdateIncorporacion.as_view(), name="update-incorporacion"),
+    path("eliminar/incorporacion/<pk>", EliminarIncorporacion.as_view(), name="eliminar-incorporacion"),
+]
 # documentos_digitales = [
 #     path("digitales/crear-contrato-digital/", CrearContratoDigital.as_view(), name="crear-contrato-digital"),
 #     path("digitales/crear-contrato-digital/<pk>", UpdateContratoDigital.as_view(), name="update-contrato-digital"),
@@ -69,6 +75,9 @@ ajax = [
     # Vehiculos
     path("listas/vehiculos", PaginaListaVehiculos, name="lista-vehiculos"),
     path("ajax_datatable/vehiculos/", ListaVehiculosView.as_view(), name="lista-vehiculos-datatables"),
+    # Incorporaciones
+    path("listas/incorporaciones", PaginaListaIncorporaciones, name="lista-incorporaciones"),
+    path("ajax_datatable/incorporaciones/", ListaIncorporacionesView.as_view(), name="lista-incorporaciones-datatables"),
 ]
 
 urlpatterns += ajax
@@ -77,5 +86,6 @@ urlpatterns += monto_viatico_diario_patterns
 urlpatterns += instrumento_legal_resolucion_patterns
 urlpatterns += solicitud_patterns
 urlpatterns += comisionado_patterns
+urlpatterns += incorporacion_patterns
 urlpatterns += vehiculo_patterns
 urlpatterns += docx_patterns

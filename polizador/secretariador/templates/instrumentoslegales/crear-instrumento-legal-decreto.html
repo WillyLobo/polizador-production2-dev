@@ -24,5 +24,13 @@
 </div>
 
 {{ form.media.js }}
-
+<script>
+  $(function () {
+      $.datetimepicker.setLocale('es');
+      $("#id_instrumentolegaldecretos_fecha_aprobacion").datetimepicker({
+      timepicker:false,
+      format: 'd/m/Y',
+      });
+    });
+  </script>
 {% endblock %}

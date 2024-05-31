@@ -20,3 +20,8 @@ class ResolucionWidget(s2forms.ModelSelect2Widget):
     search_fields = [
         "instrumentolegalresoluciones_str__icontains",
     ]
+
+class SolicitudWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "solicitud_actuacion__icontains",
+    ]

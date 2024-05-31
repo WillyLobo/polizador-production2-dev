@@ -74,6 +74,7 @@ class InstrumentosLegalesResoluciones(models.Model):
     instrumentolegalresoluciones_tipo = models.CharField("Tipo", max_length=1, choices=TIPO, default="P")
     instrumentolegalresoluciones_numero = models.CharField("Número", max_length=7)
     instrumentolegalresoluciones_ano = models.CharField("Año", max_length=5)
+    instrumentolegalresoluciones_fecha_aprobacion = models.DateField("Fecha de Aprobación", default=timezone.now)
     instrumentolegalresoluciones_descripcion = models.CharField("Descripción", max_length=600, default="")
     instrumentolegalresoluciones = models.FileField(upload_to=generate_name_resoluciones, max_length=500, validators=[FileValidator(max_size=1024*1024*14, min_size=None, content_types=("application/pdf"))], null=True, blank=True)
     instrumentolegalresoluciones_str = GeneratedField(
@@ -105,6 +106,7 @@ class InstrumentosLegalesDecretos(models.Model):
     instrumentolegaldecretos_tipo = models.CharField("Tipo", max_length=1, choices=TIPO, default="P")
     instrumentolegaldecretos_numero = models.CharField("Número", max_length=7)
     instrumentolegaldecretos_ano = models.CharField("Año", max_length=5)
+    instrumentolegaldecretos_fecha_aprobacion = models.DateField("Fecha de Aprobación", default=timezone.now)
     instrumentolegaldecretos_descripcion = models.CharField("Descripción", max_length=600, default="Escala de viáticos")
     instrumentolegaldecretos = models.FileField(upload_to=generate_name_decretos, max_length=500, validators=[FileValidator(max_size=1024*1024*14, min_size=None, content_types=("application/pdf"))], null=True, blank=True)
     instrumentolegaldecretos_str = GeneratedField(
@@ -252,7 +254,8 @@ class ComisionadoSolicitud(models.Model):
         verbose_name = "Comisionado Solicitud"
         verbose_name_plural = "Comisionado Solicitudes"
 
-    comisionadosolicitud_foreign = models.ForeignKey("Solicitud", on_delete=models.CASCADE)
+    comisionadosolicitud_foreign = models.ForeignKey("Solicitud", on_delete=models.CASCADE, null=True, blank=True)
+    comisionadosolicitud_incorporacion_foreign = models.ForeignKey("Incorporacion", on_delete=models.CASCADE, null=True, blank=True)
     comisionadosolicitud_nombre = models.ForeignKey("Comisionado", on_delete=models.CASCADE)
     comisionadosolicitud_colaborador = models.BooleanField("Es colaborador?")
     comisionadosolicitud_chofer = models.BooleanField("Es Chofer?")
@@ -260,18 +263,55 @@ class ComisionadoSolicitud(models.Model):
     comisionadosolicitud_gastos = models.DecimalField("Gastos", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
 
     def valor_viatico_dia(self):
+        gabinete = self.comisionadosolicitud_nombre.comisionado_cargo.organigrama_cargo
         estrato = self.comisionadosolicitud_nombre.comisionado_cargo.organigrama_escalafon
-        if estrato == 2:
-            estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_dos_interior
+        if gabinete == "Vocal" or gabinete == "Presidente":
+            estrato_decreto = 0
+        else:
+            if estrato == 1:
+                estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_uno_interior
+            elif estrato == 2:
+                estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_dos_interior
+            elif estrato == 3:
+                estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_tres_interior
+            elif estrato == 4:
+                estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_cuatro_interior
+        
         return estrato_decreto
     
     def viaticos_computado(self):
+        gabinete = self.comisionadosolicitud_nombre.comisionado_cargo.organigrama_cargo
         estrato = self.comisionadosolicitud_nombre.comisionado_cargo.organigrama_escalafon
         dias = self.comisionadosolicitud_foreign.cantidad_de_dias()
-        if estrato == 2:
-            estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_dos_interior
+        if gabinete == "Vocal" or gabinete == "Presidente":
+            estrato_decreto = 0
+        else:
+            if estrato == 1:
+                estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_uno_interior
+            elif estrato == 2:
+                estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_dos_interior
+            elif estrato == 3:
+                estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_tres_interior
+            elif estrato == 4:
+                estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_cuatro_interior
+        
         return dias * estrato_decreto
     
     def viaticos_total(self):
         total = self.viaticos_computado() + self.comisionadosolicitud_combustible + self.comisionadosolicitud_gastos
         return total
+
+class Incorporacion(models.Model):
+    class Meta:
+        verbose_name = "Incorporación"
+        verbose_name_plural = "Incorporaciones"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["incorporacion_solicitud"],
+                name='unique_incorporacion_1'
+            ),
+        ]
+    incorporacion_solicitud = models.ForeignKey("Solicitud", on_delete=models.CASCADE)
+    incorporacion_actuacion = models.CharField("Actuación", max_length=18)
+    incorporacion_solicitante = models.ForeignKey("Comisionado", on_delete=models.CASCADE) # Encargado del area solicitante
+    incorporacion_resolucion = models.ForeignKey("InstrumentosLegalesResoluciones", verbose_name="Resolución Aprobada", on_delete=models.CASCADE)
