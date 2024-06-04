@@ -95,7 +95,8 @@ Chofer Perez Ramón Antonio D.N.I.Nº.23.273.715......................………�
     (Viáticos: {{solicitud.cantidad_de_dias()}}{%if solicitud.cantidad_de_dias() > 1 %} días {%else%} día {%endif%}a razón de ${{solicitud.tmpviaticos()}} diarios.
     {%endif%}
     
-
+Gastos:
+{{"${:,.2f}".format(agente.comisionadosolicitud_gastos|float) .replace(",", "@").replace(".", ",").replace("@", ".")}}
 {%endcomment%}
 
 

@@ -23,7 +23,16 @@ def render_docx(request, pk):
 	doc = DocxTemplate("secretariador/media/solicitud_template.docx")
 	solicitud = Solicitud.objects.get(pk=pk)
 	context = {
-	"solicitud":solicitud
+	"solicitud":solicitud,
+	"actuacion":solicitud.solicitud_actuacion,
+	"agentes":solicitud.comisionadosolicitud_set.all(),
+	"localidades":solicitud.solicitud_localidades.all(),
+	"fechas":solicitud.solicitud_fechas(),
+	"tareas":solicitud.solicitud_tareas,
+	"vehiculo":solicitud.solicitud_vehiculo,
+	"vehiculo_modelo":solicitud.solicitud_vehiculo.vehiculo_modelo,
+	"vehiculo_patente":solicitud.solicitud_vehiculo.vehiculo_patente,
+	"decreto_viaticos":solicitud.solicitud_decreto_viaticos.montoviaticodiario_decreto_reglamentario,
 	}
 
 	filename = solicitud.solicitud_actuacion+".docx"

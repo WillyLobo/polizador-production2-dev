@@ -141,6 +141,12 @@ class Comisionado(models.Model):
         ordering = ("comisionado_apellidos",)
         verbose_name = "Comisionado"
         verbose_name_plural = "Comisionados"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["comisionado_nombres", "comisionado_apellidos", "comisionado_dni"],
+                name='unique_comisionado_1'
+            ),
+        ]
     SEXO = (
         ("M", "Masculino"),
         ("F", "Femenino")
@@ -169,6 +175,10 @@ class Comisionado(models.Model):
         return f"{self.comisionado_apellidos}, {self.comisionado_nombres}"
 
 class Organigrama(models.Model):
+    class Meta:
+        verbose_name = "Organigrama"
+        verbose_name_plural = "Organigramas"
+    
     organigrama_cargo = models.CharField("Cargo", max_length=120)
     organigrama_escalafon = models.DecimalField("Escalafón", max_digits=1, decimal_places=0, default=2)
 
@@ -179,7 +189,12 @@ class Vehiculo(models.Model):
     class Meta:
         verbose_name = "Vehículo"
         verbose_name_plural = "Vehículos"
-    
+        constraints = [
+            models.UniqueConstraint(
+                fields=["vehiculo_modelo", "vehiculo_patente"],
+                name='unique_vehiculo_1'
+            ),
+        ]
     VEHICULO = (
         ("E", "Empresa"),
         ("O", "Oficial"),
@@ -262,7 +277,38 @@ class ComisionadoSolicitud(models.Model):
     comisionadosolicitud_combustible = models.DecimalField("Combustible", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
     comisionadosolicitud_gastos = models.DecimalField("Gastos", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
 
+    def __str__(self):
+        """
+        Returns a string representation of the object.
+        The string representation consists of the foreign key value, which is either the value of `comisionadosolicitud_foreign` or `comisionadosolicitud_incorporacion_foreign`,
+        followed by the last name and first name of the `comisionadosolicitud_nombre` object.
+
+        Returns:
+            str: A string representation of the object.
+        """
+        if self.comisionadosolicitud_foreign is None:
+            foreign = self.comisionadosolicitud_incorporacion_foreign
+        else:
+            foreign = self.comisionadosolicitud_foreign
+        return f"{foreign} - {self.comisionadosolicitud_nombre.comisionado_apellidos}, {self.comisionadosolicitud_nombre.comisionado_nombres}"
+    
+    def clean(self):
+        """
+        Sets the `comisionadosolicitud_combustible` and `comisionadosolicitud_gastos` fields to 0 if they are None, otherwise keeps their current values.
+        This function is used to ensure that these fields are always set to a non-null value. It is typically called during the cleaning process of a form or model instance.
+
+        Returns:
+            None
+        """
+        self.comisionadosolicitud_gastos = 0 if self.comisionadosolicitud_gastos is None else self.comisionadosolicitud_gastos
+
     def valor_viatico_dia(self):
+        """
+        Calculates the daily viatic value based on the position and stratum of the commissioned person.
+
+        Returns:
+            float: The daily viatic value. Returns 0 if the position is "Vocal" or "Presidente".
+        """
         gabinete = self.comisionadosolicitud_nombre.comisionado_cargo.organigrama_cargo
         estrato = self.comisionadosolicitud_nombre.comisionado_cargo.organigrama_escalafon
         if gabinete == "Vocal" or gabinete == "Presidente":
@@ -280,6 +326,12 @@ class ComisionadoSolicitud(models.Model):
         return estrato_decreto
     
     def viaticos_computado(self):
+        """
+        Calculates the total amount of viaticos based on the position and stratum of the commissioned person.
+
+        Returns:
+            float: The total amount of viaticos computed.
+        """
         gabinete = self.comisionadosolicitud_nombre.comisionado_cargo.organigrama_cargo
         estrato = self.comisionadosolicitud_nombre.comisionado_cargo.organigrama_escalafon
         dias = self.comisionadosolicitud_foreign.cantidad_de_dias()
@@ -298,6 +350,12 @@ class ComisionadoSolicitud(models.Model):
         return dias * estrato_decreto
     
     def viaticos_total(self):
+        """
+        Calculates the total amount of viaticos based on the computed viaticos, combustible, and gastos.
+
+        Returns:
+            float: The total amount of viaticos.
+        """
         total = self.viaticos_computado() + self.comisionadosolicitud_combustible + self.comisionadosolicitud_gastos
         return total
 
@@ -315,3 +373,6 @@ class Incorporacion(models.Model):
     incorporacion_actuacion = models.CharField("Actuación", max_length=18)
     incorporacion_solicitante = models.ForeignKey("Comisionado", on_delete=models.CASCADE) # Encargado del area solicitante
     incorporacion_resolucion = models.ForeignKey("InstrumentosLegalesResoluciones", verbose_name="Resolución Aprobada", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.incorporacion_actuacion}"

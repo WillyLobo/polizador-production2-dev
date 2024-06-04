@@ -156,3 +156,7 @@ tr:nth-child(even) {
 tr:nth-child(odd) {
     background-color: rgba(240,240,240,1);
 }
+.errorlist{
+    color: #D8000C;
+    background-color: #FFBABA;
+}

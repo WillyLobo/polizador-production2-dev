@@ -33,6 +33,10 @@ class IncorporacionAdmin(ImportExportMixin, admin.ModelAdmin):
     model = Incorporacion
     resource_class = IncorporacionResource
     inlines = [ComisionadoSolicitudAdminInline]
+
+class ComisionadoSolicitudAdmin(admin.ModelAdmin):
+    model = ComisionadoSolicitud
+
 # Registro de los modelos en Admin
 admin.site.register(InstrumentosLegalesResoluciones, InstrumentosLegalesResolucionesAdmin)
 admin.site.register(InstrumentosLegalesDecretos, InstrumentosLegalesDecretoAdmin)
@@ -42,3 +46,4 @@ admin.site.register(Organigrama, OrganigramaAdmin)
 admin.site.register(Vehiculo, VehiculoAdmin)
 admin.site.register(Solicitud, SolicitudAdmin)
 admin.site.register(Incorporacion, IncorporacionAdmin)
+admin.site.register(ComisionadoSolicitud, ComisionadoSolicitudAdmin)

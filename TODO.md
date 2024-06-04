@@ -9,7 +9,7 @@
     [+] InstrumentosLegalesResoluciones.
     [+] Vehiculos
     [+] Montos viaticos diarios.
-    [ ] Incorporacion
+    [+] Incorporacion
 
 [+] Create concatenated fields for display.
     [+] Vehículos= vehiculo_str(TextField)
@@ -31,8 +31,9 @@
     [+] Incorporacion
 
 [ ] Create detail templates.
-    [ ] ListaComisionadosView
     [+] ListaSolicitudesView
+    [ ] ListaIncorporacionesView
+    [ ] ListaComisionadosView
     [ ] ListaVehiculosView
     [ ] ListaInstrumentosLegalesDecretosView
     [ ] ListaInstrumentosLegalesResolucionesView
@@ -48,9 +49,9 @@
 [+] Test form date validators.
 [+] Create CuitValidator validator.
 [+] Create FileValidator validator, to check for file types and size on upload.
-[ ] Add model constraints.
-[ ] Add default values in model.save method to avoid blank form fields.
-[ ] solicitud.actuacion_electronica should be capitalized on model.clean method.
+[+] Add model constraints.
+[+] Add default values in model.save method to avoid blank form fields in Solicitudes.
+[+] solicitud.actuacion_electronica should be capitalized on model.clean method.
 [+] Add field fecha de firma to instrumentoslegales models.
 
 [+] Agregar campos aseguradora y número de póliza al modelo Vehiculo.
@@ -58,16 +59,23 @@
 [ ] Review code to get comisionado_estrato(models.ComisionadoSolicitud.viaticos_computado), taking consideration that cabinet personel does not receive compensation.
 
 [+] Fix form_invalid() in UpdateSolicitud view.
-[ ] Fix form_invalid() in CrearSolitidud view.
 [+] Fix allowances for vocal in organigrama model.
+[ ] Fix form_invalid() in CrearSolitidud view.
 
+[+] Check order of comisionados in template.docx.
+[+] Add non working day check on Articulo 1º of solicitud_template.docx.
+[+] Add solicitud_decreto_viaticos check on solicitud_template.docx
+[+] Add reference to executive order 211/2020 for allowances outside of working days.
+[+] Remove scrollMonth & scrollInput from Datepicker.
 [ ] Add a way to update template.docx(ej: upload and overwrite the original file).
 [ ] Add logic to template.docx for allowance payments outside the province.
-[+] Check order of comisionados in template.docx
+[ ] Create docx template for Incorporados.
+[ ] Check comisionadosolicitud_chofer for values in registered drivers.
 
 [ ] Add a right-side frame to form templates to provide help-text.
 
 [ ] Generate cron shell script to backup database.
+[ ] Add a more advanced logging capability.
 
 
 ###############################################
