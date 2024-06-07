@@ -25,3 +25,14 @@ class SolicitudWidget(s2forms.ModelSelect2Widget):
     search_fields = [
         "solicitud_actuacion__icontains",
     ]
+
+class ComisionadoWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "comisionado_nombres__icontains",
+        "comisionado_apellidos__icontains",
+    ]
+
+class VehiculoWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "vehiculo_str__icontains",
+    ]

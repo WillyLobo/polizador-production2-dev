@@ -1,6 +1,7 @@
 from django.urls import path
 
 from secretariador.views.solicitudviews import *
+from secretariador.views.solicitud_exteriorviews import *
 from secretariador.views.comisionadoviews import *
 from secretariador.views.instrumentolegalviews import *
 from secretariador.views.vehiculoviews import *
@@ -31,6 +32,12 @@ solicitud_patterns = [
 	path("crearsolicitud/<pk>", UpdateSolicitud.as_view(), name="update-solicitud"),
 	path("crearsolicitud/ver/<pk>", VerSolicitud.as_view(), name="ver-solicitud"),
     path("eliminar/solicitud/<pk>", EliminarSolicitud.as_view(), name="eliminar-solicitud"),
+]
+solicitud_exterior_patterns = [
+	path("crearsolicitudexterior/", CrearSolicitudExterior.as_view(), name="crear-solicitud-exterior"),
+	path("crearsolicitudexterior/<pk>", UpdateSolicitudExterior.as_view(), name="update-solicitud-exterior"),
+	# path("crearsolicitudexterior/ver/<pk>", VerSolicitud.as_view(), name="ver-solicitud"),
+    path("eliminar/solicitudexterior/<pk>", EliminarSolicitudExterior.as_view(), name="eliminar-solicitud-exterior"),
 ]
 vehiculo_patterns = [
     path("crearvehiculo/", CrearVehiculo.as_view(), name="crear-vehiculo"),
@@ -85,6 +92,7 @@ urlpatterns += instrumento_legal_decreto_patterns
 urlpatterns += monto_viatico_diario_patterns
 urlpatterns += instrumento_legal_resolucion_patterns
 urlpatterns += solicitud_patterns
+urlpatterns += solicitud_exterior_patterns
 urlpatterns += comisionado_patterns
 urlpatterns += incorporacion_patterns
 urlpatterns += vehiculo_patterns

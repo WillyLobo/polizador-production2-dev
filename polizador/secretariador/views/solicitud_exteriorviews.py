@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from secretariador.models import Solicitud, InstrumentosLegalesDecretos
 from carga.models import Provincia
-from secretariador.forms.solicitudform import *
+from secretariador.forms.solicitud_exteriorform import *
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg, generarlinkimg
 from carga.views.generics import get_deleted_objects
 import jinja2
@@ -22,6 +22,7 @@ def render_docx(request, pk):
 	jinja_env = jinja2.Environment()
 	jinja_env.trim_blocks = True
 	jinja_env.lstrip_blocks = True
+	# if solicitud.solicitud_solicitante.comisionado_cargo.organigrama_cargo == "":
 	if solicitud.solicitud_provincia.provincia_nombre == "Chaco":
 		doc = DocxTemplate("secretariador/media/solicitud_template.docx")
 		context = {
@@ -38,7 +39,7 @@ def render_docx(request, pk):
 		"decreto_viaticos":solicitud.solicitud_decreto_viaticos.montoviaticodiario_decreto_reglamentario,
 		}
 	else:
-		doc = DocxTemplate("secretariador/media/solicitud_provincia.docx")
+		doc = DocxTemplate("secretariador/media/solicitud_exterior.docx")
 		context = {
 		"solicitud":solicitud,
 		"actuacion":solicitud.solicitud_actuacion,
@@ -46,10 +47,10 @@ def render_docx(request, pk):
 		"agentes":solicitud.comisionadosolicitud_set.all(),
 		"fechas":solicitud.solicitud_fechas(),
 		"tareas":solicitud.solicitud_tareas,
-
+		"ciudad":solicitud.solicitud_ciudad,
+		"decreto_viaticos":solicitud.solicitud_decreto_viaticos.montoviaticodiario_decreto_reglamentario,
+		
 		}
-
-	
 
 	filename = solicitud.solicitud_actuacion+".docx"
 	response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
@@ -61,43 +62,43 @@ def render_docx(request, pk):
 	return response
 
 @method_decorator(login_required, name="dispatch")
-class CrearSolicitud(PermissionRequiredMixin, generic.CreateView):
+class CrearSolicitudExterior(PermissionRequiredMixin, generic.CreateView):
 	login_url = "/"
 	redirect_field_name = "login"
 	permission_required = "secretariador.add_solicitud"
 
 	model = Solicitud
-	template_name = "solicitud/crear-solicitud.html"
-	form_class = SolicitudForm
+	template_name = "solicitudexterior/crear-solicitud-exterior.html"
+	form_class = SolicitudExteriorForm
 	initial={
 		"solicitud_provincia":Provincia.objects.all().filter(provincia_nombre__icontains="Chaco").last(),
 		"solicitud_decreto_viaticos":InstrumentosLegalesDecretos.objects.filter(instrumentolegaldecretos_tipo="P").filter(instrumentolegaldecretos_descripcion__icontains="Viáticos").latest()
 		}
-	success_url = reverse_lazy("secretariador:crear-solicitud")
+	success_url = reverse_lazy("secretariador:crear-solicitud-exterior")
 	
-	title = "Crear Solicitud"
+	title = "Crear Solicitud Exterior"
 
 	def get_title(self):
 		return self.title
 
 	def get_context_data(self, **kwargs):
-		context = super(CrearSolicitud, self).get_context_data(**kwargs)
+		context = super(CrearSolicitudExterior, self).get_context_data(**kwargs)
 
-		context["comisionadosformset"] = ComisionadoSolicitudFormset(instance=self.object)
+		context["comisionadosformset"] = ComisionadoSolicitudExteriorFormset(instance=self.object)
 		return context
 
 	def get(self, request, *args, **kwargs):
 		self.object = None
 		form_class = self.get_form_class()
 		form = self.get_form(form_class)
-		comisionadosformset = ComisionadoSolicitudFormset(instance=self.object)
+		comisionadosformset = ComisionadoSolicitudExteriorFormset(instance=self.object)
 		return self.render_to_response(self.get_context_data(form=form, comisionadosformset = comisionadosformset))
 	
 	def post(self, request, *args, **kwargs):
 		self.object = None
 		form_class = self.get_form_class()
 		form = self.get_form(form_class)
-		comisionadosformset = ComisionadoSolicitudFormset(self.request.POST, instance=self.object)
+		comisionadosformset = ComisionadoSolicitudExteriorFormset(self.request.POST, instance=self.object)
 		if form.is_valid() and comisionadosformset.is_valid():
 			form.save()
 			return self.form_valid(form, comisionadosformset)
@@ -126,34 +127,34 @@ class CrearSolicitud(PermissionRequiredMixin, generic.CreateView):
 		return self.render_to_response(self.get_context_data(form=form, comisionadosformset=comisionadosformset))
 	
 @method_decorator(login_required, name="dispatch")
-class UpdateSolicitud(PermissionRequiredMixin, generic.UpdateView):
+class UpdateSolicitudExterior(PermissionRequiredMixin, generic.UpdateView):
 	login_url = "/"
 	redirect_field_name = "login"
 	permission_required = "secretariador.change_solicitud"
 
 	model = Solicitud
-	template_name = "solicitud/update-solicitud.html"
-	form_class = SolicitudForm
+	template_name = "solicitudexterior/update-solicitud-exterior.html"
+	form_class = SolicitudExteriorForm
 	success_url = reverse_lazy("secretariador:lista-solicitudes")
 	
 	def get_context_data(self, **kwargs):
-		context = super(UpdateSolicitud, self).get_context_data(**kwargs)
+		context = super(UpdateSolicitudExterior, self).get_context_data(**kwargs)
 
-		context["comisionadosformset"] = ComisionadoSolicitudFormset(instance=self.object)
+		context["comisionadosformset"] = ComisionadoSolicitudExteriorFormset(instance=self.object)
 		return context
 
 	def get(self, request, *args, **kwargs):
 		self.object = self.get_object()
 		form_class = self.get_form_class()
 		form = self.get_form(form_class)
-		comisionadosformset = ComisionadoSolicitudFormset(instance=self.object)
+		comisionadosformset = ComisionadoSolicitudExteriorFormset(instance=self.object)
 		return self.render_to_response(self.get_context_data(form=form, comisionadosformset = comisionadosformset))
 	
 	def post(self, request, *args, **kwargs):
 		self.object = self.get_object()
 		form_class = self.get_form_class()
 		form = self.get_form(form_class)
-		comisionadosformset = ComisionadoSolicitudFormset(self.request.POST, instance=self.object)
+		comisionadosformset = ComisionadoSolicitudExteriorFormset(self.request.POST, instance=self.object)
 		if form.is_valid() and comisionadosformset.is_valid():
 			form.save()
 			return self.form_valid(form, comisionadosformset)
@@ -179,7 +180,7 @@ class UpdateSolicitud(PermissionRequiredMixin, generic.UpdateView):
 
 
 @method_decorator(login_required, name="dispatch")
-class EliminarSolicitud(PermissionRequiredMixin, generic.DeleteView):
+class EliminarSolicitudExterior(PermissionRequiredMixin, generic.DeleteView):
 	login_url = "/"
 	redirect_field_name = "login"
 	permission_required = "secretariador.delete_solicitud"
@@ -247,12 +248,18 @@ class ListaSolicitudesView(AjaxDatatableView):
 
 	def customize_row(self, row, obj):
 		id = str(obj.id)
-				
-		editarlink = f'<a href="/viaticos/crearsolicitud/{id}">{editlinkimg}</a>'
-		detallelink = f'<a href="/viaticos/crearsolicitud/ver/{id}">{detallelinkimg}</a>'
-		eliminarlink = f'<a href="/viaticos/eliminar/solicitud/{id}">{eliminarlinkimg}</a>'
-		generarlink = f'<a href="/viaticos/creardocumento/{id}">{generarlinkimg}</a>'
-		
+
+		if obj.solicitud_provincia.provincia_nombre =="Chaco":				
+			editarlink = f'<a href="/viaticos/crearsolicitud/{id}">{editlinkimg}</a>'
+			detallelink = f'<a href="/viaticos/crearsolicitud/ver/{id}">{detallelinkimg}</a>'
+			eliminarlink = f'<a href="/viaticos/eliminar/solicitud/{id}">{eliminarlinkimg}</a>'
+			generarlink = f'<a href="/viaticos/creardocumento/{id}">{generarlinkimg}</a>'
+		else:
+			editarlink = f'<a href="/viaticos/crearsolicitudexterior/{id}">{editlinkimg}</a>'
+			detallelink = f'<a href="/viaticos/crearsolicitudexterior/ver/{id}">{detallelinkimg}</a>'
+			eliminarlink = f'<a href="/viaticos/eliminar/solicitudexterior/{id}">{eliminarlinkimg}</a>'
+			generarlink = f'<a href="/viaticos/creardocumento/{id}">{generarlinkimg}</a>'
+
 		if self.request.user.has_perm("secretariador.delete_solicitud"):
 			row["edit"] = f"{editarlink}{detallelink}{eliminarlink}{generarlink}"
 		elif self.request.user.has_perm("secretariador.change_solicitud"):

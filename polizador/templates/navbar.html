@@ -227,6 +227,7 @@
 			<ul class="dropdown-menu">
 				<li> <a href="{% url "secretariador:lista-solicitudes" %}" class="dropdown-item">Lista Solicitudes</a></li>
 				{% if perms.secretariador.add_solicitud %}<li><a href="{% url "secretariador:crear-solicitud" %}" class="dropdown-item">Crear Solicitud</a></li>{% endif %}
+				{% if perms.secretariador.add_solicitud %}<li><a href="{% url "secretariador:crear-solicitud-exterior" %}" class="dropdown-item">Crear Solicitud Fuera de la Provincia</a></li>{% endif %}
 			</ul>
 		</li>
 		<!-- Submenu Comisionados Ends -->

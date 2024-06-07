@@ -15,10 +15,22 @@
             <div class="col border align-left"><b>Fechas:</b></div>
             <div class="col border align-left">{%for fecha in object.solicitud_fechas %}{{fecha}}{%if not forloop.last %}, {%endif%} {%endfor%}</div>
         </div>
+        {%if object.solicitud_localidades.all|length > 1%}
         <div class="row g-0">
             <div class="col border align-left"><b>Localidades:</b></div>
             <div class="col border align-left">{%for localidad in object.solicitud_localidades.all %}{{localidad}}{%if not forloop.last %}, {%endif%} {%endfor%}</div>
         </div>
+        {%endif%}
+        {%if object.solicitud_aereo%}
+        <div class="row g-0">
+            <div class="col border align-left"><b>Provincia:</b></div>
+            <div class="col border align-left">{{object.solicitud_provincia.provincia_nombre}}</div>
+        </div>
+        <div class="row g-0">
+            <div class="col border align-left"><b>Ciudad:</b></div>
+            <div class="col border align-left">{{object.solicitud_ciudad}}</div>
+        </div>
+        {%endif%}
         <div class="row g-0">
             <div class="col border align-left"><b>Tareas:</b></div>
             <div class="col border align-left">{{object.solicitud_tareas|capfirst}}</div>
@@ -56,6 +68,7 @@
                 <th scope="col">Viáticos</th>
                 <th scope="col">Gastos</th>
                 <th scope="col">Combustible</th>
+                <th scope="col">Pasajes</th>
                 <th scope="col">Total</th>
                 <th scope="col">Link</th>
             </tr>
@@ -68,6 +81,7 @@
                 <td class="align-left">{{agente.viaticos_computado}}</td>
                 <td class="align-left">{{agente.comisionadosolicitud_gastos}}</td>
                 <td class="align-left">{{agente.comisionadosolicitud_combustible}}</td>
+                <td class="align-left">{{agente.comisionadosolicitud_pasaje}}</td>
                 <td class="align-left">{{agente.viaticos_total}}</td>
                 <td class="d-print-none align-right" ><a href="{% url 'secretariador:update-comisionado' agente.id %}">{{editimglink|safe}}</a></td>
             </tr>
@@ -80,6 +94,7 @@
                 <th id="totalViaticos{{object.id}}" scope="col"></th>
                 <th id="totalGastos{{object.id}}" scope="col"></th>
                 <th id="totalCombustible{{object.id}}" scope="col"></th>
+                <th id="totalPasaje{{object.id}}" scope="col"></th>
                 <th id="totalTotal{{object.id}}" scope="col"></th>
                 <th scope="col"></th>
             </tr>
@@ -88,5 +103,5 @@
 </div>
 
 <script>
-    sumaColumnaPesos("tablaSolicitud{{object.id}}", 5, "totalTotal{{object.id}}");
+    sumaColumnaPesos("tablaSolicitud{{object.id}}", 6, "totalTotal{{object.id}}");
 </script>

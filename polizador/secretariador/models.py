@@ -228,12 +228,14 @@ class Solicitud(models.Model):
     solicitud_actuacion = models.CharField("Actuación", max_length=18)
     solicitud_solicitante = models.ForeignKey("Comisionado", on_delete=models.CASCADE) # Encargado del area solicitante
     solicitud_provincia = models.ForeignKey("carga.Provincia", on_delete=models.CASCADE)
-    solicitud_localidades = models.ManyToManyField("carga.Localidad")
+    solicitud_localidades = models.ManyToManyField("carga.Localidad", blank=True)
+    solicitud_ciudad = models.CharField("Ciudad", help_text="... en la ciudad de #Texto ingresado en el formulario#", max_length=200, blank=True, null=True)
     solicitud_decreto_viaticos = models.ForeignKey("MontoViaticoDiario", on_delete=models.CASCADE)
     solicitud_fecha_desde = models.DateField("Fecha Inicio")
     solicitud_fecha_hasta = models.DateField("Fecha Regreso")
     solicitud_tareas = models.TextField("Tareas a Realizar", help_text="... a fin de #Texto ingresado en el formulario#")
-    solicitud_vehiculo = models.ForeignKey("Vehiculo", on_delete=models.CASCADE)
+    solicitud_vehiculo = models.ForeignKey("Vehiculo", on_delete=models.CASCADE, blank=True, null=True)
+    solicitud_aereo = models.BooleanField("Aereo", help_text="Tildar si es viaje aereo", blank=True, null=True)
     solicitud_dia_inhabil = models.BooleanField("Dia Inhábil", help_text="Tildar si es un diá de no laboral")
     solicitud_resolucion = models.ForeignKey("InstrumentosLegalesResoluciones", verbose_name="Resolución Aprobada", on_delete=models.CASCADE, blank=True, null=True)
     solicitud_viaticos_total = GeneratedField(
@@ -275,6 +277,7 @@ class ComisionadoSolicitud(models.Model):
     comisionadosolicitud_colaborador = models.BooleanField("Es colaborador?")
     comisionadosolicitud_chofer = models.BooleanField("Es Chofer?")
     comisionadosolicitud_combustible = models.DecimalField("Combustible", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    comisionadosolicitud_pasaje = models.DecimalField("Pasajes", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
     comisionadosolicitud_gastos = models.DecimalField("Gastos", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
 
     def __str__(self):
@@ -294,13 +297,14 @@ class ComisionadoSolicitud(models.Model):
     
     def clean(self):
         """
-        Sets the `comisionadosolicitud_combustible` and `comisionadosolicitud_gastos` fields to 0 if they are None, otherwise keeps their current values.
+        Sets the `comisionadosolicitud_combustible`, `comisionadosolicitud_pasaje` and `comisionadosolicitud_gastos` fields to 0 if they are None, otherwise keeps their current values.
         This function is used to ensure that these fields are always set to a non-null value. It is typically called during the cleaning process of a form or model instance.
-
         Returns:
             None
         """
         self.comisionadosolicitud_gastos = 0 if self.comisionadosolicitud_gastos is None else self.comisionadosolicitud_gastos
+        self.comisionadosolicitud_pasaje = 0 if self.comisionadosolicitud_pasaje is None else self.comisionadosolicitud_pasaje
+        self.comisionadosolicitud_combustible = 0 if self.comisionadosolicitud_combustible is None else self.comisionadosolicitud_combustible
 
     def valor_viatico_dia(self):
         """
@@ -309,19 +313,38 @@ class ComisionadoSolicitud(models.Model):
         Returns:
             float: The daily viatic value. Returns 0 if the position is "Vocal" or "Presidente".
         """
+        foreign = self.comisionadosolicitud_foreign if self.comisionadosolicitud_foreign is not None else self.comisionadosolicitud_incorporacion_foreign
         gabinete = self.comisionadosolicitud_nombre.comisionado_cargo.organigrama_cargo
         estrato = self.comisionadosolicitud_nombre.comisionado_cargo.organigrama_escalafon
+        # Check if its cabinet personel
         if gabinete == "Vocal" or gabinete == "Presidente":
+            if foreign.solicitud_provincia.provincia_nombre == "Chaco":
+                estrato_decreto = 0
+            else:
+                estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_cuatro_exterior
+        elif self.comisionadosolicitud_colaborador == True:
             estrato_decreto = 0
         else:
-            if estrato == 1:
-                estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_uno_interior
-            elif estrato == 2:
-                estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_dos_interior
-            elif estrato == 3:
-                estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_tres_interior
-            elif estrato == 4:
-                estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_cuatro_interior
+            if self.comisionadosolicitud_foreign.solicitud_provincia.provincia_nombre == "Chaco":
+                # Inside province.
+                if estrato == 1:
+                    estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_uno_interior
+                elif estrato == 2:
+                    estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_dos_interior
+                elif estrato == 3:
+                    estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_tres_interior
+                elif estrato == 4:
+                    estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_cuatro_interior
+            else:
+                # Out of province.
+                if estrato == 1:
+                    estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_uno_exterior
+                elif estrato == 2:
+                    estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_dos_exterior
+                elif estrato == 3:
+                    estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_tres_exterior
+                elif estrato == 4:
+                    estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_cuatro_exterior
         
         return estrato_decreto
     
@@ -332,21 +355,8 @@ class ComisionadoSolicitud(models.Model):
         Returns:
             float: The total amount of viaticos computed.
         """
-        gabinete = self.comisionadosolicitud_nombre.comisionado_cargo.organigrama_cargo
-        estrato = self.comisionadosolicitud_nombre.comisionado_cargo.organigrama_escalafon
         dias = self.comisionadosolicitud_foreign.cantidad_de_dias()
-        if gabinete == "Vocal" or gabinete == "Presidente":
-            estrato_decreto = 0
-        else:
-            if estrato == 1:
-                estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_uno_interior
-            elif estrato == 2:
-                estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_dos_interior
-            elif estrato == 3:
-                estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_tres_interior
-            elif estrato == 4:
-                estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_cuatro_interior
-        
+        estrato_decreto = self.valor_viatico_dia() 
         return dias * estrato_decreto
     
     def viaticos_total(self):
@@ -356,7 +366,7 @@ class ComisionadoSolicitud(models.Model):
         Returns:
             float: The total amount of viaticos.
         """
-        total = self.viaticos_computado() + self.comisionadosolicitud_combustible + self.comisionadosolicitud_gastos
+        total = self.viaticos_computado() + self.comisionadosolicitud_combustible + self.comisionadosolicitud_gastos + self.comisionadosolicitud_pasaje
         return total
 
 class Incorporacion(models.Model):

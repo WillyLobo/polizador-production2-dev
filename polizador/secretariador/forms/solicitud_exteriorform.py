@@ -1,7 +1,7 @@
 from django import forms
 from django.utils.safestring import SafeString
 from secretariador.models import Solicitud, ComisionadoSolicitud
-from secretariador.forms.comisionadosolicitudform import ComisionadoSolicitudForm
+from secretariador.forms.comisionadosolicitud_exteriorform import ComisionadoSolicitudExteriorForm
 from carga.views.ajaxviews import (
 	localidadmultiplewidget,
     )
@@ -12,18 +12,19 @@ from secretariador.views.ajaxviews import (
     )
 from django.forms.models import inlineformset_factory
 
-class SolicitudForm(forms.ModelForm):
+class SolicitudExteriorForm(forms.ModelForm):
     class Meta:
         model = Solicitud
         fields = (
             "solicitud_actuacion",
             "solicitud_solicitante",
             "solicitud_provincia",
-            "solicitud_localidades",
+            "solicitud_ciudad",
             "solicitud_decreto_viaticos",
             "solicitud_fecha_desde",
             "solicitud_fecha_hasta",
             "solicitud_tareas",
+            "solicitud_aereo",
             "solicitud_vehiculo",
             "solicitud_dia_inhabil",
             "solicitud_resolucion"
@@ -42,9 +43,8 @@ class SolicitudForm(forms.ModelForm):
                 "class":"form-control",
                 "default":"20"
                 }),
-            "solicitud_localidades":localidadmultiplewidget(attrs={
-                "class":"form-control customSelect2",
-                "data-mdb-filter":"true"
+            "solicitud_ciudad":forms.TextInput(attrs={
+                "class":"form-control"
                 }),
             "solicitud_fecha_desde":forms.DateInput(attrs={
                 "class":"form-control",
@@ -56,6 +56,10 @@ class SolicitudForm(forms.ModelForm):
                 }),
             "solicitud_tareas":forms.TextInput(attrs={
                 "class":"form-control"
+                }),
+            "solicitud_aereo":forms.CheckboxInput(attrs={
+                "class":"form-check-input",
+                "style":'width: 2em;height: 2em;'
                 }),
             "solicitud_vehiculo":VehiculoWidget(attrs={
                 "class":"form-control customSelect2"
@@ -98,9 +102,9 @@ class SolicitudForm(forms.ModelForm):
         if fecha_hasta < fecha_desde:
             raise forms.ValidationError("Fecha final tiene que ser mayor a fecha inicial.")
 
-ComisionadoSolicitudFormset = inlineformset_factory(
+ComisionadoSolicitudExteriorFormset = inlineformset_factory(
 					Solicitud,
 					ComisionadoSolicitud,
-					form = ComisionadoSolicitudForm,
+					form = ComisionadoSolicitudExteriorForm,
 					extra=1,
                     can_delete=False)

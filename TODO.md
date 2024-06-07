@@ -60,7 +60,7 @@
 
 [+] Fix form_invalid() in UpdateSolicitud view.
 [+] Fix allowances for vocal in organigrama model.
-[ ] Fix form_invalid() in CrearSolitidud view.
+[+] Fix form_invalid() in CrearSolitidud view.
 
 [+] Check order of comisionados in template.docx.
 [+] Add non working day check on Articulo 1º of solicitud_template.docx.
@@ -73,6 +73,7 @@
 [ ] Check comisionadosolicitud_chofer for values in registered drivers.
 
 [ ] Add a right-side frame to form templates to provide help-text.
+[ ] Add embedded pdf view to list detail templates.
 
 [ ] Generate cron shell script to backup database.
 [ ] Add a more advanced logging capability.
