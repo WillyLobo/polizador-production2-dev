@@ -195,6 +195,7 @@ class Vehiculo(models.Model):
                 name='unique_vehiculo_1'
             ),
         ]
+        ordering = ["vehiculo_modelo", "vehiculo_patente"]
     VEHICULO = (
         ("E", "Empresa"),
         ("O", "Oficial"),

@@ -34,5 +34,6 @@ class ComisionadoWidget(s2forms.ModelSelect2Widget):
 
 class VehiculoWidget(s2forms.ModelSelect2Widget):
     search_fields = [
-        "vehiculo_str__icontains",
+        "vehiculo_modelo__icontains",
+        "vehiculo_patente__icontains",
     ]

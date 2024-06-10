@@ -104,6 +104,17 @@ TEMPLATES = [
 ]
 TEMPLATES[0]['OPTIONS']['context_processors'].append("polizador.context_processors.imglinks")
 
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    },
+    'select2': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'TIMEOUT': 3600
+    }
+}
+SELECT2_CACHE_BACKEND = "select2"
+
 WSGI_APPLICATION = 'polizador.wsgi.application'
 
 # Database
