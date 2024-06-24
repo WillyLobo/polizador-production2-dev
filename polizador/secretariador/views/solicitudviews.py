@@ -16,7 +16,7 @@ import jinja2
 
 from docxtpl import DocxTemplate
 
-def render_docx(request, pk):
+def solicitud_docx(request, pk):
 	solicitud = Solicitud.objects.get(pk=pk)
 
 	jinja_env = jinja2.Environment()
@@ -208,7 +208,6 @@ def PaginaListaSolicitudes(request):
 	template_name = "Lista-solicitudes.html"
 
 	return render(request, template_name, {})
-
 @method_decorator(login_required, name="dispatch")
 class ListaSolicitudesView(AjaxDatatableView):
 	model = Solicitud
@@ -247,12 +246,18 @@ class ListaSolicitudesView(AjaxDatatableView):
 
 	def customize_row(self, row, obj):
 		id = str(obj.id)
-				
-		editarlink = f'<a href="/viaticos/crearsolicitud/{id}">{editlinkimg}</a>'
-		detallelink = f'<a href="/viaticos/crearsolicitud/ver/{id}">{detallelinkimg}</a>'
-		eliminarlink = f'<a href="/viaticos/eliminar/solicitud/{id}">{eliminarlinkimg}</a>'
-		generarlink = f'<a href="/viaticos/creardocumento/{id}">{generarlinkimg}</a>'
-		
+
+		if obj.solicitud_provincia.provincia_nombre =="Chaco":				
+			editarlink = f'<a href="/viaticos/crearsolicitud/{id}">{editlinkimg}</a>'
+			detallelink = f'<a href="/viaticos/crearsolicitud/ver/{id}">{detallelinkimg}</a>'
+			eliminarlink = f'<a href="/viaticos/eliminar/solicitud/{id}">{eliminarlinkimg}</a>'
+			generarlink = f'<a href="/viaticos/creardocumento/solicitud/{id}">{generarlinkimg}</a>'
+		else:
+			editarlink = f'<a href="/viaticos/crearsolicitudexterior/{id}">{editlinkimg}</a>'
+			detallelink = f'<a href="/viaticos/crearsolicitudexterior/ver/{id}">{detallelinkimg}</a>'
+			eliminarlink = f'<a href="/viaticos/eliminar/solicitudexterior/{id}">{eliminarlinkimg}</a>'
+			generarlink = f'<a href="/viaticos/creardocumento/solicitudexterior/{id}">{generarlinkimg}</a>'
+
 		if self.request.user.has_perm("secretariador.delete_solicitud"):
 			row["edit"] = f"{editarlink}{detallelink}{eliminarlink}{generarlink}"
 		elif self.request.user.has_perm("secretariador.change_solicitud"):

@@ -1,0 +1,89 @@
+{%extends "base.html"%}
+
+{%block content %}
+{%load static%}
+{%load l10n%}
+
+{%block title%}<title>Crear Reporte Viaticos por Agente</title>{%endblock title%}
+<br>
+<form action="{% url "secretariador:crear-reporte-viaticos-por-agente" %}" method="get">
+
+    <!-- Select Fecha-->
+    <!-- Select Mes -->
+<div class="input-group">
+    <div class="input-group-prepend">
+        <label class="input-group-text" for="inputGroupSelectMes">Mes</label>
+    </div>
+    <select name="mes" class="custom-select customSelect2" id="inputGroupSelectMes" multiple>
+        <option value="1">Enero</option>
+        <option value="2">Febrero</option>
+        <option value="3">Marzo</option>
+        <option value="4">Abril</option>
+        <option value="5">Mayo</option>
+        <option value="6">Junio</option>
+        <option value="7">Julio</option>
+        <option value="8">Agosto</option>
+        <option value="9">Septiembre</option>
+        <option value="10">Octubre</option>
+        <option value="11">Noviembre</option>
+        <option value="12">Diciembre</option>
+    </select>
+    <!-- Select Ano -->
+    <div class="input-group-prepend">
+        <label class="input-group-text" for="inputGroupSelectAno">Año</label>
+    </div>
+        <select name="ano" class="custom-select customSelect2" id="inputGroupSelectAno" multiple>
+            <option value="2022">2022</option>
+            <option value="2023">2023</option>
+            <option value="2024" selected>2024</option>
+        </select>
+</div>
+
+    <input type='submit' value='Buscar' class="btn" />
+</form>
+
+<TABLE class="table table-bordered" id="tablaReporte">
+    <THEAD>
+        <TR>
+            <TH class="align-middle">Agente</TH>
+            <TH class="align-middle">Días</TH>
+            <TH class="align-middle">Viáticos</TH>
+            <TH class="align-middle">Combustible</TH>
+            <TH class="align-middle">Gastos</TH>
+            <TH class="align-middle">Pasajes</TH>
+            <TH class="align-middle">Total</TH>
+        </TR>
+    </THEAD>
+    <TBODY>
+        {%for s, d in solicitud.items%}
+        <TR id="{{object.id}}">
+            <TD class="col border align-middle">{{s}}</TD>
+            <TD class="col border align-middle">{{d.cantidad_de_dias.days}}</TD>
+            <TD class="col border align-middle">{{d.valor_viaticos}}</TD>
+            <TD class="col border align-middle">{{d.combustible}}</TD>
+            <TD class="col border align-middle">{{d.gastos}}</TD>
+            <TD class="col border align-middle">{{d.pasajes}}</TD>
+            <TD class="col border align-middle">{{d.total}}</TD>
+        {%endfor%}
+
+        <TFOOT>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </tr>
+</TABLE>
+
+<script>
+    new DataTable('#tablaReporte', {
+    info: false,
+    paging: false,
+    order: [[ 1, 'desc' ]]
+});
+
+</script>
+{%endblock%}

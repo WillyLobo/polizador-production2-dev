@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 from django.core.exceptions import ValidationError
 import os
+from django.db.models.functions import ExtractDay
 from django.db.models.fields.generated import GeneratedField
 
 # Funciones
@@ -59,6 +60,7 @@ class InstrumentosLegalesResoluciones(models.Model):
     class Meta:
         verbose_name = "Instrumento Legal(Resolución)"
         verbose_name_plural = "Instrumentos Legales(Resoluciones)"
+        ordering = ["-instrumentolegalresoluciones_ano", "-instrumentolegalresoluciones_numero"]
         constraints = [
             models.UniqueConstraint(
                 fields=["instrumentolegalresoluciones_tipo", "instrumentolegalresoluciones_numero", "instrumentolegalresoluciones_ano"],
@@ -90,6 +92,7 @@ class InstrumentosLegalesDecretos(models.Model):
     class Meta:
         verbose_name = "Instrumento Legal(Decreto)"
         verbose_name_plural = "Instrumentos Legales(Decretos)"
+        ordering = ["-instrumentolegaldecretos_ano", "-instrumentolegaldecretos_numero"]
         constraints = [
             models.UniqueConstraint(
                 fields=["instrumentolegaldecretos_tipo", "instrumentolegaldecretos_numero", "instrumentolegaldecretos_ano"],
@@ -239,24 +242,17 @@ class Solicitud(models.Model):
     solicitud_aereo = models.BooleanField("Aereo", help_text="Tildar si es viaje aereo", blank=True, null=True)
     solicitud_dia_inhabil = models.BooleanField("Dia Inhábil", help_text="Tildar si es un diá de no laboral")
     solicitud_resolucion = models.ForeignKey("InstrumentosLegalesResoluciones", verbose_name="Resolución Aprobada", on_delete=models.CASCADE, blank=True, null=True)
-    solicitud_viaticos_total = GeneratedField(
+    solicitud_cantidad_de_dias = GeneratedField(
         expression=models.F('solicitud_fecha_hasta') - models.F('solicitud_fecha_desde') + timedelta(days=1),
         output_field=models.DurationField(),
-        db_persist=True,
+        db_persist=True
     )
     
     def solicitud_fechas(self):
         fechas = [self.solicitud_fecha_desde+timedelta(days=x) for x in range((self.solicitud_fecha_hasta-self.solicitud_fecha_desde).days+1)]
         fechas = [datetime.strftime(fecha, "%d/%m/%Y") for fecha in fechas]
         return fechas
-    def cantidad_de_dias(self):
-        dias = (self.solicitud_fecha_hasta-self.solicitud_fecha_desde).days+1
-        return dias
-    
-    def monto_viaticos(self): # ADD RANK CHECK!!!
-        monto_diario = self.solicitud_decreto_viaticos.montoviaticodiario_estrato_dos_interior
-        return self.cantidad_de_dias * monto_diario
-    
+
     def get_comisionados(self):
         serialized_q = self.comisionadosolicitud_set.values_list("comisionadosolicitud_nombre__comisionado_nombreyapellido", flat=True)
         return list(serialized_q)
@@ -281,6 +277,9 @@ class ComisionadoSolicitud(models.Model):
     comisionadosolicitud_pasaje = models.DecimalField("Pasajes", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
     comisionadosolicitud_gastos = models.DecimalField("Gastos", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
 
+    def get_origin(self):
+        return self.comisionadosolicitud_foreign if self.comisionadosolicitud_foreign is not None else self.comisionadosolicitud_incorporacion_foreign.incorporacion_solicitud
+    
     def __str__(self):
         """
         Returns a string representation of the object.
@@ -290,10 +289,7 @@ class ComisionadoSolicitud(models.Model):
         Returns:
             str: A string representation of the object.
         """
-        if self.comisionadosolicitud_foreign is None:
-            foreign = self.comisionadosolicitud_incorporacion_foreign
-        else:
-            foreign = self.comisionadosolicitud_foreign
+        foreign = self.get_origin()
         return f"{foreign} - {self.comisionadosolicitud_nombre.comisionado_apellidos}, {self.comisionadosolicitud_nombre.comisionado_nombres}"
     
     def clean(self):
@@ -307,14 +303,14 @@ class ComisionadoSolicitud(models.Model):
         self.comisionadosolicitud_pasaje = 0 if self.comisionadosolicitud_pasaje is None else self.comisionadosolicitud_pasaje
         self.comisionadosolicitud_combustible = 0 if self.comisionadosolicitud_combustible is None else self.comisionadosolicitud_combustible
 
-    def valor_viatico_dia(self):
+    def valor_viatico_dia(self): # This is the one called in .DOCX template!!!
         """
         Calculates the daily viatic value based on the position and stratum of the commissioned person.
 
         Returns:
             float: The daily viatic value. Returns 0 if the position is "Vocal" or "Presidente".
         """
-        foreign = self.comisionadosolicitud_foreign if self.comisionadosolicitud_foreign is not None else self.comisionadosolicitud_incorporacion_foreign
+        foreign = self.get_origin()
         gabinete = self.comisionadosolicitud_nombre.comisionado_cargo.organigrama_cargo
         estrato = self.comisionadosolicitud_nombre.comisionado_cargo.organigrama_escalafon
         # Check if its cabinet personel
@@ -322,30 +318,30 @@ class ComisionadoSolicitud(models.Model):
             if foreign.solicitud_provincia.provincia_nombre == "Chaco":
                 estrato_decreto = 0
             else:
-                estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_cuatro_exterior
+                estrato_decreto = self.get_origin().solicitud_decreto_viaticos.montoviaticodiario_estrato_cuatro_exterior
         elif self.comisionadosolicitud_colaborador == True:
             estrato_decreto = 0
         else:
-            if self.comisionadosolicitud_foreign.solicitud_provincia.provincia_nombre == "Chaco":
+            if self.get_origin().solicitud_provincia.provincia_nombre == "Chaco":
                 # Inside province.
                 if estrato == 1:
-                    estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_uno_interior
+                    estrato_decreto = self.get_origin().solicitud_decreto_viaticos.montoviaticodiario_estrato_uno_interior
                 elif estrato == 2:
-                    estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_dos_interior
+                    estrato_decreto = self.get_origin().solicitud_decreto_viaticos.montoviaticodiario_estrato_dos_interior
                 elif estrato == 3:
-                    estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_tres_interior
+                    estrato_decreto = self.get_origin().solicitud_decreto_viaticos.montoviaticodiario_estrato_tres_interior
                 elif estrato == 4:
-                    estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_cuatro_interior
+                    estrato_decreto = self.get_origin().solicitud_decreto_viaticos.montoviaticodiario_estrato_cuatro_interior
             else:
                 # Out of province.
                 if estrato == 1:
-                    estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_uno_exterior
+                    estrato_decreto = self.get_origin().solicitud_decreto_viaticos.montoviaticodiario_estrato_uno_exterior
                 elif estrato == 2:
-                    estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_dos_exterior
+                    estrato_decreto = self.get_origin().solicitud_decreto_viaticos.montoviaticodiario_estrato_dos_exterior
                 elif estrato == 3:
-                    estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_tres_exterior
+                    estrato_decreto = self.get_origin().solicitud_decreto_viaticos.montoviaticodiario_estrato_tres_exterior
                 elif estrato == 4:
-                    estrato_decreto = self.comisionadosolicitud_foreign.solicitud_decreto_viaticos.montoviaticodiario_estrato_cuatro_exterior
+                    estrato_decreto = self.get_origin().solicitud_decreto_viaticos.montoviaticodiario_estrato_cuatro_exterior
         
         return estrato_decreto
     
@@ -356,9 +352,9 @@ class ComisionadoSolicitud(models.Model):
         Returns:
             float: The total amount of viaticos computed.
         """
-        dias = self.comisionadosolicitud_foreign.cantidad_de_dias()
+        dias = self.get_origin().solicitud_cantidad_de_dias
         estrato_decreto = self.valor_viatico_dia() 
-        return dias * estrato_decreto
+        return int(dias.days) * estrato_decreto
     
     def viaticos_total(self):
         """
@@ -383,7 +379,10 @@ class Incorporacion(models.Model):
     incorporacion_solicitud = models.ForeignKey("Solicitud", on_delete=models.CASCADE)
     incorporacion_actuacion = models.CharField("Actuación", max_length=18)
     incorporacion_solicitante = models.ForeignKey("Comisionado", on_delete=models.CASCADE) # Encargado del area solicitante
-    incorporacion_resolucion = models.ForeignKey("InstrumentosLegalesResoluciones", verbose_name="Resolución Aprobada", on_delete=models.CASCADE)
+    incorporacion_resolucion = models.ForeignKey("InstrumentosLegalesResoluciones", verbose_name="Resolución Aprobada", on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         return f"{self.incorporacion_actuacion}"
+    
+    def cantidad_de_dias(self):
+        return self.incorporacion_solicitud.solicitud_cantidad_de_dias

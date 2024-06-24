@@ -1,9 +1,9 @@
-[+] Add permission checks to the navbar.html menu.
-
+# Models
 [ ] Create model Incorporacion.
     - Model will allow to insert comisionados into a previously approved executive order.
     [+] Fields: comisionado, actuacion_electronica, resolucion
-    
+[ ] Split Solicitud.solicitud_actuacion into year and number fields.
+
 [+] Build create/update templates.
     [+] InstrumentosLegalesDecretos.
     [+] InstrumentosLegalesResoluciones.
@@ -62,16 +62,23 @@
 [+] Fix allowances for vocal in organigrama model.
 [+] Fix form_invalid() in CrearSolitidud view.
 
+# Docx Templates
 [+] Check order of comisionados in template.docx.
 [+] Add non working day check on Articulo 1º of solicitud_template.docx.
 [+] Add solicitud_decreto_viaticos check on solicitud_template.docx
 [+] Add reference to executive order 211/2020 for allowances outside of working days.
-[+] Remove scrollMonth & scrollInput from Datepicker.
+[+] Add logic to template.docx for allowance payments outside the province.
+    [+] Created new template solicitud_exterior.docx
 [ ] Add a way to update template.docx(ej: upload and overwrite the original file).
-[ ] Add logic to template.docx for allowance payments outside the province.
 [ ] Create docx template for Incorporados.
 [ ] Check comisionadosolicitud_chofer for values in registered drivers.
+[ ] Change Actuacion field to set number and year independently.
+[ ] Fix solicitud_cantidad_de_dias to integer(days).
+[ ] Remove solicitud.solicitud_viaticos_total.
 
+# Web Templates
+[+] Add permission checks to the navbar.html menu.
+[+] Remove scrollMonth & scrollInput from Datepicker.
 [ ] Add a right-side frame to form templates to provide help-text.
 [ ] Add embedded pdf view to list detail templates.
 
@@ -79,9 +86,9 @@
 [ ] Add a more advanced logging capability.
 
 
-###############################################
+# ------------------------------------------- #
 # Legend:                                     #
 #     [ ] = Pending                           #
 #     [+] = Completed                         #
 #     [!] = Forcibly not needed/implemented.  #
-#---------------------------------------------#
+# ------------------------------------------- #

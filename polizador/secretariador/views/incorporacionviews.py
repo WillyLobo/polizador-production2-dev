@@ -16,24 +16,39 @@ import jinja2
 
 from docxtpl import DocxTemplate
 
-# def render_docx(request, pk):
-# 	jinja_env = jinja2.Environment()
-# 	jinja_env.trim_blocks = True
-# 	jinja_env.lstrip_blocks = True
-# 	doc = DocxTemplate("secretariador/media/solicitud_template.docx")
-# 	solicitud = Solicitud.objects.get(pk=pk)
-# 	context = {
-# 	"solicitud":solicitud
-# 	}
+def incorporacion_docx(request, pk):
+	jinja_env = jinja2.Environment()
+	jinja_env.trim_blocks = True
+	jinja_env.lstrip_blocks = True
+	doc = DocxTemplate("secretariador/media/solicitud_incorporacion.docx")
+	incorporacion = Incorporacion.objects.get(pk=pk)
+	context = {
+	"solicitud":incorporacion.incorporacion_solicitud,
+	"incorporacion": incorporacion,
+	"agentes_incorporados":incorporacion.comisionadosolicitud_set.all(),
+	"actuacion_incorporacion": incorporacion.incorporacion_actuacion,
+	"actuacion":incorporacion.incorporacion_solicitud.solicitud_actuacion,
+	"agentes":incorporacion.incorporacion_solicitud.comisionadosolicitud_set.all(),
+	"solicitante_cargo":incorporacion.incorporacion_solicitud.solicitud_solicitante.comisionado_cargo.organigrama_cargo,
+	"localidades":incorporacion.incorporacion_solicitud.solicitud_localidades.all(),
+	"fechas":incorporacion.incorporacion_solicitud.solicitud_fechas(),
+	"tareas":incorporacion.incorporacion_solicitud.solicitud_tareas,
+	"vehiculo":incorporacion.incorporacion_solicitud.solicitud_vehiculo,
+	"vehiculo_modelo":incorporacion.incorporacion_solicitud.solicitud_vehiculo.vehiculo_modelo,
+	"vehiculo_patente":incorporacion.incorporacion_solicitud.solicitud_vehiculo.vehiculo_patente,
+	"decreto_viaticos":incorporacion.incorporacion_solicitud.solicitud_decreto_viaticos.montoviaticodiario_decreto_reglamentario,
+	"resolucion":incorporacion.incorporacion_solicitud.solicitud_resolucion,
+	"resolucion_fecha":incorporacion.incorporacion_solicitud.solicitud_resolucion.instrumentolegalresoluciones_fecha_aprobacion,
+	}
 
-# 	filename = solicitud.solicitud_actuacion+".docx"
-# 	response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
-# 	response["Content-Disposition"] = f'filename="{filename}"'
+	filename = incorporacion.incorporacion_actuacion+".docx"
+	response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+	response["Content-Disposition"] = f'filename="{filename}"'
 
-# 	doc.render(context)
-# 	doc.save(response)
+	doc.render(context)
+	doc.save(response)
 
-# 	return response
+	return response
 
 @method_decorator(login_required, name="dispatch")
 class CrearIncorporacion(PermissionRequiredMixin, generic.CreateView):
@@ -136,7 +151,7 @@ class UpdateIncorporacion(PermissionRequiredMixin, generic.UpdateView):
 		for field in formset:
 			field.comisionadosolicitud_incorporacion_foreign = self.object
 			field.save()
-		return redirect(reverse_lazy("secretariador:lista-incorporaiones"))
+		return redirect(reverse_lazy("secretariador:lista-incorporaciones"))
 	
 	def form_invalid(self, form, comisionadosformset):
 		"""
@@ -168,11 +183,11 @@ class EliminarIncorporacion(PermissionRequiredMixin, generic.DeleteView):
 		return context
 	
 # @method_decorator(login_required, name="dispatch")
-# class VerSolicitud(generic.DetailView):
+# class VerIncorporacion(generic.DetailView):
 # 	login_url = "/"
 # 	redirect_field_name = "login"
 # 	model = Solicitud
-# 	template_name = "solicitud/ver-solicitud.html"
+# 	template_name = "solicitud/ver-incorporacion.incorporacion_solicitud.html"
 
 @login_required
 def PaginaListaIncorporaciones(request):
@@ -216,7 +231,7 @@ class ListaIncorporacionesView(AjaxDatatableView):
 		editarlink = f'<a href="/viaticos/crearincorporacion/{id}">{editlinkimg}</a>'
 		detallelink = f'<a href="/viaticos/crearincorporacion/ver/{id}">{detallelinkimg}</a>'
 		eliminarlink = f'<a href="/viaticos/eliminar/incorporacion/{id}">{eliminarlinkimg}</a>'
-		generarlink = f'<a href="/viaticos/creardocumentoincorporacion/{id}">{generarlinkimg}</a>'
+		generarlink = f'<a href="/viaticos/creardocumento/incorporacion/{id}">{generarlinkimg}</a>'
 		
 		if self.request.user.has_perm("secretariador.delete_incorporacion"):
 			row["edit"] = f"{editarlink}{detallelink}{eliminarlink}{generarlink}"

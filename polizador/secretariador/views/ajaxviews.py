@@ -19,6 +19,7 @@ class LocalidadMultipleWidget(s2forms.ModelSelect2MultipleWidget):
 class ResolucionWidget(s2forms.ModelSelect2Widget):
     search_fields = [
         "instrumentolegalresoluciones_str__icontains",
+        "instrumentolegalresoluciones_descripcion__icontains",
     ]
 
 class SolicitudWidget(s2forms.ModelSelect2Widget):

@@ -114,7 +114,7 @@ CACHES = {
     }
 }
 SELECT2_CACHE_BACKEND = "select2"
-
+SELECT2_THEME = "bootstrap-5"
 WSGI_APPLICATION = 'polizador.wsgi.application'
 
 # Database

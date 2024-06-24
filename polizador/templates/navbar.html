@@ -314,6 +314,8 @@
 		<!-- Submenu Crear Reporte Ends -->
 		<!-- Submenu Crear Reporte Certificado Mes Starts -->
 		{% if perms.carga.add_certificado %}<li><a href="{% url "carga:crear-reporte-certificado" %}" class="dropdown-item">Crear Reporte Certificados	</a></li>{% endif %}
+		{% if perms.secretariador.add_solicitud %}<li><a href="{% url "secretariador:crear-reporte-viaticos-por-agente" %}" class="dropdown-item">Reporte Viáticos por Agente</a></li>{% endif %}
+		{% if perms.secretariador.add_solicitud %}<li><a href="{% url "secretariador:crear-reporte-viaticos-por-area" %}" class="dropdown-item">Reporte Viáticos por Area</a></li>{% endif %}
 		<!-- Submenu Crear Reporte Certificado Mes Ends -->
 	</ul>
 </li>

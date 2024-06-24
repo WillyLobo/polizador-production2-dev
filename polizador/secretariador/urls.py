@@ -7,6 +7,7 @@ from secretariador.views.instrumentolegalviews import *
 from secretariador.views.vehiculoviews import *
 from secretariador.views.montoviaticodiarioviews import *
 from secretariador.views.incorporacionviews import *
+from secretariador.views.reportesviews import *
 
 app_name = "secretariador"
 
@@ -45,7 +46,9 @@ vehiculo_patterns = [
     path("eliminar/vehiculo/<pk>", EliminarVehiculo.as_view(), name="eliminar-vehiculo"),
 ]
 docx_patterns = [
-    path("creardocumento/<pk>", render_docx, name="crear-documento"),
+    path("creardocumento/solicitud/<pk>", solicitud_docx, name="crear-documento-solicitud"),
+    path("creardocumento/solicitudexterior/<pk>", exterior_docx, name="crear-documento-solicitud-exterior"),
+    path("creardocumento/incorporacion/<pk>", incorporacion_docx, name="crear-documento-incorporacion"),
 ]
 comisionado_patterns = [
     path("crearcomisionado/", CrearComisionado.as_view(), name="crear-comisionado"),
@@ -56,6 +59,10 @@ incorporacion_patterns = [
     path("crearincorporacion/", CrearIncorporacion.as_view(), name="crear-incorporacion"),
     path("crearincorporacion/<pk>", UpdateIncorporacion.as_view(), name="update-incorporacion"),
     path("eliminar/incorporacion/<pk>", EliminarIncorporacion.as_view(), name="eliminar-incorporacion"),
+]
+reportes_patterns = [
+    path("reportes/viaticos-agente/", CrearReporteViaticosPorAgente.as_view(), name="crear-reporte-viaticos-por-agente"),
+    path("reportes/viaticos-area/", CrearReporteViaticosporArea.as_view(), name="crear-reporte-viaticos-por-area"),
 ]
 # documentos_digitales = [
 #     path("digitales/crear-contrato-digital/", CrearContratoDigital.as_view(), name="crear-contrato-digital"),
@@ -96,4 +103,5 @@ urlpatterns += solicitud_exterior_patterns
 urlpatterns += comisionado_patterns
 urlpatterns += incorporacion_patterns
 urlpatterns += vehiculo_patterns
+urlpatterns += reportes_patterns
 urlpatterns += docx_patterns
