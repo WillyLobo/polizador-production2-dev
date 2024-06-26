@@ -16,7 +16,8 @@ class SolicitudForm(forms.ModelForm):
     class Meta:
         model = Solicitud
         fields = (
-            "solicitud_actuacion",
+            "solicitud_actuacion_ano",
+            "solicitud_actuacion_numero",
             "solicitud_solicitante",
             "solicitud_provincia",
             "solicitud_localidades",
@@ -29,7 +30,10 @@ class SolicitudForm(forms.ModelForm):
             "solicitud_resolucion"
             )
         widgets = {
-            "solicitud_actuacion":forms.TextInput(attrs={
+            "solicitud_actuacion_ano":forms.TextInput(attrs={
+                "class":"form-control"
+                }),
+            "solicitud_actuacion_numero":forms.TextInput(attrs={
                 "class":"form-control"
                 }),
             "solicitud_solicitante":ComisionadoWidget(attrs={

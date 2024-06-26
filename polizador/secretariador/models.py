@@ -228,8 +228,18 @@ class Solicitud(models.Model):
                 fields=["solicitud_actuacion"],
                 name='unique_solicitud_1'
             ),
+            models.UniqueConstraint(
+                fields=["solicitud_actuacion_ano", "solicitud_actuacion_numero"],
+                name="unique_solicitud_2"
+            )
         ]
-    solicitud_actuacion = models.CharField("Actuación", max_length=18)
+    solicitud_actuacion = GeneratedField(
+        expression=ConcatOp(models.Value("E10-"), 'solicitud_actuacion_ano', models.Value("-"), 'solicitud_actuacion_numero', models.Value("-AE")),
+        output_field=models.TextField(),
+        db_persist=True,
+    )
+    solicitud_actuacion_numero = models.DecimalField("N° Actuación", max_digits=6, decimal_places=0, validators=[MinValueValidator(0)], default=0, help_text="Solo el número de la actuación. Sin prefijo, sufijo o Año.")
+    solicitud_actuacion_ano = models.DecimalField("Año Actuación", max_digits=4, decimal_places=0, validators=[MinValueValidator(0)], default=int(timezone.now().year))
     solicitud_solicitante = models.ForeignKey("Comisionado", on_delete=models.CASCADE) # Encargado del area solicitante
     solicitud_provincia = models.ForeignKey("carga.Provincia", on_delete=models.CASCADE)
     solicitud_localidades = models.ManyToManyField("carga.Localidad", blank=True)
@@ -375,9 +385,19 @@ class Incorporacion(models.Model):
                 fields=["incorporacion_solicitud"],
                 name='unique_incorporacion_1'
             ),
+            models.UniqueConstraint(
+                fields=["incorporacion_actuacion_ano", "incorporacion_actuacion_numero"],	
+                name="unique_incorporacion_2"
+            ),
         ]
     incorporacion_solicitud = models.ForeignKey("Solicitud", on_delete=models.CASCADE)
-    incorporacion_actuacion = models.CharField("Actuación", max_length=18)
+    incorporacion_actuacion = GeneratedField(
+        expression=ConcatOp(models.Value("E10-"), 'incorporacion_actuacion_ano', models.Value("-"), 'incorporacion_actuacion_numero', models.Value("-AE")),
+        output_field=models.TextField(),
+        db_persist=True,
+    )
+    incorporacion_actuacion_numero = models.DecimalField("N° Actuación", max_digits=6, decimal_places=0, validators=[MinValueValidator(0)], default=0, help_text="Solo el número de la actuación. Sin prefijo, sufijo o Año.")
+    incorporacion_actuacion_ano = models.DecimalField("Año Actuación", max_digits=4, decimal_places=0, validators=[MinValueValidator(0)], default=int(timezone.now().year))
     incorporacion_solicitante = models.ForeignKey("Comisionado", on_delete=models.CASCADE) # Encargado del area solicitante
     incorporacion_resolucion = models.ForeignKey("InstrumentosLegalesResoluciones", verbose_name="Resolución Aprobada", on_delete=models.CASCADE, blank=True, null=True)
 

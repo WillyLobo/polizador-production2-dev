@@ -9,7 +9,7 @@ from django.views import generic
 from secretariador.models import Solicitud, InstrumentosLegalesDecretos
 from carga.models import Provincia
 from secretariador.forms.solicitudform import *
-from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg, generarlinkimg
+from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg, generarlinkimg, pdflinkimg
 from carga.views.generics import get_deleted_objects
 import jinja2
 
@@ -212,7 +212,7 @@ def PaginaListaSolicitudes(request):
 class ListaSolicitudesView(AjaxDatatableView):
 	model = Solicitud
 	title = "Solicitudes"
-	initial_order = [["solicitud_actuacion", "desc"], ]
+	initial_order = [["solicitud_actuacion_ano", "desc"], ["solicitud_actuacion_numero", "desc"]]
 	length_menu = [[50, 100, -1], [50, 100, "all"]]
 	search_values_separator = "+"
 
@@ -220,7 +220,8 @@ class ListaSolicitudesView(AjaxDatatableView):
 		AjaxDatatableView.render_row_tools_column_def(),
 		{'name': 'edit', 'title': '', 'placeholder': True, 'searchable': False, 'orderable': False, "width":81},
 		{"name": "id","title":"ID", "visible": False},
-		{"name":"solicitud_actuacion"},
+		{"name":"solicitud_actuacion_ano"},
+		{"name":"solicitud_actuacion_numero"},
 		{"name":"solicitud_solicitante", "foreign_field":"solicitud_solicitante__comisionado_nombreyapellido"},
 		{"name":"Comisionados", "placeholder":True, "searchable": False, "orderable": False},
 		{"name":"solicitud_localidades", "m2m_foreign_field": "solicitud_localidades__localidad_nombre", "visible": True},
@@ -249,12 +250,18 @@ class ListaSolicitudesView(AjaxDatatableView):
 
 		if obj.solicitud_provincia.provincia_nombre =="Chaco":				
 			editarlink = f'<a href="/viaticos/crearsolicitud/{id}">{editlinkimg}</a>'
-			detallelink = f'<a href="/viaticos/crearsolicitud/ver/{id}">{detallelinkimg}</a>'
+			if obj.solicitud_resolucion is not None:
+				detallelink = f'<a href="{str(obj.solicitud_resolucion.instrumentolegalresoluciones.url)}">{pdflinkimg}</a>'
+			else:
+				detallelink = ""
 			eliminarlink = f'<a href="/viaticos/eliminar/solicitud/{id}">{eliminarlinkimg}</a>'
 			generarlink = f'<a href="/viaticos/creardocumento/solicitud/{id}">{generarlinkimg}</a>'
 		else:
 			editarlink = f'<a href="/viaticos/crearsolicitudexterior/{id}">{editlinkimg}</a>'
-			detallelink = f'<a href="/viaticos/crearsolicitudexterior/ver/{id}">{detallelinkimg}</a>'
+			if obj.solicitud_resolucion is not None:
+				detallelink = f'<a href="{str(obj.solicitud_resolucion.instrumentolegalresoluciones.url)}">{pdflinkimg}</a>'
+			else:
+				detallelink = ""
 			eliminarlink = f'<a href="/viaticos/eliminar/solicitudexterior/{id}">{eliminarlinkimg}</a>'
 			generarlink = f'<a href="/viaticos/creardocumento/solicitudexterior/{id}">{generarlinkimg}</a>'
 
@@ -266,10 +273,8 @@ class ListaSolicitudesView(AjaxDatatableView):
 			row["edit"] = f"{detallelink}"
 
 		# Get list of comisionados for this solicitud, joining them wih ";" for display
-		if obj.get_comisionados():
-			row["Comisionados"] = "; ".join(c for c in obj.get_comisionados())
-
-		return
+		comisionados = obj.comisionadosolicitud_set.all()
+		row["Comisionados"] = "; ".join(c.comisionadosolicitud_nombre.comisionado_nombreyapellido for c in comisionados)
 	
 	def render_row_details(self, pk, request=None):
 

@@ -199,7 +199,7 @@ def PaginaListaIncorporaciones(request):
 class ListaIncorporacionesView(AjaxDatatableView):
 	model = Incorporacion
 	title = "Incorporaciones"
-	initial_order = [["incorporacion_actuacion", "desc"], ]
+	initial_order = [["incorporacion_actuacion_ano", "desc"], ["incorporacion_actuacion_numero", "desc"]]
 	length_menu = [[50, 100, -1], [50, 100, "all"]]
 	search_values_separator = "+"
 
@@ -207,7 +207,8 @@ class ListaIncorporacionesView(AjaxDatatableView):
 		AjaxDatatableView.render_row_tools_column_def(),
 		{'name': 'edit', 'title': '', 'placeholder': True, 'searchable': False, 'orderable': False, "width":81},
 		{"name": "id","title":"ID", "visible": False},
-		{"name":"incorporacion_actuacion"},
+		{"name":"incorporacion_actuacion_ano"},
+		{"name":"incorporacion_actuacion_numero"},
 		{"name":"incorporacion_solicitud", "foreign_field":"incorporacion_solicitud__solicitud_actuacion"},
 		{"name":"incorporacion_solicitante", "foreign_field":"incorporacion_solicitante__comisionado_nombreyapellido"},
 	]

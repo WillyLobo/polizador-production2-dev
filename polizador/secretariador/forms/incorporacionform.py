@@ -13,7 +13,8 @@ class IncorporacionForm(forms.ModelForm):
         model = Incorporacion
         fields = (
             "incorporacion_solicitud",
-            "incorporacion_actuacion",
+            "incorporacion_actuacion_ano",
+            "incorporacion_actuacion_numero",
             "incorporacion_solicitante",
             "incorporacion_resolucion",
         )
@@ -21,7 +22,10 @@ class IncorporacionForm(forms.ModelForm):
             "incorporacion_solicitud":SolicitudWidget(attrs={
                 "class":"form-control customSelect2"
                 }),
-            "incorporacion_actuacion":forms.TextInput(attrs={
+            "incorporacion_actuacion_ano":forms.TextInput(attrs={
+                "class":"form-control"
+                }),
+            "incorporacion_actuacion_numero":forms.TextInput(attrs={
                 "class":"form-control"
                 }),
             "incorporacion_solicitante":forms.Select(attrs={
