@@ -267,9 +267,6 @@ class Solicitud(models.Model):
         serialized_q = self.comisionadosolicitud_set.values_list("comisionadosolicitud_nombre__comisionado_nombreyapellido", flat=True)
         return list(serialized_q)
 
-    def clean(self):
-        self.solicitud_actuacion = self.solicitud_actuacion.upper()
-
     def __str__(self):
         return f"{self.solicitud_actuacion}"
 
