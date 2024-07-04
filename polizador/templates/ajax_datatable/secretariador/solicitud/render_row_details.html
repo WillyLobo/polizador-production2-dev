@@ -77,7 +77,7 @@
             {%for agente in object.comisionadosolicitud_set.all %}
             <tr>
                 <th class="align-left" scope="row">{{agente.comisionadosolicitud_nombre.comisionado_abreviatura}} {{agente.comisionadosolicitud_nombre.comisionado_nombre}}</td>
-                <td class="align-left">{{object.cantidad_de_dias}}</td>
+                <td class="align-left">{{object.solicitud_cantidad_de_dias.days}}</td>
                 <td class="align-left">{{agente.viaticos_computado}}</td>
                 <td class="align-left">{{agente.comisionadosolicitud_gastos}}</td>
                 <td class="align-left">{{agente.comisionadosolicitud_combustible}}</td>

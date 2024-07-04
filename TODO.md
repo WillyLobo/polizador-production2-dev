@@ -1,8 +1,8 @@
 # Models
-[ ] Create model Incorporacion.
+[+] Create model Incorporacion.
     - Model will allow to insert comisionados into a previously approved executive order.
     [+] Fields: comisionado, actuacion_electronica, resolucion
-[ ] Split Solicitud.solicitud_actuacion into year and number fields.
+[+] Split Solicitud.solicitud_actuacion into year and number fields.
 
 [+] Build create/update templates.
     [+] InstrumentosLegalesDecretos.
@@ -14,7 +14,16 @@
 [+] Create concatenated fields for display.
     [+] Vehículos= vehiculo_str(TextField)
     [+] Comisionados= comisionado_nombreyapellido(TextField)
-    [ ] Solicitud= get_comisionados(TextField)
+    [!] Solicitud= get_comisionados(TextField)
+
+[ ] Comisionado Model:
+    [!] Move calculations for valor_viatico_dia from Comisionadosolicitud to Comisionado model.
+
+[ ] ComisionadoSolicitud Model:
+    [+] Moved comisionadosolicitud_viatico_diario to field via model save method.
+    [+] Moved comisionadosolicitud_viatico_computado to field via model save method.
+    [+] Moved comisionadosolicitud_viatico_total to field via model save method.
+    [+] Moved comisionadosolicitud_cantidad_de_dias to field via model save method.
 
 [+] Build Create/Update/Delete/List views.
     [+] InstrumentosLegalesDecretos.
@@ -38,8 +47,9 @@
     [ ] ListaInstrumentosLegalesDecretosView
     [ ] ListaInstrumentosLegalesResolucionesView
 
-[ ] Create reportes views for solicitudes.
-    [ ] Filter by solicitud.solicitud_solicitante.
+[ ] Create report views.
+    [?] Filter by solicitud.solicitud_solicitante.
+    [ ] Filter by agent.
 
 [+] Move Provincia model to carga_app.
     # Number of provinces remain static, no need to implement.
@@ -53,10 +63,11 @@
 [+] Add default values in model.save method to avoid blank form fields in Solicitudes.
 [+] solicitud.actuacion_electronica should be capitalized on model.clean method.
 [+] Add field fecha de firma to instrumentoslegales models.
+[ ] Add functionality to deprecate Solicitudes.
 
 [+] Agregar campos aseguradora y número de póliza al modelo Vehiculo.
 
-[ ] Review code to get comisionado_estrato(models.ComisionadoSolicitud.viaticos_computado), taking consideration that cabinet personel does not receive compensation.
+[?] Review code to get comisionado_estrato(models.ComisionadoSolicitud.viaticos_computado), taking consideration that cabinet personel does not receive compensation.
 
 [+] Fix form_invalid() in UpdateSolicitud view.
 [+] Fix allowances for vocal in organigrama model.
@@ -70,11 +81,11 @@
 [+] Add logic to template.docx for allowance payments outside the province.
     [+] Created new template solicitud_exterior.docx
 [ ] Add a way to update template.docx(ej: upload and overwrite the original file).
-[ ] Create docx template for Incorporados.
-[ ] Check comisionadosolicitud_chofer for values in registered drivers.
-[ ] Change Actuacion field to set number and year independently.
-[ ] Fix solicitud_cantidad_de_dias to integer(days).
-[ ] Remove solicitud.solicitud_viaticos_total.
+[+] Create docx template for Incorporados.
+[!] Check comisionadosolicitud_chofer for values in registered drivers.
+[+] Change Actuacion field to set number and year independently.
+[+] Fix solicitud_cantidad_de_dias to integer(days).
+[+] Remove solicitud.solicitud_viaticos_total.
 
 # Web Templates
 [+] Add permission checks to the navbar.html menu.
@@ -82,8 +93,8 @@
 [ ] Add a right-side frame to form templates to provide help-text.
 [ ] Add embedded pdf view to list detail templates.
 
-[ ] Generate cron shell script to backup database.
-[ ] Add a more advanced logging capability.
+[+] Generate cron shell script to backup database.
+[ ] Add more advanced logging capability.
 
 
 # ------------------------------------------- #
@@ -91,4 +102,5 @@
 #     [ ] = Pending                           #
 #     [+] = Completed                         #
 #     [!] = Forcibly not needed/implemented.  #
+#     [?] = Implementation needs review.      #
 # ------------------------------------------- #

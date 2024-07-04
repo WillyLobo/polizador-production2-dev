@@ -283,6 +283,10 @@ class ComisionadoSolicitud(models.Model):
     comisionadosolicitud_combustible = models.DecimalField("Combustible", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
     comisionadosolicitud_pasaje = models.DecimalField("Pasajes", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
     comisionadosolicitud_gastos = models.DecimalField("Gastos", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    comisionadosolicitud_viatico_diario = models.DecimalField("Viatico Diario", max_digits=12, decimal_places=2, default=0, editable=False, null=True, blank=True)
+    comisionadosolicitud_viatico_computado = models.DecimalField("Viatico Computado", max_digits=12, decimal_places=2, default=0, editable=False, null=True, blank=True)
+    comisionadosolicitud_viatico_total = models.DecimalField("Viatico Total", max_digits=12, decimal_places=2, default=0, editable=False, null=True, blank=True)
+    comisionadosolicitud_cantidad_de_dias = models.DurationField("Días", editable=False, null=True, blank=True)
 
     def get_origin(self):
         return self.comisionadosolicitud_foreign if self.comisionadosolicitud_foreign is not None else self.comisionadosolicitud_incorporacion_foreign.incorporacion_solicitud
@@ -349,7 +353,6 @@ class ComisionadoSolicitud(models.Model):
                     estrato_decreto = self.get_origin().solicitud_decreto_viaticos.montoviaticodiario_estrato_tres_exterior
                 elif estrato == 4:
                     estrato_decreto = self.get_origin().solicitud_decreto_viaticos.montoviaticodiario_estrato_cuatro_exterior
-        
         return estrato_decreto
     
     def viaticos_computado(self):
@@ -372,6 +375,13 @@ class ComisionadoSolicitud(models.Model):
         """
         total = self.viaticos_computado() + self.comisionadosolicitud_combustible + self.comisionadosolicitud_gastos + self.comisionadosolicitud_pasaje
         return total
+    
+    def save(self, *args, **kwargs):
+        self.comisionadosolicitud_cantidad_de_dias = self.get_origin().solicitud_cantidad_de_dias
+        self.comisionadosolicitud_viatico_diario = self.valor_viatico_dia()
+        self.comisionadosolicitud_viatico_computado = self.viaticos_computado()
+        self.comisionadosolicitud_viatico_total = self.viaticos_total()
+        super(ComisionadoSolicitud, self).save(*args, **kwargs)
 
 class Incorporacion(models.Model):
     class Meta:

@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.shortcuts import render
 from secretariador.models import *
-from django.db.models import Q, FilteredRelation, Subquery, OuterRef, Sum, F
+from django.db.models import Q, FilteredRelation, Subquery, OuterRef, Sum, F, Min, Max
 from django.core.exceptions import ValidationError
 from django.views.decorators.cache import cache_page
 from datetime import datetime, timedelta
@@ -21,43 +21,56 @@ class CrearReporteViaticosPorAgente(PermissionRequiredMixin, generic.ListView):
     template_name = "reportes/crear-reporteviaticosporagente.html"
 	
     def get_queryset(self):
-        mes_list = self.request.GET.getlist("mes")
-        ano = self.request.GET.get("ano")
+        if not self.request.GET or self.request.GET.get("fecha_final") == "" or self.request.GET.get("fecha_inicial") == "":
+            fecha_final = datetime.today()
+            fecha_inicial = fecha_final - timedelta(days=30)
+            solicitudes = ComisionadoSolicitud.objects.filter(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial,fecha_final])
+        elif self.request.GET:
+            fecha_final = self.request.GET.get("fecha_final")
+            fecha_final = datetime.strptime(fecha_final, "%d/%m/%Y")
+            fecha_inicial = self.request.GET.get("fecha_inicial")
+            fecha_inicial = datetime.strptime(fecha_inicial, "%d/%m/%Y")
+            solicitudes = ComisionadoSolicitud.objects.filter(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial, fecha_final])
+
         agentes = Comisionado.objects.all()
         queryset = {}
+        final_queryset = {}
         for agente in agentes:
             # Cantidad de días por agente
-            if not mes_list and not ano:
-                agentes_list = ComisionadoSolicitud.objects.all().filter(comisionadosolicitud_nombre=agente)
-            elif not mes_list:
-                agentes_list = ComisionadoSolicitud.objects.filter(
-                comisionadosolicitud_foreign__solicitud_fecha_desde__year=ano).filter(comisionadosolicitud_nombre=agente)
-            elif not ano:
-                agentes_list = ComisionadoSolicitud.objects.filter(
-                comisionadosolicitud_foreign__solicitud_fecha_desde__month__in=mes_list).filter(comisionadosolicitud_nombre=agente)
-            elif not mes_list and not ano:
-                agentes_list = ComisionadoSolicitud.objects.all().filter(comisionadosolicitud_nombre=agente)
-            else:
-                agentes_list = ComisionadoSolicitud.objects.filter(
-                    comisionadosolicitud_foreign__solicitud_fecha_desde__year=ano, comisionadosolicitud_foreign__solicitud_fecha_desde__month__in=mes_list).filter(comisionadosolicitud_nombre=agente)
+            agentes_list = solicitudes.filter(comisionadosolicitud_nombre=agente)
+            solicitudes_annotated = agentes_list.annotate(
+                dias=F("comisionadosolicitud_foreign__solicitud_cantidad_de_dias"), 
+                viatico=F("comisionadosolicitud_viatico_computado"),
+                pasaje=F("comisionadosolicitud_pasaje"), 
+                gastos=F("comisionadosolicitud_gastos"), 
+                combustible=F("comisionadosolicitud_combustible"),
+                valor_viatico=F("comisionadosolicitud_viatico_total")
+                ).aggregate(
+                    cantidad_de_dias=Sum("comisionadosolicitud_foreign__solicitud_cantidad_de_dias"), 
+                    viatico=Sum("comisionadosolicitud_viatico_computado"),
+                    pasaje=Sum("comisionadosolicitud_pasaje"), 
+                    gastos=Sum("comisionadosolicitud_gastos"), 
+                    combustible=Sum("comisionadosolicitud_combustible"),
+                    valor_viatico=Sum("comisionadosolicitud_viatico_total")
+                )
             
-            dias = agentes_list.annotate(
-                            cantidad_de_dias=Sum("comisionadosolicitud_foreign__solicitud_cantidad_de_dias"))
-            dias = dias.aggregate(cantidad_de_dias=Sum("comisionadosolicitud_foreign__solicitud_cantidad_de_dias"))
-            
-            if dias["cantidad_de_dias"] is not None:
-                agente_last = agentes_list.last()
-                
-                dias["valor_viaticos"] = agente_last.valor_viatico_dia() * dias["cantidad_de_dias"].days
-                dias["combustible"] = agentes_list.aggregate(combustible=Sum("comisionadosolicitud_combustible"))["combustible"]
-                dias["gastos"] = agentes_list.aggregate(gastos=Sum("comisionadosolicitud_gastos"))["gastos"]
-                dias["pasajes"] = agentes_list.aggregate(pasajes=Sum("comisionadosolicitud_pasaje"))["pasajes"]
-                dias["total"] = dias["valor_viaticos"] + dias["combustible"] + dias["gastos"] + dias["pasajes"]
+            if solicitudes_annotated["cantidad_de_dias"] is not None:
                 queryset.update({
-                    agente.comisionado_nombreyapellido:dias
+                        agente.comisionado_nombreyapellido: {
+                            "cantidad_de_dias": solicitudes_annotated["cantidad_de_dias"].days,
+                            "viatico":          solicitudes_annotated["viatico"],
+                            "pasaje":           solicitudes_annotated["pasaje"],
+                            "gastos":           solicitudes_annotated["gastos"],
+                            "combustible":      solicitudes_annotated["combustible"],
+                            "valor_viatico":    solicitudes_annotated["valor_viatico"]
+                        }
                     })
-
-        return queryset
+        final_queryset.update({
+            "comisionados": queryset,
+            "fecha_inicial": fecha_inicial,
+            "fecha_final": fecha_final
+        })
+        return final_queryset
 
 @method_decorator(login_required, name="dispatch")
 class CrearReporteViaticosporArea(PermissionRequiredMixin, generic.ListView):
@@ -70,40 +83,56 @@ class CrearReporteViaticosporArea(PermissionRequiredMixin, generic.ListView):
     template_name = "reportes/crear-reporteviaticosporarea.html"
 
     def get_queryset(self):
-        mes_list = self.request.GET.getlist("mes")
-        ano = self.request.GET.get("ano")
+
+        if not self.request.GET or self.request.GET.get("fecha_final") == "" or self.request.GET.get("fecha_inicial") == "":
+            fecha_final = datetime.today()
+            fecha_inicial = fecha_final - timedelta(days=30)
+            solicitudes = ComisionadoSolicitud.objects.filter(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial,fecha_final])
+        elif self.request.GET:
+            fecha_final = self.request.GET.get("fecha_final")
+            fecha_final = datetime.strptime(fecha_final, "%d/%m/%Y")
+            fecha_inicial = self.request.GET.get("fecha_inicial")
+            fecha_inicial = datetime.strptime(fecha_inicial, "%d/%m/%Y")
+            solicitudes = ComisionadoSolicitud.objects.filter(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial, fecha_final])
+        
         agentes = Comisionado.objects.all()
         queryset = {}
+        final_queryset = {}
         for agente in agentes:
-            if not mes_list and not ano:
-                agentes_list = ComisionadoSolicitud.objects.all().filter(comisionadosolicitud_foreign__solicitud_solicitante=agente)
-            elif not mes_list:
-                agentes_list = ComisionadoSolicitud.objects.filter(
-                comisionadosolicitud_foreign__solicitud_fecha_desde__year=ano).filter(comisionadosolicitud_foreign__solicitud_solicitante=agente)
-            elif not ano:
-                agentes_list = ComisionadoSolicitud.objects.filter(
-                comisionadosolicitud_foreign__solicitud_fecha_desde__month__in=mes_list).filter(comisionadosolicitud_foreign__solicitud_solicitante=agente)
-            elif not mes_list and not ano:
-                agentes_list = ComisionadoSolicitud.objects.all().filter(comisionadosolicitud_foreign__solicitud_solicitante=agente)
-            else:
-                agentes_list = ComisionadoSolicitud.objects.filter(
-                    comisionadosolicitud_foreign__solicitud_fecha_desde__year=ano, comisionadosolicitud_foreign__solicitud_fecha_desde__month__in=mes_list).filter(comisionadosolicitud_foreign__solicitud_solicitante=agente)
-        
+            agentes_list = solicitudes.filter(comisionadosolicitud_foreign__solicitud_solicitante=agente)
             
-            dias = agentes_list.annotate(
-                            cantidad_de_dias=Sum("comisionadosolicitud_foreign__solicitud_cantidad_de_dias"))
-            dias = dias.aggregate(cantidad_de_dias=Sum("comisionadosolicitud_foreign__solicitud_cantidad_de_dias"))
+            solicitudes_annotated = agentes_list.annotate(
+                dias=F("comisionadosolicitud_foreign__solicitud_cantidad_de_dias"), 
+                viatico=F("comisionadosolicitud_viatico_computado"),
+                pasaje=F("comisionadosolicitud_pasaje"), 
+                gastos=F("comisionadosolicitud_gastos"), 
+                combustible=F("comisionadosolicitud_combustible"),
+                valor_viatico=F("comisionadosolicitud_viatico_total"),
+                dia_min=F("comisionadosolicitud_foreign__solicitud_fecha_desde"),
+                dia_max=F("comisionadosolicitud_foreign__solicitud_fecha_hasta")
+                ).aggregate(
+                    cantidad_de_dias=Sum("comisionadosolicitud_foreign__solicitud_cantidad_de_dias"), 
+                    viatico=Sum("comisionadosolicitud_viatico_computado"),
+                    pasaje=Sum("comisionadosolicitud_pasaje"), 
+                    gastos=Sum("comisionadosolicitud_gastos"), 
+                    combustible=Sum("comisionadosolicitud_combustible"),
+                    valor_viatico=Sum("comisionadosolicitud_viatico_total")
+                )
             
-            if dias["cantidad_de_dias"] is not None:
-                agente_last = agentes_list.last()
-                
-                dias["valor_viaticos"] = agente_last.valor_viatico_dia() * dias["cantidad_de_dias"].days
-                dias["combustible"] = agentes_list.aggregate(combustible=Sum("comisionadosolicitud_combustible"))["combustible"]
-                dias["gastos"] = agentes_list.aggregate(gastos=Sum("comisionadosolicitud_gastos"))["gastos"]
-                dias["pasajes"] = agentes_list.aggregate(pasajes=Sum("comisionadosolicitud_pasaje"))["pasajes"]
-                dias["total"] = dias["valor_viaticos"] + dias["combustible"] + dias["gastos"] + dias["pasajes"]
+            if solicitudes_annotated["cantidad_de_dias"] is not None:
                 queryset.update({
-                    agente.comisionado_nombreyapellido:dias
+                        agente.comisionado_nombreyapellido: {
+                            "cantidad_de_dias": solicitudes_annotated["cantidad_de_dias"].days,
+                            "viatico":          solicitudes_annotated["viatico"],
+                            "pasaje":           solicitudes_annotated["pasaje"],
+                            "gastos":           solicitudes_annotated["gastos"],
+                            "combustible":      solicitudes_annotated["combustible"],
+                            "valor_viatico":    solicitudes_annotated["valor_viatico"]
+                        }
                     })
-
-        return queryset
+        final_queryset.update({
+            "comisionados": queryset,
+            "fecha_inicial": fecha_inicial,
+            "fecha_final": fecha_final
+        })
+        return final_queryset

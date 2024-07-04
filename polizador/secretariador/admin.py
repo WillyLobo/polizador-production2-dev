@@ -36,6 +36,25 @@ class IncorporacionAdmin(ImportExportMixin, admin.ModelAdmin):
 
 class ComisionadoSolicitudAdmin(admin.ModelAdmin):
     model = ComisionadoSolicitud
+    fields = [
+        "comisionadosolicitud_foreign",
+        "comisionadosolicitud_incorporacion_foreign",
+        "comisionadosolicitud_nombre",
+        "comisionadosolicitud_colaborador",
+        "comisionadosolicitud_chofer",
+        "comisionadosolicitud_combustible",
+        "comisionadosolicitud_pasaje",
+        "comisionadosolicitud_gastos",
+        "comisionadosolicitud_viatico_diario",
+        "comisionadosolicitud_viatico_computado",
+        "comisionadosolicitud_cantidad_de_dias"
+    ]
+    readonly_fields = [
+        "comisionadosolicitud_viatico_diario",
+        "comisionadosolicitud_viatico_computado",
+        "comisionadosolicitud_cantidad_de_dias",
+        "comisionadosolicitud_viatico_total"
+    ]
 
 # Registro de los modelos en Admin
 admin.site.register(InstrumentosLegalesResoluciones, InstrumentosLegalesResolucionesAdmin)
