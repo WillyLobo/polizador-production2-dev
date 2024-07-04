@@ -107,7 +107,7 @@ def solicitud_docx(request, pk):
 		for agente in agentes:
 			lista_agentes = []
 			agente_cuit = f"{agente.comisionadosolicitud_nombre.comisionado_abreviatura} {agente.comisionadosolicitud_nombre.comisionado_nombreyapellido} – CUIL Nº{agente.comisionadosolicitud_nombre.comisionado_cuit}"
-			cantidad_de_dias = f"{actuacion.solicitud_cantidad_de_dias.days} {' dias' if actuacion.solicitud_cantidad_de_dias.days > 1 else 'dia'}"
+			cantidad_de_dias = f"{actuacion.solicitud_cantidad_de_dias.days} {' dias' if actuacion.solicitud_cantidad_de_dias.days > 1 else ' dia'}"
 			comisionadosolicitud_combustible = "{:,.2f}".format(agente.comisionadosolicitud_combustible).replace(",", "@").replace(".", ",").replace("@", ".")
 			comisionadosolicitud_pasaje = "{:,.2f}".format(agente.comisionadosolicitud_pasaje).replace(",", "@").replace(".", ",").replace("@", ".")
 			comisionadosolicitud_gastos = "{:,.2f}".format(agente.comisionadosolicitud_gastos).replace(",", "@").replace(".", ",").replace("@", ".")
@@ -117,9 +117,9 @@ def solicitud_docx(request, pk):
 			subparrafo = f"(Viáticos: {cantidad_de_dias} a razón de ${valor_viatico_dia} diarios"
 			if comisionadosolicitud_pasaje != "0,00":
 				subparrafo += f" + Pasaje: ${comisionadosolicitud_pasaje}"
-			elif comisionadosolicitud_gastos != "0,00":
+			if comisionadosolicitud_gastos != "0,00":
 				subparrafo += f" + Gastos: ${comisionadosolicitud_gastos}"
-			elif comisionadosolicitud_combustible != "0,00":
+			if comisionadosolicitud_combustible != "0,00":
 				subparrafo += f" + Combustible: ${comisionadosolicitud_combustible}"
 			subparrafo += f")."
 

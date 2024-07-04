@@ -86,6 +86,7 @@
 [+] Change Actuacion field to set number and year independently.
 [+] Fix solicitud_cantidad_de_dias to integer(days).
 [+] Remove solicitud.solicitud_viaticos_total.
+[+] Fix "Combustible" in template.
 
 # Web Templates
 [+] Add permission checks to the navbar.html menu.
