@@ -189,7 +189,7 @@ class CrearSolicitud(PermissionRequiredMixin, generic.CreateView):
 	form_class = SolicitudForm
 	initial={
 		"solicitud_provincia":Provincia.objects.all().filter(provincia_nombre__icontains="Chaco").last(),
-		"solicitud_decreto_viaticos":InstrumentosLegalesDecretos.objects.filter(instrumentolegaldecretos_tipo="P").filter(instrumentolegaldecretos_descripcion__icontains="Viáticos").latest()
+		"solicitud_decreto_viaticos":InstrumentosLegalesDecretos.objects.filter(instrumentolegaldecretos_descripcion__icontains="viáticos").latest()
 		}
 	success_url = reverse_lazy("secretariador:crear-solicitud")
 	
@@ -197,7 +197,7 @@ class CrearSolicitud(PermissionRequiredMixin, generic.CreateView):
 
 	def get_title(self):
 		return self.title
-
+	
 	def get_context_data(self, **kwargs):
 		context = super(CrearSolicitud, self).get_context_data(**kwargs)
 

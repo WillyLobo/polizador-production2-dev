@@ -1,6 +1,6 @@
 from django import forms
 from django.utils.safestring import SafeString
-from secretariador.models import Solicitud, ComisionadoSolicitud
+from secretariador.models import Solicitud, ComisionadoSolicitud, InstrumentosLegalesDecretos
 from secretariador.forms.comisionadosolicitudform import ComisionadoSolicitudForm
 from carga.views.ajaxviews import (
 	localidadmultiplewidget,
@@ -13,6 +13,10 @@ from secretariador.views.ajaxviews import (
 from django.forms.models import inlineformset_factory
 
 class SolicitudForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(SolicitudForm, self).__init__(*args, **kwargs)
+        self.fields["solicitud_decreto_viaticos"].queryset = InstrumentosLegalesDecretos.objects.filter(instrumentolegaldecretos_descripcion__icontains="viáticos")
+
     class Meta:
         model = Solicitud
         fields = (
@@ -29,6 +33,8 @@ class SolicitudForm(forms.ModelForm):
             "solicitud_dia_inhabil",
             "solicitud_resolucion"
             )
+        # solicitud_decreto_viaticos = forms.ModelChoiceField(queryset=InstrumentosLegalesDecretos.objects.filter(instrumentolegaldecretos_descripcion__icontains="viáticos"))
+        
         widgets = {
             "solicitud_actuacion_ano":forms.TextInput(attrs={
                 "class":"form-control"
