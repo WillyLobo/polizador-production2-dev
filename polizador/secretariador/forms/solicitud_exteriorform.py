@@ -13,10 +13,6 @@ from secretariador.views.ajaxviews import (
 from django.forms.models import inlineformset_factory
 
 class SolicitudExteriorForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(SolicitudExteriorForm, self).__init__(*args, **kwargs)
-        self.fields["solicitud_decreto_viaticos"].queryset = InstrumentosLegalesDecretos.objects.filter(instrumentolegaldecretos_descripcion__icontains="viáticos")
-
     class Meta:
         model = Solicitud
         fields = (
@@ -35,8 +31,6 @@ class SolicitudExteriorForm(forms.ModelForm):
             "solicitud_resolucion"
             )
         
-        # solicitud_decreto_viaticos = forms.ModelChoiceField(queryset=InstrumentosLegalesDecretos.objects.filter(instrumentolegaldecretos_descripcion__icontains="viáticos"))
-
         widgets = {
             "solicitud_actuacion_ano":forms.TextInput(attrs={
                 "class":"form-control"

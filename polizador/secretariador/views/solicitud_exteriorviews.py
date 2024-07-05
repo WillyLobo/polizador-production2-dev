@@ -188,7 +188,7 @@ class CrearSolicitudExterior(PermissionRequiredMixin, generic.CreateView):
 	form_class = SolicitudExteriorForm
 	initial={
 		"solicitud_provincia":Provincia.objects.all().filter(provincia_nombre__icontains="Chaco").last(),
-		"solicitud_decreto_viaticos":InstrumentosLegalesDecretos.objects.filter(instrumentolegaldecretos_descripcion__icontains="viáticos").latest()
+		"solicitud_decreto_viaticos":InstrumentosLegalesDecretos.objects.filter(instrumentolegaldecretos_tipo="P").filter(instrumentolegaldecretos_descripcion__icontains="Viáticos").latest()
 		}
 	success_url = reverse_lazy("secretariador:crear-solicitud-exterior")
 	
