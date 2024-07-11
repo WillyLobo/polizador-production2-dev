@@ -169,7 +169,7 @@ class Comisionado(models.Model):
     )
 
     def __str__(self):
-        return f"{self.comisionado_apellidos}, {self.comisionado_nombres}"
+        return f"{self.comisionado_apellidos}, {self.comisionado_nombres} - DNI Nº{self.comisionado_dni}"
     
     def nombreydni(self):
         return f"{self.comisionado_abreviatura} {self.comisionado_apellidos}, {self.comisionado_nombres}-DNI Nº{self.comisionado_dni}"

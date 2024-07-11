@@ -27,33 +27,39 @@ def solicitud_docx(request, pk):
 	vehiculo = actuacion.solicitud_vehiculo
 	decreto_viaticos = actuacion.solicitud_decreto_viaticos.montoviaticodiario_decreto_reglamentario
 	
+	def separate_items(items):
+	    # Concatenate the items in the list into a string
+		concatenated_items = ", ".join(items)
+		
+		# Replace the last comma with "y"
+		last_comma_index = concatenated_items.rfind(",")
+		if last_comma_index != -1:
+			concatenated_items = concatenated_items[:last_comma_index] + " y" + concatenated_items[last_comma_index + 1:]
+		
+		return concatenated_items
+
 	def generate_agente_list(agentes):
 		lista_agentes = []
 		final_text = {}
-		for index, agente in enumerate(agentes):
+		for agente in agentes:
 			chofer = ""
 			colaborador = ""
-
-			if index == len(agentes)-1 and len(agentes) > 1:
-				if agente.comisionadosolicitud_nombre.comisionado_sexo == "M":
-					text = "y el"
-				else:
-					text = "y la"
+			agente_denominacion = f"{agente.comisionadosolicitud_nombre.comisionado_abreviatura} {agente.comisionadosolicitud_nombre.comisionado_nombres} {agente.comisionadosolicitud_nombre.comisionado_apellidos}"
+			if agente.comisionadosolicitud_nombre.comisionado_sexo == "M":
+				text = "el"
 			else:
-				if agente.comisionadosolicitud_nombre.comisionado_sexo == "M":
-					text = "el"
-				else:
-					text = "la"
-				if agente.comisionadosolicitud_colaborador:
-					colaborador = ", en carácter de colaborador"
-				else:
-					colaborador = ""
-			
+				text = "la"
+				
+			if agente.comisionadosolicitud_colaborador:
+				colaborador = ", en carácter de colaborador"
+			else:
+				colaborador = ""
+		
 			if agente.comisionadosolicitud_chofer:
 				if agente.comisionadosolicitud_nombre.comisionado_sexo == "M":
-					chofer = f"el {agente.comisionadosolicitud_nombre.comisionado_abreviatura} {agente.comisionadosolicitud_nombre.comisionado_nombreyapellido}"
+					chofer = f"el {agente_denominacion}"
 				else:
-					chofer = f"la {agente.comisionadosolicitud_nombre.comisionado_abreviatura} {agente.comisionadosolicitud_nombre.comisionado_nombreyapellido}"
+					chofer = f"la {agente_denominacion}"
 
 			if len(agentes) > 1:
 				traslado = "trasladar a los mencionados agentes"
@@ -61,10 +67,11 @@ def solicitud_docx(request, pk):
 				traslado = "trasladar al mencionado agente"
 			
 			dni = "{:,}".format(agente.comisionadosolicitud_nombre.comisionado_dni).replace(",", "@").replace(".", ",").replace("@", ".")
-			lista_agentes.append(f"{text} {agente.comisionadosolicitud_nombre.comisionado_abreviatura} {agente.comisionadosolicitud_nombre.comisionado_nombreyapellido} - D.N.I.Nº{dni}{colaborador}")
+			lista_agentes.append(f"{text} {agente_denominacion} - D.N.I.Nº{dni}{colaborador}")
+		lista_agentes = separate_items(lista_agentes)
 
 		final_text.update({
-			"lista_agentes": f"{', '.join(agente for agente in lista_agentes)}",
+			"lista_agentes": lista_agentes,
 			"traslado":traslado,
 			"chofer":chofer,
 		})
@@ -77,12 +84,11 @@ def solicitud_docx(request, pk):
 			text_localidad = "las localidades de"
 		else:
 			text_localidad = "la localidad de"
-		for index, localidad in enumerate(localidades):
-			if index == len(localidades)-1 and len(localidades) > 1:
-				lista_localidades.append(f"y {localidad}")
-			else:
-				lista_localidades.append(f"{localidad}")
-		final_text = f"{text_localidad} {', '.join(localidad for localidad in lista_localidades)}"
+		for localidad in localidades:
+			lista_localidades.append(str(localidad.localidad_nombre))
+		lista_localidades = separate_items(lista_localidades)
+		
+		final_text = f"{text_localidad} {lista_localidades}"
 		return final_text
 
 	def generate_fechas_list(fechas):
@@ -92,12 +98,11 @@ def solicitud_docx(request, pk):
 			text_fechas = "los días"
 		else:
 			text_fechas = "el día"
-		for index, fecha in enumerate(fechas):
-			if index == len(fechas)-1 and len(fechas) > 1:
-				lista_fechas.append(f"y {fecha}")
-			else:
-				lista_fechas.append(f"{fecha}")
-		final_text = f"{text_fechas} {', '.join(fecha for fecha in lista_fechas)}"
+		for fecha in fechas:
+			lista_fechas.append(f"{fecha}")
+		lista_fechas = separate_items(lista_fechas)
+
+		final_text = f"{text_fechas} {lista_fechas}"
 		return final_text
 
 	def generate_agente_list_articulo(agentes):
