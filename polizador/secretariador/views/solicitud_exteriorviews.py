@@ -133,7 +133,7 @@ def exterior_docx(request, pk):
 		parrafo_dos_2  = f", asegurado bajo póliza Nº{ vehiculo.vehiculo_poliza} emitida por {vehiculo.vehiculo_poliza_aseguradora}," if vehiculo.vehiculo_poliza else ""
 		parrafo_dos_3  = f" conducido por {lista_agentes['chofer']};"
 		parrafo_dos    = parrafo_dos_1+parrafo_dos_2+parrafo_dos_3
-	parrafo_tres	= f"Que, en consecuencia, deben anticiparse los fondos necesarios para hacer frente a los gastos a realizar, de acuerdo a lo dispuesto en los Decretos Nº1324/1978 y Nº{decreto_viaticos.instrumentolegaldecretos_numero}/{decreto_viaticos.instrumentolegaldecretos_ano});"
+	parrafo_tres	= f"Que, en consecuencia, deben anticiparse los fondos necesarios para hacer frente a los gastos a realizar, de acuerdo a lo dispuesto en los Decretos Nº1324/1978 y Nº{decreto_viaticos.instrumentolegaldecretos_numero}/{decreto_viaticos.instrumentolegaldecretos_ano};"
 	parrafo_cuatro	= f"Que el trámite se encuadra dentro de lo establecido en el Decreto Nº 1324/78 – “Régimen de Viáticos”; y que debido a la fecha a realizarse, incluye días inhábiles deben encuadrarse dentro de las excepciones en el Inciso A; IV Decreto Nº211/20;"
 
 	articulo_uno    = f"Autorizar a los agentes, detallados a continuación, a trasladarse a la ciudad de {actuacion.solicitud_ciudad}, provincia de {actuacion.solicitud_provincia}, con motivo de {tareas}, {lista_fechas} y anticipar los importes que se consignan, conforme con el Visto y Considerando de la presente, debiendo rendir cuentas documentadas de sus inversiones, de acuerdo con las reglamentaciones vigentes."
