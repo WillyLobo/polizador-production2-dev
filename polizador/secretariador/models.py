@@ -247,7 +247,7 @@ class Solicitud(models.Model):
     solicitud_decreto_viaticos = models.ForeignKey("MontoViaticoDiario", on_delete=models.CASCADE)
     solicitud_fecha_desde = models.DateField("Fecha Inicio")
     solicitud_fecha_hasta = models.DateField("Fecha Regreso")
-    solicitud_tareas = models.TextField("Tareas a Realizar", help_text="... a fin de #Texto ingresado en el formulario#")
+    solicitud_tareas = models.TextField("Tareas a Realizar", help_text="... a fin de #Texto ingresado en el formulario# en la localidad de #Localidad#")
     solicitud_vehiculo = models.ForeignKey("Vehiculo", on_delete=models.CASCADE, blank=True, null=True)
     solicitud_aereo = models.BooleanField("Aereo", help_text="Tildar si es viaje aereo", blank=True, null=True)
     solicitud_dia_inhabil = models.BooleanField("Dia Inhábil", help_text="Tildar si es un diá de no laboral")

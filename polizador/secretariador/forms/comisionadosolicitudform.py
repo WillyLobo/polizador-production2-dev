@@ -37,3 +37,7 @@ class ComisionadoSolicitudForm(forms.ModelForm):
 
     def as_div(self):
         return SafeString(super().as_div().replace("<div>", "<div class='col'>"))
+    
+    def __init__(self, *args, **kwargs):
+        super(ComisionadoSolicitudForm, self).__init__(*args, **kwargs)
+        self.fields["comisionadosolicitud_nombre"].label = "Nombre"

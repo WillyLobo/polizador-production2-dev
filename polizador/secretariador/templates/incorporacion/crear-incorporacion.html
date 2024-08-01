@@ -20,6 +20,9 @@
     {{form.as_div}}
     {{comisionadosformset.management_form}}
     <span class="fs-4 p-0">Comisionados</span>
+    <div class="container">
+      <input type='button' class="btn btn-primary" id='addForm' value='Agregar Nuevo Comisionado'>
+    </div>
 
     <div id="comisionadosolicitud-form" class="comisionadosolicitud-form">
       {%for form in comisionadosformset%}
@@ -42,8 +45,10 @@
 
     </div>
     
-    <input type='button' class="px-5 btn btn-info" id='addForm' value='Agregar Nuevo Comisionado'>
-    <input type='submit' value='Guardar' class="btn" />
+    <div class="container ml-2 pt-2">
+      <input type='submit' value='Guardar' class="btn btn-primary" />
+      <a href="{% url 'secretariador:lista-incorporaciones' %}" type="button" class="btn btn-secondary">Volver</a>
+    </div>
   </form>
 </div>
 <div id="empty_form" style="display:none">

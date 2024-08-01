@@ -64,7 +64,9 @@
 [+] solicitud.actuacion_electronica should be capitalized on model.clean method.
 [+] Add field fecha de firma to instrumentoslegales models.
 [ ] Add functionality to deprecate Solicitudes.
-[ ] Add route distance to Localidades(from Capital city, Resistencia)
+[ ] Add route distance to Localidades(from Capital city, Resistencia).
+[ ] Add save method to set Comisionados into Solicitud database field.
+[ ] Add ajax to validate instrumentolegalresoluciones in forms.
 
 [+] Add vehiculo_poliza & vehiculo_poliza_aseguradora fields to Vehiculo model.
 [ ] Add field instrumentolegalresoluciones_actuacion to InstrumentosLegalesResoluciones model, generated from instrumentolegalresoluciones_descripcion split.

@@ -8,6 +8,7 @@ from secretariador.views.vehiculoviews import *
 from secretariador.views.montoviaticodiarioviews import *
 from secretariador.views.incorporacionviews import *
 from secretariador.views.reportesviews import *
+from secretariador.views.delete_inlines import *
 
 app_name = "secretariador"
 
@@ -33,6 +34,7 @@ solicitud_patterns = [
 	path("crearsolicitud/<pk>", UpdateSolicitud.as_view(), name="update-solicitud"),
 	path("crearsolicitud/ver/<pk>", VerSolicitud.as_view(), name="ver-solicitud"),
     path("eliminar/solicitud/<pk>", EliminarSolicitud.as_view(), name="eliminar-solicitud"),
+    path('delete-comisionadosolicitud/<int:pk>/', delete_comisionadosolicitud, name='delete-comisionado-solicitud'),
 ]
 solicitud_exterior_patterns = [
 	path("crearsolicitudexterior/", CrearSolicitudExterior.as_view(), name="crear-solicitud-exterior"),

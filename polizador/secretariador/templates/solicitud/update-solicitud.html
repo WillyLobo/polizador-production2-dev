@@ -20,6 +20,9 @@
     {{form.as_div}}
     {{comisionadosformset.management_form}}
     <span class="fs-4 p-0">Comisionados</span>
+    <div class="container">
+      <input type='button' class="btn btn-primary" id='addForm' value='Agregar Nuevo Comisionado'>
+    </div>
 
     <div id="comisionadosolicitud-form" class="comisionadosolicitud-form">
       {%for form in comisionadosformset%}
@@ -32,6 +35,31 @@
       
           {{form.as_div}}
 
+          <!-- Button trigger modal -->
+          {% if perms.secretariador.delete_comisionadosolicitud %} 
+            {% if form.instance.pk %}
+            <div class="col-1">
+                <img src='/static/images/trash3.svg' title='Eliminar' class="pt-2" style='width: 3em;height: 3em;' data-bs-toggle="modal" data-bs-target="#eliminarModal{{form.instance.pk}}" />
+                  <!-- Modal -->
+                  <div class="modal fade" id="eliminarModal{{form.instance.pk}}" tabindex="-1" role="dialog" aria-labelledby="eliminarModalLabel{{form.instance.pk}}" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                          <div class="modal-header">
+                          <h5 class="modal-title" id="eliminarModalLabel{{form.instance.pk}}">Está seguro que desea eliminar este comisionado?</h5>
+                          </div>
+                          <div class="modal-footer">
+                              <a href="{% url 'secretariador:delete-comisionado-solicitud' form.instance.pk %}" type="button" class="btn btn-primary">Si, Eliminar</a>
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                          </div>
+                      </div>
+                      </div>
+                  </div>
+            </div>
+           {%else%}
+           <div class="col-1"></div>
+            {% endif %}
+          {% endif %}
+
         </div>
       {%endfor%}
       {% for dict in formset.errors %}
@@ -39,12 +67,13 @@
           {{ error }}
         {% endfor %}
       {% endfor %}
-
     </div>
-    
-    <input type='button' class="px-5 btn btn-info" id='addForm' value='Agregar Nuevo Comisionado'>
-    <input type='submit' value='Guardar' class="btn" />
+    <div class="container ml-2 pt-2">
+      <input type='submit' value='Guardar' class="btn btn-primary" />
+      <a href="{% url 'secretariador:lista-solicitudes' %}" type="button" class="btn btn-secondary">Volver</a>
+    </div>
   </form>
+
 </div>
 <div id="empty_form" style="display:none">
   <div class="row">
