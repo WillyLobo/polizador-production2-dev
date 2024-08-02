@@ -78,7 +78,7 @@ class InstrumentosLegalesResoluciones(models.Model):
     instrumentolegalresoluciones_ano = models.CharField("Año", max_length=5)
     instrumentolegalresoluciones_fecha_aprobacion = models.DateField("Fecha de Aprobación", default=timezone.now)
     instrumentolegalresoluciones_descripcion = models.CharField("Descripción", max_length=600, default="")
-    instrumentolegalresoluciones = models.FileField(upload_to=generate_name_resoluciones, max_length=500, validators=[FileValidator(max_size=1024*1024*14, min_size=None, content_types=("application/pdf"))], null=True, blank=True)
+    instrumentolegalresoluciones = models.FileField(upload_to=generate_name_resoluciones, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], null=True, blank=True)
     instrumentolegalresoluciones_str = GeneratedField(
         expression=ConcatOp('instrumentolegalresoluciones_numero', models.Value(" - "), 'instrumentolegalresoluciones_ano', models.Value(" - "), 'instrumentolegalresoluciones_tipo'),
         output_field=models.TextField(),
@@ -111,7 +111,7 @@ class InstrumentosLegalesDecretos(models.Model):
     instrumentolegaldecretos_ano = models.CharField("Año", max_length=5)
     instrumentolegaldecretos_fecha_aprobacion = models.DateField("Fecha de Aprobación", default=timezone.now)
     instrumentolegaldecretos_descripcion = models.CharField("Descripción", max_length=600, default="Escala de viáticos")
-    instrumentolegaldecretos = models.FileField(upload_to=generate_name_decretos, max_length=500, validators=[FileValidator(max_size=1024*1024*14, min_size=None, content_types=("application/pdf"))], null=True, blank=True)
+    instrumentolegaldecretos = models.FileField(upload_to=generate_name_decretos, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], null=True, blank=True)
     instrumentolegaldecretos_str = GeneratedField(
         expression=ConcatOp('instrumentolegaldecretos_numero', models.Value(" - "), 'instrumentolegaldecretos_ano', models.Value(" - "), 'instrumentolegaldecretos_tipo'),
         output_field=models.TextField(),
