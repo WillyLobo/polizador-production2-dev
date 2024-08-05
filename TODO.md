@@ -44,8 +44,8 @@
     [ ] ListaIncorporacionesView
     [ ] ListaComisionadosView
     [ ] ListaVehiculosView
-    [ ] ListaInstrumentosLegalesDecretosView
-    [ ] ListaInstrumentosLegalesResolucionesView
+    [+] ListaInstrumentosLegalesDecretosView
+    [+] ListaInstrumentosLegalesResolucionesView
 
 [ ] Create report views.
     [?] Filter by solicitud.solicitud_solicitante.
@@ -97,11 +97,23 @@
 [+] Add permission checks to the navbar.html menu.
 [+] Remove scrollMonth & scrollInput from Datepicker.
 [ ] Add a right-side frame in form templates to provide help-text.
-[ ] Add embedded pdf view to list detail templates.
+[+] Add embedded pdf view to list detail templates.
 
 [+] Generate cron shell script to backup database.
 [ ] Add more advanced logging capability.
 
+# Experimental features to add/check:
+[ ] Use IA to summarize executive orders.
+
+# Fix Bugs:
+[ ] Fixed wrong parameter in nginx.conf regarding client_max_body_size.
+
+# ------------------------------------------- #
+#           PERSONALIZADOR APP                #
+# ------------------------------------------- #
+
+# Models:
+[ ] Create database models based on RRHH requests.
 
 # ------------------------------------------- #
 # Legend:                                     #
