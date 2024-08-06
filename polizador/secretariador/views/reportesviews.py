@@ -14,7 +14,7 @@ from datetime import datetime, timedelta
 class CrearReporteViaticosPorAgente(PermissionRequiredMixin, generic.ListView):
     login_url = "/"
     redirect_field_name = "login"
-    permission_required = "secretariador.view_solicitudes"
+    permission_required = "secretariador.add_solicitud"
 
     model = Comisionado
     context_object_name = "solicitud"
@@ -76,7 +76,7 @@ class CrearReporteViaticosPorAgente(PermissionRequiredMixin, generic.ListView):
 class CrearReporteViaticosporArea(PermissionRequiredMixin, generic.ListView):
     login_url = "/"
     redirect_field_name = "login"
-    permission_required = "secretariador.view_solicitudes"
+    permission_required = "secretariador.add_solicitud"
 
     model = Comisionado
     context_object_name = "solicitud"
@@ -141,7 +141,7 @@ class CrearReporteViaticosporArea(PermissionRequiredMixin, generic.ListView):
 class CrearReporteAusenciasPorAgente(PermissionRequiredMixin, generic.ListView):
     login_url = "/"
     redirect_field_name = "login"
-    permission_required = "secretariador.view_solicitudes"
+    permission_required = "secretariador.add_solicitud"
 
     model = Comisionado
     context_object_name = "solicitud"
