@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+{% load l10n %}
 {%block title%}<title>{{title}}</title>{%endblock title%}
 
 <!-- XDSoft DateTimePicker -->
@@ -38,13 +39,13 @@
           {% if perms.secretariador.delete_comisionadosolicitud %} 
             {% if form.instance.pk %}
             <div class="col-1">
-                <img src='/static/images/trash3.svg' title='Eliminar' class="pt-2" style='width: 3em;height: 3em;' data-bs-toggle="modal" data-bs-target="#eliminarModal{{form.instance.pk}}" />
+                <img src='/static/images/trash3.svg' title='Eliminar' class="pt-2" style='width: 3em;height: 3em;' data-bs-toggle="modal" data-bs-target="#eliminarModal{% localize off %}{{form.instance.pk}}{% endlocalize %}" />
                   <!-- Modal -->
-                  <div class="modal fade" id="eliminarModal{{form.instance.pk}}" tabindex="-1" role="dialog" aria-labelledby="eliminarModalLabel{{form.instance.pk}}" aria-hidden="true">
+                  <div class="modal fade" id="eliminarModal{% localize off %}{{form.instance.pk}}{% endlocalize %}" tabindex="-1" role="dialog" aria-labelledby="eliminarModalLabel{% localize off %}{{form.instance.pk}}{% endlocalize %}" aria-hidden="true">
                       <div class="modal-dialog" role="document">
                       <div class="modal-content">
                           <div class="modal-header">
-                          <h5 class="modal-title" id="eliminarModalLabel{{form.instance.pk}}">Está seguro que desea eliminar este comisionado?</h5>
+                          <h5 class="modal-title" id="eliminarModalLabel{% localize off %}{{form.instance.pk}}{% endlocalize %}">Está seguro que desea eliminar este comisionado?</h5>
                           </div>
                           <div class="modal-footer">
                               <a href="{% url 'secretariador:delete-comisionado-solicitud' form.instance.pk %}" type="button" class="btn btn-primary">Si, Eliminar</a>

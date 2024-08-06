@@ -50,6 +50,8 @@
 [ ] Create report views.
     [?] Filter by solicitud.solicitud_solicitante.
     [ ] Filter by agent.
+    [ ] Report days that agentes are not present based on allowances days.
+        [ ] Report should have name, days absent, day that the report was made, executive order number that approved the allowance.
 
 [+] Move Provincia model to carga_app.
     # Number of provinces remain static, no need to implement.
