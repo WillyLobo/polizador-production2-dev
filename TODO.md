@@ -65,7 +65,7 @@
 [+] Add default values in model.save method to avoid blank form fields in Solicitudes.
 [+] solicitud.actuacion_electronica should be capitalized on model.clean method.
 [+] Add field fecha de firma to instrumentoslegales models.
-[ ] Add functionality to deprecate Solicitudes.
+[+] Add functionality to deprecate Solicitudes.
 [ ] Add route distance to Localidades(from Capital city, Resistencia).
 [ ] Add save method to set Comisionados into Solicitud database field.
 [ ] Add ajax to validate instrumentolegalresoluciones in forms.

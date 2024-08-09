@@ -257,6 +257,7 @@ class Solicitud(models.Model):
         output_field=models.DurationField(),
         db_persist=True
     )
+    solicitud_anulada = models.BooleanField("Anulada", default=False, help_text="Si la solicitud se encuentra anulada, no se registra en los reportes.")
     
     def solicitud_fechas(self):
         fechas = [self.solicitud_fecha_desde+timedelta(days=x) for x in range((self.solicitud_fecha_hasta-self.solicitud_fecha_desde).days+1)]

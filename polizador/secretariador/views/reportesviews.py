@@ -24,13 +24,13 @@ class CrearReporteViaticosPorAgente(PermissionRequiredMixin, generic.ListView):
         if not self.request.GET or self.request.GET.get("fecha_final") == "" or self.request.GET.get("fecha_inicial") == "":
             fecha_final = datetime.today()
             fecha_inicial = fecha_final - timedelta(days=30)
-            solicitudes = ComisionadoSolicitud.objects.filter(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial,fecha_final])
+            solicitudes = ComisionadoSolicitud.objects.filter(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial,fecha_final]).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
         elif self.request.GET:
             fecha_final = self.request.GET.get("fecha_final")
             fecha_final = datetime.strptime(fecha_final, "%d/%m/%Y")
             fecha_inicial = self.request.GET.get("fecha_inicial")
             fecha_inicial = datetime.strptime(fecha_inicial, "%d/%m/%Y")
-            solicitudes = ComisionadoSolicitud.objects.filter(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial, fecha_final])
+            solicitudes = ComisionadoSolicitud.objects.filter(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial, fecha_final]).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
 
         agentes = Comisionado.objects.all()
         queryset = {}
@@ -87,13 +87,13 @@ class CrearReporteViaticosporArea(PermissionRequiredMixin, generic.ListView):
         if not self.request.GET or self.request.GET.get("fecha_final") == "" or self.request.GET.get("fecha_inicial") == "":
             fecha_final = datetime.today()
             fecha_inicial = fecha_final - timedelta(days=30)
-            solicitudes = ComisionadoSolicitud.objects.filter(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial,fecha_final])
+            solicitudes = ComisionadoSolicitud.objects.filter(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial,fecha_final]).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
         elif self.request.GET:
             fecha_final = self.request.GET.get("fecha_final")
             fecha_final = datetime.strptime(fecha_final, "%d/%m/%Y")
             fecha_inicial = self.request.GET.get("fecha_inicial")
             fecha_inicial = datetime.strptime(fecha_inicial, "%d/%m/%Y")
-            solicitudes = ComisionadoSolicitud.objects.filter(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial, fecha_final])
+            solicitudes = ComisionadoSolicitud.objects.filter(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial, fecha_final]).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
         
         agentes = Comisionado.objects.all()
         queryset = {}
@@ -151,13 +151,13 @@ class CrearReporteAusenciasPorAgente(PermissionRequiredMixin, generic.ListView):
         if not self.request.GET or self.request.GET.get("fecha_final") == "" or self.request.GET.get("fecha_inicial") == "":
             fecha_final = datetime.today()
             fecha_inicial = fecha_final - timedelta(days=30)
-            solicitudes = ComisionadoSolicitud.objects.filter(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial,fecha_final])
+            solicitudes = ComisionadoSolicitud.objects.filter(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial,fecha_final]).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
         elif self.request.GET:
             fecha_final = self.request.GET.get("fecha_final")
             fecha_final = datetime.strptime(fecha_final, "%d/%m/%Y")
             fecha_inicial = self.request.GET.get("fecha_inicial")
             fecha_inicial = datetime.strptime(fecha_inicial, "%d/%m/%Y")
-            solicitudes = ComisionadoSolicitud.objects.filter(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial, fecha_final])
+            solicitudes = ComisionadoSolicitud.objects.filter(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial, fecha_final]).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
 
         agentes = Comisionado.objects.all()
         queryset = {}
