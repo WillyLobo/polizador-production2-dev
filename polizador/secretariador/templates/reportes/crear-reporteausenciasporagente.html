@@ -56,11 +56,9 @@
     var table = new DataTable('#tablaReporte', {
     info: false,
     paging: false,
-    searching: false,
     order: [[ 1, 'desc' ]],
 });
-
-
+$('#tablaReporte_filter').addClass('d-print-none');
 $(function () {
       $.datetimepicker.setLocale('es');
       $("#id_fecha_inicial").datetimepicker({
