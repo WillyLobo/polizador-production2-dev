@@ -203,7 +203,7 @@
 <li class="nav-item dropdown">
 	<a href="#" id="menu" data-bs-toggle="dropdown" class="nav-link active dropdown-toggle border border-3 rounded-pill border-dark" data-bs-display="static">Viáticos</a>
 	<ul class="dropdown-menu">
-		<!-- Submenu Solicitud Starts -->
+		<!-- Submenu Comisionado Starts -->
 		<li class="dropdown-submenu">
 			<a href="#" data-bs-toggle="dropdown" class="dropdown-item dropdown-toggle">Comisionados</a>
 			<ul class="dropdown-menu">
@@ -211,7 +211,7 @@
 				{% if perms.secretariador.add_comisionado %}<li><a href="{% url "secretariador:crear-comisionado" %}" class="dropdown-item">Crear Agente Comisionado</a></li>{% endif %}
 			</ul>
 		</li>
-		<!-- Submenu Solicitud Ends -->
+		<!-- Submenu Comisionado Ends -->
 		<!-- Submenu Incorporacion Starts -->
 		<li class="dropdown-submenu">
 			<a href="#" data-bs-toggle="dropdown" class="dropdown-item dropdown-toggle">Incorporaciones</a>
@@ -221,16 +221,15 @@
 			</ul>
 		</li>
 		<!-- Submenu Incorporacion Ends -->
-		<!-- Submenu Comisionados Starts -->
+		<!-- Submenu Solicitud Starts -->
 		<li class="dropdown-submenu">
 			<a href="#" data-bs-toggle="dropdown" class="dropdown-item dropdown-toggle">Solicitud</a>
 			<ul class="dropdown-menu">
 				<li> <a href="{% url "secretariador:lista-solicitudes" %}" class="dropdown-item">Lista Solicitudes</a></li>
-				{% if perms.secretariador.add_solicitud %}<li><a href="{% url "secretariador:crear-solicitud" %}" class="dropdown-item">Crear Solicitud</a></li>{% endif %}
-				{% if perms.secretariador.add_solicitud %}<li><a href="{% url "secretariador:crear-solicitud-exterior" %}" class="dropdown-item">Crear Solicitud Fuera de la Provincia</a></li>{% endif %}
+				{% if perms.secretariador.add_solicitud %}<li><a href="{% url "secretariador:redirect-solicitud" %}" class="dropdown-item">Crear Solicitud</a></li>{% endif %}
 			</ul>
 		</li>
-		<!-- Submenu Comisionados Ends -->
+		<!-- Submenu Solicitud Ends -->
 		<!-- Submenu Vehiculos Starts -->
 		<li class="dropdown-submenu">
 			<a href="#" data-bs-toggle="dropdown" class="dropdown-item dropdown-toggle">Vehiculos</a>
@@ -246,7 +245,7 @@
 		<!-- Decretos Menu Starts -->
 		<ul class="dropdown-menu">
 			<li> <a href="{% url "secretariador:lista-decretos" %}" class="dropdown-item">Lista Decretos</a></li>
-			{% if perms.secretariador.add_instrumentoslegalesdecretos %}<li><a href="{% url "secretariador:crear-decreto" %}" class="dropdown-item">Cargar Decreto</a></li>{% endif %}
+			{% if perms.secretariador.add_instrumentoslegalesdecretos %}<li><a href="{% url "secretariador:redirect-decreto" %}" class="dropdown-item">Cargar Decreto</a></li>{% endif %}
 		<!-- Decretos Menu Ends -->
 		<!-- Resoluciones Menu Starts -->
 			<li> <a href="{% url "secretariador:lista-resoluciones" %}" class="dropdown-item">Lista Resoluciones</a></li>
@@ -309,13 +308,13 @@
 	<a href="#" id="menu" data-bs-toggle="dropdown" class="nav-link active dropdown-toggle border border-3 rounded-pill border-dark" data-bs-display="static">Reportes</a>
 	<ul class="dropdown-menu">
 		<!-- Submenu Crear Reporte Starts -->
-		{% if perms.carga.add_certificado %}<li><a href="{% url "carga:crear-reporte" %}" class="dropdown-item">Crear Reporte</a></li>{% endif %}
+		{% if perms.carga.view_certificado %}<li><a href="{% url "carga:crear-reporte" %}" class="dropdown-item">Crear Reporte</a></li>{% endif %}
 		<!-- Submenu Crear Reporte Ends -->
 		<!-- Submenu Crear Reporte Certificado Mes Starts -->
-		{% if perms.carga.add_certificado %}<li><a href="{% url "carga:crear-reporte-certificado" %}" class="dropdown-item">Crear Reporte Certificados	</a></li>{% endif %}
-		{% if perms.secretariador.add_solicitud %}<li><a href="{% url "secretariador:crear-reporte-viaticos-por-agente" %}" class="dropdown-item">Reporte Viáticos por Agente</a></li>{% endif %}
-		{% if perms.secretariador.add_solicitud %}<li><a href="{% url "secretariador:crear-reporte-viaticos-por-area" %}" class="dropdown-item">Reporte Viáticos por Area</a></li>{% endif %}
-		{% if perms.secretariador.add_solicitud %}<li><a href="{% url "secretariador:crear-reporte-ausencias-por-agente" %}" class="dropdown-item">Reporte Ausencias por Agente</a></li>{% endif %}
+		{% if perms.carga.view_certificado %}<li><a href="{% url "carga:crear-reporte-certificado" %}" class="dropdown-item">Crear Reporte Certificados	</a></li>{% endif %}
+		{% if perms.secretariador.view_solicitud %}<li><a href="{% url "secretariador:crear-reporte-viaticos-por-agente" %}" class="dropdown-item">Reporte Viáticos por Agente</a></li>{% endif %}
+		{% if perms.secretariador.view_solicitud %}<li><a href="{% url "secretariador:crear-reporte-viaticos-por-area" %}" class="dropdown-item">Reporte Viáticos por Area</a></li>{% endif %}
+		{% if perms.secretariador.view_solicitud %}<li><a href="{% url "secretariador:crear-reporte-ausencias-por-agente" %}" class="dropdown-item">Reporte Ausencias por Agente</a></li>{% endif %}
 		<!-- Submenu Crear Reporte Certificado Mes Ends -->
 	</ul>
 </li>

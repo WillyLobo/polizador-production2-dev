@@ -100,6 +100,8 @@
 [+] Remove scrollMonth & scrollInput from Datepicker.
 [ ] Add a right-side frame in form templates to provide help-text.
 [+] Add embedded pdf view to list detail templates.
+[+] Add an intermediate page to redirect to solicitud or solicitud-exterior view.
+[+] Add an intermediate page to redirect to intrumentolegaldecretos or montoviaticodiario view.
 
 [+] Generate cron shell script to backup database.
 [ ] Add more advanced logging capability.
@@ -109,9 +111,11 @@
 
 # Fix Bugs:
 [ ] Fixed wrong parameter in nginx.conf regarding client_max_body_size.
+[+] Fix plural omission in template_exterior: "quienes se trasladaran" should check if plural.
+
 
 # ------------------------------------------- #
-#           PERSONALIZADOR APP                #
+#           Systemonchi APP                #
 # ------------------------------------------- #
 
 # Models:

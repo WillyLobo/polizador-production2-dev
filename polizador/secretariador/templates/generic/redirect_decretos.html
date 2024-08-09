@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{{ form.media.css }}
+<div class="container">
+    <div class="container ml-2 pt-2">
+        <span><h4>Tipo de Decreto</h4></span>
+        <a href="{% url 'secretariador:crear-decreto' %}" type="button" class="btn btn-primary">Decreto</a>
+        <a href="{% url 'secretariador:crear-montoviaticodiario' %}" type="button" class="btn btn-primary">Decreto Escala de Viáticos</a>
+        <a href="{% url 'secretariador:lista-decretos' %}" type="button" class="btn btn-secondary">Volver</a>
+      </div>  
+</div>
+
+{{ form.media.js }}
+
+{% endblock %}

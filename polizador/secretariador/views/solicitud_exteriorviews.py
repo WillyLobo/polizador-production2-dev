@@ -64,8 +64,12 @@ def exterior_docx(request, pk):
 
 			if len(agentes) > 1:
 				traslado = "trasladar a los mencionados agentes"
+				traslado_parrafo_uno = "quienes se trasladarán"
+				plural_agente_articulo_uno = "a los agentes, detallados"
 			else:
 				traslado = "trasladar al mencionado agente"
+				traslado_parrafo_uno = "quien se trasladará"
+				plural_agente_articulo_uno = "al agente, detallado"
 			
 			dni = "{:,}".format(agente.comisionadosolicitud_nombre.comisionado_dni).replace(",", "@").replace(".", ",").replace("@", ".")
 			lista_agentes.append(f"{text} {agente_denominacion} - D.N.I.Nº{dni}{colaborador}")
@@ -75,6 +79,8 @@ def exterior_docx(request, pk):
 			"lista_agentes": lista_agentes,
 			"traslado":traslado,
 			"chofer":chofer,
+			"traslado_parrafo_uno": traslado_parrafo_uno,
+			"plural_agente_articulo_uno": plural_agente_articulo_uno
 		})
 		return final_text
 
@@ -125,7 +131,7 @@ def exterior_docx(request, pk):
 	lista_fechas        = generate_fechas_list(fechas)
 	lista_agentes_articulo = generate_agente_list_articulo(agentes)
 
-	parrafo_uno     = f"Que por la misma se tramita autorización y anticipo de viáticos para {lista_agentes['lista_agentes']} de este Organismo, quienes se trasladaran a la provincia de {actuacion.solicitud_provincia} {lista_fechas}, con motivo de {tareas} en la ciudad de {actuacion.solicitud_ciudad};"
+	parrafo_uno     = f"Que por la misma se tramita autorización y anticipo de viáticos para {lista_agentes['lista_agentes']} de este Organismo, {lista_agentes['traslado_parrafo_uno']} a la provincia de {actuacion.solicitud_provincia} {lista_fechas}, con motivo de {tareas} en la ciudad de {actuacion.solicitud_ciudad};"
 	if actuacion.solicitud_aereo:
 		parrafo_dos     = f"Que, en la comisión de referencia el traslado se realizará de forma aérea;"
 	else:
@@ -136,7 +142,7 @@ def exterior_docx(request, pk):
 	parrafo_tres	= f"Que, en consecuencia, deben anticiparse los fondos necesarios para hacer frente a los gastos a realizar, de acuerdo a lo dispuesto en los Decretos Nº1324/1978 y Nº{decreto_viaticos.instrumentolegaldecretos_numero}/{decreto_viaticos.instrumentolegaldecretos_ano};"
 	parrafo_cuatro	= f"Que el trámite se encuadra dentro de lo establecido en el Decreto Nº 1324/78 – “Régimen de Viáticos”; y que debido a la fecha a realizarse, incluye días inhábiles deben encuadrarse dentro de las excepciones en el Inciso A; IV Decreto Nº211/20;"
 
-	articulo_uno    = f"Autorizar a los agentes, detallados a continuación, a trasladarse a la ciudad de {actuacion.solicitud_ciudad}, provincia de {actuacion.solicitud_provincia}, con motivo de {tareas}, {lista_fechas} y anticipar los importes que se consignan, conforme con el Visto y Considerando de la presente, debiendo rendir cuentas documentadas de sus inversiones, de acuerdo con las reglamentaciones vigentes."
+	articulo_uno    = f"Autorizar {lista_agentes['plural_agente_articulo_uno']} a continuación, a trasladarse a la ciudad de {actuacion.solicitud_ciudad}, provincia de {actuacion.solicitud_provincia}, con motivo de {tareas}, {lista_fechas} y anticipar los importes que se consignan, conforme con el Visto y Considerando de la presente, debiendo rendir cuentas documentadas de sus inversiones, de acuerdo con las reglamentaciones vigentes."
 	articulo_dos    = lista_agentes_articulo
 
 	if actuacion.solicitud_provincia.provincia_nombre == "Chaco":
@@ -179,7 +185,6 @@ class CrearSolicitudExterior(PermissionRequiredMixin, generic.CreateView):
 	template_name = "solicitudexterior/crear-solicitud-exterior.html"
 	form_class = SolicitudExteriorForm
 	initial={
-		"solicitud_provincia":Provincia.objects.all().filter(provincia_nombre__icontains="Chaco").last(),
 		"solicitud_decreto_viaticos":InstrumentosLegalesDecretos.objects.filter(instrumentolegaldecretos_tipo="P").filter(instrumentolegaldecretos_descripcion__icontains="Viáticos").latest()
 		}
 	success_url = reverse_lazy("secretariador:crear-solicitud-exterior")

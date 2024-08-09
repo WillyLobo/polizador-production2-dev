@@ -371,7 +371,7 @@ class ListaSolicitudesView(AjaxDatatableView):
 	def customize_row(self, row, obj):
 		id = str(obj.id)
 
-		if obj.solicitud_provincia.provincia_nombre =="Chaco":				
+		if obj.solicitud_provincia.provincia_nombre == "Chaco":				
 			editarlink = f'<a href="/viaticos/crearsolicitud/{id}">{editlinkimg}</a>'
 			if obj.solicitud_resolucion is not None:
 				detallelink = f'<a href="{str(obj.solicitud_resolucion.instrumentolegalresoluciones.url)}">{pdflinkimg}</a>'

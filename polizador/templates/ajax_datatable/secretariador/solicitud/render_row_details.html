@@ -21,11 +21,12 @@
             <div class="col border align-left">{%for localidad in object.solicitud_localidades.all %}{{localidad}}{%if not forloop.last %}, {%endif%} {%endfor%}</div>
         </div>
         {%endif%}
-        {%if object.solicitud_aereo%}
+
         <div class="row g-0">
             <div class="col border align-left"><b>Provincia:</b></div>
             <div class="col border align-left">{{object.solicitud_provincia.provincia_nombre}}</div>
         </div>
+        {%if object.solicitud_provincia.provincia_nombre != "Chaco" %}
         <div class="row g-0">
             <div class="col border align-left"><b>Ciudad:</b></div>
             <div class="col border align-left">{{object.solicitud_ciudad}}</div>

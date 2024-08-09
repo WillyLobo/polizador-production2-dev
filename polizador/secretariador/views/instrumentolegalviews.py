@@ -129,6 +129,7 @@ class ListaListaInstrumentosLegalesDecretosView(AjaxDatatableView):
 		{"name":"instrumentolegaldecretos_tipo", "className": "align-left"},
 		{"name":"instrumentolegaldecretos_numero", "className": "align-left"},
 		{"name":"instrumentolegaldecretos_ano", "className": "align-left "},
+		{"name":"instrumentolegaldecretos_fecha_aprobacion", "className": "align-left "},
 		{"name":"instrumentolegaldecretos_descripcion", "className": "align-right"},
 		{"name":"PDF", "placeholder": True, "searchable": False, "orderable": False, "width":30},
 	]
@@ -239,6 +240,7 @@ class ListaListaInstrumentosLegalesResolucionesView(AjaxDatatableView):
 		{"name":"instrumentolegalresoluciones_tipo", "className":"align-left"},
 		{"name":"instrumentolegalresoluciones_numero", "className":"align-left"},
 		{"name":"instrumentolegalresoluciones_ano", "className":"align-left "},
+		{"name":"instrumentolegalresoluciones_fecha_aprobacion", "className":"align-left "},
 		{"name":"instrumentolegalresoluciones_descripcion", "className":"align-right"},
 		{"name":"PDF", "placeholder":True, "searchable": False, "orderable": False, "width":30},
 	]

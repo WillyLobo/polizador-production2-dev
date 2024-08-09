@@ -9,10 +9,15 @@ from secretariador.views.montoviaticodiarioviews import *
 from secretariador.views.incorporacionviews import *
 from secretariador.views.reportesviews import *
 from secretariador.views.delete_inlines import *
+from secretariador.views.redirects import *
 
 app_name = "secretariador"
 
 urlpatterns = [
+]
+redirects = [
+    path("redirect_decreto/", redirect_decretos, name="redirect-decreto"),
+    path("redirect_solicitudes/", redirect_solicitudes, name="redirect-solicitud"),
 ]
 instrumento_legal_decreto_patterns = [
 	path("creardecreto/", CrearInstrumentoLegalDecreto.as_view(), name="crear-decreto"),
@@ -97,6 +102,7 @@ ajax = [
     path("ajax_datatable/incorporaciones/", ListaIncorporacionesView.as_view(), name="lista-incorporaciones-datatables"),
 ]
 
+urlpatterns += redirects
 urlpatterns += ajax
 urlpatterns += instrumento_legal_decreto_patterns
 urlpatterns += monto_viatico_diario_patterns

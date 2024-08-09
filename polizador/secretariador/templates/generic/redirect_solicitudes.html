@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{{ form.media.css }}
+<div class="container">
+    <div class="container ml-2 pt-2">
+        <span><h4>Tipo de Solicitud</h4></span>
+        <a href="{% url 'secretariador:crear-solicitud' %}" type="button" class="btn btn-primary">Interior</a>
+        <a href="{% url 'secretariador:crear-solicitud-exterior' %}" type="button" class="btn btn-primary">Exterior</a>
+        <a href="{% url 'secretariador:lista-solicitudes' %}" type="button" class="btn btn-secondary">Volver</a>
+      </div>  
+</div>
+
+{{ form.media.js }}
+
+{% endblock %}
