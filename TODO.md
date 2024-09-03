@@ -50,8 +50,8 @@
 [ ] Create report views.
     [?] Filter by solicitud.solicitud_solicitante.
     [ ] Filter by agent.
-    [ ] Report days that agentes are not present based on allowances days.
-        [ ] Report should have name, days absent, day that the report was made, executive order number that approved the allowance.
+    [+] Report days that agentes are not present based on allowances days.
+        [+] Report should have name, days absent, day that the report was made, executive order number that approved the allowance.
 
 [+] Move Provincia model to carga_app.
     # Number of provinces remain static, no need to implement.
@@ -66,13 +66,14 @@
 [+] solicitud.actuacion_electronica should be capitalized on model.clean method.
 [+] Add field fecha de firma to instrumentoslegales models.
 [+] Add functionality to deprecate Solicitudes.
+[ ] Add field localidad_distancia to Localidad model(carga app).
 [ ] Add route distance to Localidades(from Capital city, Resistencia).
 [ ] Add save method to set Comisionados into Solicitud database field.
 [ ] Add ajax to validate instrumentolegalresoluciones in forms.
+[ ] Add button option for Solicitud to be withou allowances.
 
 [+] Add vehiculo_poliza & vehiculo_poliza_aseguradora fields to Vehiculo model.
 [ ] Add field instrumentolegalresoluciones_actuacion to InstrumentosLegalesResoluciones model, generated from instrumentolegalresoluciones_descripcion split.
-[ ] Add field localidad_distancia to Localidad model(carga app).
 
 [?] Review code to get comisionado_estrato(models.ComisionadoSolicitud.viaticos_computado), taking consideration that cabinet personel does not receive compensation.
 
@@ -110,7 +111,7 @@
 [ ] Use IA to summarize executive orders.
 
 # Fix Bugs:
-[ ] Fixed wrong parameter in nginx.conf regarding client_max_body_size.
+[+] Fix wrong parameter in nginx.conf regarding client_max_body_size.
 [+] Fix plural omission in template_exterior: "quienes se trasladaran" should check if plural.
 
 
