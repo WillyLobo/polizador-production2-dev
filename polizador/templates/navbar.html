@@ -315,6 +315,7 @@
 		{% if perms.secretariador.view_solicitud %}<li><a href="{% url "secretariador:crear-reporte-viaticos-por-agente" %}" class="dropdown-item">Reporte Viáticos por Agente</a></li>{% endif %}
 		{% if perms.secretariador.view_solicitud %}<li><a href="{% url "secretariador:crear-reporte-viaticos-por-area" %}" class="dropdown-item">Reporte Viáticos por Area</a></li>{% endif %}
 		{% if perms.secretariador.view_solicitud %}<li><a href="{% url "secretariador:crear-reporte-ausencias-por-agente" %}" class="dropdown-item">Reporte Ausencias por Agente</a></li>{% endif %}
+		{% if perms.secretariador.view_solicitud %}<li><a href="{% url "secretariador:crear-reporte-duplicados" %}" class="dropdown-item">Reporte Comisiones Duplicadas</a></li>{% endif %}
 		<!-- Submenu Crear Reporte Certificado Mes Ends -->
 	</ul>
 </li>

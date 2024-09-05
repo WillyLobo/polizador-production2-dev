@@ -193,3 +193,83 @@ class CrearReporteAusenciasPorAgente(PermissionRequiredMixin, generic.ListView):
             "fechas_en_comision": days_list,
         })
         return final_queryset
+
+@method_decorator(login_required, name="dispatch")
+class CrearReporteComisionesDuplicadas(PermissionRequiredMixin, generic.ListView):
+    """
+    Genera reporte de comisiones duplicadas.
+    """
+
+    login_url = "/"
+    redirect_field_name = "login"
+    permission_required = "secretariador.add_solicitud"
+
+    model = Solicitud
+    context_object_name = "solicitud"
+    template_name = "reportes/crear-reporteduplicados.html"
+	
+    def get_queryset(self):
+        if not self.request.GET or self.request.GET.get("fecha_final") == "" or self.request.GET.get("fecha_inicial") == "":
+            fecha_final = datetime.today()
+            fecha_inicial = fecha_final - timedelta(days=30)
+            solicitudes = Solicitud.objects.filter(solicitud_fecha_desde__range=[fecha_inicial,fecha_final]).exclude(solicitud_anulada=True)
+        elif self.request.GET:
+            fecha_final = self.request.GET.get("fecha_final")
+            fecha_final = datetime.strptime(fecha_final, "%d/%m/%Y")
+            fecha_inicial = self.request.GET.get("fecha_inicial")
+            fecha_inicial = datetime.strptime(fecha_inicial, "%d/%m/%Y")
+            solicitudes = Solicitud.objects.filter(solicitud_fecha_desde__range=[fecha_inicial, fecha_final]).exclude(solicitud_anulada=True)
+
+        fechas = [fecha_inicial+timedelta(days=x) for x in range((fecha_final-fecha_inicial).days+1)]
+        fechas = [datetime.strftime(fecha, "%Y-%m-%d") for fecha in fechas]
+        queryset = {}
+        final_queryset = {}
+
+        for fecha in fechas:
+            solicitudes = Solicitud.objects.filter(solicitud_fecha_desde=fecha).exclude(solicitud_anulada=True)
+            for solicitud in solicitudes:
+                if solicitudes is not None:
+                    queryset.update({
+                            solicitud.solicitud_actuacion: {
+                                "cantidad_de_dias": solicitud.solicitud_cantidad_de_dias.days,
+                                "localidades": [localidad.localidad_nombre for localidad in solicitud.solicitud_localidades.all()],
+                                "fechas": solicitud.solicitud_fechas(),
+                                "solicitante": solicitud.solicitud_solicitante.comisionado_nombreyapellido,
+                                "comisionados": solicitud.get_comisionados(),
+                                "tareas": solicitud.solicitud_tareas,
+                            }
+                        })
+         
+        duplicates = {}
+        for actuacion, values in queryset.items():
+            key = tuple(values['fechas']) + tuple(values['localidades'])
+            if key in duplicates:
+                duplicates[key].append([
+                    actuacion,
+                    values["solicitante"],
+                    values["comisionados"],
+                    values["tareas"],
+                    values["cantidad_de_dias"],
+                    values["localidades"],
+                    ])
+            else:
+                duplicates[key] = [[
+                    actuacion,
+                    values["solicitante"],
+                    values["comisionados"],
+                    values["tareas"],
+                    values["cantidad_de_dias"],
+                    values["localidades"],
+                    ]]
+
+        final_queryset = {}
+        final_queryset["duplicados"] = {}
+        for key, actuaciones in duplicates.items():
+            if len(actuaciones) > 1:
+                final_queryset["duplicados"].update({key : actuaciones})
+        final_queryset["fechas"] = {
+            "fecha_inicial": fecha_inicial,
+            "fecha_final": fecha_final,
+        }
+
+        return final_queryset
