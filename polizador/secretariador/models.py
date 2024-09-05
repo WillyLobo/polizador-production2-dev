@@ -237,6 +237,7 @@ class Solicitud(models.Model):
                 name="unique_solicitud_2"
             )
         ]
+        
     solicitud_actuacion = GeneratedField(
         expression=ConcatOp(models.Value("E10-"), 'solicitud_actuacion_ano', models.Value("-"), 'solicitud_actuacion_numero', models.Value("-AE")),
         output_field=models.TextField(),
@@ -319,7 +320,7 @@ class ComisionadoSolicitud(models.Model):
         self.comisionadosolicitud_pasaje = 0 if self.comisionadosolicitud_pasaje is None else self.comisionadosolicitud_pasaje
         self.comisionadosolicitud_combustible = 0 if self.comisionadosolicitud_combustible is None else self.comisionadosolicitud_combustible
 
-    def valor_viatico_dia(self): # This is the one called in .DOCX template!!!
+    def valor_viatico_dia(self):
         """
         Calculates the daily viatic value based on the position and stratum of the commissioned person.
 
@@ -329,36 +330,21 @@ class ComisionadoSolicitud(models.Model):
         foreign = self.get_origin()
         gabinete = self.comisionadosolicitud_nombre.comisionado_cargo.organigrama_cargo
         estrato = self.comisionadosolicitud_nombre.comisionado_cargo.organigrama_escalafon
-        # Check if its cabinet personel
-        if gabinete == "Vocal" or gabinete == "Presidente":
-            if foreign.solicitud_provincia.provincia_nombre == "Chaco":
-                estrato_decreto = 0
-            else:
-                estrato_decreto = self.get_origin().solicitud_decreto_viaticos.montoviaticodiario_estrato_cuatro_exterior
-        elif self.comisionadosolicitud_colaborador == True:
-            estrato_decreto = 0
+        decreto = foreign.solicitud_decreto_viaticos
+        es_chaco = foreign.solicitud_provincia.provincia_nombre == "Chaco"
+
+        if gabinete in ["Vocal", "Presidente"]:
+            return 0 if es_chaco else decreto.montoviaticodiario_estrato_cuatro_exterior
+        
+        if self.comisionadosolicitud_colaborador:
+            return 0
+
+        if es_chaco:
+            campo = f"montoviaticodiario_estrato_{['uno', 'dos', 'tres', 'cuatro'][int(estrato)-1]}_interior"
         else:
-            if self.get_origin().solicitud_provincia.provincia_nombre == "Chaco":
-                # Inside province.
-                if estrato == 1:
-                    estrato_decreto = self.get_origin().solicitud_decreto_viaticos.montoviaticodiario_estrato_uno_interior
-                elif estrato == 2:
-                    estrato_decreto = self.get_origin().solicitud_decreto_viaticos.montoviaticodiario_estrato_dos_interior
-                elif estrato == 3:
-                    estrato_decreto = self.get_origin().solicitud_decreto_viaticos.montoviaticodiario_estrato_tres_interior
-                elif estrato == 4:
-                    estrato_decreto = self.get_origin().solicitud_decreto_viaticos.montoviaticodiario_estrato_cuatro_interior
-            else:
-                # Out of province.
-                if estrato == 1:
-                    estrato_decreto = self.get_origin().solicitud_decreto_viaticos.montoviaticodiario_estrato_uno_exterior
-                elif estrato == 2:
-                    estrato_decreto = self.get_origin().solicitud_decreto_viaticos.montoviaticodiario_estrato_dos_exterior
-                elif estrato == 3:
-                    estrato_decreto = self.get_origin().solicitud_decreto_viaticos.montoviaticodiario_estrato_tres_exterior
-                elif estrato == 4:
-                    estrato_decreto = self.get_origin().solicitud_decreto_viaticos.montoviaticodiario_estrato_cuatro_exterior
-        return estrato_decreto
+            campo = f"montoviaticodiario_estrato_{['uno', 'dos', 'tres', 'cuatro'][int(estrato)-1]}_exterior"
+        
+        return getattr(decreto, campo)
     
     def viaticos_computado(self):
         """
