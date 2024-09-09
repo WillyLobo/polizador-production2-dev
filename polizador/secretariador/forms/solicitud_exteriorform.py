@@ -17,6 +17,7 @@ class SolicitudExteriorForm(forms.ModelForm):
         model = Solicitud
         fields = (
             "solicitud_anulada",
+            "solicitud_actuacion_jurisdiccion",
             "solicitud_actuacion_ano",
             "solicitud_actuacion_numero",
             "solicitud_solicitante",
@@ -36,6 +37,9 @@ class SolicitudExteriorForm(forms.ModelForm):
             "solicitud_anulada":forms.CheckboxInput(attrs={
                 "class":"form-check-input",
                 "style":'width: 2em;height: 2em;'
+                }),
+            "solicitud_actuacion_jurisdiccion":forms.TextInput(attrs={
+                "class":"form-control"
                 }),
             "solicitud_actuacion_ano":forms.TextInput(attrs={
                 "class":"form-control"

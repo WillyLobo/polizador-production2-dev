@@ -243,6 +243,7 @@ class Solicitud(models.Model):
         output_field=models.TextField(),
         db_persist=True,
     )
+    solicitud_actuacion_jurisdiccion = models.CharField("Jurisdicción", max_length=3, default="E10")
     solicitud_actuacion_numero = models.DecimalField("N° Actuación", max_digits=6, decimal_places=0, validators=[MinValueValidator(0)], default=0, help_text="Solo el número de la actuación. Sin prefijo, sufijo o Año.")
     solicitud_actuacion_ano = models.DecimalField("Año Actuación", max_digits=4, decimal_places=0, validators=[MinValueValidator(0)], default=int(timezone.now().year))
     solicitud_solicitante = models.ForeignKey("Comisionado", on_delete=models.CASCADE) # Encargado del area solicitante
