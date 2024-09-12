@@ -12,6 +12,7 @@ class ComisionadoSolicitudExteriorForm(forms.ModelForm):
             "comisionadosolicitud_combustible",
             "comisionadosolicitud_chofer",
             "comisionadosolicitud_colaborador",
+            "comisionadosolicitud_sin_viatico",
         )
         widgets = {
             "comisionadosolicitud_nombre":forms.Select(attrs={
@@ -34,6 +35,10 @@ class ComisionadoSolicitudExteriorForm(forms.ModelForm):
                 "style":'width: 2em;height: 2em;'
                 }),
             "comisionadosolicitud_colaborador":forms.CheckboxInput(attrs={
+                "class":"form-check-input",
+                "style":'width: 2em;height: 2em;'
+                }),
+            "comisionadosolicitud_sin_viatico":forms.CheckboxInput(attrs={
                 "class":"form-check-input",
                 "style":'width: 2em;height: 2em;'
                 }),

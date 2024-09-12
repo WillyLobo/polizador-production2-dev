@@ -290,9 +290,10 @@ class ComisionadoSolicitud(models.Model):
     comisionadosolicitud_combustible = models.DecimalField("Combustible", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
     comisionadosolicitud_pasaje = models.DecimalField("Pasajes", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
     comisionadosolicitud_gastos = models.DecimalField("Gastos", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
-    comisionadosolicitud_viatico_diario = models.DecimalField("Viatico Diario", max_digits=12, decimal_places=2, default=0, editable=False, null=True, blank=True)
-    comisionadosolicitud_viatico_computado = models.DecimalField("Viatico Computado", max_digits=12, decimal_places=2, default=0, editable=False, null=True, blank=True)
-    comisionadosolicitud_viatico_total = models.DecimalField("Viatico Total", max_digits=12, decimal_places=2, default=0, editable=False, null=True, blank=True)
+    comisionadosolicitud_sin_viatico = models.BooleanField("Sin viático", default=False)
+    comisionadosolicitud_viatico_diario = models.DecimalField("Viatico Diario", max_digits=12, decimal_places=2, default=0, editable=False, null=True, blank=True) # Field is editable=False because it is calculated in the clean method.
+    comisionadosolicitud_viatico_computado = models.DecimalField("Viatico Computado", max_digits=12, decimal_places=2, default=0, editable=False, null=True, blank=True) # Field is editable=False because it is calculated in the clean method.
+    comisionadosolicitud_viatico_total = models.DecimalField("Viatico Total", max_digits=12, decimal_places=2, default=0, editable=False, null=True, blank=True) # Field is editable=False because it is calculated in the clean method.
     comisionadosolicitud_cantidad_de_dias = models.DurationField("Días", editable=False, null=True, blank=True)
 
     def get_origin(self):
@@ -339,7 +340,10 @@ class ComisionadoSolicitud(models.Model):
         
         if self.comisionadosolicitud_colaborador:
             return 0
-
+        
+        if self.comisionadosolicitud_sin_viatico:
+            return 0
+        
         if es_chaco:
             campo = f"montoviaticodiario_estrato_{['uno', 'dos', 'tres', 'cuatro'][int(estrato)-1]}_interior"
         else:

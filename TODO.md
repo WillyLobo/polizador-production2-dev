@@ -70,7 +70,7 @@
 [ ] Add route distance to Localidades(from Capital city, Resistencia).
 [ ] Add save method to set Comisionados into Solicitud database field.
 [ ] Add ajax to validate instrumentolegalresoluciones in forms.
-[ ] Add button option for Solicitud to be withou allowances.
+[+] Add button option for Solicitud to be without allowances.
 
 [+] Add vehiculo_poliza & vehiculo_poliza_aseguradora fields to Vehiculo model.
 [ ] Add field instrumentolegalresoluciones_actuacion to InstrumentosLegalesResoluciones model, generated from instrumentolegalresoluciones_descripcion split.
