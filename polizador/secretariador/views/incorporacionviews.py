@@ -20,34 +20,160 @@ def incorporacion_docx(request, pk):
 	jinja_env = jinja2.Environment()
 	jinja_env.trim_blocks = True
 	jinja_env.lstrip_blocks = True
+
+	actuacion = Incorporacion.objects.get(pk=pk)
+	numero_actuacion = actuacion.incorporacion_actuacion
+	resolucion_solicitud = actuacion.incorporacion_solicitud.solicitud_resolucion
+	agentes_incorporacion = actuacion.comisionadosolicitud_set.all().order_by("comisionadosolicitud_chofer")
+	agentes_solicitud = actuacion.incorporacion_solicitud.comisionadosolicitud_set.all().order_by("comisionadosolicitud_chofer")
+	localidades = actuacion.incorporacion_solicitud.solicitud_localidades.all()
+	tareas = actuacion.incorporacion_solicitud.solicitud_tareas
+	fechas = actuacion.incorporacion_solicitud.solicitud_fechas()
+	dia_inhabil = actuacion.incorporacion_solicitud.solicitud_dia_inhabil
+	vehiculo = actuacion.incorporacion_solicitud.solicitud_vehiculo
+	decreto_viaticos = actuacion.incorporacion_solicitud.solicitud_decreto_viaticos.montoviaticodiario_decreto_reglamentario
+	
+	def separate_items(items):
+	    # Concatenate the items in the list into a string
+		concatenated_items = ", ".join(items)
+		
+		# Replace the last comma with "y"
+		last_comma_index = concatenated_items.rfind(",")
+		if last_comma_index != -1:
+			concatenated_items = concatenated_items[:last_comma_index] + " y" + concatenated_items[last_comma_index + 1:]
+		
+		return concatenated_items
+
+	def generate_agente_list(agentes):
+		lista_agentes = []
+		final_text = {}
+		for agente in agentes:
+			chofer = ""
+			colaborador = ""
+			agente_denominacion = f"{agente.comisionadosolicitud_nombre.comisionado_abreviatura} {agente.comisionadosolicitud_nombre.comisionado_nombres} {agente.comisionadosolicitud_nombre.comisionado_apellidos}"
+			if agente.comisionadosolicitud_nombre.comisionado_sexo == "M":
+				text = "el"
+			else:
+				text = "la"
+				
+			if agente.comisionadosolicitud_colaborador:
+				colaborador = ", en carácter de colaborador"
+			else:
+				colaborador = ""
+		
+			if agente.comisionadosolicitud_chofer:
+				if agente.comisionadosolicitud_nombre.comisionado_sexo == "M":
+					chofer = f"el {agente_denominacion}"
+				else:
+					chofer = f"la {agente_denominacion}"
+
+			if len(agentes) > 1:
+				traslado = "trasladar a los mencionados agentes"
+			else:
+				traslado = "trasladar al mencionado agente"
+			
+			dni = "{:,}".format(agente.comisionadosolicitud_nombre.comisionado_dni).replace(",", "@").replace(".", ",").replace("@", ".")
+			lista_agentes.append(f"{text} {agente_denominacion} - D.N.I.Nº{dni}{colaborador}")
+		lista_agentes = separate_items(lista_agentes)
+
+		final_text.update({
+			"lista_agentes": lista_agentes,
+			"traslado":traslado,
+			"chofer":chofer,
+		})
+		return final_text
+
+	def generate_localidad_list(localidades):
+		lista_localidades = []
+		final_text = ""
+		if len(localidades) > 1:
+			text_localidad = "las localidades de"
+		else:
+			text_localidad = "la localidad de"
+		for localidad in localidades:
+			lista_localidades.append(str(localidad.localidad_nombre))
+		lista_localidades = separate_items(lista_localidades)
+		
+		final_text = f"{text_localidad} {lista_localidades}"
+		return final_text
+
+	def generate_fechas_list(fechas):
+		lista_fechas = []
+		final_text = ""
+		if len(fechas) > 1:
+			text_fechas = "los días"
+		else:
+			text_fechas = "el día"
+		for fecha in fechas:
+			lista_fechas.append(f"{fecha}")
+		lista_fechas = separate_items(lista_fechas)
+
+		final_text = f"{text_fechas} {lista_fechas}"
+		return final_text
+
+	def generate_agente_list_articulo(agentes):
+		colaborador = ""
+		
+		final_text = []
+		for agente in agentes:
+			lista_agentes = []
+			agente_cuit = f"{agente.comisionadosolicitud_nombre.comisionado_abreviatura} {agente.comisionadosolicitud_nombre.comisionado_nombreyapellido} – CUIL Nº{agente.comisionadosolicitud_nombre.comisionado_cuit}"
+			cantidad_de_dias = f"{actuacion.incorporacion_solicitud.solicitud_cantidad_de_dias.days} {' dias' if actuacion.incorporacion_solicitud.solicitud_cantidad_de_dias.days > 1 else ' dia'}"
+			comisionadosolicitud_combustible = "{:,.2f}".format(agente.comisionadosolicitud_combustible).replace(",", "@").replace(".", ",").replace("@", ".")
+			comisionadosolicitud_pasaje = "{:,.2f}".format(agente.comisionadosolicitud_pasaje).replace(",", "@").replace(".", ",").replace("@", ".")
+			comisionadosolicitud_gastos = "{:,.2f}".format(agente.comisionadosolicitud_gastos).replace(",", "@").replace(".", ",").replace("@", ".")
+			valor_viatico_dia = "{:,.2f}".format(agente.valor_viatico_dia()).replace(",", "@").replace(".", ",").replace("@", ".")
+			valor_viatico_total = "{:,.2f}".format(agente.viaticos_total()).replace(",", "@").replace(".", ",").replace("@", ".")
+
+			subparrafo = f"(Viáticos: {cantidad_de_dias} a razón de ${valor_viatico_dia} diarios"
+			if comisionadosolicitud_pasaje != "0,00":
+				subparrafo += f" + Pasaje: ${comisionadosolicitud_pasaje}"
+			if comisionadosolicitud_gastos != "0,00":
+				subparrafo += f" + Gastos: ${comisionadosolicitud_gastos}"
+			if comisionadosolicitud_combustible != "0,00":
+				subparrafo += f" + Combustible: ${comisionadosolicitud_combustible}"
+			subparrafo += f")."
+
+			lista_agentes.append(agente_cuit)
+			lista_agentes.append(valor_viatico_total)	
+			lista_agentes.append(subparrafo)
+			final_text.append(lista_agentes)
+		return final_text
+
+	lista_agentes       = generate_agente_list(agentes_solicitud)
+	lista_agentes_incorporacion = generate_agente_list(agentes_incorporacion)
+	lista_localidades   = generate_localidad_list(localidades)
+	lista_fechas        = generate_fechas_list(fechas)
+	lista_agentes_articulo = generate_agente_list_articulo(agentes_solicitud)
+	lista_agentes_incorporacion_articulo = generate_agente_list_articulo(agentes_incorporacion)
+
+	parrafo_uno		= f"Que por la {resolucion_solicitud}, se tramitó autorización y anticipo de viáticos para {lista_agentes['lista_agentes']} de este Organismo, a fin de {tareas}, en {lista_localidades} {lista_fechas};"
+	parrafo_dos     = f"Que resulta necesario incorporar a la misma, a {lista_agentes_incorporacion['lista_agentes']} de este Organismo;"
+	parrafo_tres  = f"Que, en consecuencia, deben anticiparse los fondos necesarios para hacer frente a los gastos a realizar, de acuerdo a lo dispuesto en los Decretos Nº1324/1978 y Nº{decreto_viaticos.instrumentolegaldecretos_numero}/{decreto_viaticos.instrumentolegaldecretos_ano};"
+	parrafo_cuatro   = f"Que el trámite se encuadra dentro de lo establecido en el Decreto Nº 1324/78 – “Régimen de Viáticos”; y que debido a la fecha a realizarse, incluye días inhábiles deben encuadrarse dentro de las excepciones en el Inciso A; IV Decreto Nº211/20;"
+
+	articulo_uno            = f"Incorporar a los agentes, detallados a continuación, a trasladarse a {lista_localidades}, {lista_fechas} a fin de {tareas} y anticipar los importes que se consignan, conforme con el Visto y Considerando de la presente, debiendo rendir cuentas documentadas de sus inversiones, de acuerdo con las reglamentaciones vigentes."
+	articulo_dos            = lista_agentes_incorporacion_articulo
+
 	doc = DocxTemplate("secretariador/media/solicitud_incorporacion.docx")
-	incorporacion = Incorporacion.objects.get(pk=pk)
 	context = {
-	"solicitud":incorporacion.incorporacion_solicitud,
-	"incorporacion": incorporacion,
-	"agentes_incorporados":incorporacion.comisionadosolicitud_set.all(),
-	"actuacion_incorporacion": incorporacion.incorporacion_actuacion,
-	"actuacion":incorporacion.incorporacion_solicitud.solicitud_actuacion,
-	"agentes":incorporacion.incorporacion_solicitud.comisionadosolicitud_set.all(),
-	"solicitante_cargo":incorporacion.incorporacion_solicitud.solicitud_solicitante.comisionado_cargo.organigrama_cargo,
-	"localidades":incorporacion.incorporacion_solicitud.solicitud_localidades.all(),
-	"fechas":incorporacion.incorporacion_solicitud.solicitud_fechas(),
-	"tareas":incorporacion.incorporacion_solicitud.solicitud_tareas,
-	"vehiculo":incorporacion.incorporacion_solicitud.solicitud_vehiculo,
-	"vehiculo_modelo":incorporacion.incorporacion_solicitud.solicitud_vehiculo.vehiculo_modelo,
-	"vehiculo_patente":incorporacion.incorporacion_solicitud.solicitud_vehiculo.vehiculo_patente,
-	"decreto_viaticos":incorporacion.incorporacion_solicitud.solicitud_decreto_viaticos.montoviaticodiario_decreto_reglamentario,
-	"resolucion":incorporacion.incorporacion_solicitud.solicitud_resolucion,
-	"resolucion_fecha":incorporacion.incorporacion_solicitud.solicitud_resolucion.instrumentolegalresoluciones_fecha_aprobacion,
+		"actuacion":actuacion,
+		"numero_actuacion":numero_actuacion,
+		"dia_inhabil":dia_inhabil,
+		"resolucion_solicitud":resolucion_solicitud,
+		"parrafo_uno":parrafo_uno,
+		"parrafo_dos":parrafo_dos,
+		"parrafo_tres":parrafo_tres,
+		"parrafo_cuatro":parrafo_cuatro,
+		"articulo_uno":articulo_uno,
+		"articulo_dos":articulo_dos,
 	}
 
-	filename = incorporacion.incorporacion_actuacion+".docx"
+	filename = actuacion.incorporacion_actuacion+".docx"
 	response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 	response["Content-Disposition"] = f'filename="{filename}"'
-
 	doc.render(context)
 	doc.save(response)
-
 	return response
 
 @method_decorator(login_required, name="dispatch")

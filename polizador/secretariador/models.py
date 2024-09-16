@@ -84,6 +84,9 @@ class InstrumentosLegalesResoluciones(models.Model):
         output_field=models.TextField(),
         db_persist=True,
     )
+    # Fields related to the automatic extraction of text from the digitalized resolution.
+    instrumentolegalresoluciones_autocarga = models.BooleanField("Resolución importada sin intervención.", default=False)
+    instrumentolegalresoluciones_document = models.TextField("Texto Extraído por OCR", null=True, blank=True)
 
     def __str__(self):
         return f"{self.get_instrumentolegalresoluciones_tipo_display()} Nº{self.instrumentolegalresoluciones_numero}/{self.instrumentolegalresoluciones_ano}"
@@ -393,7 +396,8 @@ class Incorporacion(models.Model):
                 name="unique_incorporacion_2"
             ),
         ]
-    incorporacion_solicitud = models.ForeignKey("Solicitud", on_delete=models.CASCADE)
+        
+    incorporacion_solicitud = models.ForeignKey("Solicitud", help_text="Actuación a la que se incorpora los agentes.", on_delete=models.CASCADE)
     incorporacion_actuacion = GeneratedField(
         expression=ConcatOp(models.Value("E10-"), 'incorporacion_actuacion_ano', models.Value("-"), 'incorporacion_actuacion_numero', models.Value("-AE")),
         output_field=models.TextField(),
@@ -402,7 +406,7 @@ class Incorporacion(models.Model):
     incorporacion_actuacion_numero = models.DecimalField("N° Actuación", max_digits=6, decimal_places=0, validators=[MinValueValidator(0)], default=0, help_text="Solo el número de la actuación. Sin prefijo, sufijo o Año.")
     incorporacion_actuacion_ano = models.DecimalField("Año Actuación", max_digits=4, decimal_places=0, validators=[MinValueValidator(0)], default=int(timezone.now().year))
     incorporacion_solicitante = models.ForeignKey("Comisionado", on_delete=models.CASCADE) # Encargado del area solicitante
-    incorporacion_resolucion = models.ForeignKey("InstrumentosLegalesResoluciones", verbose_name="Resolución Aprobada", on_delete=models.CASCADE, blank=True, null=True)
+    incorporacion_resolucion = models.ForeignKey("InstrumentosLegalesResoluciones", verbose_name="Resolución Aprobada", help_text="Resolución que aprueba la incorporación de los agentes.", on_delete=models.CASCADE, blank=True, null=True)
 
     def __str__(self):
         return f"{self.incorporacion_actuacion}"
