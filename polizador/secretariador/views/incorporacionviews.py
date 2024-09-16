@@ -57,7 +57,7 @@ def incorporacion_docx(request, pk):
 				text = "la"
 				
 			if agente.comisionadosolicitud_colaborador:
-				colaborador = ", en carácter de colaborador"
+				colaborador = " en carácter de colaborador"
 			else:
 				colaborador = ""
 		
