@@ -51,6 +51,7 @@ class InstrumentosLegalesResolucionesForm(forms.ModelForm):
             "instrumentolegalresoluciones_fecha_aprobacion",
             "instrumentolegalresoluciones_descripcion",
             "instrumentolegalresoluciones",
+            "instrumentolegalresoluciones_document"
         )
         widgets = {
             "instrumentolegalresoluciones_tipo":forms.Select(attrs={
@@ -71,6 +72,12 @@ class InstrumentosLegalesResolucionesForm(forms.ModelForm):
             }),
             "instrumentolegalresoluciones":forms.ClearableFileInput(attrs={
                 "class":"form-control"
+            }),
+            "instrumentolegalresoluciones_document":forms.Textarea(attrs={
+                "class":"form-control",
+                "rows":10,
+                "cols":50,
+                "readonly":"readonly"
             }),
         }
 

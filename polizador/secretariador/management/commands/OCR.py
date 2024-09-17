@@ -29,8 +29,8 @@ processor_display_name = 'test_processor_ocr_processor' # Must be unique per pro
 processor_type = 'OCR_PROCESSOR' # Use fetch_processor_types to get available processor types
 processor_id_summary = 'd7c3475c0c92e6e3'
 processor_id = 'bc2556a92e4b120a'
-file_path = "/home/willy/dev/Euler/resoluciones/RESOLUCION 0001.pdf"
-dir_path = "/home/willy/dev/Euler/resoluciones/"
+file_path = ""
+dir_path = "/home/willy/resoluciones2023/"
 mime_type = "application/pdf" # Refer to https://cloud.google.com/document-ai/docs/file-types for supported file types
 # processor_version_id = "YOUR_PROCESSOR_VERSION_ID" # Optional. Processor version to use
 test_file_uri = "gs://polizador-production-pdf/instrumentoslegales/resoluciones/"
@@ -199,7 +199,7 @@ class Command(BaseCommand):
         pdf_files = [os.path.join(dir_path, f) for f in os.listdir(dir_path) if f.endswith('.pdf')]
 
         pdf_files.sort()
-        for file in pdf_files[:1]:
+        for file in pdf_files:
             start_time = time.perf_counter()
             filename = os.path.basename(file)
             filename = filename.replace(".pdf", "")
@@ -207,7 +207,7 @@ class Command(BaseCommand):
             res_year = "2023"
 
             file_object = File(open(file, "rb"))
-            self.stdout.write(f"{self.style.MIGRATE_LABEL('Procesando el archivo:')} {self.style.SQL_KEYWORD(filename)}")
+            self.stdout.write(f"{self.style.MIGRATE_LABEL('Procesando el archivo:')} {self.style.SQL_KEYWORD(file)}")
             
 
             p, created = InstrumentosLegalesResoluciones.objects.get_or_create(
@@ -223,12 +223,12 @@ class Command(BaseCommand):
             if created:
                 try:
                     self.stdout.write(f"{self.style.MIGRATE_LABEL('Procesando OCR:')}")
-                    document = process_document_sample(project_id, location, processor_id, file_path, mime_type)
+                    document = process_document_sample(project_id, location, processor_id, file, mime_type)
                     p.instrumentolegalresoluciones_document = document.text
                     p.save()
                     # json_document = documentai.Document.to_json(document)
                 except Exception as e:
-                    self.stdout.write(f"Error al procesar el archivo {self.style.ERROR(filename)}: {self.style.ERROR(e)}")
+                    self.stdout.write(f"Error al procesar el archivo {self.style.ERROR(file)}: {self.style.ERROR(e)}")
                     continue
                 self.stdout.write(f"{self.style.SUCCESS('Archivo procesado con éxito.')}")
 
@@ -237,7 +237,7 @@ class Command(BaseCommand):
                 self.stdout.write(f"    Resolucion de Presidencia Nº:{p.instrumentolegalresoluciones_numero}/{p.instrumentolegalresoluciones_ano}")
                 self.stdout.write(f"    Fecha de Aprobación: {p.instrumentolegalresoluciones_fecha_aprobacion}")
                 self.stdout.write(f"    Descripción: {p.instrumentolegalresoluciones_descripcion}")
-                self.stdout.write(f"    Texto Extraído: {self.style.HTTP_SUCCESS(p.instrumentolegalresoluciones_document[:100])}")
+                self.stdout.write(f"    Texto Extraído: {self.style.HTTP_SUCCESS(p.instrumentolegalresoluciones_document[:100])}...(truncado)")
                 self.stdout.write(f"...")
                 self.stdout.write(f"    Archivo subido: {self.style.SUCCESS(p.instrumentolegalresoluciones)}")
 
