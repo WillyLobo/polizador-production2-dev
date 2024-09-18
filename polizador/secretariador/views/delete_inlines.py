@@ -27,3 +27,20 @@ def delete_comisionadosolicitud(request, pk):
             request, 'Comisionado deleted successfully'
             )
     return redirect('secretariador:update-solicitud', pk=comisionado.comisionadosolicitud_foreign.id)
+
+@login_required
+@permission_required('secretariador.delete_comisionadosolicitud')
+def delete_incorporacion_comisionadosolicitud(request, pk):
+    try:
+        comisionado = ComisionadoSolicitud.objects.get(id=pk)
+    except ComisionadoSolicitud.DoesNotExist:
+        messages.success(
+            request, 'Object Does not exit'
+            )
+        return redirect('secretariador:update-incorporacion', pk=comisionado.comisionadosolicitud_incorporacion_foreign.id)
+
+    comisionado.delete()
+    messages.success(
+            request, 'Comisionado deleted successfully'
+            )
+    return redirect('secretariador:update-incorporacion', pk=comisionado.comisionadosolicitud_incorporacion_foreign.id)

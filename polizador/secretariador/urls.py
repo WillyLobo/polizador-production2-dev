@@ -66,6 +66,7 @@ incorporacion_patterns = [
     path("crearincorporacion/", CrearIncorporacion.as_view(), name="crear-incorporacion"),
     path("crearincorporacion/<pk>", UpdateIncorporacion.as_view(), name="update-incorporacion"),
     path("eliminar/incorporacion/<pk>", EliminarIncorporacion.as_view(), name="eliminar-incorporacion"),
+    path('delete-incorporacion-comisionadosolicitud/<int:pk>/', delete_incorporacion_comisionadosolicitud, name='delete-incorporacion-comisionado-solicitud'),
 ]
 reportes_patterns = [
     path("reportes/viaticos-agente/", CrearReporteViaticosPorAgente.as_view(), name="crear-reporte-viaticos-por-agente"),

@@ -108,6 +108,7 @@
 [ ] Add more advanced logging capability.
 
 # Experimental features to add/check:
+[+] OCR for InstrumentosLegalesResoluciones.
 [ ] Use IA to summarize executive orders.
 
 # Fix Bugs:
