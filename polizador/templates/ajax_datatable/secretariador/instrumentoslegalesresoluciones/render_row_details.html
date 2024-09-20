@@ -1,4 +1,14 @@
 <div class="container">
+    <div class="card">
+        <div class="card-body">
+          <h5 class="card-title"><u>{{object.get_instrumentolegalresoluciones_tipo_display}} Nº{{object.instrumentolegalresoluciones_numero}}/{{object.instrumentolegalresoluciones_ano}}</u></h5>
+          {%if object.instrumentolegalresoluciones_autocarga%}
+            <h6 class="card-subtitle mb-2 text-muted">El texto siguiente fué extraído de manera automática y puede contener errores:</h6>
+          {%endif%}
+          <p class="card-text">{{object.instrumentolegalresoluciones_document}}</p>
+        </div>
+    </div>
+
     <object class="pdf" 
     data=
 "{{ object.instrumentolegalresoluciones.url }}"

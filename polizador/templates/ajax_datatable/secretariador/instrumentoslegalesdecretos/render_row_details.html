@@ -1,4 +1,10 @@
 <div class="container">
+    <div class="card">
+        <div class="card-body">
+          <h5 class="card-title"><u>{{object.get_instrumentolegaldecretos_tipo_display}} Nº{{object.instrumentolegaldecretos_numero}}/{{object.instrumentolegaldecretos_ano}}</u></h5>
+        </div>
+    </div>
+
     <object class="pdf" 
     data=
 "{{ object.instrumentolegaldecretos.url }}"

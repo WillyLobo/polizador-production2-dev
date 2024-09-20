@@ -131,7 +131,6 @@ class ListaListaInstrumentosLegalesDecretosView(AjaxDatatableView):
 		{"name":"instrumentolegaldecretos_ano", "className": "align-left "},
 		{"name":"instrumentolegaldecretos_fecha_aprobacion", "className": "align-left "},
 		{"name":"instrumentolegaldecretos_descripcion", "className": "align-right"},
-		{"name":"PDF", "placeholder": True, "searchable": False, "orderable": False, "width":30},
 	]
 
 	def render_clip_value_as_html(self, long_text, short_text, is_clipped):
@@ -153,17 +152,13 @@ class ListaListaInstrumentosLegalesDecretosView(AjaxDatatableView):
 		editarlink = f'<a href="/viaticos/creardecreto/{id}">{editlinkimg}</a>'
 		detallelink = f'<a href="/viaticos/creardecreto/ver/{id}">{detallelinkimg}</a>'
 		eliminarlink = f'<a href="/viaticos/eliminar/decreto/{id}">{eliminarlinkimg}</a>'
-		pdfimg = f'<a href="{obj.instrumentolegaldecretos.url}">{pdflinkimg}</a>'
 
 		if self.request.user.has_perm("secretariador.delete_instrumentoslegalesdecretos"):
 			row["edit"] = f"{editarlink}{detallelink}{eliminarlink}"
-			row["PDF"] = f"{pdfimg}"
 		elif self.request.user.has_perm("secretariador.change_instrumentoslegalesdecretos"):
 			row["edit"] = f"{editarlink}{detallelink}"
-			row["PDF"] = f"{pdfimg}"
 		else:
 			row["edit"] = f"{detallelink}"
-			row["PDF"] = f"{pdfimg}"
 
 		# # Conversion de numeros con separador de miles "." y decimales ",2"
 		# locale.setlocale(locale.LC_ALL, "")
@@ -171,53 +166,6 @@ class ListaListaInstrumentosLegalesDecretosView(AjaxDatatableView):
 		# row['certificado_monto_cobrar_uvi'] = locale.format_string("%.2f", obj.certificado_monto_cobrar_uvi, True)
 
 		return
-	
-	def render_row_details(self, pk, request=None):
-
-        # we do some optimization on the request
-		relateds = []
-		if not self.disable_queryset_optimization_only and not self.disable_queryset_optimization_select_related:
-			relateds = [f.name for f in self.model._meta.get_fields() if f.many_to_one and f.concrete]
-
-		prefetchs = []
-		if not self.disable_queryset_optimization_only and not self.disable_queryset_optimization_prefetch_related:
-			prefetchs = [f.name for f in self.model._meta.get_fields() if f.many_to_many and f.concrete]
-
-		obj = self.model.objects.filter(pk=pk).select_related(*relateds).prefetch_related(*prefetchs).first()
-
-		# Extract "extra_data" from request
-		extra_data = {k: v for k, v in request.GET.items() if k not in ['action', 'pk', ]}
-
-		# Search a custom template for rendering, if available
-		try:
-			template = loader.get_template(
-                'ajax_datatable/%s/%s/%s' % (self.model._meta.app_label,
-                                             self.model._meta.model_name, self.render_row_details_template_name),
-            )
-
-			html = template.render({
-				'model': self.model,
-				'model_admin': self.get_model_admin(),
-				'object': obj,
-				'extra_data': extra_data,
-				}, request)
-
-		# Failing that, display a simple table with field values
-		except TemplateDoesNotExist:
-			fields = [f.name for f in self.model._meta.get_fields() if f.concrete]
-			html = '<table class="row-details">'
-			for field in fields:
-				
-				if field in prefetchs:
-					value = ', '.join([str(x) for x in eval(f'obj.{field}').all()])
-				else:
-					try:
-						value = getattr(obj, field)
-					except AttributeError:
-						continue
-				html += '<tr><td>%s</td><td>%s</td></tr>' % (field, value)
-			html += '</table>'
-		return html
 	
 @login_required
 def PaginaListaInstrumentosLegalesResoluciones(request):
@@ -241,8 +189,8 @@ class ListaListaInstrumentosLegalesResolucionesView(AjaxDatatableView):
 		{"name":"instrumentolegalresoluciones_numero", "className":"align-left"},
 		{"name":"instrumentolegalresoluciones_ano", "className":"align-left "},
 		{"name":"instrumentolegalresoluciones_fecha_aprobacion", "className":"align-left "},
-		{"name":"instrumentolegalresoluciones_descripcion", "className":"align-right"},
-		{"name":"PDF", "placeholder":True, "searchable": False, "orderable": False, "width":30},
+		{"name":"instrumentolegalresoluciones_descripcion", "className":"align-right", "max_length":200},
+		{"name":"instrumentolegalresoluciones_document", "className":"align-right", "max_length":200, "searchable": False, "orderable": False},
 	]
 
 	def render_clip_value_as_html(self, long_text, short_text, is_clipped):
@@ -264,17 +212,13 @@ class ListaListaInstrumentosLegalesResolucionesView(AjaxDatatableView):
 		editarlink = f'<a href="/viaticos/crearresolucion/{id}">{editlinkimg}</a>'
 		detallelink = f'<a href="/viaticos/crearresolucion/ver/{id}">{detallelinkimg}</a>'
 		eliminarlink = f'<a href="/viaticos/eliminar/resolucion/{id}">{eliminarlinkimg}</a>'
-		pdfimg = f"<a href={obj.instrumentolegalresoluciones.url}>{pdflinkimg}</a>"
 		
 		if self.request.user.has_perm("secretariador.delete_instrumentoslegalesresoluciones"):
 			row["edit"] = f"{editarlink}{detallelink}{eliminarlink}"
-			row["PDF"] = f"{pdfimg}"
 		elif self.request.user.has_perm("secretariador.change_instrumentoslegalesresoluciones"):
 			row["edit"] = f"{editarlink}{detallelink}"
-			row["PDF"] = f"{pdfimg}"
 		else:
 			row["edit"] = f"{detallelink}"
-			row["PDF"] = f"{pdfimg}"
 
 		# # Conversion de numeros con separador de miles "." y decimales ",2"
 		# locale.setlocale(locale.LC_ALL, "")
@@ -282,50 +226,3 @@ class ListaListaInstrumentosLegalesResolucionesView(AjaxDatatableView):
 		# row['certificado_monto_cobrar_uvi'] = locale.format_string("%.2f", obj.certificado_monto_cobrar_uvi, True)
 
 		return
-	
-	def render_row_details(self, pk, request=None):
-
-        # we do some optimization on the request
-		relateds = []
-		if not self.disable_queryset_optimization_only and not self.disable_queryset_optimization_select_related:
-			relateds = [f.name for f in self.model._meta.get_fields() if f.many_to_one and f.concrete]
-
-		prefetchs = []
-		if not self.disable_queryset_optimization_only and not self.disable_queryset_optimization_prefetch_related:
-			prefetchs = [f.name for f in self.model._meta.get_fields() if f.many_to_many and f.concrete]
-
-		obj = self.model.objects.filter(pk=pk).select_related(*relateds).prefetch_related(*prefetchs).first()
-
-		# Extract "extra_data" from request
-		extra_data = {k: v for k, v in request.GET.items() if k not in ['action', 'pk', ]}
-
-		# Search a custom template for rendering, if available
-		try:
-			template = loader.get_template(
-                'ajax_datatable/%s/%s/%s' % (self.model._meta.app_label,
-                                             self.model._meta.model_name, self.render_row_details_template_name),
-            )
-
-			html = template.render({
-				'model': self.model,
-				'model_admin': self.get_model_admin(),
-				'object': obj,
-				'extra_data': extra_data,
-				}, request)
-
-		# Failing that, display a simple table with field values
-		except TemplateDoesNotExist:
-			fields = [f.name for f in self.model._meta.get_fields() if f.concrete]
-			html = '<table class="row-details">'
-			for field in fields:
-				
-				if field in prefetchs:
-					value = ', '.join([str(x) for x in eval(f'obj.{field}').all()])
-				else:
-					try:
-						value = getattr(obj, field)
-					except AttributeError:
-						continue
-				html += '<tr><td>%s</td><td>%s</td></tr>' % (field, value)
-			html += '</table>'
-		return html
