@@ -12,7 +12,10 @@
     <form action="{% url "carga:update-poliza-movimiento" object.id %}" method="POST">
 
         {% include "partials/form-partial.html" %}
-        <input type='submit' value='Guardar' class="btn" />
+        <div class="container ml-2 pt-2">
+            <input type='submit' value='Guardar' class="btn btn-primary" />
+            <a href="{% url 'carga:lista-polizas' %}" type="button" class="btn btn-secondary">Volver</a>
+          </div>
     </form>
 </div>
 
