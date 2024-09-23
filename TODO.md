@@ -109,7 +109,7 @@
 
 # Experimental features to add/check:
 [+] OCR for InstrumentosLegalesResoluciones.
-[ ] Use IA to summarize executive orders.
+[+] Use IA to summarize executive orders.
 
 # Fix Bugs:
 [+] Fix wrong parameter in nginx.conf regarding client_max_body_size.
