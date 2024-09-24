@@ -141,7 +141,7 @@
 							<li class="list-group-item bg-light"><strong><u>Crear:</u></strong></li>
 							<small>
 							{% if perms.carga.add_solicitud %}<li class="dropdown-item list-group-item py-0 pr-0"><a href='{% url "secretariador:redirect-solicitud" %}' class="dropdown-item">Nueva Solicitud</a></li>{% endif %}
-							{% if perms.carga.add_incorporaciones %}<li class="dropdown-item list-group-item py-0 pr-0"><a href='{% url "secretariador:crear-incorporacion" %}' class="dropdown-item">Nueva Incorporación</a></li>{% endif %}
+							{% if perms.carga.add_incorporacion %}<li class="dropdown-item list-group-item py-0 pr-0"><a href='{% url "secretariador:crear-incorporacion" %}' class="dropdown-item">Nueva Incorporación</a></li>{% endif %}
 							{% if perms.carga.add_comisionado %}<li class="dropdown-item list-group-item py-0 pr-0"><a href='{% url "secretariador:crear-comisionado" %}' class="dropdown-item">Nuevo Agente</a></li>{% endif %}
 							{% if perms.carga.add_vehiculo %}<li class="dropdown-item list-group-item py-0 pr-0"><a href='{% url "secretariador:crear-vehiculo" %}' class="dropdown-item">Nuevo Vehículo</a></li>{% endif %}
 							{% if perms.carga.add_instrumentoslegalesdecretos %}<li class="dropdown-item list-group-item py-0 pr-0"><a href='{% url "secretariador:redirect-decreto" %}' class="dropdown-item">Nuevo Decreto</a></li>{% endif %}
