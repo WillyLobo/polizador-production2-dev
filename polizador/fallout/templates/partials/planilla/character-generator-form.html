@@ -1,0 +1,27 @@
+<!-- Character Generator Button -->
+<div class="fallout-font col p-2">
+    <div class="fallout-font col-4 input-group">
+        <div class="fallout-font input-group-prepend">
+            <div class="fallout-font input-group-text">Raza</div>
+        </div>
+        <select class="fallout-font form-select" name="razaPNJ" required id="id_razaPNJ">
+            <option value="">---------</option>
+            <option value="H">Humano</option>
+            <option value="G">Ghoul</option>
+            <option value="S">Super-Mutante</option>
+            <option value="D">Garra Mortal</option>
+            <option value="P">Perro</option>
+            <option value="R">Robot</option>
+        </select>
+    </div>
+    <div class="fallout-font col-4 input-group">
+        <div class="fallout-font input-group-prepend">
+            <div class="fallout-font input-group-text">Nivel</div>
+        </div>
+        <input type="number" name="nivelPNJ" class="fallout-font form-control" id="id_nivelPNJ" placeholder="Nivel">
+    </div>
+    <div class="fallout-font col-4 input-group">
+        <input type="button" name="genPNJ" class="fallout-font form-control" id="id_genPNJ" value='Generar PNJ' onclick='console.log(document.getElementById("id_razaPNJ").value, document.getElementById("id_nivelPNJ").value)'>
+    </div>
+</div>
+<!-- onclick="generar('human', 6) -->

@@ -1,0 +1,151 @@
+{% load list_operators %}
+{% csrf_token %}
+<span class="fallout-font-md fs-3 border border-dark rounded">Atributos Secundarios</span>
+<div class="fallout-font row">
+        <div class="fallout-font col-4 ms-3 p-0 border-top"></div>
+        <div class="fallout-font col-1 p-0 border-top">
+                Base
+        </div>
+        <div class="fallout-font col-1 p-0 border-top"></div>
+        <div class="fallout-font col-2 p-0 border-top">
+                Mod
+        </div>
+        <div class="fallout-font col-1 p-0 border-top"></div>
+        <div class="fallout-font col-2 p-0 border-top">
+                Total
+        </div>
+</div>
+
+
+<div class="fallout-font row">
+        <div class="fallout-font col-4 ms-3 p-0 border-top">PUNTOS DE ACCION » (5+AG/2)</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.apBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">+/-</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.apMod}}
+        </div>
+        <div class="fallout-font col-1 p-0 border-top">=</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.instance.apTotal}}
+        </div>
+</div>
+<div class="fallout-font row">
+        <div class="fallout-font col-4 ms-3 p-0 border-top">SECUENCIA » (2xPE)</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.secBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">+/-</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.secMod}}
+        </div>
+        <div class="fallout-font col-1 p-0 border-top">=</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.instance.secTotal}}
+        </div>
+</div>
+<div class="fallout-font row">
+        <div class="fallout-font col-4 ms-3 p-0 border-top">DAÑO MELEE » (FU - 5) Minimo 1</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.danoMeleeBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">+/-</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.danoMeleeMod}}
+        </div>
+        <div class="fallout-font col-1 p-0 border-top">=</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.instance.danoMeleeTotal}}
+        </div>
+</div>
+<div class="fallout-font row">
+        <div class="fallout-font col-4 ms-3 p-0 border-top">POSIBILIDAD DE CRITICO » (SU)</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.probCriticoBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">+/-</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.probCriticoMod}}
+        </div>
+        <div class="fallout-font col-1 p-0 border-top">=</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.instance.probCriticoTotal}}
+        </div>
+</div>
+<div class="fallout-font row">
+        <div class="fallout-font col-4 ms-3 p-0 border-top">RATIO CURACION » (RE / 3)</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.ratioCuracionBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">+/-</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.ratioCuracionMod}}
+        </div>
+        <div class="fallout-font col-1 p-0 border-top">=</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.instance.ratioCuracionTotal}}
+        </div>
+</div>
+<div class="fallout-font row">
+        <div class="fallout-font col-4 ms-3 p-0 border-top">CAPACIDAD DE CARGA » (11.35 + 11.35xFU) Kg</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.capCargaBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">+/-</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.capCargaMod}}
+        </div>
+        <div class="fallout-font col-1 p-0 border-top">=</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.instance.capCargaTotal}}
+        </div>
+</div>
+<div class="fallout-font row">
+        <div class="fallout-font col-4 ms-3 p-0 border-top">RESISTENCIA VENENO » (5 x RE)</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.resVenenoBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">+/-</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.resVenenoMod}}
+        </div>
+        <div class="fallout-font col-1 p-0 border-top">=</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.instance.resVenenoTotal}}
+        </div>
+</div>
+<div class="fallout-font row">
+        <div class="fallout-font col-4 ms-3 p-0 border-top">RESISTENCIA RADIACION » (2 x RE)</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.resRadiacionBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">+/-</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.resRadiacionMod}}
+        </div>
+        <div class="fallout-font col-1 p-0 border-top">=</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.instance.resRadiacionTotal}}
+        </div>
+</div>
+<div class="fallout-font row">
+        <div class="fallout-font col-4 ms-3 p-0 border-top">RESISTENCIA ELECTRICIDAD »</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.resElectricidadBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">+/-</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.resElectricidadMod}}
+        </div>
+        <div class="fallout-font col-1 p-0 border-top">=</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.instance.resElectricidadTotal}}
+        </div>
+</div>
+<div class="fallout-font row">
+        <div class="fallout-font col-4 ms-3 p-0 border-top">RESISTENCIA GAS »</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.resGasBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">+/-</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.resGasMod}}
+        </div>
+        <div class="fallout-font col-1 p-0 border-top">=</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.instance.resGasTotal}}
+        </div>
+</div>
+<div class="fallout-font row">
+        <div class="fallout-font col-4 ms-3 p-0 border-top">IMPLANTE » (10 x (IN + RE))</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.implanteBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">+/-</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.implanteMod}}
+        </div>
+        <div class="fallout-font col-1 p-0 border-top">=</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.instance.implanteTotal}}
+        </div>
+</div>

@@ -38,11 +38,10 @@ DBSECRET=env("DBPASSWORD")
 
 ALLOWED_HOSTS = [
 	"www.willylobo.net.ar",
-	"127.0.0.1"
 	]
+INTERNAL_IPS = ["localhost", "127.0.0.1"]
 
 # Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -52,7 +51,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
 
-    "debug_toolbar",
     "django_select2",
     "ajax_datatable",
 	"import_export",
@@ -80,7 +78,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'polizador.urls'
@@ -201,3 +198,14 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
 MEDIA_URL  = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+if DEBUG == True:
+    ALLOWED_HOSTS = INTERNAL_IPS
+    DEBUG_TOOLBAR_ENABLE = True
+    if DEBUG_TOOLBAR_ENABLE:
+        INSTALLED_APPS = INSTALLED_APPS + ["debug_toolbar"]
+        MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
+        DEBUG_TOOLBAR_PATCH_SETTINGS = False
+        DEBUG_TOOLBAR_CONFIG = {
+            "JQUERY_URL": "",
+        }

@@ -1,0 +1,25 @@
+@font-face {
+    font-family: Swiss;
+    src: url('/static/Swiss 911 Compressed Regular.otf');
+}
+.fallout-font {
+    font-family: Swiss !important;
+    font-size: 1rem !important;
+}
+.fallout-font-md {
+    font-family: Swiss !important;
+    font-size: 1.5rem !important;
+}
+.fallout-font-lg {
+    font-family: Swiss !important;
+    font-size: 2.5rem !important;
+}
+.no-border {
+    border: 0;
+}
+.tagged {
+    background-color: rgba(240,240,240,1) !important;
+}
+*:disabled {
+    background-color: rgb(238, 243, 97) !important;
+}

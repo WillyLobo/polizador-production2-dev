@@ -1,0 +1,444 @@
+{% load static %}
+<span class="fallout-font-md fs-3 border border-dark rounded">HABILIDADES</span>
+<small>((0-100 1p=1p) (101-125 2p=1p) (126-150 3p=1p) (151-175 4p=1p) (176-... 5p=1p)</small>
+<table class="fallout-font table table-sm">
+    <thead class="fallout-font border-bottom border-dark">
+        <tr>
+            <td class="fallout-font align-left col-6"></td>
+            <td class="fallout-font align-left col-1">Base</td>
+            <td class="fallout-font align-left col-1">Mod</td>
+            <td class="fallout-font align-left col-1">Puntos</td>
+            <td class="fallout-font align-left col-1">Total</td>
+            <td class="fallout-font align-left col-1"></td>
+        </tr>
+        </thdead>
+    <tbody>
+        <!--
+        armasPequenasBaseSkill
+        armasPequenasPointsSkill
+        armasPequenasTotalSkill
+        armasPequenasMod
+        armasPequenasTag
+        -->
+        <tr class="fallout-font border-bottom border-dark" id="armasPequenasNode">
+                <td class="fallout-font col-6" id="armasPequenasTagTD">
+                        <input class="fallout-font form-check-input" type="checkbox" name="armasPequenasTag" id="id_armasPequenasTag"
+                                {%if object.armasPequenasTag%}Checked{%endif%}>
+                        ARMAS PEQUEÑAS » (5%+4xAG))
+                </td>
+                <td class="fallout-font col-1" id="armasPequenasBaseTD">
+                        <input type="text" name="armasPequenasMod" class="fallout-font form-control p-0 m-0 shadow-none no-border"
+                                value="{{object.armasPequenasBaseSkill}}" readonly="readonly" min="0" id="id_armasPequenasBaseSkill">
+                </td>
+                <td class="fallout-font col-1" id="armasPequenasModTD">
+                        <input type="text" name="armasPequenasMod" class="fallout-font form-control p-0 m-0 shadow-none no-border"
+                                value="{{object.armasPequenasMod}}" min="0" id="id_armasPequenasMod">
+                </td>
+                <td class="fallout-font col-1" id="armasPequenasPointsSkillTD">
+                        <input type="text" name="armasPequenasPointsSkill"
+                                class="fallout-font form-control p-0 m-0 shadow-none no-border"
+                                value="{{object.armasPequenasPointsSkill}}" min="0" id="id_armasPequenasPointsSkill">
+                </td>
+                <td class="fallout-font col-1" id="armasPequenasTotalSkillTD">
+                        <input type="text" name="armasPequenasTotalSkill"
+                                class="fallout-font form-control p-0 m-0 shadow-none no-border"
+                                value="{{object.armasPequenasTotalSkill}}" readonly="readonly" min="0" id="id_armasPequenasTotalSkill">
+                </td>
+                <td class="fallout-font col-1" id="armasPequenasButtonsTD">
+                        <nobr><img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"
+                                onclick="habilidadMinus('armasPequenasBase','id_armasPequenasMod','id_armasPequenasSkill','id_armasPequenasTag','armasPequenasTotal')" />
+                                <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"
+                                onclick="habilidadPlus('armasPequenasBase','id_armasPequenasMod','id_armasPequenasSkill','id_armasPequenasTag','armasPequenasTotal')" />
+                        </nobr>
+                </td>
+        </tr>
+        {%comment%}
+        <tr class="fallout-font border-bottom border-dark" id="armasGrandesNode">
+            <td class="fallout-font col-6"><input class="fallout-font form-check-input" type="checkbox"
+                    name="armasGrandesTag" id="id_armasGrandesTag" onchange="actualizarHabilidades()" {%if object.armasGrandesTag%}Checked{%endif%}> ARMAS GRANDES » (0%+2xAG))</td>
+            <td class="fallout-font col-1" id="armasGrandesBase"> *** </td>
+            <td class="fallout-font col-1"><input class="fallout-font d-none" name="armasGrandesSkill"
+                    type="text" id="id_armasGrandesSkill" value="{{object.armasGrandesSkill}}"> % </td>
+            <td class="fallout-font col-1"><input type="text" name="armasGrandesMod"
+                    class="fallout-font form-control p-0 m-0 shadow-none no-border"
+                    value="{{object.armasGrandesMod}}" min="0" id="id_armasGrandesMod" onchange="actualizar()">
+            </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1" id="armasGrandesTotal"> *** </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1">
+                <nobr><img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"
+                        onclick="habilidadMinus('armasGrandesBase','id_armasGrandesMod','id_armasGrandesSkill','id_armasGrandesTag','armasGrandesTotal')" />
+                    <img src="{% static 'plus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadPlus('armasGrandesBase','id_armasGrandesMod','id_armasGrandesSkill','id_armasGrandesTag','armasGrandesTotal')" />
+                </nobr>
+            </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark" id="armasEnergiaNode">
+            <td class="fallout-font col-6"><input class="fallout-font form-check-input" type="checkbox"
+                    name="armasEnergiaTag" id="id_armasEnergiaTag" onchange="actualizarHabilidades()" {%if object.armasEnergiaTag%}Checked{%endif%}> ARMAS ENERGIA » (0%+2xAG)</td>
+            <td class="fallout-font col-1" id="armasEnergiaBase"> *** </td>
+            <td class="fallout-font col-1"><input class="fallout-font d-none" name="armasEnergiaSkill"
+                    type="text" id="id_armasEnergiaSkill" value="{{object.armasEnergiaSkill}}"> % </td>
+            <td class="fallout-font col-1"><input type="text" name="armasEnergiaMod"
+                    class="fallout-font form-control p-0 m-0 shadow-none no-border"
+                    value="{{object.armasEnergiaMod}}" min="0" id="id_armasEnergiaMod" onchange="actualizar()">
+            </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1" id="armasEnergiaTotal"> *** </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1">
+                <nobr><img src="{% static 'minus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadMinus('armasEnergiaBase','id_armasEnergiaMod','id_armasEnergiaSkill','id_armasEnergiaTag','armasEnergiaTotal')" />
+                    <img src="{% static 'plus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadPlus('armasEnergiaBase','id_armasEnergiaMod','id_armasEnergiaSkill','id_armasEnergiaTag','armasEnergiaTotal')" />
+                </nobr>
+            </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark" id="armasMeleeNode">
+            <td class="fallout-font col-6"><input class="fallout-font form-check-input" type="checkbox"
+                    name="armasMeleeTag" id="id_armasMeleeTag" onchange="actualizarHabilidades()" {%if object.armasMeleeTag%}Checked{%endif%}> ARMAS MELEE » (20%+2x(AG+FU))</td>
+            <td class="fallout-font col-1" id="armasMeleeBase"> *** </td>
+            <td class="fallout-font col-1"><input class="fallout-font d-none" name="armasMeleeSkill" type="text"
+                    id="id_armasMeleeSkill" value="{{object.armasMeleeSkill}}"> % </td>
+            <td class="fallout-font col-1"><input type="text" name="armasMeleeMod"
+                    class="fallout-font form-control p-0 m-0 shadow-none no-border"
+                    value="{{object.armasMeleeMod}}" min="0" id="id_armasMeleeMod" onchange="actualizar()"></td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1" id="armasMeleeTotal"> *** </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1">
+                <nobr><img src="{% static 'minus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadMinus('armasMeleeBase','id_armasMeleeMod','id_armasMeleeSkill','id_armasMeleeTag','armasMeleeTotal')" />
+                    <img src="{% static 'plus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadPlus('armasMeleeBase','id_armasMeleeMod','id_armasMeleeSkill','id_armasMeleeTag','armasMeleeTotal')" />
+                </nobr>
+            </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark" id="desarmadoNode">
+            <td class="fallout-font col-6"><input class="fallout-font form-check-input" type="checkbox"
+                    name="desarmadoTag" id="id_desarmadoTag" onchange="actualizarHabilidades()" {%if object.desarmadoTag%}Checked{%endif%}> ARMAS MELEE » (30%+2x(AG+FU))</td>
+            <td class="fallout-font col-1" id="desarmadoBase"> *** </td>
+            <td class="fallout-font col-1"><input class="fallout-font d-none" name="desarmadoSkill" type="text"
+                    id="id_desarmadoSkill" value="{{object.desarmadoSkill}}"> % </td>
+            <td class="fallout-font col-1"><input type="text" name="desarmadoMod"
+                    class="fallout-font form-control p-0 m-0 shadow-none no-border"
+                    value="{{object.desarmadoMod}}" min="0" id="id_desarmadoMod" onchange="actualizar()"></td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1" id="desarmadoTotal"> *** </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1">
+                <nobr><img src="{% static 'minus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadMinus('desarmadoBase','id_desarmadoMod','id_desarmadoSkill','id_desarmadoTag','desarmadoTotal')" />
+                    <img src="{% static 'plus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadPlus('desarmadoBase','id_desarmadoMod','id_desarmadoSkill','id_desarmadoTag','desarmadoTotal')" />
+                </nobr>
+            </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark" id="lanzarNode">
+            <td class="fallout-font col-6"><input class="fallout-font form-check-input" type="checkbox"
+                    name="lanzarTag" id="id_lanzarTag" onchange="actualizarHabilidades()" {%if object.lanzarTag%}Checked{%endif%}> LANZAR » (0%+4x(AG))</td>
+            <td class="fallout-font col-1" id="lanzarBase"> *** </td>
+            <td class="fallout-font col-1"><input class="fallout-font d-none" name="lanzarSkill" type="text"
+                    id="id_lanzarSkill" value="{{object.lanzarSkill}}"> % </td>
+            <td class="fallout-font col-1"><input type="text" name="lanzarMod"
+                    class="fallout-font form-control p-0 m-0 shadow-none no-border" value="{{object.lanzarMod}}"
+                    min="0" id="id_lanzarMod" onchange="actualizar()"></td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1" id="lanzarTotal"> *** </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1">
+                <nobr><img src="{% static 'minus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadMinus('lanzarBase','id_lanzarMod','id_lanzarSkill','id_lanzarTag','lanzarTotal')" />
+                    <img src="{% static 'plus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadPlus('lanzarBase','id_lanzarMod','id_lanzarSkill','id_lanzarTag','lanzarTotal')" />
+                </nobr>
+            </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark" id="primerosAuxiliosNode">
+            <td class="fallout-font col-6"><input class="fallout-font form-check-input" type="checkbox"
+                    name="primerosAuxiliosTag" id="id_primerosAuxiliosTag" onchange="actualizarHabilidades()"
+                    {%if object.primerosAuxiliosTag%}Checked{%endif%}> PRIMEROS AUXILIOS » (0%+2x(PE+IN))</td>
+            <td class="fallout-font col-1" id="primerosAuxiliosBase"> *** </td>
+            <td class="fallout-font col-1"><input class="fallout-font d-none" name="primerosAuxiliosSkill"
+                    type="text" id="id_primerosAuxiliosSkill" value="{{object.primerosAuxiliosSkill}}"> % </td>
+            <td class="fallout-font col-1"><input type="text" name="primerosAuxiliosMod"
+                    class="fallout-font form-control p-0 m-0 shadow-none no-border"
+                    value="{{object.primerosAuxiliosMod}}" min="0" id="id_primerosAuxiliosMod"
+                    onchange="actualizar()"></td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1" id="primerosAuxiliosTotal"> *** </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1">
+                <nobr><img src="{% static 'minus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadMinus('primerosAuxiliosBase','id_primerosAuxiliosMod','id_primerosAuxiliosSkill','id_primerosAuxiliosTag','primerosAuxiliosTotal')" />
+                    <img src="{% static 'plus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadPlus('primerosAuxiliosBase','id_primerosAuxiliosMod','id_primerosAuxiliosSkill','id_primerosAuxiliosTag','primerosAuxiliosTotal')" />
+                </nobr>
+            </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark" id="medicinaNode">
+            <td class="fallout-font col-6"><input class="fallout-font form-check-input" type="checkbox"
+                    name="medicinaTag" id="id_medicinaTag" onchange="actualizarHabilidades()" {%if object.medicinaTag%}Checked{%endif%}> MEDICINA » (0%+5+(PE+IN))</td>
+            <td class="fallout-font col-1" id="medicinaBase"> *** </td>
+            <td class="fallout-font col-1"><input class="fallout-font d-none" name="medicinaSkill" type="text"
+                    id="id_medicinaSkill" value="{{object.medicinaSkill}}"> % </td>
+            <td class="fallout-font col-1"><input type="text" name="medicinaMod"
+                    class="fallout-font form-control p-0 m-0 shadow-none no-border"
+                    value="{{object.medicinaMod}}" min="0" id="id_medicinaMod" onchange="actualizar()"></td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1" id="medicinaTotal"> *** </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1">
+                <nobr><img src="{% static 'minus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadMinus('medicinaBase','id_medicinaMod','id_medicinaSkill','id_medicinaTag','medicinaTotal')" />
+                    <img src="{% static 'plus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadPlus('medicinaBase','id_medicinaMod','id_medicinaSkill','id_medicinaTag','medicinaTotal')" />
+                </nobr>
+            </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark" id="sigiloNode">
+            <td class="fallout-font col-6"><input class="fallout-font form-check-input" type="checkbox"
+                    name="sigiloTag" id="id_sigiloTag" onchange="actualizarHabilidades()" {%if object.sigiloTag%}Checked{%endif%}> SIGILO » (0%+5x(3xAG))</td>
+            <td class="fallout-font col-1" id="sigiloBase"> *** </td>
+            <td class="fallout-font col-1"><input class="fallout-font d-none" name="sigiloSkill" type="text"
+                    id="id_sigiloSkill" value="{{object.sigiloSkill}}"> % </td>
+            <td class="fallout-font col-1"><input type="text" name="sigiloMod"
+                    class="fallout-font form-control p-0 m-0 shadow-none no-border" value="{{object.sigiloMod}}"
+                    min="0" id="id_sigiloMod" onchange="actualizar()"></td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1" id="sigiloTotal"> *** </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1">
+                <nobr><img src="{% static 'minus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadMinus('sigiloBase','id_sigiloMod','id_sigiloSkill','id_sigiloTag','sigiloTotal')" />
+                    <img src="{% static 'plus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadPlus('sigiloBase','id_sigiloMod','id_sigiloSkill','id_sigiloTag','sigiloTotal')" />
+                </nobr>
+            </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark" id="ganzuasNode">
+            <td class="fallout-font col-6"><input class="fallout-font form-check-input" type="checkbox"
+                    name="ganzuasTag" id="id_ganzuasTag" onchange="actualizarHabilidades()" {%if object.ganzuasTag%}Checked{%endif%}> GANZUAS » (0%+(10%+PE+AG))</td>
+            <td class="fallout-font col-1" id="ganzuasBase"> *** </td>
+            <td class="fallout-font col-1"><input class="fallout-font d-none" name="ganzuasSkill" type="text"
+                    id="id_ganzuasSkill" value="{{object.ganzuasSkill}}"> % </td>
+            <td class="fallout-font col-1"><input type="text" name="ganzuasMod"
+                    class="fallout-font form-control p-0 m-0 shadow-none no-border"
+                    value="{{object.ganzuasMod}}" min="0" id="id_ganzuasMod" onchange="actualizar()"></td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1" id="ganzuasTotal"> *** </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1">
+                <nobr><img src="{% static 'minus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadMinus('ganzuasBase','id_ganzuasMod','id_ganzuasSkill','id_ganzuasTag','ganzuasTotal')" />
+                    <img src="{% static 'plus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadPlus('ganzuasBase','id_ganzuasMod','id_ganzuasSkill','id_ganzuasTag','ganzuasTotal')" />
+                </nobr>
+            </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark" id="robarNode">
+            <td class="fallout-font col-6"><input class="fallout-font form-check-input" type="checkbox"
+                    name="robarTag" id="id_robarTag" onchange="actualizarHabilidades()" {%if object.robarTag%}Checked{%endif%}> ROBAR » (0%+(3xAG))</td>
+            <td class="fallout-font col-1" id="robarBase"> *** </td>
+            <td class="fallout-font col-1"><input class="fallout-font d-none" name="robarSkill" type="text"
+                    id="id_robarSkill" value="{{object.robarSkill}}"> % </td>
+            <td class="fallout-font col-1"><input type="text" name="robarMod"
+                    class="fallout-font form-control p-0 m-0 shadow-none no-border" value="{{object.robarMod}}"
+                    min="0" id="id_robarMod" onchange="actualizar()"></td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1" id="robarTotal"> *** </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1">
+                <nobr><img src="{% static 'minus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadMinus('robarBase','id_robarMod','id_robarSkill','id_robarTag','robarTotal')" />
+                    <img src="{% static 'plus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadPlus('robarBase','id_robarMod','id_robarSkill','id_robarTag','robarTotal')" />
+                </nobr>
+            </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark" id="trampasNode">
+            <td class="fallout-font col-6"><input class="fallout-font form-check-input" type="checkbox"
+                    name="trampasTag" id="id_trampasTag" onchange="actualizarHabilidades()" {%if object.trampasTag%}Checked{%endif%}> TRAMPAS/EXPLOSIVOS » (0%+PE+AG)</td>
+            <td class="fallout-font col-1" id="trampasBase"> *** </td>
+            <td class="fallout-font col-1"><input class="fallout-font d-none" name="trampasSkill" type="text"
+                    id="id_trampasSkill" value="{{object.trampasSkill}}"> % </td>
+            <td class="fallout-font col-1"><input type="text" name="trampasMod"
+                    class="fallout-font form-control p-0 m-0 shadow-none no-border"
+                    value="{{object.trampasMod}}" min="0" id="id_trampasMod" onchange="actualizar()"></td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1" id="trampasTotal"> *** </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1">
+                <nobr><img src="{% static 'minus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadMinus('trampasBase','id_trampasMod','id_trampasSkill','id_trampasTag','trampasTotal')" />
+                    <img src="{% static 'plus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadPlus('trampasBase','id_trampasMod','id_trampasSkill','id_trampasTag','trampasTotal')" />
+                </nobr>
+            </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark" id="cienciaNode">
+            <td class="fallout-font col-6"><input class="fallout-font form-check-input" type="checkbox"
+                    name="cienciaTag" id="id_cienciaTag" onchange="actualizarHabilidades()" {%if object.cienciaTag%}Checked{%endif%}> CIENCIA » (0%+4xIN)</td>
+            <td class="fallout-font col-1" id="cienciaBase"> *** </td>
+            <td class="fallout-font col-1"><input class="fallout-font d-none" name="cienciaSkill" type="text"
+                    id="id_cienciaSkill" value="{{object.cienciaSkill}}"> % </td>
+            <td class="fallout-font col-1"><input type="text" name="cienciaMod"
+                    class="fallout-font form-control p-0 m-0 shadow-none no-border"
+                    value="{{object.cienciaMod}}" min="0" id="id_cienciaMod" onchange="actualizar()"></td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1" id="cienciaTotal"> *** </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1">
+                <nobr><img src="{% static 'minus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadMinus('cienciaBase','id_cienciaMod','id_cienciaSkill','id_cienciaTag','cienciaTotal')" />
+                    <img src="{% static 'plus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadPlus('cienciaBase','id_cienciaMod','id_cienciaSkill','id_cienciaTag','cienciaTotal')" />
+                </nobr>
+            </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark" id="repararNode">
+            <td class="fallout-font col-6"><input class="fallout-font form-check-input" type="checkbox"
+                    name="repararTag" id="id_repararTag" onchange="actualizarHabilidades()" {%if object.repararTag%}Checked{%endif%}> REPARAR » (0%+3xIN)</td>
+            <td class="fallout-font col-1" id="repararBase"> *** </td>
+            <td class="fallout-font col-1"><input class="fallout-font d-none" name="repararSkill" type="text"
+                    id="id_repararSkill" value="{{object.repararSkill}}"> % </td>
+            <td class="fallout-font col-1"><input type="text" name="repararMod"
+                    class="fallout-font form-control p-0 m-0 shadow-none no-border"
+                    value="{{object.repararMod}}" min="0" id="id_repararMod" onchange="actualizar()"></td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1" id="repararTotal"> *** </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1">
+                <nobr><img src="{% static 'minus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadMinus('repararBase','id_repararMod','id_repararSkill','id_repararTag','repararTotal')" />
+                    <img src="{% static 'plus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadPlus('repararBase','id_repararMod','id_repararSkill','id_repararTag','repararTotal')" />
+                </nobr>
+            </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark" id="pilotarNode">
+            <td class="fallout-font col-6"><input class="fallout-font form-check-input" type="checkbox"
+                    name="pilotarTag" id="id_pilotarTag" onchange="actualizarHabilidades()" {%if object.pilotarTag%}Checked{%endif%}> PILOTAR » (0%+2x(AG+PE))</td>
+            <td class="fallout-font col-1" id="pilotarBase"> *** </td>
+            <td class="fallout-font col-1"><input class="fallout-font d-none" name="pilotarSkill" type="text"
+                    id="id_pilotarSkill" value="{{object.pilotarSkill}}"> % </td>
+            <td class="fallout-font col-1"><input type="text" name="pilotarMod"
+                    class="fallout-font form-control p-0 m-0 shadow-none no-border"
+                    value="{{object.pilotarMod}}" min="0" id="id_pilotarMod" onchange="actualizar()"></td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1" id="pilotarTotal"> *** </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1">
+                <nobr><img src="{% static 'minus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadMinus('pilotarBase','id_pilotarMod','id_pilotarSkill','id_pilotarTag','pilotarTotal')" />
+                    <img src="{% static 'plus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadPlus('pilotarBase','id_pilotarMod','id_pilotarSkill','id_pilotarTag','pilotarTotal')" />
+                </nobr>
+            </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark" id="conversacionNode">
+            <td class="fallout-font col-6"><input class="fallout-font form-check-input" type="checkbox"
+                    name="conversacionTag" id="id_conversacionTag" onchange="actualizarHabilidades()" {%if object.conversacionTag%}Checked{%endif%}> CONVERSACION » (0%+(5xCA))</td>
+            <td class="fallout-font col-1" id="conversacionBase"> *** </td>
+            <td class="fallout-font col-1"><input class="fallout-font d-none" name="conversacionSkill"
+                    type="text" id="id_conversacionSkill" value="{{object.conversacionSkill}}"> % </td>
+            <td class="fallout-font col-1"><input type="text" name="conversacionMod"
+                    class="fallout-font form-control p-0 m-0 shadow-none no-border"
+                    value="{{object.conversacionMod}}" min="0" id="id_conversacionMod" onchange="actualizar()">
+            </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1" id="conversacionTotal"> *** </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1">
+                <nobr><img src="{% static 'minus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadMinus('conversacionBase','id_conversacionMod','id_conversacionSkill','id_conversacionTag','conversacionTotal')" />
+                    <img src="{% static 'plus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadPlus('conversacionBase','id_conversacionMod','id_conversacionSkill','id_conversacionTag','conversacionTotal')" />
+                </nobr>
+            </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark" id="truequeNode">
+            <td class="fallout-font col-6"><input class="fallout-font form-check-input" type="checkbox"
+                    name="truequeTag" id="id_truequeTag" onchange="actualizarHabilidades()" {%if object.truequeTag%}Checked{%endif%}> TRUEQUE » (0%+(4xCA))</td>
+            <td class="fallout-font col-1" id="truequeBase"> *** </td>
+            <td class="fallout-font col-1"><input class="fallout-font d-none" name="truequeSkill" type="text"
+                    id="id_truequeSkill" value="{{object.truequeSkill}}"> % </td>
+            <td class="fallout-font col-1"><input type="text" name="truequeMod"
+                    class="fallout-font form-control p-0 m-0 shadow-none no-border"
+                    value="{{object.truequeMod}}" min="0" id="id_truequeMod" onchange="actualizar()"></td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1" id="truequeTotal"> *** </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1">
+                <nobr><img src="{% static 'minus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadMinus('truequeBase','id_truequeMod','id_truequeSkill','id_truequeTag','truequeTotal')" />
+                    <img src="{% static 'plus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadPlus('truequeBase','id_truequeMod','id_truequeSkill','id_truequeTag','truequeTotal')" />
+                </nobr>
+            </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark" id="juegoNode">
+            <td class="fallout-font col-6"><input class="fallout-font form-check-input" type="checkbox"
+                    name="juegoTag" id="id_juegoTag" onchange="actualizarHabilidades()" {%if object.juegoTag%}Checked{%endif%}> JUEGO » (0%+(5xSU))</td>
+            <td class="fallout-font col-1" id="juegoBase"> *** </td>
+            <td class="fallout-font col-1"><input class="fallout-font d-none" name="juegoSkill" type="text"
+                    id="id_juegoSkill" value="{{object.juegoSkill}}"> % </td>
+            <td class="fallout-font col-1"><input type="text" name="juegoMod"
+                    class="fallout-font form-control p-0 m-0 shadow-none no-border" value="{{object.juegoMod}}"
+                    min="0" id="id_juegoMod" onchange="actualizar()"></td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1" id="juegoTotal"> *** </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1">
+                <nobr><img src="{% static 'minus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadMinus('juegoBase','id_juegoMod','id_juegoSkill','id_juegoTag','juegoTotal')" />
+                    <img src="{% static 'plus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadPlus('juegoBase','id_juegoMod','id_juegoSkill','id_juegoTag','juegoTotal')" />
+                </nobr>
+            </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark" id="vidaAlAireLibreNode">
+            <td class="fallout-font col-6"><input class="fallout-font form-check-input" type="checkbox"
+                    name="vidaAlAireLibreTag" id="id_vidaAlAireLibreTag" onchange="actualizarHabilidades()" {%if object.vidaAlAireLibreTag%}Checked{%endif%}> VIDA AL AIRE LIBRE » (0%+2x(RE+IN))</td>
+            <td class="fallout-font col-1" id="vidaAlAireLibreBase"> *** </td>
+            <td class="fallout-font col-1"><input class="fallout-font d-none" name="vidaAlAireLibreSkill"
+                    type="text" id="id_vidaAlAireLibreSkill" value="{{object.vidaAlAireLibreSkill}}"> % </td>
+            <td class="fallout-font col-1"><input type="text" name="vidaAlAireLibreMod"
+                    class="fallout-font form-control p-0 m-0 shadow-none no-border"
+                    value="{{object.vidaAlAireLibreMod}}" min="0" id="id_vidaAlAireLibreMod"
+                    onchange="actualizar()"></td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1" id="vidaAlAireLibreTotal"> *** </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1">
+                <nobr><img src="{% static 'minus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadMinus('vidaAlAireLibreBase','id_vidaAlAireLibreMod','id_vidaAlAireLibreSkill','id_vidaAlAireLibreTag','vidaAlAireLibreTotal')" />
+                    <img src="{% static 'plus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadPlus('vidaAlAireLibreBase','id_vidaAlAireLibreMod','id_vidaAlAireLibreSkill','id_vidaAlAireLibreTag','vidaAlAireLibreTotal')" />
+                </nobr>
+            </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark" id="atletismoNode">
+            <td class="fallout-font col-6"><input class="fallout-font form-check-input" type="checkbox"
+                    name="atletismoTag" id="id_atletismoTag" onchange="actualizarHabilidades()" {%if object.atletismoTag%}Checked{%endif%}> ATLETISMO » (5%+2x(FU+AG))</td>
+            <td class="fallout-font col-1" id="atletismoBase"> *** </td>
+            <td class="fallout-font col-1"><input class="fallout-font d-none" name="atletismoSkill" type="text"
+                    id="id_atletismoSkill" value="{{object.atletismoSkill}}"> % </td>
+            <td class="fallout-font col-1"><input type="text" name="atletismoMod"
+                    class="fallout-font form-control p-0 m-0 shadow-none no-border"
+                    value="{{object.atletismoMod}}" min="0" id="id_atletismoMod" onchange="actualizar()"></td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1" id="atletismoTotal"> *** </td>
+            <td class="fallout-font col-1"> % </td>
+            <td class="fallout-font col-1">
+                <nobr><img src="{% static 'minus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadMinus('atletismoBase','id_atletismoMod','id_atletismoSkill','id_atletismoTag','atletismoTotal')" />
+                    <img src="{% static 'plus-circle.svg'%}" width="14" heigth="14"
+                        onclick="habilidadPlus('atletismoBase','id_atletismoMod','id_atletismoSkill','id_atletismoTag','atletismoTotal')" />
+                </nobr>
+            </td>
+        </tr>
+        {%endcomment%}
+    </tbody>
+</table>

@@ -1,0 +1,104 @@
+{%load static%}
+{% load l10n %}
+
+<div class="fallout-font row border border-dark rounded rounded-3 p-2">
+    <div class="fallout-font col-6">
+        <span class="fallout-font-md fs-3 border border-dark rounded">Datos Generales</span>
+        {% for field in form.visible_fields|slice:":1" %}
+            <input type="hidden" class="form-control" name="{{field.name}}" value="{{request.user.id}}" readonly>
+        {%endfor%}
+        {% for field in form.visible_fields|slice:"1:2" %}
+            <div class="fallout-font input-group">
+                <div class="fallout-font input-group-prepend">
+                    <div class="fallout-font input-group-text">
+                        {{field.label}}
+                    </div>
+                </div>
+                {{field}}
+            </div>
+        {%endfor%}
+        <div class="m-0 p-0 row">
+            {% for field in form.visible_fields|slice:"2:4" %}
+            <div class="m-0 p-0 col-6">
+                <div class="fallout-font input-group">
+                    <div class="fallout-font input-group-prepend">
+                        <div class="fallout-font input-group-text">
+                            {{field.label}}
+                        </div>
+                    </div>
+                    {{field}}
+                </div>
+            </div>
+            {%endfor%}
+        </div>
+        {% for field in form.visible_fields|slice:"4:5" %}
+        <div class="fallout-font input-group">
+            <div class="fallout-font input-group-prepend">
+                <div class="fallout-font input-group-text">
+                    {{field.label}}
+                </div>
+            </div>
+            {{field}}
+        </div>
+        {%endfor%}
+        <div class="m-0 p-0 row">
+            {% for field in form.visible_fields|slice:"5:7" %}
+            <div class="m-0 p-0 col-6">
+                <div class="fallout-font input-group">
+                    <div class="fallout-font input-group-prepend">
+                        <div class="fallout-font input-group-text">
+                            {{field.label}}
+                        </div>
+                    </div>
+                    {{field}}
+                </div>
+            </div>
+            {%endfor%}
+        </div>
+        {% for field in form.visible_fields|slice:"7:8" %}
+        <div class="fallout-font input-group">
+            <div class="fallout-font input-group-prepend">
+                <div class="fallout-font input-group-text">
+                    {{field.label}}
+                </div>
+            </div>
+            {{field}}
+        </div>
+        {%endfor%}
+    </div>
+    
+<div class="fallout-font col-3 border">
+    <img src="{% static "vaultboy-launcher.jpg" %}" title="Vault Boy" class="fallout-font img-fluid" />
+</div>
+
+<div class="fallout-font col-3">
+    <span class="fallout-font-md fs-3 border border-dark rounded">Status</span>
+    {% for field in form.visible_fields|slice:"8:11" %}
+        <div class="fallout-font input-group">
+            <div class="fallout-font input-group-prepend">
+                <div class="fallout-font input-group-text">
+                    {{field.label}}
+                </div>
+            </div>
+            {{field}}
+        </div>
+    {%endfor%}
+    <div class="fallout-font input-group">
+        <div class="fallout-font input-group-prepend">
+            <div class="fallout-font input-group-text">PG/Nivel (3+(RE/2)) »</div>
+        </div>
+        <span class="fallout-font form-control"></span>
+    </div>
+    <div class="fallout-font input-group">
+        <div class="fallout-font input-group-prepend">
+            <div class="fallout-font input-group-text">PH/Nivel (5+(2*IN)) »</div>
+        </div>
+        <span class="fallout-font form-control"></span>
+    </div>
+    <div class="fallout-font input-group">
+        <div class="fallout-font input-group-prepend">
+            <div class="fallout-font input-group-text">Perks/Nivel</div>
+        </div>
+        <span class="fallout-font form-control"></span>
+    </div>
+</div>

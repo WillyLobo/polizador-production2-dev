@@ -1,0 +1,103 @@
+{%load static%}
+{% load l10n %}
+<div class="fallout-font row border border-dark rounded rounded-3 p-2">
+    <div class="fallout-font col-6">
+        <span class="fallout-font-md fs-3 border border-dark rounded">Datos Generales</span>
+        <div class="fallout-font input-group">
+            <div class="fallout-font input-group-prepend">
+                <div class="fallout-font input-group-text">Nombre</div>
+            </div>
+            <input type="text" name="nombrePersonaje" class="fallout-font form-control" id="id_nombrePersonaje" value="{{object.nombrePersonaje}}" placeholder="Nombre del Personaje">
+        </div>
+        <div class="fallout-font input-group">
+            <div class="fallout-font input-group-prepend">
+                <div class="fallout-font input-group-text">Jugador</div>
+            </div>
+            <input type="text" name="nombreJugador" class="fallout-font form-control" id="id_nombreJugador" value="{{request.user}}" placeholder="Nombre del Jugador">
+        </div>
+        <div class="fallout-font input-group">
+            <div class="fallout-font input-group-prepend">
+                <div class="fallout-font input-group-text">Edad</div>
+            </div>
+            <input type="number" name="edadPersonaje" class="fallout-font form-control" id="id_edadPersonaje" value="{{object.edadPersonaje}}" placeholder="Edad" min="0">
+            <div class="fallout-font input-group-prepend">
+                <div class="fallout-font input-group-text">Género</div>
+            </div>
+            <input type="text" name="generoPersonaje" class="fallout-font form-control" id="id_generoPersonaje" value="{{object.generoPersonaje}}" placeholder="Género">
+        </div>
+        <div class="fallout-font input-group">
+            <div class="fallout-font input-group-prepend">
+                <div class="fallout-font input-group-text">Raza</div>
+            </div>
+            <select class="fallout-font form-select" name="razaPersonaje" required id="id_razaPersonaje">
+                <option value="">---------</option>
+                <option value="H" {%if object.razaPersonaje == "H"%}selected{%endif%}>Humano</option>
+                <option value="G" {%if object.razaPersonaje == "G"%}selected{%endif%}>Ghoul</option>
+                <option value="S" {%if object.razaPersonaje == "S"%}selected{%endif%}>Super-Mutante</option>
+                <option value="D" {%if object.razaPersonaje == "D"%}selected{%endif%}>Garra Mortal</option>
+                <option value="P" {%if object.razaPersonaje == "P"%}selected{%endif%}>Perro</option>
+                <option value="R" {%if object.razaPersonaje == "R"%}selected{%endif%}>Robot</option>
+            </select>
+        </div>
+        <div class="fallout-font input-group">
+            <div class="fallout-font input-group-prepend">
+                <div class="fallout-font input-group-text">Altura</div>
+            </div>
+            <input type="number" name="alturaPersonaje" class="fallout-font form-control" id="id_alturaPersonaje" value="{% localize off %}{{object.alturaPersonaje}}{% endlocalize %}" placeholder="Altura" min="0" step="0.01">
+            <div class="fallout-font input-group-prepend">
+                <div class="fallout-font input-group-text">Peso</div>
+            </div>
+            <input type="number" name="pesoPersonaje" class="fallout-font form-control" id="id_pesoPersonaje" value="{{object.pesoPersonaje}}" placeholder="Peso" min="0">
+        </div>
+        <div class="fallout-font input-group">
+            <div class="fallout-font input-group-prepend">
+                <div class="fallout-font input-group-text">Facción/Alianza</div>
+            </div>
+            <input type="text" name="faccionPersonaje" class="fallout-font form-control" id="id_faccionPersonaje" value="{{object.faccionPersonaje}}" placeholder="Facción">
+        </div>
+    </div>
+    <div class="fallout-font col-3 border">
+        
+        <img src="{% static "vaultboy-launcher.jpg" %}" title="Vault Boy" class="fallout-font img-fluid" />
+        
+    </div>
+    <div class="fallout-font col-3">
+        <span class="fallout-font-md fs-3 border border-dark rounded">Status</span>
+        <div class="fallout-font input-group">
+            <div class="fallout-font input-group-prepend">
+                <div class="fallout-font input-group-text">Nivel</div>
+            </div>
+            <input type="number" name="nivelPersonaje" class="fallout-font form-control" id="id_nivelPersonaje" value="{{object.nivelPersonaje}}" onchange="actualizarModificadoresAtributosSecundarios()">
+        </div>
+        <div class="fallout-font input-group">
+            <div class="fallout-font input-group-prepend">
+                <div class="fallout-font input-group-text">Experiencia</div>
+            </div>
+            <input type="text" name="experienciaPersonaje" class="fallout-font form-control" id="id_experienciaPersonaje" value="{{object.experienciaPersonaje}}" placeholder="XP">
+        </div>
+        <div class="fallout-font input-group">
+            <div class="fallout-font input-group-prepend">
+                <div class="fallout-font input-group-text">Karma</div>
+            </div>
+            <input type="text" name="karmaPersonaje" class="fallout-font form-control" id="id_karmaPersonaje" value="{{object.karmaPersonaje}}" placeholder="Karma">
+        </div>
+        <div class="fallout-font input-group">
+            <div class="fallout-font input-group-prepend">
+                <div class="fallout-font input-group-text">PG/Nivel (3+(RE/2)) »</div>
+            </div>
+            <input type="text" class="fallout-font form-control" id="pgPorNivelPersonaje" value="0">
+        </div>
+        <div class="fallout-font input-group">
+            <div class="fallout-font input-group-prepend">
+                <div class="fallout-font input-group-text">PH/Nivel (5+(2*IN)) »</div>
+            </div>
+            <input type="text" class="fallout-font form-control" id="habilidadPorNivelPersonaje" value="0">
+        </div>
+        <div class="fallout-font input-group">
+            <div class="fallout-font input-group-prepend">
+                <div class="fallout-font input-group-text">Perks/Nivel</div>
+            </div>
+            <input type="text" class="fallout-font form-control" id="perksPorNivelPersonaje" value="1">
+        </div>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+{% extends "home/fallout-base.html" %}
+{% block content %}
+{% load static %}
+
+{% for pj in object_list %}
+<div class="card" style="width: 18rem;">
+    <div class="card-body">
+    <div class="fallout-font">{{pj.nombrePersonaje}}</div>
+    <p class="card-subtitle mb-2 text-muted"><small>Jugador: {{pj.nombreJugador}}</small></p>
+    <p class="card-subtitle mb-2 text-muted"><small>Raza: {{pj.razaPersonaje}}</small></p>
+    <p class="card-subtitle mb-2 text-muted"><small>Nivel: {{pj.nivelPersonaje}}</small></p>
+    <a href="{% url 'fallout:planilla-fallout-update' pj.id %}" class="btn btn-primary btn-sm stretched-link"><p class="fallout-font m-0 p-0">Ir</p></a>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}

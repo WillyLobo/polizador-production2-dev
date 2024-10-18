@@ -1,0 +1,24 @@
+{% extends "home/fallout-base.html" %}
+{% block content %}
+{% load static %}
+<form action='{% url "fallout:planilla-fallout-create" %}' method="POST">
+{% csrf_token %}
+{% include "partials/planilla/datos-generales-create.html" %}
+
+<div class="fallout-font row border border-dark rounded rounded-3 p-2">
+        <div class="fallout-font col border border-dark rounded rounded-3 m-1">
+                {% include "partials/planilla/atributos-primarios-create.html" %}
+        </div>
+        <div class="fallout-font col border border-dark rounded rounded-3 m-1">
+                {% include "partials/planilla/atributos-secundarios-create.html" %}
+        </div>
+</div>
+<div class="fallout-font col">
+        {% include "partials/planilla/habilidades-create.html" %}
+</div>
+<div class="fallout-font border">
+        <input type='submit' value='Guardar' class="fallout-font-lg" />
+</div>
+</form>
+
+{% endblock %}

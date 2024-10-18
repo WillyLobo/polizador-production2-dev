@@ -1,0 +1,546 @@
+{% load static %}
+{% csrf_token %}
+<span class="fallout-font-md fs-3 border border-dark rounded">HABILIDADES</span>
+<small>(0-100 1p=1p) (101-125 2p=1p) (126-150 3p=1p) (151-175 4p=1p) (176-... 5p=1p)</small>
+<table class="fallout-font table table-sm">
+    <thead class="fallout-font border-bottom border-dark">
+        <tr>
+            <td class="fallout-font align-left col-1"></td>
+            <td class="fallout-font align-left col-6"></td>
+            <td class="fallout-font align-left col-1">Base</td>
+            <td class="fallout-font align-left col-1">Mod</td>
+            <td class="fallout-font align-left col-1">Puntos</td>
+            <td class="fallout-font align-left col-1">Total</td>
+            <td class="fallout-font align-left col-1"></td>
+        </tr>
+        </thdead>
+        <tbody>
+        <!--
+        {{field.auto_id}}BaseSkill
+        {{field.auto_id}}PointsSkill
+        {{field.auto_id}}TotalSkill
+        {{field.auto_id}}Mod
+        {{field.auto_id}}Tag
+        -->
+        <tr class="fallout-font border-bottom border-dark {%if form.instance.armasPequenasTag %}tagged{%endif%}">
+                <td class="fallout-font col-1">
+                        {{form.armasPequenasTag}}
+                </td>
+                <td class="fallout-font col-6 align-left">
+                        {{form.armasPequenasTag.label}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.instance.armasPequenasBaseSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.armasPequenasMod}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.armasPequenasPointsSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        <span class="fallout-font p-0 m-0 shadow-none no-border">{{form.instance.armasPequenasTotalSkill}}</span>
+                </td>
+                <td class="fallout-font col-1">
+                        <nobr>
+                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        </nobr>
+                </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.armasGrandesTag %}tagged{%endif%}">
+                <td class="fallout-font col-1">
+                        {{form.armasGrandesTag}}
+                </td>
+                <td class="fallout-font col-6 align-left">
+                        {{form.armasGrandesTag.label}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.instance.armasGrandesBaseSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.armasGrandesMod}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.armasGrandesPointsSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        <span class="fallout-font p-0 m-0 shadow-none no-border">{{form.instance.armasGrandesTotalSkill}}</span>
+                </td>
+                <td class="fallout-font col-1">
+                        <nobr>
+                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        </nobr>
+                </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.armasEnergiaTag %}tagged{%endif%}">
+                <td class="fallout-font col-1">
+                        {{form.armasEnergiaTag}}
+                </td>
+                <td class="fallout-font col-6 align-left">
+                        {{form.armasEnergiaTag.label}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.instance.armasEnergiaBaseSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.armasEnergiaMod}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.armasEnergiaPointsSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        <span class="fallout-font p-0 m-0 shadow-none no-border">{{form.instance.armasEnergiaTotalSkill}}</span>
+                </td>
+                <td class="fallout-font col-1">
+                        <nobr>
+                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        </nobr>
+                </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.desarmadoTag %}tagged{%endif%}">
+                <td class="fallout-font col-1">
+                        {{form.desarmadoTag}}
+                </td>
+                <td class="fallout-font col-6 align-left">
+                        {{form.desarmadoTag.label}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.instance.desarmadoBaseSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.desarmadoMod}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.desarmadoPointsSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        <span class="fallout-font p-0 m-0 shadow-none no-border">{{form.instance.desarmadoTotalSkill}}</span>
+                </td>
+                <td class="fallout-font col-1">
+                        <nobr>
+                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        </nobr>
+                </td>
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.armasMeleeTag%}tagged{%endif%}">
+                <td class="fallout-font col-1">
+                        {{form.armasMeleeTag}}
+                </td>
+                <td class="fallout-font col-6 align-left">
+                        {{form.armasMeleeTag.label}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.instance.armasMeleeBaseSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.armasMeleeMod}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.armasMeleePointsSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        <span class="fallout-font p-0 m-0 shadow-none no-border">{{form.instance.armasMeleeTotalSkill}}</span>
+                </td>
+                <td class="fallout-font col-1">
+                        <nobr>
+                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        </nobr>
+                </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.lanzarTag%}tagged{%endif%}">
+                <td class="fallout-font col-1">
+                        {{form.lanzarTag}}
+                </td>
+                <td class="fallout-font col-6 align-left">
+                        {{form.lanzarTag.label}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.instance.lanzarBaseSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.lanzarMod}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.lanzarPointsSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        <span class="fallout-font p-0 m-0 shadow-none no-border">{{form.instance.lanzarTotalSkill}}</span>
+                </td>
+                <td class="fallout-font col-1">
+                        <nobr>
+                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        </nobr>
+                </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.primerosAuxiliosTag%}tagged{%endif%}">
+                <td class="fallout-font col-1">
+                        {{form.primerosAuxiliosTag}}
+                </td>
+                <td class="fallout-font col-6 align-left">
+                        {{form.primerosAuxiliosTag.label}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.instance.primerosAuxiliosBaseSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.primerosAuxiliosMod}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.primerosAuxiliosPointsSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        <span class="fallout-font p-0 m-0 shadow-none no-border">{{form.instance.primerosAuxiliosTotalSkill}}</span>
+                </td>
+                <td class="fallout-font col-1">
+                        <nobr>
+                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        </nobr>
+                </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.medicinaTag%}tagged{%endif%}">
+                <td class="fallout-font col-1">
+                        {{form.medicinaTag}}
+                </td>
+                <td class="fallout-font col-6 align-left">
+                        {{form.medicinaTag.label}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.instance.medicinaBaseSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.medicinaMod}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.medicinaPointsSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        <span class="fallout-font p-0 m-0 shadow-none no-border">{{form.instance.medicinaTotalSkill}}</span>
+                </td>
+                <td class="fallout-font col-1">
+                        <nobr>
+                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        </nobr>
+                </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.sigiloTag%}tagged{%endif%}">
+                <td class="fallout-font col-1">
+                        {{form.sigiloTag}}
+                </td>
+                <td class="fallout-font col-6 align-left">
+                        {{form.sigiloTag.label}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.instance.sigiloBaseSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.sigiloMod}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.sigiloPointsSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        <span class="fallout-font p-0 m-0 shadow-none no-border">{{form.instance.sigiloTotalSkill}}</span>
+                </td>
+                <td class="fallout-font col-1">
+                        <nobr>
+                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        </nobr>
+                </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.ganzuasTag%}tagged{%endif%}">
+                <td class="fallout-font col-1">
+                        {{form.ganzuasTag}}
+                </td>
+                <td class="fallout-font col-6 align-left">
+                        {{form.ganzuasTag.label}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.instance.ganzuasBaseSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.ganzuasMod}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.ganzuasPointsSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        <span class="fallout-font p-0 m-0 shadow-none no-border">{{form.instance.ganzuasTotalSkill}}</span>
+                </td>
+                <td class="fallout-font col-1">
+                        <nobr>
+                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        </nobr>
+                </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.robarTag%}tagged{%endif%}">
+                <td class="fallout-font col-1">
+                        {{form.robarTag}}
+                </td>
+                <td class="fallout-font col-6 align-left">
+                        {{form.robarTag.label}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.instance.robarBaseSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.robarMod}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.robarPointsSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        <span class="fallout-font p-0 m-0 shadow-none no-border">{{form.instance.robarTotalSkill}}</span>
+                </td>
+                <td class="fallout-font col-1">
+                        <nobr>
+                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        </nobr>
+                </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.trampasTag%}tagged{%endif%}">
+                <td class="fallout-font col-1">
+                        {{form.trampasTag}}
+                </td>
+                <td class="fallout-font col-6 align-left">
+                        {{form.trampasTag.label}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.instance.trampasBaseSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.trampasMod}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.trampasPointsSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        <span class="fallout-font p-0 m-0 shadow-none no-border">{{form.instance.trampasTotalSkill}}</span>
+                </td>
+                <td class="fallout-font col-1">
+                        <nobr>
+                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        </nobr>
+                </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.cienciaTag%}tagged{%endif%}">
+                <td class="fallout-font col-1">
+                        {{form.cienciaTag}}
+                </td>
+                <td class="fallout-font col-6 align-left">
+                        {{form.cienciaTag.label}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.instance.cienciaBaseSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.cienciaMod}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.cienciaPointsSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        <span class="fallout-font p-0 m-0 shadow-none no-border">{{form.instance.cienciaTotalSkill}}</span>
+                </td>
+                <td class="fallout-font col-1">
+                        <nobr>
+                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        </nobr>
+                </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.repararTag%}tagged{%endif%}">
+                <td class="fallout-font col-1">
+                        {{form.repararTag}}
+                </td>
+                <td class="fallout-font col-6 align-left">
+                        {{form.repararTag.label}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.instance.repararBaseSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.repararMod}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.repararPointsSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        <span class="fallout-font p-0 m-0 shadow-none no-border">{{form.instance.repararTotalSkill}}</span>
+                </td>
+                <td class="fallout-font col-1">
+                        <nobr>
+                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        </nobr>
+                </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.pilotarTag%}tagged{%endif%}">
+                <td class="fallout-font col-1">
+                        {{form.pilotarTag}}
+                </td>
+                <td class="fallout-font col-6 align-left">
+                        {{form.pilotarTag.label}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.instance.pilotarBaseSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.pilotarMod}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.pilotarPointsSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        <span class="fallout-font p-0 m-0 shadow-none no-border">{{form.instance.pilotarTotalSkill}}</span>
+                </td>
+                <td class="fallout-font col-1">
+                        <nobr>
+                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        </nobr>
+                </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.conversacionTag%}tagged{%endif%}">
+                <td class="fallout-font col-1">
+                        {{form.conversacionTag}}
+                </td>
+                <td class="fallout-font col-6 align-left">
+                        {{form.conversacionTag.label}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.instance.conversacionBaseSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.conversacionMod}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.conversacionPointsSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        <span class="fallout-font p-0 m-0 shadow-none no-border">{{form.instance.conversacionTotalSkill}}</span>
+                </td>
+                <td class="fallout-font col-1">
+                        <nobr>
+                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        </nobr>
+                </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.truequeTag%}tagged{%endif%}">
+                <td class="fallout-font col-1">
+                        {{form.truequeTag}}
+                </td>
+                <td class="fallout-font col-6 align-left">
+                        {{form.truequeTag.label}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.instance.truequeBaseSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.truequeMod}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.truequePointsSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        <span class="fallout-font p-0 m-0 shadow-none no-border">{{form.instance.truequeTotalSkill}}</span>
+                </td>
+                <td class="fallout-font col-1">
+                        <nobr>
+                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        </nobr>
+                </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.juegoTag%}tagged{%endif%}">
+                <td class="fallout-font col-1">
+                        {{form.juegoTag}}
+                </td>
+                <td class="fallout-font col-6 align-left">
+                        {{form.juegoTag.label}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.instance.juegoBaseSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.juegoMod}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.juegoPointsSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        <span class="fallout-font p-0 m-0 shadow-none no-border">{{form.instance.juegoTotalSkill}}</span>
+                </td>
+                <td class="fallout-font col-1">
+                        <nobr>
+                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        </nobr>
+                </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.vidaAlAireLibreTag%}tagged{%endif%}">
+                <td class="fallout-font col-1">
+                        {{form.vidaAlAireLibreTag}}
+                </td>
+                <td class="fallout-font col-6 align-left">
+                        {{form.vidaAlAireLibreTag.label}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.instance.vidaAlAireLibreBaseSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.vidaAlAireLibreMod}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.vidaAlAireLibrePointsSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        <span class="fallout-font p-0 m-0 shadow-none no-border">{{form.instance.vidaAlAireLibreTotalSkill}}</span>
+                </td>
+                <td class="fallout-font col-1">
+                        <nobr>
+                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        </nobr>
+                </td>
+        </tr>
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.atletismoTag%}tagged{%endif%}">
+                <td class="fallout-font col-1">
+                        {{form.atletismoTag}}
+                </td>
+                <td class="fallout-font col-6 align-left">
+                        {{form.atletismoTag.label}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.instance.atletismoBaseSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.atletismoMod}}
+                </td>
+                <td class="fallout-font col-1">
+                        {{form.atletismoPointsSkill}}
+                </td>
+                <td class="fallout-font col-1">
+                        <span class="fallout-font p-0 m-0 shadow-none no-border">{{form.instance.atletismoTotalSkill}}</span>
+                </td>
+                <td class="fallout-font col-1">
+                        <nobr>
+                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        </nobr>
+                </td>
+        </tr>
+
+        </tbody>
+</table>
