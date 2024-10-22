@@ -229,6 +229,8 @@ class PlanillaFalloutUpdateForm(forms.ModelForm):
             "SueBase", # 24
             "SueMod", # 25
             # Atributos Secundarios
+            "puntosHabilidadPorNivelMod",
+            "puntosGolpePorNivelMod",
             "apMod", # 26
             "secMod", # 27
             "danoMeleeMod", # 28
@@ -302,6 +304,12 @@ class PlanillaFalloutUpdateForm(forms.ModelForm):
             "atletismoMod", # 95
             "atletismoPointsSkill", # 96
         )
+
+        habilidad_numberinput = {
+                    "class":"fallout-font p-0 m-0 shadow-none no-border",
+                    "placeholder":"0"
+                }
+
         widgets = {
             "nombreJugador":forms.Select(attrs={
                 "class":"fallout-font form-control",
@@ -354,8 +362,8 @@ class PlanillaFalloutUpdateForm(forms.ModelForm):
             }),
             "StrMod":forms.NumberInput(attrs={
                 "class":"fallout-font-md form-control fs-1",
-                "placeholder":"1",
-                "min":"1",
+                "placeholder":"0",
+                "min":"0",
                 "step":"1"
             }),
             "PerBase":forms.NumberInput(attrs={
@@ -366,8 +374,8 @@ class PlanillaFalloutUpdateForm(forms.ModelForm):
             }),
             "PerMod":forms.NumberInput(attrs={
                 "class":"fallout-font-md form-control fs-1",
-                "placeholder":"1",
-                "min":"1",
+                "placeholder":"0",
+                "min":"0",
                 "step":"1"
             }),
             "ResBase":forms.NumberInput(attrs={
@@ -378,8 +386,8 @@ class PlanillaFalloutUpdateForm(forms.ModelForm):
             }),
             "ResMod":forms.NumberInput(attrs={
                 "class":"fallout-font-md form-control fs-1",
-                "placeholder":"1",
-                "min":"1",
+                "placeholder":"0",
+                "min":"0",
                 "step":"1"
             }),
             "CarBase":forms.NumberInput(attrs={
@@ -390,8 +398,8 @@ class PlanillaFalloutUpdateForm(forms.ModelForm):
             }),
             "CarMod":forms.NumberInput(attrs={
                 "class":"fallout-font-md form-control fs-1",
-                "placeholder":"1",
-                "min":"1",
+                "placeholder":"0",
+                "min":"0",
                 "step":"1"
             }),
             "IntBase":forms.NumberInput(attrs={
@@ -402,8 +410,8 @@ class PlanillaFalloutUpdateForm(forms.ModelForm):
             }),
             "IntMod":forms.NumberInput(attrs={
                 "class":"fallout-font-md form-control fs-1",
-                "placeholder":"1",
-                "min":"1",
+                "placeholder":"0",
+                "min":"0",
                 "step":"1"
             }),
             "AgiBase":forms.NumberInput(attrs={
@@ -414,8 +422,8 @@ class PlanillaFalloutUpdateForm(forms.ModelForm):
             }),
             "AgiMod":forms.NumberInput(attrs={
                 "class":"fallout-font-md form-control fs-1",
-                "placeholder":"1",
-                "min":"1",
+                "placeholder":"0",
+                "min":"0",
                 "step":"1"
             }),
             "SueBase":forms.NumberInput(attrs={
@@ -426,11 +434,23 @@ class PlanillaFalloutUpdateForm(forms.ModelForm):
             }),
             "SueMod":forms.NumberInput(attrs={
                 "class":"fallout-font-md form-control fs-1",
-                "placeholder":"1",
-                "min":"1",
+                "placeholder":"0",
+                "min":"0",
                 "step":"1"
             }),
 
+            "puntosHabilidadPorNivelMod":forms.NumberInput(attrs={
+                "class":"fallout-font p-0 m-0 shadow-none no-border",
+                "placeholder":"0",
+                "min":"0",
+                "step":"1"
+            }),
+            "puntosGolpePorNivelMod":forms.NumberInput(attrs={
+                "class":"fallout-font p-0 m-0 shadow-none no-border",
+                "placeholder":"0",
+                "min":"0",
+                "step":"1"
+            }),
             "apMod":forms.NumberInput(attrs={
                 "class":"fallout-font p-0 m-0 shadow-none no-border",
                 "placeholder":"0"
@@ -479,223 +499,103 @@ class PlanillaFalloutUpdateForm(forms.ModelForm):
             "armasPequenasTag":forms.CheckboxInput(attrs={
                 "class":"fallout-font form-check-input",
             }),
-            "armasPequenasMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
-            "armasPequenasPointsSkill":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
+            "armasPequenasMod":forms.NumberInput(attrs=habilidad_numberinput),
+            "armasPequenasPointsSkill":forms.NumberInput(attrs=habilidad_numberinput),
             "armasGrandesTag":forms.CheckboxInput(attrs={
                 "class":"fallout-font form-check-input",
             }),
-            "armasGrandesMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
-            "armasGrandesPointsSkill":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
+            "armasGrandesMod":forms.NumberInput(attrs=habilidad_numberinput),
+            "armasGrandesPointsSkill":forms.NumberInput(attrs=habilidad_numberinput),
             "armasEnergiaTag":forms.CheckboxInput(attrs={
                 "class":"fallout-font form-check-input",
             }),
-            "armasEnergiaMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
-            "armasEnergiaPointsSkill":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
+            "armasEnergiaMod":forms.NumberInput(attrs=habilidad_numberinput),
+            "armasEnergiaPointsSkill":forms.NumberInput(attrs=habilidad_numberinput),
             "desarmadoTag":forms.CheckboxInput(attrs={
                 "class":"fallout-font form-check-input",
             }),
-            "desarmadoMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
-            "desarmadoPointsSkill":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
+            "desarmadoMod":forms.NumberInput(attrs=habilidad_numberinput),
+            "desarmadoPointsSkill":forms.NumberInput(attrs=habilidad_numberinput),
             "armasMeleeTag":forms.CheckboxInput(attrs={
                 "class":"fallout-font form-check-input",
             }),
-            "armasMeleeMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
-            "armasMeleePointsSkill":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
+            "armasMeleeMod":forms.NumberInput(attrs=habilidad_numberinput),
+            "armasMeleePointsSkill":forms.NumberInput(attrs=habilidad_numberinput),
             "lanzarTag":forms.CheckboxInput(attrs={
                 "class":"fallout-font form-check-input",
             }),
-            "lanzarMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
-            "lanzarPointsSkill":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
+            "lanzarMod":forms.NumberInput(attrs=habilidad_numberinput),
+            "lanzarPointsSkill":forms.NumberInput(attrs=habilidad_numberinput),
             "primerosAuxiliosTag":forms.CheckboxInput(attrs={
                 "class":"fallout-font form-check-input",
             }),
-            "primerosAuxiliosMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
-            "primerosAuxiliosPointsSkill":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
+            "primerosAuxiliosMod":forms.NumberInput(attrs=habilidad_numberinput),
+            "primerosAuxiliosPointsSkill":forms.NumberInput(attrs=habilidad_numberinput),
             "medicinaTag":forms.CheckboxInput(attrs={
                 "class":"fallout-font form-check-input",
             }),
-            "medicinaMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
-            "medicinaPointsSkill":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
+            "medicinaMod":forms.NumberInput(attrs=habilidad_numberinput),
+            "medicinaPointsSkill":forms.NumberInput(attrs=habilidad_numberinput),
             "sigiloTag":forms.CheckboxInput(attrs={
                 "class":"fallout-font form-check-input",
             }),
-            "sigiloMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
-            "sigiloPointsSkill":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
+            "sigiloMod":forms.NumberInput(attrs=habilidad_numberinput),
+            "sigiloPointsSkill":forms.NumberInput(attrs=habilidad_numberinput),
             "ganzuasTag":forms.CheckboxInput(attrs={
                 "class":"fallout-font form-check-input",
             }),
-            "ganzuasMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
-            "ganzuasPointsSkill":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
+            "ganzuasMod":forms.NumberInput(attrs=habilidad_numberinput),
+            "ganzuasPointsSkill":forms.NumberInput(attrs=habilidad_numberinput),
             "robarTag":forms.CheckboxInput(attrs={
                 "class":"fallout-font form-check-input",
             }),
-            "robarMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
-            "robarPointsSkill":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
+            "robarMod":forms.NumberInput(attrs=habilidad_numberinput),
+            "robarPointsSkill":forms.NumberInput(attrs=habilidad_numberinput),
             "trampasTag":forms.CheckboxInput(attrs={
                 "class":"fallout-font form-check-input",
             }),
-            "trampasMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
-            "trampasPointsSkill":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
+            "trampasMod":forms.NumberInput(attrs=habilidad_numberinput),
+            "trampasPointsSkill":forms.NumberInput(attrs=habilidad_numberinput),
             "cienciaTag":forms.CheckboxInput(attrs={
                 "class":"fallout-font form-check-input",
             }),
-            "cienciaMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
-            "cienciaPointsSkill":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
+            "cienciaMod":forms.NumberInput(attrs=habilidad_numberinput),
+            "cienciaPointsSkill":forms.NumberInput(attrs=habilidad_numberinput),
             "repararTag":forms.CheckboxInput(attrs={
                 "class":"fallout-font form-check-input",
             }),
-            "repararMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
-            "repararPointsSkill":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
+            "repararMod":forms.NumberInput(attrs=habilidad_numberinput),
+            "repararPointsSkill":forms.NumberInput(attrs=habilidad_numberinput),
             "pilotarTag":forms.CheckboxInput(attrs={
                 "class":"fallout-font form-check-input",
             }),
-            "pilotarMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
-            "pilotarPointsSkill":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
+            "pilotarMod":forms.NumberInput(attrs=habilidad_numberinput),
+            "pilotarPointsSkill":forms.NumberInput(attrs=habilidad_numberinput),
             "conversacionTag":forms.CheckboxInput(attrs={
                 "class":"fallout-font form-check-input",
             }),
-            "conversacionMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
-            "conversacionPointsSkill":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
+            "conversacionMod":forms.NumberInput(attrs=habilidad_numberinput),
+            "conversacionPointsSkill":forms.NumberInput(attrs=habilidad_numberinput),
             "truequeTag":forms.CheckboxInput(attrs={
                 "class":"fallout-font form-check-input",
             }),
-            "truequeMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
-            "truequePointsSkill":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
+            "truequeMod":forms.NumberInput(attrs=habilidad_numberinput),
+            "truequePointsSkill":forms.NumberInput(attrs=habilidad_numberinput),
             "juegoTag":forms.CheckboxInput(attrs={
                 "class":"fallout-font form-check-input",
             }),
-            "juegoMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
-            "juegoPointsSkill":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
+            "juegoMod":forms.NumberInput(attrs=habilidad_numberinput),
+            "juegoPointsSkill":forms.NumberInput(attrs=habilidad_numberinput),
             "vidaAlAireLibreTag":forms.CheckboxInput(attrs={
                 "class":"fallout-font form-check-input",
             }),
-            "vidaAlAireLibreMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
-            "vidaAlAireLibrePointsSkill":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
+            "vidaAlAireLibreMod":forms.NumberInput(attrs=habilidad_numberinput),
+            "vidaAlAireLibrePointsSkill":forms.NumberInput(attrs=habilidad_numberinput),
             "atletismoTag":forms.CheckboxInput(attrs={
                 "class":"fallout-font form-check-input",
             }),
-            "atletismoMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
-            "atletismoPointsSkill":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
-                "placeholder":"0"
-            }),
+            "atletismoMod":forms.NumberInput(attrs=habilidad_numberinput),
+            "atletismoPointsSkill":forms.NumberInput(attrs=habilidad_numberinput),
         }
 
     def as_div(self):

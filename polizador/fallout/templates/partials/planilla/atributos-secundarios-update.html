@@ -18,6 +18,30 @@
 
 
 <div class="fallout-font row">
+        <div class="fallout-font col-4 ms-3 p-0 border-top">PH/Nivel (5+(2*IN)) »</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.puntosHabilidadPorNivelBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">+/-</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.puntosHabilidadPorNivelMod}}
+        </div>
+        <div class="fallout-font col-1 p-0 border-top">=</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.instance.puntosHabilidadPorNivelTotal}}
+        </div>
+</div>
+<div class="fallout-font row">
+        <div class="fallout-font col-4 ms-3 p-0 border-top">PG/Nivel (3+(RE/2)) »</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.puntosGolpePorNivelBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">+/-</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.puntosGolpePorNivelMod}}
+        </div>
+        <div class="fallout-font col-1 p-0 border-top">=</div>
+        <div class="fallout-font col-2 p-0 border-top">
+            {{form.instance.puntosGolpePorNivelTotal}}
+        </div>
+</div>
+<div class="fallout-font row">
         <div class="fallout-font col-4 ms-3 p-0 border-top">PUNTOS DE ACCION » (5+AG/2)</div>
         <div class="fallout-font col-1 p-0 border-top">{{form.instance.apBase}}</div>
         <div class="fallout-font col-1 p-0 border-top">+/-</div>

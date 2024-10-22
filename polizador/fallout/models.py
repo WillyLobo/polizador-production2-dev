@@ -62,7 +62,7 @@ class CharFallout(models.Model):
     edadPersonaje = models.IntegerField(
         "Edad", validators=[MinValueValidator(1)])
     generoPersonaje = models.CharField("Género", max_length=15)
-    razaPersonaje = models.ForeignKey("Raza", on_delete=models.CASCADE)
+    razaPersonaje = models.ForeignKey("Raza", verbose_name="Raza", on_delete=models.CASCADE)
     alturaPersonaje = models.DecimalField(
         "Altura", max_digits=3, decimal_places=2, default=1)
     pesoPersonaje = models.IntegerField(
@@ -494,7 +494,8 @@ class CharFallout(models.Model):
             atr_sec_base = atr_sec_calculo
             
             if atributo_secundario == "puntosGolpePorNivel":
-                atr_sec_total = (atr_sec_base + float(atr_sec_mod)) * self.nivelPersonaje
+                # 15 + Fue + (Res*2) + PG/Nivel
+                atr_sec_total = 15 + atributos_computables["Str_total"] + (atributos_computables["Res_total"] * 2) + ((atr_sec_base + float(atr_sec_mod)) * self.nivelPersonaje)
                 setattr(self, f"{atributo_secundario}Base", atr_sec_base)
                 setattr(self, f"{atributo_secundario}Total", atr_sec_total)
             elif atributo_secundario == "puntosHabilidadPorNivel":
