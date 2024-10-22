@@ -40,6 +40,21 @@ def generate_name_resoluciones(instance, filename):
     filename = f"{instance.instrumentolegalresoluciones_numero}-{instance.instrumentolegalresoluciones_ano}-{instance.instrumentolegalresoluciones_tipo}.pdf"
     name = os.path.join(directorio, filename)
     return name
+def generate_name_memorandum(instance, filename):
+    """
+    Generates a name for a memorandum file based on the given instance and filename.
+
+    Parameters:
+        instance (object): The instance of the resolution.
+        filename (str): The original filename of the resolution.
+
+    Returns:
+        str: The generated name for the resolution file.
+    """
+    directorio = "instrumentoslegales/memorandum/"
+    filename = f"{instance.instrumentolegalmemorandum_numero}-{instance.instrumentolegalmemorandum_ano}-{instance.instrumentolegalmemorandum_tipo}.pdf"
+    name = os.path.join(directorio, filename)
+    return name
 def date_validation(value):
     """
     Validates if the provided date value is not earlier than the current date.
@@ -56,6 +71,41 @@ class ConcatOp(models.Func):
     template = "%(expressions)s"
 
 # Modelos
+class InstrumentosLegalesMemorandum(models.Model):
+    class Meta:
+        verbose_name = "Instrumento Legal(Memorandum)"
+        verbose_name_plural = "Instrumentos Legales(Memorandums)"
+        ordering = ["-instrumentolegalmemorandum_ano", "-instrumentolegalmemorandum_numero"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["instrumentolegalmemorandum_tipo", "instrumentolegalmemorandum_numero", "instrumentolegalmemorandum_ano"],
+                name='unique_memorandum_1'
+            ),
+        ]
+
+    TIPO = (
+        ("P", "Presidencia"),
+        ("D", "Dirección General de Gestión Administrativa")
+    )
+
+    instrumentolegalmemorandum_tipo = models.CharField("Tipo", max_length=1, choices=TIPO, default="P")
+    instrumentolegalmemorandum_numero = models.CharField("Número", max_length=7)
+    instrumentolegalmemorandum_ano = models.CharField("Año", max_length=5)
+    instrumentolegalmemorandum_fecha_aprobacion = models.DateField("Fecha de Aprobación", default=timezone.now)
+    instrumentolegalmemorandum_descripcion = models.CharField("Descripción", max_length=600, default="")
+    instrumentolegalmemorandum = models.FileField(upload_to=generate_name_memorandum, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], null=True, blank=True)
+    instrumentolegalmemorandum_str = GeneratedField(
+        expression=ConcatOp('instrumentolegalmemorandum_numero', models.Value(" - "), 'instrumentolegalmemorandum_ano', models.Value(" - "), 'instrumentolegalmemorandum_tipo'),
+        output_field=models.TextField(),
+        db_persist=True,
+    )
+    # Fields related to the automatic extraction of text from the digitalized instrument.
+    instrumentolegalmemorandum_autocarga = models.BooleanField("Memorandum importada sin intervención.", default=False)
+    instrumentolegalmemorandum_document = models.TextField("Texto Extraído por OCR", null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.get_instrumentolegalmemorandum_tipo_display()} Nº{self.instrumentolegalmemorandum_numero}/{self.instrumentolegalmemorandum_ano}"
+    
 class InstrumentosLegalesResoluciones(models.Model):
     class Meta:
         verbose_name = "Instrumento Legal(Resolución)"

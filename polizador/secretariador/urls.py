@@ -24,6 +24,11 @@ instrumento_legal_decreto_patterns = [
     path("creardecreto/<pk>", UpdateInstrumentoLegalDecreto.as_view(), name="update-decreto"),
     path("eliminar/decreto/<pk>", EliminarInstrumentoLegalDecreto.as_view(), name="eliminar-decreto"),
 ]
+instrumento_legal_memorandum_patterns = [
+	path("crearmemorandum/", CrearInstrumentoLegalMemorandum.as_view(), name="crear-memorandum"),
+    path("crearmemorandum/<pk>", UpdateInstrumentoLegalMemorandum.as_view(), name="update-memorandum"),
+    path("eliminar/memorandum/<pk>", EliminarInstrumentoLegalMemorandum.as_view(), name="eliminar-memorandum"),
+]
 monto_viatico_diario_patterns = [
     path("crearmontoviaticodiario/", CrearMontoViaticoDiario.as_view(), name="crear-montoviaticodiario"),
     path("crearmontoviaticodiario/<pk>", UpdateMontoViaticoDiario.as_view(), name="update-montoviaticodiario"),
@@ -90,6 +95,9 @@ ajax = [
     # Comisionados
 	path("listas/comisionados", PaginaListaComisionados, name="lista-comisionados"),
 	path("ajax_datatable/comisionados/", ListaComisionadosView.as_view(), name="lista-comisionados-datatables"),
+    # Memorandum
+    path("listas/memorandum", PaginaListaInstrumentosLegalesMemorandum, name="lista-memorandum"),
+    path("ajax_datatable/memorandum/", ListaListaInstrumentosLegalesMemorandumView.as_view(), name="lista-memorandum-datatables"),
     # Decretos
     path("listas/decretos", PaginaListaInstrumentosLegalesDecretos, name="lista-decretos"),
     path("ajax_datatable/decretos/", ListaListaInstrumentosLegalesDecretosView.as_view(), name="lista-decretos-datatables"),
@@ -106,6 +114,7 @@ ajax = [
 
 urlpatterns += redirects
 urlpatterns += ajax
+urlpatterns += instrumento_legal_memorandum_patterns
 urlpatterns += instrumento_legal_decreto_patterns
 urlpatterns += monto_viatico_diario_patterns
 urlpatterns += instrumento_legal_resolucion_patterns

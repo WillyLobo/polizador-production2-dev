@@ -144,6 +144,7 @@
 							{% if perms.secretariador.add_incorporacion %}<li class="dropdown-item list-group-item py-0 pr-0"><a href='{% url "secretariador:crear-incorporacion" %}' class="dropdown-item">Nueva Incorporación</a></li>{% endif %}
 							{% if perms.secretariador.add_comisionado %}<li class="dropdown-item list-group-item py-0 pr-0"><a href='{% url "secretariador:crear-comisionado" %}' class="dropdown-item">Nuevo Agente</a></li>{% endif %}
 							{% if perms.secretariador.add_vehiculo %}<li class="dropdown-item list-group-item py-0 pr-0"><a href='{% url "secretariador:crear-vehiculo" %}' class="dropdown-item">Nuevo Vehículo</a></li>{% endif %}
+							{% if perms.secretariador.add_instrumentoslegalesmemorandum %}<li class="dropdown-item list-group-item py-0 pr-0"><a href='{% url "secretariador:crear-memorandum" %}' class="dropdown-item">Nuevo Memorandum</a></li>{% endif %}
 							{% if perms.secretariador.add_instrumentoslegalesdecretos %}<li class="dropdown-item list-group-item py-0 pr-0"><a href='{% url "secretariador:redirect-decreto" %}' class="dropdown-item">Nuevo Decreto</a></li>{% endif %}
 							{% if perms.secretariador.add_instrumentoslegalesresoluciones %}<li class="dropdown-item list-group-item py-0 pr-0"><a href='{% url "secretariador:crear-resolucion" %}' class="dropdown-item">Nueva Resolución</a></li>{% endif %}
 							{% if perms.secretariador.add_montoviaticodiario %}<li class="dropdown-item list-group-item py-0 pr-0"><a href='{% url "secretariador:crear-montoviaticodiario" %}' class="dropdown-item">Nuevo Monto de Viáticos</a></li>{% endif %}
@@ -158,6 +159,7 @@
 							<li class="dropdown-item list-group-item py-0 pr-0"><a href='{% url "secretariador:lista-incorporaciones" %}' class="dropdown-item">Incorporaciones</a></li>
 							<li class="dropdown-item list-group-item py-0 pr-0"><a href='{% url "secretariador:lista-comisionados" %}' class="dropdown-item">Agentes</a></li>
 							<li class="dropdown-item list-group-item py-0 pr-0"><a href='{% url "secretariador:lista-vehiculos" %}' class="dropdown-item">Vehículos</a></li>
+							<li class="dropdown-item list-group-item py-0 pr-0"><a href='{% url "secretariador:lista-memorandum" %}' class="dropdown-item">Memorandum</a></li>
 							<li class="dropdown-item list-group-item py-0 pr-0"><a href='{% url "secretariador:lista-decretos" %}' class="dropdown-item">Decretos</a></li>
 							<li class="dropdown-item list-group-item py-0 pr-0"><a href='{% url "secretariador:lista-resoluciones" %}' class="dropdown-item">Resoluciones</a></li>
 							</small>

@@ -4,6 +4,9 @@ from import_export.admin import ImportExportMixin
 from secretariador.models import *
 from secretariador.resources import OrganigramaResource, ComisionadoResource, VehiculoResource, IncorporacionResource
 
+class InstrumentosLegalesMemorandumAdmin(admin.ModelAdmin):
+    model = InstrumentosLegalesMemorandum
+
 class InstrumentosLegalesResolucionesAdmin(admin.ModelAdmin):
     model = InstrumentosLegalesResoluciones
 
@@ -57,6 +60,7 @@ class ComisionadoSolicitudAdmin(admin.ModelAdmin):
     ]
 
 # Registro de los modelos en Admin
+admin.site.register(InstrumentosLegalesMemorandum, InstrumentosLegalesMemorandumAdmin)
 admin.site.register(InstrumentosLegalesResoluciones, InstrumentosLegalesResolucionesAdmin)
 admin.site.register(InstrumentosLegalesDecretos, InstrumentosLegalesDecretoAdmin)
 admin.site.register(MontoViaticoDiario, MontoViaticoDiarioAdmin)
