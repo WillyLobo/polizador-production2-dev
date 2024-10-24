@@ -307,7 +307,8 @@ class PlanillaFalloutUpdateForm(forms.ModelForm):
 
         habilidad_numberinput = {
                     "class":"fallout-font p-0 m-0 shadow-none no-border",
-                    "placeholder":"0"
+                    "placeholder":"0",
+                    "step":"1",
                 }
 
         widgets = {

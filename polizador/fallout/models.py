@@ -56,6 +56,29 @@ class Raza(models.Model):
 #         return self.perkNombre
 
 class CharFallout(models.Model):
+    """
+    Campos a agregar:
+        - resVeneno
+        - resRadiacion
+        - resElectricidad
+        - resGas
+        - resDanoNormal
+        - resDanoLaser
+        - resDanoFuego
+        - resDanoPlasma
+        - resDanoExplosivo
+        - danoArmasPequenas
+        - danoArmasGrandes
+        - danoArmasEnergia
+        - danoLanzar
+        - danoDesarmado
+        - danoMelee
+        - condHeridoCritico (menos de 20% de HP)
+        - condHeridoMedio (menos de 50% de HP)
+        - condBorracho
+        - statPool = models.IntegerField("Puntos S.P.E.C.I.A.L.", default=0, validators=[MinValueValidator(0)])
+
+    """
     # Datos Generales
     nombrePersonaje = models.CharField("Nombre del Personaje", max_length=60)
     nombreJugador = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -460,32 +483,32 @@ class CharFallout(models.Model):
 
 
     def save(self, *args, **kwargs):
-        atributos_computables = {}
+        atributos_primarios = {}
 
         for atributo in self.atributos_primarios:
             atr_base = getattr(self, f"{atributo}Base")
             atr_mod = getattr(self, f"{atributo}Mod")
             atr_total = atr_base + atr_mod
 
-            atributos_computables.update({f"{atributo}_total": atr_total})
+            atributos_primarios.update({f"{atributo}_total": atr_total})
 
             setattr(self, f"{atributo}Total", atr_total)
             # print(f"Save method: {atributo}Stat: {atr_base} - {atributo}Mod: {atr_mod} - {atributo}Total: {atr_total}")
         
-        puntosGolpePorNivelCalculo = 3 + (atributos_computables["Res_total"] / 2)
-        puntosHabilidadPorNivelCalculo = 5 + (2 * atributos_computables["Int_total"])
+        puntosGolpePorNivelCalculo = 3 + (atributos_primarios["Res_total"] / 2)
+        puntosHabilidadPorNivelCalculo = 5 + (2 * atributos_primarios["Int_total"])
         perksPorNivelCalculo = 1
-        apCalculo = 5 + atributos_computables["Agi_total"] /2
-        secCalculo = 2 * atributos_computables["Per_total"]
-        danoMeleeCalculo = atributos_computables["Str_total"] - 5 if atributos_computables["Str_total"] -5 > 0 else 1
-        probCriticoCalculo = atributos_computables["Sue_total"]
-        ratioCuracionCalculo = atributos_computables["Res_total"] /3
-        capCargaCalculo = 11.35 + 11.35 * atributos_computables["Str_total"]
-        resVenenoCalculo = 5 * atributos_computables["Res_total"]
-        resRadiacionCalculo = 2 * atributos_computables["Res_total"]
+        apCalculo = 5 + atributos_primarios["Agi_total"] /2
+        secCalculo = 2 * atributos_primarios["Per_total"]
+        danoMeleeCalculo = atributos_primarios["Str_total"] - 5 if atributos_primarios["Str_total"] -5 > 0 else 1
+        probCriticoCalculo = atributos_primarios["Sue_total"]
+        ratioCuracionCalculo = atributos_primarios["Res_total"] /3
+        capCargaCalculo = 11.35 + 11.35 * atributos_primarios["Str_total"]
+        resVenenoCalculo = 5 * atributos_primarios["Res_total"]
+        resRadiacionCalculo = 2 * atributos_primarios["Res_total"]
         resElectricidadCalculo = 0
         resGasCalculo = 0
-        implanteCalculo = 10 * (atributos_computables["Int_total"] + atributos_computables["Res_total"])   
+        implanteCalculo = 10 * (atributos_primarios["Int_total"] + atributos_primarios["Res_total"])   
 
         for atributo_secundario in self.atributos_secundarios:
             atr_sec_base    = getattr(self, f"{atributo_secundario}Base")
@@ -495,7 +518,7 @@ class CharFallout(models.Model):
             
             if atributo_secundario == "puntosGolpePorNivel":
                 # 15 + Fue + (Res*2) + PG/Nivel
-                atr_sec_total = 15 + atributos_computables["Str_total"] + (atributos_computables["Res_total"] * 2) + ((atr_sec_base + float(atr_sec_mod)) * self.nivelPersonaje)
+                atr_sec_total = 15 + atributos_primarios["Str_total"] + (atributos_primarios["Res_total"] * 2) + ((atr_sec_base + float(atr_sec_mod)) * self.nivelPersonaje)
                 setattr(self, f"{atributo_secundario}Base", atr_sec_base)
                 setattr(self, f"{atributo_secundario}Total", atr_sec_total)
             elif atributo_secundario == "puntosHabilidadPorNivel":
@@ -508,26 +531,26 @@ class CharFallout(models.Model):
                 setattr(self, f"{atributo_secundario}Total", atr_sec_total)
             # print(f"Save method: {atributo_secundario}Base: {atr_sec_base} - {atributo_secundario}Mod: {atr_sec_mod} - {atributo_secundario}Total: {atr_sec_total}")
 
-        armasPequenasCalculo = 5 + (4 * atributos_computables["Agi_total"])
-        armasGrandesCalculo = 0 + (2 * atributos_computables["Agi_total"])
-        armasEnergiaCalculo = 0 + (2 * atributos_computables["Agi_total"])
-        desarmadoCalculo = 30 + 2 * (atributos_computables["Agi_total"] + atributos_computables["Str_total"])
-        armasMeleeCalculo = 20 + 2 * (atributos_computables["Agi_total"] + atributos_computables["Str_total"])
-        lanzarCalculo = 0 + 4 * atributos_computables["Agi_total"]
-        primerosAuxiliosCalculo = 0 + 2 * (atributos_computables["Per_total"] + atributos_computables["Int_total"])
-        medicinaCalculo = 0 + 2 * (atributos_computables["Per_total"] + atributos_computables["Int_total"])
-        sigiloCalculo = 0 + 5 + (atributos_computables["Agi_total"] * 3)
-        ganzuasCalculo = 0 + 10 + atributos_computables["Per_total"] + atributos_computables["Agi_total"]
-        robarCalculo = 0 + 3 * atributos_computables["Agi_total"]
-        trampasCalculo = 0 + atributos_computables["Per_total"] + atributos_computables["Agi_total"]
-        cienciaCalculo = 0 + 4 * atributos_computables["Int_total"]
-        repararCalculo = 0 + 3 * atributos_computables["Int_total"]
-        pilotarCalculo = 0 + 2 * (atributos_computables["Agi_total"] + atributos_computables["Per_total"])
-        conversacionCalculo = 0 + 5 * atributos_computables["Car_total"]
-        truequeCalculo = 0 + 4 * atributos_computables["Car_total"]
-        juegoCalculo = 0 + 5 * atributos_computables["Sue_total"]
-        vidaAlAireLibreCalculo = 2 * (atributos_computables["Res_total"] + atributos_computables["Int_total"])
-        atletismoCalculo = 5 + (2 * (atributos_computables["Str_total"] + atributos_computables["Agi_total"]))
+        armasPequenasCalculo = 5 + (4 * atributos_primarios["Agi_total"])
+        armasGrandesCalculo = 0 + (2 * atributos_primarios["Agi_total"])
+        armasEnergiaCalculo = 0 + (2 * atributos_primarios["Agi_total"])
+        desarmadoCalculo = 30 + 2 * (atributos_primarios["Agi_total"] + atributos_primarios["Str_total"])
+        armasMeleeCalculo = 20 + 2 * (atributos_primarios["Agi_total"] + atributos_primarios["Str_total"])
+        lanzarCalculo = 0 + 4 * atributos_primarios["Agi_total"]
+        primerosAuxiliosCalculo = 0 + 2 * (atributos_primarios["Per_total"] + atributos_primarios["Int_total"])
+        medicinaCalculo = 0 + 2 * (atributos_primarios["Per_total"] + atributos_primarios["Int_total"])
+        sigiloCalculo = 0 + 5 + (atributos_primarios["Agi_total"] * 3)
+        ganzuasCalculo = 0 + 10 + atributos_primarios["Per_total"] + atributos_primarios["Agi_total"]
+        robarCalculo = 0 + 3 * atributos_primarios["Agi_total"]
+        trampasCalculo = 0 + atributos_primarios["Per_total"] + atributos_primarios["Agi_total"]
+        cienciaCalculo = 0 + 4 * atributos_primarios["Int_total"]
+        repararCalculo = 0 + 3 * atributos_primarios["Int_total"]
+        pilotarCalculo = 0 + 2 * (atributos_primarios["Agi_total"] + atributos_primarios["Per_total"])
+        conversacionCalculo = 0 + 5 * atributos_primarios["Car_total"]
+        truequeCalculo = 0 + 4 * atributos_primarios["Car_total"]
+        juegoCalculo = 0 + 5 * atributos_primarios["Sue_total"]
+        vidaAlAireLibreCalculo = 2 * (atributos_primarios["Res_total"] + atributos_primarios["Int_total"])
+        atletismoCalculo = 5 + (2 * (atributos_primarios["Str_total"] + atributos_primarios["Agi_total"]))
 
         for skill in self.skill_list:
             tag = getattr(self, f"{skill}Tag")

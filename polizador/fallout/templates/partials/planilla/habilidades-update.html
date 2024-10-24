@@ -1,5 +1,9 @@
 {% load static %}
+{% load list_operators %}
 {% csrf_token %}
+
+<script src="{% static 'js/planilla-fallout.js' %}"></script>
+
 <span class="fallout-font-md fs-3 border border-dark rounded">HABILIDADES</span>
 <small>(0-100 1p=1p) (101-125 2p=1p) (126-150 3p=1p) (151-175 4p=1p) (176-... 5p=1p)</small>
 <table class="fallout-font table table-sm">
@@ -22,7 +26,7 @@
         {{field.auto_id}}Mod
         {{field.auto_id}}Tag
         -->
-        <tr class="fallout-font border-bottom border-dark {%if form.instance.armasPequenasTag %}tagged{%endif%}">
+        <tr class="fallout-font border-bottom border-dark {%if form.instance.armasPequenasTag %}tagged{%endif%}" id="{{form.armasPequenasTag.auto_id}}Nodo">
                 <td class="fallout-font col-1">
                         {{form.armasPequenasTag}}
                 </td>
@@ -43,12 +47,12 @@
                 </td>
                 <td class="fallout-font col-1">
                         <nobr>
-                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
-                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'minus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.armasPequenasTag.auto_id}}Nodo', 'minus')"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.armasPequenasTag.auto_id}}Nodo', 'plus')"/>
                         </nobr>
                 </td>
         </tr>
-        <tr class="fallout-font border-bottom border-dark {% if form.instance.armasGrandesTag %}tagged{%endif%}">
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.armasGrandesTag %}tagged{%endif%}" id="{{form.armasGrandesTag.auto_id}}Nodo">
                 <td class="fallout-font col-1">
                         {{form.armasGrandesTag}}
                 </td>
@@ -69,12 +73,12 @@
                 </td>
                 <td class="fallout-font col-1">
                         <nobr>
-                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
-                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'minus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.armasGrandesTag.auto_id}}Nodo', 'minus')"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.armasGrandesTag.auto_id}}Nodo', 'plus')"/>
                         </nobr>
                 </td>
         </tr>
-        <tr class="fallout-font border-bottom border-dark {% if form.instance.armasEnergiaTag %}tagged{%endif%}">
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.armasEnergiaTag %}tagged{%endif%}" id="{{form.armasEnergiaTag.auto_id}}Nodo">
                 <td class="fallout-font col-1">
                         {{form.armasEnergiaTag}}
                 </td>
@@ -95,19 +99,19 @@
                 </td>
                 <td class="fallout-font col-1">
                         <nobr>
-                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
-                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'minus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.armasEnergiaTag.auto_id}}Nodo', 'minus')"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.armasEnergiaTag.auto_id}}Nodo', 'plus')"/>
                         </nobr>
                 </td>
         </tr>
-        <tr class="fallout-font border-bottom border-dark {% if form.instance.desarmadoTag %}tagged{%endif%}">
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.desarmadoTag %}tagged{%endif%}" id="{{form.desarmadoTag.auto_id}}Nodo">
                 <td class="fallout-font col-1">
                         {{form.desarmadoTag}}
                 </td>
                 <td class="fallout-font col-6 align-left">
                         {{form.desarmadoTag.label}}
                 </td>
-                <td class="fallout-font col-1">
+                <td class="fallout-font col-1" id={{form.instance.desarmadoBaseSkill.auto_id}}>
                         {{form.instance.desarmadoBaseSkill}}
                 </td>
                 <td class="fallout-font col-1">
@@ -121,11 +125,11 @@
                 </td>
                 <td class="fallout-font col-1">
                         <nobr>
-                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
-                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'minus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.desarmadoTag.auto_id}}Nodo', 'minus')"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.desarmadoTag.auto_id}}Nodo', 'plus')"/>
                         </nobr>
                 </td>
-        <tr class="fallout-font border-bottom border-dark {% if form.instance.armasMeleeTag%}tagged{%endif%}">
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.armasMeleeTag%}tagged{%endif%}" id="{{form.armasMeleeTag.auto_id}}Nodo">
                 <td class="fallout-font col-1">
                         {{form.armasMeleeTag}}
                 </td>
@@ -146,12 +150,12 @@
                 </td>
                 <td class="fallout-font col-1">
                         <nobr>
-                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
-                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'minus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.armasMeleeTag.auto_id}}Nodo', 'minus')"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.armasMeleeTag.auto_id}}Nodo', 'plus')"/>
                         </nobr>
                 </td>
         </tr>
-        <tr class="fallout-font border-bottom border-dark {% if form.instance.lanzarTag%}tagged{%endif%}">
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.lanzarTag%}tagged{%endif%}" id="{{form.lanzarTag.auto_id}}Nodo">
                 <td class="fallout-font col-1">
                         {{form.lanzarTag}}
                 </td>
@@ -172,12 +176,12 @@
                 </td>
                 <td class="fallout-font col-1">
                         <nobr>
-                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
-                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'minus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.lanzarTag.auto_id}}Nodo', 'minus')"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.lanzarTag.auto_id}}Nodo', 'plus')"/>
                         </nobr>
                 </td>
         </tr>
-        <tr class="fallout-font border-bottom border-dark {% if form.instance.primerosAuxiliosTag%}tagged{%endif%}">
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.primerosAuxiliosTag%}tagged{%endif%}" id="{{form.primerosAuxiliosTag.auto_id}}Nodo">
                 <td class="fallout-font col-1">
                         {{form.primerosAuxiliosTag}}
                 </td>
@@ -198,12 +202,12 @@
                 </td>
                 <td class="fallout-font col-1">
                         <nobr>
-                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
-                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'minus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.primerosAuxiliosTag.auto_id}}Nodo', 'minus')"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.primerosAuxiliosTag.auto_id}}Nodo', 'plus')"/>
                         </nobr>
                 </td>
         </tr>
-        <tr class="fallout-font border-bottom border-dark {% if form.instance.medicinaTag%}tagged{%endif%}">
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.medicinaTag%}tagged{%endif%}" id="{{form.medicinaTag.auto_id}}Nodo">
                 <td class="fallout-font col-1">
                         {{form.medicinaTag}}
                 </td>
@@ -224,12 +228,12 @@
                 </td>
                 <td class="fallout-font col-1">
                         <nobr>
-                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
-                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'minus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.medicinaTag.auto_id}}Nodo', 'minus')"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.medicinaTag.auto_id}}Nodo', 'plus')"/>
                         </nobr>
                 </td>
         </tr>
-        <tr class="fallout-font border-bottom border-dark {% if form.instance.sigiloTag%}tagged{%endif%}">
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.sigiloTag%}tagged{%endif%}" id="{{form.sigiloTag.auto_id}}Nodo">
                 <td class="fallout-font col-1">
                         {{form.sigiloTag}}
                 </td>
@@ -250,12 +254,12 @@
                 </td>
                 <td class="fallout-font col-1">
                         <nobr>
-                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
-                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'minus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.sigiloTag.auto_id}}Nodo', 'minus')"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.sigiloTag.auto_id}}Nodo', 'plus')"/>
                         </nobr>
                 </td>
         </tr>
-        <tr class="fallout-font border-bottom border-dark {% if form.instance.ganzuasTag%}tagged{%endif%}">
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.ganzuasTag%}tagged{%endif%}" id="{{form.ganzuasTag.auto_id}}Nodo">
                 <td class="fallout-font col-1">
                         {{form.ganzuasTag}}
                 </td>
@@ -276,12 +280,12 @@
                 </td>
                 <td class="fallout-font col-1">
                         <nobr>
-                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
-                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'minus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.ganzuasTag.auto_id}}Nodo', 'minus')"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.ganzuasTag.auto_id}}Nodo', 'plus')"/>
                         </nobr>
                 </td>
         </tr>
-        <tr class="fallout-font border-bottom border-dark {% if form.instance.robarTag%}tagged{%endif%}">
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.robarTag%}tagged{%endif%}" id="{{form.robarTag.auto_id}}Nodo">
                 <td class="fallout-font col-1">
                         {{form.robarTag}}
                 </td>
@@ -302,12 +306,12 @@
                 </td>
                 <td class="fallout-font col-1">
                         <nobr>
-                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
-                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'minus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.robarTag.auto_id}}Nodo', 'minus')"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.robarTag.auto_id}}Nodo', 'plus')"/>
                         </nobr>
                 </td>
         </tr>
-        <tr class="fallout-font border-bottom border-dark {% if form.instance.trampasTag%}tagged{%endif%}">
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.trampasTag%}tagged{%endif%}" id="{{form.trampasTag.auto_id}}Nodo">
                 <td class="fallout-font col-1">
                         {{form.trampasTag}}
                 </td>
@@ -328,12 +332,12 @@
                 </td>
                 <td class="fallout-font col-1">
                         <nobr>
-                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
-                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'minus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.trampasTag.auto_id}}Nodo', 'minus')"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.trampasTag.auto_id}}Nodo', 'plus')"/>
                         </nobr>
                 </td>
         </tr>
-        <tr class="fallout-font border-bottom border-dark {% if form.instance.cienciaTag%}tagged{%endif%}">
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.cienciaTag%}tagged{%endif%}" id="{{form.cienciaTag.auto_id}}Nodo">
                 <td class="fallout-font col-1">
                         {{form.cienciaTag}}
                 </td>
@@ -354,12 +358,12 @@
                 </td>
                 <td class="fallout-font col-1">
                         <nobr>
-                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
-                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'minus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.cienciaTag.auto_id}}Nodo', 'minus')"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.cienciaTag.auto_id}}Nodo', 'plus')"/>
                         </nobr>
                 </td>
         </tr>
-        <tr class="fallout-font border-bottom border-dark {% if form.instance.repararTag%}tagged{%endif%}">
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.repararTag%}tagged{%endif%}" id="{{form.repararTag.auto_id}}Nodo">
                 <td class="fallout-font col-1">
                         {{form.repararTag}}
                 </td>
@@ -380,12 +384,12 @@
                 </td>
                 <td class="fallout-font col-1">
                         <nobr>
-                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
-                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'minus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.repararTag.auto_id}}Nodo', 'minus')"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.repararTag.auto_id}}Nodo', 'plus')"/>
                         </nobr>
                 </td>
         </tr>
-        <tr class="fallout-font border-bottom border-dark {% if form.instance.pilotarTag%}tagged{%endif%}">
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.pilotarTag%}tagged{%endif%}" id="{{form.pilotarTag.auto_id}}Nodo">
                 <td class="fallout-font col-1">
                         {{form.pilotarTag}}
                 </td>
@@ -406,12 +410,12 @@
                 </td>
                 <td class="fallout-font col-1">
                         <nobr>
-                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
-                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'minus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.pilotarTag.auto_id}}Nodo', 'minus')"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.pilotarTag.auto_id}}Nodo', 'plus')"/>
                         </nobr>
                 </td>
         </tr>
-        <tr class="fallout-font border-bottom border-dark {% if form.instance.conversacionTag%}tagged{%endif%}">
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.conversacionTag%}tagged{%endif%}" id="{{form.conversacionTag.auto_id}}Nodo">
                 <td class="fallout-font col-1">
                         {{form.conversacionTag}}
                 </td>
@@ -432,12 +436,12 @@
                 </td>
                 <td class="fallout-font col-1">
                         <nobr>
-                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
-                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'minus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.conversacionTag.auto_id}}Nodo', 'minus')"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.conversacionTag.auto_id}}Nodo', 'plus')"/>
                         </nobr>
                 </td>
         </tr>
-        <tr class="fallout-font border-bottom border-dark {% if form.instance.truequeTag%}tagged{%endif%}">
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.truequeTag%}tagged{%endif%}" id="{{form.truequeTag.auto_id}}Nodo">
                 <td class="fallout-font col-1">
                         {{form.truequeTag}}
                 </td>
@@ -458,12 +462,12 @@
                 </td>
                 <td class="fallout-font col-1">
                         <nobr>
-                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
-                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'minus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.truequeTag.auto_id}}Nodo', 'minus')"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.truequeTag.auto_id}}Nodo', 'plus')"/>
                         </nobr>
                 </td>
         </tr>
-        <tr class="fallout-font border-bottom border-dark {% if form.instance.juegoTag%}tagged{%endif%}">
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.juegoTag%}tagged{%endif%}" id="{{form.juegoTag.auto_id}}Nodo">
                 <td class="fallout-font col-1">
                         {{form.juegoTag}}
                 </td>
@@ -484,12 +488,12 @@
                 </td>
                 <td class="fallout-font col-1">
                         <nobr>
-                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
-                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'minus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.juegoTag.auto_id}}Nodo', 'minus')"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.juegoTag.auto_id}}Nodo', 'plus')"/>
                         </nobr>
                 </td>
         </tr>
-        <tr class="fallout-font border-bottom border-dark {% if form.instance.vidaAlAireLibreTag%}tagged{%endif%}">
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.vidaAlAireLibreTag%}tagged{%endif%}" id="{{form.vidaAlAireLibreTag.auto_id}}Nodo">
                 <td class="fallout-font col-1">
                         {{form.vidaAlAireLibreTag}}
                 </td>
@@ -510,12 +514,12 @@
                 </td>
                 <td class="fallout-font col-1">
                         <nobr>
-                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
-                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'minus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.vidaAlAireLibreTag.auto_id}}Nodo', 'minus')"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.vidaAlAireLibreTag.auto_id}}Nodo', 'plus')"/>
                         </nobr>
                 </td>
         </tr>
-        <tr class="fallout-font border-bottom border-dark {% if form.instance.atletismoTag%}tagged{%endif%}">
+        <tr class="fallout-font border-bottom border-dark {% if form.instance.atletismoTag%}tagged{%endif%}" id="{{form.atletismoTag.auto_id}}Nodo">
                 <td class="fallout-font col-1">
                         {{form.atletismoTag}}
                 </td>
@@ -536,8 +540,8 @@
                 </td>
                 <td class="fallout-font col-1">
                         <nobr>
-                        <img src="{% static 'minus-circle.svg' %}" width="14" heigth="14"/>
-                        <img src="{% static 'plus-circle.svg' %}" width="14" heigth="14"/>
+                        <img src="{% static 'minus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.atletismoTag.auto_id}}Nodo', 'minus')"/>
+                        <img src="{% static 'plus-circle.svg' %}" width="20" heigth="20" onclick="calculadorHabilidad('{{form.atletismoTag.auto_id}}Nodo', 'plus')"/>
                         </nobr>
                 </td>
         </tr>

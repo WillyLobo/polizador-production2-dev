@@ -19,157 +19,157 @@
 
 <div class="fallout-font row">
         <div class="fallout-font col-4 ms-3 p-0 border-top">PH/Nivel (5+(2*IN)) »</div>
-        <div class="fallout-font col-1 p-0 border-top">{{form.instance.puntosHabilidadPorNivelBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.puntosHabilidadPorNivelBase|strip_decimal}}</div>
         <div class="fallout-font col-1 p-0 border-top">+/-</div>
         <div class="fallout-font col-2 p-0 border-top">
             {{form.puntosHabilidadPorNivelMod}}
         </div>
         <div class="fallout-font col-1 p-0 border-top">=</div>
         <div class="fallout-font col-2 p-0 border-top">
-            {{form.instance.puntosHabilidadPorNivelTotal}}
+            {{form.instance.puntosHabilidadPorNivelTotal|strip_decimal}}
         </div>
 </div>
 <div class="fallout-font row">
         <div class="fallout-font col-4 ms-3 p-0 border-top">PG/Nivel (3+(RE/2)) »</div>
-        <div class="fallout-font col-1 p-0 border-top">{{form.instance.puntosGolpePorNivelBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.puntosGolpePorNivelBase|strip_decimal}}</div>
         <div class="fallout-font col-1 p-0 border-top">+/-</div>
         <div class="fallout-font col-2 p-0 border-top">
             {{form.puntosGolpePorNivelMod}}
         </div>
         <div class="fallout-font col-1 p-0 border-top">=</div>
         <div class="fallout-font col-2 p-0 border-top">
-            {{form.instance.puntosGolpePorNivelTotal}}
+            {{form.instance.puntosGolpePorNivelTotal|strip_decimal}}
         </div>
 </div>
 <div class="fallout-font row">
         <div class="fallout-font col-4 ms-3 p-0 border-top">PUNTOS DE ACCION » (5+AG/2)</div>
-        <div class="fallout-font col-1 p-0 border-top">{{form.instance.apBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.apBase|strip_decimal}}</div>
         <div class="fallout-font col-1 p-0 border-top">+/-</div>
         <div class="fallout-font col-2 p-0 border-top">
             {{form.apMod}}
         </div>
         <div class="fallout-font col-1 p-0 border-top">=</div>
         <div class="fallout-font col-2 p-0 border-top">
-            {{form.instance.apTotal}}
+            {{form.instance.apTotal|strip_decimal}}
         </div>
 </div>
 <div class="fallout-font row">
         <div class="fallout-font col-4 ms-3 p-0 border-top">SECUENCIA » (2xPE)</div>
-        <div class="fallout-font col-1 p-0 border-top">{{form.instance.secBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.secBase|strip_decimal}}</div>
         <div class="fallout-font col-1 p-0 border-top">+/-</div>
         <div class="fallout-font col-2 p-0 border-top">
             {{form.secMod}}
         </div>
         <div class="fallout-font col-1 p-0 border-top">=</div>
         <div class="fallout-font col-2 p-0 border-top">
-            {{form.instance.secTotal}}
+            {{form.instance.secTotal|strip_decimal}}
         </div>
 </div>
 <div class="fallout-font row">
         <div class="fallout-font col-4 ms-3 p-0 border-top">DAÑO MELEE » (FU - 5) Minimo 1</div>
-        <div class="fallout-font col-1 p-0 border-top">{{form.instance.danoMeleeBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.danoMeleeBase|strip_decimal}}</div>
         <div class="fallout-font col-1 p-0 border-top">+/-</div>
         <div class="fallout-font col-2 p-0 border-top">
             {{form.danoMeleeMod}}
         </div>
         <div class="fallout-font col-1 p-0 border-top">=</div>
         <div class="fallout-font col-2 p-0 border-top">
-            {{form.instance.danoMeleeTotal}}
+            {{form.instance.danoMeleeTotal|strip_decimal}}
         </div>
 </div>
 <div class="fallout-font row">
         <div class="fallout-font col-4 ms-3 p-0 border-top">POSIBILIDAD DE CRITICO » (SU)</div>
-        <div class="fallout-font col-1 p-0 border-top">{{form.instance.probCriticoBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.probCriticoBase|strip_decimal}}</div>
         <div class="fallout-font col-1 p-0 border-top">+/-</div>
         <div class="fallout-font col-2 p-0 border-top">
             {{form.probCriticoMod}}
         </div>
         <div class="fallout-font col-1 p-0 border-top">=</div>
         <div class="fallout-font col-2 p-0 border-top">
-            {{form.instance.probCriticoTotal}}
+            {{form.instance.probCriticoTotal|strip_decimal}}
         </div>
 </div>
 <div class="fallout-font row">
         <div class="fallout-font col-4 ms-3 p-0 border-top">RATIO CURACION » (RE / 3)</div>
-        <div class="fallout-font col-1 p-0 border-top">{{form.instance.ratioCuracionBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.ratioCuracionBase|strip_decimal}}</div>
         <div class="fallout-font col-1 p-0 border-top">+/-</div>
         <div class="fallout-font col-2 p-0 border-top">
             {{form.ratioCuracionMod}}
         </div>
         <div class="fallout-font col-1 p-0 border-top">=</div>
         <div class="fallout-font col-2 p-0 border-top">
-            {{form.instance.ratioCuracionTotal}}
+            {{form.instance.ratioCuracionTotal|strip_decimal}}
         </div>
 </div>
 <div class="fallout-font row">
         <div class="fallout-font col-4 ms-3 p-0 border-top">CAPACIDAD DE CARGA » (11.35 + 11.35xFU) Kg</div>
-        <div class="fallout-font col-1 p-0 border-top">{{form.instance.capCargaBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.capCargaBase|strip_decimal}}</div>
         <div class="fallout-font col-1 p-0 border-top">+/-</div>
         <div class="fallout-font col-2 p-0 border-top">
             {{form.capCargaMod}}
         </div>
         <div class="fallout-font col-1 p-0 border-top">=</div>
         <div class="fallout-font col-2 p-0 border-top">
-            {{form.instance.capCargaTotal}}
+            {{form.instance.capCargaTotal|strip_decimal}}
         </div>
 </div>
 <div class="fallout-font row">
         <div class="fallout-font col-4 ms-3 p-0 border-top">RESISTENCIA VENENO » (5 x RE)</div>
-        <div class="fallout-font col-1 p-0 border-top">{{form.instance.resVenenoBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.resVenenoBase|strip_decimal}}</div>
         <div class="fallout-font col-1 p-0 border-top">+/-</div>
         <div class="fallout-font col-2 p-0 border-top">
             {{form.resVenenoMod}}
         </div>
         <div class="fallout-font col-1 p-0 border-top">=</div>
         <div class="fallout-font col-2 p-0 border-top">
-            {{form.instance.resVenenoTotal}}
+            {{form.instance.resVenenoTotal|strip_decimal}}
         </div>
 </div>
 <div class="fallout-font row">
         <div class="fallout-font col-4 ms-3 p-0 border-top">RESISTENCIA RADIACION » (2 x RE)</div>
-        <div class="fallout-font col-1 p-0 border-top">{{form.instance.resRadiacionBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.resRadiacionBase|strip_decimal}}</div>
         <div class="fallout-font col-1 p-0 border-top">+/-</div>
         <div class="fallout-font col-2 p-0 border-top">
             {{form.resRadiacionMod}}
         </div>
         <div class="fallout-font col-1 p-0 border-top">=</div>
         <div class="fallout-font col-2 p-0 border-top">
-            {{form.instance.resRadiacionTotal}}
+            {{form.instance.resRadiacionTotal|strip_decimal}}
         </div>
 </div>
 <div class="fallout-font row">
         <div class="fallout-font col-4 ms-3 p-0 border-top">RESISTENCIA ELECTRICIDAD »</div>
-        <div class="fallout-font col-1 p-0 border-top">{{form.instance.resElectricidadBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.resElectricidadBase|strip_decimal}}</div>
         <div class="fallout-font col-1 p-0 border-top">+/-</div>
         <div class="fallout-font col-2 p-0 border-top">
             {{form.resElectricidadMod}}
         </div>
         <div class="fallout-font col-1 p-0 border-top">=</div>
         <div class="fallout-font col-2 p-0 border-top">
-            {{form.instance.resElectricidadTotal}}
+            {{form.instance.resElectricidadTotal|strip_decimal}}
         </div>
 </div>
 <div class="fallout-font row">
         <div class="fallout-font col-4 ms-3 p-0 border-top">RESISTENCIA GAS »</div>
-        <div class="fallout-font col-1 p-0 border-top">{{form.instance.resGasBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.resGasBase|strip_decimal}}</div>
         <div class="fallout-font col-1 p-0 border-top">+/-</div>
         <div class="fallout-font col-2 p-0 border-top">
             {{form.resGasMod}}
         </div>
         <div class="fallout-font col-1 p-0 border-top">=</div>
         <div class="fallout-font col-2 p-0 border-top">
-            {{form.instance.resGasTotal}}
+            {{form.instance.resGasTotal|strip_decimal}}
         </div>
 </div>
 <div class="fallout-font row">
         <div class="fallout-font col-4 ms-3 p-0 border-top">IMPLANTE » (10 x (IN + RE))</div>
-        <div class="fallout-font col-1 p-0 border-top">{{form.instance.implanteBase}}</div>
+        <div class="fallout-font col-1 p-0 border-top">{{form.instance.implanteBase|strip_decimal}}</div>
         <div class="fallout-font col-1 p-0 border-top">+/-</div>
         <div class="fallout-font col-2 p-0 border-top">
             {{form.implanteMod}}
         </div>
         <div class="fallout-font col-1 p-0 border-top">=</div>
         <div class="fallout-font col-2 p-0 border-top">
-            {{form.instance.implanteTotal}}
+            {{form.instance.implanteTotal|strip_decimal}}
         </div>
 </div>
