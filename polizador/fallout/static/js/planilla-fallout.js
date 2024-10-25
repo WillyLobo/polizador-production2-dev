@@ -17,8 +17,8 @@ function calculadorHabilidad(nodo, operacion) {
     } else if (operacion == 'minus') {
         habilidadSkill.value = parseInt(habilidadSkill.value) - 1
     }
-    habCalculada = habilidadBase
-    habilidadTotal.innerText = Math.round(skillUp(habCalculada, parseInt(habilidadSkill.value)+habilidadMod, habilidadTag) * 100) / 100
+    habCalculada = parseInt(habilidadBase)
+    habilidadTotal.innerText = (Math.round(skillUp(habCalculada, parseInt(habilidadSkill.value), habilidadTag) * 100) / 100) + parseInt(habilidadMod)
 }
 
 function skillUp(habilidadTotal, habilidadPuntos, tagged) {
