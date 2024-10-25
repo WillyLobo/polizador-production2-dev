@@ -306,7 +306,7 @@ class PlanillaFalloutUpdateForm(forms.ModelForm):
         )
 
         habilidad_numberinput = {
-                    "class":"fallout-font p-0 m-0 shadow-none no-border",
+                    "class":"fallout-font p-0 m-0 shadow-none no-border w-100",
                     "placeholder":"0",
                     "step":"1",
                 }
@@ -441,59 +441,59 @@ class PlanillaFalloutUpdateForm(forms.ModelForm):
             }),
 
             "puntosHabilidadPorNivelMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
+                "class":"fallout-font p-0 m-0 shadow-none no-border w-100",
                 "placeholder":"0",
                 "min":"0",
                 "step":"1"
             }),
             "puntosGolpePorNivelMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
+                "class":"fallout-font p-0 m-0 shadow-none no-border w-100",
                 "placeholder":"0",
                 "min":"0",
                 "step":"1"
             }),
             "apMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
+                "class":"fallout-font p-0 m-0 shadow-none no-border w-100",
                 "placeholder":"0"
             }),
             "secMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
+                "class":"fallout-font p-0 m-0 shadow-none no-border w-100",
                 "placeholder":"0"
             }),
             "danoMeleeMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
+                "class":"fallout-font p-0 m-0 shadow-none no-border w-100",
                 "placeholder":"0"
             }),
             "probCriticoMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
+                "class":"fallout-font p-0 m-0 shadow-none no-border w-100",
                 "placeholder":"0"
             }),
             "ratioCuracionMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
+                "class":"fallout-font p-0 m-0 shadow-none no-border w-100",
                 "placeholder":"0"
             }),
             "capCargaMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
+                "class":"fallout-font p-0 m-0 shadow-none no-border w-100",
                 "placeholder":"0"
             }),
             "resVenenoMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
+                "class":"fallout-font p-0 m-0 shadow-none no-border w-100",
                 "placeholder":"0"
             }),
             "resRadiacionMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
+                "class":"fallout-font p-0 m-0 shadow-none no-border w-100",
                 "placeholder":"0"
             }),
             "resElectricidadMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
+                "class":"fallout-font p-0 m-0 shadow-none no-border w-100",
                 "placeholder":"0"
             }),
             "resGasMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
+                "class":"fallout-font p-0 m-0 shadow-none no-border w-100",
                 "placeholder":"0"
             }),
             "implanteMod":forms.NumberInput(attrs={
-                "class":"fallout-font p-0 m-0 shadow-none no-border",
+                "class":"fallout-font p-0 m-0 shadow-none no-border w-100",
                 "placeholder":"0"
             }),
                  

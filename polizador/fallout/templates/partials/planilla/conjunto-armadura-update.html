@@ -1,0 +1,95 @@
+{% load static %}
+{% load list_operators %}
+{% csrf_token %}
+
+<span class="fallout-font-md fs-3 border border-dark rounded">CONJUNTO ARMADURA</span>
+
+<div class="container">
+        <div class="row">
+                <span class="fallout-font-sm m-0 p-0">Condición »</span>
+                <div class="col m-0 p-0"><input class="m-0 p-0" style="width:40px;height:20px" type="checkbox" name="condicion" value=""></div>
+                <div class="col m-0 p-0"><input class="m-0 p-0" style="width:40px;height:20px" type="checkbox" name="condicion" value=""></div>
+                <div class="col m-0 p-0"><input class="m-0 p-0" style="width:40px;height:20px" type="checkbox" name="condicion" value=""></div>
+                <div class="col m-0 p-0"><input class="m-0 p-0" style="width:40px;height:20px" type="checkbox" name="condicion" value=""></div>
+                <div class="col m-0 p-0"><input class="m-0 p-0" style="width:40px;height:20px" type="checkbox" name="condicion" value=""></div>
+                <div class="col m-0 p-0"><input class="m-0 p-0" style="width:40px;height:20px" type="checkbox" name="condicion" value=""></div>
+                <div class="col m-0 p-0"><input class="m-0 p-0" style="width:40px;height:20px" type="checkbox" name="condicion" value=""></div>
+                <div class="col m-0 p-0"><input class="m-0 p-0" style="width:40px;height:20px" type="checkbox" name="condicion" value=""></div>
+                <div class="col m-0 p-0"><input class="m-0 p-0" style="width:40px;height:20px" type="checkbox" name="condicion" value=""></div>
+                <div class="col m-0 p-0"><input class="m-0 p-0" style="width:40px;height:20px" type="checkbox" name="condicion" value=""></div>
+        </div>
+
+        <div class="fallout-font row">
+                <div class="fallout-font col-2 ms-3 p-0 border-top"></div>
+                <div class="fallout-font col-1 p-0 border-top">DT</div>
+                <div class="fallout-font col-1 p-0 border-top"></div>
+                <div class="fallout-font col-1 p-0 border-top">DR</div>
+                <div class="fallout-font col-1 p-0 border-top"></div>
+                <div class="fallout-font col-1 p-0 border-top">MOD</div>
+                <div class="fallout-font col-1 p-0 border-top"></div>
+                <div class="fallout-font col-1 p-0 border-top"></div>
+                <div class="fallout-font col-2 p-0 border-top">Total</div>
+        </div>
+        
+        <div class="fallout-font row">
+                <div class="fallout-font col-2 ms-3 p-0 border-top">NORMAL</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">/</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">+/-</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">=</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+        </div>
+        <div class="fallout-font row">
+                <div class="fallout-font col-2 ms-3 p-0 border-top">LASER</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">/</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">+/-</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">=</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+        </div>
+        <div class="fallout-font row">
+                <div class="fallout-font col-2 ms-3 p-0 border-top">FUEGO</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">/</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">+/-</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">=</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+        </div>
+        <div class="fallout-font row">
+                <div class="fallout-font col-2 ms-3 p-0 border-top">PLASMA</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">/</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">+/-</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">=</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+        </div>
+        <div class="fallout-font row">
+                <div class="fallout-font col-2 ms-3 p-0 border-top">EXPLOSIVO</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">/</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">+/-</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">=</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+                <div class="fallout-font col-1 p-0 border-top">0</div>
+        </div>
+
+</div>
