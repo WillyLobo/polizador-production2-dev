@@ -1,5 +1,4 @@
-{% if perms.secretariador.view_solicitud %}
-{<!doctype html>
+<!doctype html>
 <html lang="es_LA">
   <head>
     <!-- Required meta tags -->
@@ -31,6 +30,7 @@
   <script src="{% static 'htmx/htmx.min.js' %}"></script>
   <!-- CSS Modifications -->
   <link href="{% static 'style.css' %}" rel="stylesheet">
+  <link href="{% static 'fallout-style.css' %}" rel="stylesheet">
   <!-- sumaColumna -->
   <script src="{% static 'js/sumacolumna.js' %}"></script>
 
@@ -42,7 +42,7 @@
 {%comment%}Padding required to avoid navbar overlaping content{%endcomment%}
 <body style="padding-top: 60px !important;">
 
-{% include "navbar.html" %}
+{% include "home/fallout-navbar.html" %}
 
 <div class="container-fluid content">
   {% block style %}   {%endblock%}
@@ -69,9 +69,9 @@
       select2.dropdown.$search.get(0).focus();
     }
   });
+  $(function () {
+    $('[data-toggle="tooltip"]').tooltip()
+  })
 </script>
 
-</html>}
-{% elif perms.fallout.view_charfallout %}
-{% include "fallout-base.html" %}
-{% endif %}
+</html>
