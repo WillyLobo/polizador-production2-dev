@@ -2,7 +2,7 @@
 {% load l10n %}
 
 <div class="fallout-font row border border-dark rounded rounded-3 p-2">
-    <div class="fallout-font col-6">
+    <div class="fallout-font col-lg-5 col-sm-12">
         <span class="fallout-font-md fs-3 border border-dark rounded">Datos Generales</span>
         {% for field in form.visible_fields|slice:":1" %}
             <input type="hidden" class="form-control" name="{{field.name}}" value="{{request.user.id}}" readonly>
@@ -67,11 +67,11 @@
         {%endfor%}
     </div>
     
-<div class="fallout-font col-3 border">
+<div class="fallout-font col-lg-2 col-sm-12 border">
     <img src="{% static "vaultboy-launcher.jpg" %}" title="Vault Boy" class="fallout-font img-fluid" />
 </div>
 
-<div class="fallout-font col-3">
+<div class="fallout-font col-lg-5 col-sm-12 border">
     <span class="fallout-font-md fs-3 border border-dark rounded">Status</span>
     {% for field in form.visible_fields|slice:"8:11" %}
         <div class="fallout-font input-group">

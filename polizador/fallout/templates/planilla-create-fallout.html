@@ -6,15 +6,16 @@
 {% include "partials/planilla/datos-generales-create.html" %}
 
 <div class="fallout-font row border border-dark rounded rounded-3 p-2">
-        <div class="fallout-font col border border-dark rounded rounded-3 m-1">
+        <div class="fallout-font col-sm-12 col-lg-5 border border-dark rounded rounded-3 m-1">
                 {% include "partials/planilla/atributos-primarios-create.html" %}
         </div>
-        <div class="fallout-font col border border-dark rounded rounded-3 m-1">
+        <div class="fallout-font col-sm-12 col-lg-5 border border-dark rounded rounded-3 m-1">
                 {% include "partials/planilla/atributos-secundarios-create.html" %}
         </div>
-</div>
-<div class="fallout-font col">
-        {% include "partials/planilla/habilidades-create.html" %}
+        <div class="fallout-font col-sm-12 col-lg-12">
+                {% include "partials/planilla/habilidades-create.html" %}
+        </div>
+        
 </div>
 <div class="fallout-font border">
         <input type='submit' value='Guardar' class="fallout-font-lg" />
