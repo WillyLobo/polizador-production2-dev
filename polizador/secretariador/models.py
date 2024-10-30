@@ -100,7 +100,7 @@ class InstrumentosLegalesMemorandum(models.Model):
         db_persist=True,
     )
     # Fields related to the automatic extraction of text from the digitalized instrument.
-    instrumentolegalmemorandum_autocarga = models.BooleanField("Memorandum importada sin intervención.", default=False)
+    instrumentolegalmemorandum_autocarga = models.BooleanField("Memorandum importado sin intervención humana.", default=False)
     instrumentolegalmemorandum_document = models.TextField("Texto Extraído por OCR", null=True, blank=True)
 
     def __str__(self):
