@@ -1,5 +1,6 @@
 from django.urls import path
 
+from secretariador.views.ajaxviews import get_agentes
 from secretariador.views.solicitudviews import *
 from secretariador.views.solicitud_exteriorviews import *
 from secretariador.views.comisionadoviews import *
@@ -75,6 +76,7 @@ incorporacion_patterns = [
 ]
 reportes_patterns = [
     path("reportes/viaticos-agente/", CrearReporteViaticosPorAgente.as_view(), name="crear-reporte-viaticos-por-agente"),
+    path("reportes/viaticos-agente-individual/", CrearReporteViaticosPorAgenteIndividual.as_view(), name="crear-reporte-viaticos-por-agente-individual"),
     path("reportes/viaticos-area/", CrearReporteViaticosporArea.as_view(), name="crear-reporte-viaticos-por-area"),
     path("reportes/ausencias/", CrearReporteAusenciasPorAgente.as_view(), name="crear-reporte-ausencias-por-agente"),
     path("reportes/duplicados/", CrearReporteComisionesDuplicadas.as_view(), name="crear-reporte-duplicados"),
@@ -110,6 +112,8 @@ ajax = [
     # Incorporaciones
     path("listas/incorporaciones", PaginaListaIncorporaciones, name="lista-incorporaciones"),
     path("ajax_datatable/incorporaciones/", ListaIncorporacionesView.as_view(), name="lista-incorporaciones-datatables"),
+    # Agente Query
+    path("ajax/get_agentes/", get_agentes, name="get-agentes"),
 ]
 
 urlpatterns += redirects
