@@ -1,4 +1,4 @@
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
@@ -272,4 +272,30 @@ class CrearReporteComisionesDuplicadas(PermissionRequiredMixin, generic.ListView
             "fecha_final": fecha_final,
         }
 
+        return final_queryset
+
+@method_decorator(login_required, name="dispatch")
+class CrearReporteViaticosPorAgenteIndividual(PermissionRequiredMixin, generic.ListView):
+    login_url = "/"
+    redirect_field_name = "login"
+    permission_required = "secretariador.add_solicitud"
+
+    model = Comisionado
+    context_object_name = "solicitud"
+    template_name = "reportes/crear-reporteviaticosporagenteindividual.html"
+	
+    def get_queryset(self):
+        if self.request.GET:
+            agente = Comisionado.objects.get(id=self.request.GET.get("agente"))
+            ano = self.request.GET.get("ano")
+            comisiones = agente.comisionadosolicitud_set.filter(comisionadosolicitud_foreign__solicitud_fecha_desde__year=ano).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
+            # comisionadosolicitud_foreign_solicitud_fecha_desde__year
+        else:
+            agente, comisiones = None, None
+
+        final_queryset = {}
+        final_queryset.update({
+            "agente": agente,
+            "comisiones": comisiones,
+        })
         return final_queryset
