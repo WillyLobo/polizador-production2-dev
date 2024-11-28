@@ -26,7 +26,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # "Secret" Variables.
-DEBUG = env('DEBUG')
+DEBUG = env("DEBUG")
+ALLOWED_HOSTS= env.list("ALLOWED_HOSTS")
+CSRF_TRUSTED_ORIGINS= env.list("CSRF_TRUSTED_ORIGINS")
 SECRET_KEY = env('SECRET_KEY')
 DBHOST=env("DBHOST")
 DBUSER=env("DBUSER")
@@ -35,11 +37,6 @@ DBSECRET=env("DBPASSWORD")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
-
-ALLOWED_HOSTS = [
-	"www.willylobo.net.ar",
-	]
-INTERNAL_IPS = ["localhost", "127.0.0.1"]
 
 # Application definition
 INSTALLED_APPS = [
@@ -103,22 +100,8 @@ TEMPLATES = [
 TEMPLATES[0]['OPTIONS']['context_processors'].append("polizador.context_processors.imglinks")
 
 CACHES = {
-    'default': {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/1",
-        "TIMEOUT": 900,
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
-    },
-    "select2": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:6379/2",
-        "TIMEOUT": 900,
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
-    }
+    'default': env.cache(),
+    "select2": env.cache_url("REDIS_URL"),
 }
 SELECT2_CACHE_BACKEND = "select2"
 SELECT2_THEME = "bootstrap-5"
@@ -200,7 +183,7 @@ MEDIA_URL  = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
 if DEBUG == True:
-    ALLOWED_HOSTS = INTERNAL_IPS
+    INTERNAL_IPS = ["localhost", "127.0.0.1"]
     DEBUG_TOOLBAR_ENABLE = True
     if DEBUG_TOOLBAR_ENABLE:
         INSTALLED_APPS = INSTALLED_APPS + ["debug_toolbar"]
