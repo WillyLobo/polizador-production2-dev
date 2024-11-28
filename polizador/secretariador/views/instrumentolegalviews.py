@@ -176,6 +176,7 @@ class ListaListaInstrumentosLegalesMemorandumView(AjaxDatatableView):
 		{"name":"instrumentolegalmemorandum_ano", "className": "align-left "},
 		{"name":"instrumentolegalmemorandum_fecha_aprobacion", "className": "align-left "},
 		{"name":"instrumentolegalmemorandum_descripcion", "className": "align-right"},
+		{"name":"instrumentolegalmemorandum_document", "className":"align-right", "max_length":200, "searchable": False, "orderable": False},
 	]
 
 	def render_clip_value_as_html(self, long_text, short_text, is_clipped):
