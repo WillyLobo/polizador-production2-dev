@@ -61,18 +61,14 @@
 
 <script>
   $('#addForm').click(function() {
+  $(".customSelect2").select2("destroy");
 	var form_idx = $('#id_comisionadosolicitud_set-TOTAL_FORMS').val();
 	$('#comisionadosolicitud-form').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
 	$('#id_comisionadosolicitud_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+  $(".customSelect2").select2({
+    theme: 'bootstrap-5',
+  });
 });
 </script>
 
-{%comment%}
-<script>
-  $('#addForm').click(function() {
-  cloneMore("div.comisionadosolicitud-form:last", "comisionadosolicitud_set")
-  });
-</script>
-{%endcomment%}
-</script>
 {% endblock %}

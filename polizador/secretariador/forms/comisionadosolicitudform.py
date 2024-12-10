@@ -15,7 +15,8 @@ class ComisionadoSolicitudForm(forms.ModelForm):
         )
         widgets = {
             "comisionadosolicitud_nombre":forms.Select(attrs={
-                "class":"form-control"
+                "class":"form-control customSelect2",
+                "style":"width: 40em;height: 3em;"
                 }),
             "comisionadosolicitud_gastos":forms.NumberInput(attrs={
                 "class":"form-control",
