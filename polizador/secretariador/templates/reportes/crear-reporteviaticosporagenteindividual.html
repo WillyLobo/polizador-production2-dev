@@ -61,6 +61,7 @@
 <script>
     $(document).ready(function () {
         $('#id_agente').select2({
+            theme: "bootstrap-5",
             ajax: {
                 url: '/viaticos/ajax/get_agentes/',
                 dataType: "json",
