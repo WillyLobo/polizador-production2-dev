@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from secretariador.functions import FileValidator, CuitValidator
 from datetime import datetime, timedelta
 from django.utils import timezone
+from django.urls import reverse
 from django.core.exceptions import ValidationError
 import os
 from django.db.models.functions import ExtractDay
@@ -329,6 +330,9 @@ class Solicitud(models.Model):
 
     def __str__(self):
         return f"{self.solicitud_actuacion}"
+    
+    def get_absolute_url(self):
+        return reverse('secretariador:update-solicitud', kwargs={"pk": str(self.id)})
 
 class ComisionadoSolicitud(models.Model):
     class Meta:
@@ -463,3 +467,6 @@ class Incorporacion(models.Model):
     
     def cantidad_de_dias(self):
         return self.incorporacion_solicitud.solicitud_cantidad_de_dias
+    
+    def get_absolute_url(self):
+        return reverse("secretariador:update-incorporacion", kwargs={"pk": str(self.id)})
