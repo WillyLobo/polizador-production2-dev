@@ -42,10 +42,10 @@
             events: [
             {% for solicitud in solicitud.comisiones %}
             {
-                title: "{{solicitud.comisionadosolicitud_foreign.solicitud_actuacion}}",
-                start: "{{solicitud.comisionadosolicitud_foreign.solicitud_fecha_desde|date:'Y-m-d'}}",
-                end: "{{solicitud.comisionadosolicitud_foreign.solicitud_fecha_hasta|date:'Y-m-d'}}",
-                url: "{% url 'secretariador:update-solicitud' solicitud.comisionadosolicitud_foreign.id %}",
+                title: "{{solicitud.0}}",
+                start: "{{solicitud.1|date:'Y-m-d'}}",
+                end: "{{solicitud.2|date:'Y-m-d'}}",
+                url: "{{solicitud.3}}",
                 allDay: true,
             },
             {%endfor%}
