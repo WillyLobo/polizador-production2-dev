@@ -181,8 +181,12 @@ class CrearReporteAusenciasPorAgente(PermissionRequiredMixin, generic.ListView):
             # fechas = [datetime.strftime(fecha, "%d/%m/%Y") for fecha in fechas]
             days_list = []
             for comision in agentes_list:
-                if comision.comisionadosolicitud_foreign.solicitud_cantidad_de_dias is not None:
-                    days_list.append(", ".join(comision.comisionadosolicitud_foreign.solicitud_fechas()))
+                if comision.comisionadosolicitud_foreign:
+                    if comision.comisionadosolicitud_foreign.solicitud_cantidad_de_dias is not None:
+                        days_list.append(", ".join(comision.comisionadosolicitud_foreign.solicitud_fechas()))
+                if comision.comisionadosolicitud_incorporacion_foreign:
+                    if comision.comisionadosolicitud_incorporacion_foreign.incorporacion_solicitud.solicitud_cantidad_de_dias is not None:
+                        days_list.append(", ".join(comision.comisionadosolicitud_incorporacion_foreign.incorporacion_solicitud.solicitud_fechas()))
 
             days_list = ", ".join(days_list)
             if solicitudes_annotated["cantidad_de_dias"] is not None:
