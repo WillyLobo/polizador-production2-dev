@@ -156,8 +156,8 @@ USE_THOUSAND_SEPARATOR = True
 # Cloud Storage
 
 GS_CREDENTIALS = service_account.Credentials.from_service_account_file("polizador-production.json")
-DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
-GS_BUCKET_NAME = 'polizador-production-pdf'
+# DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
+# GS_BUCKET_NAME = 'polizador-production-pdf'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
@@ -177,10 +177,26 @@ STATIC_ROOT = BASE_DIR / "static_files/static"
 STATIC_FILES_DIRS = [
     BASE_DIR / "static_files",
 ]
-STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
 MEDIA_URL  = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+STORAGES = {
+    "default": {
+        "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+        "OPTIONS": {
+        #  https://storage.cloud.google.com/polizador-production-pdf/instrumentoslegales/resoluciones/1400-2024-P.pdf
+        "bucket_name": "polizador-production-pdf",
+        "credentials": GS_CREDENTIALS,
+        },
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
+
+
 
 if DEBUG == True:
     INTERNAL_IPS = ["localhost", "127.0.0.1"]
