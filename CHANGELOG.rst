@@ -3,6 +3,17 @@
 History
 =======
 
+v0.1.3-1
+------
+* Added filter to instrumentoslegalesresoluciones OCR field in datatables.
+* Fixed ComisionadoSolicitud cloned select2 widgets.
+* Fixed reportesviews to include incorporaciones in the query.
+* Fixed missing bootstrap5 theme in reportesviews.
+
+v0.1.3
+------
+* Added annual calendar report by agent.
+
 v0.1.2
 * Fixed buttons in old templates.
 * Changed render_row_details in ListaListaInstrumentosLegalesDecretosView and ListaListaInstrumentosLegalesResolucionesView to improve loading times.

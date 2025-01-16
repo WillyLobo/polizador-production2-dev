@@ -6,15 +6,18 @@ from carga.models import Uvi
 
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
-        proyeccion = (datetime.now() + timedelta(days=30)).strftime("%Y-%m-%d")
-
-        fecha_desde = (datetime.now() + timedelta(days=-30)).strftime("%Y-%m-%d")
-        fecha_hasta = proyeccion
         idvariable=32
+        last_object = Uvi.objects.last()
+        last_object_date = last_object.uvi_fecha
+        counter = 0
+        fecha_desde = last_object_date+timedelta(days=1)
+        fecha_hasta = fecha_desde+timedelta(days=31)
+
+
         
         r = requests.get(f"https://api.bcra.gob.ar/estadisticas/v2.0/datosvariable/{idvariable}/{fecha_desde}/{fecha_hasta}", verify=False)
         r = dict(r.json())
-        
+        # Get last date of Uvi model to fill the last id and complete the sequence.
         for value in r["results"]:
             uvi_fecha = value["fecha"]
             uvi_valor = value["valor"]
@@ -25,10 +28,13 @@ class Command(BaseCommand):
                     print(f"{uvi} already exists.")
             except ObjectDoesNotExist:
                 print(f"No record found... inserting new one.")
-                Uvi.objects.create(
+                uvi = Uvi(
+                    id=int(last_object.id) + counter,
                     uvi_fecha=uvi_fecha,
                     uvi_valor=uvi_valor
                     )
+                uvi.save()
+                counter += 1
 
 """
 {

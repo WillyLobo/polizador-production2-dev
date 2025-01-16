@@ -1,5 +1,6 @@
 from django.urls import path
 from fallout.views.planillaviews import *
+from fallout.views.planilladnd5view import *
 from fallout.views.generator import *
 from django.contrib.auth.decorators import login_required
 from django.views.generic.base import TemplateView
@@ -12,6 +13,6 @@ urlpatterns = [
     path("planilla/update/<pk>/", PlanillaFalloutUpdateView.as_view(), name="planilla-fallout-update"),
     # path("planilla/<pk>/", PlanillaFalloutDetailView.as_view(), name="planilla-fallout-detail"),
     path("list/", PlanillaFalloutListView.as_view(), name="planilla-fallout-list"),
-    # path("skill_test/", skill_test, name="skill-test"),
+    path("planilla_test/", planilla_test, name="planilla-test"),
     # path("skill_check/", skill_check, name="skill-check"),
 ]

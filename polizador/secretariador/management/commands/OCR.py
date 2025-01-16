@@ -30,7 +30,7 @@ processor_type = 'OCR_PROCESSOR' # Use fetch_processor_types to get available pr
 processor_id_summary = 'd7c3475c0c92e6e3'
 processor_id = 'bc2556a92e4b120a'
 file_path = ""
-dir_path = "/home/willy/resoluciones2023/"
+dir_path = "/home/willy/resoluciones2022/"
 mime_type = "application/pdf" # Refer to https://cloud.google.com/document-ai/docs/file-types for supported file types
 # processor_version_id = "YOUR_PROCESSOR_VERSION_ID" # Optional. Processor version to use
 test_file_uri = "gs://polizador-production-pdf/instrumentoslegales/resoluciones/"
@@ -172,9 +172,6 @@ def process_document_sample(project_id: str, location: str, processor_id: str, f
     # Read the text recognition output from the processor
     return document
 
-# document = process_document_sample(project_id, location, processor_id, file_path, mime_type)
-# document.text
-
 #     def ERROR(self, text: str) -> str: ...
 #     def SUCCESS(self, text: str) -> str: ...
 #     def WARNING(self, text: str) -> str: ...
@@ -203,8 +200,8 @@ class Command(BaseCommand):
             start_time = time.perf_counter()
             filename = os.path.basename(file)
             filename = filename.replace(".pdf", "")
-            res_number = str(int(filename.split(" ")[1])).zfill(4) # Convert to int so we can be sure is the correct number, and then to string, then fill with zero to 4 digits.
-            res_year = "2023"
+            res_number = str(int(filename.split(".")[0].split(" ")[1])).zfill(4) # Convert to int so we can be sure is the correct number, and then to string, then fill with zero to 4 digits.
+            res_year = "2022"
 
             file_object = File(open(file, "rb"))
             self.stdout.write(f"{self.style.MIGRATE_LABEL('Procesando el archivo:')} {self.style.SQL_KEYWORD(file)}")

@@ -71,6 +71,8 @@
 [ ] Add save method to set Comisionados into Solicitud database field.
 [ ] Add ajax to validate instrumentolegalresoluciones in forms.
 [+] Add button option for Solicitud to be without allowances.
+[ ] Add constraint to solicitud so comisionados cannot be duplicated.
+[ ] Fix get_absolute_url() in reportesviews CrearReporteViaticosPorAgenteIndividual that is calling the wrong url.
 
 [+] Add vehiculo_poliza & vehiculo_poliza_aseguradora fields to Vehiculo model.
 [ ] Add field instrumentolegalresoluciones_actuacion to InstrumentosLegalesResoluciones model, generated from instrumentolegalresoluciones_descripcion split.
