@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 from django.views import generic
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from secretariador.models import *
 from django.db.models import Q, FilteredRelation, Subquery, OuterRef, Sum, F, Min, Max
 from django.core.exceptions import ValidationError
@@ -296,14 +296,15 @@ class CrearReporteViaticosPorAgenteIndividual(PermissionRequiredMixin, generic.L
 	
     def get_queryset(self):
         if self.request.GET:
-            agente = Comisionado.objects.get(id=self.request.GET.get("agente"))
+            agente = get_object_or_404(Comisionado, id=self.request.GET.get("agente"))
+            #agente = Comisionado.objects.get(id=self.request.GET.get("agente"))
             ano = self.request.GET.get("ano")
             comisiones = agente.comisionadosolicitud_set.filter(
                     Q(comisionadosolicitud_foreign__solicitud_fecha_desde__year=ano) |
                     Q(comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__year=ano)
                 ).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
         else:
-            agente, comisiones = None, None
+            agente, comisiones, ano = None, None, None
 
         # title: "{{solicitud.comisionadosolicitud_foreign.solicitud_actuacion}}",
         # start: "{{solicitud.comisionadosolicitud_foreign.solicitud_fecha_desde|date:'Y-m-d'}}",
@@ -320,11 +321,13 @@ class CrearReporteViaticosPorAgenteIndividual(PermissionRequiredMixin, generic.L
                         foreign.solicitud_fecha_hasta,
                         foreign.get_absolute_url(),
                 ])
-        # print(comisiones_dict)
+
+        initial_date = str(ano)+"-01-01" if ano is not None else str(datetime.today().year)+"-01-01"
         final_queryset = {}
         final_queryset.update({
+            "initial_date": initial_date,
             "agente": agente,
             "comisiones": comisiones_list,
         })
-        print(final_queryset)
+
         return final_queryset
