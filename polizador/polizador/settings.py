@@ -13,6 +13,7 @@ import environ
 import os
 from pathlib import Path
 from google.oauth2 import service_account
+import sentry_sdk
 
 env = environ.Env(
     # set casting, default value
@@ -34,7 +35,20 @@ DBHOST=env("DBHOST")
 DBUSER=env("DBUSER")
 DBNAME=env("DBNAME")
 DBSECRET=env("DBPASSWORD")
+SENTRY_DSN=env("SENTRY_DSN")
 
+sentry_sdk.init(
+    dsn=SENTRY_DSN,
+    # Set traces_sample_rate to 1.0 to capture 100%
+    # of transactions for tracing.
+    traces_sample_rate=1.0,
+    _experiments={
+        # Set continuous_profiling_auto_start to True
+        # to automatically start the profiler on when
+        # possible.
+        "continuous_profiling_auto_start": True,
+    },
+)
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
