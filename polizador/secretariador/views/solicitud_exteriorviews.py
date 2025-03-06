@@ -185,7 +185,7 @@ class CrearSolicitudExterior(PermissionRequiredMixin, generic.CreateView):
 	template_name = "solicitudexterior/crear-solicitud-exterior.html"
 	form_class = SolicitudExteriorForm
 	initial={
-		"solicitud_decreto_viaticos":InstrumentosLegalesDecretos.objects.filter(instrumentolegaldecretos_tipo="P").filter(instrumentolegaldecretos_descripcion__icontains="Viáticos").latest()
+		# "solicitud_decreto_viaticos":InstrumentosLegalesDecretos.objects.filter(instrumentolegaldecretos_tipo="P").filter(instrumentolegaldecretos_descripcion__icontains="Viáticos").latest()
 		}
 	success_url = reverse_lazy("secretariador:crear-solicitud-exterior")
 	

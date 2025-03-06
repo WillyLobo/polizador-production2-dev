@@ -92,6 +92,12 @@ class SolicitudExteriorForm(forms.ModelForm):
     def as_row(self):
         return SafeString(super().as_div().replace("<div>", "<div class='form-group row'>"))
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        queryset = InstrumentosLegalesDecretos.objects.filter(instrumentolegaldecretos_tipo="P").filter(instrumentolegaldecretos_descripcion__icontains="viáticos")
+        self.fields["solicitud_decreto_viaticos"].queryset = queryset
+        self.fields["solicitud_decreto_viaticos"].initial = queryset.latest()
+
     # Logic for raising error if fecha_hasta < fecha_desde
     def clean(self):
         """

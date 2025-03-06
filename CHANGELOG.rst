@@ -3,6 +3,14 @@
 History
 =======
 
+v0.1.3-3
+------
+* Added initial value to solicitud_decreto_viaticos field in SolicitudForm and SolicitudExteriorForm.
+
+v0.1.3-2
+------
+* Added configuratio for Sentry(https://sentry.io/) error tracking.
+
 v0.1.3-1
 ------
 * Added filter to instrumentoslegalesresoluciones OCR field in datatables.
