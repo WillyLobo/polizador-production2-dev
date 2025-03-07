@@ -1,6 +1,6 @@
 from django import forms
 from django.utils.safestring import SafeString
-from secretariador.models import Solicitud, ComisionadoSolicitud, InstrumentosLegalesDecretos
+from secretariador.models import Solicitud, ComisionadoSolicitud, InstrumentosLegalesDecretos, MontoViaticoDiario
 from secretariador.forms.comisionadosolicitud_exteriorform import ComisionadoSolicitudExteriorForm
 from carga.views.ajaxviews import (
 	localidadmultiplewidget,
@@ -94,9 +94,9 @@ class SolicitudExteriorForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        queryset = InstrumentosLegalesDecretos.objects.filter(instrumentolegaldecretos_tipo="P").filter(instrumentolegaldecretos_descripcion__icontains="viáticos")
+        queryset = MontoViaticoDiario.objects.all()
         self.fields["solicitud_decreto_viaticos"].queryset = queryset
-        self.fields["solicitud_decreto_viaticos"].initial = queryset.latest()
+        self.fields["solicitud_decreto_viaticos"].initial = queryset.last().id
 
     # Logic for raising error if fecha_hasta < fecha_desde
     def clean(self):

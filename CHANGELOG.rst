@@ -3,6 +3,10 @@
 History
 =======
 
+v0.1.3-4
+------
+* Fixed error when creating a new Solicitud that pointed to the wrong MontoViaticoDiario instance.
+
 v0.1.3-3
 ------
 * Added initial value to solicitud_decreto_viaticos field in SolicitudForm and SolicitudExteriorForm.
