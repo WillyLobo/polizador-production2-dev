@@ -44,15 +44,31 @@ class CrearInstrumentoLegalDecreto(PermissionRequiredMixin, generic.CreateView):
 		return self.title
 
 @method_decorator(login_required, name="dispatch")
-class CrearInstrumentoLegalResolucion(PermissionRequiredMixin, generic.CreateView):
+class CrearInstrumentoLegalResolucionPresidencia(PermissionRequiredMixin, generic.CreateView):
 	login_url = "/"
 	redirect_field_name = "login"
 	permission_required = "secretariador.add_instrumentoslegalesresoluciones"
 
 	model = InstrumentosLegalesResoluciones
-	template_name = "instrumentoslegales/crear-instrumento-legal-resolucion.html"
-	form_class = InstrumentosLegalesResolucionesForm
-	success_url = reverse_lazy("secretariador:crear-resolucion")
+	template_name = "instrumentoslegales/crear-instrumento-legal-resolucion-presidencia.html"
+	form_class = InstrumentosLegalesResolucionesPresidenciaForm
+	success_url = reverse_lazy("secretariador:crear-resolucion-presidencia")
+	
+	title = "Crear Resolución"
+
+	def get_title(self):
+		return self.title
+	
+@method_decorator(login_required, name="dispatch")
+class CrearInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, generic.CreateView):
+	login_url = "/"
+	redirect_field_name = "login"
+	permission_required = "secretariador.add_instrumentoslegalesresoluciones"
+
+	model = InstrumentosLegalesResoluciones
+	template_name = "instrumentoslegales/crear-instrumento-legal-resolucion-directorio.html"
+	form_class = InstrumentosLegalesResolucionesDirectorioForm
+	success_url = reverse_lazy("secretariador:crear-resolucion-directorio")
 	
 	title = "Crear Resolución"
 
@@ -82,14 +98,25 @@ class UpdateInstrumentoLegalDecreto(PermissionRequiredMixin, generic.UpdateView)
 	success_url = reverse_lazy("secretariador:lista-decretos")
 
 @method_decorator(login_required, name="dispatch")
-class UpdateInstrumentoLegalResolucion(PermissionRequiredMixin, generic.UpdateView):
+class UpdateInstrumentoLegalResolucionPresidencia(PermissionRequiredMixin, generic.UpdateView):
 	login_url = "/"
 	redirect_field_name = "login"
 	permission_required = "secretariador.change_instrumentoslegalesresoluciones"
 
 	model = InstrumentosLegalesResoluciones
-	template_name = "instrumentoslegales/update-instrumento-legal-resolucion.html"
-	form_class = InstrumentosLegalesResolucionesForm
+	template_name = "instrumentoslegales/update-instrumento-legal-resolucion-presidencia.html"
+	form_class = InstrumentosLegalesResolucionesPresidenciaForm
+	success_url = reverse_lazy("secretariador:lista-resoluciones")
+
+@method_decorator(login_required, name="dispatch")
+class UpdateInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, generic.UpdateView):
+	login_url = "/"
+	redirect_field_name = "login"
+	permission_required = "secretariador.change_instrumentoslegalesresoluciones"
+
+	model = InstrumentosLegalesResoluciones
+	template_name = "instrumentoslegales/update-instrumento-legal-resolucion-directorio.html"
+	form_class = InstrumentosLegalesResolucionesDirectorioForm
 	success_url = reverse_lazy("secretariador:lista-resoluciones")
 	
 @method_decorator(login_required, name="dispatch")
@@ -314,7 +341,10 @@ class ListaListaInstrumentosLegalesResolucionesView(AjaxDatatableView):
 	def customize_row(self, row, obj):
 		id = str(obj.id)
 				
-		editarlink = f'<a href="/viaticos/crearresolucion/{id}">{editlinkimg}</a>'
+		if obj.instrumentolegalresoluciones_tipo == "P":
+			editarlink = f'<a href="/viaticos/crearresolucionpresidencia/{id}">{editlinkimg}</a>'
+		elif obj.instrumentolegalresoluciones_tipo == "D":
+			editarlink = f'<a href="/viaticos/crearresoluciondirectorio/{id}">{editlinkimg}</a>'
 		detallelink = f'<a href="/viaticos/crearresolucion/ver/{id}">{detallelinkimg}</a>'
 		eliminarlink = f'<a href="/viaticos/eliminar/resolucion/{id}">{eliminarlinkimg}</a>'
 		

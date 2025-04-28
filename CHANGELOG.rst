@@ -3,6 +3,10 @@
 History
 =======
 
+v0.1.3-5
+------
+* Added new template for creating and updating InstrumentosLegalesResoluciones.
+
 v0.1.3-4
 ------
 * Fixed error when creating a new Solicitud that pointed to the wrong MontoViaticoDiario instance.

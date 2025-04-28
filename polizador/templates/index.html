@@ -27,10 +27,15 @@
                 <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
                 {%endif%}Cargar Decreto</a>
                 {% if perms.secretariador.add_instrumentoslegalesresoluciones %}
-                <a href="{% url "secretariador:crear-resolucion" %}" class="list-group-item list-group-item-action list-group-item-info viaticos-menu">
+                <a href="{% url "secretariador:crear-resolucion-presidencia" %}" class="list-group-item list-group-item-action list-group-item-info viaticos-menu">
                 {%else%}
                 <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
-                {%endif%}Cargar Resolucion</a>
+                {%endif%}Cargar Resolucion Presidencia</a>
+                {% if perms.secretariador.add_instrumentoslegalesresoluciones %}
+                <a href="{% url "secretariador:crear-resolucion-directorio" %}" class="list-group-item list-group-item-action list-group-item-info viaticos-menu">
+                {%else%}
+                <a href="#" class="list-group-item list-group-item-action disabled" aria-disabled="true">
+                {%endif%}Cargar Resolucion Directorio</a>
                 {% if perms.secretariador.add_montoviaticodiario %}
                 <a href="{% url "secretariador:crear-montoviaticodiario" %}" class="list-group-item list-group-item-action list-group-item-info viaticos-menu">
                 {%else%}

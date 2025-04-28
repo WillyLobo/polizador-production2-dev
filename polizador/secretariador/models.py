@@ -126,6 +126,7 @@ class InstrumentosLegalesResoluciones(models.Model):
 
     instrumentolegalresoluciones_tipo = models.CharField("Tipo", max_length=1, choices=TIPO, default="P")
     instrumentolegalresoluciones_numero = models.CharField("Número", max_length=7)
+    instrumentolegalresoluciones_acta = models.CharField("Acta", max_length=3, default="")
     instrumentolegalresoluciones_ano = models.CharField("Año", max_length=5)
     instrumentolegalresoluciones_fecha_aprobacion = models.DateField("Fecha de Aprobación", default=timezone.now)
     instrumentolegalresoluciones_descripcion = models.CharField("Descripción", max_length=600, default="")

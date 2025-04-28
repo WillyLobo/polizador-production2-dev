@@ -36,8 +36,10 @@ monto_viatico_diario_patterns = [
     path("eliminar/montoviaticodiario/<pk>", EliminarMontoViaticoDiario.as_view(), name="eliminar-montoviaticodiario"),
 ]
 instrumento_legal_resolucion_patterns = [
-	path("crearresolucion/", CrearInstrumentoLegalResolucion.as_view(), name="crear-resolucion"),
-    path("crearresolucion/<pk>", UpdateInstrumentoLegalResolucion.as_view(), name="update-resolucion"),
+	path("crearresolucionpresidencia/", CrearInstrumentoLegalResolucionPresidencia.as_view(), name="crear-resolucion-presidencia"),
+	path("crearresoluciondirectorio/", CrearInstrumentoLegalResolucionDirectorio.as_view(), name="crear-resolucion-directorio"),
+    path("crearresolucionpresidencia/<pk>", UpdateInstrumentoLegalResolucionPresidencia.as_view(), name="update-resolucion-presidencia"),
+    path("crearresoluciondirectorio/<pk>", UpdateInstrumentoLegalResolucionDirectorio.as_view(), name="update-resolucion-directorio"),
     path("eliminar/resolucion/<pk>", EliminarInstrumentoLegalResolucion.as_view(), name="eliminar-resolucion"),
 ]
 solicitud_patterns = [

@@ -84,7 +84,7 @@ class InstrumentosLegalesDecretosForm(forms.ModelForm):
     def as_div(self):
         return SafeString(super().as_div().replace("<div>", "<div class='form-group'>"))
 
-class InstrumentosLegalesResolucionesForm(forms.ModelForm):
+class InstrumentosLegalesResolucionesPresidenciaForm(forms.ModelForm):
     class Meta:
         model = InstrumentosLegalesResoluciones
         fields = (
@@ -126,3 +126,58 @@ class InstrumentosLegalesResolucionesForm(forms.ModelForm):
 
     def as_div(self):
         return SafeString(super().as_div().replace("<div>", "<div class='form-group'>"))
+    
+    def __init__(self, *args, **kwargs):
+        super(InstrumentosLegalesResolucionesPresidenciaForm, self).__init__(*args, **kwargs)
+        self.fields['instrumentolegalresoluciones_tipo'].initial = "P"
+    
+class InstrumentosLegalesResolucionesDirectorioForm(forms.ModelForm):
+    class Meta:
+        model = InstrumentosLegalesResoluciones
+        fields = (
+            "instrumentolegalresoluciones_tipo",
+            "instrumentolegalresoluciones_numero",
+            "instrumentolegalresoluciones_acta",
+            "instrumentolegalresoluciones_ano",
+            "instrumentolegalresoluciones_fecha_aprobacion",
+            "instrumentolegalresoluciones_descripcion",
+            "instrumentolegalresoluciones",
+            "instrumentolegalresoluciones_document"
+        )
+        widgets = {
+            "instrumentolegalresoluciones_tipo":forms.Select(attrs={
+                "class":"form-control customSelect2"
+            }),
+            "instrumentolegalresoluciones_numero":forms.TextInput(attrs={
+                "class":"form-control"
+            }),
+            "instrumentolegalresoluciones_acta":forms.TextInput(attrs={
+                "class":"form-control"
+            }),
+            "instrumentolegalresoluciones_ano":forms.TextInput(attrs={
+                "class":"form-control"
+            }),
+            "instrumentolegalresoluciones_fecha_aprobacion":forms.DateInput(attrs={
+                "class":"form-control",
+                "autocomplete":"off"
+                }),
+            "instrumentolegalresoluciones_descripcion":forms.TextInput(attrs={
+                "class":"form-control"
+            }),
+            "instrumentolegalresoluciones":forms.ClearableFileInput(attrs={
+                "class":"form-control"
+            }),
+            "instrumentolegalresoluciones_document":forms.Textarea(attrs={
+                "class":"form-control",
+                "rows":10,
+                "cols":50,
+                "readonly":"readonly"
+            }),
+        }
+
+    def as_div(self):
+        return SafeString(super().as_div().replace("<div>", "<div class='form-group'>"))
+    
+    def __init__(self, *args, **kwargs):
+        super(InstrumentosLegalesResolucionesDirectorioForm, self).__init__(*args, **kwargs)
+        self.fields['instrumentolegalresoluciones_tipo'].initial = "D"
