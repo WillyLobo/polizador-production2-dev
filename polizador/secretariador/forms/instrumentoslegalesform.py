@@ -83,6 +83,13 @@ class InstrumentosLegalesDecretosForm(forms.ModelForm):
 
     def as_div(self):
         return SafeString(super().as_div().replace("<div>", "<div class='form-group'>"))
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        numero = cleaned_data.get("instrumentolegaldecretos_numero")
+        if numero:
+            cleaned_data["instrumentolegaldecretos_numero"] = numero.zfill(5)
+        return cleaned_data
 
 class InstrumentosLegalesResolucionesPresidenciaForm(forms.ModelForm):
     class Meta:
@@ -127,6 +134,13 @@ class InstrumentosLegalesResolucionesPresidenciaForm(forms.ModelForm):
     def as_div(self):
         return SafeString(super().as_div().replace("<div>", "<div class='form-group'>"))
     
+    def clean(self):
+        cleaned_data = super().clean()
+        numero = cleaned_data.get("instrumentolegalresoluciones_numero")
+        if numero:
+            cleaned_data["instrumentolegalresoluciones_numero"] = numero.zfill(5)
+        return cleaned_data
+
     def __init__(self, *args, **kwargs):
         super(InstrumentosLegalesResolucionesPresidenciaForm, self).__init__(*args, **kwargs)
         self.fields['instrumentolegalresoluciones_tipo'].initial = "P"
@@ -177,6 +191,13 @@ class InstrumentosLegalesResolucionesDirectorioForm(forms.ModelForm):
 
     def as_div(self):
         return SafeString(super().as_div().replace("<div>", "<div class='form-group'>"))
+    
+    def clean(self):
+        cleaned_data = super().clean()
+        numero = cleaned_data.get("instrumentolegalresoluciones_numero")
+        if numero:
+            cleaned_data["instrumentolegalresoluciones_numero"] = numero.zfill(5)
+        return cleaned_data
     
     def __init__(self, *args, **kwargs):
         super(InstrumentosLegalesResolucionesDirectorioForm, self).__init__(*args, **kwargs)
