@@ -9,7 +9,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.core.files import File
 from secretariador.functions import FileValidator
 from secretariador.models import Solicitud, Comisionado, InstrumentosLegalesResoluciones, generate_name_resoluciones
-import time, urllib.request
+import time
 
 class Resolucion(typing.TypedDict):
   numero_de_resolucion: int
@@ -140,7 +140,7 @@ def process_document_sample(project_id: str, location: str, processor_id: str, f
         name = client.processor_path(project_id, location, processor_id)
 
     # Read the file into memory
-    with urllib.request.urlopen(file_path) as image:
+    with open(file_path, "rb") as image:
         image_content = image.read()
 
     # Load binary data
@@ -193,72 +193,52 @@ def process_document_sample(project_id: str, location: str, processor_id: str, f
 
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
-        objects = InstrumentosLegalesResoluciones.objects.filter(instrumentolegalresoluciones_ano=2024)
-        for object in objects:
-            self.stdout.write(f"{self.style.MIGRATE_LABEL('Resolución:')} {self.style.SQL_KEYWORD(object.instrumentolegalresoluciones_numero)}/{self.style.SQL_KEYWORD(object.instrumentolegalresoluciones_ano)}")
-            self.stdout.write(f"{self.style.MIGRATE_LABEL('URL:')} {object.instrumentolegalresoluciones.url[:50]}...(truncado)")
-            file_object = object.instrumentolegalresoluciones.url
+        pdf_files = [os.path.join(dir_path, f) for f in os.listdir(dir_path) if f.endswith('.pdf')]
 
-            # # OCR processing
-            if object.instrumentolegalresoluciones_document is None or object.instrumentolegalresoluciones_document == "":
-                document = process_document_sample(project_id, location, processor_id, file_object, mime_type)
-                self.stdout.write(f"{self.style.MIGRATE_LABEL('Texto extraído:')} {document.text}")
-                object.instrumentolegalresoluciones_document = document.text
-                object.save()
-            else:
-                self.stdout.write(f"{self.style.ERROR_OUTPUT('La resolución ya tiene un texto extraído.')}")
+        pdf_files.sort()
+        for file in pdf_files:
+            start_time = time.perf_counter()
+            filename = os.path.basename(file)
+            filename = filename.replace(".pdf", "")
+            res_number = str(int(filename.split(".")[0].split(" ")[1])).zfill(4) # Convert to int so we can be sure is the correct number, and then to string, then fill with zero to 4 digits.
+            res_year = "2022"
 
-
-
-
-
-
-        # pdf_files = [os.path.join(dir_path, f) for f in os.listdir(dir_path) if f.endswith('.pdf')]
-
-        # pdf_files.sort()
-        # for file in pdf_files:
-        #     start_time = time.perf_counter()
-        #     filename = os.path.basename(file)
-        #     filename = filename.replace(".pdf", "")
-        #     res_number = str(int(filename.split(".")[0].split(" ")[1])).zfill(4) # Convert to int so we can be sure is the correct number, and then to string, then fill with zero to 4 digits.
-        #     res_year = "2022"
-
-        #     file_object = File(open(file, "rb"))
-        #     self.stdout.write(f"{self.style.MIGRATE_LABEL('Procesando el archivo:')} {self.style.SQL_KEYWORD(file)}")
+            file_object = File(open(file, "rb"))
+            self.stdout.write(f"{self.style.MIGRATE_LABEL('Procesando el archivo:')} {self.style.SQL_KEYWORD(file)}")
             
 
-            # p, created = InstrumentosLegalesResoluciones.objects.get_or_create(
-            #     instrumentolegalresoluciones_numero=res_number,
-            #     instrumentolegalresoluciones_ano=res_year,
-            #     defaults={
-            #         "instrumentolegalresoluciones_tipo":"P",
-            #         "instrumentolegalresoluciones_descripcion":"Resolución importada por OCR",
-            #         "instrumentolegalresoluciones_autocarga":True,
-            #         "instrumentolegalresoluciones":file_object
-            #     }
-            #     )
-            # if created:
-            #     try:
-            #         self.stdout.write(f"{self.style.MIGRATE_LABEL('Procesando OCR:')}")
-            #         document = process_document_sample(project_id, location, processor_id, file, mime_type)
-            #         p.instrumentolegalresoluciones_document = document.text
-            #         p.save()
-            #         # json_document = documentai.Document.to_json(document)
-            #     except Exception as e:
-            #         self.stdout.write(f"Error al procesar el archivo {self.style.ERROR(file)}: {self.style.ERROR(e)}")
-            #         continue
+            p, created = InstrumentosLegalesResoluciones.objects.get_or_create(
+                instrumentolegalresoluciones_numero=res_number,
+                instrumentolegalresoluciones_ano=res_year,
+                defaults={
+                    "instrumentolegalresoluciones_tipo":"P",
+                    "instrumentolegalresoluciones_descripcion":"Resolución importada por OCR",
+                    "instrumentolegalresoluciones_autocarga":True,
+                    "instrumentolegalresoluciones":file_object
+                }
+                )
+            if created:
+                try:
+                    self.stdout.write(f"{self.style.MIGRATE_LABEL('Procesando OCR:')}")
+                    document = process_document_sample(project_id, location, processor_id, file, mime_type)
+                    p.instrumentolegalresoluciones_document = document.text
+                    p.save()
+                    # json_document = documentai.Document.to_json(document)
+                except Exception as e:
+                    self.stdout.write(f"Error al procesar el archivo {self.style.ERROR(file)}: {self.style.ERROR(e)}")
+                    continue
 
-            #     # Console output
-            #     self.stdout.write(f"{self.style.SUCCESS('Archivo procesado con éxito.')}")
-            #     self.stdout.write(f"{self.style.MIGRATE_LABEL('Entrada creada:')}")
-            #     self.stdout.write(f"    ID:{p.id}")
-            #     self.stdout.write(f"    Resolucion de Presidencia Nº:{p.instrumentolegalresoluciones_numero}/{p.instrumentolegalresoluciones_ano}")
-            #     self.stdout.write(f"    Fecha de Aprobación: {p.instrumentolegalresoluciones_fecha_aprobacion}")
-            #     self.stdout.write(f"    Descripción: {p.instrumentolegalresoluciones_descripcion}")
-            #     self.stdout.write(f"    Texto Extraído: {self.style.HTTP_SUCCESS(p.instrumentolegalresoluciones_document[:100])}...(truncado)")
-            #     self.stdout.write(f"...")
-            #     self.stdout.write(f"    Archivo subido: {self.style.SUCCESS(p.instrumentolegalresoluciones)}")
+                # Console output
+                self.stdout.write(f"{self.style.SUCCESS('Archivo procesado con éxito.')}")
+                self.stdout.write(f"{self.style.MIGRATE_LABEL('Entrada creada:')}")
+                self.stdout.write(f"    ID:{p.id}")
+                self.stdout.write(f"    Resolucion de Presidencia Nº:{p.instrumentolegalresoluciones_numero}/{p.instrumentolegalresoluciones_ano}")
+                self.stdout.write(f"    Fecha de Aprobación: {p.instrumentolegalresoluciones_fecha_aprobacion}")
+                self.stdout.write(f"    Descripción: {p.instrumentolegalresoluciones_descripcion}")
+                self.stdout.write(f"    Texto Extraído: {self.style.HTTP_SUCCESS(p.instrumentolegalresoluciones_document[:100])}...(truncado)")
+                self.stdout.write(f"...")
+                self.stdout.write(f"    Archivo subido: {self.style.SUCCESS(p.instrumentolegalresoluciones)}")
 
-            # end_time = time.perf_counter()
-            # elapsed_time = end_time - start_time
-            # self.stdout.write(f"Tiempo de ejecución: {elapsed_time:.6f} segundos.")
+            end_time = time.perf_counter()
+            elapsed_time = end_time - start_time
+            self.stdout.write(f"Tiempo de ejecución: {elapsed_time:.6f} segundos.")

@@ -67,7 +67,7 @@ INSTALLED_APPS = [
     "django_select2",
     "ajax_datatable",
 	"import_export",
-    'easyaudit',
+    # 'easyaudit',
 	"widget_tweaks",
 	"extra_views",
 	"django.forms",
