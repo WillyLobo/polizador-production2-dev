@@ -1,6 +1,7 @@
 from django import forms
 from secretariador.models import ComisionadoSolicitud
 from secretariador.forms.mixins import ColumnFormMixin
+from secretariador.views.ajaxviews import ComisionadoWidget
 
 class ComisionadoSolicitudForm(ColumnFormMixin, forms.ModelForm):
     class Meta:
@@ -14,7 +15,7 @@ class ComisionadoSolicitudForm(ColumnFormMixin, forms.ModelForm):
             "comisionadosolicitud_sin_viatico",
         )
         widgets = {
-            "comisionadosolicitud_nombre":forms.Select(attrs={
+            "comisionadosolicitud_nombre":ComisionadoWidget(attrs={
                 "class":"form-control customSelect2",
                 "style":"width: 40em;height: 3em;"
                 }),
@@ -38,7 +39,6 @@ class ComisionadoSolicitudForm(ColumnFormMixin, forms.ModelForm):
                 "class":"form-check-input",
                 "style":'width: 2em;height: 2em;'
                 }),
-
         }
 
     def __init__(self, *args, **kwargs):
