@@ -13,8 +13,11 @@
 .page-item .page-link {
     color: black !important;
 }
-.required:before { 
-    content: '*'; 
+.required { 
+    font-weight: bold;
+}
+.helptext {
+    font-style: italic;
 }
 p.poliza-e-p {
     margin-bottom: 0;

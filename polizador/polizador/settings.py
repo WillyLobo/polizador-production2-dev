@@ -67,7 +67,7 @@ INSTALLED_APPS = [
     "django_select2",
     "ajax_datatable",
 	"import_export",
-    # 'easyaudit',
+    'easyaudit',
 	"widget_tweaks",
 	"extra_views",
 	"django.forms",
@@ -212,7 +212,11 @@ STORAGES = {
     },
 }
 
-
+DJANGO_EASY_AUDIT_UNREGISTERED_CLASSES_EXTRA = [
+        "secretariador.instrumentoslegalesresoluciones",
+        "secretariador.instrumentoslegalesdecretos",
+        "secretariador.instrumentoslegalesmemorandum"
+]
 
 if DEBUG == True:
     INTERNAL_IPS = ["localhost", "127.0.0.1"]
