@@ -1,11 +1,11 @@
 from django import forms
-from django.utils.safestring import SafeString
 from secretariador.models import InstrumentosLegalesMemorandum, InstrumentosLegalesDecretos, InstrumentosLegalesResoluciones
 from carga.views.ajaxviews import (
 	localidadmultiplewidget,
 	)
+from secretariador.forms.mixins import BaseFormMixin
 
-class InstrumentosLegalesMemorandumForm(forms.ModelForm):
+class InstrumentosLegalesMemorandumForm(BaseFormMixin, forms.ModelForm):
     class Meta:
         model = InstrumentosLegalesMemorandum
         fields = (
@@ -45,10 +45,7 @@ class InstrumentosLegalesMemorandumForm(forms.ModelForm):
             }),
         }
 
-    def as_div(self):
-        return SafeString(super().as_div().replace("<div>", "<div class='form-group'>"))
-    
-class InstrumentosLegalesDecretosForm(forms.ModelForm):
+class InstrumentosLegalesDecretosForm(BaseFormMixin, forms.ModelForm):
     class Meta:
         model = InstrumentosLegalesDecretos
         fields = (
@@ -81,9 +78,6 @@ class InstrumentosLegalesDecretosForm(forms.ModelForm):
             }),
         }
 
-    def as_div(self):
-        return SafeString(super().as_div().replace("<div>", "<div class='form-group'>"))
-    
     def clean(self):
         cleaned_data = super().clean()
         numero = cleaned_data.get("instrumentolegaldecretos_numero")
@@ -91,7 +85,7 @@ class InstrumentosLegalesDecretosForm(forms.ModelForm):
             cleaned_data["instrumentolegaldecretos_numero"] = numero.zfill(5)
         return cleaned_data
 
-class InstrumentosLegalesResolucionesPresidenciaForm(forms.ModelForm):
+class InstrumentosLegalesResolucionesPresidenciaForm(BaseFormMixin, forms.ModelForm):
     class Meta:
         model = InstrumentosLegalesResoluciones
         fields = (
@@ -131,9 +125,6 @@ class InstrumentosLegalesResolucionesPresidenciaForm(forms.ModelForm):
             }),
         }
 
-    def as_div(self):
-        return SafeString(super().as_div().replace("<div>", "<div class='form-group'>"))
-    
     def clean(self):
         cleaned_data = super().clean()
         numero = cleaned_data.get("instrumentolegalresoluciones_numero")
@@ -145,7 +136,7 @@ class InstrumentosLegalesResolucionesPresidenciaForm(forms.ModelForm):
         super(InstrumentosLegalesResolucionesPresidenciaForm, self).__init__(*args, **kwargs)
         self.fields['instrumentolegalresoluciones_tipo'].initial = "P"
     
-class InstrumentosLegalesResolucionesDirectorioForm(forms.ModelForm):
+class InstrumentosLegalesResolucionesDirectorioForm(BaseFormMixin, forms.ModelForm):
     class Meta:
         model = InstrumentosLegalesResoluciones
         fields = (
@@ -189,9 +180,6 @@ class InstrumentosLegalesResolucionesDirectorioForm(forms.ModelForm):
             }),
         }
 
-    def as_div(self):
-        return SafeString(super().as_div().replace("<div>", "<div class='form-group'>"))
-    
     def clean(self):
         cleaned_data = super().clean()
         numero = cleaned_data.get("instrumentolegalresoluciones_numero")

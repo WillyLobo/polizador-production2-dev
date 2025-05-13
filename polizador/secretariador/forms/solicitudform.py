@@ -1,5 +1,4 @@
 from django import forms
-from django.utils.safestring import SafeString
 from secretariador.models import Solicitud, ComisionadoSolicitud, InstrumentosLegalesDecretos, MontoViaticoDiario
 from secretariador.forms.comisionadosolicitudform import ComisionadoSolicitudForm
 from carga.views.ajaxviews import (
@@ -11,8 +10,9 @@ from secretariador.views.ajaxviews import (
     VehiculoWidget,
     )
 from django.forms.models import inlineformset_factory
+from secretariador.forms.mixins import BaseFormMixin
 
-class SolicitudForm(forms.ModelForm):
+class SolicitudForm(BaseFormMixin, forms.ModelForm):
     class Meta:
         model = Solicitud
         fields = (
@@ -82,11 +82,6 @@ class SolicitudForm(forms.ModelForm):
                 "class":"form-control customSelect2"
                 }),
         }
-
-    def as_div(self):
-        return SafeString(super().as_div().replace("<div>", "<div class='form-group'>"))
-    def as_row(self):
-        return SafeString(super().as_div().replace("<div>", "<div class='form-group row'>"))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

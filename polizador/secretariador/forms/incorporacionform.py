@@ -1,5 +1,4 @@
 from django import forms
-from django.utils.safestring import SafeString
 from secretariador.models import Incorporacion, ComisionadoSolicitud
 from secretariador.forms.comisionadosolicitudform import ComisionadoSolicitudForm
 from carga.views.ajaxviews import (
@@ -7,8 +6,9 @@ from carga.views.ajaxviews import (
 	)
 from secretariador.views.ajaxviews import ResolucionWidget, SolicitudWidget
 from django.forms.models import inlineformset_factory
+from secretariador.forms.mixins import BaseFormMixin
 
-class IncorporacionForm(forms.ModelForm):
+class IncorporacionForm(BaseFormMixin, forms.ModelForm):
     class Meta:
         model = Incorporacion
         fields = (
@@ -35,13 +35,6 @@ class IncorporacionForm(forms.ModelForm):
                 "class":"form-control customSelect2"
                 }),
         }
-
-    def as_div(self):
-        return SafeString(super().as_div().replace("<div>", "<div class='form-group'>"))
-    def as_row(self):
-        return SafeString(super().as_div().replace("<div>", "<div class='form-group row'>"))
-
-    # Logic for raising error if fecha_hasta < fecha_desde
 
 ComisionadoIncorporacionFormset = inlineformset_factory(
 					Incorporacion,

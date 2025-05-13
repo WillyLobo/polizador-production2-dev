@@ -1,8 +1,8 @@
 from django import forms
-from django.utils.safestring import SafeString
 from secretariador.models import Vehiculo
+from secretariador.forms.mixins import BaseFormMixin
 
-class VehiculoForm(forms.ModelForm):
+class VehiculoForm(BaseFormMixin, forms.ModelForm):
     class Meta:
         model = Vehiculo
         fields = (
@@ -29,6 +29,3 @@ class VehiculoForm(forms.ModelForm):
                 "class":"form-control customSelect2",
                 }),
         }
-
-    def as_div(self):
-        return SafeString(super().as_div().replace("<div>", "<div class='form-group'>"))

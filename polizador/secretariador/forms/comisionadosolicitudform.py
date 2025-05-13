@@ -1,8 +1,8 @@
 from django import forms
-from django.utils.safestring import SafeString
 from secretariador.models import ComisionadoSolicitud
+from secretariador.forms.mixins import ColumnFormMixin
 
-class ComisionadoSolicitudForm(forms.ModelForm):
+class ComisionadoSolicitudForm(ColumnFormMixin, forms.ModelForm):
     class Meta:
         model = ComisionadoSolicitud
         fields = (
@@ -41,9 +41,6 @@ class ComisionadoSolicitudForm(forms.ModelForm):
 
         }
 
-    def as_div(self):
-        return SafeString(super().as_div().replace("<div>", "<div class='col'>"))
-    
     def __init__(self, *args, **kwargs):
         super(ComisionadoSolicitudForm, self).__init__(*args, **kwargs)
         self.fields["comisionadosolicitud_nombre"].label = "Nombre"

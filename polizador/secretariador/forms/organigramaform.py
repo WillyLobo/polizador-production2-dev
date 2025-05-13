@@ -1,8 +1,8 @@
 from django import forms
-from django.utils.safestring import SafeString
 from secretariador.models import Organigrama
+from secretariador.forms.mixins import BaseFormMixin
 
-class OrganigramaForm(forms.ModelForm):
+class OrganigramaForm(BaseFormMixin, forms.ModelForm):
     class Meta:
         model = Organigrama
         fields = (
@@ -19,6 +19,3 @@ class OrganigramaForm(forms.ModelForm):
                 }),
 
         }
-
-    def as_div(self):
-        return SafeString(super().as_div().replace("<div>", "<div class='form-group'>"))

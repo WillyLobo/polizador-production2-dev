@@ -1,8 +1,7 @@
 from django import forms
-from django.utils.safestring import SafeString
 from secretariador.models import ComisionadoSolicitud
-
-class ComisionadoSolicitudExteriorForm(forms.ModelForm):
+from secretariador.forms.mixins import ColumnFormMixin
+class ComisionadoSolicitudExteriorForm(ColumnFormMixin, forms.ModelForm):
     class Meta:
         model = ComisionadoSolicitud
         fields = (
@@ -44,9 +43,6 @@ class ComisionadoSolicitudExteriorForm(forms.ModelForm):
                 }),
 
         }
-
-    def as_div(self):
-        return SafeString(super().as_div().replace("<div>", "<div class='col'>"))
 
     def __init__(self, *args, **kwargs):
         super(ComisionadoSolicitudExteriorForm, self).__init__(*args, **kwargs)

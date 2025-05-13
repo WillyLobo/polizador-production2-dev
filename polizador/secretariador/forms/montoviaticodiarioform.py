@@ -1,9 +1,9 @@
 from django import forms
-from django.utils.safestring import SafeString
 from extra_views import InlineFormSetView
 from secretariador.models import MontoViaticoDiario, InstrumentosLegalesDecretos
+from secretariador.forms.mixins import ColumnFormMixin
 
-class MontoViaticoDiarioForm(forms.ModelForm):
+class MontoViaticoDiarioForm(ColumnFormMixin, forms.ModelForm):
     class Meta:
         model = MontoViaticoDiario
         fields = (
@@ -15,7 +15,6 @@ class MontoViaticoDiarioForm(forms.ModelForm):
             "montoviaticodiario_estrato_dos_exterior",
             "montoviaticodiario_estrato_tres_exterior",
             "montoviaticodiario_estrato_cuatro_exterior",
-            # "montoviaticodiario_decreto_reglamentario",
         )
         widgets = {
             "montoviaticodiario_estrato_uno_interior":      forms.TextInput(attrs={"class":"form-control", "inputmode":"numeric", "placeholder":"0", "min":"0"}),
@@ -27,9 +26,6 @@ class MontoViaticoDiarioForm(forms.ModelForm):
             "montoviaticodiario_estrato_tres_exterior":     forms.TextInput(attrs={"class":"form-control", "inputmode":"numeric", "placeholder":"0", "min":"0"}),
             "montoviaticodiario_estrato_cuatro_exterior":   forms.TextInput(attrs={"class":"form-control", "inputmode":"numeric", "placeholder":"0", "min":"0"}),
         }
-
-    def as_div(self):
-        return SafeString(super().as_div().replace("<div>", "<div class='col'>"))
 
 MontoViaticoDiarioFormset = forms.models.inlineformset_factory(
 					InstrumentosLegalesDecretos,

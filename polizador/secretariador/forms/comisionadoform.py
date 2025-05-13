@@ -1,8 +1,8 @@
 from django import forms
-from django.utils.safestring import SafeString
 from secretariador.models import Comisionado
+from secretariador.forms.mixins import BaseFormMixin
 
-class ComisionadoForm(forms.ModelForm):
+class ComisionadoForm(BaseFormMixin, forms.ModelForm):
     class Meta:
         model = Comisionado
         fields = (
@@ -13,6 +13,7 @@ class ComisionadoForm(forms.ModelForm):
             "comisionado_cargo",
             "comisionado_dni",
             "comisionado_cuit",
+            "comisionado_personal_transitorio",
         )
         widgets = {
             "comisionado_nombres":forms.TextInput(attrs={
@@ -37,7 +38,7 @@ class ComisionadoForm(forms.ModelForm):
             "comisionado_cuit":forms.TextInput(attrs={
                 "class":"form-control"
                 }),
+            "comisionado_personal_transitorio":forms.CheckboxInput(attrs={
+                "class":"form-check-input"
+                }),
         }
-
-    def as_div(self):
-        return SafeString(super().as_div().replace("<div>", "<div class='form-group'>"))
