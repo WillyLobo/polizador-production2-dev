@@ -14,6 +14,7 @@ class ComisionadoForm(BaseFormMixin, forms.ModelForm):
             "comisionado_dni",
             "comisionado_cuit",
             "comisionado_personal_transitorio",
+            "comisionado_personal_de_gabinete",
         )
         widgets = {
             "comisionado_nombres":forms.TextInput(attrs={
@@ -39,6 +40,9 @@ class ComisionadoForm(BaseFormMixin, forms.ModelForm):
                 "class":"form-control"
                 }),
             "comisionado_personal_transitorio":forms.CheckboxInput(attrs={
+                "class":"form-check-input"
+                }),
+            "comisionado_personal_de_gabinete":forms.CheckboxInput(attrs={
                 "class":"form-check-input"
                 }),
         }

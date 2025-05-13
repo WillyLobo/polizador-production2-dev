@@ -227,6 +227,7 @@ class Comisionado(models.Model):
     )
     comisionado_verificado_contra_padron = models.BooleanField("Chequeado",default=False)
     comisionado_personal_transitorio = models.BooleanField("Personal Transitorio",default=False)
+    comisionado_personal_de_gabinete = models.BooleanField("Personal de Gabinete",default=False)
 
     def __str__(self):
         return f"{self.comisionado_apellidos}, {self.comisionado_nombres} - DNI Nº{self.comisionado_dni}"

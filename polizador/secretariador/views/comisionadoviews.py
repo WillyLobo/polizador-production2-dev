@@ -91,6 +91,8 @@ class ListaComisionadosView(AjaxDatatableView):
 		{"name":"comisionado_nombres", "title":"Nombre", "className": "align-left"},
 		{"name":"comisionado_cargo", "title":"Cargo", "foreign_field":"comisionado_cargo__organigrama_cargo"},
 		{"name":"comisionado_cuit", "title":"CUIT"},
+		{"name":"comisionado_personal_transitorio", "title":"Personal Contratado", "choices":True, "autofilter":True},
+		{"name":"comisionado_personal_de_gabinete", "title":"Personal de Gabinete", "choices":True, "autofilter":True},
 	]
 
 	def customize_row(self, row, obj):
