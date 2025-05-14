@@ -120,6 +120,7 @@ CACHES = {
     "select2": env.cache_url("REDIS_URL"),
 }
 SELECT2_CACHE_BACKEND = "select2"
+SELECT2_CACHE_TIMEOUT = 60 * 60 * 24 * 1 # 1 day
 SELECT2_THEME = "bootstrap-5"
 WSGI_APPLICATION = 'polizador.wsgi.application'
 
