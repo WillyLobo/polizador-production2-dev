@@ -44,11 +44,17 @@
       {% endfor %}
 
     </div>
+
+<!--Floating menu-->
+<div class="container border rounded border-dark floating-menu">
+<input type='submit' value='Guardar' class="mx-auto my-1 btn btn-primary btn-lg btn-block w-100" />
+<a href="{% url 'secretariador:lista-incorporaciones' %}" type="button" class="mx-auto my-1 btn btn-secondary btn-lg btn-block w-100">Volver</a>
+<input type='button' class="mx-auto my-1 btn btn-success btn-sm btn-block btn-outline btn-wrap-text w-100" id='addForm' value='Agregar
+Nuevo
+Comisionado'>
+</div>
+<!--End of floating menu-->
     
-    <div class="container ml-2 pt-2">
-      <input type='submit' value='Guardar' class="btn btn-primary" />
-      <a href="{% url 'secretariador:lista-incorporaciones' %}" type="button" class="btn btn-secondary">Volver</a>
-    </div>
   </form>
 </div>
 <div id="empty_form" style="display:none">
@@ -68,6 +74,9 @@
   $(".customSelect2").select2({
     theme: 'bootstrap-5',
   });
+  $('html, body').animate({
+            scrollTop: $('html, body').height()
+        }, 'slow');
   $(".customSelect2").djangoSelect2()
 });
 </script>

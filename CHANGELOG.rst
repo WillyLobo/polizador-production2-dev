@@ -2,6 +2,12 @@
 
 History
 =======
+v0.1.3-8
+------
+* Added ComisionadoWidget to IncorporacionForm.
+* Added floating menu to solicitud, solicitudexterior, incorporacion, incorporacionexterior, incorporaciondecretoviaticos, incorporaciondecretoviaticosexterior templates.
+* Adjusted scroll behavior in JavaScript.
+
 v0.1.3-7
 ------
 * Added DecretoWidget for use in SolicitudForm and SolicitudExteriorForm.

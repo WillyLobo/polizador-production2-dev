@@ -71,3 +71,11 @@ tr-striped:nth-child(odd) {
     color: #D8000C;
     background-color: #FFBABA;
 }
+.floating-menu {
+    background: lavender;
+    width: 150px;
+    z-index: 100;
+    position: fixed;
+    top: 100px;
+    left: 10px;
+  }

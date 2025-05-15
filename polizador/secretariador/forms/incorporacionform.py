@@ -4,7 +4,7 @@ from secretariador.forms.comisionadosolicitudform import ComisionadoSolicitudFor
 from carga.views.ajaxviews import (
 	localidadmultiplewidget,
 	)
-from secretariador.views.ajaxviews import ResolucionWidget, SolicitudWidget
+from secretariador.views.ajaxviews import ResolucionWidget, SolicitudWidget, ComisionadoWidget
 from django.forms.models import inlineformset_factory
 from secretariador.forms.mixins import BaseFormMixin
 
@@ -28,7 +28,7 @@ class IncorporacionForm(BaseFormMixin, forms.ModelForm):
             "incorporacion_actuacion_numero":forms.TextInput(attrs={
                 "class":"form-control"
                 }),
-            "incorporacion_solicitante":forms.Select(attrs={
+            "incorporacion_solicitante":ComisionadoWidget(attrs={
                 "class":"form-control customSelect2"
                 }),
             "incorporacion_resolucion":ResolucionWidget(attrs={
