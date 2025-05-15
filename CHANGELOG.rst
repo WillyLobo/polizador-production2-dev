@@ -2,6 +2,21 @@
 
 History
 =======
+v0.1.3-7
+------
+* Added DecretoWidget for use in SolicitudForm and SolicitudExteriorForm.
+* Updated MontoViaticoDiario model to include ordering options.
+* Adjusted sum function in JavaScript to handle Spanish number formatting(attempt number 4 million to get it right).
+
+v0.1.3-6
+------
+* Added method in InstrumentoLegalesDecretos and InstrumentoLegalesResoluciones to fill the instrument number to 5 digits.
+* Fixed sumacolumna.js to use es-LA locale for parsing numbers.
+* Added fields "comisionado_personal_transitorio" and "comisionado_personal_de_gabinete" in Comisionado model.
+* Added required field styling to style.css.
+* Refactored multiple forms in secretariador.app to use form mixins reducing code duplication.
+* Finally fixed inline formsets in secretariador.app to work with select2 widgets.
+* Changed default cache timeout for select2 to 1 day.
 
 v0.1.3-5
 ------

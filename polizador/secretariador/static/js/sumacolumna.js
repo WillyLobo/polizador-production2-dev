@@ -30,28 +30,28 @@ function sumaColumnaPesos(tabla, columna, celdaId) {
   var table = document.getElementById(tabla),
     sumVal = 0;
   for (var i = 1; i < table.rows.length - 1; i++) {
-    if (isNaN(parseLocaleNumber(table.rows[i].cells[columna].innerHTML))) {
+    if (isNaN(parseLocaleNumber(table.rows[i].cells[columna].innerHTML, "es-LA"))) {
     }
     else {
-      sumVal = sumVal + parseLocaleNumber(table.rows[i].cells[columna].innerHTML);
+      sumVal = sumVal + parseLocaleNumber(table.rows[i].cells[columna].innerHTML, "es-LA");
     }
   };
 
-  return document.getElementById(celdaId).innerHTML = "$" + sumVal.toLocaleString();
+  return document.getElementById(celdaId).innerHTML = "$" + sumVal.toLocaleString("es-LA");
 };
 
 function sumaColumnaUvi(tabla, columna, celdaId) {
   var table = document.getElementById(tabla),
     sumVal = 0;
   for (var i = 1; i < table.rows.length - 1; i++) {
-    if (isNaN(parseLocaleNumber(table.rows[i].cells[columna].innerHTML))) {
+    if (isNaN(parseLocaleNumber(table.rows[i].cells[columna].innerHTML, "es-LA"))) {
     }
     else {
-      sumVal = sumVal + parseLocaleNumber(table.rows[i].cells[columna].innerHTML);
+      sumVal = sumVal + parseLocaleNumber(table.rows[i].cells[columna].innerHTML, "es-LA");
     }
   };
 
-  return document.getElementById(celdaId).innerHTML = sumVal.toLocaleString();
+  return document.getElementById(celdaId).innerHTML = sumVal.toLocaleString("es-LA");
 };
 
 function cloneMore(selector, type) {

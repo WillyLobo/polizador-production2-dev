@@ -180,6 +180,8 @@ class MontoViaticoDiario(models.Model):
     class Meta:
         verbose_name = "Monto diario de Viático"
         verbose_name_plural = "Monto diario de Viáticos"
+        ordering = ["montoviaticodiario_decreto_reglamentario__instrumentolegaldecretos_ano", "montoviaticodiario_decreto_reglamentario__instrumentolegaldecretos_numero"]
+        get_latest_by = ["montoviaticodiario_decreto_reglamentario__instrumentolegaldecretos_ano", "montoviaticodiario_decreto_reglamentario__instrumentolegaldecretos_numero"]
     
     montoviaticodiario_estrato_uno_interior     = models.DecimalField("Viatico diario Estrato I dentro de la Provincia", max_digits=12, decimal_places=2, default=0)
     montoviaticodiario_estrato_dos_interior     = models.DecimalField("Viatico diario Estrato II dentro de la Provincia", max_digits=12, decimal_places=2, default=0)

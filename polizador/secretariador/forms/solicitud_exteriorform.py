@@ -8,6 +8,7 @@ from secretariador.views.ajaxviews import (
     ResolucionWidget,
     ComisionadoWidget,
     VehiculoWidget,
+    DecretoWidget,
     )
 from django.forms.models import inlineformset_factory
 from secretariador.forms.mixins import BaseFormMixin
@@ -50,7 +51,7 @@ class SolicitudExteriorForm(BaseFormMixin, forms.ModelForm):
             "solicitud_solicitante":ComisionadoWidget(attrs={
                 "class":"form-control customSelect2"
                 }),
-            "solicitud_decreto_viaticos":forms.Select(attrs={
+            "solicitud_decreto_viaticos":DecretoWidget(attrs={
                 "class":"form-control customSelect2"
                 }),
             "solicitud_provincia":forms.Select(attrs={

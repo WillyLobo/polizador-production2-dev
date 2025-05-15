@@ -40,3 +40,8 @@ class VehiculoWidget(s2forms.ModelSelect2Widget):
         "vehiculo_modelo__icontains",
         "vehiculo_patente__icontains",
     ]
+
+class DecretoWidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "montoviaticodiario_decreto_reglamentario__instrumentolegaldecretos_str__icontains",
+    ]
