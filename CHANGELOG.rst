@@ -2,6 +2,14 @@
 
 History
 =======
+v0.1.3-9
+------
+* Added field "comisionado_personal_transitorio" in Comisionado model.
+* Added field "comisionado_personal_de_gabinete" in Comisionado model.
+* Added tag to show "(C)" in __str__ method in Comisionado model.
+* Modifified ordering in MontoViaticoDiario model.
+
+
 v0.1.3-8
 ------
 * Added ComisionadoWidget to IncorporacionForm.

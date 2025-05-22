@@ -232,7 +232,10 @@ class Comisionado(models.Model):
     comisionado_personal_de_gabinete = models.BooleanField("Personal de Gabinete",default=False)
 
     def __str__(self):
-        return f"{self.comisionado_apellidos}, {self.comisionado_nombres} - DNI Nº{self.comisionado_dni}"
+        if self.comisionado_personal_transitorio:
+            return f"(C){self.comisionado_apellidos}, {self.comisionado_nombres} - DNI Nº{self.comisionado_dni}"
+        else:
+            return f"{self.comisionado_apellidos}, {self.comisionado_nombres} - DNI Nº{self.comisionado_dni}"
     
     def nombreydni(self):
         return f"{self.comisionado_abreviatura} {self.comisionado_apellidos}, {self.comisionado_nombres}-DNI Nº{self.comisionado_dni}"
