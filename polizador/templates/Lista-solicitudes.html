@@ -28,7 +28,14 @@
           },
       );
   });
-  
+
+// Subscribe "rowCallback" event
+$('#tableSolicitudes').on('rowCallback', function(event, table, row, data) {
+    if (data.solicitud_anulada == 'Sí') {
+        $(row).css('background-color', '#ffcccc');
+    }
+});
+
 </script>
 
 {% endblock %}

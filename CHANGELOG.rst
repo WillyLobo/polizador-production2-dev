@@ -2,6 +2,10 @@
 
 History
 =======
+v0.1.3-10
+------
+* Added rowCallback event to Lista-solicitudes.html to highlight anulled rows.
+
 v0.1.3-9
 ------
 * Added field "comisionado_personal_transitorio" in Comisionado model.

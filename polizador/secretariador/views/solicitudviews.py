@@ -353,6 +353,7 @@ class ListaSolicitudesView(AjaxDatatableView):
 		{"name":"solicitud_tareas", "max_length":100},
 		{"name":"solicitud_vehiculo", "foreign_field":"solicitud_vehiculo__vehiculo_str", "choices":True, "autofilter":True},
 		{"name":"solicitud_dia_inhabil", "choices":True, "autofilter":True},
+		{"name": "solicitud_anulada", "visible": False},
 	]
 
 	def render_clip_value_as_html(self, long_text, short_text, is_clipped):
