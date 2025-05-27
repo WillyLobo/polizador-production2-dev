@@ -192,10 +192,6 @@ class CrearSolicitud(PermissionRequiredMixin, generic.CreateView):
 	model = Solicitud
 	template_name = "solicitud/crear-solicitud.html"
 	form_class = SolicitudForm
-	initial={
-		"solicitud_provincia":Provincia.objects.all().filter(provincia_nombre__icontains="Chaco").last(),
-		# "solicitud_decreto_viaticos":InstrumentosLegalesDecretos.objects.filter(instrumentolegaldecretos_tipo="P").filter(instrumentolegaldecretos_descripcion__icontains="Viáticos").latest()
-		}
 	success_url = reverse_lazy("secretariador:crear-solicitud")
 	
 	title = "Crear Solicitud"

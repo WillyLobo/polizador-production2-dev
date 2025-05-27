@@ -1,5 +1,6 @@
 from django import forms
 from secretariador.models import Solicitud, ComisionadoSolicitud, InstrumentosLegalesDecretos, MontoViaticoDiario
+from carga.models import Provincia
 from secretariador.forms.comisionadosolicitudform import ComisionadoSolicitudForm
 from carga.views.ajaxviews import (
 	localidadmultiplewidget,
@@ -89,6 +90,7 @@ class SolicitudForm(BaseFormMixin, forms.ModelForm):
         queryset = MontoViaticoDiario.objects.all()
         self.fields["solicitud_decreto_viaticos"].queryset = queryset
         self.fields["solicitud_decreto_viaticos"].initial = queryset.last().id
+        self.fields["solicitud_provincia"].initial = Provincia.objects.get(pk=22)
 
     # Logic for raising error if fecha_hasta < fecha_desde
     def clean(self):

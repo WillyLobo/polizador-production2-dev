@@ -2,6 +2,18 @@
 
 History
 =======
+v0.1.3-11
+------
+* Added ordering by name in Aseguradora and Empresa models.
+* Created new widget for Aseguradora in ajaxviews.py.
+* Added field "vehiculo_poliza_aseguradora" in Vehiculo model.
+* Added field "vehiculo_titular_empresa" in Vehiculo model.
+* Added field "vehiculo_titular_agente" in Vehiculo model.
+* Added field "vehiculo_n_motor" in Vehiculo model.
+* Added field "vehiculo_n_chasis" in Vehiculo model.
+* Updated VehiculoForm and SolicitudForm to include new fields related to the vehicle.
+* Generated migrations to reflect these changes in the database.
+
 v0.1.3-10
 ------
 * Added rowCallback event to Lista-solicitudes.html to highlight anulled rows.

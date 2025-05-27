@@ -9,6 +9,11 @@ class obrawidget(s2forms.ModelSelect2Widget):
         "obra_convenio__icontains",
     ]
 
+class aseguradorawidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "aseguradora_nombre__icontains",
+    ]
+
 class empresawidget(s2forms.ModelSelect2Widget):
     search_fields = [
         "empresa_nombre__icontains",

@@ -74,6 +74,7 @@ class Aseguradora(models.Model):
     class Meta:
         verbose_name = "Aseguradora"
         verbose_name_plural = "Aseguradoras"
+        ordering = ["aseguradora_nombre"]
     
     aseguradora_nombre = models.CharField("Nombre Empresa Aseguradora", max_length=255)
 
@@ -87,6 +88,7 @@ class Empresa(models.Model):
     class Meta:
         verbose_name = "Empresa"
         verbose_name_plural = "Empresas"
+        ordering = ["empresa_nombre"]
     
     empresa_nombre          = models.CharField("Nombre Empresa Tomadora:", max_length=255)
     empresa_cuit            = models.CharField("CUIT:", max_length=11, blank=True, null=True)
