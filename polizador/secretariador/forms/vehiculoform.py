@@ -22,7 +22,7 @@ class VehiculoForm(BaseFormMixin, forms.ModelForm):
             "vehiculo_titular_empresa",
             "vehiculo_n_motor",
             "vehiculo_n_chasis",
-            "vehiculo_modelo",
+            "vehiculo_modelo_ano",
         )
         widgets = {
             "vehiculo_caracter":forms.Select(attrs={
@@ -52,7 +52,7 @@ class VehiculoForm(BaseFormMixin, forms.ModelForm):
             "vehiculo_n_chasis":forms.TextInput(attrs={
                 "class":"form-control",
                 }),
-            "vehiculo_modelo":forms.NumberInput(attrs={
+            "vehiculo_modelo_ano":forms.TextInput(attrs={
                 "class":"form-control",
                 }),
         }
