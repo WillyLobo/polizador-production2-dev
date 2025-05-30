@@ -343,11 +343,11 @@ class CalendarioSemanal(PermissionRequiredMixin, generic.ListView):
     template_name = "reportes/calendario-semanal.html"
 	
     def get_queryset(self):
-        date = datetime.today().month
+        date = datetime.today().isocalendar().week
         comisionados = ComisionadoSolicitud.objects.filter(
-                Q(comisionadosolicitud_foreign__solicitud_fecha_desde__month=date) |
-                Q(comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__month=date)
-            ).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
+                Q(comisionadosolicitud_foreign__solicitud_fecha_desde__week__range=[date, date+1]) |
+                Q(comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__week__range=[date, date+1])
+            ).exclude(comisionadosolicitud_foreign__solicitud_anulada=True).select_related("comisionadosolicitud_foreign", "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud", "comisionadosolicitud_nombre")
 
         comisiones_list = []
         if comisionados is not None:
