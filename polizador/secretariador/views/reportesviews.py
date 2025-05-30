@@ -331,3 +331,40 @@ class CrearReporteViaticosPorAgenteIndividual(PermissionRequiredMixin, generic.L
         })
 
         return final_queryset
+
+@method_decorator(login_required, name="dispatch")
+class CalendarioSemanal(PermissionRequiredMixin, generic.ListView):
+    login_url = "/"
+    redirect_field_name = "login"
+    permission_required = "secretariador.add_solicitud"
+
+    model = Comisionado
+    context_object_name = "solicitud"
+    template_name = "reportes/calendario-semanal.html"
+	
+    def get_queryset(self):
+        date = datetime.today().month
+        comisionados = ComisionadoSolicitud.objects.filter(
+                Q(comisionadosolicitud_foreign__solicitud_fecha_desde__month=date) |
+                Q(comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__month=date)
+            ).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
+
+        comisiones_list = []
+        if comisionados is not None:
+            for comisionado in comisionados:
+                foreign = comisionado.comisionadosolicitud_foreign if comisionado.comisionadosolicitud_foreign is not None else comisionado.comisionadosolicitud_incorporacion_foreign.incorporacion_solicitud
+                comisiones_list.append([
+                        comisionado.comisionadosolicitud_nombre.comisionado_nombreyapellido,
+                        foreign.solicitud_fecha_desde,
+                        foreign.solicitud_fecha_hasta,
+                        foreign.get_absolute_url(),
+                ])
+
+        final_queryset = {}
+
+        initial_date = datetime.today().strftime("%Y-%m-%d")
+        final_queryset.update({
+            "initial_date": initial_date,
+            "comisiones": comisiones_list,
+        })
+        return final_queryset

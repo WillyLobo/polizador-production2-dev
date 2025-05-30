@@ -2,6 +2,10 @@
 
 History
 =======
+v0.1.3-12
+------
+* Added Calendario Semanal link to navbar.
+
 v0.1.3-11
 ------
 * Added ordering by name in Aseguradora and Empresa models.

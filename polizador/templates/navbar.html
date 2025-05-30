@@ -135,6 +135,7 @@
 	</a>
 	<div class="dropdown-menu vw-100 start-50 translate-middle-x" aria-labelledby="megaMenuDropdown">
 		<div class="container">
+		{% if perms.secretariador.add_solicitud %}<a href='{% url "secretariador:calendario-semanal" %}' class="dropdown-item"><input type='button' class="mx-auto my-1 btn btn-success btn-sm btn-block btn-outline btn-wrap-text w-100" value='Calendario Semanal'></a>{% endif %}
 				<div class="row">
 					<div class="col">
 						<ul class="list-group">

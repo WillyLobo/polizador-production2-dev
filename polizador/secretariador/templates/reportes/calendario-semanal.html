@@ -1,0 +1,69 @@
+{%extends "base.html"%}
+
+{%block content %}
+{%load static%}
+{%load l10n%}
+
+{%block title%}<title>Crear Reporte Viaticos por Agente</title>{%endblock title%}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
+
+<br>
+
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+<script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var calendarEl = document.getElementById('calendar');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            locale: 'es',
+            initialView: 'dayGridWeek',
+            contentHeight:"auto",
+            initialDate: "{{solicitud.initial_date}}",
+            headerToolbar: {
+                left: 'prev,next',
+                center: 'title',
+                right: 'dayGridWeek,dayGridDay' // user can switch between the two
+            },
+            events: [
+            {% for solicitud in solicitud.comisiones %}
+            {
+                title: "{{solicitud.0}}",
+                start: "{{solicitud.1|date:'Y-m-d'}}",
+                end: "{{solicitud.2|date:'Y-m-d'}}",
+                url: "{{solicitud.3}}",
+                allDay: true,
+            },
+            {%endfor%}
+            ]
+        });
+        calendar.render();
+    });
+
+</script>
+
+<div class="container-fluid" id='calendar'></div>
+
+<script>
+    $(document).ready(function () {
+        $('#id_agente').select2({
+            theme: "bootstrap-5",
+            ajax: {
+                url: '/viaticos/ajax/get_agentes/',
+                dataType: "json",
+                type: "GET",
+                delay: 250,
+                data: function (params) {
+                    console.log(params);
+                    var queryParameters = {
+                        q: params.term
+                    }
+                    return queryParameters;
+                },
+            },
+            placeholder: 'Nombre del Agente a buscar',
+            minimumInputLength: 2
+        });
+    });
+</script>
+{%endblock%}
