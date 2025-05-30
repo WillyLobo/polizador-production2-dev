@@ -350,15 +350,36 @@ class CalendarioSemanal(PermissionRequiredMixin, generic.ListView):
             ).exclude(comisionadosolicitud_foreign__solicitud_anulada=True).select_related("comisionadosolicitud_foreign", "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud", "comisionadosolicitud_nombre")
 
         comisiones_list = []
+        
+        def check_value_in_list_of_lists(list_of_lists, *args):
+            for sublist in list_of_lists:
+                if all(arg in sublist for arg in args):
+                    return True
+            return False
+        
         if comisionados is not None:
             for comisionado in comisionados:
                 foreign = comisionado.comisionadosolicitud_foreign if comisionado.comisionadosolicitud_foreign is not None else comisionado.comisionadosolicitud_incorporacion_foreign.incorporacion_solicitud
-                comisiones_list.append([
-                        comisionado.comisionadosolicitud_nombre.comisionado_nombreyapellido,
-                        foreign.solicitud_fecha_desde,
-                        foreign.solicitud_fecha_hasta,
-                        foreign.get_absolute_url(),
-                ])
+
+                # if comisionado is already in the list, append it with "red" background color
+                if check_value_in_list_of_lists(comisiones_list, comisionado.comisionadosolicitud_nombre.comisionado_nombreyapellido, foreign.solicitud_fecha_desde):
+                    comisiones_list.append([
+                            comisionado.comisionadosolicitud_nombre.comisionado_nombreyapellido,
+                            foreign.solicitud_fecha_desde,
+                            foreign.solicitud_fecha_hasta,
+                            foreign.get_absolute_url(),
+                            "red",
+                            "red",
+                    ])
+                else:
+                    comisiones_list.append([
+                            comisionado.comisionadosolicitud_nombre.comisionado_nombreyapellido,
+                            foreign.solicitud_fecha_desde,
+                            foreign.solicitud_fecha_hasta,
+                            foreign.get_absolute_url(),
+                            "",
+                            "",
+                    ])
 
         final_queryset = {}
 

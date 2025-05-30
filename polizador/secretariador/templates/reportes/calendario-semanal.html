@@ -11,6 +11,7 @@
 <br>
 
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
+<center><h3>Calendario Semanal</h3></center>
 <script>
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -23,7 +24,7 @@
             headerToolbar: {
                 left: 'prev,next',
                 center: 'title',
-                right: 'dayGridWeek,dayGridDay' // user can switch between the two
+                right: 'prev,next' // user can switch between the two
             },
             events: [
             {% for solicitud in solicitud.comisiones %}
@@ -32,6 +33,8 @@
                 start: "{{solicitud.1|date:'Y-m-d'}}",
                 end: "{{solicitud.2|date:'Y-m-d'}}",
                 url: "{{solicitud.3}}",
+                backgroundColor: "{{solicitud.4}}",
+                borderColor:"{{solicitud.5}}",
                 allDay: true,
             },
             {%endfor%}
