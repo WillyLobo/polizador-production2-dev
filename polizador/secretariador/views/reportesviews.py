@@ -347,9 +347,7 @@ class CalendarioSemanal(PermissionRequiredMixin, generic.ListView):
         comisionados = ComisionadoSolicitud.objects.filter(
                 Q(comisionadosolicitud_foreign__solicitud_fecha_desde__week__range=[date, date+1]) |
                 Q(comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__week__range=[date, date+1])
-            ).exclude(comisionadosolicitud_foreign__solicitud_anulada=True).select_related("comisionadosolicitud_foreign", "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud", "comisionadosolicitud_nombre").annotate(
-                cantidad_de_dias=Sum("comisionadosolicitud_foreign__solicitud_cantidad_de_dias")
-            )
+            ).exclude(comisionadosolicitud_foreign__solicitud_anulada=True).select_related("comisionadosolicitud_foreign", "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud", "comisionadosolicitud_nombre")
 
         comisiones_list = []
         
@@ -367,7 +365,7 @@ class CalendarioSemanal(PermissionRequiredMixin, generic.ListView):
                 if check_value_in_list_of_lists(comisiones_list, comisionado.comisionadosolicitud_nombre.comisionado_nombreyapellido, foreign.solicitud_fecha_desde):
                     print(comisionado.cantidad_de_dias.days)
                     comisiones_list.append([
-                            comisionado.comisionadosolicitud_nombre.comisionado_nombreyapellido+" ("+str(comisionado.cantidad_de_dias.days)+")",
+                            comisionado.comisionadosolicitud_nombre.comisionado_nombreyapellido,
                             foreign.solicitud_fecha_desde,
                             foreign.solicitud_fecha_hasta,
                             foreign.get_absolute_url(),
@@ -376,7 +374,7 @@ class CalendarioSemanal(PermissionRequiredMixin, generic.ListView):
                     ])
                 else:
                     comisiones_list.append([
-                            comisionado.comisionadosolicitud_nombre.comisionado_nombreyapellido+" ("+str(comisionado.cantidad_de_dias.days)+")",
+                            comisionado.comisionadosolicitud_nombre.comisionado_nombreyapellido,
                             foreign.solicitud_fecha_desde,
                             foreign.solicitud_fecha_hasta,
                             foreign.get_absolute_url(),
