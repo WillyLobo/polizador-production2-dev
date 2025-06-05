@@ -2,8 +2,7 @@ from ajax_datatable.views import AjaxDatatableView
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
-from django.shortcuts import render, redirect, HttpResponse
-from django.template import loader, TemplateDoesNotExist
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
 from secretariador.models import InstrumentosLegalesMemorandum, InstrumentosLegalesDecretos, InstrumentosLegalesResoluciones
@@ -86,6 +85,16 @@ class UpdateInstrumentoLegalMemorandum(PermissionRequiredMixin, generic.UpdateVi
 	form_class = InstrumentosLegalesMemorandumForm
 	success_url = reverse_lazy("secretariador:lista-memorandum")
 
+	def get_context_data(self,*args, **kwargs):
+		context = super(type(self), self).get_context_data(*args,**kwargs)
+		objetoanterior = self.model.objects.filter(pk=self.object.id - 1)
+		objetosiguiente = self.model.objects.filter(pk=self.object.id + 1)
+		
+		context['idanteriorobjeto'] = objetoanterior.first() if objetoanterior.exists() else None
+		context['idsiguienteobjeto'] = objetosiguiente.first() if objetosiguiente.exists() else None
+		
+		return context
+
 @method_decorator(login_required, name="dispatch")
 class UpdateInstrumentoLegalDecreto(PermissionRequiredMixin, generic.UpdateView):
 	login_url = "/"
@@ -96,6 +105,16 @@ class UpdateInstrumentoLegalDecreto(PermissionRequiredMixin, generic.UpdateView)
 	template_name = "instrumentoslegales/update-instrumento-legal-decreto.html"
 	form_class = InstrumentosLegalesDecretosForm
 	success_url = reverse_lazy("secretariador:lista-decretos")
+
+	def get_context_data(self,*args, **kwargs):
+		context = super(type(self), self).get_context_data(*args,**kwargs)
+		objetoanterior = self.model.objects.filter(pk=self.object.id - 1)
+		objetosiguiente = self.model.objects.filter(pk=self.object.id + 1)
+		
+		context['idanteriorobjeto'] = objetoanterior.first() if objetoanterior.exists() else None
+		context['idsiguienteobjeto'] = objetosiguiente.first() if objetosiguiente.exists() else None
+		
+		return context
 
 @method_decorator(login_required, name="dispatch")
 class UpdateInstrumentoLegalResolucionPresidencia(PermissionRequiredMixin, generic.UpdateView):
@@ -108,7 +127,15 @@ class UpdateInstrumentoLegalResolucionPresidencia(PermissionRequiredMixin, gener
 	form_class = InstrumentosLegalesResolucionesPresidenciaForm
 	success_url = reverse_lazy("secretariador:lista-resoluciones")
 
-@method_decorator(login_required, name="dispatch")
+	def get_context_data(self,*args, **kwargs):
+		context = super(type(self), self).get_context_data(*args,**kwargs)
+		objetoanterior = self.model.objects.filter(pk=self.object.id - 1)
+		objetosiguiente = self.model.objects.filter(pk=self.object.id + 1)
+		
+		context['idanteriorobjeto'] = objetoanterior.first() if objetoanterior.exists() else None
+		context['idsiguienteobjeto'] = objetosiguiente.first() if objetosiguiente.exists() else None
+		
+		return context
 class UpdateInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, generic.UpdateView):
 	login_url = "/"
 	redirect_field_name = "login"
@@ -119,6 +146,16 @@ class UpdateInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, generi
 	form_class = InstrumentosLegalesResolucionesDirectorioForm
 	success_url = reverse_lazy("secretariador:lista-resoluciones")
 	
+	def get_context_data(self,*args, **kwargs):
+		context = super(type(self), self).get_context_data(*args,**kwargs)
+		objetoanterior = self.model.objects.filter(pk=self.object.id - 1)
+		objetosiguiente = self.model.objects.filter(pk=self.object.id + 1)
+		
+		context['idanteriorobjeto'] = objetoanterior.first() if objetoanterior.exists() else None
+		context['idsiguienteobjeto'] = objetosiguiente.first() if objetosiguiente.exists() else None
+		
+		return context
+
 @method_decorator(login_required, name="dispatch")
 class EliminarInstrumentoLegalMemorandum(PermissionRequiredMixin, generic.DeleteView):
 	login_url = "/"

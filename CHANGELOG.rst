@@ -2,6 +2,12 @@
 
 History
 =======
+v0.1.3-13
+------
+* Added administrative tools to navigate through the instrumentoslegalesresoluciones model.
+* Added administrative tools to navigate through the instrumentoslegalesmemorandum model.
+* Added administrative tools to navigate through the instrumentoslegalesdecretos model.
+
 v0.1.3-12
 ------
 * Added Calendario Semanal link to navbar.

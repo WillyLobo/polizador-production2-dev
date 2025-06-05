@@ -363,7 +363,6 @@ class CalendarioSemanal(PermissionRequiredMixin, generic.ListView):
 
                 # if comisionado is already in the list, append it with "red" background color
                 if check_value_in_list_of_lists(comisiones_list, comisionado.comisionadosolicitud_nombre.comisionado_nombreyapellido, foreign.solicitud_fecha_desde):
-                    print(comisionado.cantidad_de_dias.days)
                     comisiones_list.append([
                             comisionado.comisionadosolicitud_nombre.comisionado_nombreyapellido,
                             foreign.solicitud_fecha_desde,

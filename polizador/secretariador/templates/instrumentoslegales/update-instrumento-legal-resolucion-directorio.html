@@ -23,6 +23,26 @@
   </form>
 </div>
 
+{% if user.is_superuser %}
+<!-- Administrative tools -->
+<div class="container">
+  <div class="list-group">
+    <a href="" class="list-group-item list-group-item-action"><b>Objeto Actual:</b> {{object.id}}</a>
+    <a href="{{idanteriorobjeto.get_absolute_url}}" class="list-group-item list-group-item-action"> <b>Objeto Anterior:</b> ({{idanteriorobjeto.id}}) - {{idanteriorobjeto}}</a>
+    <a href="{{idsiguienteobjeto.get_absolute_url}}" class="list-group-item list-group-item-action"> <B>Objeto Siguiente:</b> ({{idsiguienteobjeto.id}}) - {{idsiguienteobjeto}}</a>
+  </div>
+
+  <div class="row">
+    <div class="col-6">
+      <a href="{{idanteriorobjeto.get_absolute_url}}" type="button" class="mx-auto my-1 btn btn-secondary btn-lg btn-block w-100"><< Anterior</a>
+    </div>
+    <div class="col-6">
+      <a href="{{idsiguienteobjeto.get_absolute_url}}" type="button" class="mx-auto my-1 btn btn-secondary btn-lg btn-block w-100">Siguiente >></a>
+    </div>
+  </div>
+</div>
+{% endif %}
+
 {{ form.media.js }}
 <script>
   $(function () {

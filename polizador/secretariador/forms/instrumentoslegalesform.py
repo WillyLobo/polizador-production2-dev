@@ -4,6 +4,7 @@ from carga.views.ajaxviews import (
 	localidadmultiplewidget,
 	)
 from secretariador.forms.mixins import BaseFormMixin
+from datetime import datetime
 
 class InstrumentosLegalesMemorandumForm(BaseFormMixin, forms.ModelForm):
     class Meta:
@@ -45,6 +46,11 @@ class InstrumentosLegalesMemorandumForm(BaseFormMixin, forms.ModelForm):
             }),
         }
 
+    def __init__(self, *args, **kwargs):
+        super(type(self), self).__init__(*args, **kwargs)
+        self.fields['instrumentolegalmemorandum_tipo'].initial = "P"
+        self.fields['instrumentolegalmemorandum_ano'].initial = datetime.now().year
+
 class InstrumentosLegalesDecretosForm(BaseFormMixin, forms.ModelForm):
     class Meta:
         model = InstrumentosLegalesDecretos
@@ -77,6 +83,11 @@ class InstrumentosLegalesDecretosForm(BaseFormMixin, forms.ModelForm):
                 "class":"form-control"
             }),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(type(self), self).__init__(*args, **kwargs)
+        self.fields['instrumentolegaldecretos_tipo'].initial = "P"
+        self.fields['instrumentolegaldecretos_ano'].initial = datetime.now().year
 
     def clean(self):
         cleaned_data = super().clean()
@@ -133,8 +144,9 @@ class InstrumentosLegalesResolucionesPresidenciaForm(BaseFormMixin, forms.ModelF
         return cleaned_data
 
     def __init__(self, *args, **kwargs):
-        super(InstrumentosLegalesResolucionesPresidenciaForm, self).__init__(*args, **kwargs)
+        super(type(self), self).__init__(*args, **kwargs)
         self.fields['instrumentolegalresoluciones_tipo'].initial = "P"
+        self.fields['instrumentolegalresoluciones_ano'].initial = datetime.now().year
     
 class InstrumentosLegalesResolucionesDirectorioForm(BaseFormMixin, forms.ModelForm):
     class Meta:
@@ -188,5 +200,6 @@ class InstrumentosLegalesResolucionesDirectorioForm(BaseFormMixin, forms.ModelFo
         return cleaned_data
     
     def __init__(self, *args, **kwargs):
-        super(InstrumentosLegalesResolucionesDirectorioForm, self).__init__(*args, **kwargs)
+        super(type(self), self).__init__(*args, **kwargs)
         self.fields['instrumentolegalresoluciones_tipo'].initial = "D"
+        self.fields['instrumentolegalresoluciones_ano'].initial = datetime.now().year

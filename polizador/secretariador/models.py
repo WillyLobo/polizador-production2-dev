@@ -107,6 +107,12 @@ class InstrumentosLegalesMemorandum(models.Model):
     def __str__(self):
         return f"{self.get_instrumentolegalmemorandum_tipo_display()} Nº{self.instrumentolegalmemorandum_numero}/{self.instrumentolegalmemorandum_ano}"
     
+    def get_absolute_url(self):
+        if self.instrumentolegalmemorandum_tipo == "P":
+            return reverse('secretariador:update-memorandum', kwargs={"pk": str(self.id)})
+        elif self.instrumentolegalmemorandum_tipo == "D":
+            return reverse('secretariador:update-memorandum', kwargs={"pk": str(self.id)})
+
 class InstrumentosLegalesResoluciones(models.Model):
     class Meta:
         verbose_name = "Instrumento Legal(Resolución)"
@@ -142,6 +148,12 @@ class InstrumentosLegalesResoluciones(models.Model):
 
     def __str__(self):
         return f"{self.get_instrumentolegalresoluciones_tipo_display()} Nº{self.instrumentolegalresoluciones_numero}/{self.instrumentolegalresoluciones_ano}"
+    
+    def get_absolute_url(self):
+        if self.instrumentolegalresoluciones_tipo == "P":
+            return reverse('secretariador:update-resolucion-presidencia', kwargs={"pk": str(self.id)})
+        elif self.instrumentolegalresoluciones_tipo == "D":
+            return reverse('secretariador:update-resolucion-directorio', kwargs={"pk": str(self.id)})
 
 class InstrumentosLegalesDecretos(models.Model):
     class Meta:
@@ -176,6 +188,12 @@ class InstrumentosLegalesDecretos(models.Model):
     def __str__(self):
         return f"{self.get_instrumentolegaldecretos_tipo_display()} Nº{self.instrumentolegaldecretos_numero}/{self.instrumentolegaldecretos_ano}"
     
+    def get_absolute_url(self):
+        if self.instrumentolegaldecretos_tipo == "N":
+            return reverse('secretariador:update-decreto', kwargs={"pk": str(self.id)})
+        elif self.instrumentolegaldecretos_tipo == "P":
+            return reverse('secretariador:update-decreto', kwargs={"pk": str(self.id)})
+
 class MontoViaticoDiario(models.Model):
     class Meta:
         verbose_name = "Monto diario de Viático"
