@@ -146,7 +146,7 @@ def solicitud_docx(request, pk):
 	parrafo_tres_3  = f" conducido por {lista_agentes['chofer']};"
 	parrafo_tres    = parrafo_tres_1+parrafo_tres_2+parrafo_tres_3
 	parrafo_cuatro  = f"Que, en consecuencia, deben anticiparse los fondos necesarios para hacer frente a los gastos a realizar, de acuerdo a lo dispuesto en los Decretos Nº1324/1978 y Nº{decreto_viaticos.instrumentolegaldecretos_numero}/{decreto_viaticos.instrumentolegaldecretos_ano};"
-	parrafo_cinco   = f"Que el trámite se encuadra dentro de lo establecido en el Decreto Nº 1324/78 – “Régimen de Viáticos”; y que debido a la fecha a realizarse, incluye días inhábiles deben encuadrarse dentro de las excepciones en el Inciso A; IV Decreto Nº211/20;"
+	parrafo_cinco   = f'Que el trámite se encuadra dentro de lo establecido en el Decreto Nº 1324/78 – "Régimen de Viáticos"; y que debido a la fecha a realizarse, incluye días inhábiles deben encuadrarse dentro de las excepciones en el Inciso A; IV Decreto Nº211/20;'
 
 	articulo_uno            = f"Autorizar a los agentes, detallados a continuación, a trasladarse a {lista_localidades}, {lista_fechas} a fin de {tareas} y anticipar los importes que se consignan, conforme con el Visto y Considerando de la presente, debiendo rendir cuentas documentadas de sus inversiones, de acuerdo con las reglamentaciones vigentes."
 	articulo_dos            = lista_agentes_articulo
@@ -201,8 +201,13 @@ class CrearSolicitud(PermissionRequiredMixin, generic.CreateView):
 	
 	def get_context_data(self, **kwargs):
 		context = super(CrearSolicitud, self).get_context_data(**kwargs)
+		if self.request.POST:
+			context['group_formset'] = ComisionadoSolicitudFormset(self.request.POST, instance=self.object)
+			# por que esta vergación tiene que estar acá para que los errores del formset se muestren correctamente?
+			context.get('group_formset').errors
+		else:
+			context['group_formset'] = ComisionadoSolicitudFormset(instance=self.object)
 
-		context["comisionadosformset"] = ComisionadoSolicitudFormset(instance=self.object)
 		return context
 
 	def get(self, request, *args, **kwargs):
@@ -257,8 +262,13 @@ class UpdateSolicitud(PermissionRequiredMixin, generic.UpdateView):
 	
 	def get_context_data(self, **kwargs):
 		context = super(UpdateSolicitud, self).get_context_data(**kwargs)
+		if self.request.POST:
+			context['group_formset'] = ComisionadoSolicitudFormset(self.request.POST, instance=self.object)
+			# por que esta vergación tiene que estar acá para que los errores del formset se muestren correctamente?
+			context.get('group_formset').errors
+		else:
+			context['group_formset'] = ComisionadoSolicitudFormset(instance=self.object)
 
-		context["comisionadosformset"] = ComisionadoSolicitudFormset(instance=self.object)
 		return context
 
 	def get(self, request, *args, **kwargs):

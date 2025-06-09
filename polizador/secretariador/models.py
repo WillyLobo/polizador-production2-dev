@@ -72,6 +72,19 @@ class ConcatOp(models.Func):
     template = "%(expressions)s"
 
 # Modelos
+
+# WIP
+# class Asuntos(models.Model):
+#     class Meta:
+#         verbose_name = "Asunto"
+#         verbose_name_plural = "Asuntos"
+
+#     asunto_nombre = models.CharField("Nombre", max_length=100)
+#     asunto_descripcion = models.TextField("Descripción", max_length=600, default="")
+
+#     def __str__(self):
+#         return self.asunto_nombre
+    
 class InstrumentosLegalesMemorandum(models.Model):
     class Meta:
         verbose_name = "Instrumento Legal(Memorandum)"
@@ -145,6 +158,13 @@ class InstrumentosLegalesResoluciones(models.Model):
     # Fields related to the automatic extraction of text from the digitalized resolution.
     instrumentolegalresoluciones_autocarga = models.BooleanField("Resolución importada sin intervención.", default=False)
     instrumentolegalresoluciones_document = models.TextField("Texto Extraído por OCR", null=True, blank=True)
+
+    # WIP
+    # # Fields related to data used in reports... Comisiones are not included due to the model having all the information needed.
+    # instrumentolegalresoluciones_asunto = models.ForeignKey("Asuntos", on_delete=models.CASCADE, null=True, blank=True)
+    # instrumentolegalresoluciones_empresa_beneficiaria = models.ForeignKey("carga.Empresa", on_delete=models.CASCADE, null=True, blank=True)
+    # instrumentolegalresoluciones_agente_beneficiario = models.ForeignKey("Comisionado", on_delete=models.CASCADE, null=True, blank=True)
+    # instrumentolegalresoluciones_monto = models.DecimalField("Monto", max_digits=12, decimal_places=2, default=0)
 
     def __str__(self):
         return f"{self.get_instrumentolegalresoluciones_tipo_display()} Nº{self.instrumentolegalresoluciones_numero}/{self.instrumentolegalresoluciones_ano}"
@@ -307,6 +327,10 @@ class Vehiculo(models.Model):
 
     def __str__(self):
         return f"{self.vehiculo_modelo} - {self.vehiculo_patente}"
+    
+    def save(self, *args, **kwargs):
+        self.vehiculo_patente = self.vehiculo_patente.replace(" ", "")
+        super(Vehiculo, self).save(*args, **kwargs)
 
 class Solicitud(models.Model):
     class Meta:

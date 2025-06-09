@@ -116,9 +116,15 @@ class SolicitudForm(BaseFormMixin, forms.ModelForm):
         if fecha_hasta < fecha_desde:
             raise forms.ValidationError("Fecha final tiene que ser mayor a fecha inicial.")
 
+class ComisionadoSolicitudFormset(forms.models.BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
 ComisionadoSolicitudFormset = inlineformset_factory(
-					Solicitud,
-					ComisionadoSolicitud,
-					form = ComisionadoSolicitudForm,
-					extra=1,
-                    can_delete=False)
+    Solicitud,
+    ComisionadoSolicitud,
+    form=ComisionadoSolicitudForm,
+    formset=ComisionadoSolicitudFormset,
+    extra=1,
+    can_delete=False,
+)

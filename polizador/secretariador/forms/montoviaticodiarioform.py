@@ -1,5 +1,4 @@
 from django import forms
-from extra_views import InlineFormSetView
 from secretariador.models import MontoViaticoDiario, InstrumentosLegalesDecretos
 from secretariador.forms.mixins import ColumnFormMixin
 

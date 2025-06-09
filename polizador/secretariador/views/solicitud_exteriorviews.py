@@ -194,7 +194,12 @@ class CrearSolicitudExterior(PermissionRequiredMixin, generic.CreateView):
 	def get_context_data(self, **kwargs):
 		context = super(CrearSolicitudExterior, self).get_context_data(**kwargs)
 
-		context["comisionadosformset"] = ComisionadoSolicitudExteriorFormset(instance=self.object)
+		if self.request.POST:
+			context['group_formset'] = ComisionadoSolicitudExteriorFormset(self.request.POST, instance=self.object)
+			# por que esta vergación tiene que estar acá para que los errores del formset se muestren correctamente?
+			context.get('group_formset').errors
+		else:
+			context['group_formset'] = ComisionadoSolicitudExteriorFormset(instance=self.object)
 		return context
 
 	def get(self, request, *args, **kwargs):
@@ -248,9 +253,14 @@ class UpdateSolicitudExterior(PermissionRequiredMixin, generic.UpdateView):
 	success_url = reverse_lazy("secretariador:lista-solicitudes")
 	
 	def get_context_data(self, **kwargs):
-		context = super(UpdateSolicitudExterior, self).get_context_data(**kwargs)
+		context = super(type(self), self).get_context_data(**kwargs)
+		if self.request.POST:
+			context['group_formset'] = ComisionadoSolicitudExteriorFormset(self.request.POST, instance=self.object)
+			# por que esta vergación tiene que estar acá para que los errores del formset se muestren correctamente?
+			context.get('group_formset').errors
+		else:
+			context['group_formset'] = ComisionadoSolicitudExteriorFormset(instance=self.object)
 
-		context["comisionadosformset"] = ComisionadoSolicitudExteriorFormset(instance=self.object)
 		return context
 
 	def get(self, request, *args, **kwargs):

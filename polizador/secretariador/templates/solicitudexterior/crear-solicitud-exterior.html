@@ -23,7 +23,7 @@
 
     <div id="comisionadosolicitud-form" class="comisionadosolicitud-form">
       {%for form in comisionadosformset%}
-        <div class="row">  
+        <div class="row pb-1 border border-secondary rounded" id="comisionadosolicitud-form-{{form.prefix}}">  
 
           {% csrf_token %}
           {% for hidden in form.hidden_fields %}
@@ -55,7 +55,7 @@ Comisionado'>
   </form>
 </div>
 <div id="empty_form" style="display:none">
-  <div class="row">
+  <div class="row pb-1 border border-secondary rounded">
     {{comisionadosformset.empty_form.as_div}}
   </div>
 </div>

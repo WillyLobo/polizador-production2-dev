@@ -194,8 +194,13 @@ class CrearIncorporacion(PermissionRequiredMixin, generic.CreateView):
 
 	def get_context_data(self, **kwargs):
 		context = super(CrearIncorporacion, self).get_context_data(**kwargs)
+		if self.request.POST:
+			context['group_formset'] = ComisionadoIncorporacionFormset(self.request.POST, instance=self.object)
+			# por que esta vergación tiene que estar acá para que los errores del formset se muestren correctamente?
+			context.get('group_formset').errors
+		else:
+			context['group_formset'] = ComisionadoIncorporacionFormset(instance=self.object)
 
-		context["comisionadosformset"] = ComisionadoIncorporacionFormset(instance=self.object)
 		return context
 
 	def get(self, request, *args, **kwargs):
@@ -250,8 +255,13 @@ class UpdateIncorporacion(PermissionRequiredMixin, generic.UpdateView):
 	
 	def get_context_data(self, **kwargs):
 		context = super(UpdateIncorporacion, self).get_context_data(**kwargs)
+		if self.request.POST:
+			context['group_formset'] = ComisionadoIncorporacionFormset(self.request.POST, instance=self.object)
+			# por que esta vergación tiene que estar acá para que los errores del formset se muestren correctamente?
+			context.get('group_formset').errors
+		else:
+			context['group_formset'] = ComisionadoIncorporacionFormset(instance=self.object)
 
-		context["comisionadosformset"] = ComisionadoIncorporacionFormset(instance=self.object)
 		return context
 
 	def get(self, request, *args, **kwargs):

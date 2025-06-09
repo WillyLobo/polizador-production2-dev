@@ -2,6 +2,15 @@
 
 History
 =======
+Se eliminaron las aplicaciones 'widget_tweaks' y 'extra_views' de INSTALLED_APPS en settings.py. Se añadieron comentarios y un modelo en desarrollo 'Asuntos' en models.py, así como un nuevo método 'save' en el modelo 'Vehiculo' para limpiar espacios en el campo 'vehiculo_patente'. Se implementó una nueva clase 'DivErrorList' en el formulario 'ComisionadoSolicitudForm' para personalizar la visualización de errores. Se realizaron ajustes en las plantillas para mejorar la presentación de formularios y se actualizaron las vistas para manejar correctamente los errores de los formsets.
+v0.1.3-14
+------
+* Removed widget_tweaks and extra_views from INSTALLED_APPS in settings.py.
+* Added 'save' method in the 'Vehiculo' model to clean spaces in the 'vehiculo_patente' field.
+* Added comments and a development model 'Asuntos' in models.py as well as fields in InstrumentosLegalesResoluciones model (WIP no db changes or migrations yet). 
+* Implemented a new 'DivErrorList' class in the 'ComisionadoSolicitudForm' form to customize error display.
+* Made adjustments to templates to improve form presentation and updated views to handle formset errors correctly.
+
 v0.1.3-13
 ------
 * Added administrative tools to navigate through the instrumentoslegalesresoluciones model.
