@@ -9,4 +9,4 @@ class BaseFormMixin(object):
 class ColumnFormMixin(object):
 
     def as_div(self):
-        return SafeString(super().as_div().replace("<div>", "<div class='col'>"))
+        return SafeString(super().as_div().replace("<div>", f"<div class='col column-{self.prefix}'>"))
