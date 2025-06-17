@@ -72,7 +72,6 @@ INSTALLED_APPS = [
     "carga",
 	"secretariador",
     "personalizador",
-    "fallout",
 ]
 
 # Widget template override. Place "widgetX.html" into "templates/django/forms/widgets/"

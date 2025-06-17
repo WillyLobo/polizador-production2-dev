@@ -12,7 +12,6 @@ urlpatterns = [
     path("polizas/", include("carga.urls")),
     path("viaticos/", include("secretariador.urls")),
     path("personal/)", include("personalizador.urls")),
-    path("fallout/", include("fallout.urls")),
     #path("api/", include("api.urls")),
     path('admin/', admin.site.urls),
     path("select2/", include("django_select2.urls")),
