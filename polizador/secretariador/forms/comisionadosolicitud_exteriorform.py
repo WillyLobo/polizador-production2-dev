@@ -56,8 +56,8 @@ class ComisionadoSolicitudExteriorForm(ColumnFormMixin, forms.ModelForm):
         # check if comisionadosolicitud_nombre is included in another Solicitud in the same date
         comisionadoid = self.cleaned_data.get("id").pk if self.cleaned_data.get("id") else None
         comisionadosolicitud_nombre = cleaned_data.get("comisionadosolicitud_nombre")
-        solicitud_fecha_desde = datetime.strptime(self.data.get("solicitud_fecha_desde"), "%d/%m/%Y")
-        solicitud_fecha_hasta = datetime.strptime(self.data.get("solicitud_fecha_hasta"), "%d/%m/%Y")
+        solicitud_fecha_desde = datetime.strptime(self.data.get("solicitud_fecha_desde"), "%Y-%m-%d")
+        solicitud_fecha_hasta = datetime.strptime(self.data.get("solicitud_fecha_hasta"), "%Y-%m-%d")
 
         if not self.data.get("solicitud_anulada") and ComisionadoSolicitud.objects.filter(
             comisionadosolicitud_nombre=comisionadosolicitud_nombre,

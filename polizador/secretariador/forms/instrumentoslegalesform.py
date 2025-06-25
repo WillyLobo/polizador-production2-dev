@@ -3,6 +3,7 @@ from secretariador.models import InstrumentosLegalesMemorandum, InstrumentosLega
 from carga.views.ajaxviews import (
 	localidadmultiplewidget,
 	)
+from secretariador.forms.widgets import DateHTMLWidget
 from secretariador.forms.mixins import BaseFormMixin
 from datetime import datetime
 
@@ -28,7 +29,8 @@ class InstrumentosLegalesMemorandumForm(BaseFormMixin, forms.ModelForm):
             "instrumentolegalmemorandum_ano":forms.TextInput(attrs={
                 "class":"form-control"
             }),
-            "instrumentolegalmemorandum_fecha_aprobacion":forms.DateInput(attrs={
+            "instrumentolegalmemorandum_fecha_aprobacion":DateHTMLWidget(attrs={
+                "type":"date",
                 "class":"form-control",
                 "autocomplete":"off"
                 }),
@@ -72,7 +74,8 @@ class InstrumentosLegalesDecretosForm(BaseFormMixin, forms.ModelForm):
             "instrumentolegaldecretos_ano":forms.TextInput(attrs={
                 "class":"form-control"
             }),
-            "instrumentolegaldecretos_fecha_aprobacion":forms.DateInput(attrs={
+            "instrumentolegaldecretos_fecha_aprobacion":DateHTMLWidget(attrs={
+                "type":"date",
                 "class":"form-control",
                 "autocomplete":"off"
                 }),
@@ -118,7 +121,8 @@ class InstrumentosLegalesResolucionesPresidenciaForm(BaseFormMixin, forms.ModelF
             "instrumentolegalresoluciones_ano":forms.TextInput(attrs={
                 "class":"form-control"
             }),
-            "instrumentolegalresoluciones_fecha_aprobacion":forms.DateInput(attrs={
+            "instrumentolegalresoluciones_fecha_aprobacion":DateHTMLWidget(attrs={
+                "type":"date",
                 "class":"form-control",
                 "autocomplete":"off"
                 }),
@@ -174,7 +178,8 @@ class InstrumentosLegalesResolucionesDirectorioForm(BaseFormMixin, forms.ModelFo
             "instrumentolegalresoluciones_ano":forms.TextInput(attrs={
                 "class":"form-control"
             }),
-            "instrumentolegalresoluciones_fecha_aprobacion":forms.DateInput(attrs={
+            "instrumentolegalresoluciones_fecha_aprobacion":DateHTMLWidget(attrs={
+                "type":"date",
                 "class":"form-control",
                 "autocomplete":"off"
                 }),

@@ -6,13 +6,13 @@
 		  <span class="navbar-toggler-icon"></span>
 		</button>
 <div class="collapse navbar-collapse justify-content-md-center" id="mainnavbar">
-	{%comment%}  
+	{% comment %}  
 		<div class="nav pull-left p-2">
 			<a href="{% url "home" %}">
 				<img src='{% static "images/house-add.svg" %}' title='Home' width='30' heigth='30' />
 			</a>
 		</div>
-	{%endcomment%}
+	{% endcomment %}
 <ul class="navbar-nav">
 
 <!-- Obra Menu -->
@@ -251,7 +251,7 @@
 </li>
 <!-- Reportes Menu Ends -->
 
-{%comment%}
+{% comment %}
 <!-- Template Menu -->
 <li class="nav-item dropdown position-static">
 	<a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -296,7 +296,7 @@
 	</div>
 </li>
 <!-- Template Menu Ends -->
-{%endcomment%}
+{% endcomment %}
 <!-- Login/Logout -->
 {% if request.user.is_authenticated %}
 <li class="nav-item dropdown">

@@ -13,6 +13,7 @@ from secretariador.views.ajaxviews import (
     )
 from django.forms.models import inlineformset_factory
 from secretariador.forms.mixins import BaseFormMixin
+from secretariador.forms.widgets import DateHTMLWidget
 
 class SolicitudForm(BaseFormMixin, forms.ModelForm):
     class Meta:
@@ -62,11 +63,13 @@ class SolicitudForm(BaseFormMixin, forms.ModelForm):
                 "class":"form-control customSelect2",
                 "data-mdb-filter":"true"
                 }),
-            "solicitud_fecha_desde":forms.DateInput(attrs={
+            "solicitud_fecha_desde":DateHTMLWidget(attrs={
+                "type":"date",
                 "class":"form-control",
                 "autocomplete":"off"
                 }),
-            "solicitud_fecha_hasta":forms.DateInput(attrs={
+            "solicitud_fecha_hasta":DateHTMLWidget(attrs={
+                "type":"date",
                 "class":"form-control",
                 "autocomplete":"off"
                 }),
