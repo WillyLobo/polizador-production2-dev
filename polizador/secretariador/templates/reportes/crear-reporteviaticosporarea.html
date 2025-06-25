@@ -1,29 +1,27 @@
-{%extends "base.html"%}
+{% extends "base.html" %}
 
-{%block content %}
-{%load static%}
-{%load l10n%}
+{% block content  %}
+{% load static %}
+{% load l10n %}
 
-{%block title%}<title>Crear Reporte Viaticos por Agente</title>{%endblock title%}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
+{% block title %}<title>Crear Reporte Viaticos por Agente</title>{% endblock title %}
 
 <br>
 <form action="{% url "secretariador:crear-reporte-viaticos-por-area" %}" method="get">
 
     <!-- Select Fecha-->
     <!-- Select Mes -->
-<div class="input-group">
-    <div class="form-floating col-3">
-        <input type="text" name="fecha_inicial" placeholder="Fecha Inicial" rows="3" autocomplete="off" class="form-control" id="id_fecha_inicial">
-        <label for="id_fecha_inicial">Fecha Desde</label>
-      </div>
-      <!-- Select Final-->
-      <div class="form-floating col-3">
-        <input type="text" name="fecha_final" placeholder="Fecha Final" rows="3" autocomplete="off" class="form-control" id="id_fecha_final">
-        <label for="id_fecha_final">Fecha Hasta(Fecha mas actual)</label>
-      </div>
-</div>
+    <div class="input-group">
+        <div class="form-floating col-3">
+            <input type="date" name="fecha_inicial" placeholder="Fecha Inicial" rows="3" autocomplete="off" class="form-control" id="id_fecha_inicial">
+            <label for="id_fecha_inicial">Fecha Desde</label>
+        </div>
+        <!-- Select Final-->
+        <div class="form-floating col-3">
+            <input type="date" name="fecha_final" placeholder="Fecha Final" rows="3" autocomplete="off" class="form-control" id="id_fecha_final">
+            <label for="id_fecha_final">Fecha Hasta(Fecha mas actual)</label>
+        </div>
+    </div>
 
     <input type='submit' value='Buscar' class="px-5 btn btn-primary" />
 </form>
@@ -41,7 +39,7 @@
         </TR>
     </THEAD>
     <TBODY>
-        {%for s, d in solicitud.comisionados.items%}
+        {% for s, d in solicitud.comisionados.items %}
         <TR id="{{object.id}}">
             <TD class="col border align-middle">{{s}}</TD>
             <TD class="col border align-middle">{{d.cantidad_de_dias}}</TD>
@@ -50,7 +48,7 @@
             <TD class="col border align-middle">{{d.gastos}}</TD>
             <TD class="col border align-middle">{{d.pasaje}}</TD>
             <TD class="col border align-middle">{{d.valor_viatico}}</TD>
-        {%endfor%}
+        {% endfor %}
 
         <TFOOT>
         <tr>
@@ -112,22 +110,5 @@
     }
 });
 
-$(function () {
-      $.datetimepicker.setLocale('es');
-      $("#id_fecha_inicial").datetimepicker({
-      timepicker:false,
-      format: 'd/m/Y',
-      minDate:'2023/12/01',//yesterday is minimum date(for today use 0 or -1970/01/01)
-      maxDate:'0'//tomorrow is maximum date calendar
-      });
-      //31-03-2016
-      $.datetimepicker.setLocale('es');
-      $("#id_fecha_final").datetimepicker({
-      timepicker:false,
-      format: 'd/m/Y',
-      minDate:'2023/12/01',//yesterday is minimum date(for today use 0 or -1970/01/01)
-      maxDate:'0'//tomorrow is maximum date calendar
-      });
-    });
 </script>
-{%endblock%}
+{% endblock %}

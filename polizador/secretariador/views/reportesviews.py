@@ -28,9 +28,9 @@ class CrearReporteViaticosPorAgente(PermissionRequiredMixin, generic.ListView):
                 comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__range=[fecha_inicial, fecha_final])).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
         elif self.request.GET:
             fecha_final = self.request.GET.get("fecha_final")
-            fecha_final = datetime.strptime(fecha_final, "%d/%m/%Y")
+            fecha_final = datetime.strptime(fecha_final, "%Y-%m-%d")
             fecha_inicial = self.request.GET.get("fecha_inicial")
-            fecha_inicial = datetime.strptime(fecha_inicial, "%d/%m/%Y")
+            fecha_inicial = datetime.strptime(fecha_inicial, "%Y-%m-%d")
             solicitudes = ComisionadoSolicitud.objects.filter(Q(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial, fecha_final]) | Q(
                 comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__range=[fecha_inicial, fecha_final])).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
 
@@ -93,9 +93,9 @@ class CrearReporteViaticosporArea(PermissionRequiredMixin, generic.ListView):
                 comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__range=[fecha_inicial, fecha_final])).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
         elif self.request.GET:
             fecha_final = self.request.GET.get("fecha_final")
-            fecha_final = datetime.strptime(fecha_final, "%d/%m/%Y")
+            fecha_final = datetime.strptime(fecha_final, "%Y-%m-%d")
             fecha_inicial = self.request.GET.get("fecha_inicial")
-            fecha_inicial = datetime.strptime(fecha_inicial, "%d/%m/%Y")
+            fecha_inicial = datetime.strptime(fecha_inicial, "%Y-%m-%d")
             solicitudes = ComisionadoSolicitud.objects.filter(Q(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial, fecha_final]) | Q(
                 comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__range=[fecha_inicial, fecha_final])).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
         
@@ -159,9 +159,9 @@ class CrearReporteAusenciasPorAgente(PermissionRequiredMixin, generic.ListView):
                 comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__range=[fecha_inicial, fecha_final])).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
         elif self.request.GET:
             fecha_final = self.request.GET.get("fecha_final")
-            fecha_final = datetime.strptime(fecha_final, "%d/%m/%Y")
+            fecha_final = datetime.strptime(fecha_final, "%Y-%m-%d")
             fecha_inicial = self.request.GET.get("fecha_inicial")
-            fecha_inicial = datetime.strptime(fecha_inicial, "%d/%m/%Y")
+            fecha_inicial = datetime.strptime(fecha_inicial, "%Y-%m-%d")
             solicitudes = ComisionadoSolicitud.objects.filter(Q(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial, fecha_final]) | Q(
                 comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__range=[fecha_inicial, fecha_final])).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
 
@@ -178,7 +178,7 @@ class CrearReporteAusenciasPorAgente(PermissionRequiredMixin, generic.ListView):
                 )
 
             # fechas = [self.solicitud_fecha_desde+timedelta(days=x) for x in range((self.solicitud_fecha_hasta-self.solicitud_fecha_desde).days+1)]
-            # fechas = [datetime.strftime(fecha, "%d/%m/%Y") for fecha in fechas]
+            # fechas = [datetime.strftime(fecha, "%Y-%m-%d") for fecha in fechas]
             days_list = []
             for comision in agentes_list:
                 if comision.comisionadosolicitud_foreign:
@@ -225,9 +225,9 @@ class CrearReporteComisionesDuplicadas(PermissionRequiredMixin, generic.ListView
             solicitudes = Solicitud.objects.filter(solicitud_fecha_desde__range=[fecha_inicial,fecha_final]).exclude(solicitud_anulada=True)
         elif self.request.GET:
             fecha_final = self.request.GET.get("fecha_final")
-            fecha_final = datetime.strptime(fecha_final, "%d/%m/%Y")
+            fecha_final = datetime.strptime(fecha_final, "%Y-%m-%d")
             fecha_inicial = self.request.GET.get("fecha_inicial")
-            fecha_inicial = datetime.strptime(fecha_inicial, "%d/%m/%Y")
+            fecha_inicial = datetime.strptime(fecha_inicial, "%Y-%m-%d")
             solicitudes = Solicitud.objects.filter(solicitud_fecha_desde__range=[fecha_inicial, fecha_final]).exclude(solicitud_anulada=True)
 
         fechas = [fecha_inicial+timedelta(days=x) for x in range((fecha_final-fecha_inicial).days+1)]

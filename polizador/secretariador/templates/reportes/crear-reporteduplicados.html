@@ -1,12 +1,10 @@
-{%extends "base.html"%}
+{% extends "base.html" %}
 
-{%block content %}
-{%load static%}
-{%load l10n%}
+{% block content %}
+{% load static %}
+{% load l10n %}
 
-{%block title%}<title>Reporte Comisiones que se repiten en la misma fecha y localidad</title>{%endblock title%}
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
+{% block title %}<title>Reporte Comisiones que se repiten en la misma fecha y localidad</title>{% endblock title %}
 
 <br>
 <form action="{% url "secretariador:crear-reporte-duplicados" %}" method="get">
@@ -15,12 +13,12 @@
     <!-- Select Mes -->
     <div class="input-group">
         <div class="form-floating col-3 d-print-none">
-            <input type="text" name="fecha_inicial" placeholder="Fecha Inicial" rows="3" autocomplete="off" class="form-control" id="id_fecha_inicial">
+            <input type="date" name="fecha_inicial" placeholder="Fecha Inicial" rows="3" autocomplete="off" class="form-control" id="id_fecha_inicial">
             <label for="id_fecha_inicial">Fecha Desde</label>
           </div>
           <!-- Select Final-->
           <div class="form-floating col-3 d-print-none">
-            <input type="text" name="fecha_final" placeholder="Fecha Final" rows="3" autocomplete="off" class="form-control" id="id_fecha_final">
+            <input type="date" name="fecha_final" placeholder="Fecha Final" rows="3" autocomplete="off" class="form-control" id="id_fecha_final">
             <label for="id_fecha_final">Fecha Hasta(Fecha mas actual)</label>
           </div>
     </div>
@@ -41,7 +39,7 @@
         </TR>
     </THEAD>
     <TBODY>
-        {%for s, d in solicitud.duplicados.items%}
+        {% for s, d in solicitud.duplicados.items %}
         <TR id="{{object.id}}">
             <TD class="align-middle bg-secondary text-white">{{s.0}}</TD>
             <TD class="align-middle bg-secondary text-white"></TD>
@@ -51,39 +49,19 @@
             <TD class="align-middle bg-secondary text-white"></TD>
             <TD class="align-middle bg-secondary text-white"></TD>
         </TR>
-            {%for actuacion in d %}
+            {% for actuacion in d %}
             <TR id="{{object.id}}_detalle">
                 <TD class="align-middle"></TD>
                 <TD class="align-middle">{{actuacion.0}}</TD>
                 <TD class="align-middle">{{actuacion.1}}</TD>
                 <TD class="align-middle">{{actuacion.4}}</TD>
-                <TD class="align-middle">{%for a in actuacion.5%}{{a}}{%if not forloop.last%}, {%endif%}{%endfor%}</TD>
-                <TD class="align-middle">{%for a in actuacion.2%}{{a}}{%if not forloop.last%}, {%endif%}{%endfor%}</TD>
+                <TD class="align-middle">{% for a in actuacion.5 %}{{a}}{% if not forloop.last %}, {% endif %}{% endfor %}</TD>
+                <TD class="align-middle">{% for a in actuacion.2 %}{{a}}{% if not forloop.last %}, {% endif %}{% endfor %}</TD>
                 <TD class="align-middle">{{actuacion.3}}</TD>
             </TR>
             {% endfor %}
-        {%endfor%}
+        {% endfor %}
     </TBODY>
 </TABLE>
 
-<script>
-$(function () {
-      $.datetimepicker.setLocale('es');
-      $("#id_fecha_inicial").datetimepicker({
-      timepicker:false,
-      format: 'd/m/Y',
-      minDate:'2023/12/01',//yesterday is minimum date(for today use 0 or -1970/01/01)
-      maxDate:'0'//tomorrow is maximum date calendar
-      });
-      //31-03-2016
-      $.datetimepicker.setLocale('es');
-      $("#id_fecha_final").datetimepicker({
-      timepicker:false,
-      format: 'd/m/Y',
-      minDate:'2023/12/01',//yesterday is minimum date(for today use 0 or -1970/01/01)
-      maxDate:'0'//tomorrow is maximum date calendar
-      });
-    });
-
-</script>
-{%endblock%}
+{% endblock %}
