@@ -348,7 +348,7 @@ class Solicitud(models.Model):
         ]
         
     solicitud_actuacion = GeneratedField(
-        expression=ConcatOp(models.Value("E10-"), 'solicitud_actuacion_ano', models.Value("-"), 'solicitud_actuacion_numero', models.Value("-AE")),
+        expression=ConcatOp('solicitud_actuacion_jurisdiccion', models.Value("-"), 'solicitud_actuacion_ano', models.Value("-"), 'solicitud_actuacion_numero', models.Value("-AE")),
         output_field=models.TextField(),
         db_persist=True,
     )
@@ -387,7 +387,10 @@ class Solicitud(models.Model):
         return f"{self.solicitud_actuacion}"
     
     def get_absolute_url(self):
-        return reverse('secretariador:update-solicitud', kwargs={"pk": str(self.id)})
+        if self.solicitud_provincia.provincia_nombre == "Chaco":
+            return reverse('secretariador:update-solicitud', kwargs={"pk": str(self.id)})
+        else:
+            return reverse('secretariador:update-solicitud-exterior', kwargs={"pk": str(self.id)})
 
 class ComisionadoSolicitud(models.Model):
     class Meta:
