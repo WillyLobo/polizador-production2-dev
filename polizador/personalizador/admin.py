@@ -7,10 +7,12 @@ from personalizador.resources import *
 class CargosAdmin(admin.ModelAdmin):
     model = Cargos
     resource_class = CargosResource
+    search_fields = ["cargo_tipo__cargotipo", "cargo_gerencia__gerencia_nombre", "cargo_direccion__direccion_nombre", "cargo_departamento__departamento_nombre"]
 
 class CargoTipoResource(admin.ModelAdmin):
     model = CargoTipo
     resource_class = CargoTipoResource
+
 
 class GerenciaAdmin(admin.ModelAdmin):
     model = Gerencia

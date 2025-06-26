@@ -13,6 +13,7 @@ class IncorporacionForm(BaseFormMixin, forms.ModelForm):
         model = Incorporacion
         fields = (
             "incorporacion_solicitud",
+            "incorporacion_actuacion_jurisdiccion",
             "incorporacion_actuacion_ano",
             "incorporacion_actuacion_numero",
             "incorporacion_solicitante",
@@ -21,6 +22,9 @@ class IncorporacionForm(BaseFormMixin, forms.ModelForm):
         widgets = {
             "incorporacion_solicitud":SolicitudWidget(attrs={
                 "class":"form-control customSelect2"
+                }),
+            "incorporacion_actuacion_jurisdiccion":forms.TextInput(attrs={
+                "class":"form-control"
                 }),
             "incorporacion_actuacion_ano":forms.TextInput(attrs={
                 "class":"form-control"

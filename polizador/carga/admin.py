@@ -12,10 +12,12 @@ class AreaAdmin(ImportExportMixin, admin.ModelAdmin):
 	resource_class = resources.AreaResource
 class AseguradoraAdmin(ImportExportMixin, admin.ModelAdmin):
 	resource_class = resources.AseguradoraResource
+	search_fields = ["aseguradora_nombre"]
 class EmpresaAdmin(ImportExportMixin, admin.ModelAdmin):
 	list_display = ["id", "empresa_nombre", "empresa_cuit"]
 	ordering = ["id"]
 	resource_class = resources.EmpresaResource
+	search_fields = ["empresa_nombre"]
 class PolizaAdmin(ImportExportMixin, admin.ModelAdmin):
 	resource_class = resources.PolizaResource
 
@@ -30,8 +32,9 @@ class ProgramaAdmin(ImportExportMixin, admin.ModelAdmin):
 	resource_class = resources.ProgramaResource
 
 class ProvinciaResourceAdmin(ImportExportMixin, admin.ModelAdmin):
-    model = models.Provincia
-    resource_class = resources.ProvinciaResource
+	model = models.Provincia
+	resource_class = resources.ProvinciaResource
+	search_fields = ["provincia_nombre"]
 
 class DepartamentoAdmin(ImportExportMixin, admin.ModelAdmin):
 	resource_class = resources.DepartamentoResource
@@ -40,6 +43,7 @@ class DepartamentoAdmin(ImportExportMixin, admin.ModelAdmin):
 class LocalidadAdmin(ImportExportMixin, admin.ModelAdmin):
 	resource_class = resources.LocalidadResource
 	list_display = ("id", "localidad_nombre", "localidad_municipio", "localidad_departamento", "localidad_funcion")
+	search_fields = ["localidad_nombre", "localidad_municipio__municipio_nombre", "localidad_departamento__departamento_nombre", "localidad_funcion"]
 
 class MunicipioAdmin(ImportExportMixin, admin.ModelAdmin):
 	resource_class = resources.MunicipioResource
