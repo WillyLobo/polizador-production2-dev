@@ -165,6 +165,7 @@ class InstrumentosLegalesResoluciones(models.Model):
     # instrumentolegalresoluciones_empresa_beneficiaria = models.ForeignKey("carga.Empresa", on_delete=models.CASCADE, null=True, blank=True)
     # instrumentolegalresoluciones_agente_beneficiario = models.ForeignKey("Comisionado", on_delete=models.CASCADE, null=True, blank=True)
     # instrumentolegalresoluciones_monto = models.DecimalField("Monto", max_digits=12, decimal_places=2, default=0)
+    # factura/boleta de pago y numero de comprobante
 
     def __str__(self):
         return f"{self.get_instrumentolegalresoluciones_tipo_display()} Nº{self.instrumentolegalresoluciones_numero}/{self.instrumentolegalresoluciones_ano}"
@@ -182,7 +183,7 @@ class InstrumentosLegalesDecretos(models.Model):
         ordering = ["-instrumentolegaldecretos_ano", "-instrumentolegaldecretos_numero"]
         constraints = [
             models.UniqueConstraint(
-                fields=["instrumentolegaldecretos_tipo", "instrumentolegaldecretos_numero", "instrumentolegaldecretos_ano"],
+                fields=["instrumentolegaldecretos_tipo", "instrumentolegaldecretos_numero", "instrumentolegaldecretos_ano", "instrumentolegaldecretos_fecha_aprobacion"],
                 name='unique_decretos_1'
             ),
         ]
