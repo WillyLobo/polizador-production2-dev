@@ -299,7 +299,12 @@ class CrearReporteViaticosPorAgenteIndividual(PermissionRequiredMixin, generic.L
             agente = get_object_or_404(Comisionado, id=self.request.GET.get("agente"))
             #agente = Comisionado.objects.get(id=self.request.GET.get("agente"))
             ano = self.request.GET.get("ano")
-            comisiones = agente.comisionadosolicitud_set.filter(
+            comisiones = agente.comisionadosolicitud_set.select_related(
+                "comisionadosolicitud_foreign",
+                "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud",
+                "comisionadosolicitud_foreign__solicitud_provincia",
+                "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_provincia"
+                ).filter(
                     Q(comisionadosolicitud_foreign__solicitud_fecha_desde__year=ano) |
                     Q(comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__year=ano)
                 ).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
