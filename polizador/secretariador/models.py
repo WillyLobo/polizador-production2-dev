@@ -343,7 +343,7 @@ class Solicitud(models.Model):
                 name='unique_solicitud_1'
             ),
             models.UniqueConstraint(
-                fields=["solicitud_actuacion_ano", "solicitud_actuacion_numero"],
+                fields=["solicitud_actuacion_jurisdiccion", "solicitud_actuacion_ano", "solicitud_actuacion_numero"],
                 name="unique_solicitud_2"
             )
         ]
@@ -505,7 +505,7 @@ class Incorporacion(models.Model):
                 name='unique_incorporacion_1'
             ),
             models.UniqueConstraint(
-                fields=["incorporacion_actuacion_ano", "incorporacion_actuacion_numero"],	
+                fields=["incorporacion_actuacion_jurisdiccion","incorporacion_actuacion_ano", "incorporacion_actuacion_numero"],	
                 name="unique_incorporacion_2"
             ),
         ]
