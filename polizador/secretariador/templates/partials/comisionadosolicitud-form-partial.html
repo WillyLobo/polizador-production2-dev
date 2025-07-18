@@ -1,0 +1,101 @@
+{{comisionadosformset.management_form}}
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Comisionados</legend>
+    <div id="comisionadosolicitud-form" class="comisionadosolicitud-form">
+        {% for form in comisionadosformset %}
+            <div class="row m-1 border border-dark rounded" id="comisionadosolicitud-form-{{form.prefix}}">  
+
+                {% csrf_token %}
+                {% for hidden in form.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
+
+                <div class="row">
+                    <div class="col pb-1">
+                        {{form.comisionadosolicitud_nombre.as_field_group}}
+                    </div>
+                    <div class="col pb-1">
+                        {{form.comisionadosolicitud_gastos.as_field_group}}
+                    </div>
+                    <div class="col pb-1">
+                        {{form.comisionadosolicitud_combustible.as_field_group}}
+                    </div>
+                    <div class="col-1 pb-1">
+                        {{form.comisionadosolicitud_chofer.as_field_group}}
+                    </div>
+                    <div class="col-1 pb-1">
+                        {{form.comisionadosolicitud_colaborador.as_field_group}}
+                    </div>
+                    <div class="col-1 pb-1">
+                        {{form.comisionadosolicitud_sin_viatico.as_field_group}}
+                    </div>
+                    {% if perms.secretariador.delete_comisionadosolicitud %} 
+                        {% if form.instance.pk %}
+                            <div class="col-1 pb-1">
+                                <label for="id-eliminar-{{form.instance.pk|stringformat:'s'}}">Eliminar</label><br>
+                                <img src='/static/images/trash3.svg' id="id-eliminar-{{form.instance.pk|stringformat:'s'}}" title='Eliminar' style='width: 3em;height: 3em;' data-bs-toggle="modal" data-bs-target="#eliminarModal-{{form.instance.pk|stringformat:'s'}}" />
+                                <!-- Modal -->
+                                <div class="modal fade" id="eliminarModal-{{form.instance.pk|stringformat:'s'}}" tabindex="-1" role="dialog" aria-labelledby="eliminarModalLabel-{{form.instance.pk|stringformat:'s'}}" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="eliminarModalLabel-{{form.instance.pk|stringformat:'s'}}">Está seguro que desea eliminar el comisionado <strong>{{form.instance.comisionadosolicitud_nombre}}</strong>?</h5>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <a href="{% url 'secretariador:delete-comisionado-solicitud' form.instance.pk|stringformat:'s' %}" type="button" class="btn btn-primary">Si, Eliminar</a>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="col-1 pb-1">
+                                <label for="id-eliminar-{{form.prefix}}">Eliminar</label><br>
+                                <img src='/static/images/trash3.svg' id="id-eliminar-{{form.prefix}}" title='Eliminar' style='width: 3em;height: 3em;' onclick="eliminarComisionado('{{form.prefix}}')"/>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+        {% for dict in formset.errors %}
+            {% for error in dict.values %}
+                {{ error }}
+            {% endfor %}
+        {% endfor %}
+    </div>
+</fieldset>
+<div id="empty_form" style="display:none">
+<div class="row m-1 border border-dark rounded" id="comisionadosolicitud-form-{{form.prefix}}">  
+    {% csrf_token %}
+    {% for hidden in form.hidden_fields %}
+        {{ hidden }}
+    {% endfor %}
+    <div class="row">
+        <div class="col pb-1">
+            {{comisionadosformset.empty_form.comisionadosolicitud_nombre.as_field_group}}
+        </div>
+        <div class="col pb-1">
+            {{comisionadosformset.empty_form.comisionadosolicitud_gastos.as_field_group}}
+        </div>
+        <div class="col pb-1">
+            {{comisionadosformset.empty_form.comisionadosolicitud_combustible.as_field_group}}
+        </div>
+        <div class="col-1 pb-1">
+            {{comisionadosformset.empty_form.comisionadosolicitud_chofer.as_field_group}}
+        </div>
+        <div class="col-1 pb-1">
+            {{comisionadosformset.empty_form.comisionadosolicitud_colaborador.as_field_group}}
+        </div>
+        <div class="col-1 pb-1">
+            {{comisionadosformset.empty_form.comisionadosolicitud_sin_viatico.as_field_group}}
+        </div>      
+        <!-- Eliminar fila -->
+        <div class="col-1 pb-1">
+            <label for="id-eliminar-comisionadosolicitud_set-__prefix__">Eliminar</label><br>
+            <img src='/static/images/trash3.svg' id="id-eliminar-comisionadosolicitud_set-__prefix__" title='Eliminar' style='width: 3em;height: 3em;' onclick="eliminarComisionado('comisionadosolicitud_set-__prefix__')"/>
+        </div>
+    </div>
+</div>

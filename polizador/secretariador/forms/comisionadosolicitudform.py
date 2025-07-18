@@ -34,15 +34,12 @@ class ComisionadoSolicitudForm(ColumnFormMixin, forms.ModelForm):
                 }),
             "comisionadosolicitud_chofer":forms.CheckboxInput(attrs={
                 "class":"form-check-input",
-                "style":'width: 2em;height: 2em;'
                 }),
             "comisionadosolicitud_colaborador":forms.CheckboxInput(attrs={
                 "class":"form-check-input",
-                "style":'width: 2em;height: 2em;'
                 }),
             "comisionadosolicitud_sin_viatico":forms.CheckboxInput(attrs={
                 "class":"form-check-input",
-                "style":'width: 2em;height: 2em;'
                 }),
         }
 

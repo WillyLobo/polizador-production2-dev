@@ -210,10 +210,13 @@ class InstrumentosLegalesDecretos(models.Model):
         return f"{self.get_instrumentolegaldecretos_tipo_display()} Nº{self.instrumentolegaldecretos_numero}/{self.instrumentolegaldecretos_ano}"
     
     def get_absolute_url(self):
-        if self.instrumentolegaldecretos_tipo == "N":
-            return reverse('secretariador:update-decreto', kwargs={"pk": str(self.id)})
-        elif self.instrumentolegaldecretos_tipo == "P":
-            return reverse('secretariador:update-decreto', kwargs={"pk": str(self.id)})
+        if self.montoviaticodiario_set.all():
+            return reverse('secretariador:update-montoviaticodiario', kwargs={"pk": str(self.id)})
+        else:    
+            if self.instrumentolegaldecretos_tipo == "N":
+                return reverse('secretariador:update-decreto', kwargs={"pk": str(self.id)})
+            elif self.instrumentolegaldecretos_tipo == "P":
+                return reverse('secretariador:update-decreto', kwargs={"pk": str(self.id)})
 
 class MontoViaticoDiario(models.Model):
     class Meta:
@@ -401,12 +404,12 @@ class ComisionadoSolicitud(models.Model):
     comisionadosolicitud_foreign = models.ForeignKey("Solicitud", on_delete=models.CASCADE, null=True, blank=True)
     comisionadosolicitud_incorporacion_foreign = models.ForeignKey("Incorporacion", on_delete=models.CASCADE, null=True, blank=True)
     comisionadosolicitud_nombre = models.ForeignKey("Comisionado", on_delete=models.CASCADE)
-    comisionadosolicitud_colaborador = models.BooleanField("Es colaborador?")
-    comisionadosolicitud_chofer = models.BooleanField("Es Chofer?")
+    comisionadosolicitud_colaborador = models.BooleanField("Colab.?")
+    comisionadosolicitud_chofer = models.BooleanField("Chofer?")
     comisionadosolicitud_combustible = models.DecimalField("Combustible", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
     comisionadosolicitud_pasaje = models.DecimalField("Pasajes", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
     comisionadosolicitud_gastos = models.DecimalField("Gastos", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
-    comisionadosolicitud_sin_viatico = models.BooleanField("Sin viático", default=False)
+    comisionadosolicitud_sin_viatico = models.BooleanField("$0", default=False)
     comisionadosolicitud_viatico_diario = models.DecimalField("Viatico Diario", max_digits=12, decimal_places=2, default=0, editable=False, null=True, blank=True) # Field is editable=False because it is calculated in the clean method.
     comisionadosolicitud_viatico_computado = models.DecimalField("Viatico Computado", max_digits=12, decimal_places=2, default=0, editable=False, null=True, blank=True) # Field is editable=False because it is calculated in the clean method.
     comisionadosolicitud_viatico_total = models.DecimalField("Viatico Total", max_digits=12, decimal_places=2, default=0, editable=False, null=True, blank=True) # Field is editable=False because it is calculated in the clean method.

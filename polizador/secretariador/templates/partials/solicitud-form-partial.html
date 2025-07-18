@@ -1,0 +1,63 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Actuación</legend>
+    <div class="row">
+        <div class="col-md-3">
+            {{form.solicitud_actuacion_jurisdiccion.as_field_group}}
+        </div>
+        <div class="col-md-3">
+            {{form.solicitud_actuacion_ano.as_field_group}}
+        </div>
+        <div class="col-md-3">
+            {{form.solicitud_actuacion_numero.as_field_group}}
+        </div>
+        <div class="col-md-3">
+            {{form.solicitud_anulada.as_field_group}}
+        </div>
+    </div>
+    <div class="form-group">
+        {{form.solicitud_solicitante.as_field_group}}
+    </div>
+</fieldset>
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Detalles del Viaje</legend>
+    <div class="row">
+        <div class="form-group" hidden>
+            {{form.solicitud_provincia.as_field_group}}
+        </div>
+        <div class="form-group col-md-12">
+            {{form.solicitud_localidades.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-5">
+            {{form.solicitud_fecha_desde.as_field_group}}
+        </div>
+        <div class="col-md-5">
+            {{form.solicitud_fecha_hasta.as_field_group}}
+        </div>
+        <div class="col-md-2">
+            {{form.solicitud_dia_inhabil.as_field_group}}
+        </div>
+    </div>
+    <div class="form-group">
+        {{form.solicitud_tareas.as_field_group}}
+    </div>
+    <div class="form-group">
+        {{form.solicitud_vehiculo.as_field_group}}
+    </div>
+</fieldset>
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Instrumentos legales</legend>
+    <div class="form-group">
+        {{form.solicitud_decreto_viaticos.as_field_group}}
+    </div>
+    <div class="form-group">
+        {{form.solicitud_resolucion.as_field_group}}
+    </div>
+</fieldset>
+

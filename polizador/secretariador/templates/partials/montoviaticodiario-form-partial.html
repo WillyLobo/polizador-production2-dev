@@ -1,0 +1,82 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Identificador</legend>
+    <div class="form-group">
+        {{form.instrumentolegaldecretos_tipo.as_field_group}}
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.instrumentolegaldecretos_numero.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.instrumentolegaldecretos_ano.as_field_group}}
+        </div>
+    </div>
+    <div class="form-group">
+        {{form.instrumentolegaldecretos_fecha_aprobacion.as_field_group}}
+    </div>
+</fieldset>
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Sumario</legend>
+    <div class="form-group">
+        {{form.instrumentolegaldecretos_descripcion.as_field_group}}
+    </div>
+</fieldset>
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Instrumentos legales</legend>
+    <div class="form-group">
+        {{form.instrumentolegaldecretos.as_field_group}}
+    </div>
+</fieldset>
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Montos según escalafón</legend>
+    {% for form in montoviaticodiarioformset %}
+        <div class="row">
+            <div class="col-md-6">
+                {{form.montoviaticodiario_estrato_uno_interior.as_field_group}}
+            </div>
+            <div class="col-md-6">
+                {{form.montoviaticodiario_estrato_uno_exterior.as_field_group}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                {{form.montoviaticodiario_estrato_dos_interior.as_field_group}}
+            </div>
+            <div class="col-md-6">
+                {{form.montoviaticodiario_estrato_dos_exterior.as_field_group}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                {{form.montoviaticodiario_estrato_tres_interior.as_field_group}}
+            </div>
+            <div class="col-md-6">
+                {{form.montoviaticodiario_estrato_tres_exterior.as_field_group}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                {{form.montoviaticodiario_estrato_cuatro_interior.as_field_group}}
+            </div>
+            <div class="col-md-6">
+                {{form.montoviaticodiario_estrato_cuatro_exterior.as_field_group}}
+            </div>
+        </div>
+        {% csrf_token %}
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+        {% for dict in formset.errors %}
+            {% for error in dict.values %}
+                {{ error }}
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
+</fieldset>

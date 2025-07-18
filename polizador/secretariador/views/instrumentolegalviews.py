@@ -318,7 +318,7 @@ class ListaListaInstrumentosLegalesDecretosView(AjaxDatatableView):
 	def customize_row(self, row, obj):
 		id = str(obj.id)
 				
-		editarlink = f'<a href="/viaticos/creardecreto/{id}">{editlinkimg}</a>'
+		editarlink = f'<a href="{obj.get_absolute_url()}">{editlinkimg}</a>'
 		detallelink = f'<a href="/viaticos/creardecreto/ver/{id}">{detallelinkimg}</a>'
 		eliminarlink = f'<a href="/viaticos/eliminar/decreto/{id}">{eliminarlinkimg}</a>'
 

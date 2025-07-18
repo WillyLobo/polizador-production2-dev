@@ -4,6 +4,7 @@ from carga.models import Provincia
 from secretariador.forms.comisionadosolicitudform import ComisionadoSolicitudForm
 from carga.views.ajaxviews import (
 	localidadmultiplewidget,
+    provinciawidget,
     )
 from secretariador.views.ajaxviews import (
     ResolucionWidget,
@@ -41,7 +42,8 @@ class SolicitudForm(BaseFormMixin, forms.ModelForm):
                 "style":'width: 2em;height: 2em;'
                 }),
             "solicitud_actuacion_jurisdiccion":forms.TextInput(attrs={
-                "class":"form-control"
+                "class":"form-control",
+                "placeholder":"Jurisdicción",
                 }),
             "solicitud_actuacion_ano":forms.TextInput(attrs={
                 "class":"form-control"
@@ -55,9 +57,9 @@ class SolicitudForm(BaseFormMixin, forms.ModelForm):
             "solicitud_decreto_viaticos":DecretoWidget(attrs={
                 "class":"form-control customSelect2"
                 }),
-            "solicitud_provincia":forms.Select(attrs={
+            "solicitud_provincia":provinciawidget(attrs={
                 "class":"form-control",
-                "default":"20"
+                "default":"22", # Provincia del Chaco
                 }),
             "solicitud_localidades":localidadmultiplewidget(attrs={
                 "class":"form-control customSelect2",
@@ -94,6 +96,13 @@ class SolicitudForm(BaseFormMixin, forms.ModelForm):
         self.fields["solicitud_decreto_viaticos"].queryset = queryset
         self.fields["solicitud_decreto_viaticos"].initial = queryset.last().id
         self.fields["solicitud_provincia"].initial = Provincia.objects.get(pk=22)
+        # Labels for fields without them.
+        self.fields["solicitud_solicitante"].label = "Solicitante"
+        self.fields["solicitud_provincia"].label = "Provincia"
+        self.fields["solicitud_localidades"].label = "Localidades"
+        self.fields["solicitud_decreto_viaticos"].label = "Decreto Reglamentario"
+        self.fields["solicitud_vehiculo"].label = "Vehículo"
+        
 
     # Logic for raising error if fecha_hasta < fecha_desde
     def clean(self):

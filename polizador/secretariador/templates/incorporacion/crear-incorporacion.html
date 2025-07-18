@@ -3,65 +3,23 @@
 {% block content %}
 {% block title %}<title>{{title}}</title>{% endblock title %}
 
-<!-- XDSoft DateTimePicker -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
-
 {{ form.media.css }}
+<form action='{% url "secretariador:crear-incorporacion" %}' method="POST" enctype="multipart/form-data"> 
+  {% csrf_token %}
 
-<div class="container">
-  <form action='{% url "secretariador:crear-incorporacion" %}' method="POST" enctype="multipart/form-data"> 
-    {% csrf_token %}
-    {% for hidden in form.hidden_fields %}
-      {{ hidden }}
-    {% endfor %}
-    {{form.as_div}}
-    {{comisionadosformset.management_form}}
-
-    <span class="fs-4 p-0">Comisionados</span>
-    <div id="comisionadosolicitud-form" class="comisionadosolicitud-form">
-      {% for form in comisionadosformset %}
-        <div class="row pb-1 border border-secondary rounded" id="comisionadosolicitud-form-{{form.prefix}}">  
-          {% csrf_token %}
-          {% for hidden in form.hidden_fields %}
-            {{ hidden }}
-          {% endfor %}
-          {{form.as_div}}
-          <div class="col-1">
-            <img src='/static/images/trash3.svg' title='Eliminar' class="pt-2" style='width: 3em;height: 3em;' onclick="eliminarComisionado('comisionadosolicitud_set-0')"/>
-          </div>
-        </div>
-      {% endfor %}
-      {% for dict in formset.errors %}
-        {% for error in dict.values %}
-          {{ error }}
-        {% endfor %}
-      {% endfor %}
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
+      {% include "partials/administrative-sidebar.html" %}
+      {% include "partials/floating-solicitudes-menu.html" %}
     </div>
-
-    <!--Floating menu-->
-    <div class="container border rounded border-dark floating-menu">
-      <input type='submit' value='Guardar' class="mx-auto my-1 btn btn-primary btn-lg btn-block w-100" />
-      <a href="{% url 'secretariador:lista-incorporaciones' %}" type="button" class="mx-auto my-1 btn btn-secondary btn-lg btn-block w-100">Volver</a>
-      <input type='button' class="mx-auto my-1 btn btn-success btn-sm btn-block btn-outline btn-wrap-text w-100" id='addForm' value='Agregar
-      Nuevo
-      Comisionado'>
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
+      {% include "partials/incorporacion-form-partial.html" %}
+      {% include "partials/comisionadosolicitud-form-partial.html" %}
+    </main>
+    <div class="d-none d-xl-block col-xl-2 bd-toc">
     </div>
-    <!--End of floating menu-->
-    
-  </form>
-</div>
-
-<div id="empty_form" style="display:none">
-  <div class="row pb-1 border border-secondary rounded" id="comisionadosolicitud-form-comisionadosolicitud_set-__prefix__">
-    {{comisionadosformset.empty_form.as_div}}
-        <!-- Eliminar fila -->
-      <div class="col-1">
-          <img src='/static/images/trash3.svg' title='Eliminar' class="pt-2" style='width: 3em;height: 3em;' onclick="eliminarComisionado('comisionadosolicitud_set-__prefix__')"/>
-      </div>
   </div>
-</div>
-
+</form>
 {{ form.media.js }}
 
 <script>

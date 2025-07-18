@@ -4,40 +4,20 @@
 {% block title %}<title>{{title}}</title>{% endblock title %}
 
 {{ form.media.css }}
+<form action='{% url "secretariador:update-resolucion-presidencia" object.id %}' method="POST" enctype="multipart/form-data"> 
+  {% csrf_token %}
 
-<div class="container">
-  <form action='{% url "secretariador:update-resolucion-presidencia" object.id %}' method="POST" enctype="multipart/form-data"> 
-
-    {% csrf_token %}
-    {% for hidden in form.hidden_fields %}
-      {{ hidden }}
-    {% endfor %}
-
-    {{form.as_div}}
-
-    <input type='submit' value='Guardar' class="px-5 btn btn-primary" />
-  </form>
-</div>
-
-{% if user.is_superuser %}
-<!-- Administrative tools -->
-<div class="container">
-  <div class="list-group">
-    <a href="" class="list-group-item list-group-item-action"><b>Objeto Actual:</b> {{object.id}}</a>
-    <a href="{{idanteriorobjeto.get_absolute_url}}" class="list-group-item list-group-item-action"> <b>Objeto Anterior:</b> ({{idanteriorobjeto.id}}) - {{idanteriorobjeto}}</a>
-    <a href="{{idsiguienteobjeto.get_absolute_url}}" class="list-group-item list-group-item-action"> <B>Objeto Siguiente:</b> ({{idsiguienteobjeto.id}}) - {{idsiguienteobjeto}}</a>
-  </div>
-
-  <div class="row">
-    <div class="col-6">
-      <a href="{{idanteriorobjeto.get_absolute_url}}" type="button" class="mx-auto my-1 btn btn-secondary btn-lg btn-block w-100"><< Anterior</a>
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
+      {% include "partials/administrative-sidebar.html" %}
+      {% include "partials/floating-generic-menu.html" %}
     </div>
-    <div class="col-6">
-      <a href="{{idsiguienteobjeto.get_absolute_url}}" type="button" class="mx-auto my-1 btn btn-secondary btn-lg btn-block w-100">Siguiente >></a>
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
+      {% include "partials/resolucionespresidencia-form-partial.html" %}
+    </main>
+    <div class="d-none d-xl-block col-xl-2 bd-toc">
     </div>
   </div>
-</div>
-{% endif %}
-
+</form>
 {{ form.media.js }}
 {% endblock %}

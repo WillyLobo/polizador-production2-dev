@@ -97,6 +97,7 @@ TEMPLATES = [
         'DIRS': [
 			BASE_DIR / "templates",
 			BASE_DIR / "polizador/carga/templates",
+            BASE_DIR / "polizador/secretariador/templates",
             ],
         'APP_DIRS': True,
         'OPTIONS': {

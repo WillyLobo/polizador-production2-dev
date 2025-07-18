@@ -1,0 +1,31 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Actuación</legend>
+    <div class="row">
+        <div class="col-md-4">
+            {{form.incorporacion_actuacion_jurisdiccion.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.incorporacion_actuacion_ano.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.incorporacion_actuacion_numero.as_field_group}}
+        </div>
+    </div>
+    <div class="form-group">
+        {{form.incorporacion_solicitud.as_field_group}}
+    </div>
+    <div class="form-group">
+        {{form.incorporacion_solicitante.as_field_group}}
+    </div>
+</fieldset>
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Instrumentos legales</legend>
+    <div class="form-group">
+        {{form.incorporacion_resolucion.as_field_group}}
+    </div>
+</fieldset>
+

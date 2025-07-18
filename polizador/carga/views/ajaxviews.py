@@ -26,6 +26,11 @@ class obramultiplewidget(s2forms.ModelSelect2MultipleWidget):
         "obra_convenio__icontains",
     ]
 
+class provinciawidget(s2forms.ModelSelect2Widget):
+    search_fields = [
+        "provincia_nombre__icontains",
+    ]
+
 class departamentomultiplewidget(s2forms.ModelSelect2MultipleWidget):
     search_fields = [
         "departamento_nombre__icontains",
