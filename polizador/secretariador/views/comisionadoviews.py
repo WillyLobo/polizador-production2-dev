@@ -87,7 +87,7 @@ class ListaComisionadosView(AjaxDatatableView):
 		AjaxDatatableView.render_row_tools_column_def(),
 		{'name': 'edit', 'title': '', 'placeholder': True, 'searchable': False, 'orderable': False, "width":81},
 		{"name": "id","title":"ID", "visible": False},
-		{"name":"comisionado_apellidos", "title":"Nombre", "className": "align-left"},
+		{"name":"comisionado_apellidos", "title":"Apellidos", "className": "align-left"},
 		{"name":"comisionado_nombres", "title":"Nombre", "className": "align-left"},
 		{"name":"comisionado_cargo", "title":"Cargo", "foreign_field":"comisionado_cargo__organigrama_cargo"},
 		{"name":"comisionado_cuit", "title":"CUIT"},
