@@ -1,5 +1,6 @@
 from django import forms
 from carga import models
+from carga.views.ajaxviews import departamentowidget, municipiowidget 
 
 class LocalidadForm(forms.ModelForm):
 	class Meta:
@@ -19,6 +20,6 @@ class LocalidadForm(forms.ModelForm):
 			"localidad_centroide_lat":forms.NumberInput(attrs={"class":"form-control"}),
 			"localidad_centroide_lon":forms.NumberInput(attrs={"class":"form-control"}),
 			"localidad_funcion":forms.TextInput(attrs={"class":"form-control"}),
-			"localidad_departamento":forms.Select(attrs={"class":"form-control customSelect2"}),
-			"localidad_municipio":forms.Select(attrs={"class":"form-control customSelect2"}),
+			"localidad_departamento":departamentowidget(attrs={"class":"form-control customSelect2"}),
+			"localidad_municipio":municipiowidget(attrs={"class":"form-control customSelect2"}),
 		}

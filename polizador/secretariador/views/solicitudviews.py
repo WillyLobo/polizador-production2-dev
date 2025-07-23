@@ -13,6 +13,7 @@ from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg, generar
 from carga.views.generics import get_deleted_objects
 import jinja2
 from docxtpl import DocxTemplate
+from secretariador.forms.mixins import FormsetViewMixin
 
 def solicitud_docx(request, pk):
 	jinja_env = jinja2.Environment()
@@ -184,10 +185,12 @@ def solicitud_docx(request, pk):
 	return response
 
 @method_decorator(login_required, name="dispatch")
-class CrearSolicitud(PermissionRequiredMixin, generic.CreateView):
+class CrearSolicitud(PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
 	login_url = "/"
 	redirect_field_name = "login"
 	permission_required = "secretariador.add_solicitud"
+	formset_name = ComisionadoSolicitudFormset
+	view_type = "create"
 
 	model = Solicitud
 	template_name = "solicitud/crear-solicitud.html"
@@ -199,114 +202,19 @@ class CrearSolicitud(PermissionRequiredMixin, generic.CreateView):
 	def get_title(self):
 		return self.title
 	
-	def get_context_data(self, **kwargs):
-		context = super(CrearSolicitud, self).get_context_data(**kwargs)
-		if self.request.POST:
-			context['group_formset'] = ComisionadoSolicitudFormset(self.request.POST, instance=self.object)
-			# por que esta vergación tiene que estar acá para que los errores del formset se muestren correctamente?
-			context.get('group_formset').errors
-		else:
-			context['group_formset'] = ComisionadoSolicitudFormset(instance=self.object)
-
-		return context
-
-	def get(self, request, *args, **kwargs):
-		self.object = None
-		form_class = self.get_form_class()
-		form = self.get_form(form_class)
-		comisionadosformset = ComisionadoSolicitudFormset(instance=self.object)
-		return self.render_to_response(self.get_context_data(form=form, comisionadosformset = comisionadosformset))
-	
-	def post(self, request, *args, **kwargs):
-		self.object = None
-		form_class = self.get_form_class()
-		form = self.get_form(form_class)
-		comisionadosformset = ComisionadoSolicitudFormset(self.request.POST, instance=self.object)
-		if form.is_valid() and comisionadosformset.is_valid():
-			form.save()
-			return self.form_valid(form, comisionadosformset)
-		else:
-			return self.form_invalid(form, comisionadosformset)
-
-	def form_valid(self, form, formset):
-		"""If the form is valid, save the associated model."""
-		self.object = form.save()
-		if formset.is_valid():
-			response = super().form_valid(form)
-			formset.instance = self.object
-			formset.save()
-			return response
-		else:
-			return super().form_invalid(form, formset)
-	
-	def form_invalid(self, form, comisionadosformset):
-		"""
-		Renders the response based on the context data with the form and formset if the form is invalid.
-
-		:param form: The form instance.
-		:param comisionadosformset: The comisionados formset instance.
-		:return: The response rendered based on the context data.
-		"""
-		return self.render_to_response(self.get_context_data(form=form, comisionadosformset=comisionadosformset))
-	
 @method_decorator(login_required, name="dispatch")
-class UpdateSolicitud(PermissionRequiredMixin, generic.UpdateView):
+class UpdateSolicitud(PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView):
 	login_url = "/"
 	redirect_field_name = "login"
 	permission_required = "secretariador.change_solicitud"
+	formset_name = ComisionadoSolicitudFormset
+	view_type = "update"
 
 	model = Solicitud
 	template_name = "solicitud/update-solicitud.html"
 	form_class = SolicitudForm
 	success_url = reverse_lazy("secretariador:lista-solicitudes")
 	
-	def get_context_data(self, **kwargs):
-		context = super(UpdateSolicitud, self).get_context_data(**kwargs)
-		if self.request.POST:
-			context['group_formset'] = ComisionadoSolicitudFormset(self.request.POST, instance=self.object)
-			# por que esta vergación tiene que estar acá para que los errores del formset se muestren correctamente?
-			context.get('group_formset').errors
-		else:
-			context['group_formset'] = ComisionadoSolicitudFormset(instance=self.object)
-
-		return context
-
-	def get(self, request, *args, **kwargs):
-		self.object = self.get_object()
-		form_class = self.get_form_class()
-		form = self.get_form(form_class)
-		comisionadosformset = ComisionadoSolicitudFormset(instance=self.object)
-		return self.render_to_response(self.get_context_data(form=form, comisionadosformset = comisionadosformset))
-	
-	def post(self, request, *args, **kwargs):
-		self.object = self.get_object()
-		form_class = self.get_form_class()
-		form = self.get_form(form_class)
-		comisionadosformset = ComisionadoSolicitudFormset(self.request.POST, instance=self.object)
-		if form.is_valid() and comisionadosformset.is_valid():
-			form.save()
-			return self.form_valid(form, comisionadosformset)
-		else:
-			return self.form_invalid(form, comisionadosformset)
-		
-	def form_valid(self, form, comisionadosformset):
-		formset = comisionadosformset.save(commit=False)
-		for field in formset:
-			field.comisionadosolicitud_foreign = self.object
-			field.save()
-		return redirect(reverse_lazy("secretariador:lista-solicitudes"))
-	
-	def form_invalid(self, form, comisionadosformset):
-		"""
-		Renders the response based on the context data with the form and formset if the form is invalid.
-
-		:param form: The form instance.
-		:param comisionadosformset: The comisionados formset instance.
-		:return: The response rendered based on the context data.
-		"""
-		return self.render_to_response(self.get_context_data(form=form, comisionadosformset=comisionadosformset))
-
-
 @method_decorator(login_required, name="dispatch")
 class EliminarSolicitud(PermissionRequiredMixin, generic.DeleteView):
 	login_url = "/"

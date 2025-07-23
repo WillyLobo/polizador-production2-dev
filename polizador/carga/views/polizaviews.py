@@ -6,11 +6,11 @@ from django.shortcuts import render
 from django.template import loader, TemplateDoesNotExist
 from django.urls import reverse_lazy
 from django.views import generic
-from django.http import HttpResponseRedirect
 from carga.models import Poliza, Poliza_Movimiento, LegacyPoliza
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg
 from carga.forms.polizaforms import *
 from carga.views.generics import get_deleted_objects
+from secretariador.forms.mixins import FormsetViewMixin
 
 @method_decorator(login_required, name="dispatch")
 class EliminarPoliza(PermissionRequiredMixin, generic.DeleteView):
@@ -32,10 +32,12 @@ class EliminarPoliza(PermissionRequiredMixin, generic.DeleteView):
 
 
 @method_decorator(login_required, name="dispatch")
-class CrearPoliza(PermissionRequiredMixin, generic.CreateView):
+class CrearPoliza(PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
 	login_url = "/"
 	redirect_field_name = "login"
 	permission_required = "carga.add_poliza"
+	formset_name = PolizaMovimientoFormset
+	view_type = "create"
 
 	model = Poliza
 	template_name = "poliza/crear-poliza.html"
@@ -60,10 +62,12 @@ class CrearPoliza(PermissionRequiredMixin, generic.CreateView):
 		return super().form_valid(form)
 
 @method_decorator(login_required, name="dispatch")
-class UpdatePoliza(PermissionRequiredMixin, generic.UpdateView):
+class UpdatePoliza(PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView):
 	login_url = "/"
 	redirect_field_name = "login"
 	permission_required = "carga.change_poliza"
+	formset_name = PolizaMovimientoFormset
+	view_type = "update"
 
 	model = Poliza
 	template_name = "poliza/update-poliza.html"
@@ -73,49 +77,6 @@ class UpdatePoliza(PermissionRequiredMixin, generic.UpdateView):
 	def form_valid(self, form):
 		self.object = form.save(commit=False)
 		self.object.poliza_editor = self.request.user
-		self.object.save()
-		return super().form_valid(form)
-
-@method_decorator(login_required, name="dispatch")
-class CrearPolizaMovimiento(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
-	permission_required = "carga.add_poliza_movimiento"
-
-	model = Poliza_Movimiento
-	template_name = "poliza/crear-movimiento-poliza.html"
-	form_class = PolizaMovimientoForm
-
-	title = "Crear Movimiento Póliza"
-
-	def get_title(self):
-		return self.title
-	
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		context['poliza_id'] = self.request.session['poliza_id']
-		context["title"] = self.get_title()
-		return context
-
-	def form_valid(self, form):
-		self.object = form.save(commit=False)
-		self.object.poliza_movimiento_editor = self.request.user
-		self.object.save()
-		return super().form_valid(form)
-
-@method_decorator(login_required, name="dispatch")
-class UpdatePolizaMovimiento(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
-	permission_required = "carga.change_poliza_movimiento"
-
-	model = Poliza_Movimiento
-	template_name = "poliza/update-movimiento-poliza.html"
-	form_class = PolizaMovimientoForm
-
-	def form_valid(self,form):
-		self.object = form.save(commit=False)
-		self.object.poliza_movimiento_editor = self.request.user
 		self.object.save()
 		return super().form_valid(form)
 
@@ -136,7 +97,6 @@ class EliminarPolizaMovimiento(PermissionRequiredMixin, generic.DeleteView):
 		context["protected"] = protected
 		return context
 
-	
 @method_decorator(login_required, name="dispatch")
 class EstadoPoliza(generic.DetailView):
 	login_url = "/"
@@ -253,30 +213,6 @@ class ListaPolizasView(AjaxDatatableView):
 			html += '</table>'
 		return html
 
-@method_decorator(login_required, name="dispatch")
-class ImprimirLegacyPoliza(generic.DetailView):
-	login_url = "/"
-	redirect_field_name = "login"
-
-	model 			= LegacyPoliza
-	template_name 	= "poliza/legacy-imprimir-poliza.html"
-	
-@method_decorator(login_required, name="dispatch")
-class UpdateLegacyPoliza(generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
-
-	model = LegacyPoliza
-	template_name = "poliza/legacy-update-poliza.html"
-	form_class = LegacyPolizaForm
-	success_url = reverse_lazy("api:legacy_polizas")
-
-	def form_valid(self, form):
-		self.object = form.save(commit=False)
-		self.object.legacy_poliza_editor = self.request.user
-		self.object.save()
-		return HttpResponseRedirect(self.get_success_url())
-	
 @login_required
 def PaginaListaLegacyPolizas(request):
 	template_name = "Lista-legacypolizas.html"

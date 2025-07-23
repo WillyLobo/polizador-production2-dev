@@ -1,0 +1,37 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Datos del Agente</legend>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.agente_nombre.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.agente_apellido.as_field_group}}
+        </div>
+    </div>
+    <div class="form-group">
+        {{form.agente_dni.as_field_group}}
+    </div>
+</fieldset>
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Datos Laborales</legend>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.agente_telefono.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.agente_email.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.agente_profesion.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.agente_matricula.as_field_group}}
+        </div>
+    </div>
+</fieldset>

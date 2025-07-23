@@ -1,22 +1,21 @@
 {% extends "base.html" %}
 {% block content %}
-{%block title%}<title>{{title}}</title>{%endblock title%}
+{% block title %}<title>{{title}}</title>{% endblock title %}
 
-<div class="container">
-    <form action="{% url "carga:crear-area"%}" method="POST">
-
-        {% csrf_token %}
-        {% for hidden in form.hidden_fields %}
-          {{ hidden }}
-        {% endfor %}
+<form action="{% url "carga:crear-area"%}" method="POST">
+  {% csrf_token %}
     
-    {{form.as_div}}
-
-    <div class="container ml-2 pt-2">
-      <input type='submit' value='Guardar' class="btn btn-primary" />
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
+      {% include "partials/administrative-sidebar.html" %}
+      {% include "partials/floating-generic-menu.html" %}
     </div>
-
-    </form>
-</div>
-
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
+      {% include "partials/area-form-partial.html" %}
+    </main>
+      <div class="d-none d-xl-block col-xl-2 bd-toc">
+    </div>
+  </div>
+</form>
+{{ form.media.js }}
 {% endblock %}

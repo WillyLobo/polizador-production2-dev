@@ -1,40 +1,22 @@
 {% extends "base.html" %}
-
 {% block content %}
-{%block title%}<title>{{title}}</title>{%endblock title%}
-
-<!-- XDSoft DateTimePicker -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
+{% block title %}<title>{{title}}</title>{% endblock title %}
 
 {{ form.media.css }}
-<div class="container">
-  <form action="{% url "carga:crear-obra" %}" method="POST"> 
-    {% csrf_token %}
-    {% for hidden in form.hidden_fields %}
-      {{ hidden }}
-    {% endfor %}
+<form action="{% url "carga:crear-obra" %}" method="POST"> 
+  {% csrf_token %}
     
-    {{form.as_div}}
-
-    <div class="container ml-2 pt-2">
-      <input type='submit' value='Guardar' class="btn btn-primary" />
-      <a href="{% url 'carga:lista-obras' %}" type="button" class="btn btn-secondary">Volver</a>
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
+      {% include "partials/administrative-sidebar.html" %}
+      {% include "partials/floating-generic-menu.html" %}
     </div>
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
+      {% include "partials/obra-form-partial.html" %}
+    </main>
+      <div class="d-none d-xl-block col-xl-2 bd-toc">
+    </div>
+  </div>
 </form>
-</div>
-
 {{ form.media.js }}
-
-<script>
-$(function () {
-    $.datetimepicker.setLocale('es');    
-    $("#id_obra_fecha_contrato").datetimepicker({
-    timepicker:false,
-    format: 'd/m/Y',
-    });
-  });
-
-</script>
-
 {% endblock %}

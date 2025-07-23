@@ -1,0 +1,24 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Conjunto Licitado</legend>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.conjunto_nombre.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.conjunto_soluciones.as_field_group}}
+        </div>
+    </div>
+    <div class="form-group">
+        {{form.conjunto_resolucion.as_field_group}}
+    </div>
+</fieldset>
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Subconjunto</legend>
+    <div class="form-group">
+        {{form.conjunto_subconjunto.as_field_group}}
+    </div>
+</fieldset>

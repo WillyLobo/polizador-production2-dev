@@ -2,6 +2,11 @@
 
 History
 =======
+v0.1.4
+------
+* Refactored forms, templates and views in Apps 'carga' and 'secretariador' for better organization and readability.
+
+v0.1.3-15
 Se eliminaron las aplicaciones 'widget_tweaks' y 'extra_views' de INSTALLED_APPS en settings.py. Se añadieron comentarios y un modelo en desarrollo 'Asuntos' en models.py, así como un nuevo método 'save' en el modelo 'Vehiculo' para limpiar espacios en el campo 'vehiculo_patente'. Se implementó una nueva clase 'DivErrorList' en el formulario 'ComisionadoSolicitudForm' para personalizar la visualización de errores. Se realizaron ajustes en las plantillas para mejorar la presentación de formularios y se actualizaron las vistas para manejar correctamente los errores de los formsets.
 v0.1.3-14
 ------

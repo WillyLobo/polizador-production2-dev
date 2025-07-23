@@ -1,4 +1,3 @@
-from django.utils.safestring import SafeString
 from django import forms
 from carga import models
 
@@ -24,6 +23,3 @@ class AgenteForm(forms.ModelForm):
 			"agente_profesion":forms.Select(attrs={"class":"form-control"}),
 			"agente_matricula":forms.NumberInput(attrs={"class":"form-control"})
 		}
-	
-	def as_div(self):
-		return SafeString(super().as_div().replace("<div>", "<div class='form-group'>"))

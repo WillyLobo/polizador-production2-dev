@@ -1,7 +1,6 @@
-from django.utils.safestring import SafeString
 from django import forms
 from carga import models
-from carga.views.ajaxviews import contratomontowidget
+from secretariador.forms.widgets import DateHTMLWidget
 
 class ContratoMontoForm(forms.ModelForm):
 	class Meta:
@@ -19,8 +18,5 @@ class ContratoMontoForm(forms.ModelForm):
 			"contratomonto_financiamiento":forms.Select(attrs={"class":"form-control"}),
 			"contratomonto_pesos": forms.NumberInput(attrs={"class":"form-control"}),
 			"contratomonto_uvi": forms.NumberInput(attrs={"class": "form-control"}),
-			"contratomonto_uvi_fecha": forms.DateInput(attrs={"class":"form-control"})
+			"contratomonto_uvi_fecha": DateHTMLWidget(attrs={"type":"date", "class":"form-control"})
 		}
-	
-	def as_div(self):
-		return SafeString(super().as_div().replace("<div>", "<div class='col'>"))

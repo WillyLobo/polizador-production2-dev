@@ -133,10 +133,11 @@ class ComisionadoSolicitudFormset(forms.models.BaseInlineFormSet):
         super().__init__(*args, **kwargs)
 
 ComisionadoSolicitudFormset = inlineformset_factory(
-    Solicitud,
-    ComisionadoSolicitud,
-    form=ComisionadoSolicitudForm,
-    formset=ComisionadoSolicitudFormset,
-    extra=1,
-    can_delete=False,
+    parent_model = Solicitud,
+    model = ComisionadoSolicitud,
+    form = ComisionadoSolicitudForm,
+    formset = ComisionadoSolicitudFormset,
+    fk_name = "comisionadosolicitud_foreign",
+    extra = 1,
+    can_delete = False,
 )

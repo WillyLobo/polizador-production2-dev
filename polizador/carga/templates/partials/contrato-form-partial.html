@@ -1,0 +1,28 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Obra</legend>
+    <div class="form-group">
+        {{form.contrato_obra.as_field_group}}
+    </div>
+</fieldset>
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Detalles del Contrato</legend>
+    <div class="form-group">
+        {{form.contrato_descripcion.as_field_group}}
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            {{form.contrato_fecha.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.contrato_resolucion.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.contrato_decreto.as_field_group}}
+        </div>
+    </div>
+</fieldset>

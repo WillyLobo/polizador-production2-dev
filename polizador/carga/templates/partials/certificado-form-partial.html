@@ -1,0 +1,103 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Obra</legend>
+    <div class="form-group">
+        {{form.certificado_obra.as_field_group}}
+    </div>
+</fieldset>
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Rubro</legend>
+    <div class="row">
+        <div class="col-md-4">
+            {{form.certificado_rubro_anticipo.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.certificado_rubro_obra.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.certificado_rubro_devanticipo.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.certificado_rubro_db.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.certificado_financiamiento.as_field_group}}
+        </div>
+    </div>
+</fieldset>
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Actuación y Período</legend>
+    <div class="row">
+        <div class="col-md-5">
+            {{form.certificado_expediente.as_field_group}}
+        </div>
+        <div class="col-md-5">
+            {{form.certificado_fecha.as_field_group}}
+        </div>
+        <div class="col-md-2">
+            {{form.certificado_fecha_carga_legacy.as_field_group}}
+        </div>
+    </div>
+    <div class="form-group">
+        {{form.certificado_devolucion_expte.as_field_group}}
+    </div>
+
+</fieldset>
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Porcentajes</legend>
+    <div class="row">
+        <div class="col-md-4">
+            {{form.certificado_ante_pct.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.certificado_mes_pct.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.certificado_acum_pct.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.certificado_rubro_db.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.certificado_financiamiento.as_field_group}}
+        </div>
+    </div>
+</fieldset>
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Montos</legend>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.certificado_monto_pesos.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.certificado_devolucion_monto.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.certificado_monto_uvi.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.certificado_devolucion_monto_uvi.as_field_group}}
+        </div>
+    </div>
+</fieldset>
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Archivo Digital</legend>
+    <div class="form-group">
+        {{form.certificado_digital.as_field_group}}
+    </div>
+
+</fieldset>

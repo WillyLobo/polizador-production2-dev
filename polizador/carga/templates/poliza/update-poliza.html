@@ -1,34 +1,39 @@
 {% extends "base.html" %}
 {% block content %}
-{%block title%}<title>{{object.id}}-{{object.poliza_numero}}({{object.poliza_aseguradora}})</title>{%endblock title%}
-
-<!-- XDSoft DateTimePicker -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
+{% block title %}<title>{{object.id}}-{{object.poliza_numero}}({{object.poliza_aseguradora}})</title>{% endblock title %}
 
 {{ form.media.css }}
-
-<div class="container">
-    <form action="{% url "carga:update-poliza" object.id %}" method="POST" enctype="multipart/form-data">
-
-        {% include "partials/form-partial.html" %}
-        <div class="container ml-2 pt-2">
-            <input type='submit' value='Guardar' class="btn btn-primary" />
-            <a href="{% url 'carga:lista-polizas' %}" type="button" class="btn btn-secondary">Volver</a>
-          </div>
-    </form>
-</div>
-
+<form action="{% url "carga:update-poliza" object.id %}" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+    
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
+      {% include "partials/administrative-sidebar.html" %}
+      {% include "partials/floating-inlines-menu.html" %}
+    </div>
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
+      {% include "partials/poliza-form-partial.html" %}
+      {% include "partials/polizamovimiento-form-partial.html" %}
+    </main>
+      <div class="d-none d-xl-block col-xl-2 bd-toc">
+    </div>
+  </div>
+</form>
 {{ form.media.js }}
 
 <script>
-    $(function () {
-        $.datetimepicker.setLocale('es');
-        $("#id_poliza_fecha").datetimepicker({
-        timepicker:false,
-        format: 'd/m/Y',
-        });
-      });
-    </script>
-
+$('#addForm').click(function() {
+$(".customSelect2").select2("destroy");
+	var form_idx = $('#id_poliza_movimiento_set-TOTAL_FORMS').val();
+$('#poliza_movimiento-form').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
+$('#id_poliza_movimiento_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+$(".customSelect2").select2({
+    theme: 'bootstrap-5',
+  });
+$('html, body').animate({
+            scrollTop: $('html, body').height()
+        }, 'slow');
+$(".customSelect2").djangoSelect2()
+});
+</script>
 {% endblock %}

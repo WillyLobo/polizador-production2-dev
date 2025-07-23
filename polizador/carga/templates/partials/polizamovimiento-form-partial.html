@@ -1,0 +1,49 @@
+{{formset.management_form}}
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Movimientos</legend>
+    <div id="poliza_movimiento-form" class="poliza_movimiento-form">
+        {% for form in formset %}
+            <div class="row m-1 border border-dark rounded" id="polizamovimiento-form-{{form.prefix}}">  
+                {% csrf_token %}
+                {% for hidden in form.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
+                <div class="row">
+                    <div class="col pb-1">
+                        {{form.poliza_movimiento_fecha.as_field_group}}
+                    </div>
+                    <div class="col pb-1">
+                        {{form.poliza_movimiento_area.as_field_group}}
+                    </div>
+                    <div class="col pb-1">
+                        {{form.poliza_movimiento_receptor.as_field_group}}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        {% for dict in formset.errors %}
+            {% for error in dict.values %}
+                {{ error }}
+            {% endfor %}
+        {% endfor %}
+    </div>
+<div id="empty_form" style="display:none">
+    <div class="row m-1 border border-dark rounded" id="poliza_movimiento-form-{{form.prefix}}">  
+        {% csrf_token %}
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+        <div class="row">
+            <div class="col pb-1">
+                {{formset.empty_form.poliza_movimiento_fecha.as_field_group}}
+            </div>
+            <div class="col pb-1">
+                {{formset.empty_form.poliza_movimiento_area.as_field_group}}
+            </div>
+            <div class="col pb-1">
+                {{formset.empty_form.poliza_movimiento_receptor.as_field_group}}
+            </div>
+        </div>
+    </div>
+</div>
+</fieldset>

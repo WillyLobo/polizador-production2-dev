@@ -1,0 +1,39 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Datos</legend>
+    <div class="form-group">
+        {{form.empresa_nombre.as_field_group}}
+    </div>
+    <div class="form-group">
+        {{form.empresa_inscripcion.as_field_group}}
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            {{form.empresa_cuit.as_field_group}}
+        </div>
+        <div class="col-md-8">
+            {{form.empresa_direccion.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            {{form.empresa_titular_titulo.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.empresa_titular_nombre.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.empresa_titular_dni.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.empresa_correo_p.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.empresa_correo_s.as_field_group}}
+        </div>
+    </div>
+</fieldset>

@@ -1,79 +1,39 @@
 {% extends "base.html" %}
-
 {% block content %}
-{%block title%}<title>{{title}}</title>{%endblock title%}
-
-
-<!-- XDSoft DateTimePicker -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.min.css" integrity="sha256-DOS9W6NR+NFe1fUhEE0PGKY/fubbUCnOfTje2JMDw3Y=" crossorigin="anonymous" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-datetimepicker/2.5.20/jquery.datetimepicker.full.min.js" integrity="sha256-FEqEelWI3WouFOo2VWP/uJfs1y8KJ++FLh2Lbqc8SJk=" crossorigin="anonymous"></script>
+{% block title %}<title>{{title}}</title>{% endblock title %}
 
 {{ form.media.css }}
-
-<div class="container">
-  <form id="contrato-form" action="{% url "carga:crear-contrato"%}" method="POST">
-
-    {% csrf_token %}
-    {% for hidden in form.hidden_fields %}
-      {{ hidden }}
-    {% endfor %}
-
-    {{form.as_div}}
-    {{contratomonto_formset.management_form}}
-    <span class="fs-4 p-0">Monto</span>
-
-    <div class="contratomonto-form">
-      {%for form in contratomonto_formset%}
-      <div class="row">  
-
-      {% csrf_token %}
-      {% for hidden in form.hidden_fields %}
-        {{ hidden }}
-      {% endfor %}
-   
-      {{form.as_div}}
-      </div>
-      {%endfor%}
-      {% for dict in formset.errors %}
-        {% for error in dict.values %}
-          {{ error }}
-        {% endfor %}
-      {% endfor %}
-    </div>
+<form id="contrato-form" action="{% url "carga:crear-contrato"%}" method="POST">
+  {% csrf_token %}
     
-    <div class="container">
-      <input type='button' class="btn btn-primary" id='addForm' value='Agregar Nuevo Comisionado'>
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
+      {% include "partials/administrative-sidebar.html" %}
+      {% include "partials/floating-inlines-menu.html" %}
     </div>
-    
-    <div class="container ml-2 pt-2">
-      <input type='submit' value='Guardar' class="btn btn-primary" />
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
+      {% include "partials/contrato-form-partial.html" %}
+      {% include "partials/contratomonto-form-partial.html" %}
+    </main>
+    <div class="d-none d-xl-block col-xl-2 bd-toc">
     </div>
-
-  </form>
-</div>
-
+  </div>
+</form>
 {{ form.media.js }}
 
 <script>
-  $('#addForm').click(function() {
-  cloneMore("div.contratomonto-form:last", "contratomonto_set")
+$('#addForm').click(function() {
+$(".customSelect2").select2("destroy");
+	var form_idx = $('#id_contratomonto_set-TOTAL_FORMS').val();
+$('#contratomonto-form').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
+$('#id_contratomonto_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+$(".customSelect2").select2({
+    theme: 'bootstrap-5',
   });
-</script>
-
-<script>
-$(function () {
-    $.datetimepicker.setLocale('es');
-    $("#id_certificado_fecha").datetimepicker({
-    timepicker:false,
-    format: 'd/m/Y',
-    });
-  });
-$("#customSelect2").select2({
-  theme: "bootstrap-5"
+$('html, body').animate({
+            scrollTop: $('html, body').height()
+        }, 'slow');
+$(".customSelect2").djangoSelect2()
 });
-
 </script>
-
-
-
 {% endblock %}

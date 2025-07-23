@@ -389,6 +389,11 @@ class Solicitud(models.Model):
 
     def __str__(self):
         return f"{self.solicitud_actuacion}"
+
+    def lista_localidades(self):
+        return ", ".join(str(localidad) for localidad in self.solicitud_localidades.all())
+    def lista_comisionados(self):
+        return ", ".join(str(comisionado) for comisionado in self.comisionadosolicitud_set.all())
     
     def get_absolute_url(self):
         if self.solicitud_provincia.provincia_nombre == "Chaco":

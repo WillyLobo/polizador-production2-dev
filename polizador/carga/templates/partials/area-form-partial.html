@@ -1,0 +1,9 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Datos del Área</legend>
+    <div class="form-group">
+        {{form.area_nombre.as_field_group}}
+    </div>
+</fieldset>

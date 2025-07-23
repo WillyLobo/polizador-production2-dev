@@ -1,0 +1,140 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Datos de la Obra</legend>
+    <div class="form-group">
+        {{form.obra_nombre.as_field_group}}
+    </div>
+    <div class="form-group">
+        {{form.obra_empresa.as_field_group}}
+    </div>
+    <div class="form-group">
+        {{form.obra_principal.as_field_group}}
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.obra_conjunto.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.obra_soluciones.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.obra_grupo.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.obra_plazo.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.obra_programa.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.obra_convenio.as_field_group}}
+        </div>
+    </div>
+</fieldset>
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Datos Catastrales</legend>
+    <div class="form-group">
+        {{form.obra_nomenclatura.as_field_group}}
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.obra_region.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.obra_departamento_m.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.obra_municipio_m.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.obra_localidad_m.as_field_group}}
+        </div>
+    </div>
+</fieldset>
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Actuación</legend>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.obra_expediente.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.obra_resolucion.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            {{form.obra_licitacion_tipo.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.obra_licitacion_numero.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.obra_licitacion_ano.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.obra_fecha_contrato.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.obra_fecha_entrega.as_field_group}}
+        </div>
+    </div>
+</fieldset>
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Miscelánea</legend>
+    <div class="form-group">
+        {{form.obra_inspector.as_field_group}}
+    </div>
+    <div class="form-group">
+        {{form.obra_observaciones.as_field_group}}
+    </div>
+</fieldset>
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Montos de Contrato</legend>
+    <div class="row">
+        <div class="col-md-4">
+            {{form.obra_contrato_nacion_pesos.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.obra_contrato_nacion_uvi.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.obra_contrato_nacion_uvi_fecha.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            {{form.obra_contrato_provincia_pesos.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.obra_contrato_provincia_uvi.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.obra_contrato_provincia_uvi_fecha.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            {{form.obra_contrato_terceros_pesos.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.obra_contrato_terceros_uvi.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.obra_contrato_terceros_uvi_fecha.as_field_group}}
+        </div>
+    </div>
+</fieldset>

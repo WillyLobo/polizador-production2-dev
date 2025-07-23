@@ -47,6 +47,7 @@ class Receptor(models.Model):
     class Meta:
         verbose_name = "Receptor"
         verbose_name_plural = "Receptores"
+        ordering = ["receptor_nombre"]
     
     receptor_nombre = models.CharField("Receptor", max_length=100)
 
@@ -61,6 +62,7 @@ class Area(models.Model):
     class Meta:
         verbose_name  = "Area"
         verbose_name_plural = "Areas"
+        ordering = ["area_nombre"]
     
     area_nombre = models.CharField("Area", max_length=50)
 
@@ -76,7 +78,7 @@ class Aseguradora(models.Model):
         verbose_name_plural = "Aseguradoras"
         ordering = ["aseguradora_nombre"]
     
-    aseguradora_nombre = models.CharField("Nombre Empresa Aseguradora", max_length=255)
+    aseguradora_nombre = models.CharField("Nombre Compañía Aseguradora", max_length=255)
 
     def __str__(self):
         return self.aseguradora_nombre
@@ -90,15 +92,15 @@ class Empresa(models.Model):
         verbose_name_plural = "Empresas"
         ordering = ["empresa_nombre"]
     
-    empresa_nombre          = models.CharField("Nombre Empresa Tomadora:", max_length=255)
-    empresa_cuit            = models.CharField("CUIT:", max_length=11, blank=True, null=True)
-    empresa_titular_titulo  = models.CharField("Titulo Representante:", max_length=40, blank=True, null=True)
+    empresa_nombre          = models.CharField("Nombre Empresa", max_length=255)
+    empresa_cuit            = models.CharField("CUIT", max_length=11, blank=True, null=True)
+    empresa_titular_titulo  = models.CharField("Titulo Representante", max_length=40, blank=True, null=True)
     empresa_titular_nombre  = models.CharField("Titular de la Empresa", max_length=140, blank=True, null=True)
-    empresa_titular_dni     = models.DecimalField("DNI:", max_digits=9, decimal_places=0, blank=True, null=True)
+    empresa_titular_dni     = models.DecimalField("DNI", max_digits=9, decimal_places=0, blank=True, null=True)
     empresa_direccion       = models.CharField("Dirección de la Empresa", max_length=255, blank=True, null=True)
-    empresa_inscripcion     = models.CharField("Inscripción:", max_length=500, blank=True, null=True)
-    empresa_correo_p        = models.EmailField("Dirección de Correo Primaria:", blank=True, null=True)
-    empresa_correo_s        = models.EmailField("Dirección de Correo Alternativa:", blank=True, null=True)
+    empresa_inscripcion     = models.CharField("Inscripción", max_length=500, blank=True, null=True)
+    empresa_correo_p        = models.EmailField("Dirección de Correo Primaria", blank=True, null=True)
+    empresa_correo_s        = models.EmailField("Dirección de Correo Alternativa", blank=True, null=True)
 
 
     def __str__(self):
@@ -118,6 +120,7 @@ class Poliza(models.Model):
         constraints = [models.UniqueConstraint(fields=["poliza_fecha", "poliza_numero", "poliza_aseguradora","poliza_tomador"], name="poliza-constraint")]
         verbose_name = "Póliza"
         verbose_name_plural = "Pólizas"
+        ordering = ["poliza_fecha"]
     
     poliza_fecha = models.DateField("Fecha")
     poliza_expediente = models.CharField("Expediente", max_length=18)
@@ -125,12 +128,12 @@ class Poliza(models.Model):
     poliza_concepto = models.CharField("Concepto", max_length=1, choices=CONCEPTO)
     poliza_anexo = models.CharField("Anexo de Póliza", max_length=40, blank=True, null=True)
     poliza_recibo = models.CharField("Número de Recibo", max_length=100)
-    poliza_aseguradora = models.ForeignKey("Aseguradora", on_delete=models.CASCADE)
-    poliza_tomador = models.ForeignKey("Empresa", on_delete=models.CASCADE)
-    poliza_obra = models.ForeignKey("Obra", on_delete=models.CASCADE)
+    poliza_aseguradora = models.ForeignKey("Aseguradora", verbose_name="Aseguradora", on_delete=models.CASCADE)
+    poliza_tomador = models.ForeignKey("Empresa", verbose_name="Tomador", on_delete=models.CASCADE)
+    poliza_obra = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.CASCADE)
     poliza_monto_pesos = models.DecimalField("Monto Sustituido en Pesos", max_digits=15, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)])
     poliza_monto_uvi = models.DecimalField("Monto Sustituido en UVI", max_digits=15, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)])
-    poliza_digital = models.FileField(upload_to=generate_name_poliza, max_length=500, null=True, blank=True)
+    poliza_digital = models.FileField(verbose_name="Póliza Digital", upload_to=generate_name_poliza, max_length=500, null=True, blank=True)
     poliza_creador = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, editable=False)
     poliza_editor = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="poliza_editor", editable=False)
     
@@ -144,12 +147,13 @@ class Poliza_Movimiento(models.Model):
     class Meta:
         verbose_name = "Poliza_Movimiento"
         verbose_name_plural = "Polizas_Movimiento"
+        ordering = ["poliza_movimiento_fecha"]
     
     poliza_movimiento_fecha     = models.DateField("Fecha")
-    poliza_movimiento_receptor  = models.ForeignKey("Receptor", on_delete=models.CASCADE)
-    poliza_movimiento_area      = models.ForeignKey("Area", on_delete=models.CASCADE)
+    poliza_movimiento_receptor  = models.ForeignKey("Receptor", verbose_name="Receptor", on_delete=models.CASCADE)
+    poliza_movimiento_area      = models.ForeignKey("Area", verbose_name="Area", on_delete=models.CASCADE)
     poliza_movimiento_editor    = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, editable=False)
-    poliza_movimiento_numero    = models.ForeignKey("Poliza", on_delete=models.CASCADE)
+    poliza_movimiento_numero    = models.ForeignKey("Poliza", verbose_name="Póliza", on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.poliza_movimiento_numero} - {self.poliza_movimiento_area} - ({self.poliza_movimiento_fecha})"
@@ -168,17 +172,18 @@ class LegacyPoliza(models.Model):
         constraints = [models.UniqueConstraint(fields=["legacy_poliza_expediente", "legacy_poliza_fecha", "legacy_poliza_numero", "legacy_poliza_aseguradora","legacy_poliza_receptor"], name="legacy-poliza-constraint")]
         verbose_name = "Legacy_Póliza"
         verbose_name_plural = "Legacy_Pólizas"
+        ordering = ["legacy_poliza_fecha"]
 
     legacy_poliza_fecha            = models.DateField("Fecha")
     legacy_poliza_expediente       = models.CharField("Número de Expediente", max_length=17)
-    legacy_poliza_receptor         = models.ForeignKey("Receptor", on_delete=models.CASCADE)
-    legacy_poliza_area             = models.ForeignKey("Area", on_delete=models.CASCADE)
+    legacy_poliza_receptor         = models.ForeignKey("Receptor", verbose_name="Receptor", on_delete=models.CASCADE)
+    legacy_poliza_area             = models.ForeignKey("Area", verbose_name="Area", on_delete=models.CASCADE)
     legacy_poliza_numero           = models.IntegerField("Número de Póliza")
     legacy_poliza_concepto         = models.CharField("Concepto", max_length=1, choices=CONCEPTO)
     legacy_poliza_anexo            = models.CharField("Anexo de póliza", max_length=40, blank=True, null=True)
     legacy_poliza_recibo           = models.CharField("Número de Recibo", max_length=100)
-    legacy_poliza_aseguradora      = models.ForeignKey("Aseguradora", on_delete=models.CASCADE)
-    legacy_poliza_tomador          = models.ForeignKey("Empresa", on_delete=models.CASCADE)
+    legacy_poliza_aseguradora      = models.ForeignKey("Aseguradora", verbose_name="Aseguradora", on_delete=models.CASCADE)
+    legacy_poliza_tomador          = models.ForeignKey("Empresa", verbose_name="Tomador", on_delete=models.CASCADE)
     legacy_poliza_obra_nombre      = models.TextField("Obra")
     legacy_poliza_obra_convenio    = models.CharField("Convenio", max_length=50, blank=True, null=True)
     legacy_poliza_obra_expediente  = models.CharField("Número de Expediente de la Obra", max_length=17, blank=True, null=True)
@@ -191,8 +196,9 @@ class Programa(models.Model):
     class Meta:
         verbose_name = "Programa"
         verbose_name_plural = "Programas"
+        ordering = ["programa_nombre"]
     
-    programa_nombre = models.CharField(max_length=255)
+    programa_nombre = models.CharField(verbose_name="Nombre", max_length=255)
 
     def __str__(self):
         return self.programa_nombre
@@ -214,7 +220,7 @@ class Provincia(models.Model):
 
 class Region(models.Model):
     class Meta:
-        ordering = ["region_numero"]
+        ordering = ["id"]
         verbose_name_plural = "Region"
     
     region_numero   = models.CharField("Número Región", max_length=10)
@@ -246,12 +252,12 @@ class Localidad(models.Model):
         verbose_name_plural = "Localidades"
 
     localidad_nombre		= models.TextField("Nombre Localidad")
-    id                      = models.IntegerField(unique=True, primary_key=True) 
-    localidad_centroide_lat	= models.DecimalField(max_digits=15, decimal_places=13,blank=True, null=True)
-    localidad_centroide_lon	= models.DecimalField(max_digits=15, decimal_places=13,blank=True, null=True)
-    localidad_funcion       = models.CharField(max_length=40,blank=True, null=True)
-    localidad_departamento	= models.ForeignKey("Departamento", on_delete=models.RESTRICT)
-    localidad_municipio     = models.ForeignKey("Municipio", on_delete=models.CASCADE)
+    id                      = models.IntegerField("Id", unique=True, primary_key=True) 
+    localidad_centroide_lat	= models.DecimalField("Latitud Centroide", max_digits=15, decimal_places=13,blank=True, null=True)
+    localidad_centroide_lon	= models.DecimalField("Longitud Centroide", max_digits=15, decimal_places=13,blank=True, null=True)
+    localidad_funcion       = models.CharField("Función",max_length=40,blank=True, null=True)
+    localidad_departamento	= models.ForeignKey("Departamento", verbose_name="Departamento", on_delete=models.RESTRICT)
+    localidad_municipio     = models.ForeignKey("Municipio", verbose_name="Municipio", on_delete=models.CASCADE)
 
     def __str__(self):
         return self.localidad_nombre
@@ -265,10 +271,10 @@ class Municipio(models.Model):
         ordering 			= ["municipio_nombre"]
         verbose_name_plural = "Municipios"
 
-    municipio_nombre        = models.CharField(max_length=40)
-    id                      = models.IntegerField(unique=True, primary_key=True)
-    municipio_departamento  = models.ForeignKey("Departamento", on_delete=models.CASCADE)
-    municipio_region        = models.ForeignKey("Region", on_delete=models.DO_NOTHING, null=True, blank=True)
+    municipio_nombre        = models.CharField("Nombre",max_length=40)
+    id                      = models.IntegerField("Id", unique=True, primary_key=True)
+    municipio_departamento  = models.ForeignKey("Departamento", verbose_name="Departamento", on_delete=models.CASCADE)
+    municipio_region        = models.ForeignKey("Region", verbose_name="Región", on_delete=models.DO_NOTHING, null=True, blank=True)
 
     def __str__(self):
         return self.municipio_nombre
@@ -288,18 +294,19 @@ class Obra(models.Model):
         # constraints = [models.UniqueConstraint(fields=["obra_nombre", "obra_empresa", "obra_convenio","obra_programa"], name="obra-constraint")]
         verbose_name = "Obra"
         verbose_name_plural = "Obras"
+        ordering = ["obra_programa", "obra_convenio", "obra_nombre"]
 
-    obra_nombre			                = models.TextField("Nombre de la Obra tal como figura en el contrato")
+    obra_nombre			                = models.TextField("Nombre", help_text="Nombre de la Obra tal como figura en el contrato")
     obra_soluciones		                = models.DecimalField("Cantidad de soluciones", max_digits=4, decimal_places=0, null=True, blank=True)
     obra_empresa		                = models.ForeignKey("Empresa", on_delete=models.CASCADE, verbose_name="Empresa")
     obra_region                         = models.ForeignKey("Region", on_delete=models.CASCADE, verbose_name="Región", null=True, blank=True)
     obra_departamento_m                 = models.ManyToManyField("Departamento", related_name="obra_departamento", verbose_name="Departamento", blank=True)
     obra_municipio_m                    = models.ManyToManyField("Municipio", related_name="obra_municipio", verbose_name="Municipio", blank=True)
     obra_localidad_m	                = models.ManyToManyField("Localidad", related_name="obra_localidad", verbose_name="Localidad", blank=True)
-    obra_conjunto                       = models.ForeignKey("ConjuntoLicitado", on_delete=models.DO_NOTHING, null=True, blank=True)
+    obra_conjunto                       = models.ForeignKey("ConjuntoLicitado", verbose_name="Conjunto Licitado", on_delete=models.DO_NOTHING, null=True, blank=True)
     obra_grupo                          = models.CharField("Grupo", max_length=4, blank=True, null=True)
     obra_plazo                          = models.CharField("Plazo de Ejecución", max_length=10, blank=True, null=True)
-    obra_programa		                = models.ForeignKey("Programa", on_delete=models.CASCADE)
+    obra_programa		                = models.ForeignKey("Programa", verbose_name="Programa", on_delete=models.CASCADE)
     obra_convenio		                = models.CharField("Convenio/ACU", max_length=60, blank=True, null=True)
     obra_expediente 	                = models.CharField("Expediente", max_length=18)
     obra_resolucion                     = models.CharField("Resolución de Adjudicación", max_length=15, blank=True, null=True)
@@ -312,16 +319,16 @@ class Obra(models.Model):
     obra_fecha_contrato                 = models.DateField("Fecha de Firma de Contrato", blank=True, null=True)
     obra_expediente_costo               = models.CharField("Expediente de Costos", max_length=18, blank=True, null=True)
     obra_inspector                      = models.ManyToManyField("Agente", related_name="obra_inspector", verbose_name="Inspector")
-    obra_observaciones                  = models.TextField("Observaciones:", blank=True, null=True)
-    obra_contrato_nacion_pesos          = models.DecimalField("Monto Nación en Pesos: ", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
-    obra_contrato_nacion_uvi            = models.DecimalField("Monto Nación en UVI: ", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
-    obra_contrato_nacion_uvi_fecha      = models.DateField("Fecha UVI Nación: ", blank=True, null=True)
-    obra_contrato_provincia_pesos       = models.DecimalField("Monto Provincia en Pesos: ", max_digits=12 ,decimal_places=2, default=0 , validators=[MinValueValidator(0)], blank=True, null=True)
-    obra_contrato_provincia_uvi         = models.DecimalField("Monto Provincia en UVI: ", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
-    obra_contrato_provincia_uvi_fecha   = models.DateField("Fecha UVI Provicia: ", blank=True, null=True)
-    obra_contrato_terceros_pesos        = models.DecimalField("Monto Terceros en Pesos: ", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
-    obra_contrato_terceros_uvi          = models.DecimalField("Monto Terceros en UVI: ", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
-    obra_contrato_terceros_uvi_fecha    = models.DateField("Fecha UVI Terceros: ", blank=True, null=True)
+    obra_observaciones                  = models.TextField("Observaciones", blank=True, null=True)
+    obra_contrato_nacion_pesos          = models.DecimalField("Monto Nación en Pesos", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
+    obra_contrato_nacion_uvi            = models.DecimalField("Monto Nación en UVI", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
+    obra_contrato_nacion_uvi_fecha      = models.DateField("Fecha UVI Nación", blank=True, null=True)
+    obra_contrato_provincia_pesos       = models.DecimalField("Monto Provincia en Pesos", max_digits=12 ,decimal_places=2, default=0 , validators=[MinValueValidator(0)], blank=True, null=True)
+    obra_contrato_provincia_uvi         = models.DecimalField("Monto Provincia en UVI", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
+    obra_contrato_provincia_uvi_fecha   = models.DateField("Fecha UVI Provicia", blank=True, null=True)
+    obra_contrato_terceros_pesos        = models.DecimalField("Monto Terceros en Pesos", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
+    obra_contrato_terceros_uvi          = models.DecimalField("Monto Terceros en UVI", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
+    obra_contrato_terceros_uvi_fecha    = models.DateField("Fecha UVI Terceros", blank=True, null=True)
     obra_contrato_total_pesos           = models.DecimalField("Monto Total Pesos", max_digits=12, decimal_places=2, default=0, editable=False)
     obra_contrato_total_uvi             = models.DecimalField("Monto Total UVI", max_digits=12, decimal_places=2, default=0, editable=False)
     obra_principal                      = models.ManyToManyField("Obra", related_name="obra_madre", verbose_name="Obra Madre", blank=True)
@@ -379,18 +386,19 @@ class Prototipo(models.Model):
         verbose_name = "Prototipo Habitacional"
         verbose_name_plural = "Prototipos Habitacionales"
     
-    prototipo_obra          = models.ForeignKey("Obra", on_delete=models.DO_NOTHING)
-    prototipo_tipo          = models.CharField("Tipo de Prototipo:", max_length=1, choices=TIPO)
-    prototipo_cantidad      = models.DecimalField("Cantidad del Prototipo:", max_digits=3, decimal_places=0)
-    prototipo_superficie    = models.DecimalField("Superficie del Prototipo: ", max_digits=3, decimal_places=0)
-    prototipo_uvi           = models.DecimalField("UVIs x M2:", max_digits=5, decimal_places=2)
-    prototipo_incremento    = models.DecimalField("Incremento Porcentual por Infraestructura:", max_digits=2, decimal_places=0)
-    prototipo_discapacitado = models.BooleanField("Es Prototipo para Discapacitado: ", default=False)
+    prototipo_obra          = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.DO_NOTHING)
+    prototipo_tipo          = models.CharField("Tipo de Prototipo", max_length=1, choices=TIPO)
+    prototipo_cantidad      = models.DecimalField("Cantidad del Prototipo", max_digits=3, decimal_places=0)
+    prototipo_superficie    = models.DecimalField("Superficie del Prototipo", max_digits=3, decimal_places=0)
+    prototipo_uvi           = models.DecimalField("UVIs x M2", max_digits=5, decimal_places=2)
+    prototipo_incremento    = models.DecimalField("Incremento Porcentual por Infraestructura", max_digits=2, decimal_places=0)
+    prototipo_discapacitado = models.BooleanField("Es Prototipo para Discapacitado", default=False)
 
 
 class Agente(models.Model):
     class Meta:
         verbose_name_plural = "Agentes"
+        ordering = ["agente_nombre", "agente_apellido"]
 
     PROFESION = (
         ("A", "Arquitecto"),
@@ -399,11 +407,11 @@ class Agente(models.Model):
         ("MO", "Maestro Mayor de Obras")
     )
 
-    agente_nombre 			= models.CharField("Nombre/s:", max_length=60)
-    agente_apellido			= models.CharField("Apellido/s:", max_length=60)
-    agente_dni				= models.DecimalField("DNI:", max_digits=9, decimal_places=0, blank=True, null=True, validators=[MinValueValidator(0)])
-    agente_telefono 		= models.CharField("Telefono:", max_length=20, blank=True, null=True)
-    agente_email 			= models.EmailField("Email:", blank=True,null=True)
+    agente_nombre 			= models.CharField("Nombre/s", max_length=60)
+    agente_apellido			= models.CharField("Apellido/s", max_length=60)
+    agente_dni				= models.DecimalField("DNI", max_digits=9, decimal_places=0, blank=True, null=True, validators=[MinValueValidator(0)])
+    agente_telefono 		= models.CharField("Telefono", max_length=20, blank=True, null=True)
+    agente_email 			= models.EmailField("Email", blank=True,null=True)
     agente_profesion		= models.CharField("Profesion", max_length=2, choices=PROFESION, default=None, blank=True, null=True)
     agente_matricula		= models.CharField("Matricula Profesional", max_length=10, blank=True, null=True)
     agente_nombre_completo  = models.CharField("Nombre Completo", max_length=200, editable=False, blank=True, null=True)
@@ -421,6 +429,7 @@ class Agente(models.Model):
 class CertificadoRubro(models.Model):
     class Meta:
         verbose_name_plural = "Rubros"
+        ordering = ["certificadorubro_nombre"]
     
     certificadorubro_nombre = models.CharField("Rubro", max_length=100)
     certificadorubro_nombre_corto = models.CharField("Rubro Corto", max_length=1)
@@ -431,6 +440,7 @@ class CertificadoRubro(models.Model):
 class CertificadoFinanciamiento(models.Model):
     class Meta:
         verbose_name_plural = "Financiamiento"
+        ordering = ["certificadofinanciamiento_nombre"]
     
     certificadofinanciamiento_nombre = models.CharField("Financiamiento", max_length=100)
     certificadofinanciamiento_nombre_corto = models.CharField("Financiamiento Corto", max_length=1)
@@ -443,7 +453,7 @@ class Certificado(models.Model):
         verbose_name = "Certificado"
         verbose_name_plural = "Certificados"
         get_latest_by = "certificado_fecha"
-    
+        ordering = ["certificado_fecha", "certificado_expediente"]
     FINANCIAMIENTO = (
         ("N", "Nación"),
         ("P", "Provincia"),
@@ -460,10 +470,10 @@ class Certificado(models.Model):
         ("M", "Deductivo")
     )
 
-    certificado_obra                = models.ForeignKey("Obra", on_delete=models.CASCADE)
+    certificado_obra                = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.CASCADE)
     certificado_financiamiento      = models.CharField("Financiamiento", max_length=1, choices=FINANCIAMIENTO, default="N")
     certificado_rubro               = models.CharField("Rubro", max_length=1, choices=RUBRO, default="V") # Obsoleto -> se migro a una tabla aparte(carga.models.CertificadoRubro)
-    certificado_rubro_db            = models.ForeignKey("CertificadoRubro", on_delete=models.DO_NOTHING, default=1, verbose_name="Rubro")
+    certificado_rubro_db            = models.ForeignKey("CertificadoRubro", verbose_name="Rubro", on_delete=models.DO_NOTHING, default=1)
     certificado_rubro_anticipo      = models.DecimalField("Anticipo N°", max_digits=3, decimal_places=0, null=True, blank=True, validators=[MinValueValidator(0)])
     certificado_rubro_obra          = models.DecimalField("Obra N°", max_digits=3, decimal_places=0, null=True, blank=True, validators=[MinValueValidator(0)])
     certificado_rubro_devanticipo   = models.DecimalField("Devolución de Anticipo N°", max_digits=3, decimal_places=0, null=True, blank=True, validators=[MinValueValidator(0)])
@@ -502,10 +512,14 @@ class Certificado(models.Model):
         return f"/polizas/crear/certificado/{self.id}"
 
 class ConjuntoLicitado(models.Model):
+    class Meta:
+        ordering = ["conjunto_nombre"]
+        verbose_name_plural = "Conjuntos Licitados"
+
     conjunto_nombre = models.TextField("Nombre")
     conjunto_soluciones = models.DecimalField("Cantidad de Soluciones", max_digits=5, decimal_places=0, default=0, null=True, blank=True)
     conjunto_resolucion = models.CharField("Resolucion", max_length=15, null=True, blank=True)
-    conjunto_subconjunto = models.ForeignKey("ConjuntoLicitado", on_delete=models.DO_NOTHING, null=True, blank=True)
+    conjunto_subconjunto = models.ForeignKey("ConjuntoLicitado", verbose_name="Conjunto Licitado", on_delete=models.DO_NOTHING, null=True, blank=True)
 
     def __str__(self):
         return f"{self.conjunto_nombre}"
@@ -525,8 +539,9 @@ class PlanDeTrabajos(models.Model):
 class Contrato(models.Model):
     class Meta:
         verbose_name_plural = "Contratos"
+        ordering = ["contrato_fecha"]
 
-    contrato_obra = models.ForeignKey("Obra", on_delete=models.CASCADE)
+    contrato_obra = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.CASCADE)
     contrato_fecha = models.DateField("Fecha",default=timezone.now)
     contrato_descripcion = models.CharField("Descripción", max_length=600, default="")
     contrato_resolucion = models.CharField("Resolución Aprobatoria", max_length=15, blank=True, null=True)
@@ -539,10 +554,11 @@ class Contrato(models.Model):
 class ContratoMonto(models.Model):
     class Meta:
         verbose_name_plural = "Montos de Contrato"
+        ordering = ["contratomonto_contrato"]
     
-    contratomonto_contrato = models.ForeignKey("Contrato", on_delete=models.CASCADE)
-    contratomonto_rubro = models.ForeignKey("CertificadoRubro", on_delete=models.CASCADE)
-    contratomonto_financiamiento = models.ForeignKey("CertificadoFinanciamiento", on_delete=models.CASCADE)
+    contratomonto_contrato = models.ForeignKey("Contrato", verbose_name="Contrato", on_delete=models.CASCADE)
+    contratomonto_rubro = models.ForeignKey("CertificadoRubro", verbose_name="Rubro Certificado", on_delete=models.CASCADE)
+    contratomonto_financiamiento = models.ForeignKey("CertificadoFinanciamiento", verbose_name="Financiamiento", on_delete=models.CASCADE)
     contratomonto_pesos = models.DecimalField("Monto Pesos", max_digits=15, decimal_places=2, default=0)
     contratomonto_uvi = models.DecimalField("Monto UVI", max_digits=15, decimal_places=2, default=0)
     contratomonto_uvi_fecha = models.DateField("Fecha UVI:", blank=True, null=True)
@@ -553,6 +569,7 @@ class ContratoMonto(models.Model):
 class ContratoRubro(models.Model):
     class Meta:
         verbose_name_plural = "Rubros de Contrato"
+        ordering = ["contratorubro_tipo"]
     
     contratorubro_tipo = models.CharField("Rubro:", max_length=100)
 
@@ -562,11 +579,12 @@ class ContratoRubro(models.Model):
 class ContratosDigitales(models.Model):
     class Meta:
         verbose_name_plural = "Contratos Digitales"
+        ordering = ["id"]
     
     contratodigital_obra = models.ManyToManyField("Obra", related_name="obra_contratos", verbose_name="Obras", blank=True)
     contratodigital_nombre_archivo = models.CharField("Nombre del Archivo", max_length=100, blank=True, null=True)
     contratodigital_descripcion = models.TextField("Descripción")
-    contratodigital_tipo = models.ForeignKey("ContratoRubro", on_delete=models.CASCADE)
+    contratodigital_tipo = models.ForeignKey("ContratoRubro", verbose_name="Rubro Contrato", on_delete=models.CASCADE)
     contratodigital_archivo = models.FileField(upload_to=generate_name_contratos, max_length=500)
     contratodigital_creador = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, editable=False)
     contratodigital_editor  = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="contratodigital_editor", editable=False)
@@ -575,6 +593,7 @@ class ContratosDigitales(models.Model):
 class ResolucionesDigitales(models.Model):
     class Meta:
         verbose_name_plural = "Resoluciones Digitales"
+        ordering = ["resoluciondigital_numero"]
     
     resoluciondigital_obra          = models.ManyToManyField("Obra", related_name="obra_resoluciones", verbose_name="Obras", blank=True)
     resoluciondigital_descripcion   = models.TextField("Descripción")
@@ -588,6 +607,7 @@ class ResolucionesDigitales(models.Model):
 class Uvi(models.Model):
     class Meta:
         verbose_name_plural = "UVI"
+        ordering = ["uvi_fecha"]
 
     uvi_fecha = models.DateField("Fecha UVI:")
     uvi_valor = models.DecimalField("Valor", max_digits=15, decimal_places=2)
@@ -596,6 +616,7 @@ class INDEC(models.Model):
 
     class Meta:
         verbose_name_plural = "INDEC"
+        ordering = ["mes"]
 
     mes                         = models.DateField("Fecha de Medición")
     indec_manodeobra            = models.DecimalField("Mano de Obra", max_digits=20, decimal_places=10)

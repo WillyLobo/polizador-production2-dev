@@ -1,9 +1,8 @@
-{{comisionadosformset.management_form}}
-
+{{formset.management_form}}
 <fieldset class="border rounded border-dark p-1">
     <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Comisionados</legend>
     <div id="comisionadosolicitud-form" class="comisionadosolicitud-form">
-        {% for form in comisionadosformset %}
+        {% for form in formset %}
             <div class="row m-1 border border-dark rounded" id="comisionadosolicitud-form-{{form.prefix}}">  
 
                 {% csrf_token %}
@@ -68,34 +67,35 @@
     </div>
 </fieldset>
 <div id="empty_form" style="display:none">
-<div class="row m-1 border border-dark rounded" id="comisionadosolicitud-form-{{form.prefix}}">  
-    {% csrf_token %}
-    {% for hidden in form.hidden_fields %}
-        {{ hidden }}
-    {% endfor %}
-    <div class="row">
-        <div class="col pb-1">
-            {{comisionadosformset.empty_form.comisionadosolicitud_nombre.as_field_group}}
-        </div>
-        <div class="col pb-1">
-            {{comisionadosformset.empty_form.comisionadosolicitud_gastos.as_field_group}}
-        </div>
-        <div class="col pb-1">
-            {{comisionadosformset.empty_form.comisionadosolicitud_combustible.as_field_group}}
-        </div>
-        <div class="col-1 pb-1">
-            {{comisionadosformset.empty_form.comisionadosolicitud_chofer.as_field_group}}
-        </div>
-        <div class="col-1 pb-1">
-            {{comisionadosformset.empty_form.comisionadosolicitud_colaborador.as_field_group}}
-        </div>
-        <div class="col-1 pb-1">
-            {{comisionadosformset.empty_form.comisionadosolicitud_sin_viatico.as_field_group}}
-        </div>      
-        <!-- Eliminar fila -->
-        <div class="col-1 pb-1">
-            <label for="id-eliminar-comisionadosolicitud_set-__prefix__">Eliminar</label><br>
-            <img src='/static/images/trash3.svg' id="id-eliminar-comisionadosolicitud_set-__prefix__" title='Eliminar' style='width: 3em;height: 3em;' onclick="eliminarComisionado('comisionadosolicitud_set-__prefix__')"/>
+    <div class="row m-1 border border-dark rounded" id="comisionadosolicitud-form-{{form.prefix}}">  
+        {% csrf_token %}
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+        <div class="row">
+            <div class="col pb-1">
+                {{formset.empty_form.comisionadosolicitud_nombre.as_field_group}}
+            </div>
+            <div class="col pb-1">
+                {{formset.empty_form.comisionadosolicitud_gastos.as_field_group}}
+            </div>
+            <div class="col pb-1">
+                {{formset.empty_form.comisionadosolicitud_combustible.as_field_group}}
+            </div>
+            <div class="col-1 pb-1">
+                {{formset.empty_form.comisionadosolicitud_chofer.as_field_group}}
+            </div>
+            <div class="col-1 pb-1">
+                {{formset.empty_form.comisionadosolicitud_colaborador.as_field_group}}
+            </div>
+            <div class="col-1 pb-1">
+                {{formset.empty_form.comisionadosolicitud_sin_viatico.as_field_group}}
+            </div>      
+            <!-- Eliminar fila -->
+            <div class="col-1 pb-1">
+                <label for="id-eliminar-comisionadosolicitud_set-__prefix__">Eliminar</label><br>
+                <img src='/static/images/trash3.svg' id="id-eliminar-comisionadosolicitud_set-__prefix__" title='Eliminar' style='width: 3em;height: 3em;' onclick="eliminarComisionado('comisionadosolicitud_set-__prefix__')"/>
+            </div>
         </div>
     </div>
 </div>

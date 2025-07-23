@@ -47,14 +47,8 @@ poliza_patterns = [
     path("eliminar/poliza/<pk>", EliminarPoliza.as_view(), name="eliminar-poliza")
 ]
 movimiento_patterns = [
-	path("crear/poliza/movimiento/", CrearPolizaMovimiento.as_view(), name="crear-poliza-movimiento"),
-	path("crear/poliza/movimiento/<pk>", UpdatePolizaMovimiento.as_view(), name="update-poliza-movimiento"),
 	path("crear/poliza/movimiento/imprimir/<pk>", ImprimirPolizaMovimiento.as_view(), name="imprimir-poliza-movimiento"),
     path("eliminar/poliza/movimiento/<pk>", EliminarPolizaMovimiento.as_view(), name="eliminar-poliza-movimiento")
-]
-legacy_patterns = [
-	path("legacy_imprimir/<pk>", ImprimirLegacyPoliza.as_view(), name="legacy-imprimir-poliza"),
-	path("legacy_update/<pk>", UpdateLegacyPoliza.as_view(), name="legacy-update-poliza"),
 ]
 region_patterns = [
 	path("crear/region/", CrearRegion.as_view(), name="crear-region"),
@@ -128,7 +122,7 @@ documentos_digitales = [
     path("digitales/crear-contrato-digital/<pk>", UpdateContratoDigital.as_view(), name="update-contrato-digital"),
     path("eliminar/digital/contrato/<pk>", EliminarContratoDigital.as_view(), name="eliminar-contrato-digital"),
     path("digitales/crear-resolucion-digital/", CrearResolucionDigital.as_view(), name="crear-resolucion-digital"),
-    path("digitales/crear-resolucoin-digital/<pk>", UpdateResolucionDigital.as_view(), name="update-resolucion-digital"),
+    path("digitales/crear-resolucion-digital/<pk>", UpdateResolucionDigital.as_view(), name="update-resolucion-digital"),
     path("eliminar/digital/resolucion/<pk>", EliminarResolucionDigital.as_view(), name="eliminar-resolucion-digital")
 ]
 ajax = [
@@ -195,4 +189,3 @@ urlpatterns += certificado_patterns
 urlpatterns += poliza_patterns
 urlpatterns += movimiento_patterns
 urlpatterns += obra_patterns
-urlpatterns += legacy_patterns
