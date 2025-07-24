@@ -9,7 +9,7 @@
   {% csrf_token %}
     
   <div class="row flex-xl-nowrap">
-    <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
+    <div class="col-12 col-md-3 col-xl-2 bd-sidebar" id="sidebar">
       {% include "partials/administrative-sidebar.html" %}
       {% include "partials/floating-generic-menu.html" %}
     </div>
@@ -21,4 +21,19 @@
   </div>
 </form>
 {{ form.media.js }}
+<script>
+  const dniInput = document.getElementById('id_comisionado_dni');
+  dniInput.addEventListener('change', function() {
+    var input = dniInput.value;
+    if (!input || input.length !== 8) {
+      input = "00000000";
+    }
+    else {
+      input = dniInput.value;
+    }
+    const gender = document.getElementById('id_comisionado_sexo').value;
+    const cuit = getCUIT(input, gender);
+    $('#cuit-calculado').text("CUIT: " + cuit);
+  });
+</script>
 {% endblock %}
