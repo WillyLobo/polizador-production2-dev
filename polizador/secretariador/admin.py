@@ -12,6 +12,10 @@ class InstrumentosLegalesResolucionesAdmin(admin.ModelAdmin):
     model = InstrumentosLegalesResoluciones
     search_fields = ["instrumentolegalresoluciones_tipo", "instrumentolegalresoluciones_numero", "instrumentolegalresoluciones_ano"]
 
+class InstrumentosLegalesResolucionesDirectorioAdmin(admin.ModelAdmin):
+    model = InstrumentosLegalesResolucionesDirectorio
+    search_fields = ["instrumentolegalresolucionesdirectorio_tipo", "instrumentolegalresolucionesdirectorio_numero", "instrumentolegalresolucionesdirectorio_ano"]
+
 class InstrumentosLegalesDecretoAdmin(admin.ModelAdmin):
     model = InstrumentosLegalesDecretos
     search_fields = ["instrumentolegaldecretos_tipo", "instrumentolegaldecretos_numero", "instrumentolegaldecretos_ano"]
@@ -94,3 +98,4 @@ admin.site.register(Vehiculo, VehiculoAdmin)
 admin.site.register(Solicitud, SolicitudAdmin)
 admin.site.register(Incorporacion, IncorporacionAdmin)
 admin.site.register(ComisionadoSolicitud, ComisionadoSolicitudAdmin)
+admin.site.register(InstrumentosLegalesResolucionesDirectorio, InstrumentosLegalesResolucionesDirectorioAdmin)

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{{ form.media.css }}
+<div class="container">
+    <div class="container ml-2 pt-2">
+        <span><h4>Tipo de Resolución</h4></span>
+        <a href="{% url 'secretariador:crear-resolucion-presidencia' %}" type="button" class="btn btn-primary">Presidencia</a>
+        <a href="{% url 'secretariador:crear-resolucion-directorio' %}" type="button" class="btn btn-primary">Directorio</a>
+        <a href="javascript:history.back()" type="button" class="btn btn-secondary">Volver</a>
+      </div>  
+</div>
+
+{{ form.media.js }}
+
+{% endblock %}

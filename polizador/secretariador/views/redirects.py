@@ -8,6 +8,12 @@ def redirect_decretos(request):
 	return render(request, template_name, {})
 
 @login_required
+def redirect_resoluciones(request):
+	template_name = "generic/redirect_resoluciones.html"
+
+	return render(request, template_name, {})
+
+@login_required
 def redirect_solicitudes(request):
 	template_name = "generic/redirect_solicitudes.html"
 

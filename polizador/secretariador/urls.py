@@ -19,6 +19,7 @@ urlpatterns = [
 redirects = [
     path("redirect_decreto/", redirect_decretos, name="redirect-decreto"),
     path("redirect_solicitudes/", redirect_solicitudes, name="redirect-solicitud"),
+    path("redirect_resoluciones/", redirect_resoluciones, name="redirect-resoluciones"),
 ]
 instrumento_legal_decreto_patterns = [
 	path("creardecreto/", CrearInstrumentoLegalDecreto.as_view(), name="crear-decreto"),
@@ -37,10 +38,11 @@ monto_viatico_diario_patterns = [
 ]
 instrumento_legal_resolucion_patterns = [
 	path("crearresolucionpresidencia/", CrearInstrumentoLegalResolucionPresidencia.as_view(), name="crear-resolucion-presidencia"),
-	path("crearresoluciondirectorio/", CrearInstrumentoLegalResolucionDirectorio.as_view(), name="crear-resolucion-directorio"),
     path("crearresolucionpresidencia/<pk>", UpdateInstrumentoLegalResolucionPresidencia.as_view(), name="update-resolucion-presidencia"),
+    path("eliminar/resolucionpresidencia/<pk>", EliminarInstrumentoLegalResolucionPresidencia.as_view(), name="eliminar-resolucion-presidencia"),
+	path("crearresoluciondirectorio/", CrearInstrumentoLegalResolucionDirectorio.as_view(), name="crear-resolucion-directorio"),
     path("crearresoluciondirectorio/<pk>", UpdateInstrumentoLegalResolucionDirectorio.as_view(), name="update-resolucion-directorio"),
-    path("eliminar/resolucion/<pk>", EliminarInstrumentoLegalResolucion.as_view(), name="eliminar-resolucion"),
+    path("eliminar/resoluciondirectorio/<pk>", EliminarInstrumentoLegalResolucionDirectorio.as_view(), name="eliminar-resolucion-directorio"),
 ]
 solicitud_patterns = [
 	path("crearsolicitud/", CrearSolicitud.as_view(), name="crear-solicitud"),
@@ -109,6 +111,9 @@ ajax = [
     # Resoluciones
     path("listas/resoluciones", PaginaListaInstrumentosLegalesResoluciones, name="lista-resoluciones"),
     path("ajax_datatable/resoluciones/", ListaListaInstrumentosLegalesResolucionesView.as_view(), name="lista-resoluciones-datatables"),
+    # Resoluciones Directorio
+    path("listas/resoluciones-directorio", PaginaListaInstrumentosLegalesResolucionesDirectorio, name="lista-resoluciones-directorio"),
+    path("ajax_datatable/resoluciones-directorio/", ListaListaInstrumentosLegalesResolucionesDirectorioView.as_view(), name="lista-resoluciones-directorio-datatables"),
     # Vehiculos
     path("listas/vehiculos", PaginaListaVehiculos, name="lista-vehiculos"),
     path("ajax_datatable/vehiculos/", ListaVehiculosView.as_view(), name="lista-vehiculos-datatables"),
