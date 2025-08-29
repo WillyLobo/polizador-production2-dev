@@ -68,11 +68,15 @@ class SolicitudForm(BaseFormMixin, forms.ModelForm):
             "solicitud_fecha_desde":DateHTMLWidget(attrs={
                 "type":"date",
                 "class":"form-control",
+                "min":"1970-01-01",
+                "max":"9999-12-31",
                 "autocomplete":"off"
                 }),
             "solicitud_fecha_hasta":DateHTMLWidget(attrs={
                 "type":"date",
                 "class":"form-control",
+                "min":"1970-01-01",
+                "max":"9999-12-31",
                 "autocomplete":"off"
                 }),
             "solicitud_tareas":forms.TextInput(attrs={
