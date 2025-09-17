@@ -25,7 +25,17 @@ def solicitud_docx(request, pk):
 	localidades = actuacion.solicitud_localidades.all()
 	tareas = actuacion.solicitud_tareas
 	fechas = actuacion.solicitud_fechas()
-	vehiculo = actuacion.solicitud_vehiculo
+	if actuacion.solicitud_vehiculo:
+		vehiculo_modelo = actuacion.solicitud_vehiculo.vehiculo_modelo
+		vehiculo_patente = actuacion.solicitud_vehiculo.vehiculo_patente
+		vehiculo_poliza = actuacion.solicitud_vehiculo.vehiculo_poliza
+		vehiculo_poliza_aseguradora = actuacion.solicitud_vehiculo.vehiculo_poliza_aseguradora
+	else:
+		vehiculo_modelo = "FALTA DESIGNAR VEHICULO!!"
+		vehiculo_patente = "FALTA DESIGNAR VEHICULO!!"
+		vehiculo_poliza = "FALTA DESIGNAR VEHICULO!!"
+		vehiculo_poliza_aseguradora = "FALTA DESIGNAR VEHICULO!!"
+
 	decreto_viaticos = actuacion.solicitud_decreto_viaticos.montoviaticodiario_decreto_reglamentario
 	
 	def separate_items(items):
@@ -142,8 +152,8 @@ def solicitud_docx(request, pk):
 
 	parrafo_uno     = f"Que por la misma se tramita autorización y anticipo de viáticos para {lista_agentes['lista_agentes']} de este Organismo, para trasladarse a {lista_localidades} {lista_fechas};"
 	parrafo_dos     = f"Que dicha comisión, en el marco de las actividades del Organismo, tendrá como objetivo, {lista_agentes['traslado']}, a fin de {tareas} en {lista_localidades};"
-	parrafo_tres_1  = f"Que el vehículo afectado será {vehiculo.vehiculo_modelo} – Dominio {vehiculo.vehiculo_patente}"
-	parrafo_tres_2  = f", asegurado bajo póliza Nº{ vehiculo.vehiculo_poliza} emitida por {vehiculo.vehiculo_poliza_aseguradora}," if vehiculo.vehiculo_poliza else ""
+	parrafo_tres_1  = f"Que el vehículo afectado será {vehiculo_modelo} – Dominio {vehiculo_patente}"
+	parrafo_tres_2  = f", asegurado bajo póliza Nº{vehiculo_poliza} emitida por {vehiculo_poliza_aseguradora}," if vehiculo_poliza else ""
 	parrafo_tres_3  = f" conducido por {lista_agentes['chofer']};"
 	parrafo_tres    = parrafo_tres_1+parrafo_tres_2+parrafo_tres_3
 	parrafo_cuatro  = f"Que, en consecuencia, deben anticiparse los fondos necesarios para hacer frente a los gastos a realizar, de acuerdo a lo dispuesto en los Decretos Nº1324/1978 y Nº{decreto_viaticos.instrumentolegaldecretos_numero}/{decreto_viaticos.instrumentolegaldecretos_ano};"
