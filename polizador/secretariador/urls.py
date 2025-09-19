@@ -82,6 +82,7 @@ reportes_patterns = [
     path("reportes/viaticos-agente/", CrearReporteViaticosPorAgente.as_view(), name="crear-reporte-viaticos-por-agente"),
     path("reportes/viaticos-agente-individual/", CrearReporteViaticosPorAgenteIndividual.as_view(), name="crear-reporte-viaticos-por-agente-individual"),
     path("reportes/calendario-semanal/", CalendarioSemanal.as_view(), name="calendario-semanal"),
+    path("reportes/calendario-anual/", CalendarioAnual.as_view(), name="calendario-anual"),
     path("reportes/viaticos-area/", CrearReporteViaticosporArea.as_view(), name="crear-reporte-viaticos-por-area"),
     path("reportes/ausencias/", CrearReporteAusenciasPorAgente.as_view(), name="crear-reporte-ausencias-por-agente"),
     path("reportes/duplicados/", CrearReporteComisionesDuplicadas.as_view(), name="crear-reporte-duplicados"),
