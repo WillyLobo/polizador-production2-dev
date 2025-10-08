@@ -198,11 +198,11 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 STORAGES = {
     "default": {
-        "BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+        "BACKEND": "polizador.storages.GCloudAndLocalStorage",
         "OPTIONS": {
         #  https://storage.cloud.google.com/polizador-production-pdf/instrumentoslegales/resoluciones/1400-2024-P.pdf
-        "bucket_name": "polizador-production-pdf",
-        "credentials": GS_CREDENTIALS,
+            "bucket_name": "polizador-production-pdf",
+            "credentials": GS_CREDENTIALS,
         },
     },
     "staticfiles": {

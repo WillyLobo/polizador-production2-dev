@@ -1,7 +1,7 @@
 # Personal ignores
 SECRET.*
 DBSECRET.*
-media/*
+polizador/media/*
 scripts/*.xls
 scripts/*.csv
 *.DS_Store
