@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     "ajax_datatable",
 	"import_export",
 	"django.forms",
+    "debug_toolbar",
 
     "carga",
 	"secretariador",
@@ -220,7 +221,6 @@ if DEBUG == True:
     INTERNAL_IPS = ["localhost", "127.0.0.1"]
     DEBUG_TOOLBAR_ENABLE = True
     if DEBUG_TOOLBAR_ENABLE:
-        INSTALLED_APPS = INSTALLED_APPS + ["debug_toolbar"]
         MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
         DEBUG_TOOLBAR_PATCH_SETTINGS = False
         DEBUG_TOOLBAR_CONFIG = {
