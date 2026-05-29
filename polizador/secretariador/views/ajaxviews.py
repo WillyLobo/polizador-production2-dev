@@ -7,9 +7,21 @@ from django.http import JsonResponse
 @login_required
 @permission_required("secretariador.add_solicitud", login_url="/")
 def get_agentes(request):
-        q = request.GET.get("q")
-        agentes = Comisionado.objects.filter(comisionado_nombreyapellido__icontains=q).values("id", text=models.F("comisionado_nombreyapellido"))
-        return JsonResponse({'results':list(agentes)},safe=False)
+    q = request.GET.get("q")
+    agentes = Comisionado.objects.filter(comisionado_nombreyapellido__icontains=q).values("id", text=models.F("comisionado_nombreyapellido"))
+    return JsonResponse({'results':list(agentes)},safe=False)
+
+@login_required
+@permission_required("secretariador.add_solicitud", login_url="/")
+def check_resolucion(request):
+    # Usage: $HOST/viaticos/ajax/check_resolucion/?instrumentolegalresoluciones_numero=1000&instrumentolegalresoluciones_ano=2025
+    numero = request.POST.get("instrumentolegalresoluciones_numero")
+    ano = request.POST.get("instrumentolegalresoluciones_ano")
+    resolucion = InstrumentosLegalesResoluciones.objects.filter(instrumentolegalresoluciones_numero__icontains=numero, instrumentolegalresoluciones_ano=ano).exists()
+    if resolucion:
+        return JsonResponse({'results':True})
+    else:
+        return JsonResponse({'results':False})
 
 class LocalidadMultipleWidget(s2forms.ModelSelect2MultipleWidget):
     search_fields = [

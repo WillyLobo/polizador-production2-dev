@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+{% block content %}
+{% block title %}<title>PDF Merge</title>{% endblock title%}
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <style>
+        #dropZone { cursor: pointer; border-style: dashed !important; }
+    </style>
+
+<div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
+      {% include "partials/administrative-sidebar.html" %}
+      {% include "partials/floating-solicitudes-menu.html" %}
+    </div>
+    <div class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
+        <div class="card-body p-4">
+            <h1 class="fs-4 text-center mb-4">PDF Merge</h1>
+
+            <label for="maxSizeMB" class="form-label fw-bold">Tamaño del Archivo de Salida (MB)</label>
+            <input type="number" id="maxSizeMB" class="form-control form-control-lg mb-3" min="0.5" step="0.5" value="5" placeholder="e.g. 5">
+
+            <label class="form-label fw-bold">Seleccionar Directorio</label>
+            <div class="border border-3 rounded p-4 text-center" id="dropZone">
+                <div class="mb-1">&boxvr;</div>
+                <span class="text-secondary small">Click para seleccionar el Directorio que contiene los archivos PDF</span>
+                <input type="file" id="dirInput" webkitdirectory directory multiple accept=".pdf" style="display:none;">
+            </div>
+
+            <div class="file-count text-center mt-2 text-muted small" id="fileCount"></div>
+            <div class="border rounded overflow-auto mt-2" id="fileList" style="max-height: 14rem;"></div>
+
+            <button id="convertBtn" class="btn btn-primary w-100 py-2 fw-bold mt-3 mb-3" disabled>Combinar PDFs</button>
+
+            <div class="mt-4" id="progressContainer" style="display:none;">
+                <div class="progress" style="height: 8px;">
+                    <div class="progress-bar bg-primary" id="progressBar" role="progressbar"></div>
+                </div>
+                <p class="text-center text-muted small mt-2 mb-0" id="progressText">Procesando...</p>
+            </div>
+
+            <p class="text-danger small text-center mt-3" id="errorMsg" style="display:none;"></p>
+
+            <div class="mt-4" id="resultContainer" style="display:none;">
+                <h3 class="fs-6 mb-3">Archivos PDF de Salida</h3>
+                <div id="resultList"></div>
+                <div class="text-center mt-3">
+                    <button class="btn btn-success px-4 py-2 fw-bold" id="downloadAllBtn">Descargar todos los PDFs</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-none d-xl-block col-xl-2 bd-toc">
+    </div>
+</div>
+<script>
+(async () => {
+    const dirInput = document.getElementById('dirInput');
+    const dropZone = document.getElementById('dropZone');
+    const fileListEl = document.getElementById('fileList');
+    const fileCountEl = document.getElementById('fileCount');
+    const convertBtn = document.getElementById('convertBtn');
+    const progressContainer = document.getElementById('progressContainer');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const resultContainer = document.getElementById('resultContainer');
+    const resultListEl = document.getElementById('resultList');
+    const downloadAllBtn = document.getElementById('downloadAllBtn');
+    const errorMsg = document.getElementById('errorMsg');
+
+    let pdfFiles = [];
+    let partBlobs = [];
+
+    dropZone.addEventListener('click', () => dirInput.click());
+
+    dirInput.addEventListener('change', (e) => {
+        const allFiles = Array.from(e.target.files);
+        pdfFiles = allFiles.filter(f => f.name.toLowerCase().endsWith('.pdf'));
+        renderFileList();
+    });
+
+    function sortPdfFiles() {
+        pdfFiles.sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    function renderFileList() {
+        fileListEl.innerHTML = '';
+        if (pdfFiles.length === 0) {
+            fileCountEl.textContent = 'No se encontraron PDFs';
+            convertBtn.disabled = true;
+            return;
+        }
+        sortPdfFiles();
+        fileCountEl.textContent = pdfFiles.length + ' archivo(s) PDF encontrados (' + formatSize(pdfFiles.reduce((s,f)=>s+f.size,0)) + ')';
+        convertBtn.disabled = false;
+        for (const f of pdfFiles) {
+            const item = document.createElement('div');
+            item.className = 'border-bottom px-3 py-2 small text-truncate d-flex justify-content-between align-items-center';
+            if (pdfFiles.indexOf(f) < pdfFiles.length - 1) item.style.borderBottomStyle = 'solid';
+            else item.style.borderBottom = 'none';
+            item.innerHTML = `<span class="text-break" title="${f.name}">${f.name}</span><span class="text-muted small ms-2 text-nowrap">${formatSize(f.size)}</span>`;
+            fileListEl.appendChild(item);
+        }
+    }
+
+    function formatSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / 1048576).toFixed(1) + ' MB';
+    }
+
+    function setProgress(pct, text) {
+        progressBar.style.width = pct + '%';
+        progressText.textContent = text;
+    }
+
+    async function splitPdfByPages(mergedDoc, mergedBytes, maxSizeBytes) {
+        const totalPages = mergedDoc.getPageCount();
+        const originalTotalSize = pdfFiles.reduce((s,f) => s + f.size, 0);
+        let numParts = Math.max(2, Math.ceil(originalTotalSize / maxSizeBytes));
+
+        if (mergedBytes.length < originalTotalSize * 0.8) {
+            numParts = Math.max(numParts, Math.ceil(mergedBytes.length / maxSizeBytes));
+        }
+
+        const chunkSize = Math.ceil(totalPages / numParts);
+        partBlobs = [];
+
+        for (let i = 0; i < numParts; i++) {
+            const startIdx = i * chunkSize;
+            if (startIdx >= totalPages) break;
+            const endIdx = Math.min(startIdx + chunkSize, totalPages);
+
+            const partDoc = await PDFLib.PDFDocument.create();
+            const indices = [];
+            for (let j = startIdx; j < endIdx; j++) indices.push(j);
+            if (indices.length > 0) {
+                const copiedPages = await partDoc.copyPages(mergedDoc, indices);
+                copiedPages.forEach(p => partDoc.addPage(p));
+            }
+
+            const partBytes = new Uint8Array(await partDoc.save());
+            partBlobs.push(new Blob([partBytes], { type: 'application/pdf' }));
+        }
+
+        return partBlobs;
+    }
+
+    function createDownloadItem(name, sizeStr, blob) {
+        const item = document.createElement('div');
+        item.className = 'border rounded mb-2 p-3 bg-light';
+        item.innerHTML = `
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span>${name}</span><br>
+                    <small class="text-muted">${sizeStr}</small>
+                </div>
+                <a class="btn btn-sm btn-success px-3">Descargar</a>
+            </div>`;
+        item.querySelector('a').addEventListener('click', () => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = name + '.pdf'; a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        });
+        return item;
+    }
+
+    convertBtn.addEventListener('click', async () => {
+        errorMsg.style.display = 'none';
+        resultContainer.style.display = 'none';
+        progressContainer.style.display = 'block';
+        convertBtn.disabled = true;
+        partBlobs = [];
+
+        try {
+            const maxSizeMB = parseFloat(document.getElementById('maxSizeMB').value);
+            if (!maxSizeMB || maxSizeMB <= 0) throw new Error('Por favor ingrese un tamaño máximo válido.');
+            const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
+            setProgress(0, 'Cargando archivos PFD...');
+            const fileData = [];
+            for (let i = 0; i < pdfFiles.length; i++) {
+                const pct = Math.round(((i + 1) / pdfFiles.length) * 50);
+                setProgress(pct, `Cargando ${i + 1} of ${pdfFiles.length}: ${pdfFiles[i].name}`);
+                const arrayBuf = await pdfFiles[i].arrayBuffer();
+                fileData.push({ name: pdfFiles[i].name, buffer: arrayBuf });
+            }
+
+            setProgress(55, 'Combinando PDFs...');
+            const mergedDoc = await PDFLib.PDFDocument.create();
+            for (const fd of fileData) {
+                const srcDoc = await PDFLib.PDFDocument.load(fd.buffer);
+                const pages = await mergedDoc.copyPages(srcDoc, srcDoc.getPageIndices());
+                pages.forEach(p => mergedDoc.addPage(p));
+            }
+
+            setProgress(80, 'Guardando...');
+            const mergedBytes = new Uint8Array(await mergedDoc.save());
+            const mergedBlob = new Blob([mergedBytes], { type: 'application/pdf' });
+
+            if (mergedBytes.length <= maxSizeBytes) {
+                partBlobs = [mergedBlob];
+                resultListEl.innerHTML = '';
+                resultListEl.appendChild(createDownloadItem('merged', formatSize(mergedBytes.length), mergedBlob));
+            } else {
+                setProgress(85, 'Dividiendo en partes...');
+                await splitPdfByPages(mergedDoc, mergedBytes, maxSizeBytes);
+
+                setProgress(100, 'Listo!');
+                resultListEl.innerHTML = '';
+                for (let i = 0; i < partBlobs.length; i++) {
+                    resultListEl.appendChild(createDownloadItem('merged_part_' + (i + 1), formatSize(partBlobs[i].size), partBlobs[i]));
+                }
+            }
+
+            resultContainer.style.display = 'block';
+
+        } catch (err) {
+            errorMsg.textContent = err.message || 'Ocurrio un error.';
+            errorMsg.style.display = 'block';
+            convertBtn.disabled = false;
+        } finally {
+            setTimeout(() => { progressContainer.style.display = 'none'; }, 3000);
+        }
+    });
+
+    downloadAllBtn.addEventListener('click', async () => {
+        for (let i = 0; i < partBlobs.length; i++) {
+            await new Promise(resolve => setTimeout(resolve, 200));
+            const url = URL.createObjectURL(partBlobs[i]);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'merged_part_' + (i + 1) + '.pdf';
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
+        }
+    });
+})();
+</script>
+
+{%endblock%}

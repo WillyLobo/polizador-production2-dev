@@ -11,6 +11,13 @@ from django.views.decorators.cache import cache_page
 from datetime import datetime, timedelta
 
 @method_decorator(login_required, name="dispatch")
+class PDFMergeTemplateView(PermissionRequiredMixin, generic.TemplateView):
+    login_url = "/"
+    redirect_field_name = "login"
+    permission_required = "secretariador.add_solicitud"
+    template_name = "html_to_pdf_merger.html"
+
+@method_decorator(login_required, name="dispatch")
 class CrearReporteViaticosPorAgente(PermissionRequiredMixin, generic.ListView):
     login_url = "/"
     redirect_field_name = "login"

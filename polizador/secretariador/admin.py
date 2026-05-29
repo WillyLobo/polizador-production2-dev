@@ -67,6 +67,7 @@ class IncorporacionAdmin(ImportExportMixin, admin.ModelAdmin):
 
 class ComisionadoSolicitudAdmin(admin.ModelAdmin):
     model = ComisionadoSolicitud
+    search_fields = ["comisionadosolicitud_foreign__solicitud_actuacion", "comisionadosolicitud_incorporacion_foreign__incorporacion_actuacion", "comisionadosolicitud_nombre__comisionado_nombreyapellido"]
     fields = [
         "comisionadosolicitud_foreign",
         "comisionadosolicitud_incorporacion_foreign",

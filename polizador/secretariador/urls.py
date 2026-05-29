@@ -1,5 +1,6 @@
 from django.urls import path
 
+from django.views.generic import TemplateView
 from secretariador.views.ajaxviews import get_agentes
 from secretariador.views.solicitudviews import *
 from secretariador.views.solicitud_exteriorviews import *
@@ -86,6 +87,7 @@ reportes_patterns = [
     path("reportes/viaticos-area/", CrearReporteViaticosporArea.as_view(), name="crear-reporte-viaticos-por-area"),
     path("reportes/ausencias/", CrearReporteAusenciasPorAgente.as_view(), name="crear-reporte-ausencias-por-agente"),
     path("reportes/duplicados/", CrearReporteComisionesDuplicadas.as_view(), name="crear-reporte-duplicados"),
+    path("pdf_merge/", PDFMergeTemplateView.as_view(), name="pdf-merge"),
 ]
 # documentos_digitales = [
 #     path("digitales/crear-contrato-digital/", CrearContratoDigital.as_view(), name="crear-contrato-digital"),
@@ -124,9 +126,13 @@ ajax = [
     # Agente Query
     path("ajax/get_agentes/", get_agentes, name="get-agentes"),
 ]
+template_views = [
+    
+]
 
 urlpatterns += redirects
 urlpatterns += ajax
+urlpatterns += template_views
 urlpatterns += instrumento_legal_memorandum_patterns
 urlpatterns += instrumento_legal_decreto_patterns
 urlpatterns += monto_viatico_diario_patterns
