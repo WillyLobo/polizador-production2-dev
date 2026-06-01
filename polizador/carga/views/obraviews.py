@@ -69,101 +69,10 @@ class EstadoObra(PermissionRequiredMixin, generic.DetailView):
 	login_url = "/"
 	redirect_field_name = "login"
 	permission_required = "carga.view_obra"
+	queryset = Obra.objects.select_related("obra_empresa", "obra_programa", "obra_conjunto").prefetch_related("certificado_set__certificado_rubro_db")
 	
 	model = Obra
 	template_name = "obra/estado-obra.html"
-
-	def get_context_data(self, **kwargs):
-		context = super(EstadoObra, self).get_context_data(**kwargs)
-		obra = Obra.objects.get(pk=self.object.pk)
-		certificados = obra.certificado_set.all().order_by("certificado_fecha")
-		vivienda_nacion_fecha = []
-		vivienda_nacion_pesos = []
-		vivienda_nacion_acumulado = []
-		vivienda_nacion_certificados = []
-		vivienda_provincia_fecha = []
-		vivienda_provincia_pesos = []
-		vivienda_provincia_acumulado = []
-		vivienda_provincia_certificados = []
-		frentista_nacion_fecha = []
-		frentista_nacion_pesos = []
-		frentista_nacion_acumulado = []
-		frentista_nacion_certificados = []
-		frentista_provincia_fecha = []
-		frentista_provincia_pesos = []
-		frentista_provincia_acumulado = []
-		frentista_provincia_certificados = []
-		nexos_nacion_fecha = []
-		nexos_nacion_pesos = []
-		nexos_nacion_acumulado = []
-		nexos_nacion_certificados = []
-		nexos_provincia_fecha = []
-		nexos_provincia_pesos = []
-		nexos_provincia_acumulado = []
-		nexos_provincia_certificados = []
-
-		for certificado in certificados:
-			if certificado.certificado_rubro_db.certificadorubro_nombre_corto == "V":
-				if certificado.certificado_financiamiento == "N":
-					vivienda_nacion_fecha.append(date_format(certificado.certificado_fecha,format="b/y"))
-					vivienda_nacion_pesos.append(float(certificado.certificado_monto_pesos))
-					vivienda_nacion_acumulado.append(float(certificado.certificado_acum_pct))
-					vivienda_nacion_certificados.append(certificado)
-				elif certificado.certificado_financiamiento == "P":
-					vivienda_provincia_fecha.append(date_format(certificado.certificado_fecha, format="b/y"))
-					vivienda_provincia_pesos.append(float(certificado.certificado_monto_pesos))
-					vivienda_provincia_acumulado.append(float(certificado.certificado_acum_pct))
-					vivienda_provincia_certificados.append(certificado)
-			elif certificado.certificado_rubro_db.certificadorubro_nombre_corto == "F":
-				if certificado.certificado_financiamiento == "N":
-					frentista_nacion_fecha.append(date_format(certificado.certificado_fecha, format="b/y"))
-					frentista_nacion_pesos.append(float(certificado.certificado_monto_pesos))
-					frentista_nacion_acumulado.append(float(certificado.certificado_acum_pct))
-					frentista_nacion_certificados.append(certificado)
-				elif certificado.certificado_financiamiento == "P":
-					frentista_provincia_fecha.append(date_format(certificado.certificado_fecha, format="b/y"))
-					frentista_provincia_pesos.append(float(certificado.certificado_monto_pesos))
-					frentista_provincia_acumulado.append(float(certificado.certificado_acum_pct))
-					frentista_provincia_certificados.append(certificado)
-			elif certificado.certificado_rubro_db.certificadorubro_nombre_corto == "I":
-				if certificado.certificado_financiamiento == "N":
-					nexos_nacion_fecha.append(date_format(certificado.certificado_fecha, format="b/y"))
-					nexos_nacion_pesos.append(float(certificado.certificado_monto_pesos))
-					nexos_nacion_acumulado.append(float(certificado.certificado_acum_pct))
-					nexos_nacion_certificados.append(certificado)
-				elif certificado.certificado_financiamiento == "P":
-					nexos_provincia_fecha.append(date_format(certificado.certificado_fecha, format="b/y"))
-					nexos_provincia_pesos.append(float(certificado.certificado_monto_pesos))
-					nexos_provincia_acumulado.append(float(certificado.certificado_acum_pct))
-					nexos_provincia_certificados.append(certificado)
-
-		
-		context["certificados_vivienda_nacion_fecha"] = vivienda_nacion_fecha
-		context["certificados_vivienda_nacion_pesos"] = vivienda_nacion_pesos
-		context["certificados_vivienda_nacion_acumulado"] = vivienda_nacion_acumulado
-		context["certificados_vivienda_nacion"] = vivienda_nacion_certificados
-		context["certificados_vivienda_provincia_fecha"] = vivienda_provincia_fecha
-		context["certificados_vivienda_provincia_pesos"] = vivienda_provincia_pesos
-		context["certificados_vivienda_provincia_acumulado"] = vivienda_provincia_acumulado
-		context["certificados_vivienda_provincia"] = vivienda_provincia_certificados
-		context["certificados_frentista_nacion_fecha"] = frentista_nacion_fecha
-		context["certificados_frentista_nacion_pesos"] = frentista_nacion_pesos
-		context["certificados_frentista_nacion_acumulado"] = frentista_nacion_acumulado
-		context["certificados_frentista_nacion"] = frentista_nacion_certificados
-		context["certificados_frentista_provincia_fecha"] = frentista_provincia_fecha
-		context["certificados_frentista_provincia_pesos"] = frentista_provincia_pesos
-		context["certificados_frentista_provincia_acumulado"] = frentista_provincia_acumulado
-		context["certificados_frentista_provincia"] = frentista_provincia_certificados
-		context["certificados_nexos_nacion_fecha"] = nexos_nacion_fecha
-		context["certificados_nexos_nacion_pesos"] = nexos_nacion_pesos
-		context["certificados_nexos_nacion_acumulado"] = nexos_nacion_acumulado
-		context["certificados_nexos_nacion"] = nexos_nacion_certificados
-		context["certificados_nexos_provincia_fecha"] = nexos_provincia_fecha
-		context["certificados_nexos_provincia_pesos"] = nexos_provincia_pesos
-		context["certificados_nexos_provincia_acumulado"] = nexos_provincia_acumulado
-		context["certificados_nexos_provincia"] = nexos_provincia_certificados
-
-		return context
 
 @login_required
 def PaginaListaObras(request):
