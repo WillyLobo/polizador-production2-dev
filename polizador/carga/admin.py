@@ -70,37 +70,37 @@ class ConjuntoLicitadoAdmin(ImportExportMixin, admin.ModelAdmin):
 class RegionAdmin(ImportExportMixin, admin.ModelAdmin):
 	resource_class = resources.RegionResource
 
-class CertificadoRubroAdmin(admin.ModelAdmin):
+class CertificadoRubroAdmin(ImportExportMixin, admin.ModelAdmin):
 	resource_class = resources.CertificadoRubroResource
 
-class CertificadoFinanciamientoAdmin(admin.ModelAdmin):
+class CertificadoFinanciamientoAdmin(ImportExportMixin, admin.ModelAdmin):
 	resource_class = resources.FinanciamientoResource
 
-class PlandeTrabajosAdmin(admin.ModelAdmin):
+class PlandeTrabajosAdmin(ImportExportMixin, admin.ModelAdmin):
 	autocomplete_fields = ["trabajos_obra"]
 	resource_class = resources.PlandeTrabajosResource
 
 class ContratoMontoInline(admin.TabularInline):
 	model = models.ContratoMonto
 
-class ContratoAdmin(admin.ModelAdmin):
+class ContratoAdmin(ImportExportMixin, admin.ModelAdmin):
 	autocomplete_fields = ["contrato_obra"]
 	inlines = [
 		ContratoMontoInline,
 	]
 	resource_class = resources.ContratoResource
 
-class ContratoMontoAdmin(admin.ModelAdmin):
+class ContratoMontoAdmin(ImportExportMixin, admin.ModelAdmin):
 	resource_class = resources.ContratoMontoResource
 
-class ContratoRubroAdmin(admin.ModelAdmin):
+class ContratoRubroAdmin(ImportExportMixin, admin.ModelAdmin):
 	resource_class = resources.ContratoRubroResource
 
-class ContratoDigitalAdmin(admin.ModelAdmin):
+class ContratoDigitalAdmin(ImportExportMixin, admin.ModelAdmin):
 	autocomplete_fields = ["contratodigital_obra"]
 	resource_class = resources.ContratoDigitalResource
 
-class ResolucionDigitalAdmin(admin.ModelAdmin):
+class ResolucionDigitalAdmin(ImportExportMixin, admin.ModelAdmin):
 	resource_class = resources.ResolucionDigitalResource
 
 class UviAdmin(ImportExportMixin, admin.ModelAdmin):
@@ -117,7 +117,7 @@ admin.site.register(models.Departamento, DepartamentoAdmin)
 admin.site.register(models.Localidad, LocalidadAdmin)
 admin.site.register(models.Municipio, MunicipioAdmin)
 admin.site.register(models.Obra, ObraAdmin)
-admin.site.register(models.Prototipo, ProgramaAdmin)
+admin.site.register(models.Prototipo, PrototipoAdmin)
 admin.site.register(models.Agente, AgenteAdmin)
 admin.site.register(models.Certificado, CertificadoAdmin)
 admin.site.register(models.Poliza, PolizaAdmin)
@@ -133,3 +133,8 @@ admin.site.register(models.ContratoRubro, ContratoRubroAdmin)
 admin.site.register(models.ContratosDigitales, ContratoDigitalAdmin)
 admin.site.register(models.ResolucionesDigitales, ResolucionDigitalAdmin)
 admin.site.register(models.Uvi, UviAdmin)
+
+class IndecAdmin(ImportExportMixin, admin.ModelAdmin):
+	resource_class = resources.IndecResource
+
+admin.site.register(models.INDEC, IndecAdmin)

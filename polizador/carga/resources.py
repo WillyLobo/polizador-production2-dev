@@ -158,3 +158,7 @@ class ResolucionDigitalResource(resources.ModelResource):
 class UviResource(resources.ModelResource):
 	class Meta:
 		model = models.Uvi
+
+class IndecResource(resources.ModelResource):
+	class Meta:
+		model = models.INDEC
