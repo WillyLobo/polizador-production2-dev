@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.template import loader, TemplateDoesNotExist
 from django.urls import reverse_lazy
 from django.views import generic
-from carga.models import Poliza, Poliza_Movimiento, LegacyPoliza
+from carga.models import Poliza, Poliza_Movimiento
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg
 from carga.forms.polizaforms import *
 from carga.views.generics import get_deleted_objects
@@ -219,72 +219,72 @@ def PaginaListaLegacyPolizas(request):
 
 	return render(request, template_name, {})
 
-@method_decorator(login_required, name="dispatch")
-class ListaLegacyPolizasView(AjaxDatatableView):
-	model = LegacyPoliza
-	title = "Legacy Polizas"
-	initial_order = [["id", "desc"], ]
-	length_menu = [[50, 100, -1], [50, 100, "all"]]
-	search_values_separator = "+"
+# @method_decorator(login_required, name="dispatch")
+# class ListaLegacyPolizasView(AjaxDatatableView):
+# 	model = LegacyPoliza
+# 	title = "Legacy Polizas"
+# 	initial_order = [["id", "desc"], ]
+# 	length_menu = [[50, 100, -1], [50, 100, "all"]]
+# 	search_values_separator = "+"
 
-	column_defs = [
-		AjaxDatatableView.render_row_tools_column_def(),
-		{"name": "id","title":"ID", "visible": True, "width":50, "searchable":False},
-		{"name": "legacy_poliza_fecha"},
-		{"name": "legacy_poliza_expediente"},
-		{"name": "legacy_poliza_numero"},
-		{"name": "legacy_poliza_area", "foreign_field": "legacy_poliza_area__area_nombre"},
-		{"name": "legacy_poliza_concepto"},
-		{"name": "legacy_poliza_recibo"},
-		{"name": "legacy_poliza_aseguradora", "foreign_field":"legacy_poliza_aseguradora__aseguradora_nombre"},
-		{"name": "legacy_poliza_tomador", "foreign_field":"legacy_poliza_tomador__empresa_nombre"},
-		{"name": "legacy_poliza_obra_nombre", "title":"Obra"},
-		{"name": "legacy_poliza_editor", "searchable":False, "orderable":False},
-		]
+# 	column_defs = [
+# 		AjaxDatatableView.render_row_tools_column_def(),
+# 		{"name": "id","title":"ID", "visible": True, "width":50, "searchable":False},
+# 		{"name": "legacy_poliza_fecha"},
+# 		{"name": "legacy_poliza_expediente"},
+# 		{"name": "legacy_poliza_numero"},
+# 		{"name": "legacy_poliza_area", "foreign_field": "legacy_poliza_area__area_nombre"},
+# 		{"name": "legacy_poliza_concepto"},
+# 		{"name": "legacy_poliza_recibo"},
+# 		{"name": "legacy_poliza_aseguradora", "foreign_field":"legacy_poliza_aseguradora__aseguradora_nombre"},
+# 		{"name": "legacy_poliza_tomador", "foreign_field":"legacy_poliza_tomador__empresa_nombre"},
+# 		{"name": "legacy_poliza_obra_nombre", "title":"Obra"},
+# 		{"name": "legacy_poliza_editor", "searchable":False, "orderable":False},
+# 		]
 
-	def render_row_details(self, pk, request=None):
+# 	def render_row_details(self, pk, request=None):
 
-        # we do some optimization on the request
-		relateds = []
-		if not self.disable_queryset_optimization_only and not self.disable_queryset_optimization_select_related:
-			relateds = [f.name for f in self.model._meta.get_fields() if f.many_to_one and f.concrete]
+#         # we do some optimization on the request
+# 		relateds = []
+# 		if not self.disable_queryset_optimization_only and not self.disable_queryset_optimization_select_related:
+# 			relateds = [f.name for f in self.model._meta.get_fields() if f.many_to_one and f.concrete]
 
-		prefetchs = []
-		if not self.disable_queryset_optimization_only and not self.disable_queryset_optimization_prefetch_related:
-			prefetchs = [f.name for f in self.model._meta.get_fields() if f.many_to_many and f.concrete]
+# 		prefetchs = []
+# 		if not self.disable_queryset_optimization_only and not self.disable_queryset_optimization_prefetch_related:
+# 			prefetchs = [f.name for f in self.model._meta.get_fields() if f.many_to_many and f.concrete]
 
-		obj = self.model.objects.filter(pk=pk).select_related(*relateds).prefetch_related(*prefetchs).first()
+# 		obj = self.model.objects.filter(pk=pk).select_related(*relateds).prefetch_related(*prefetchs).first()
 
-		# Extract "extra_data" from request
-		extra_data = {k: v for k, v in request.GET.items() if k not in ['action', 'pk', ]}
+# 		# Extract "extra_data" from request
+# 		extra_data = {k: v for k, v in request.GET.items() if k not in ['action', 'pk', ]}
 
-		# Search a custom template for rendering, if available
-		try:
-			template = loader.get_template(
-                'ajax_datatable/%s/%s/%s' % (self.model._meta.app_label,
-                                             self.model._meta.model_name, self.render_row_details_template_name),
-            )
+# 		# Search a custom template for rendering, if available
+# 		try:
+# 			template = loader.get_template(
+#                 'ajax_datatable/%s/%s/%s' % (self.model._meta.app_label,
+#                                              self.model._meta.model_name, self.render_row_details_template_name),
+#             )
 
-			html = template.render({
-				'model': self.model,
-				'model_admin': self.get_model_admin(),
-				'object': obj,
-				'extra_data': extra_data,
-				}, request)
+# 			html = template.render({
+# 				'model': self.model,
+# 				'model_admin': self.get_model_admin(),
+# 				'object': obj,
+# 				'extra_data': extra_data,
+# 				}, request)
 
-		# Failing that, display a simple table with field values
-		except TemplateDoesNotExist:
-			fields = [f.name for f in self.model._meta.get_fields() if f.concrete]
-			html = '<table class="row-details">'
-			for field in fields:
+# 		# Failing that, display a simple table with field values
+# 		except TemplateDoesNotExist:
+# 			fields = [f.name for f in self.model._meta.get_fields() if f.concrete]
+# 			html = '<table class="row-details">'
+# 			for field in fields:
 				
-				if field in prefetchs:
-					value = ', '.join([str(x) for x in eval(f'obj.{field}').all()])
-				else:
-					try:
-						value = getattr(obj, field)
-					except AttributeError:
-						continue
-				html += '<tr><td>%s</td><td>%s</td></tr>' % (field, value)
-			html += '</table>'
-		return html
+# 				if field in prefetchs:
+# 					value = ', '.join([str(x) for x in eval(f'obj.{field}').all()])
+# 				else:
+# 					try:
+# 						value = getattr(obj, field)
+# 					except AttributeError:
+# 						continue
+# 				html += '<tr><td>%s</td><td>%s</td></tr>' % (field, value)
+# 			html += '</table>'
+# 		return html

@@ -9,6 +9,7 @@ polizador/static/*
 polizador/static_files
 polizador-production.json
 *.sock
+csv_exports/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -151,3 +152,5 @@ cython_debug/
 Polizador.code-workspace
 scripts/test.py
 polizador-production-dd5c413dde2f.json
+snippets.py
+.kilo/kilo.jsonc

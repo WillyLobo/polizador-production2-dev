@@ -24,9 +24,9 @@ class PolizaAdmin(ImportExportMixin, admin.ModelAdmin):
 class PolizaMovimientoAdmin(ImportExportMixin, admin.ModelAdmin):
 	resource_class = resources.PolizaMovimientoResource
 
-class LegacyPolizaAdmin(ImportExportMixin, admin.ModelAdmin):
-	resource_class = resources.LegacyPolizaResource
-	list_display = ("legacy_poliza_receptor", "legacy_poliza_concepto", "legacy_poliza_numero", "legacy_poliza_tomador")
+# class LegacyPolizaAdmin(ImportExportMixin, admin.ModelAdmin):
+# 	resource_class = resources.LegacyPolizaResource
+# 	list_display = ("legacy_poliza_receptor", "legacy_poliza_concepto", "legacy_poliza_numero", "legacy_poliza_tomador")
 
 class ProgramaAdmin(ImportExportMixin, admin.ModelAdmin):
 	resource_class = resources.ProgramaResource
@@ -110,7 +110,7 @@ admin.site.register(models.Receptor, ReceptorAdmin)
 admin.site.register(models.Area, AreaAdmin)
 admin.site.register(models.Aseguradora, AseguradoraAdmin)
 admin.site.register(models.Empresa, EmpresaAdmin)
-admin.site.register(models.LegacyPoliza, LegacyPolizaAdmin)
+# admin.site.register(models.LegacyPoliza, LegacyPolizaAdmin)
 admin.site.register(models.Programa, ProgramaAdmin)
 admin.site.register(models.Provincia, ProvinciaResourceAdmin)
 admin.site.register(models.Departamento, DepartamentoAdmin)

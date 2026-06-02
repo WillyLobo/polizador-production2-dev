@@ -134,8 +134,8 @@ class Poliza(models.Model):
     poliza_monto_pesos = models.DecimalField("Monto Sustituido en Pesos", max_digits=15, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)])
     poliza_monto_uvi = models.DecimalField("Monto Sustituido en UVI", max_digits=15, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)])
     poliza_digital = models.FileField(verbose_name="Póliza Digital", upload_to=generate_name_poliza, max_length=500, null=True, blank=True)
-    poliza_creador = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, editable=False)
-    poliza_editor = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="poliza_editor", editable=False)
+    # poliza_creador = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, editable=False)
+    # poliza_editor = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="poliza_editor", editable=False)
     
     def __str__(self):
         return f"{self.poliza_numero} - {self.poliza_aseguradora.aseguradora_nombre} - {self.poliza_obra.obra_nombre} - {self.poliza_tomador.empresa_nombre} "
@@ -152,7 +152,7 @@ class Poliza_Movimiento(models.Model):
     poliza_movimiento_fecha     = models.DateField("Fecha")
     poliza_movimiento_receptor  = models.ForeignKey("Receptor", verbose_name="Receptor", on_delete=models.CASCADE)
     poliza_movimiento_area      = models.ForeignKey("Area", verbose_name="Area", on_delete=models.CASCADE)
-    poliza_movimiento_editor    = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, editable=False)
+    # poliza_movimiento_editor    = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, editable=False)
     poliza_movimiento_numero    = models.ForeignKey("Poliza", verbose_name="Póliza", on_delete=models.CASCADE)
 
     def __str__(self):
@@ -161,36 +161,36 @@ class Poliza_Movimiento(models.Model):
     def get_absolute_url(self):
         return f"/polizas/crear/poliza/estado/{self.poliza_movimiento_numero.id}"
 
-class LegacyPoliza(models.Model):
-    CONCEPTO = (
-        ("C", "Garantía de Ejecución de Contrato"),
-        ("F", "Garantía de Sustitución de Fondo de Reparo"),
-        ("A", "Garantía de Anticipo Financiero")
-    )
+# class LegacyPoliza(models.Model):
+#     CONCEPTO = (
+#         ("C", "Garantía de Ejecución de Contrato"),
+#         ("F", "Garantía de Sustitución de Fondo de Reparo"),
+#         ("A", "Garantía de Anticipo Financiero")
+#     )
 
-    class Meta:
-        constraints = [models.UniqueConstraint(fields=["legacy_poliza_expediente", "legacy_poliza_fecha", "legacy_poliza_numero", "legacy_poliza_aseguradora","legacy_poliza_receptor"], name="legacy-poliza-constraint")]
-        verbose_name = "Legacy_Póliza"
-        verbose_name_plural = "Legacy_Pólizas"
-        ordering = ["legacy_poliza_fecha"]
+#     class Meta:
+#         constraints = [models.UniqueConstraint(fields=["legacy_poliza_expediente", "legacy_poliza_fecha", "legacy_poliza_numero", "legacy_poliza_aseguradora","legacy_poliza_receptor"], name="legacy-poliza-constraint")]
+#         verbose_name = "Legacy_Póliza"
+#         verbose_name_plural = "Legacy_Pólizas"
+#         ordering = ["legacy_poliza_fecha"]
 
-    legacy_poliza_fecha            = models.DateField("Fecha")
-    legacy_poliza_expediente       = models.CharField("Número de Expediente", max_length=17)
-    legacy_poliza_receptor         = models.ForeignKey("Receptor", verbose_name="Receptor", on_delete=models.CASCADE)
-    legacy_poliza_area             = models.ForeignKey("Area", verbose_name="Area", on_delete=models.CASCADE)
-    legacy_poliza_numero           = models.IntegerField("Número de Póliza")
-    legacy_poliza_concepto         = models.CharField("Concepto", max_length=1, choices=CONCEPTO)
-    legacy_poliza_anexo            = models.CharField("Anexo de póliza", max_length=40, blank=True, null=True)
-    legacy_poliza_recibo           = models.CharField("Número de Recibo", max_length=100)
-    legacy_poliza_aseguradora      = models.ForeignKey("Aseguradora", verbose_name="Aseguradora", on_delete=models.CASCADE)
-    legacy_poliza_tomador          = models.ForeignKey("Empresa", verbose_name="Tomador", on_delete=models.CASCADE)
-    legacy_poliza_obra_nombre      = models.TextField("Obra")
-    legacy_poliza_obra_convenio    = models.CharField("Convenio", max_length=50, blank=True, null=True)
-    legacy_poliza_obra_expediente  = models.CharField("Número de Expediente de la Obra", max_length=17, blank=True, null=True)
-    legacy_poliza_monto_pesos      = models.DecimalField("Monto Sustituido Pesos", max_digits=12, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)])
-    legacy_poliza_monto_uvi        = models.DecimalField("Monto Sustituido UVI", max_digits=12, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)])
-    legacy_poliza_creador          = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, editable=False)
-    legacy_poliza_editor           = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="legacy_poliza_editor", editable=False)
+#     legacy_poliza_fecha            = models.DateField("Fecha")
+#     legacy_poliza_expediente       = models.CharField("Número de Expediente", max_length=17)
+#     legacy_poliza_receptor         = models.ForeignKey("Receptor", verbose_name="Receptor", on_delete=models.CASCADE)
+#     legacy_poliza_area             = models.ForeignKey("Area", verbose_name="Area", on_delete=models.CASCADE)
+#     legacy_poliza_numero           = models.IntegerField("Número de Póliza")
+#     legacy_poliza_concepto         = models.CharField("Concepto", max_length=1, choices=CONCEPTO)
+#     legacy_poliza_anexo            = models.CharField("Anexo de póliza", max_length=40, blank=True, null=True)
+#     legacy_poliza_recibo           = models.CharField("Número de Recibo", max_length=100)
+#     legacy_poliza_aseguradora      = models.ForeignKey("Aseguradora", verbose_name="Aseguradora", on_delete=models.CASCADE)
+#     legacy_poliza_tomador          = models.ForeignKey("Empresa", verbose_name="Tomador", on_delete=models.CASCADE)
+#     legacy_poliza_obra_nombre      = models.TextField("Obra")
+#     legacy_poliza_obra_convenio    = models.CharField("Convenio", max_length=50, blank=True, null=True)
+#     legacy_poliza_obra_expediente  = models.CharField("Número de Expediente de la Obra", max_length=17, blank=True, null=True)
+#     legacy_poliza_monto_pesos      = models.DecimalField("Monto Sustituido Pesos", max_digits=12, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)])
+#     legacy_poliza_monto_uvi        = models.DecimalField("Monto Sustituido UVI", max_digits=12, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)])
+#     legacy_poliza_creador          = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, editable=False)
+#     legacy_poliza_editor           = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="legacy_poliza_editor", editable=False)
     
 class Programa(models.Model):
     class Meta:
@@ -333,45 +333,45 @@ class Obra(models.Model):
     obra_contrato_total_uvi             = models.DecimalField("Monto Total UVI", max_digits=12, decimal_places=2, default=0, editable=False)
     obra_principal                      = models.ManyToManyField("Obra", related_name="obra_madre", verbose_name="Obra Madre", blank=True)
 
-    def obra_acum_pesos(self):
-        if self.certificado_set:
-            return self.certificado_set.aggregate(Sum(F("certificado_monto_cobrar"), output_field=FloatField()))
-        else:
-            return 0
-    def obra_acum_uvi(self):
-        if self.certificado_set:
-            return self.certificado_set.aggregate(Sum(F("certificado_monto_cobrar_uvi"), output_field=FloatField()))
-        else:
-            return 0
-    def saldo_uvi(self):
-        try:
-            if self.certificado_set:
-                agregado = self.certificado_set.aggregate(Sum(F("certificado_monto_cobrar_uvi")))["certificado_monto_cobrar_uvi__sum"]
-                contrato = self.obra_contrato_total_uvi
-                saldo = contrato - agregado
-                return saldo
-            else:
-                return self.obra_contrato_total_uvi
-        except TypeError:
-            return 0
-    def obra_acum_pct(self):
-        if self.certificado_set:
-            return self.certificado_set.latest().certificado_acum_pct
+    # def obra_acum_pesos(self):
+    #     if self.certificado_set:
+    #         return self.certificado_set.aggregate(Sum(F("certificado_monto_cobrar"), output_field=FloatField()))
+    #     else:
+    #         return 0
+    # def obra_acum_uvi(self):
+    #     if self.certificado_set:
+    #         return self.certificado_set.aggregate(Sum(F("certificado_monto_cobrar_uvi"), output_field=FloatField()))
+    #     else:
+    #         return 0
+    # def saldo_uvi(self):
+    #     try:
+    #         if self.certificado_set:
+    #             agregado = self.certificado_set.aggregate(Sum(F("certificado_monto_cobrar_uvi")))["certificado_monto_cobrar_uvi__sum"]
+    #             contrato = self.obra_contrato_total_uvi
+    #             saldo = contrato - agregado
+    #             return saldo
+    #         else:
+    #             return self.obra_contrato_total_uvi
+    #     except TypeError:
+    #         return 0
+    # def obra_acum_pct(self):
+    #     if self.certificado_set:
+    #         return self.certificado_set.latest().certificado_acum_pct
     
-    def __str__(self):
-        localidades = ", ".join(str(localidad) for localidad in self.obra_localidad_m.all())
-        return f"({self.obra_convenio if self.obra_convenio else ''}) {self.obra_nombre} - {self.obra_empresa}"
+    # def __str__(self):
+    #     localidades = ", ".join(str(localidad) for localidad in self.obra_localidad_m.all())
+    #     return f"({self.obra_convenio if self.obra_convenio else ''}) {self.obra_nombre} - {self.obra_empresa}"
     
-    def save(self):
-        self.obra_contrato_total_pesos = self.obra_contrato_nacion_pesos + self.obra_contrato_terceros_pesos + self.obra_contrato_provincia_pesos
-        self.obra_contrato_total_uvi = self.obra_contrato_nacion_uvi + self.obra_contrato_terceros_uvi + self.obra_contrato_provincia_uvi
-        return super(Obra, self).save()
+    # def save(self):
+    #     self.obra_contrato_total_pesos = self.obra_contrato_nacion_pesos + self.obra_contrato_terceros_pesos + self.obra_contrato_provincia_pesos
+    #     self.obra_contrato_total_uvi = self.obra_contrato_nacion_uvi + self.obra_contrato_terceros_uvi + self.obra_contrato_provincia_uvi
+    #     return super(Obra, self).save()
 
-    def lista_localidades(self):
-        return ", ".join(str(localidad) for localidad in self.obra_localidad_m.all())
+    # def lista_localidades(self):
+    #     return ", ".join(str(localidad) for localidad in self.obra_localidad_m.all())
     
-    def get_absolute_url(self):
-        return f"/polizas/crear/obra/estado/{self.id}"
+    # def get_absolute_url(self):
+    #     return f"/polizas/crear/obra/estado/{self.id}"
 
 class Prototipo(models.Model):
     TIPO = (
@@ -491,8 +491,8 @@ class Certificado(models.Model):
     certificado_monto_cobrar        = models.DecimalField("Monto a Cobrar Pesos", max_digits=12, decimal_places=2, default=0, editable=False)
     certificado_monto_cobrar_uvi    = models.DecimalField("Monto a Cobrar UVI", max_digits=12, decimal_places=2, default=0, editable=False)
     certificado_digital             = models.FileField(upload_to=generate_name, max_length=500, null=True, blank=True)
-    certificado_creador             = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, editable=False)
-    certificado_editor              = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="certificado_editor", editable=False)
+    # certificado_creador             = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, editable=False)
+    # certificado_editor              = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="certificado_editor", editable=False)
     certificado_fecha_carga         = models.DateField("Fecha de carga", default=timezone.now)
     certificado_fecha_carga_legacy  = models.BooleanField("Es Certificado Viejo", default=False)
     
@@ -513,7 +513,7 @@ class Certificado(models.Model):
 
 class ConjuntoLicitado(models.Model):
     class Meta:
-        ordering = ["conjunto_nombre"]
+        ordering = ["id", "conjunto_nombre"]
         verbose_name_plural = "Conjuntos Licitados"
 
     conjunto_nombre = models.TextField("Nombre")
@@ -586,8 +586,8 @@ class ContratosDigitales(models.Model):
     contratodigital_descripcion = models.TextField("Descripción")
     contratodigital_tipo = models.ForeignKey("ContratoRubro", verbose_name="Rubro Contrato", on_delete=models.CASCADE)
     contratodigital_archivo = models.FileField(upload_to=generate_name_contratos, max_length=500)
-    contratodigital_creador = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, editable=False)
-    contratodigital_editor  = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="contratodigital_editor", editable=False)
+    # contratodigital_creador = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, editable=False)
+    # contratodigital_editor  = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="contratodigital_editor", editable=False)
 
 
 class ResolucionesDigitales(models.Model):
@@ -599,8 +599,8 @@ class ResolucionesDigitales(models.Model):
     resoluciondigital_descripcion   = models.TextField("Descripción")
     resoluciondigital_numero        = models.CharField("Resolución", max_length=15)
     resoluciondigital_archivo       = models.FileField(upload_to=generate_name_resoluciones, max_length=500)
-    resoluciondigital_creador       = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, editable=False)
-    resoluciondigital_editor        = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="resoluciondigital_editor", editable=False)
+    # resoluciondigital_creador       = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, editable=False)
+    # resoluciondigital_editor        = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="resoluciondigital_editor", editable=False)
     
     def __str__(self):
         return f"{self.resoluciondigital_numero}"

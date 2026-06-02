@@ -57,10 +57,10 @@ class Migration(migrations.Migration):
             name='indec',
             options={'ordering': ['mes'], 'verbose_name_plural': 'INDEC'},
         ),
-        migrations.AlterModelOptions(
-            name='legacypoliza',
-            options={'ordering': ['legacy_poliza_fecha'], 'verbose_name': 'Legacy_Póliza', 'verbose_name_plural': 'Legacy_Pólizas'},
-        ),
+        # migrations.AlterModelOptions(
+        #     name='legacypoliza',
+        #     options={'ordering': ['legacy_poliza_fecha'], 'verbose_name': 'Legacy_Póliza', 'verbose_name_plural': 'Legacy_Pólizas'},
+        # ),
         migrations.AlterModelOptions(
             name='obra',
             options={'ordering': ['obra_programa', 'obra_convenio', 'obra_nombre'], 'verbose_name': 'Obra', 'verbose_name_plural': 'Obras'},
@@ -193,26 +193,26 @@ class Migration(migrations.Migration):
             name='empresa_titular_titulo',
             field=models.CharField(blank=True, max_length=40, null=True, verbose_name='Titulo Representante'),
         ),
-        migrations.AlterField(
-            model_name='legacypoliza',
-            name='legacy_poliza_area',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='carga.area', verbose_name='Area'),
-        ),
-        migrations.AlterField(
-            model_name='legacypoliza',
-            name='legacy_poliza_aseguradora',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='carga.aseguradora', verbose_name='Aseguradora'),
-        ),
-        migrations.AlterField(
-            model_name='legacypoliza',
-            name='legacy_poliza_receptor',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='carga.receptor', verbose_name='Receptor'),
-        ),
-        migrations.AlterField(
-            model_name='legacypoliza',
-            name='legacy_poliza_tomador',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='carga.empresa', verbose_name='Tomador'),
-        ),
+        # migrations.AlterField(
+        #     model_name='legacypoliza',
+        #     name='legacy_poliza_area',
+        #     field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='carga.area', verbose_name='Area'),
+        # ),
+        # migrations.AlterField(
+        #     model_name='legacypoliza',
+        #     name='legacy_poliza_aseguradora',
+        #     field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='carga.aseguradora', verbose_name='Aseguradora'),
+        # ),
+        # migrations.AlterField(
+        #     model_name='legacypoliza',
+        #     name='legacy_poliza_receptor',
+        #     field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='carga.receptor', verbose_name='Receptor'),
+        # ),
+        # migrations.AlterField(
+        #     model_name='legacypoliza',
+        #     name='legacy_poliza_tomador',
+        #     field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='carga.empresa', verbose_name='Tomador'),
+        # ),
         migrations.AlterField(
             model_name='localidad',
             name='id',

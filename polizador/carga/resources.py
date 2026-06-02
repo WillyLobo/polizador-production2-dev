@@ -43,33 +43,33 @@ class PolizaResource(resources.ModelResource):
 	poliza_aseguradora	= fields.Field(column_name="aseguradora_nombre", attribute="poliza_aseguradora", widget=ForeignKeyWidget(models.Aseguradora, "aseguradora_nombre",))
 	poliza_tomador		= fields.Field(column_name="tomador_nombre", attribute="poliza_tomador", widget=ForeignKeyWidget(models.Empresa, "empresa_nombre"))
 
-class LegacyPolizaResource(resources.ModelResource):
-	legacy_poliza_receptor 		= fields.Field(column_name="legacy_poliza_receptor", attribute="legacy_poliza_receptor", widget=ForeignKeyWidget(models.Receptor, 'receptor_nombre',))
-	legacy_poliza_area			= fields.Field(column_name="legacy_poliza_area", attribute="legacy_poliza_area", widget=ForeignKeyWidget(models.Area, 'area_nombre',))
-	legacy_poliza_aseguradora	= fields.Field(column_name="legacy_poliza_aseguradora", attribute="legacy_poliza_aseguradora", widget=ForeignKeyWidget(models.Aseguradora, 'aseguradora_nombre',))
-	legacy_poliza_tomador		= fields.Field(column_name="legacy_poliza_tomador", attribute="legacy_poliza_tomador", widget=ForeignKeyWidget(models.Empresa, 'empresa_nombre',))
+# class LegacyPolizaResource(resources.ModelResource):
+# 	legacy_poliza_receptor 		= fields.Field(column_name="legacy_poliza_receptor", attribute="legacy_poliza_receptor", widget=ForeignKeyWidget(models.Receptor, 'receptor_nombre',))
+# 	legacy_poliza_area			= fields.Field(column_name="legacy_poliza_area", attribute="legacy_poliza_area", widget=ForeignKeyWidget(models.Area, 'area_nombre',))
+# 	legacy_poliza_aseguradora	= fields.Field(column_name="legacy_poliza_aseguradora", attribute="legacy_poliza_aseguradora", widget=ForeignKeyWidget(models.Aseguradora, 'aseguradora_nombre',))
+# 	legacy_poliza_tomador		= fields.Field(column_name="legacy_poliza_tomador", attribute="legacy_poliza_tomador", widget=ForeignKeyWidget(models.Empresa, 'empresa_nombre',))
 
-	class Meta:
-		model = models.LegacyPoliza
-		fields = (
-		"legacy_poliza_fecha",
-		"legacy_poliza_expediente",   
-		"legacy_poliza_receptor",
-		"legacy_poliza_area",
-		"legacy_poliza_numero",
-		"legacy_poliza_concepto",
-		"legacy_poliza_anexo",
-		"legacy_poliza_recibo",
-		"legacy_poliza_aseguradora",
-		"legacy_poliza_tomador",
-		"legacy_poliza_obra_nombre",
-		"legacy_poliza_obra_convenio",
-		"legacy_poliza_obra_expediente",
-		"legacy_poliza_monto_pesos",
-		"legacy_poliza_monto_uvi",
-		"legacy_poliza_creador",
-		"legacy_poliza_editor",
-		)
+# 	class Meta:
+# 		model = models.LegacyPoliza
+# 		fields = (
+# 		"legacy_poliza_fecha",
+# 		"legacy_poliza_expediente",   
+# 		"legacy_poliza_receptor",
+# 		"legacy_poliza_area",
+# 		"legacy_poliza_numero",
+# 		"legacy_poliza_concepto",
+# 		"legacy_poliza_anexo",
+# 		"legacy_poliza_recibo",
+# 		"legacy_poliza_aseguradora",
+# 		"legacy_poliza_tomador",
+# 		"legacy_poliza_obra_nombre",
+# 		"legacy_poliza_obra_convenio",
+# 		"legacy_poliza_obra_expediente",
+# 		"legacy_poliza_monto_pesos",
+# 		"legacy_poliza_monto_uvi",
+# 		"legacy_poliza_creador",
+# 		"legacy_poliza_editor",
+# 		)
 
 class PolizaMovimientoResource(resources.ModelResource):
 	poliza_movimiento_receptor 	= fields.Field(column_name="Receptor", attribute="poliza_movimento_receptor", widget=ForeignKeyWidget(models.Receptor, "receptor_nombre",))

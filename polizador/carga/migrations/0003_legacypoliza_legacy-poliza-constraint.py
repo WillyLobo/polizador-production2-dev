@@ -10,8 +10,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddConstraint(
-            model_name='legacypoliza',
-            constraint=models.UniqueConstraint(fields=('legacy_poliza_expediente', 'legacy_poliza_fecha', 'legacy_poliza_numero', 'legacy_poliza_aseguradora', 'legacy_poliza_receptor'), name='legacy-poliza-constraint'),
-        ),
+        # migrations.AddConstraint(
+        #     model_name='legacypoliza',
+        #     constraint=models.UniqueConstraint(fields=('legacy_poliza_expediente', 'legacy_poliza_fecha', 'legacy_poliza_numero', 'legacy_poliza_aseguradora', 'legacy_poliza_receptor'), name='legacy-poliza-constraint'),
+        # ),
     ]

@@ -7,10 +7,10 @@ from carga.models import Poliza, Poliza_Movimiento
 from carga.views.ajaxviews import areawidget, polizawidget, receptorwidget
 
 
-class LegacyPolizaForm(forms.ModelForm):
-	class Meta:
-		model = models.LegacyPoliza
-		fields = "__all__"
+# class LegacyPolizaForm(forms.ModelForm):
+# 	class Meta:
+# 		model = models.LegacyPoliza
+# 		fields = "__all__"
 
 class PolizaForm(forms.ModelForm):
 	CONCEPTO = (

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Script para exportar todos los modelos de las apps Django a archivos CSV.
+Script para exportar todos los modelos de las apps Django a archivos XLSX.
 
 Uso:
     python export_models_to_csv.py
@@ -19,19 +19,7 @@ Ejecutar desde el root del proyecto:
 """
 import os
 import sys
-import csv
-
-
-def make_resource(model_class):
-    """Factory function to create a ModelResource for the given model."""
-    from import_export import resources
-    
-    class DynamicResource(resources.ModelResource):
-        class Meta:
-            model = model_class
-            export_order = [f.name for f in model_class._meta.fields]
-    
-    return DynamicResource
+import subprocess
 
 
 def main():
@@ -94,23 +82,23 @@ def main():
         
         for model in models:
             try:
-                resource = make_resource(model)
-                queryset = model.objects.all()
-                dataset = resource().export(queryset)
-                
-                filename = model.__name__.lower() + '.csv'
+                filename = app_label + '_' + model.__name__.lower() + '.xlsx'
                 filepath = os.path.join(output_dir, filename)
                 
-                with open(filepath, 'w', newline='', encoding='utf-8') as f:
-                    writer = csv.writer(f)
-                    if dataset.headers:
-                        writer.writerow(dataset.headers)
-                    for row in dataset:
-                        writer.writerow(list(row))
+                cmd = [
+                    sys.executable, 'polizador/manage.py', 'export', 'XLSX',
+                    f'{app_label}.{model.__name__}', '--encoding', 'utf-8'
+                ]
                 
-                count = queryset.count()
-                print(f"  OK    {model.__name__:40s} -> {filepath} ({count:,} registros)")
-                total_files.append(filepath)
+                with open(filepath, 'wb') as outfile:
+                    result = subprocess.run(cmd, cwd=project_root, stdout=outfile)
+                
+                if result.returncode == 0:
+                    count = model.objects.count()
+                    print(f"  OK    {model.__name__:40s} -> {filepath} ({count:,} registros)")
+                    total_files.append(filepath)
+                else:
+                    print(f"  FAIL  {model.__name__:40s} -> Error en exportacion")
             
             except Exception as e:
                 print(f"  FAIL  {model.__name__:40s} -> {e}")

@@ -163,8 +163,8 @@ ajax = [
 	path("listas/polizas", PaginaListaPolizas, name="lista-polizas"),
 	path("ajax_datatables/polizas", ListaPolizasView.as_view(), name="lista-polizas-datatables"),
 	# Legacy Polizas
-	path("listas/legacypolizas", PaginaListaLegacyPolizas, name="lista-legacy-polizas"),
-	path("ajax_datatables/legacypolizas", ListaLegacyPolizasView.as_view(), name="lista-legacy-polizas-datatables"),
+	# path("listas/legacypolizas", PaginaListaLegacyPolizas, name="lista-legacy-polizas"),
+	# path("ajax_datatables/legacypolizas", ListaLegacyPolizasView.as_view(), name="lista-legacy-polizas-datatables"),
 	# Obras Extendida
 	path("listas/obrasextendida", PaginaListaObrasExtendida, name="lista-obras-extendida"),
 	path("ajax_datatables/obrasextendida", ListaObrasExtendidaView.as_view(), name="lista-obras-extendida-datatables"),
