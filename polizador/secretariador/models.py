@@ -1,6 +1,5 @@
 from django.db import models
 from django.core.validators import MinValueValidator
-from django.contrib.auth.models import User
 from secretariador.functions import FileValidator, CuitValidator
 from datetime import datetime, timedelta
 from django.utils import timezone
@@ -9,6 +8,12 @@ from django.core.exceptions import ValidationError
 import os
 from django.db.models.functions import ExtractDay
 from django.db.models.fields.generated import GeneratedField
+from django.contrib.auth.models import AbstractUser
+
+class CustomUser(AbstractUser):
+    # Add your own custom fields here
+    usuario_dni = models.DecimalField("DNI:", max_digits=9, decimal_places=0, validators=[MinValueValidator(0)], unique=True, blank=True)
+
 
 # Funciones
 def generate_name_decretos(instance, filename):
