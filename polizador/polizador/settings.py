@@ -36,6 +36,8 @@ DBUSER=env("DBUSER")
 DBNAME=env("DBNAME")
 DBSECRET=env("DBPASSWORD")
 SENTRY_DSN=env("SENTRY_DSN")
+MAILGUN_API_KEY=env("MAILGUN_API_KEY")
+MAILGUN_SENDER_DOMAIN=env("MAILGUN_SENDER_DOMAIN")
 
 if DEBUG == False:
     sentry_sdk.init(
@@ -69,6 +71,9 @@ INSTALLED_APPS = [
 	"import_export",
 	"django.forms",
     "debug_toolbar",
+    "anymail",
+    "allauth",
+    "allauth.account",
 
     "carga",
 	"secretariador",
@@ -88,7 +93,18 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "allauth.account.middleware.AccountMiddleware",
 ]
+
+# Email backend configuration parameters
+EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+ANYMAIL = {
+    "MAILGUN_API_KEY": MAILGUN_API_KEY,
+    "MAILGUN_SENDER_DOMAIN": MAILGUN_SENDER_DOMAIN,
+}
+DEFAULT_FROM_EMAIL = "noreply@willylobo.net"
+SERVER_EMAIL = "admin@willylobo.net"
+
 
 ROOT_URLCONF = 'polizador.urls'
 
@@ -113,6 +129,12 @@ TEMPLATES = [
 ]
 TEMPLATES[0]['OPTIONS']['context_processors'].append("polizador.context_processors.imglinks")
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    # `allauth` specific authentication methods, such as login by email
+    'allauth.account.auth_backends.AuthenticationBackend',
+
+]
 CACHES = {
     'default': env.cache(),
     "select2": env.cache_url("REDIS_URL"),

@@ -12,7 +12,8 @@ from secretariador.views.ajaxviews import (
     )
 from django.forms.models import inlineformset_factory
 from secretariador.forms.mixins import BaseFormMixin
-from secretariador.forms.widgets import DateHTMLWidget
+from polizador.custom_forms import DateHTMLWidget
+from polizador.custom_forms import CustomCheckboxInput
 
 class SolicitudExteriorForm(BaseFormMixin, forms.ModelForm):
     class Meta:
@@ -36,7 +37,7 @@ class SolicitudExteriorForm(BaseFormMixin, forms.ModelForm):
             )
         
         widgets = {
-            "solicitud_anulada":forms.CheckboxInput(attrs={
+            "solicitud_anulada":CustomCheckboxInput(attrs={
                 "class":"form-check-input",
                 "style":'width: 2em;height: 2em;'
                 }),
@@ -75,14 +76,14 @@ class SolicitudExteriorForm(BaseFormMixin, forms.ModelForm):
             "solicitud_tareas":forms.TextInput(attrs={
                 "class":"form-control"
                 }),
-            "solicitud_aereo":forms.CheckboxInput(attrs={
+            "solicitud_aereo":CustomCheckboxInput(attrs={
                 "class":"form-check-input",
                 "style":'width: 2em;height: 2em;'
                 }),
             "solicitud_vehiculo":VehiculoWidget(attrs={
                 "class":"form-control customSelect2"
                 }),
-            "solicitud_dia_inhabil":forms.CheckboxInput(attrs={
+            "solicitud_dia_inhabil":CustomCheckboxInput(attrs={
                 "class":"form-check-input",
                 "style":'width: 2em;height: 2em;'
                 }),

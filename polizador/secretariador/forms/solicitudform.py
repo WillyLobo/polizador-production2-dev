@@ -12,9 +12,10 @@ from secretariador.views.ajaxviews import (
     VehiculoWidget,
     DecretoWidget,
     )
+from polizador.custom_forms import CustomCheckboxInput
 from django.forms.models import inlineformset_factory
 from secretariador.forms.mixins import BaseFormMixin
-from secretariador.forms.widgets import DateHTMLWidget
+from polizador.custom_forms import DateHTMLWidget
 
 class SolicitudForm(BaseFormMixin, forms.ModelForm):
     class Meta:
@@ -37,7 +38,7 @@ class SolicitudForm(BaseFormMixin, forms.ModelForm):
             )
 
         widgets = {
-            "solicitud_anulada":forms.CheckboxInput(attrs={
+            "solicitud_anulada":CustomCheckboxInput(attrs={
                 "class":"form-check-input",
                 "style":'width: 2em;height: 2em;'
                 }),
@@ -85,7 +86,7 @@ class SolicitudForm(BaseFormMixin, forms.ModelForm):
             "solicitud_vehiculo":VehiculoWidget(attrs={
                 "class":"form-control customSelect2"
                 }),
-            "solicitud_dia_inhabil":forms.CheckboxInput(attrs={
+            "solicitud_dia_inhabil":CustomCheckboxInput(attrs={
                 "class":"form-check-input",
                 "style":'width: 2em;height: 2em;'
                 }),
@@ -98,8 +99,8 @@ class SolicitudForm(BaseFormMixin, forms.ModelForm):
         super().__init__(*args, **kwargs)
         queryset = MontoViaticoDiario.objects.all()
         self.fields["solicitud_decreto_viaticos"].queryset = queryset
-        self.fields["solicitud_decreto_viaticos"].initial = queryset.last().id
-        self.fields["solicitud_provincia"].initial = Provincia.objects.get(pk=22)
+        self.fields["solicitud_decreto_viaticos"].initial = queryset.last().id or None
+        self.fields["solicitud_provincia"].initial = Provincia.objects.get(pk=22) or None
         # Labels for fields without them.
         self.fields["solicitud_solicitante"].label = "Solicitante"
         self.fields["solicitud_provincia"].label = "Provincia"

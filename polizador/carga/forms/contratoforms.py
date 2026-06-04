@@ -3,7 +3,7 @@ from carga.models import Contrato, ContratoMonto
 from django.forms import inlineformset_factory
 from carga.forms.contratomontoforms import *
 from carga.views.ajaxviews import *
-from secretariador.forms.widgets import DateHTMLWidget
+from polizador.custom_forms import DateHTMLWidget
 
 class ContratoForm(forms.ModelForm):
 	class Meta:

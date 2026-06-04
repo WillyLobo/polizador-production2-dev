@@ -12,7 +12,13 @@ from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
     # Add your own custom fields here
-    usuario_dni = models.DecimalField("DNI:", max_digits=9, decimal_places=0, validators=[MinValueValidator(0)], unique=True, blank=True)
+    usuario_dni = models.DecimalField(
+        "DNI:", max_digits=9, decimal_places=0,
+         validators=[MinValueValidator(0)],
+         unique=True,
+         null=True,
+         blank=True
+         )
 
 
 # Funciones

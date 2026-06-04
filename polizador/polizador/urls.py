@@ -7,8 +7,8 @@ from django.views.generic.base import TemplateView
 from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
-    path("", auth_views.LoginView.as_view(redirect_authenticated_user=True, redirect_field_name="polizas")),
-    path("accounts/", include('django.contrib.auth.urls')),
+    path("", TemplateView.as_view(template_name="index.html")),
+    path("accounts/", include('allauth.urls')),
     path("polizas/", include("carga.urls")),
     path("viaticos/", include("secretariador.urls")),
     path("personal/)", include("personalizador.urls")),

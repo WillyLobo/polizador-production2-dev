@@ -3,7 +3,7 @@ from secretariador.models import InstrumentosLegalesMemorandum, InstrumentosLega
 from carga.views.ajaxviews import (
 	localidadmultiplewidget,
 	)
-from secretariador.forms.widgets import DateHTMLWidget
+from polizador.custom_forms import DateHTMLWidget
 from secretariador.forms.mixins import BaseFormMixin
 from datetime import datetime
 

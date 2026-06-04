@@ -4,7 +4,7 @@ from wsgiref.validate import validator
 from django.db import models
 from django.db.models import Sum, F, FloatField
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.contrib.auth.models import User 
+from uuid_utils import compat
 import os
 
 # from .models import User
@@ -50,6 +50,7 @@ class Receptor(models.Model):
         ordering = ["receptor_nombre"]
     
     receptor_nombre = models.CharField("Receptor", max_length=100)
+    receptor_uuid = models.UUIDField(default=compat.uuid7, editable=False)
 
     def __str__(self):
         return self.receptor_nombre
@@ -64,6 +65,7 @@ class Area(models.Model):
         verbose_name_plural = "Areas"
         ordering = ["area_nombre"]
     
+    area_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     area_nombre = models.CharField("Area", max_length=50)
 
     def __str__(self):
@@ -78,6 +80,7 @@ class Aseguradora(models.Model):
         verbose_name_plural = "Aseguradoras"
         ordering = ["aseguradora_nombre"]
     
+    aseguradora_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     aseguradora_nombre = models.CharField("Nombre Compañía Aseguradora", max_length=255)
 
     def __str__(self):
@@ -92,6 +95,7 @@ class Empresa(models.Model):
         verbose_name_plural = "Empresas"
         ordering = ["empresa_nombre"]
     
+    empresa_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     empresa_nombre          = models.CharField("Nombre Empresa", max_length=255)
     empresa_cuit            = models.CharField("CUIT", max_length=11, blank=True, null=True)
     empresa_titular_titulo  = models.CharField("Titulo Representante", max_length=40, blank=True, null=True)
@@ -122,6 +126,7 @@ class Poliza(models.Model):
         verbose_name_plural = "Pólizas"
         ordering = ["poliza_fecha"]
     
+    poliza_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     poliza_fecha = models.DateField("Fecha")
     poliza_expediente = models.CharField("Expediente", max_length=18)
     poliza_numero = models.IntegerField("Número de Póliza")
@@ -149,6 +154,7 @@ class Poliza_Movimiento(models.Model):
         verbose_name_plural = "Polizas_Movimiento"
         ordering = ["poliza_movimiento_fecha"]
     
+    poliza_movimiento_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     poliza_movimiento_fecha     = models.DateField("Fecha")
     poliza_movimiento_receptor  = models.ForeignKey("Receptor", verbose_name="Receptor", on_delete=models.CASCADE)
     poliza_movimiento_area      = models.ForeignKey("Area", verbose_name="Area", on_delete=models.CASCADE)
@@ -198,6 +204,7 @@ class Programa(models.Model):
         verbose_name_plural = "Programas"
         ordering = ["programa_nombre"]
     
+    programa_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     programa_nombre = models.CharField(verbose_name="Nombre", max_length=255)
 
     def __str__(self):
@@ -212,6 +219,7 @@ class Provincia(models.Model):
         verbose_name = "Provincia"
         verbose_name_plural = "Provincias"
     
+    provincia_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     id = models.IntegerField(unique=True, primary_key=True)
     provincia_nombre = models.CharField("Nombre Provincia", max_length=33)
 
@@ -223,6 +231,7 @@ class Region(models.Model):
         ordering = ["id"]
         verbose_name_plural = "Region"
     
+    region_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     region_numero   = models.CharField("Número Región", max_length=10)
 
     def __str__(self):
@@ -237,6 +246,7 @@ class Departamento(models.Model):
         ordering			= ["departamento_nombre"]
         verbose_name_plural = "Departamentos"
 
+    departamento_uuid		= models.UUIDField(default=compat.uuid7, editable=False)
     id					= models.IntegerField(unique=True, primary_key=True)
     departamento_nombre = models.TextField("Nombre Departamento")
 
@@ -251,6 +261,7 @@ class Localidad(models.Model):
         ordering			= ["localidad_nombre"]
         verbose_name_plural = "Localidades"
 
+    localidad_uuid		= models.UUIDField(default=compat.uuid7, editable=False)
     localidad_nombre		= models.TextField("Nombre Localidad")
     id                      = models.IntegerField("Id", unique=True, primary_key=True) 
     localidad_centroide_lat	= models.DecimalField("Latitud Centroide", max_digits=15, decimal_places=13,blank=True, null=True)
@@ -271,6 +282,7 @@ class Municipio(models.Model):
         ordering 			= ["municipio_nombre"]
         verbose_name_plural = "Municipios"
 
+    municipio_uuid        = models.UUIDField(default=compat.uuid7, editable=False)
     municipio_nombre        = models.CharField("Nombre",max_length=40)
     id                      = models.IntegerField("Id", unique=True, primary_key=True)
     municipio_departamento  = models.ForeignKey("Departamento", verbose_name="Departamento", on_delete=models.CASCADE)
@@ -296,7 +308,8 @@ class Obra(models.Model):
         verbose_name_plural = "Obras"
         ordering = ["obra_programa", "obra_convenio", "obra_nombre"]
 
-    obra_nombre			                = models.TextField("Nombre", help_text="Nombre de la Obra tal como figura en el contrato")
+    obra_uuid			= models.UUIDField(default=compat.uuid7, editable=False)
+    obra_nombre			                    = models.TextField("Nombre", help_text="Nombre de la Obra tal como figura en el contrato")
     obra_soluciones		                = models.DecimalField("Cantidad de soluciones", max_digits=4, decimal_places=0, null=True, blank=True)
     obra_empresa		                = models.ForeignKey("Empresa", on_delete=models.CASCADE, verbose_name="Empresa")
     obra_region                         = models.ForeignKey("Region", on_delete=models.CASCADE, verbose_name="Región", null=True, blank=True)
@@ -386,6 +399,7 @@ class Prototipo(models.Model):
         verbose_name = "Prototipo Habitacional"
         verbose_name_plural = "Prototipos Habitacionales"
     
+    prototipo_uuid          = models.UUIDField(default=compat.uuid7, editable=False)
     prototipo_obra          = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.DO_NOTHING)
     prototipo_tipo          = models.CharField("Tipo de Prototipo", max_length=1, choices=TIPO)
     prototipo_cantidad      = models.DecimalField("Cantidad del Prototipo", max_digits=3, decimal_places=0)
@@ -399,6 +413,8 @@ class Agente(models.Model):
     class Meta:
         verbose_name_plural = "Agentes"
         ordering = ["agente_nombre", "agente_apellido"]
+
+    agente_uuid			= models.UUIDField(default=compat.uuid7, editable=False)
 
     PROFESION = (
         ("A", "Arquitecto"),
@@ -431,6 +447,7 @@ class CertificadoRubro(models.Model):
         verbose_name_plural = "Rubros"
         ordering = ["certificadorubro_nombre"]
     
+    certificadorubro_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     certificadorubro_nombre = models.CharField("Rubro", max_length=100)
     certificadorubro_nombre_corto = models.CharField("Rubro Corto", max_length=1)
 
@@ -442,6 +459,7 @@ class CertificadoFinanciamiento(models.Model):
         verbose_name_plural = "Financiamiento"
         ordering = ["certificadofinanciamiento_nombre"]
     
+    certificadofinanciamiento_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     certificadofinanciamiento_nombre = models.CharField("Financiamiento", max_length=100)
     certificadofinanciamiento_nombre_corto = models.CharField("Financiamiento Corto", max_length=1)
 
@@ -470,6 +488,7 @@ class Certificado(models.Model):
         ("M", "Deductivo")
     )
 
+    certificado_uuid                = models.UUIDField(default=compat.uuid7, editable=False)
     certificado_obra                = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.CASCADE)
     certificado_financiamiento      = models.CharField("Financiamiento", max_length=1, choices=FINANCIAMIENTO, default="N")
     certificado_rubro               = models.CharField("Rubro", max_length=1, choices=RUBRO, default="V") # Obsoleto -> se migro a una tabla aparte(carga.models.CertificadoRubro)
@@ -516,6 +535,7 @@ class ConjuntoLicitado(models.Model):
         ordering = ["id", "conjunto_nombre"]
         verbose_name_plural = "Conjuntos Licitados"
 
+    conjunto_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     conjunto_nombre = models.TextField("Nombre")
     conjunto_soluciones = models.DecimalField("Cantidad de Soluciones", max_digits=5, decimal_places=0, default=0, null=True, blank=True)
     conjunto_resolucion = models.CharField("Resolucion", max_length=15, null=True, blank=True)
@@ -534,6 +554,7 @@ class PlanDeTrabajos(models.Model):
     class Meta:
         verbose_name_plural = "Plan de Trabajos"
 
+    trabajos_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     trabajos_obra = models.ForeignKey("Obra", on_delete=models.DO_NOTHING)
 
 class Contrato(models.Model):
@@ -541,6 +562,7 @@ class Contrato(models.Model):
         verbose_name_plural = "Contratos"
         ordering = ["contrato_fecha"]
 
+    contrato_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     contrato_obra = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.CASCADE)
     contrato_fecha = models.DateField("Fecha",default=timezone.now)
     contrato_descripcion = models.CharField("Descripción", max_length=600, default="")
@@ -556,6 +578,7 @@ class ContratoMonto(models.Model):
         verbose_name_plural = "Montos de Contrato"
         ordering = ["contratomonto_contrato"]
     
+    contratomonto_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     contratomonto_contrato = models.ForeignKey("Contrato", verbose_name="Contrato", on_delete=models.CASCADE)
     contratomonto_rubro = models.ForeignKey("CertificadoRubro", verbose_name="Rubro Certificado", on_delete=models.CASCADE)
     contratomonto_financiamiento = models.ForeignKey("CertificadoFinanciamiento", verbose_name="Financiamiento", on_delete=models.CASCADE)
@@ -571,6 +594,7 @@ class ContratoRubro(models.Model):
         verbose_name_plural = "Rubros de Contrato"
         ordering = ["contratorubro_tipo"]
     
+    contratorubro_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     contratorubro_tipo = models.CharField("Rubro:", max_length=100)
 
     def __str__(self):
@@ -581,6 +605,7 @@ class ContratosDigitales(models.Model):
         verbose_name_plural = "Contratos Digitales"
         ordering = ["id"]
     
+    contratodigital_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     contratodigital_obra = models.ManyToManyField("Obra", related_name="obra_contratos", verbose_name="Obras", blank=True)
     contratodigital_nombre_archivo = models.CharField("Nombre del Archivo", max_length=100, blank=True, null=True)
     contratodigital_descripcion = models.TextField("Descripción")
@@ -595,6 +620,7 @@ class ResolucionesDigitales(models.Model):
         verbose_name_plural = "Resoluciones Digitales"
         ordering = ["resoluciondigital_numero"]
     
+    resoluciondigital_uuid          = models.UUIDField(default=compat.uuid7, editable=False)
     resoluciondigital_obra          = models.ManyToManyField("Obra", related_name="obra_resoluciones", verbose_name="Obras", blank=True)
     resoluciondigital_descripcion   = models.TextField("Descripción")
     resoluciondigital_numero        = models.CharField("Resolución", max_length=15)
@@ -609,6 +635,7 @@ class Uvi(models.Model):
         verbose_name_plural = "UVI"
         ordering = ["uvi_fecha"]
 
+    uvi_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     uvi_fecha = models.DateField("Fecha UVI:")
     uvi_valor = models.DecimalField("Valor", max_digits=15, decimal_places=2)
 
@@ -617,6 +644,8 @@ class INDEC(models.Model):
     class Meta:
         verbose_name_plural = "INDEC"
         ordering = ["mes"]
+
+    indec_uuid                        = models.UUIDField(default=compat.uuid7, editable=False)
 
     mes                         = models.DateField("Fecha de Medición")
     indec_manodeobra            = models.DecimalField("Mano de Obra", max_digits=20, decimal_places=10)

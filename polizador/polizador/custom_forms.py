@@ -1,5 +1,11 @@
-from django.forms.widgets import TextInput, DateTimeBaseInput
+# widgets.py or forms.py
+from django import forms
+from django.forms.widgets import DateTimeBaseInput
 from django.utils import formats
+
+
+class CustomCheckboxInput(forms.CheckboxInput):
+    template_name = 'widgets/custom_checkbox.html'
 
 class DateHTMLWidget(DateTimeBaseInput):
     supports_microseconds = False

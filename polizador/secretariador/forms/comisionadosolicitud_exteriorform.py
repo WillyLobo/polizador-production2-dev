@@ -3,6 +3,7 @@ from secretariador.models import ComisionadoSolicitud
 from secretariador.forms.mixins import ColumnFormMixin
 from secretariador.views.ajaxviews import ComisionadoWidget
 from datetime import datetime
+from polizador.custom_forms import CustomCheckboxInput
 
 class ComisionadoSolicitudExteriorForm(ColumnFormMixin, forms.ModelForm):
     class Meta:
@@ -33,15 +34,15 @@ class ComisionadoSolicitudExteriorForm(ColumnFormMixin, forms.ModelForm):
                 "class":"form-control",
                 "placeholder":"0"
                 }),
-            "comisionadosolicitud_chofer":forms.CheckboxInput(attrs={
+            "comisionadosolicitud_chofer":CustomCheckboxInput(attrs={
                 "class":"form-check-input",
                 "style":'width: 2em;height: 2em;'
                 }),
-            "comisionadosolicitud_colaborador":forms.CheckboxInput(attrs={
+            "comisionadosolicitud_colaborador":CustomCheckboxInput(attrs={
                 "class":"form-check-input",
                 "style":'width: 2em;height: 2em;'
                 }),
-            "comisionadosolicitud_sin_viatico":forms.CheckboxInput(attrs={
+            "comisionadosolicitud_sin_viatico":CustomCheckboxInput(attrs={
                 "class":"form-check-input",
                 "style":'width: 2em;height: 2em;'
                 }),

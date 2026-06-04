@@ -1,6 +1,6 @@
 from django import forms
 from carga import models
-from secretariador.forms.widgets import DateHTMLWidget
+from polizador.custom_forms import DateHTMLWidget
 
 class ContratoMontoForm(forms.ModelForm):
 	class Meta:

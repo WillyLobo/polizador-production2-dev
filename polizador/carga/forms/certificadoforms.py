@@ -1,7 +1,7 @@
 from django import forms
 from carga import models
 from carga.views.ajaxviews import obrawidget
-from secretariador.forms.widgets import DateHTMLWidget
+from polizador.custom_forms import DateHTMLWidget
 
 class CustomClearableFileInput(forms.widgets.ClearableFileInput):
 	# template_name = "clearable_file_input.html"

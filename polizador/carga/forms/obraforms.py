@@ -10,7 +10,7 @@ from carga.views.ajaxviews import (
 	municipiomultiplewidget,
 	obramultiplewidget
 	)
-from secretariador.forms.widgets import DateHTMLWidget
+from polizador.custom_forms import DateHTMLWidget
 
 class ObraForm(forms.ModelForm):
 	class Meta:

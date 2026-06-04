@@ -1,6 +1,7 @@
 from django import forms
 from secretariador.models import Comisionado
 from secretariador.forms.mixins import BaseFormMixin
+from polizador.custom_forms import CustomCheckboxInput
 
 class ComisionadoForm(BaseFormMixin, forms.ModelForm):
     class Meta:
@@ -39,10 +40,10 @@ class ComisionadoForm(BaseFormMixin, forms.ModelForm):
             "comisionado_cuit":forms.TextInput(attrs={
                 "class":"form-control"
                 }),
-            "comisionado_personal_transitorio":forms.CheckboxInput(attrs={
+            "comisionado_personal_transitorio":CustomCheckboxInput(attrs={
                 "class":"form-check-input"
                 }),
-            "comisionado_personal_de_gabinete":forms.CheckboxInput(attrs={
+            "comisionado_personal_de_gabinete":CustomCheckboxInput(attrs={
                 "class":"form-check-input"
                 }),
         }

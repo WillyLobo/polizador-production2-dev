@@ -2,7 +2,7 @@ from django import forms
 from django.forms.models import inlineformset_factory
 from carga import models
 from carga.views.ajaxviews import obrawidget, empresawidget, aseguradorawidget
-from secretariador.forms.widgets import DateHTMLWidget
+from polizador.custom_forms import DateHTMLWidget
 from carga.models import Poliza, Poliza_Movimiento
 from carga.views.ajaxviews import areawidget, polizawidget, receptorwidget
 
