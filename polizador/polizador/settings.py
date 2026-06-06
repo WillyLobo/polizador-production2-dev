@@ -248,7 +248,7 @@ if DEBUG == True:
             "JQUERY_URL": "",
         }
 elif DEBUG == False:
-    INSTALLED_APPS = INSTALLED_APPS + ["easyaudit", "anymail",]
+    INSTALLED_APPS = INSTALLED_APPS + ["anymail",]
     # Email backend configuration parameters
     EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
     ANYMAIL = {
