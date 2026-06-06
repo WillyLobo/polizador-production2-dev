@@ -1,19 +1,13 @@
 from carga import models
 from django.db.models import Sum, F
 
-def obra_por_programa(request):
-    """
-    Ver ésta cosa asquerosa... porque el context processor significa hacer el 
-    pedido de programas por obra cada vez que hay un reload de pagina.
-    """
-    programa = models.Obra.objects.values_list("obra_programa", flat=True).distinct()
-    lista_url_programa = ()
-    for url in programa:
-        obj = models.Programa.objects.get(pk=url).get_absolute_url()
-        lista_url_programa += (obj,)
-    return {
-        "lista_url" : lista_url_programa
-    }
+def user_groups_processor(request):
+    """ Crea un contexto con los grupos del usuario para ser usado en los templates permitiendo verificar permisos por grupo."""
+    groups = []
+    user = request.user
+    if user.is_authenticated:
+        groups = list(user.groups.values_list('name',flat = True))
+    return {'groups': groups}
 
 def imglinks(request):
     return {

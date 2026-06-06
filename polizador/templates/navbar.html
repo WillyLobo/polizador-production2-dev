@@ -17,26 +17,26 @@
     <div class="collapse navbar-collapse" id="navContent">
       <ul class="navbar-nav nav-items me-auto">
         <!-- Obras -->
-        {% if perms.carga.add_obra or perms.carga.add_empresa or perms.carga.add_certificado or perms.carga.add_programa or perms.carga.add_conjuntolicitado or perms.carga.add_agente or perms.carga.add_contrato or perms.carga.add_contratosdigitales or perms.carga.add_resolucionesdigitales %}
+        {% if "gciaoperativa_usuarios" in groups %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-building me-1"></i>Obras
           </a>
           <ul class="dropdown-menu dropdown-menu-lg-start">
             <li class="dropdown-item fw-bold text-muted"><small>CREAR</small></li>
-            {% if perms.carga.add_obra %}<li><a class="dropdown-item" href="{% url "carga:crear-obra" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Obra</a></li>{% endif %}
-            {% if perms.carga.add_empresa %}<li><a class="dropdown-item" href="{% url "carga:crear-empresa" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Empresa</a></li>{% endif %}
-            {% if perms.carga.add_certificado %}<li><a class="dropdown-item" href="{% url "carga:crear-certificado" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Certificado</a></li>{% endif %}
-            {% if perms.carga.add_programa %}<li><a class="dropdown-item" href="{% url "carga:crear-programa" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Programa</a></li>{% endif %}
-            {% if perms.carga.add_conjuntolicitado %}<li><a class="dropdown-item" href="{% url "carga:crear-conjunto" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Conjunto Licitado</a></li>{% endif %}
-            {% if perms.carga.add_agente %}<li><a class="dropdown-item" href="{% url "carga:crear-agente" %}" title="Programado para ser obsoleto"><i class="bi bi-plus-circle me-1"></i>Nuevo Inspector</a></li>{% endif %}
-            {% if perms.carga.add_contrato %}<li><a class="dropdown-item" href="{% url "carga:crear-contrato" %}"><i class="bi bi-plus-circle me-1"></i>Contrato de Obra</a></li>{% endif %}
+            <li><a class="dropdown-item" href="{% url "carga:crear-obra" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Obra</a></li>
+            <li><a class="dropdown-item" href="{% url "carga:crear-empresa" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Empresa</a></li>
+            <li><a class="dropdown-item" href="{% url "carga:crear-certificado" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Certificado</a></li>
+            <li><a class="dropdown-item" href="{% url "carga:crear-programa" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Programa</a></li>
+            <li><a class="dropdown-item" href="{% url "carga:crear-conjunto" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Conjunto Licitado</a></li>
+            <li><a class="dropdown-item" href="{% url "carga:crear-agente" %}" title="Programado para ser obsoleto"><i class="bi bi-plus-circle me-1"></i>Nuevo Inspector</a></li>
+            <li><a class="dropdown-item" href="{% url "carga:crear-contrato" %}"><i class="bi bi-plus-circle me-1"></i>Contrato de Obra</a></li>
             <li><hr class="dropdown-divider"></li>
             <li class="dropdown-item fw-bold text-muted"><small>LISTADOS</small></li>
-            {% if perms.carga.add_contratosdigitales %}<li><a class="dropdown-item" href="{% url "carga:crear-contrato-digital" %}"><i class="bi bi-file-text me-1"></i>Documento (Contrato)</a></li>{% endif %}
-            {% if perms.carga.add_resolucionesdigitales %}<li><a class="dropdown-item" href="{% url "carga:crear-resolucion-digital" %}"><i class="bi bi-file-text me-1"></i>Documento (Resolución)</a></li>{% endif %}
+            <li><a class="dropdown-item" href="{% url "carga:crear-contrato-digital" %}"><i class="bi bi-file-text me-1"></i>Documento (Contrato)</a></li>
+            <li><a class="dropdown-item" href="{% url "carga:crear-resolucion-digital" %}"><i class="bi bi-file-text me-1"></i>Documento (Resolución)</a></li>
             <li><hr class="dropdown-divider"></li>
-            {% if perms.carga.add_obra %}<li><a class="dropdown-item" href="{% url "carga:lista-obras" %}"><i class="bi bi-list-ul me-1"></i>Obras</a></li>{% endif %}
+            <li><a class="dropdown-item" href="{% url "carga:lista-obras" %}"><i class="bi bi-list-ul me-1"></i>Obras</a></li>
             <li><a class="dropdown-item" href="{% url "carga:lista-empresas" %}"><i class="bi bi-list-ul me-1"></i>Empresas</a></li>
             <li><a class="dropdown-item" href="{% url "carga:lista-certificados" %}"><i class="bi bi-list-ul me-1"></i>Certificados</a></li>
             <li><a class="dropdown-item" href="{% url "carga:lista-programas" %}"><i class="bi bi-list-ul me-1"></i>Programas</a></li>
@@ -46,30 +46,27 @@
             <li><a class="dropdown-item" href="{% url "carga:lista-obras-extendida" %}"><i class="bi bi-table me-1"></i>Obras Extendidas</a></li>
           </ul>
         </li>
-        {% endif %}
-
         <!-- Pólizas -->
-        {% if perms.carga.add_poliza or perms.carga.add_receptor or perms.carga.add_area or perms.carga.add_aseguradora %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-file-shield me-1"></i>Pólizas
           </a>
           <ul class="dropdown-menu dropdown-menu-lg-start">
             <li class="dropdown-item fw-bold text-muted"><small>CREAR</small></li>
-            {% if perms.carga.add_poliza %}<li><a class="dropdown-item" href="{% url "carga:crear-poliza" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Póliza (Obra)</a></li>{% endif %}
-            {% if perms.carga.add_receptor %}<li><a class="dropdown-item" href="{% url "carga:crear-receptor" %}" title="Programado para ser obsoleto"><i class="bi bi-plus-circle me-1"></i>Receptor</a></li>{% endif %}
-            {% if perms.carga.add_area %}<li><a class="dropdown-item" href="{% url "carga:crear-area" %}" title="Programado para ser obsoleto"><i class="bi bi-plus-circle me-1"></i>Área</a></li>{% endif %}
-            {% if perms.carga.add_aseguradora %}<li><a class="dropdown-item" href="{% url "carga:crear-aseguradora" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Aseguradora</a></li>{% endif %}
+            <li><a class="dropdown-item" href="{% url "carga:crear-poliza" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Póliza (Obra)</a></li>
+            <li><a class="dropdown-item" href="{% url "carga:crear-receptor" %}" title="Programado para ser obsoleto"><i class="bi bi-plus-circle me-1"></i>Receptor</a></li>
+            <li><a class="dropdown-item" href="{% url "carga:crear-area" %}" title="Programado para ser obsoleto"><i class="bi bi-plus-circle me-1"></i>Área</a></li>
+            <li><a class="dropdown-item" href="{% url "carga:crear-aseguradora" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Aseguradora</a></li>
             <li><hr class="dropdown-divider"></li>
             <li class="dropdown-item fw-bold text-muted"><small>LISTADOS</small></li>
-            {% if perms.carga.add_poliza or perms.carga.add_aseguradora %}<li><a class="dropdown-item" href="{% url "carga:lista-polizas" %}"><i class="bi bi-list-ul me-1"></i>Pólizas</a></li>{% endif %}
+            <li><a class="dropdown-item" href="{% url "carga:lista-polizas" %}"><i class="bi bi-list-ul me-1"></i>Pólizas</a></li>
             <li><a class="dropdown-item" href="{% url "carga:lista-aseguradoras" %}"><i class="bi bi-list-ul me-1"></i>Aseguradoras</a></li>
           </ul>
         </li>
         {% endif %}
 
         <!-- Localidades -->
-        {% if perms.carga.add_region or perms.carga.add_departamento or perms.carga.add_municipio or perms.carga.add_localidad %}
+        {% if "localidades_todos_los_usuarios" in groups %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-geo-alt me-1"></i>Localidades
@@ -78,64 +75,63 @@
             <li class="dropdown-item fw-bold text-muted"><small>CREAR</small></li>
             {% if perms.carga.add_region %}<li><a class="dropdown-item" href="{% url "carga:crear-region" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Región</a></li>{% endif %}
             {% if perms.carga.add_departamento %}<li><a class="dropdown-item" href="{% url "carga:crear-departamento" %}"><i class="bi bi-plus-circle me-1"></i>Departamento</a></li>{% endif %}
-            {% if perms.carga.add_municipio %}<li><a class="dropdown-item" href="{% url "carga:crear-municipio" %}"><i class="bi bi-plus-circle me-1"></i>Municipio</a></li>{% endif %}
-            {% if perms.carga.add_localidad %}<li><a class="dropdown-item" href="{% url "carga:crear-localidad" %}"><i class="bi bi-plus-circle me-1"></i>Localidad</a></li>{% endif %}
+            {%if perms.carga.add_municipio %}<li><a class="dropdown-item" href="{% url "carga:crear-municipio" %}"><i class="bi bi-plus-circle me-1"></i>Municipio</a></li>{% endif %}
+            {%if perms.carga.add_localidad %}<li><a class="dropdown-item" href="{% url "carga:crear-localidad" %}"><i class="bi bi-plus-circle me-1"></i>Localidad</a></li>{% endif %}
             <li><hr class="dropdown-divider"></li>
             <li class="dropdown-item fw-bold text-muted"><small>LISTADOS</small></li>
-            {% if perms.carga.add_region or perms.carga.add_departamento or perms.carga.add_municipio or perms.carga.add_localidad %}
-            <li><a class="dropdown-item" href="{% url "carga:lista-regiones" %}"><i class="bi bi-list-ul me-1"></i>Regiones</a></li>{% endif %}
-            {% if perms.carga.add_departamento or perms.carga.add_municipio or perms.carga.add_localidad %}<li><a class="dropdown-item" href="{% url "carga:lista-departamentos" %}"><i class="bi bi-list-ul me-1"></i>Departamentos</a></li>{% endif %}
-            {% if perms.carga.add_municipio or perms.carga.add_localidad %}<li><a class="dropdown-item" href="{% url "carga:lista-municipios" %}"><i class="bi bi-list-ul me-1"></i>Municipios</a></li>{% endif %}
-            {% if perms.carga.add_localidad %}<li><a class="dropdown-item" href="{% url "carga:lista-localidades" %}"><i class="bi bi-list-ul me-1"></i>Localidades</a></li>{% endif %}
-            {% endif %}
+            
+            <li><a class="dropdown-item" href="{% url "carga:lista-regiones" %}"><i class="bi bi-list-ul me-1"></i>Regiones</a></li>
+            <li><a class="dropdown-item" href="{% url "carga:lista-departamentos" %}"><i class="bi bi-list-ul me-1"></i>Departamentos</a></li>
+            <li><a class="dropdown-item" href="{% url "carga:lista-municipios" %}"><i class="bi bi-list-ul me-1"></i>Municipios</a></li>
+            <li><a class="dropdown-item" href="{% url "carga:lista-localidades" %}"><i class="bi bi-list-ul me-1"></i>Localidades</a></li>
           </ul>
         </li>
+        {% endif %}
 
         <!-- Viáticos -->
+        {% if "dirgral_usuarios" in groups %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-briefcase me-1"></i>Viáticos
           </a>
           <ul class="dropdown-menu dropdown-menu-lg-start">
-            {% if perms.secretariador.add_solicitud %}<li><a class="dropdown-item" href="{% url "secretariador:calendario-semanal" %}"><i class="bi bi-calendar-week text-success me-1"></i>Calendario Semanal</a></li>{% endif %}
-            {% if request.user.is_superuser %}<li><a class="dropdown-item" href="{% url "secretariador:calendario-anual" %}"><i class="bi bi-calendar-year text-warning me-1"></i>Calendario Anual</a></li>{% endif %}
+            <li><a class="dropdown-item" href="{% url "secretariador:calendario-semanal" %}"><i class="bi bi-calendar-week text-success me-1"></i>Calendario Semanal</a></li>
+            <li><a class="dropdown-item" href="{% url "secretariador:calendario-anual" %}"><i class="bi bi-calendar-year text-warning me-1"></i>Calendario Anual</a></li>
             <li><hr class="dropdown-divider"></li>
             <li class="dropdown-item fw-bold text-muted"><small>CREAR</small></li>
-            {% if perms.secretariador.add_solicitud %}<li><a class="dropdown-item" href="{% url "secretariador:redirect-solicitud" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Solicitud</a></li>{% endif %}
-            {% if perms.secretariador.add_incorporacion %}<li><a class="dropdown-item" href="{% url "secretariador:crear-incorporacion" %}"><i class="bi bi-person-plus me-1"></i>Incorporación</a></li>{% endif %}
-            {% if perms.secretariador.add_comisionado %}<li><a class="dropdown-item" href="{% url "secretariador:crear-comisionado" %}"><i class="bi bi-person-badge me-1"></i>Nuevo Agente</a></li>{% endif %}
-            {% if perms.secretariador.add_vehiculo %}<li><a class="dropdown-item" href="{% url "secretariador:crear-vehiculo" %}"><i class="bi bi-car-front me-1"></i>Vehículo</a></li>{% endif %}
-            {% if perms.secretariador.add_instrumentoslegalesmemorandum %}<li><a class="dropdown-item" href="{% url "secretariador:crear-memorandum" %}"><i class="bi bi-file-text me-1"></i>Memorándum</a></li>{% endif %}
-            {% if perms.secretariador.add_instrumentoslegalesdecretos %}<li><a class="dropdown-item" href="{% url "secretariador:redirect-decreto" %}"><i class="bi bi-file-award me-1"></i>Decreto</a></li>{% endif %}
-            {% if perms.secretariador.add_instrumentoslegalesresoluciones %}<li><a class="dropdown-item" href="{% url "secretariador:redirect-resoluciones" %}"><i class="bi bi-file-check me-1"></i>Resolución</a></li>{% endif %}
-            {% if perms.secretariador.add_montoviaticodiario %}<li><a class="dropdown-item" href="{% url "secretariador:crear-montoviaticodiario" %}"><i class="bi bi-currency-exchange me-1"></i>Monto Viáticos</a></li>{% endif %}
+            <li><a class="dropdown-item" href="{% url "secretariador:redirect-solicitud" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Solicitud</a></li>
+            <li><a class="dropdown-item" href="{% url "secretariador:crear-incorporacion" %}"><i class="bi bi-person-plus me-1"></i>Incorporación</a></li>
+            <li><a class="dropdown-item" href="{% url "secretariador:crear-comisionado" %}"><i class="bi bi-person-badge me-1"></i>Nuevo Agente</a></li>
+            <li><a class="dropdown-item" href="{% url "secretariador:crear-vehiculo" %}"><i class="bi bi-car-front me-1"></i>Vehículo</a></li>
+            <li><a class="dropdown-item" href="{% url "secretariador:crear-memorandum" %}"><i class="bi bi-file-text me-1"></i>Memorándum</a></li>
+            <li><a class="dropdown-item" href="{% url "secretariador:redirect-decreto" %}"><i class="bi bi-file-award me-1"></i>Decreto</a></li>
+            <li><a class="dropdown-item" href="{% url "secretariador:redirect-resoluciones" %}"><i class="bi bi-file-check me-1"></i>Resolución</a></li>
+            <li><a class="dropdown-item" href="{% url "secretariador:crear-montoviaticodiario" %}"><i class="bi bi-currency-exchange me-1"></i>Monto Viáticos</a></li>
             <li><hr class="dropdown-divider"></li>
             <li class="dropdown-item fw-bold text-muted"><small>LISTADOS</small></li>
-            {% if perms.secretariador.add_solicitud or perms.secretariador.add_incorporacion or perms.secretariador.add_comisionado or perms.secretariador.add_vehiculo %}
-            <li><a class="dropdown-item" href="{% url "secretariador:lista-solicitudes" %}"><i class="bi bi-list-ul me-1"></i>Solicitudes</a></li>{% endif %}
-            {% if perms.secretariador.add_incorporacion or perms.secretariador.add_comisionado %}<li><a class="dropdown-item" href="{% url "secretariador:lista-incorporaciones" %}"><i class="bi bi-list-ul me-1"></i>Incorporaciones</a></li>{% endif %}
+            <li><a class="dropdown-item" href="{% url "secretariador:lista-solicitudes" %}"><i class="bi bi-list-ul me-1"></i>Solicitudes</a></li>
+            <li><a class="dropdown-item" href="{% url "secretariador:lista-incorporaciones" %}"><i class="bi bi-list-ul me-1"></i>Incorporaciones</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:lista-comisionados" %}"><i class="bi bi-list-ul me-1"></i>Agentes</a></li>
-            {% if perms.secretariador.add_vehiculo or perms.secretariador.add_instrumentoslegalesmemorandum %}<li><a class="dropdown-item" href="{% url "secretariador:lista-vehiculos" %}"><i class="bi bi-list-ul me-1"></i>Vehículos</a></li>{% endif %}
-            {% if perms.secretariador.add_instrumentoslegalesmemorandum or perms.secretariador.add_instrumentoslegalesdecretos or perms.secretariador.add_instrumentoslegalesresoluciones %}<li><a class="dropdown-item" href="{% url "secretariador:lista-memorandum" %}"><i class="bi bi-list-ul me-1"></i>Memorándum</a></li>{% endif %}
-            {% if perms.secretariador.add_instrumentoslegalesdecretos or perms.secretariador.add_instrumentoslegalesresoluciones %}<li><a class="dropdown-item" href="{% url "secretariador:lista-decretos" %}"><i class="bi bi-list-ul me-1"></i>Decretos</a></li>{% endif %}
+            <li><a class="dropdown-item" href="{% url "secretariador:lista-vehiculos" %}"><i class="bi bi-list-ul me-1"></i>Vehículos</a></li>
+            <li><a class="dropdown-item" href="{% url "secretariador:lista-memorandum" %}"><i class="bi bi-list-ul me-1"></i>Memorándum</a></li>
+            <li><a class="dropdown-item" href="{% url "secretariador:lista-decretos" %}"><i class="bi bi-list-ul me-1"></i>Decretos</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:lista-resoluciones" %}"><i class="bi bi-list-ul me-1"></i>Resoluciones Presidencia</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:lista-resoluciones-directorio" %}"><i class="bi bi-list-ul me-1"></i>Resoluciones Directorio</a></li>
           </ul>
         </li>
-		
+        {% endif %}
 		
 		<!-- Herramientas -->
+        {% if "gciaoperativa_usuarios" in groups or "secretariador_usuarios" in groups %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-briefcase me-1"></i>Herramientas
           </a>
           <ul class="dropdown-menu dropdown-menu-lg-start">
-            {% if perms.secretariador.add_solicitud %}
-            <li><a class="dropdown-item" href="{% url "secretariador:pdf-merge" %}"><i class="bi bi-file-pdf text-danger me-1"></i>Combinar PDFs</a></li>{% endif %}
+            <li><a class="dropdown-item" href="{% url "secretariador:pdf-merge" %}"><i class="bi bi-file-pdf text-danger me-1"></i>Combinar PDFs</a></li>
           </ul>
         </li>
-
-
+        {% endif %}
         <!-- Reportes (Mega-menu justificado por la cantidad de links) -->
         <li class="nav-item dropdown position-static">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">

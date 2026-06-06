@@ -119,6 +119,7 @@ TEMPLATES = [
     },
 ]
 TEMPLATES[0]['OPTIONS']['context_processors'].append("polizador.context_processors.imglinks")
+TEMPLATES[0]['OPTIONS']['context_processors'].append("polizador.context_processors.user_groups_processor")
 
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
