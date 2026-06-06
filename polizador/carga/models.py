@@ -2,6 +2,7 @@ from datetime import datetime
 from django.utils import timezone
 from wsgiref.validate import validator
 from django.db import models
+from simple_history.models import HistoricalRecords
 from django.db.models import Sum, F, FloatField
 from django.core.validators import MinValueValidator, MaxValueValidator
 from uuid_utils import compat
@@ -51,6 +52,7 @@ class Receptor(models.Model):
     
     receptor_nombre = models.CharField("Receptor", max_length=100)
     receptor_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    receptor_history = HistoricalRecords()
 
     def __str__(self):
         return self.receptor_nombre
@@ -67,6 +69,7 @@ class Area(models.Model):
     
     area_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     area_nombre = models.CharField("Area", max_length=50)
+    area_history = HistoricalRecords()
 
     def __str__(self):
         return self.area_nombre
@@ -82,6 +85,7 @@ class Aseguradora(models.Model):
     
     aseguradora_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     aseguradora_nombre = models.CharField("Nombre Compañía Aseguradora", max_length=255)
+    aseguradora_history = HistoricalRecords()
 
     def __str__(self):
         return self.aseguradora_nombre
@@ -105,6 +109,7 @@ class Empresa(models.Model):
     empresa_inscripcion     = models.CharField("Inscripción", max_length=500, blank=True, null=True)
     empresa_correo_p        = models.EmailField("Dirección de Correo Primaria", blank=True, null=True)
     empresa_correo_s        = models.EmailField("Dirección de Correo Alternativa", blank=True, null=True)
+    empresa_history = HistoricalRecords()
 
 
     def __str__(self):
@@ -139,6 +144,7 @@ class Poliza(models.Model):
     poliza_monto_pesos = models.DecimalField("Monto Sustituido en Pesos", max_digits=15, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)])
     poliza_monto_uvi = models.DecimalField("Monto Sustituido en UVI", max_digits=15, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)])
     poliza_digital = models.FileField(verbose_name="Póliza Digital", upload_to=generate_name_poliza, max_length=500, null=True, blank=True)
+    poliza_history = HistoricalRecords()
     # poliza_creador = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, editable=False)
     # poliza_editor = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="poliza_editor", editable=False)
     
@@ -160,6 +166,7 @@ class Poliza_Movimiento(models.Model):
     poliza_movimiento_area      = models.ForeignKey("Area", verbose_name="Area", on_delete=models.CASCADE)
     # poliza_movimiento_editor    = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, editable=False)
     poliza_movimiento_numero    = models.ForeignKey("Poliza", verbose_name="Póliza", on_delete=models.CASCADE)
+    poliza_movimiento_history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.poliza_movimiento_numero} - {self.poliza_movimiento_area} - ({self.poliza_movimiento_fecha})"
@@ -206,6 +213,7 @@ class Programa(models.Model):
     
     programa_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     programa_nombre = models.CharField(verbose_name="Nombre", max_length=255)
+    programa_history = HistoricalRecords()
 
     def __str__(self):
         return self.programa_nombre
@@ -222,6 +230,7 @@ class Provincia(models.Model):
     provincia_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     id = models.IntegerField(unique=True, primary_key=True)
     provincia_nombre = models.CharField("Nombre Provincia", max_length=33)
+    provincia_history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.provincia_nombre}"
@@ -233,6 +242,7 @@ class Region(models.Model):
     
     region_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     region_numero   = models.CharField("Número Región", max_length=10)
+    region_history = HistoricalRecords()
 
     def __str__(self):
         return self.region_numero
@@ -249,6 +259,7 @@ class Departamento(models.Model):
     departamento_uuid		= models.UUIDField(default=compat.uuid7, editable=False)
     id					= models.IntegerField(unique=True, primary_key=True)
     departamento_nombre = models.TextField("Nombre Departamento")
+    departamento_history = HistoricalRecords()
 
     def __str__(self):
         return self.departamento_nombre
@@ -269,6 +280,7 @@ class Localidad(models.Model):
     localidad_funcion       = models.CharField("Función",max_length=40,blank=True, null=True)
     localidad_departamento	= models.ForeignKey("Departamento", verbose_name="Departamento", on_delete=models.RESTRICT)
     localidad_municipio     = models.ForeignKey("Municipio", verbose_name="Municipio", on_delete=models.CASCADE)
+    localidad_history = HistoricalRecords()
 
     def __str__(self):
         return self.localidad_nombre
@@ -287,6 +299,7 @@ class Municipio(models.Model):
     id                      = models.IntegerField("Id", unique=True, primary_key=True)
     municipio_departamento  = models.ForeignKey("Departamento", verbose_name="Departamento", on_delete=models.CASCADE)
     municipio_region        = models.ForeignKey("Region", verbose_name="Región", on_delete=models.DO_NOTHING, null=True, blank=True)
+    municipio_history = HistoricalRecords()
 
     def __str__(self):
         return self.municipio_nombre
@@ -345,6 +358,7 @@ class Obra(models.Model):
     obra_contrato_total_pesos           = models.DecimalField("Monto Total Pesos", max_digits=12, decimal_places=2, default=0, editable=False)
     obra_contrato_total_uvi             = models.DecimalField("Monto Total UVI", max_digits=12, decimal_places=2, default=0, editable=False)
     obra_principal                      = models.ManyToManyField("Obra", related_name="obra_madre", verbose_name="Obra Madre", blank=True)
+    obra_history = HistoricalRecords()
 
     # def obra_acum_pesos(self):
     #     if self.certificado_set:
@@ -407,6 +421,7 @@ class Prototipo(models.Model):
     prototipo_uvi           = models.DecimalField("UVIs x M2", max_digits=5, decimal_places=2)
     prototipo_incremento    = models.DecimalField("Incremento Porcentual por Infraestructura", max_digits=2, decimal_places=0)
     prototipo_discapacitado = models.BooleanField("Es Prototipo para Discapacitado", default=False)
+    prototipo_history = HistoricalRecords()
 
 
 class Agente(models.Model):
@@ -431,6 +446,7 @@ class Agente(models.Model):
     agente_profesion		= models.CharField("Profesion", max_length=2, choices=PROFESION, default=None, blank=True, null=True)
     agente_matricula		= models.CharField("Matricula Profesional", max_length=10, blank=True, null=True)
     agente_nombre_completo  = models.CharField("Nombre Completo", max_length=200, editable=False, blank=True, null=True)
+    agente_history = HistoricalRecords()
 
     def save(self):
         self.agente_nombre_completo = f"{self.agente_nombre} {self.agente_apellido}"
@@ -450,6 +466,7 @@ class CertificadoRubro(models.Model):
     certificadorubro_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     certificadorubro_nombre = models.CharField("Rubro", max_length=100)
     certificadorubro_nombre_corto = models.CharField("Rubro Corto", max_length=1)
+    certificadorubro_history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.certificadorubro_nombre}"
@@ -462,6 +479,7 @@ class CertificadoFinanciamiento(models.Model):
     certificadofinanciamiento_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     certificadofinanciamiento_nombre = models.CharField("Financiamiento", max_length=100)
     certificadofinanciamiento_nombre_corto = models.CharField("Financiamiento Corto", max_length=1)
+    certificadofinanciamiento_history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.certificadofinanciamiento_nombre}"
@@ -514,6 +532,7 @@ class Certificado(models.Model):
     # certificado_editor              = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="certificado_editor", editable=False)
     certificado_fecha_carga         = models.DateField("Fecha de carga", default=timezone.now)
     certificado_fecha_carga_legacy  = models.BooleanField("Es Certificado Viejo", default=False)
+    certificado_history = HistoricalRecords()
     
 
     def save(self):
@@ -540,6 +559,7 @@ class ConjuntoLicitado(models.Model):
     conjunto_soluciones = models.DecimalField("Cantidad de Soluciones", max_digits=5, decimal_places=0, default=0, null=True, blank=True)
     conjunto_resolucion = models.CharField("Resolucion", max_length=15, null=True, blank=True)
     conjunto_subconjunto = models.ForeignKey("ConjuntoLicitado", verbose_name="Conjunto Licitado", on_delete=models.DO_NOTHING, null=True, blank=True)
+    conjunto_history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.conjunto_nombre}"
@@ -556,6 +576,7 @@ class PlanDeTrabajos(models.Model):
 
     trabajos_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     trabajos_obra = models.ForeignKey("Obra", on_delete=models.DO_NOTHING)
+    trabajos_history = HistoricalRecords()
 
 class Contrato(models.Model):
     class Meta:
@@ -569,6 +590,7 @@ class Contrato(models.Model):
     contrato_resolucion = models.CharField("Resolución Aprobatoria", max_length=15, blank=True, null=True)
     contrato_autocarga = models.BooleanField("Contrato importado de formato anterior", editable=False, default=False)
     contrato_decreto = models.CharField("Decreto Aprobatorio(Si Tuviera)", max_length=15, blank=True, null=True)
+    contrato_history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.contrato_descripcion} - {self.contrato_obra}"
@@ -585,10 +607,11 @@ class ContratoMonto(models.Model):
     contratomonto_pesos = models.DecimalField("Monto Pesos", max_digits=15, decimal_places=2, default=0)
     contratomonto_uvi = models.DecimalField("Monto UVI", max_digits=15, decimal_places=2, default=0)
     contratomonto_uvi_fecha = models.DateField("Fecha UVI:", blank=True, null=True)
+    contratomonto_history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.contratomonto_rubro}({self.contratomonto_financiamiento}) - {self.contratomonto_contrato}"
-
+    
 class ContratoRubro(models.Model):
     class Meta:
         verbose_name_plural = "Rubros de Contrato"
@@ -596,6 +619,7 @@ class ContratoRubro(models.Model):
     
     contratorubro_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     contratorubro_tipo = models.CharField("Rubro:", max_length=100)
+    contratorubro_history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.contratorubro_tipo}"
@@ -611,6 +635,7 @@ class ContratosDigitales(models.Model):
     contratodigital_descripcion = models.TextField("Descripción")
     contratodigital_tipo = models.ForeignKey("ContratoRubro", verbose_name="Rubro Contrato", on_delete=models.CASCADE)
     contratodigital_archivo = models.FileField(upload_to=generate_name_contratos, max_length=500)
+    contratodigital_history = HistoricalRecords()
     # contratodigital_creador = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, editable=False)
     # contratodigital_editor  = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="contratodigital_editor", editable=False)
 
@@ -625,6 +650,7 @@ class ResolucionesDigitales(models.Model):
     resoluciondigital_descripcion   = models.TextField("Descripción")
     resoluciondigital_numero        = models.CharField("Resolución", max_length=15)
     resoluciondigital_archivo       = models.FileField(upload_to=generate_name_resoluciones, max_length=500)
+    resoluciondigital_history = HistoricalRecords()
     # resoluciondigital_creador       = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, editable=False)
     # resoluciondigital_editor        = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True, related_name="resoluciondigital_editor", editable=False)
     
@@ -638,6 +664,7 @@ class Uvi(models.Model):
     uvi_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     uvi_fecha = models.DateField("Fecha UVI:")
     uvi_valor = models.DecimalField("Valor", max_digits=15, decimal_places=2)
+    uvi_history = HistoricalRecords()
 
 class INDEC(models.Model):
 
@@ -671,6 +698,7 @@ class INDEC(models.Model):
     indec_arena                 = models.DecimalField("Arena", max_digits=20, decimal_places=10)
     indec_costo_financiero      = models.DecimalField("Costo Financiero", max_digits=20, decimal_places=10, default=18.85)
     indec_transporte            = models.DecimalField("Transporte", max_digits=20, decimal_places=10, default=134.98)
+    indec_history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.mes}"

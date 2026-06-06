@@ -1,4 +1,5 @@
 from django.db import models
+from simple_history.models import HistoricalRecords
 from django.core.validators import MinValueValidator
 from secretariador.functions import FileValidator, CuitValidator
 from datetime import datetime, timedelta
@@ -12,6 +13,8 @@ from django.contrib.auth.models import AbstractUser
 
 class CustomUser(AbstractUser):
     # Add your own custom fields here
+    first_name = models.CharField("Nombre", max_length=128)
+    last_name = models.CharField("Apellido", max_length=128)
     usuario_dni = models.DecimalField(
         "DNI:", max_digits=9, decimal_places=0,
          validators=[MinValueValidator(0)],
@@ -19,6 +22,7 @@ class CustomUser(AbstractUser):
          null=True,
          blank=True
          )
+    usuario_history = HistoricalRecords()
 
 
 # Funciones
@@ -127,6 +131,7 @@ class InstrumentosLegalesMemorandum(models.Model):
     # Fields related to the automatic extraction of text from the digitalized instrument.
     instrumentolegalmemorandum_autocarga = models.BooleanField("Memorandum importado sin intervención humana.", default=False)
     instrumentolegalmemorandum_document = models.TextField("Texto Extraído por OCR", null=True, blank=True)
+    instrumentolegalmemorandum_history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.get_instrumentolegalmemorandum_tipo_display()} Nº{self.instrumentolegalmemorandum_numero}/{self.instrumentolegalmemorandum_ano}"
@@ -175,6 +180,7 @@ class InstrumentosLegalesResoluciones(models.Model):
         output_field=models.CharField(max_length=20),
         db_persist=True,
     )
+    instrumentolegalresoluciones_history = HistoricalRecords()
 
     # WIP
     # # Fields related to data used in reports... Comisiones are not included due to the model having all the information needed.
@@ -224,6 +230,7 @@ class InstrumentosLegalesResolucionesDirectorio(models.Model):
     # Fields related to the automatic extraction of text from the digitalized resolution.
     instrumentolegalresolucionesdirectorio_autocarga = models.BooleanField("Resolución importada sin intervención.", default=False)
     instrumentolegalresolucionesdirectorio_document = models.TextField("Texto Extraído por OCR", null=True, blank=True)
+    instrumentolegalresolucionesdirectorio_history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.get_instrumentolegalresolucionesdirectorio_tipo_display()} Nº{self.instrumentolegalresolucionesdirectorio_numero}/{self.instrumentolegalresolucionesdirectorio_acta}/{self.instrumentolegalresolucionesdirectorio_ano}"
@@ -260,6 +267,7 @@ class InstrumentosLegalesDecretos(models.Model):
         output_field=models.TextField(),
         db_persist=True,
     )
+    instrumentolegaldecretos_history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.get_instrumentolegaldecretos_tipo_display()} Nº{self.instrumentolegaldecretos_numero}/{self.instrumentolegaldecretos_ano}"
@@ -289,6 +297,7 @@ class MontoViaticoDiario(models.Model):
     montoviaticodiario_estrato_tres_exterior    = models.DecimalField("Viatico diario Estrato III fuera de la Provincia", max_digits=12, decimal_places=2, default=0)
     montoviaticodiario_estrato_cuatro_exterior  = models.DecimalField("Viatico diario Estrato IV fuera de la Provincia", max_digits=12, decimal_places=2, default=0)
     montoviaticodiario_decreto_reglamentario    = models.ForeignKey("InstrumentosLegalesDecretos", on_delete=models.CASCADE)
+    montoviaticodiario_history = HistoricalRecords()
     
     def __str__(self):
         return f"{self.montoviaticodiario_decreto_reglamentario}"
@@ -327,6 +336,7 @@ class Comisionado(models.Model):
     comisionado_verificado_contra_padron = models.BooleanField("Chequeado",default=False)
     comisionado_personal_transitorio = models.BooleanField("Personal Transitorio",default=False)
     comisionado_personal_de_gabinete = models.BooleanField("Personal de Gabinete",default=False)
+    comisionado_history = HistoricalRecords()
 
     def __str__(self):
         if self.comisionado_personal_transitorio:
@@ -347,6 +357,7 @@ class Organigrama(models.Model):
     
     organigrama_cargo = models.CharField("Cargo", max_length=120)
     organigrama_escalafon = models.DecimalField("Escalafón", max_digits=1, decimal_places=0, default=2)
+    organigrama_history = HistoricalRecords()
 
     def __str__(self):
         return self.organigrama_cargo
@@ -383,6 +394,7 @@ class Vehiculo(models.Model):
     vehiculo_n_motor = models.CharField("Número de Motor", max_length=100, null=True, blank=True)
     vehiculo_n_chasis = models.CharField("Número de Chasis", max_length=100, null=True, blank=True)
     vehiculo_modelo_ano = models.DecimalField("Año del Modelo", max_digits=4, decimal_places=0, null=True, blank=True)
+    vehiculo_history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.vehiculo_modelo} - {self.vehiculo_patente}"
@@ -432,6 +444,7 @@ class Solicitud(models.Model):
         db_persist=True
     )
     solicitud_anulada = models.BooleanField("Anulada", default=False, help_text="Si la solicitud se encuentra anulada, no se registra en los reportes.")
+    solicitud_history = HistoricalRecords()
     
     def solicitud_fechas(self):
         fechas = [self.solicitud_fecha_desde+timedelta(days=x) for x in range((self.solicitud_fecha_hasta-self.solicitud_fecha_desde).days+1)]
@@ -474,6 +487,7 @@ class ComisionadoSolicitud(models.Model):
     comisionadosolicitud_viatico_computado = models.DecimalField("Viatico Computado", max_digits=12, decimal_places=2, default=0, editable=False, null=True, blank=True) # Field is editable=False because it is calculated in the clean method.
     comisionadosolicitud_viatico_total = models.DecimalField("Viatico Total", max_digits=12, decimal_places=2, default=0, editable=False, null=True, blank=True) # Field is editable=False because it is calculated in the clean method.
     comisionadosolicitud_cantidad_de_dias = models.DurationField("Días", editable=False, null=True, blank=True)
+    comisionadosolicitud_history = HistoricalRecords()
 
     def get_origin(self):
         return self.comisionadosolicitud_foreign if self.comisionadosolicitud_foreign is not None else self.comisionadosolicitud_incorporacion_foreign.incorporacion_solicitud
@@ -584,6 +598,7 @@ class Incorporacion(models.Model):
     incorporacion_actuacion_ano = models.DecimalField("Año Actuación", max_digits=4, decimal_places=0, validators=[MinValueValidator(0)], default=int(timezone.now().year))
     incorporacion_solicitante = models.ForeignKey("Comisionado", on_delete=models.CASCADE) # Encargado del area solicitante
     incorporacion_resolucion = models.ForeignKey("InstrumentosLegalesResoluciones", verbose_name="Resolución Aprobada", help_text="Resolución que aprueba la incorporación de los agentes.", on_delete=models.CASCADE, blank=True, null=True)
+    incorporacion_history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.incorporacion_actuacion}"

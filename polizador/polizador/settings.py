@@ -65,21 +65,22 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.humanize',
+    "django.contrib.sites",
 
     "django_select2",
     "ajax_datatable",
 	"import_export",
 	"django.forms",
     "debug_toolbar",
-    "anymail",
     "allauth",
     "allauth.account",
+    "simple_history",
 
     "carga",
 	"secretariador",
     "personalizador",
 ]
-
+SITE_ID = 1
 # Widget template override. Place "widgetX.html" into "templates/django/forms/widgets/"
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
 
@@ -87,7 +88,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
 	"whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
-	'easyaudit.middleware.easyaudit.EasyAuditMiddleware',
+	'simple_history.middleware.HistoryRequestMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -95,16 +96,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "allauth.account.middleware.AccountMiddleware",
 ]
-
-# Email backend configuration parameters
-EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
-ANYMAIL = {
-    "MAILGUN_API_KEY": MAILGUN_API_KEY,
-    "MAILGUN_SENDER_DOMAIN": MAILGUN_SENDER_DOMAIN,
-}
-DEFAULT_FROM_EMAIL = "noreply@willylobo.net"
-SERVER_EMAIL = "admin@willylobo.net"
-
 
 ROOT_URLCONF = 'polizador.urls'
 
@@ -161,6 +152,10 @@ DATABASES = {
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_USER_MODEL = 'secretariador.CustomUser'  # Format: 'app_label.ModelName'
+ACCOUNT_FORMS = {'signup': 'secretariador.forms.customuserform.CustomUserForm'}
+ACCOUNT_SIGNUP_FIELDS = ['username*', 'first_name', 'last_name', 'email', 'password1*', 'password2*']
+ACCOUNT_ADAPTER = 'secretariador.adapters.InactiveSignupAdapter'
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -253,4 +248,13 @@ if DEBUG == True:
             "JQUERY_URL": "",
         }
 elif DEBUG == False:
-    INSTALLED_APPS = INSTALLED_APPS + ["easyaudit"]
+    INSTALLED_APPS = INSTALLED_APPS + ["easyaudit", "anymail",]
+    # Email backend configuration parameters
+    EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+    ANYMAIL = {
+        "MAILGUN_API_KEY": MAILGUN_API_KEY,
+        "MAILGUN_SENDER_DOMAIN": MAILGUN_SENDER_DOMAIN,
+    }
+    DEFAULT_FROM_EMAIL = "noreply@willylobo.net"
+    SERVER_EMAIL = "admin@willylobo.net"
+

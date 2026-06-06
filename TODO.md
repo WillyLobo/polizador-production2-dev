@@ -1,3 +1,14 @@
+[+] Agregar los campos nombre y apellido al formulario de registro de cuenta
+[ ] Eliminar easy Audit
+[ ] Reacomodar los menues en el panel admin
+[ ] Crear script para recopilar datos del valor UVI con fuente del BCRA
+[ ] Revisar los campos de modelos que requieren operaciones aritmeticas y aplicar campos generados
+    a nivel base de datos.
+[ ] Crear grupos de permisos para los usuarios:
+    - Direccion General
+    - Gerencia Operativa
+    - Grupos para edición y grupos para vistas(tipo invitado solo para ver reportes)?
+
 # Models
 [+] Create model Incorporacion.
 

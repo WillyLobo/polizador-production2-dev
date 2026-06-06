@@ -1,109 +1,110 @@
 from django.contrib import admin
 
 from import_export.admin import ImportExportMixin
+from simple_history.admin import SimpleHistoryAdmin
 
 from carga import models
 from carga import resources
 
 # Register your models here.
-class ReceptorAdmin(ImportExportMixin, admin.ModelAdmin):
+class ReceptorAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.ReceptorResource
-class AreaAdmin(ImportExportMixin, admin.ModelAdmin):
+class AreaAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.AreaResource
-class AseguradoraAdmin(ImportExportMixin, admin.ModelAdmin):
+class AseguradoraAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.AseguradoraResource
 	search_fields = ["aseguradora_nombre"]
-class EmpresaAdmin(ImportExportMixin, admin.ModelAdmin):
+class EmpresaAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	list_display = ["id", "empresa_nombre", "empresa_cuit"]
 	ordering = ["id"]
 	resource_class = resources.EmpresaResource
 	search_fields = ["empresa_nombre"]
-class PolizaAdmin(ImportExportMixin, admin.ModelAdmin):
+class PolizaAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.PolizaResource
 
-class PolizaMovimientoAdmin(ImportExportMixin, admin.ModelAdmin):
+class PolizaMovimientoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.PolizaMovimientoResource
 
-# class LegacyPolizaAdmin(ImportExportMixin, admin.ModelAdmin):
+# class LegacyPolizaAdmin(ImportExportMixin, SimpleHistoryAdmin):
 # 	resource_class = resources.LegacyPolizaResource
 # 	list_display = ("legacy_poliza_receptor", "legacy_poliza_concepto", "legacy_poliza_numero", "legacy_poliza_tomador")
 
-class ProgramaAdmin(ImportExportMixin, admin.ModelAdmin):
+class ProgramaAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.ProgramaResource
 
-class ProvinciaResourceAdmin(ImportExportMixin, admin.ModelAdmin):
+class ProvinciaResourceAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	model = models.Provincia
 	resource_class = resources.ProvinciaResource
 	search_fields = ["provincia_nombre"]
 
-class DepartamentoAdmin(ImportExportMixin, admin.ModelAdmin):
+class DepartamentoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.DepartamentoResource
 	list_display = ("id", "departamento_nombre")
 
-class LocalidadAdmin(ImportExportMixin, admin.ModelAdmin):
+class LocalidadAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.LocalidadResource
 	list_display = ("id", "localidad_nombre", "localidad_municipio", "localidad_departamento", "localidad_funcion")
 	search_fields = ["localidad_nombre", "localidad_municipio__municipio_nombre", "localidad_departamento__departamento_nombre", "localidad_funcion"]
 
-class MunicipioAdmin(ImportExportMixin, admin.ModelAdmin):
+class MunicipioAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.MunicipioResource
 	list_display = ("id", "municipio_nombre", "municipio_departamento", "municipio_region")
 
-class ObraAdmin(ImportExportMixin, admin.ModelAdmin):
+class ObraAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	ordering = ["id"]
 	search_fields = ["id","obra_convenio","obra_nombre", "obra_empresa__empresa_nombre"]
 	resource_class = resources.ObraResource
 
-class PrototipoAdmin(ImportExportMixin, admin.ModelAdmin):
+class PrototipoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.PrototipoResource
 
-class AgenteAdmin(ImportExportMixin, admin.ModelAdmin):
+class AgenteAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.AgenteResource
 
-class CertificadoAdmin(ImportExportMixin, admin.ModelAdmin):
+class CertificadoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	autocomplete_fields = ["certificado_obra"]
 	resource_class = resources.CertificadoResource
 
-class ConjuntoLicitadoAdmin(ImportExportMixin, admin.ModelAdmin):
+class ConjuntoLicitadoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.ConjuntoLicitadoResource
 
-class RegionAdmin(ImportExportMixin, admin.ModelAdmin):
+class RegionAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.RegionResource
 
-class CertificadoRubroAdmin(ImportExportMixin, admin.ModelAdmin):
+class CertificadoRubroAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.CertificadoRubroResource
 
-class CertificadoFinanciamientoAdmin(ImportExportMixin, admin.ModelAdmin):
+class CertificadoFinanciamientoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.FinanciamientoResource
 
-class PlandeTrabajosAdmin(ImportExportMixin, admin.ModelAdmin):
+class PlandeTrabajosAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	autocomplete_fields = ["trabajos_obra"]
 	resource_class = resources.PlandeTrabajosResource
 
 class ContratoMontoInline(admin.TabularInline):
 	model = models.ContratoMonto
 
-class ContratoAdmin(ImportExportMixin, admin.ModelAdmin):
+class ContratoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	autocomplete_fields = ["contrato_obra"]
 	inlines = [
 		ContratoMontoInline,
 	]
 	resource_class = resources.ContratoResource
 
-class ContratoMontoAdmin(ImportExportMixin, admin.ModelAdmin):
+class ContratoMontoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.ContratoMontoResource
 
-class ContratoRubroAdmin(ImportExportMixin, admin.ModelAdmin):
+class ContratoRubroAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.ContratoRubroResource
 
-class ContratoDigitalAdmin(ImportExportMixin, admin.ModelAdmin):
+class ContratoDigitalAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	autocomplete_fields = ["contratodigital_obra"]
 	resource_class = resources.ContratoDigitalResource
 
-class ResolucionDigitalAdmin(ImportExportMixin, admin.ModelAdmin):
+class ResolucionDigitalAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.ResolucionDigitalResource
 
-class UviAdmin(ImportExportMixin, admin.ModelAdmin):
+class UviAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.UviResource
 
 admin.site.register(models.Receptor, ReceptorAdmin)
@@ -134,7 +135,7 @@ admin.site.register(models.ContratosDigitales, ContratoDigitalAdmin)
 admin.site.register(models.ResolucionesDigitales, ResolucionDigitalAdmin)
 admin.site.register(models.Uvi, UviAdmin)
 
-class IndecAdmin(ImportExportMixin, admin.ModelAdmin):
+class IndecAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.IndecResource
 
 admin.site.register(models.INDEC, IndecAdmin)

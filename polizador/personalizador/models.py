@@ -1,4 +1,5 @@
 from django.db import models
+from simple_history.models import HistoricalRecords
 from django.core.validators import MinValueValidator
 from secretariador.functions import FileValidator, CuitValidator
 
@@ -71,6 +72,7 @@ class Cargos(models.Model):
     cargo_gerencia = models.ForeignKey("Gerencia", on_delete=models.CASCADE, blank=True, null=True)
     cargo_direccion = models.ForeignKey("Direccion", on_delete=models.CASCADE, blank=True, null=True)
     cargo_departamento = models.ForeignKey("Departamento", on_delete=models.CASCADE, blank=True, null=True)
+    cargos_history = HistoricalRecords()
 
     def __str__(self):
         gerencia = " - "+self.cargo_gerencia.gerencia_nombre if self.cargo_gerencia else ""
@@ -84,6 +86,7 @@ class CargoTipo(models.Model):
         verbose_name_plural = "Tipos de Cargos"
     
     cargotipo = models.CharField("Tipo de Cargo", max_length=120)
+    cargotipo_history = HistoricalRecords()
 
     def __str__(self):
         return self.cargotipo
@@ -95,6 +98,7 @@ class Gerencia(models.Model):
     
     gerencia_nombre = models.CharField("Gerencia", max_length=200)
     gerencia_cuof = models.CharField("CUOF", max_length=10)
+    gerencia_history = HistoricalRecords()
 
     def __str__(self):
         return self.gerencia_nombre
@@ -106,6 +110,7 @@ class Direccion(models.Model):
 
     direccion_nombre = models.CharField("Direccion", max_length=200)
     direccion_cuof = models.CharField("CUOF", max_length=10)
+    direccion_history = HistoricalRecords()
 
     def __str__(self):
         return self.direccion_nombre
@@ -117,6 +122,7 @@ class Departamento(models.Model):
     
     departamento_nombre = models.CharField("Departamento", max_length=200)
     departamento_cuof = models.CharField("CUOF", max_length=10)
+    departamento_history = HistoricalRecords()
 
     def __str__(self):
         return self.departamento_nombre
