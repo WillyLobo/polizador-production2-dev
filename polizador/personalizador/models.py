@@ -2,6 +2,7 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 from django.core.validators import MinValueValidator
 from secretariador.functions import FileValidator, CuitValidator
+from uuid_utils import compat
 
 
 # class Agente(models.Model):
@@ -72,6 +73,7 @@ class Cargos(models.Model):
     cargo_gerencia = models.ForeignKey("Gerencia", on_delete=models.CASCADE, blank=True, null=True)
     cargo_direccion = models.ForeignKey("Direccion", on_delete=models.CASCADE, blank=True, null=True)
     cargo_departamento = models.ForeignKey("Departamento", on_delete=models.CASCADE, blank=True, null=True)
+    cargos_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     cargos_history = HistoricalRecords()
 
     def __str__(self):
@@ -86,6 +88,7 @@ class CargoTipo(models.Model):
         verbose_name_plural = "Tipos de Cargos"
     
     cargotipo = models.CharField("Tipo de Cargo", max_length=120)
+    cargotipo_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     cargotipo_history = HistoricalRecords()
 
     def __str__(self):
@@ -98,6 +101,7 @@ class Gerencia(models.Model):
     
     gerencia_nombre = models.CharField("Gerencia", max_length=200)
     gerencia_cuof = models.CharField("CUOF", max_length=10)
+    gerencia_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     gerencia_history = HistoricalRecords()
 
     def __str__(self):
@@ -110,6 +114,7 @@ class Direccion(models.Model):
 
     direccion_nombre = models.CharField("Direccion", max_length=200)
     direccion_cuof = models.CharField("CUOF", max_length=10)
+    direccion_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     direccion_history = HistoricalRecords()
 
     def __str__(self):
@@ -122,6 +127,7 @@ class Departamento(models.Model):
     
     departamento_nombre = models.CharField("Departamento", max_length=200)
     departamento_cuof = models.CharField("CUOF", max_length=10)
+    departamento_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     departamento_history = HistoricalRecords()
 
     def __str__(self):

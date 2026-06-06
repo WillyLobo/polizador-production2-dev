@@ -10,6 +10,8 @@ import os
 from django.db.models.functions import ExtractDay
 from django.db.models.fields.generated import GeneratedField
 from django.contrib.auth.models import AbstractUser
+from uuid_utils import compat
+
 
 class CustomUser(AbstractUser):
     # Add your own custom fields here
@@ -131,6 +133,7 @@ class InstrumentosLegalesMemorandum(models.Model):
     # Fields related to the automatic extraction of text from the digitalized instrument.
     instrumentolegalmemorandum_autocarga = models.BooleanField("Memorandum importado sin intervención humana.", default=False)
     instrumentolegalmemorandum_document = models.TextField("Texto Extraído por OCR", null=True, blank=True)
+    instrumentolegalmemorandum_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     instrumentolegalmemorandum_history = HistoricalRecords()
 
     def __str__(self):
@@ -180,6 +183,7 @@ class InstrumentosLegalesResoluciones(models.Model):
         output_field=models.CharField(max_length=20),
         db_persist=True,
     )
+    instrumentolegalresoluciones_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     instrumentolegalresoluciones_history = HistoricalRecords()
 
     # WIP
@@ -230,6 +234,7 @@ class InstrumentosLegalesResolucionesDirectorio(models.Model):
     # Fields related to the automatic extraction of text from the digitalized resolution.
     instrumentolegalresolucionesdirectorio_autocarga = models.BooleanField("Resolución importada sin intervención.", default=False)
     instrumentolegalresolucionesdirectorio_document = models.TextField("Texto Extraído por OCR", null=True, blank=True)
+    instrumentolegalresolucionesdirectorio_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     instrumentolegalresolucionesdirectorio_history = HistoricalRecords()
 
     def __str__(self):
@@ -267,6 +272,7 @@ class InstrumentosLegalesDecretos(models.Model):
         output_field=models.TextField(),
         db_persist=True,
     )
+    instrumentolegaldecretos_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     instrumentolegaldecretos_history = HistoricalRecords()
 
     def __str__(self):
@@ -297,6 +303,7 @@ class MontoViaticoDiario(models.Model):
     montoviaticodiario_estrato_tres_exterior    = models.DecimalField("Viatico diario Estrato III fuera de la Provincia", max_digits=12, decimal_places=2, default=0)
     montoviaticodiario_estrato_cuatro_exterior  = models.DecimalField("Viatico diario Estrato IV fuera de la Provincia", max_digits=12, decimal_places=2, default=0)
     montoviaticodiario_decreto_reglamentario    = models.ForeignKey("InstrumentosLegalesDecretos", on_delete=models.CASCADE)
+    montoviaticodiario_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     montoviaticodiario_history = HistoricalRecords()
     
     def __str__(self):
@@ -336,6 +343,7 @@ class Comisionado(models.Model):
     comisionado_verificado_contra_padron = models.BooleanField("Chequeado",default=False)
     comisionado_personal_transitorio = models.BooleanField("Personal Transitorio",default=False)
     comisionado_personal_de_gabinete = models.BooleanField("Personal de Gabinete",default=False)
+    comisionado_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     comisionado_history = HistoricalRecords()
 
     def __str__(self):
@@ -357,6 +365,7 @@ class Organigrama(models.Model):
     
     organigrama_cargo = models.CharField("Cargo", max_length=120)
     organigrama_escalafon = models.DecimalField("Escalafón", max_digits=1, decimal_places=0, default=2)
+    organigrama_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     organigrama_history = HistoricalRecords()
 
     def __str__(self):
@@ -394,6 +403,7 @@ class Vehiculo(models.Model):
     vehiculo_n_motor = models.CharField("Número de Motor", max_length=100, null=True, blank=True)
     vehiculo_n_chasis = models.CharField("Número de Chasis", max_length=100, null=True, blank=True)
     vehiculo_modelo_ano = models.DecimalField("Año del Modelo", max_digits=4, decimal_places=0, null=True, blank=True)
+    vehiculo_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     vehiculo_history = HistoricalRecords()
 
     def __str__(self):
@@ -444,6 +454,7 @@ class Solicitud(models.Model):
         db_persist=True
     )
     solicitud_anulada = models.BooleanField("Anulada", default=False, help_text="Si la solicitud se encuentra anulada, no se registra en los reportes.")
+    solicitud_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     solicitud_history = HistoricalRecords()
     
     def solicitud_fechas(self):
@@ -487,6 +498,7 @@ class ComisionadoSolicitud(models.Model):
     comisionadosolicitud_viatico_computado = models.DecimalField("Viatico Computado", max_digits=12, decimal_places=2, default=0, editable=False, null=True, blank=True) # Field is editable=False because it is calculated in the clean method.
     comisionadosolicitud_viatico_total = models.DecimalField("Viatico Total", max_digits=12, decimal_places=2, default=0, editable=False, null=True, blank=True) # Field is editable=False because it is calculated in the clean method.
     comisionadosolicitud_cantidad_de_dias = models.DurationField("Días", editable=False, null=True, blank=True)
+    comisionadosolicitud_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     comisionadosolicitud_history = HistoricalRecords()
 
     def get_origin(self):
@@ -598,6 +610,7 @@ class Incorporacion(models.Model):
     incorporacion_actuacion_ano = models.DecimalField("Año Actuación", max_digits=4, decimal_places=0, validators=[MinValueValidator(0)], default=int(timezone.now().year))
     incorporacion_solicitante = models.ForeignKey("Comisionado", on_delete=models.CASCADE) # Encargado del area solicitante
     incorporacion_resolucion = models.ForeignKey("InstrumentosLegalesResoluciones", verbose_name="Resolución Aprobada", help_text="Resolución que aprueba la incorporación de los agentes.", on_delete=models.CASCADE, blank=True, null=True)
+    incorporacion_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     incorporacion_history = HistoricalRecords()
 
     def __str__(self):
