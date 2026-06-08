@@ -17,7 +17,7 @@
     <div class="collapse navbar-collapse" id="navContent">
       <ul class="navbar-nav nav-items me-auto">
         <!-- Obras -->
-        {% if "gciaoperativa_usuarios" in groups %}
+        {% if "gciaoperativa_usuarios" in groups or request.user.is_superuser %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-building me-1"></i>Obras
@@ -66,7 +66,7 @@
         {% endif %}
 
         <!-- Localidades -->
-        {% if "localidades_todos_los_usuarios" in groups %}
+        {% if "localidades_todos_los_usuarios" in groups or request.user.is_superuser %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-geo-alt me-1"></i>Localidades
@@ -89,7 +89,7 @@
         {% endif %}
 
         <!-- Viáticos -->
-        {% if "dirgral_usuarios" in groups %}
+        {% if "dirgral_usuarios" in groups or request.user.is_superuser %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-briefcase me-1"></i>Viáticos
@@ -122,7 +122,7 @@
         {% endif %}
 		
 		<!-- Herramientas -->
-        {% if "gciaoperativa_usuarios" in groups or "secretariador_usuarios" in groups %}
+        {% if "gciaoperativa_usuarios" in groups or "secretariador_usuarios" in groups or request.user.is_superuser %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-briefcase me-1"></i>Herramientas
@@ -133,6 +133,7 @@
         </li>
         {% endif %}
         <!-- Reportes (Mega-menu justificado por la cantidad de links) -->
+        {% if "gciaoperativa_usuarios" in groups or "secretariador_usuarios" in groups or request.user.is_superuser %}
         <li class="nav-item dropdown position-static">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-bar-chart me-1"></i>Reportes
@@ -205,6 +206,7 @@
             </div>
           </div>
         </li>
+        {% endif %}
       </ul>
 
       <!-- User menu (right) -->
@@ -229,7 +231,11 @@
               {% endif %}
             </strong></li>
             <li><hr class="dropdown-divider"></li>
+            {% if request.user.is_superuser %}
+            <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="bi bi-person-gear me-1"></i>Panel de administración</a></li>
+            {% endif %}
             <li><a class="dropdown-item" href="{% url "account_change_password" %}"><i class="bi bi-key me-1"></i>Cambiar contraseña</a></li>
+            <li><a class="dropdown-item" href="{% url "account_email" %}"><i class="bi bi-key me-1"></i>Cambiar correo</a></li>
             <li><a class="dropdown-item text-danger" href="{% url "account_logout" %}"><i class="bi bi-box-arrow-right me-1"></i>Salir</a></li>
           </ul>
         </li>

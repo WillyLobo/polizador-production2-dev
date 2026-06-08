@@ -239,6 +239,55 @@ DJANGO_EASY_AUDIT_UNREGISTERED_CLASSES_EXTRA = [
         "secretariador.instrumentoslegalesmemorandum"
 ]
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,  # Keep Django's default loggers active
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
+        },
+    },
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/django.log'),
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        # Catch-all root logger
+        '': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+        },
+        # Dedicated logger for database queries (only outputs during local debug)
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+            'filters': ['require_debug_true'],
+        },
+    },
+}
+
 if DEBUG == True:
     INTERNAL_IPS = ["localhost", "127.0.0.1"]
     DEBUG_TOOLBAR_ENABLE = True
@@ -256,6 +305,6 @@ elif DEBUG == False:
         "MAILGUN_API_KEY": MAILGUN_API_KEY,
         "MAILGUN_SENDER_DOMAIN": MAILGUN_SENDER_DOMAIN,
     }
-    DEFAULT_FROM_EMAIL = "noreply@willylobo.net"
-    SERVER_EMAIL = "admin@willylobo.net"
+    DEFAULT_FROM_EMAIL = "noreply@mail.willylobo.net"
+    SERVER_EMAIL = "admin@mail.willylobo.net"
 
