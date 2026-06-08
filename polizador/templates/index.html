@@ -1,6 +1,21 @@
 {% extends "base.html" %}
 {% load allauth %}
-{% block head_title %}En Construccion{% endblock %}
-<h1>En Construccion</h1>
+{% load static %}
 {% block content %}
+
+{% if not "gciaoperativa_usuarios" in groups or "secretariador_usuarios" in groups %}
+<div class="flex-grow-1 bg-white d-flex flex-column justify-content-center">
+        <div class="flex-grow-0 flex-shrink-0 container">
+            <div class="row justify-content-md-center">
+                <div class="col col-lg-4">
+                    <div class="bg-white shadow rounded-4">
+                        <div id="content" class="alert alert-xs alert-danger text-center p-5">
+                            <h3>Su cuenta no posee permisos establecidos. Comuniquese con un Administrator</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
 {% endblock content %}

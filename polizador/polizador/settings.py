@@ -75,6 +75,7 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "simple_history",
+    "anymail",
 
     "carga",
 	"secretariador",
@@ -155,7 +156,7 @@ DATABASES = {
 AUTH_USER_MODEL = 'secretariador.CustomUser'  # Format: 'app_label.ModelName'
 ACCOUNT_FORMS = {'signup': 'secretariador.forms.customuserform.CustomUserForm'}
 ACCOUNT_SIGNUP_FIELDS = ['username*', 'first_name', 'last_name', 'email', 'password1*', 'password2*']
-ACCOUNT_ADAPTER = 'secretariador.adapters.InactiveSignupAdapter'
+# ACCOUNT_ADAPTER = 'secretariador.adapters.InactiveSignupAdapter'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -291,6 +292,8 @@ LOGGING = {
 if DEBUG == True:
     INTERNAL_IPS = ["localhost", "127.0.0.1"]
     DEBUG_TOOLBAR_ENABLE = True
+    EMAIL_BACKEND = "anymail.backends.console.EmailBackend"
+
     if DEBUG_TOOLBAR_ENABLE:
         MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
         DEBUG_TOOLBAR_PATCH_SETTINGS = False
@@ -298,7 +301,7 @@ if DEBUG == True:
             "JQUERY_URL": "",
         }
 elif DEBUG == False:
-    INSTALLED_APPS = INSTALLED_APPS + ["anymail",]
+    INSTALLED_APPS = INSTALLED_APPS
     # Email backend configuration parameters
     EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
     ANYMAIL = {

@@ -46,10 +46,10 @@
 <body class="min-vh-100 d-flex flex-shrink-0 flex-column py-5">
   {% include "navbar.html" %}
 
-  <div class="container-fluid content pt-2">
+  <div class="min-vh-100 flex-grow-1 bg-white d-flex flex-column justify-content-center align-items-center content py-2">
     {% block style %}   {%endblock%}
     {% block content %} {% endblock %}
-  </div>
+</div>
 
 </body>
 
