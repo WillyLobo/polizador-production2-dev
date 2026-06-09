@@ -11,7 +11,8 @@
 [ ] Repasar los permisos en los Views
 [ ] Ordenar el cuadro busqueda de datatables
 [ ] Rehacer la integracion para contratos y resoluciones digitales de obras
-[ ] Reparar los templates para ajustar viewport size.
+[ ] Reparar los templates para ajustar viewport size
+[ ] Ajustar los templates de reportes de la app carga para ajustarse al resto del sitio
 
 # Models
 [+] Create model Incorporacion.

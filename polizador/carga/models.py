@@ -355,11 +355,19 @@ class Obra(models.Model):
     obra_contrato_terceros_pesos        = models.DecimalField("Monto Terceros en Pesos", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
     obra_contrato_terceros_uvi          = models.DecimalField("Monto Terceros en UVI", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
     obra_contrato_terceros_uvi_fecha    = models.DateField("Fecha UVI Terceros", blank=True, null=True)
-    obra_contrato_total_pesos           = models.DecimalField("Monto Total Pesos", max_digits=12, decimal_places=2, default=0, editable=False)
-    obra_contrato_total_uvi             = models.DecimalField("Monto Total UVI", max_digits=12, decimal_places=2, default=0, editable=False)
+    obra_contrato_total_pesos           = models.GeneratedField(
+        expression=F("obra_contrato_nacion_pesos") + F("obra_contrato_terceros_pesos") + F("obra_contrato_provincia_pesos"),
+        output_field=models.DecimalField(max_digits=12, decimal_places=2, editable=False),
+        db_persist=True,
+    )
+    obra_contrato_total_uvi             = models.GeneratedField(
+        expression=F("obra_contrato_nacion_uvi") + F("obra_contrato_terceros_uvi") + F("obra_contrato_provincia_uvi"),
+        output_field=models.DecimalField(max_digits=12, decimal_places=2, editable=False),
+        db_persist=True,
+    )
     obra_principal                      = models.ManyToManyField("Obra", related_name="obra_madre", verbose_name="Obra Madre", blank=True)
-    obra_history = HistoricalRecords()
-
+    obra_history = HistoricalRecords(excluded_fields=['obra_contrato_total_pesos', "obra_contrato_total_uvi"])
+        
     # def obra_acum_pesos(self):
     #     if self.certificado_set:
     #         return self.certificado_set.aggregate(Sum(F("certificado_monto_cobrar"), output_field=FloatField()))
@@ -385,20 +393,14 @@ class Obra(models.Model):
     #     if self.certificado_set:
     #         return self.certificado_set.latest().certificado_acum_pct
     
-    # def __str__(self):
-    #     localidades = ", ".join(str(localidad) for localidad in self.obra_localidad_m.all())
-    #     return f"({self.obra_convenio if self.obra_convenio else ''}) {self.obra_nombre} - {self.obra_empresa}"
+    def __str__(self):
+        return f"({self.obra_convenio if self.obra_convenio else ''}) {self.obra_nombre} - {self.obra_empresa}"
     
-    # def save(self):
-    #     self.obra_contrato_total_pesos = self.obra_contrato_nacion_pesos + self.obra_contrato_terceros_pesos + self.obra_contrato_provincia_pesos
-    #     self.obra_contrato_total_uvi = self.obra_contrato_nacion_uvi + self.obra_contrato_terceros_uvi + self.obra_contrato_provincia_uvi
-    #     return super(Obra, self).save()
-
-    # def lista_localidades(self):
-    #     return ", ".join(str(localidad) for localidad in self.obra_localidad_m.all())
+    def lista_localidades(self):
+        return ", ".join(str(localidad) for localidad in self.obra_localidad_m.all())
     
-    # def get_absolute_url(self):
-    #     return f"/polizas/crear/obra/estado/{self.id}"
+    def get_absolute_url(self):
+        return f"/polizas/crear/obra/estado/{self.id}"
 
 class Prototipo(models.Model):
     TIPO = (
