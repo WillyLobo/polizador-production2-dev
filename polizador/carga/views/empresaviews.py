@@ -1,5 +1,5 @@
 from ajax_datatable.views import AjaxDatatableView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.template import loader, TemplateDoesNotExist
@@ -13,8 +13,6 @@ from carga.views.generics import get_deleted_objects
 
 @method_decorator(login_required, name="dispatch")
 class EliminarEmpresa(PermissionRequiredMixin, generic.DeleteView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.delete_empresa"
 
 	model = Empresa
@@ -32,8 +30,6 @@ class EliminarEmpresa(PermissionRequiredMixin, generic.DeleteView):
 
 @method_decorator(login_required, name="dispatch")
 class CrearEmpresa(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.add_empresa"
 
 	model = Empresa
@@ -54,8 +50,6 @@ class CrearEmpresa(PermissionRequiredMixin, generic.CreateView):
 
 @method_decorator(login_required, name="dispatch")
 class UpdateEmpresa(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.change_empresa"
 
 	model = Empresa
@@ -64,9 +58,8 @@ class UpdateEmpresa(PermissionRequiredMixin, generic.UpdateView):
 	success_url = reverse_lazy("carga:lista-empresas")
 
 @method_decorator(login_required, name="dispatch")
-class EmpresaObra(generic.DetailView):
-	login_url = "/"
-	redirect_field_name = "login"
+class EmpresaObra(PermissionRequiredMixin, generic.DetailView):
+	permission_required = "carga.view_empresa"
 
 	model = Empresa
 	template_name = "empresa/empresa-obra.html"
@@ -77,12 +70,14 @@ class EmpresaObra(generic.DetailView):
 # 	return render(request, "partials/check-empresa.html", {"empresas": empresas})
 
 @login_required
+@permission_required("carga.view_empresa", raise_exception=True)
 def PaginaListaEmpresas(request):
 	template_name = "Lista-empresas.html"
 
 	return render(request, template_name, {})
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("carga.view_empresa", raise_exception=True), name="dispatch")
 class ListaEmpresasView(AjaxDatatableView):
 	model = Empresa
 	title = "Empresas"

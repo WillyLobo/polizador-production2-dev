@@ -1,5 +1,5 @@
 from django.contrib.auth.mixins import PermissionRequiredMixin
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.decorators import method_decorator
 from django.views import generic
 from django.urls import reverse_lazy
@@ -9,8 +9,6 @@ from carga.views.generics import get_deleted_objects
 
 @method_decorator(login_required, name="dispatch")
 class EliminarReceptor(PermissionRequiredMixin, generic.DeleteView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.delete_receptor"
 
 	model = models.Receptor
@@ -28,8 +26,6 @@ class EliminarReceptor(PermissionRequiredMixin, generic.DeleteView):
 
 @method_decorator(login_required, name="dispatch")
 class CrearReceptor(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.add_receptor"
 
 	model = models.Receptor
@@ -50,8 +46,6 @@ class CrearReceptor(PermissionRequiredMixin, generic.CreateView):
 
 @method_decorator(login_required, name="dispatch")
 class UpdateReceptor(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.change_receptor"
 
 	model = models.Receptor

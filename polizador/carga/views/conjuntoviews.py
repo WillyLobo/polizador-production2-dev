@@ -1,5 +1,5 @@
 from ajax_datatable.views import AjaxDatatableView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.template import loader, TemplateDoesNotExist
@@ -13,8 +13,6 @@ from carga.views.generics import get_deleted_objects
 
 @method_decorator(login_required, name="dispatch")
 class EliminarConjunto(PermissionRequiredMixin, generic.DeleteView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.delete_conjunto"
 
 	model = ConjuntoLicitado
@@ -31,8 +29,6 @@ class EliminarConjunto(PermissionRequiredMixin, generic.DeleteView):
 
 @method_decorator(login_required, name="dispatch")
 class CrearConjunto(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.add_conjunto"
 
 	model = ConjuntoLicitado
@@ -52,8 +48,6 @@ class CrearConjunto(PermissionRequiredMixin, generic.CreateView):
 
 @method_decorator(login_required, name="dispatch")
 class UpdateConjunto(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.change_conjunto"
 
 	model = ConjuntoLicitado
@@ -62,20 +56,21 @@ class UpdateConjunto(PermissionRequiredMixin, generic.UpdateView):
 	success_url = reverse_lazy("carga:lista-conjuntos")
 
 @method_decorator(login_required, name="dispatch")
-class ConjuntoObra(generic.DetailView):
-	login_url = "/"
-	redirect_field_name = "login"
+class ConjuntoObra(PermissionRequiredMixin, generic.DetailView):
+	permission_required = "carga.view_conjunto"
 
 	model = ConjuntoLicitado
 	template_name = "conjunto/conjunto-obra.html"
 
 @login_required
+@permission_required('carga.view_conjunto', raise_exception=True)
 def PaginaListaConjuntos(request):
 	template_name = "Lista-conjuntos.html"
 
 	return render(request, template_name, {})
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required('carga.view_conjunto', raise_exception=True), name="dispatch")
 class ListaConjuntosView(AjaxDatatableView):
 	model = ConjuntoLicitado
 	title = "Conjuntos"

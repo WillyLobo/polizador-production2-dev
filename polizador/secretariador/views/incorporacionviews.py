@@ -1,5 +1,5 @@
 from ajax_datatable.views import AjaxDatatableView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.shortcuts import render, redirect, HttpResponse
@@ -16,6 +16,8 @@ import jinja2
 
 from docxtpl import DocxTemplate
 
+@login_required
+@permission_required("secretariador.view_incorporacion", raise_exception=True)
 def incorporacion_docx(request, pk):
 	jinja_env = jinja2.Environment()
 	jinja_env.trim_blocks = True
@@ -178,8 +180,6 @@ def incorporacion_docx(request, pk):
 
 @method_decorator(login_required, name="dispatch")
 class CrearIncorporacion(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.add_incorporacion"
 
 	model = Incorporacion
@@ -244,8 +244,6 @@ class CrearIncorporacion(PermissionRequiredMixin, generic.CreateView):
 
 @method_decorator(login_required, name="dispatch")
 class UpdateIncorporacion(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.change_incorporacion"
 
 	model = Incorporacion
@@ -302,8 +300,6 @@ class UpdateIncorporacion(PermissionRequiredMixin, generic.UpdateView):
 
 @method_decorator(login_required, name="dispatch")
 class EliminarIncorporacion(PermissionRequiredMixin, generic.DeleteView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.delete_incorporacion"
 
 	model = Incorporacion
@@ -326,12 +322,14 @@ class EliminarIncorporacion(PermissionRequiredMixin, generic.DeleteView):
 # 	template_name = "solicitud/ver-incorporacion.incorporacion_solicitud.html"
 
 @login_required
+@permission_required("secretariador.view_incorporacion", raise_exception=True)
 def PaginaListaIncorporaciones(request):
 	template_name = "Lista-incorporaciones.html"
 
 	return render(request, template_name, {})
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("secretariador.view_incorporacion", raise_exception=True), name="dispatch")
 class ListaIncorporacionesView(AjaxDatatableView):
 	model = Incorporacion
 	title = "Incorporaciones"

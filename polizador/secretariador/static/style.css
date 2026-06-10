@@ -23,7 +23,8 @@ p.poliza-e-p {
     margin-bottom: 0;
 }
 .content {
-    font-size: 12px;
+    font-size: 0.8rem;
+    font-family: Lato, Arial, sans-serif;
 }
 /* .select2 {
     width: 100%;

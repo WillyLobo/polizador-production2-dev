@@ -205,7 +205,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Redirects after Authentication
 
 LOGOUT_REDIRECT_URL = '/'
-LOGIN_REDIRECT_URL = "/home/"
+LOGIN_REDIRECT_URL = "/accounts/login/"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/

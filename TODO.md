@@ -2,7 +2,7 @@
 [+] Eliminar easy Audit
 [ ] Reacomodar los menues en el panel admin
 [+] Crear script para recopilar datos del valor UVI con fuente del BCRA
-[ ] Revisar los campos de modelos que requieren operaciones aritmeticas y aplicar campos generados
+[+] Revisar los campos de modelos que requieren operaciones aritmeticas y aplicar campos generados
     a nivel base de datos.
 [?] Crear grupos de permisos para los usuarios:
     [+] Direccion General
@@ -13,7 +13,10 @@
 [ ] Rehacer la integracion para contratos y resoluciones digitales de obras
 [ ] Reparar los templates para ajustar viewport size
 [ ] Ajustar los templates de reportes de la app carga para ajustarse al resto del sitio
+[ ] Corregir los Select en las páginas de creación de reportes
 [ ] Redireccionar usuarios con permisos fuera de la vista sin permisos
+[ ] Modificar modelo Agente para vincularlo a los agentes de la app secretariador
+
 
 # Models
 [+] Create model Incorporacion.

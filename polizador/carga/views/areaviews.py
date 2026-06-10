@@ -8,8 +8,6 @@ from carga.forms.areaforms import *
 
 @method_decorator(login_required, name="dispatch")
 class CrearArea(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.add_area"
 	title = "Crear Area"
 
@@ -28,8 +26,6 @@ class CrearArea(PermissionRequiredMixin, generic.CreateView):
 	
 @method_decorator(login_required, name="dispatch")
 class UpdateArea(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required  = "carga.change_area"
 
 	model = models.Area

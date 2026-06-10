@@ -1,5 +1,5 @@
 from ajax_datatable.views import AjaxDatatableView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.shortcuts import render
@@ -14,8 +14,6 @@ from carga.views.generics import get_deleted_objects
 
 @method_decorator(login_required, name="dispatch")
 class CrearComisionado(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.add_comisionado"
 
 	model = Comisionado
@@ -35,8 +33,6 @@ class CrearComisionado(PermissionRequiredMixin, generic.CreateView):
 	
 @method_decorator(login_required, name="dispatch")
 class UpdateComisionado(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.change_comisionado"
 
 	model = Comisionado
@@ -46,8 +42,6 @@ class UpdateComisionado(PermissionRequiredMixin, generic.UpdateView):
 
 @method_decorator(login_required, name="dispatch")
 class EliminarComisionado(PermissionRequiredMixin, generic.DeleteView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.delete_comisionado"
 
 	model = Comisionado
@@ -70,12 +64,14 @@ class EliminarComisionado(PermissionRequiredMixin, generic.DeleteView):
 # 	template_name = "certificado/certificado.html"
 
 @login_required
+@permission_required("secretariador.view_comisionado", raise_exception=True)
 def PaginaListaComisionados(request):
 	template_name = "Lista-comisionados.html"
 
 	return render(request, template_name, {})
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("secretariador.view_comisionado", raise_exception=True), name="dispatch")
 class ListaComisionadosView(AjaxDatatableView):
 	model = Comisionado
 	title = "Comisionados"

@@ -1,5 +1,5 @@
 from ajax_datatable.views import AjaxDatatableView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.shortcuts import render
@@ -13,8 +13,6 @@ from carga.views.generics import get_deleted_objects
 
 @method_decorator(login_required, name="dispatch")
 class EliminarRegion(PermissionRequiredMixin, generic.DeleteView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.delete_region"
 
 	model = Region
@@ -32,8 +30,6 @@ class EliminarRegion(PermissionRequiredMixin, generic.DeleteView):
 
 @method_decorator(login_required, name="dispatch")
 class CrearRegion(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.add_region"
 
 	model = Region
@@ -54,8 +50,6 @@ class CrearRegion(PermissionRequiredMixin, generic.CreateView):
 
 @method_decorator(login_required, name="dispatch")
 class UpdateRegion(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.change_region"
 
 	model = Region
@@ -64,20 +58,21 @@ class UpdateRegion(PermissionRequiredMixin, generic.UpdateView):
 	success_url = reverse_lazy("carga:lista-regiones")
 
 @method_decorator(login_required, name="dispatch")
-class RegionObra(generic.DetailView):
-	login_url = "/"
-	redirect_field_name = "login"
+class RegionObra(PermissionRequiredMixin, generic.DetailView):
+	permission_required = "carga.view_region"
 
 	model = Region
 	template_name = "region/region-obra.html"
 
 @login_required
+@permission_required('carga.view_region', raise_exception=True)
 def PaginaListaRegiones(request):
 	template_name = "Lista-regiones.html"
 
 	return render(request, template_name, {})
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required('carga.view_region', raise_exception=True), name="dispatch")
 class ListaRegionesView(AjaxDatatableView):
 	model = Region
 	title = "Regiones"

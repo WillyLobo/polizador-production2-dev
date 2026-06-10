@@ -1,5 +1,5 @@
 from ajax_datatable.views import AjaxDatatableView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.shortcuts import render
@@ -12,8 +12,6 @@ from carga.views.generics import get_deleted_objects
 
 @method_decorator(login_required, name="dispatch")
 class EliminarAseguradora(PermissionRequiredMixin, generic.DeleteView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.delete_aseguradora"
 
 	model = Aseguradora
@@ -31,8 +29,6 @@ class EliminarAseguradora(PermissionRequiredMixin, generic.DeleteView):
 
 @method_decorator(login_required, name="dispatch")
 class CrearAseguradora(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.add_aseguradora"
 
 	model = Aseguradora
@@ -53,8 +49,6 @@ class CrearAseguradora(PermissionRequiredMixin, generic.CreateView):
 
 @method_decorator(login_required, name="dispatch")
 class UpdateAseguradora(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.change_aseguradora"
 
 	model = Aseguradora
@@ -63,12 +57,14 @@ class UpdateAseguradora(PermissionRequiredMixin, generic.UpdateView):
 	success_url = reverse_lazy("carga:lista-aseguradoras")
 
 @login_required
+@permission_required('carga.view_aseguradora', raise_exception=True)
 def PaginaListaAseguradoras(request):
 	template_name = "Lista-aseguradoras.html"
 
 	return render(request, template_name, {})
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required('carga.view_aseguradora', raise_exception=True), name="dispatch")
 class ListaAseguradorasView(AjaxDatatableView):
 	model = Aseguradora
 	title = "Aseguradoras"

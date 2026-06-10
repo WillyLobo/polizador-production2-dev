@@ -1,5 +1,5 @@
 from ajax_datatable.views import AjaxDatatableView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.shortcuts import render, redirect, HttpResponse
@@ -15,6 +15,8 @@ import jinja2
 from docxtpl import DocxTemplate
 from secretariador.forms.mixins import FormsetViewMixin
 
+@login_required
+@permission_required("secretariador.view_solicitud", raise_exception=True)
 def solicitud_docx(request, pk):
 	jinja_env = jinja2.Environment()
 	jinja_env.trim_blocks = True
@@ -196,8 +198,6 @@ def solicitud_docx(request, pk):
 
 @method_decorator(login_required, name="dispatch")
 class CrearSolicitud(PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.add_solicitud"
 	formset_name = ComisionadoSolicitudFormset
 	view_type = "create"
@@ -214,8 +214,6 @@ class CrearSolicitud(PermissionRequiredMixin, FormsetViewMixin, generic.CreateVi
 	
 @method_decorator(login_required, name="dispatch")
 class UpdateSolicitud(PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.change_solicitud"
 	formset_name = ComisionadoSolicitudFormset
 	view_type = "update"
@@ -227,8 +225,6 @@ class UpdateSolicitud(PermissionRequiredMixin, FormsetViewMixin, generic.UpdateV
 	
 @method_decorator(login_required, name="dispatch")
 class EliminarSolicitud(PermissionRequiredMixin, generic.DeleteView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.delete_solicitud"
 
 	model = Solicitud
@@ -244,18 +240,20 @@ class EliminarSolicitud(PermissionRequiredMixin, generic.DeleteView):
 		return context
 	
 @method_decorator(login_required, name="dispatch")
-class VerSolicitud(generic.DetailView):
-	login_url = "/"
-	redirect_field_name = "login"
+class VerSolicitud(PermissionRequiredMixin, generic.DetailView):
+	permission_required = "secretariador.view_solicitud"
+
 	model = Solicitud
 	template_name = "solicitud/ver-solicitud.html"
 
 @login_required
+@permission_required("secretariador.view_solicitud", raise_exception=True)
 def PaginaListaSolicitudes(request):
 	template_name = "Lista-solicitudes.html"
 
 	return render(request, template_name, {})
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("secretariador.view_solicitud", raise_exception=True), name="dispatch")
 class ListaSolicitudesView(AjaxDatatableView):
 	model = Solicitud
 	title = "Solicitudes"

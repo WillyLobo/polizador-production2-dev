@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
@@ -15,15 +15,11 @@ from datetime import datetime, timedelta
 
 @method_decorator(login_required, name="dispatch")
 class CrearReporteCertificadoPorMes(PermissionRequiredMixin, generic.TemplateView) :
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.view_certificado"
 	template_name = "reportes/crear-reportecertificadopormes.html"
 
 @method_decorator(login_required, name="dispatch")
 class VerReporteCertificadoPorMes(PermissionRequiredMixin, generic.ListView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.view_certificado"
 
 	model = Certificado
@@ -40,8 +36,6 @@ class VerReporteCertificadoPorMes(PermissionRequiredMixin, generic.ListView):
 
 @method_decorator(login_required, name="dispatch")
 class CrearReporteView(PermissionRequiredMixin, generic.TemplateView) :
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.view_certificado"
 	template_name = "reportes/crear-reporteobra.html"
 
@@ -63,8 +57,6 @@ class CrearReporteView(PermissionRequiredMixin, generic.TemplateView) :
 @method_decorator(login_required, name="dispatch")
 @method_decorator(cache_page(60*15), name="dispatch")
 class VerReporteView(PermissionRequiredMixin, generic.ListView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.view_certificado"
 
 	model = Obra
@@ -160,8 +152,6 @@ class VerReporteView(PermissionRequiredMixin, generic.ListView):
 
 @method_decorator(login_required, name="dispatch")
 class CrearListaUvi(PermissionRequiredMixin, generic.ListView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.view_certificado"
 
 	model = Uvi
@@ -199,6 +189,8 @@ class CrearListaUvi(PermissionRequiredMixin, generic.ListView):
 		context["title"] = self.get_title()
 		return context
 
+@login_required
+@permission_required('carga.view_certificado', raise_exception=True)
 def refresh_uvi_from_bcra(request):
 	call_command("bcra_uvi")
 	return redirect('/polizas/reporte/lista-uvi/')

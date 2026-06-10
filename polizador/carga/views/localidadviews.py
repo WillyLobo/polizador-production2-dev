@@ -1,5 +1,5 @@
 from ajax_datatable.views import AjaxDatatableView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.shortcuts import render
@@ -13,8 +13,6 @@ from carga.views.generics import get_deleted_objects
 
 @method_decorator(login_required, name="dispatch")
 class EliminarLocalidad(PermissionRequiredMixin, generic.DeleteView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.delete_localidad"
 
 	model = Localidad
@@ -32,8 +30,6 @@ class EliminarLocalidad(PermissionRequiredMixin, generic.DeleteView):
 
 @method_decorator(login_required, name="dispatch")
 class CrearLocalidad(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.add_localidad"
 
 	model = Localidad
@@ -54,8 +50,6 @@ class CrearLocalidad(PermissionRequiredMixin, generic.CreateView):
 
 @method_decorator(login_required, name="dispatch")
 class UpdateLocalidad(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.change_localidad"
 
 	model = Localidad
@@ -64,20 +58,21 @@ class UpdateLocalidad(PermissionRequiredMixin, generic.UpdateView):
 	success_url = reverse_lazy("carga:lista-localidades")
 
 @method_decorator(login_required, name="dispatch")
-class LocalidadObra(generic.DetailView):
-	login_url = "/"
-	redirect_field_name = "login"
+class LocalidadObra(PermissionRequiredMixin, generic.DetailView):
+	permission_required = "carga.view_localidad"
 
 	model = Localidad
 	template_name = "localidad/localidad-obra.html"
 
 @login_required
+@permission_required("carga.view_localidad", raise_exception=True)
 def PaginaListaLocalidad(request):
 	template_name = "Lista-localidades.html"
 
 	return render(request, template_name, {})
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("carga.view_localidad", raise_exception=True), name="dispatch")
 class ListaLocalidadesView(AjaxDatatableView):
 	model = Localidad
 	title = "Localidades"

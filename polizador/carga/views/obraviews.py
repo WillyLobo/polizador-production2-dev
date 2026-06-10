@@ -1,6 +1,6 @@
 from ajax_datatable.views import AjaxDatatableView
 from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.template import loader, TemplateDoesNotExist
@@ -15,8 +15,6 @@ import locale
 
 @method_decorator(login_required, name="dispatch")
 class EliminarObra(PermissionRequiredMixin, generic.DeleteView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.delete_obra"
 
 	model = Obra
@@ -33,8 +31,6 @@ class EliminarObra(PermissionRequiredMixin, generic.DeleteView):
 	
 @method_decorator(login_required, name="dispatch")
 class CrearObra(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.add_obra"
 
 	model = Obra
@@ -55,8 +51,6 @@ class CrearObra(PermissionRequiredMixin, generic.CreateView):
 
 @method_decorator(login_required, name="dispatch")
 class UpdateObra(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.change_obra"
 
 	model = Obra
@@ -66,8 +60,6 @@ class UpdateObra(PermissionRequiredMixin, generic.UpdateView):
 
 @method_decorator(login_required, name="dispatch")
 class EstadoObra(PermissionRequiredMixin, generic.DetailView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.view_obra"
 	queryset = Obra.objects.select_related("obra_empresa", "obra_programa", "obra_conjunto").prefetch_related("certificado_set__certificado_rubro_db")
 	
@@ -75,6 +67,7 @@ class EstadoObra(PermissionRequiredMixin, generic.DetailView):
 	template_name = "obra/estado-obra.html"
 
 @login_required
+@permission_required("carga.view_obra", raise_exception=True)
 def PaginaListaObras(request):
     """
 	Renderiza la página que contiene la tabla.
@@ -88,6 +81,7 @@ def PaginaListaObras(request):
     })
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("carga.view_obra", raise_exception=True), name="dispatch")
 class ListaObrasView(AjaxDatatableView):
 	model = Obra
 	title = "Obras"
@@ -198,6 +192,7 @@ def PaginaListaObrasExtendida(request):
 	return render(request, template_name, {})
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("carga.view_obra", raise_exception=True), name="dispatch")
 class ListaObrasExtendidaView(AjaxDatatableView):
 	model = Obra
 	title = "Obras"

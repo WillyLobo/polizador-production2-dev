@@ -1,5 +1,5 @@
 from ajax_datatable.views import AjaxDatatableView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.shortcuts import render
@@ -14,8 +14,6 @@ from carga.views.generics import get_deleted_objects
 
 @method_decorator(login_required, name="dispatch")
 class CrearVehiculo(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.add_vehiculo"
 
 	model = Vehiculo
@@ -35,8 +33,6 @@ class CrearVehiculo(PermissionRequiredMixin, generic.CreateView):
 
 @method_decorator(login_required, name="dispatch")
 class UpdateVehiculo(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.change_vehiculo"
 
 	model = Vehiculo
@@ -46,8 +42,6 @@ class UpdateVehiculo(PermissionRequiredMixin, generic.UpdateView):
 
 @method_decorator(login_required, name="dispatch")
 class EliminarVehiculo(PermissionRequiredMixin, generic.DeleteView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.delete_vehiculo"
 
 	model = Vehiculo
@@ -62,20 +56,15 @@ class EliminarVehiculo(PermissionRequiredMixin, generic.DeleteView):
 		context["protected"] = protected
 		return context
 
-# @method_decorator(login_required, name="dispatch")
-# class CertificadoView(generic.DetailView):
-# 	login_url = "/"
-# 	redirect_field_name = "login"
-# 	model = Certificado
-# 	template_name = "certificado/certificado.html"
-
 @login_required
+@permission_required("secretariador.view_vehiculo", raise_exception=True)
 def PaginaListaVehiculos(request):
 	template_name = "Lista-vehiculos.html"
 
 	return render(request, template_name, {})
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("secretariador.view_vehiculo", raise_exception=True), name="dispatch")
 class ListaVehiculosView(AjaxDatatableView):
 	model = Vehiculo
 	title = "Vehiculos"

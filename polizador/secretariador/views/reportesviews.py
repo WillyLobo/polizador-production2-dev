@@ -12,16 +12,12 @@ from datetime import datetime, timedelta
 
 @method_decorator(login_required, name="dispatch")
 class PDFMergeTemplateView(PermissionRequiredMixin, generic.TemplateView):
-    login_url = "/"
-    redirect_field_name = "login"
-    permission_required = "secretariador.add_solicitud"
+    permission_required = "secretariador.view_solicitud"
     template_name = "html_to_pdf_merger.html"
 
 @method_decorator(login_required, name="dispatch")
 class CrearReporteViaticosPorAgente(PermissionRequiredMixin, generic.ListView):
-    login_url = "/"
-    redirect_field_name = "login"
-    permission_required = "secretariador.add_solicitud"
+    permission_required = "secretariador.view_solicitud"
 
     model = Comisionado
     context_object_name = "solicitud"
@@ -83,9 +79,7 @@ class CrearReporteViaticosPorAgente(PermissionRequiredMixin, generic.ListView):
 
 @method_decorator(login_required, name="dispatch")
 class CrearReporteViaticosporArea(PermissionRequiredMixin, generic.ListView):
-    login_url = "/"
-    redirect_field_name = "login"
-    permission_required = "secretariador.add_solicitud"
+    permission_required = "secretariador.view_solicitud"
 
     model = Comisionado
     context_object_name = "solicitud"
@@ -150,9 +144,7 @@ class CrearReporteViaticosporArea(PermissionRequiredMixin, generic.ListView):
 
 @method_decorator(login_required, name="dispatch")
 class CrearReporteAusenciasPorAgente(PermissionRequiredMixin, generic.ListView):
-    login_url = "/"
-    redirect_field_name = "login"
-    permission_required = "secretariador.add_solicitud"
+    permission_required = "secretariador.view_solicitud"
 
     model = Comisionado
     context_object_name = "solicitud"
@@ -217,9 +209,7 @@ class CrearReporteComisionesDuplicadas(PermissionRequiredMixin, generic.ListView
     Genera reporte de comisiones duplicadas.
     """
 
-    login_url = "/"
-    redirect_field_name = "login"
-    permission_required = "secretariador.add_solicitud"
+    permission_required = "secretariador.view_solicitud"
 
     model = Solicitud
     context_object_name = "solicitud"
@@ -293,9 +283,7 @@ class CrearReporteComisionesDuplicadas(PermissionRequiredMixin, generic.ListView
 
 @method_decorator(login_required, name="dispatch")
 class CrearReporteViaticosPorAgenteIndividual(PermissionRequiredMixin, generic.ListView):
-    login_url = "/"
-    redirect_field_name = "login"
-    permission_required = "secretariador.add_solicitud"
+    permission_required = "secretariador.view_solicitud"
 
     model = Comisionado
     context_object_name = "solicitud"
@@ -346,9 +334,7 @@ class CrearReporteViaticosPorAgenteIndividual(PermissionRequiredMixin, generic.L
 
 @method_decorator(login_required, name="dispatch")
 class CalendarioSemanal(PermissionRequiredMixin, generic.ListView):
-    login_url = "/"
-    redirect_field_name = "login"
-    permission_required = "secretariador.add_solicitud"
+    permission_required = "secretariador.view_solicitud"
 
     model = Comisionado
     context_object_name = "solicitud"
@@ -404,9 +390,7 @@ class CalendarioSemanal(PermissionRequiredMixin, generic.ListView):
 
 @method_decorator(login_required, name="dispatch")
 class CalendarioAnual(PermissionRequiredMixin, generic.ListView):
-    login_url = "/"
-    redirect_field_name = "login"
-    permission_required = "secretariador.add_solicitud"
+    permission_required = "secretariador.view_solicitud"
 
     model = Comisionado
     context_object_name = "solicitud"

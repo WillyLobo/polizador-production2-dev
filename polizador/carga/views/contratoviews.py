@@ -10,8 +10,6 @@ from secretariador.forms.mixins import FormsetViewMixin
 
 @method_decorator(login_required, name="dispatch")
 class CrearContrato(PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.add_certificado"
 	formset_name = ContratoMontoFormset
 	view_type = "create"
@@ -27,8 +25,6 @@ class CrearContrato(PermissionRequiredMixin, FormsetViewMixin, generic.CreateVie
 	
 @method_decorator(login_required, name="dispatch")
 class UpdateContrato(PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.add_certificado"
 	formset_name = ContratoMontoFormset
 	view_type = "update"

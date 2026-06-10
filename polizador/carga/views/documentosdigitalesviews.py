@@ -16,8 +16,6 @@ import locale
 
 @method_decorator(login_required, name="dispatch")
 class CrearContratoDigital(PermissionRequiredMixin, generic.CreateView):
-    login_url = "/"
-    redirect_field_name = "login"
     permission_required = "carga.add_certificado"
 
     model = ContratosDigitales
@@ -45,8 +43,6 @@ class CrearContratoDigital(PermissionRequiredMixin, generic.CreateView):
 
 @method_decorator(login_required, name="dispatch")
 class UpdateContratoDigital(PermissionRequiredMixin, generic.UpdateView):
-    login_url = "/"
-    redirect_field_name = "login"
     permission_required = "carga.change_certificado"
 
     model = ContratosDigitales
@@ -63,8 +59,6 @@ class UpdateContratoDigital(PermissionRequiredMixin, generic.UpdateView):
 
 @method_decorator(login_required, name="dispatch")
 class EliminarContratoDigital(PermissionRequiredMixin, generic.DeleteView):
-    login_url = "/"
-    redirect_field_name = "login"
     permission_required = "carga.delete_certificado"
 
     model = ContratosDigitales
@@ -82,8 +76,6 @@ class EliminarContratoDigital(PermissionRequiredMixin, generic.DeleteView):
 
 @method_decorator(login_required, name="dispatch")
 class CrearResolucionDigital(PermissionRequiredMixin, generic.CreateView):
-    login_url = "/"
-    redirect_field_name = "login"
     permission_required = "carga.add_certificado"
 
     model = ResolucionesDigitales
@@ -111,8 +103,6 @@ class CrearResolucionDigital(PermissionRequiredMixin, generic.CreateView):
 
 @method_decorator(login_required, name="dispatch")
 class UpdateResolucionDigital(PermissionRequiredMixin, generic.UpdateView):
-    login_url = "/"
-    redirect_field_name = "login"
     permission_required = "carga.add_certificado"
 
     model = ResolucionesDigitales
@@ -129,8 +119,6 @@ class UpdateResolucionDigital(PermissionRequiredMixin, generic.UpdateView):
 
 @method_decorator(login_required, name="dispatch")
 class EliminarResolucionDigital(PermissionRequiredMixin, generic.DeleteView):
-    login_url = "/"
-    redirect_field_name = "login"
     permission_required = "carga.delete_certificado"
 
     model = ResolucionesDigitales

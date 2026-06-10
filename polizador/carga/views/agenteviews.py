@@ -1,5 +1,5 @@
 from ajax_datatable.views import AjaxDatatableView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import render
@@ -12,8 +12,6 @@ from carga.views.generics import get_deleted_objects
 
 @method_decorator(login_required, name="dispatch")
 class EliminarAgente(PermissionRequiredMixin, generic.DeleteView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.delete_agente"
 
 	model = Agente
@@ -31,8 +29,6 @@ class EliminarAgente(PermissionRequiredMixin, generic.DeleteView):
 
 @method_decorator(login_required, name="dispatch")
 class CrearAgente(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.add_agente"
 
 	model = Agente
@@ -53,8 +49,6 @@ class CrearAgente(PermissionRequiredMixin, generic.CreateView):
 
 @method_decorator(login_required, name="dispatch")
 class UpdateAgente(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.change_agente"
 
 	model = Agente
@@ -64,19 +58,20 @@ class UpdateAgente(PermissionRequiredMixin, generic.UpdateView):
 
 @method_decorator(login_required, name="dispatch")
 class AgenteObra(generic.DetailView):
-	login_url = "/"
-	redirect_field_name = "login"
+	permission_required = "carga.view_agente"
 
 	model = Agente
 	template_name = "agente/agente-obra.html"
 
 @login_required
+@permission_required('carga.view_agente', raise_exception=True)
 def PaginaListaAgentes(request):
 	template_name = "Lista-agentes.html"
 
 	return render(request, template_name, {})
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required('carga.view_agente', raise_exception=True), name="dispatch")
 class ListaAgentesView(AjaxDatatableView):
 	model = Agente
 	title = "Agentes"

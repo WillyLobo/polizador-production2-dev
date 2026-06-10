@@ -1,5 +1,5 @@
 from ajax_datatable.views import AjaxDatatableView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.template import loader, TemplateDoesNotExist
@@ -13,8 +13,6 @@ from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg
 
 @method_decorator(login_required, name="dispatch")
 class EliminarDepartamento(PermissionRequiredMixin, generic.DeleteView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.delete_departamento"
 
 	model = Departamento
@@ -32,8 +30,6 @@ class EliminarDepartamento(PermissionRequiredMixin, generic.DeleteView):
 
 @method_decorator(login_required, name="dispatch")
 class CrearDepartamento(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.add_departamento"
 
 	model = Departamento
@@ -54,8 +50,6 @@ class CrearDepartamento(PermissionRequiredMixin, generic.CreateView):
 
 @method_decorator(login_required, name="dispatch")
 class UpdateDepartamento(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.change_departamento"
 
 	model = Departamento
@@ -64,9 +58,8 @@ class UpdateDepartamento(PermissionRequiredMixin, generic.UpdateView):
 	success_url = reverse_lazy("carga:lista-departamentos")
 
 @method_decorator(login_required, name="dispatch")
-class DepartamentoObra(generic.DetailView):
-	login_url = "/"
-	redirect_field_name = "login"
+class DepartamentoObra(PermissionRequiredMixin, generic.DetailView):
+	permission_required = "carga.view_departamento"
 
 	model = Departamento
 	template_name = "departamento/departamento-obra.html"
@@ -79,6 +72,7 @@ def PaginaListaDepartamentos(request):
 
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required('carga.view_departamento', raise_exception=True), name="dispatch")
 class ListaDepartamentosView(AjaxDatatableView):
 	model = Departamento
 	title = "Departamentos"

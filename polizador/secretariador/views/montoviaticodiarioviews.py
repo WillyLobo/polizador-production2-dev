@@ -11,8 +11,6 @@ from carga.views.generics import get_deleted_objects
 
 @method_decorator(login_required, name="dispatch")
 class CrearMontoViaticoDiario(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.add_montoviaticodiario"
 
 	model = InstrumentosLegalesDecretos
@@ -64,8 +62,6 @@ class CrearMontoViaticoDiario(PermissionRequiredMixin, generic.CreateView):
 
 @method_decorator(login_required, name="dispatch")
 class UpdateMontoViaticoDiario(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.change_montoviaticodiario"
 
 	model = InstrumentosLegalesDecretos
@@ -117,8 +113,6 @@ class UpdateMontoViaticoDiario(PermissionRequiredMixin, generic.UpdateView):
 
 @method_decorator(login_required, name="dispatch")
 class EliminarMontoViaticoDiario(PermissionRequiredMixin, generic.DeleteView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.delete_montoviaticodiario"
 
 	model = MontoViaticoDiario

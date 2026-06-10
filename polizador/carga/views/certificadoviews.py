@@ -1,5 +1,5 @@
 from ajax_datatable.views import AjaxDatatableView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.shortcuts import render
@@ -15,8 +15,6 @@ import locale
 
 @method_decorator(login_required, name="dispatch")
 class EliminarCertificado(PermissionRequiredMixin, generic.DeleteView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.delete_certificado"
 
 	model = Certificado
@@ -34,8 +32,6 @@ class EliminarCertificado(PermissionRequiredMixin, generic.DeleteView):
 
 @method_decorator(login_required, name="dispatch")
 class CrearCertificado(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.add_certificado"
 
 	model = Certificado
@@ -64,8 +60,6 @@ class CrearCertificado(PermissionRequiredMixin, generic.CreateView):
 
 @method_decorator(login_required, name="dispatch")
 class UpdateCertificado(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.change_certificado"
 
 	model = Certificado
@@ -81,19 +75,21 @@ class UpdateCertificado(PermissionRequiredMixin, generic.UpdateView):
 
 
 @method_decorator(login_required, name="dispatch")
-class CertificadoView(generic.DetailView):
-	login_url = "/"
-	redirect_field_name = "login"
+class CertificadoView(PermissionRequiredMixin, generic.DetailView):
+	permission_required = "carga.view_certificado"
+
 	model = Certificado
 	template_name = "certificado/certificado.html"
 
 @login_required
+@permission_required('carga.view_certificado', raise_exception=True)
 def PaginaListaCertificados(request):
 	template_name = "Lista-certificados.html"
 
 	return render(request, template_name, {})
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required('carga.view_certificado', raise_exception=True), name="dispatch")
 class ListaCertificadosView(AjaxDatatableView):
 	model = Certificado
 	title = "Certificados"

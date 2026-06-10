@@ -1,5 +1,5 @@
 from ajax_datatable.views import AjaxDatatableView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.shortcuts import render
@@ -13,8 +13,6 @@ from carga.views.generics import get_deleted_objects
 
 @method_decorator(login_required, name="dispatch")
 class EliminarMunicipio(PermissionRequiredMixin, generic.DeleteView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.delete_municipio"
 
 	model = Municipio
@@ -32,8 +30,6 @@ class EliminarMunicipio(PermissionRequiredMixin, generic.DeleteView):
 
 @method_decorator(login_required, name="dispatch")
 class CrearMunicipio(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.add_municipio"
 
 	model = Municipio
@@ -54,8 +50,6 @@ class CrearMunicipio(PermissionRequiredMixin, generic.CreateView):
 
 @method_decorator(login_required, name="dispatch")
 class UpdateMunicipio(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "carga.change_municipio"
 
 	model = Municipio
@@ -64,20 +58,21 @@ class UpdateMunicipio(PermissionRequiredMixin, generic.UpdateView):
 	success_url = reverse_lazy("carga:lista-municipios")
 
 @method_decorator(login_required, name="dispatch")
-class MunicipioObra(generic.DetailView):
-	login_url = "/"
-	redirect_field_name = "login"
+class MunicipioObra(PermissionRequiredMixin, generic.DetailView):
+	permission_required = "carga.view_municipio"
 
 	model = Municipio
 	template_name = "municipio/municipio-obra.html"
 	
 @login_required
+@permission_required("carga.view_municipio", raise_exception=True)
 def PaginaListaMunicipio(request):
 	template_name = "Lista-municipios.html"
 
 	return render(request, template_name, {})
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("carga.view_municipio", raise_exception=True), name="dispatch")
 class ListaMunicipiosView(AjaxDatatableView):
 	model = Municipio
 	title = "Municipios"

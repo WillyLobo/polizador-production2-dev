@@ -1,5 +1,5 @@
 from ajax_datatable.views import AjaxDatatableView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.shortcuts import render
@@ -12,8 +12,6 @@ from carga.views.generics import get_deleted_objects
 
 @method_decorator(login_required, name="dispatch")
 class CrearInstrumentoLegalMemorandum(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.add_instrumentoslegalesmemorandum"
 
 	model = InstrumentosLegalesMemorandum
@@ -28,8 +26,6 @@ class CrearInstrumentoLegalMemorandum(PermissionRequiredMixin, generic.CreateVie
 	
 @method_decorator(login_required, name="dispatch")
 class CrearInstrumentoLegalDecreto(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.add_instrumentoslegalesdecretos"
 
 	model = InstrumentosLegalesDecretos
@@ -44,8 +40,6 @@ class CrearInstrumentoLegalDecreto(PermissionRequiredMixin, generic.CreateView):
 
 @method_decorator(login_required, name="dispatch")
 class CrearInstrumentoLegalResolucionPresidencia(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.add_instrumentoslegalesresoluciones"
 
 	model = InstrumentosLegalesResoluciones
@@ -60,8 +54,6 @@ class CrearInstrumentoLegalResolucionPresidencia(PermissionRequiredMixin, generi
 	
 @method_decorator(login_required, name="dispatch")
 class CrearInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, generic.CreateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.add_instrumentoslegalesresoluciones"
 
 	model = InstrumentosLegalesResolucionesDirectorio
@@ -76,8 +68,6 @@ class CrearInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, generic
 
 @method_decorator(login_required, name="dispatch")
 class UpdateInstrumentoLegalMemorandum(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.change_instrumentoslegalesmemorandum"
 
 	model = InstrumentosLegalesMemorandum
@@ -97,8 +87,6 @@ class UpdateInstrumentoLegalMemorandum(PermissionRequiredMixin, generic.UpdateVi
 
 @method_decorator(login_required, name="dispatch")
 class UpdateInstrumentoLegalDecreto(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.change_instrumentoslegalesdecretos"
 
 	model = InstrumentosLegalesDecretos
@@ -118,8 +106,6 @@ class UpdateInstrumentoLegalDecreto(PermissionRequiredMixin, generic.UpdateView)
 
 @method_decorator(login_required, name="dispatch")
 class UpdateInstrumentoLegalResolucionPresidencia(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.change_instrumentoslegalesresoluciones"
 
 	model = InstrumentosLegalesResoluciones
@@ -137,9 +123,8 @@ class UpdateInstrumentoLegalResolucionPresidencia(PermissionRequiredMixin, gener
 		
 		return context
 	
+@method_decorator(login_required, name="dispatch")
 class UpdateInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, generic.UpdateView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.change_instrumentoslegalesresoluciones"
 
 	model = InstrumentosLegalesResolucionesDirectorio
@@ -159,8 +144,6 @@ class UpdateInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, generi
 
 @method_decorator(login_required, name="dispatch")
 class EliminarInstrumentoLegalMemorandum(PermissionRequiredMixin, generic.DeleteView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.delete_instrumentoslegalesmemorandum"
 
 	model = InstrumentosLegalesMemorandum
@@ -177,8 +160,6 @@ class EliminarInstrumentoLegalMemorandum(PermissionRequiredMixin, generic.Delete
 
 @method_decorator(login_required, name="dispatch")
 class EliminarInstrumentoLegalDecreto(PermissionRequiredMixin, generic.DeleteView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.delete_instrumentoslegalesdecretos"
 
 	model = InstrumentosLegalesDecretos
@@ -195,8 +176,6 @@ class EliminarInstrumentoLegalDecreto(PermissionRequiredMixin, generic.DeleteVie
 
 @method_decorator(login_required, name="dispatch")
 class EliminarInstrumentoLegalResolucionPresidencia(PermissionRequiredMixin, generic.DeleteView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.delete_instrumentoslegalesresoluciones"
 
 	model = InstrumentosLegalesResoluciones
@@ -213,8 +192,6 @@ class EliminarInstrumentoLegalResolucionPresidencia(PermissionRequiredMixin, gen
 
 @method_decorator(login_required, name="dispatch")
 class EliminarInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, generic.DeleteView):
-	login_url = "/"
-	redirect_field_name = "login"
 	permission_required = "secretariador.delete_instrumentoslegalesresoluciones"
 
 	model = InstrumentosLegalesResolucionesDirectorio
@@ -230,12 +207,14 @@ class EliminarInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, gene
 		return context
 
 @login_required
+@permission_required("secretariador.view_instrumentoslegalesmemorandum", raise_exception=True)
 def PaginaListaInstrumentosLegalesMemorandum(request):
 	template_name = "Lista-memorandum.html"
 
 	return render(request, template_name, {})
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("secretariador.view_instrumentoslegalesmemorandum", raise_exception=True), name="dispatch")
 class ListaListaInstrumentosLegalesMemorandumView(AjaxDatatableView):
 	model = InstrumentosLegalesMemorandum
 	title = "Instrumentos Legales(Memorandum)"
@@ -290,12 +269,14 @@ class ListaListaInstrumentosLegalesMemorandumView(AjaxDatatableView):
 		return
 
 @login_required
+@permission_required("secretariador.view_instrumentoslegalesdecretos", raise_exception=True)
 def PaginaListaInstrumentosLegalesDecretos(request):
 	template_name = "Lista-decretos.html"
 
 	return render(request, template_name, {})
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("secretariador.view_instrumentoslegalesdecretos", raise_exception=True), name="dispatch")
 class ListaListaInstrumentosLegalesDecretosView(AjaxDatatableView):
 	model = InstrumentosLegalesDecretos
 	title = "Instrumentos Legales(Decretos)"
@@ -349,12 +330,14 @@ class ListaListaInstrumentosLegalesDecretosView(AjaxDatatableView):
 		return
 	
 @login_required
+@permission_required("secretariador.view_instrumentoslegalesresoluciones", raise_exception=True)
 def PaginaListaInstrumentosLegalesResoluciones(request):
 	template_name = "Lista-resoluciones.html"
 
 	return render(request, template_name, {})
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("secretariador.view_instrumentoslegalesresoluciones", raise_exception=True), name="dispatch")
 class ListaListaInstrumentosLegalesResolucionesView(AjaxDatatableView):
 	model = InstrumentosLegalesResoluciones
 	title = "Instrumentos Legales(Resoluciones Presidencia)"
@@ -412,12 +395,14 @@ class ListaListaInstrumentosLegalesResolucionesView(AjaxDatatableView):
 		return
 
 @login_required
+@permission_required("secretariador.view_instrumentoslegalesresolucionesdirectorio", raise_exception=True)
 def PaginaListaInstrumentosLegalesResolucionesDirectorio(request):
 	template_name = "Lista-resoluciones-directorio.html"
 
 	return render(request, template_name, {})
 
 @method_decorator(login_required, name="dispatch")
+@method_decorator(permission_required("secretariador.view_instrumentoslegalesresolucionesdirectorio", raise_exception=True), name="dispatch")
 class ListaListaInstrumentosLegalesResolucionesDirectorioView(AjaxDatatableView):
 	model = InstrumentosLegalesResolucionesDirectorio
 	title = "Instrumentos Legales(Resoluciones Directorio)"
