@@ -191,7 +191,7 @@ USE_THOUSAND_SEPARATOR = True
 # Cloud Storage
 
 try:
-    GS_CREDENTIALS = service_account.Credentials.from_service_account_file("polizador-production.json")
+    GS_CREDENTIALS = service_account.Credentials.from_service_account_file(BASE_DIR / "polizador-production.json")
 except (FileNotFoundError, ValueError):
     GS_CREDENTIALS = None
 # DEFAULT_FILE_STORAGE = 'storages.backends.gcloud.GoogleCloudStorage'
