@@ -1,13 +1,15 @@
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.urls import reverse_lazy
 from django.views import generic
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from carga.models import Certificado, Obra, Localidad, Empresa, Programa, CertificadoRubro, Uvi
 from carga.forms.certificadoforms import *
 from django.db.models import Q, FilteredRelation, Subquery, OuterRef, Sum, F
 from django.core.exceptions import ValidationError
+from django.core.management import call_command
 from django.views.decorators.cache import cache_page
 from datetime import datetime, timedelta
 
@@ -196,3 +198,7 @@ class CrearListaUvi(PermissionRequiredMixin, generic.ListView):
 		context = super().get_context_data(**kwargs)
 		context["title"] = self.get_title()
 		return context
+
+def refresh_uvi_from_bcra(request):
+	call_command("bcra_uvi")
+	return redirect('/polizas/reporte/lista-uvi/')

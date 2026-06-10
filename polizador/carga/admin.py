@@ -105,6 +105,8 @@ class ResolucionDigitalAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.ResolucionDigitalResource
 
 class UviAdmin(ImportExportMixin, SimpleHistoryAdmin):
+	list_display = ("id", "uvi_fecha", "uvi_valor", "uvi_uuid")
+	ordering = ("-uvi_fecha",)
 	resource_class = resources.UviResource
 
 admin.site.register(models.Receptor, ReceptorAdmin)

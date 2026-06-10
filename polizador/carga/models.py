@@ -287,41 +287,41 @@ class Obra(models.Model):
         verbose_name_plural = "Obras"
         ordering = ["obra_programa", "obra_convenio", "obra_nombre"]
 
-    obra_uuid			= models.UUIDField(default=compat.uuid7, editable=False)
-    obra_nombre			                    = models.TextField("Nombre", help_text="Nombre de la Obra tal como figura en el contrato")
-    obra_soluciones		                = models.DecimalField("Cantidad de soluciones", max_digits=4, decimal_places=0, null=True, blank=True)
-    obra_empresa		                = models.ForeignKey("Empresa", on_delete=models.CASCADE, verbose_name="Empresa")
-    obra_region                         = models.ForeignKey("Region", on_delete=models.CASCADE, verbose_name="Región", null=True, blank=True)
-    obra_departamento_m                 = models.ManyToManyField("Departamento", related_name="obra_departamento", verbose_name="Departamento", blank=True)
-    obra_municipio_m                    = models.ManyToManyField("Municipio", related_name="obra_municipio", verbose_name="Municipio", blank=True)
-    obra_localidad_m	                = models.ManyToManyField("Localidad", related_name="obra_localidad", verbose_name="Localidad", blank=True)
-    obra_conjunto                       = models.ForeignKey("ConjuntoLicitado", verbose_name="Conjunto Licitado", on_delete=models.DO_NOTHING, null=True, blank=True)
-    obra_grupo                          = models.CharField("Grupo", max_length=4, blank=True, null=True)
-    obra_plazo                          = models.CharField("Plazo de Ejecución", max_length=10, blank=True, null=True)
-    obra_programa		                = models.ForeignKey("Programa", verbose_name="Programa", on_delete=models.CASCADE)
-    obra_convenio		                = models.CharField("Convenio/ACU", max_length=60, blank=True, null=True)
-    obra_expediente 	                = models.CharField("Expediente", max_length=18)
-    obra_resolucion                     = models.CharField("Resolución de Adjudicación", max_length=15, blank=True, null=True)
-    obra_licitacion_tipo                = models.CharField("Compulsa", max_length=1, choices=COMPULSA, blank=True, null=True)
-    obra_licitacion_numero              = models.DecimalField("Número de Licitación", max_digits=3, decimal_places=0, blank=True, null=True)
-    obra_licitacion_ano                 = models.DecimalField("Año de Licitación", max_digits=4, decimal_places=0, blank=True, null=True)
-    obra_nomenclatura                   = models.CharField("Nomenclatura Catastral", max_length=1000, blank=True, null=True)  
-    obra_nomenclatura_plano             = models.CharField("Número de Plano", max_length=10, blank=True, null=True)
-    obra_fecha_entrega                  = models.DateField("Fecha de Entrega de la Obra", blank=True, null=True)
-    obra_fecha_contrato                 = models.DateField("Fecha de Firma de Contrato", blank=True, null=True)
-    obra_expediente_costo               = models.CharField("Expediente de Costos", max_length=18, blank=True, null=True)
-    obra_inspector                      = models.ManyToManyField("Agente", related_name="obra_inspector", verbose_name="Inspector")
-    obra_observaciones                  = models.TextField("Observaciones", blank=True, null=True)
-    obra_contrato_nacion_pesos          = models.DecimalField("Monto Nación en Pesos", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
-    obra_contrato_nacion_uvi            = models.DecimalField("Monto Nación en UVI", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
-    obra_contrato_nacion_uvi_fecha      = models.DateField("Fecha UVI Nación", blank=True, null=True)
-    obra_contrato_provincia_pesos       = models.DecimalField("Monto Provincia en Pesos", max_digits=12 ,decimal_places=2, default=0 , validators=[MinValueValidator(0)], blank=True, null=True)
-    obra_contrato_provincia_uvi         = models.DecimalField("Monto Provincia en UVI", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
-    obra_contrato_provincia_uvi_fecha   = models.DateField("Fecha UVI Provicia", blank=True, null=True)
-    obra_contrato_terceros_pesos        = models.DecimalField("Monto Terceros en Pesos", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
-    obra_contrato_terceros_uvi          = models.DecimalField("Monto Terceros en UVI", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
-    obra_contrato_terceros_uvi_fecha    = models.DateField("Fecha UVI Terceros", blank=True, null=True)
-    obra_contrato_total_pesos           = models.GeneratedField(
+    obra_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    obra_nombre = models.TextField("Nombre", help_text="Nombre de la Obra tal como figura en el contrato")
+    obra_soluciones = models.DecimalField("Cantidad de soluciones", max_digits=4, decimal_places=0, null=True, blank=True)
+    obra_empresa = models.ForeignKey("Empresa", on_delete=models.CASCADE, verbose_name="Empresa")
+    obra_region = models.ForeignKey("Region", on_delete=models.CASCADE, verbose_name="Región", null=True, blank=True)
+    obra_departamento_m = models.ManyToManyField("Departamento", related_name="obra_departamento", verbose_name="Departamento", blank=True)
+    obra_municipio_m = models.ManyToManyField("Municipio", related_name="obra_municipio", verbose_name="Municipio", blank=True)
+    obra_localidad_m = models.ManyToManyField("Localidad", related_name="obra_localidad", verbose_name="Localidad", blank=True)
+    obra_conjunto = models.ForeignKey("ConjuntoLicitado", verbose_name="Conjunto Licitado", on_delete=models.DO_NOTHING, null=True, blank=True)
+    obra_grupo = models.CharField("Grupo", max_length=4, blank=True, null=True)
+    obra_plazo = models.CharField("Plazo de Ejecución", max_length=10, blank=True, null=True)
+    obra_programa = models.ForeignKey("Programa", verbose_name="Programa", on_delete=models.CASCADE)
+    obra_convenio = models.CharField("Convenio/ACU", max_length=60, blank=True, null=True)
+    obra_expediente = models.CharField("Expediente", max_length=18)
+    obra_resolucion = models.CharField("Resolución de Adjudicación", max_length=15, blank=True, null=True)
+    obra_licitacion_tipo = models.CharField("Compulsa", max_length=1, choices=COMPULSA, blank=True, null=True)
+    obra_licitacion_numero = models.DecimalField("Número de Licitación", max_digits=3, decimal_places=0, blank=True, null=True)
+    obra_licitacion_ano = models.DecimalField("Año de Licitación", max_digits=4, decimal_places=0, blank=True, null=True)
+    obra_nomenclatura = models.CharField("Nomenclatura Catastral", max_length=1000, blank=True, null=True)  
+    obra_nomenclatura_plano = models.CharField("Número de Plano", max_length=10, blank=True, null=True)
+    obra_fecha_entrega = models.DateField("Fecha de Entrega de la Obra", blank=True, null=True)
+    obra_fecha_contrato = models.DateField("Fecha de Firma de Contrato", blank=True, null=True)
+    obra_expediente_costo = models.CharField("Expediente de Costos", max_length=18, blank=True, null=True)
+    obra_inspector = models.ManyToManyField("Agente", related_name="obra_inspector", verbose_name="Inspector")
+    obra_observaciones = models.TextField("Observaciones", blank=True, null=True)
+    obra_contrato_nacion_pesos = models.DecimalField("Monto Nación en Pesos", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
+    obra_contrato_nacion_uvi = models.DecimalField("Monto Nación en UVI", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
+    obra_contrato_nacion_uvi_fecha = models.DateField("Fecha UVI Nación", blank=True, null=True)
+    obra_contrato_provincia_pesos = models.DecimalField("Monto Provincia en Pesos", max_digits=12 ,decimal_places=2, default=0 , validators=[MinValueValidator(0)], blank=True, null=True)
+    obra_contrato_provincia_uvi = models.DecimalField("Monto Provincia en UVI", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
+    obra_contrato_provincia_uvi_fecha = models.DateField("Fecha UVI Provicia", blank=True, null=True)
+    obra_contrato_terceros_pesos = models.DecimalField("Monto Terceros en Pesos", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
+    obra_contrato_terceros_uvi = models.DecimalField("Monto Terceros en UVI", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
+    obra_contrato_terceros_uvi_fecha = models.DateField("Fecha UVI Terceros", blank=True, null=True)
+    obra_contrato_total_pesos = models.GeneratedField(
         expression=F("obra_contrato_nacion_pesos") + F("obra_contrato_terceros_pesos") + F("obra_contrato_provincia_pesos"),
         output_field=models.DecimalField(max_digits=12, decimal_places=2, editable=False),
         db_persist=True,
@@ -331,7 +331,7 @@ class Obra(models.Model):
         output_field=models.DecimalField(max_digits=12, decimal_places=2, editable=False),
         db_persist=True,
     )
-    obra_principal                      = models.ManyToManyField("Obra", related_name="obra_madre", verbose_name="Obra Madre", blank=True)
+    obra_principal = models.ManyToManyField("Obra", related_name="obra_madre", verbose_name="Obra Madre", blank=True)
     obra_history = HistoricalRecords(excluded_fields=['obra_contrato_total_pesos', "obra_contrato_total_uvi"])
         
     # def obra_acum_pesos(self):
@@ -381,16 +381,15 @@ class Prototipo(models.Model):
         verbose_name = "Prototipo Habitacional"
         verbose_name_plural = "Prototipos Habitacionales"
     
-    prototipo_uuid          = models.UUIDField(default=compat.uuid7, editable=False)
-    prototipo_obra          = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.DO_NOTHING)
-    prototipo_tipo          = models.CharField("Tipo de Prototipo", max_length=1, choices=TIPO)
-    prototipo_cantidad      = models.DecimalField("Cantidad del Prototipo", max_digits=3, decimal_places=0)
-    prototipo_superficie    = models.DecimalField("Superficie del Prototipo", max_digits=3, decimal_places=0)
-    prototipo_uvi           = models.DecimalField("UVIs x M2", max_digits=5, decimal_places=2)
-    prototipo_incremento    = models.DecimalField("Incremento Porcentual por Infraestructura", max_digits=2, decimal_places=0)
+    prototipo_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    prototipo_obra = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.DO_NOTHING)
+    prototipo_tipo = models.CharField("Tipo de Prototipo", max_length=1, choices=TIPO)
+    prototipo_cantidad = models.DecimalField("Cantidad del Prototipo", max_digits=3, decimal_places=0)
+    prototipo_superficie = models.DecimalField("Superficie del Prototipo", max_digits=3, decimal_places=0)
+    prototipo_uvi = models.DecimalField("UVIs x M2", max_digits=5, decimal_places=2)
+    prototipo_incremento = models.DecimalField("Incremento Porcentual por Infraestructura", max_digits=2, decimal_places=0)
     prototipo_discapacitado = models.BooleanField("Es Prototipo para Discapacitado", default=False)
     prototipo_history = HistoricalRecords()
-
 
 class Agente(models.Model):
     class Meta:
@@ -406,14 +405,14 @@ class Agente(models.Model):
         ("MO", "Maestro Mayor de Obras")
     )
 
-    agente_nombre 			= models.CharField("Nombre/s", max_length=60)
-    agente_apellido			= models.CharField("Apellido/s", max_length=60)
-    agente_dni				= models.DecimalField("DNI", max_digits=9, decimal_places=0, blank=True, null=True, validators=[MinValueValidator(0)])
-    agente_telefono 		= models.CharField("Telefono", max_length=20, blank=True, null=True)
-    agente_email 			= models.EmailField("Email", blank=True,null=True)
-    agente_profesion		= models.CharField("Profesion", max_length=2, choices=PROFESION, default=None, blank=True, null=True)
-    agente_matricula		= models.CharField("Matricula Profesional", max_length=10, blank=True, null=True)
-    agente_nombre_completo  = models.CharField("Nombre Completo", max_length=200, editable=False, blank=True, null=True)
+    agente_nombre = models.CharField("Nombre/s", max_length=60)
+    agente_apellido = models.CharField("Apellido/s", max_length=60)
+    agente_dni = models.DecimalField("DNI", max_digits=9, decimal_places=0, blank=True, null=True, validators=[MinValueValidator(0)])
+    agente_telefono = models.CharField("Telefono", max_length=20, blank=True, null=True)
+    agente_email = models.EmailField("Email", blank=True,null=True)
+    agente_profesion = models.CharField("Profesion", max_length=2, choices=PROFESION, default=None, blank=True, null=True)
+    agente_matricula = models.CharField("Matricula Profesional", max_length=10, blank=True, null=True)
+    agente_nombre_completo = models.CharField("Nombre Completo", max_length=200, editable=False, blank=True, null=True)
     agente_history = HistoricalRecords()
 
     def save(self):
@@ -474,38 +473,38 @@ class Certificado(models.Model):
         ("M", "Deductivo")
     )
 
-    certificado_uuid                = models.UUIDField(default=compat.uuid7, editable=False)
-    certificado_obra                = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.CASCADE)
-    certificado_financiamiento      = models.CharField("Financiamiento", max_length=1, choices=FINANCIAMIENTO, default="N")
-    certificado_rubro               = models.CharField("Rubro", max_length=1, choices=RUBRO, default="V") # Obsoleto -> se migro a una tabla aparte(carga.models.CertificadoRubro)
-    certificado_rubro_db            = models.ForeignKey("CertificadoRubro", verbose_name="Rubro", on_delete=models.DO_NOTHING, default=1)
-    certificado_rubro_anticipo      = models.DecimalField("Anticipo N°", max_digits=3, decimal_places=0, null=True, blank=True, validators=[MinValueValidator(0)])
-    certificado_rubro_obra          = models.DecimalField("Obra N°", max_digits=3, decimal_places=0, null=True, blank=True, validators=[MinValueValidator(0)])
-    certificado_rubro_devanticipo   = models.DecimalField("Devolución de Anticipo N°", max_digits=3, decimal_places=0, null=True, blank=True, validators=[MinValueValidator(0)])
-    certificado_expediente          = models.CharField("Número de Expediente", max_length=18)
-    certificado_periodo             = models.CharField("Periodo", max_length=13, null=True, blank=True)
-    certificado_monto_pesos         = models.DecimalField("Monto en Pesos", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
-    certificado_mes_pct             = models.DecimalField("Mes %", max_digits=5, decimal_places=2, default=0, validators=[MaxValueValidator(100)])
-    certificado_ante_pct            = models.DecimalField("Anterior %", max_digits=5, decimal_places=2, default=0, validators=[MaxValueValidator(100)])
-    certificado_acum_pct            = models.DecimalField("Acumulado %", max_digits=5, decimal_places=2, default=0, validators=[MaxValueValidator(100)])
-    certificado_devolucion_expte    = models.CharField("Número de Expediente Devolución", max_length=18, null=True, blank=True)
-    certificado_devolucion_monto    = models.DecimalField("Monto Devolución en Pesos", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    certificado_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    certificado_obra = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.CASCADE)
+    certificado_financiamiento = models.CharField("Financiamiento", max_length=1, choices=FINANCIAMIENTO, default="N")
+    certificado_rubro = models.CharField("Rubro", max_length=1, choices=RUBRO, default="V") # Obsoleto -> se migro a una tabla aparte(carga.models.CertificadoRubro)
+    certificado_rubro_db = models.ForeignKey("CertificadoRubro", verbose_name="Rubro", on_delete=models.DO_NOTHING, default=1)
+    certificado_rubro_anticipo = models.DecimalField("Anticipo N°", max_digits=3, decimal_places=0, null=True, blank=True, validators=[MinValueValidator(0)])
+    certificado_rubro_obra = models.DecimalField("Obra N°", max_digits=3, decimal_places=0, null=True, blank=True, validators=[MinValueValidator(0)])
+    certificado_rubro_devanticipo = models.DecimalField("Devolución de Anticipo N°", max_digits=3, decimal_places=0, null=True, blank=True, validators=[MinValueValidator(0)])
+    certificado_expediente = models.CharField("Número de Expediente", max_length=18)
+    certificado_periodo = models.CharField("Periodo", max_length=13, null=True, blank=True)
+    certificado_monto_pesos = models.DecimalField("Monto en Pesos", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    certificado_mes_pct = models.DecimalField("Mes %", max_digits=5, decimal_places=2, default=0, validators=[MaxValueValidator(100)])
+    certificado_ante_pct = models.DecimalField("Anterior %", max_digits=5, decimal_places=2, default=0, validators=[MaxValueValidator(100)])
+    certificado_acum_pct = models.DecimalField("Acumulado %", max_digits=5, decimal_places=2, default=0, validators=[MaxValueValidator(100)])
+    certificado_devolucion_expte = models.CharField("Número de Expediente Devolución", max_length=18, null=True, blank=True)
+    certificado_devolucion_monto = models.DecimalField("Monto Devolución en Pesos", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
     certificado_devolucion_monto_uvi = models.DecimalField("Monto Devolución en UVI", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
-    certificado_monto_uvi           = models.DecimalField("Monto en UVI", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
-    certificado_fecha               = models.DateField("Fecha", default=timezone.now)
-    certificado_monto_cobrar        = models.GeneratedField(
+    certificado_monto_uvi = models.DecimalField("Monto en UVI", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    certificado_fecha = models.DateField("Fecha", default=timezone.now)
+    certificado_monto_cobrar = models.GeneratedField(
         expression=F("certificado_monto_pesos") - F("certificado_devolucion_monto"),
         output_field=models.DecimalField("Monto a Cobrar Pesos", max_digits=12, decimal_places=2, default=0, editable=False),
         db_persist=True
     )
-    certificado_monto_cobrar_uvi    = models.GeneratedField(
+    certificado_monto_cobrar_uvi = models.GeneratedField(
         expression=F("certificado_monto_uvi") - F("certificado_devolucion_monto_uvi"),
         output_field=models.DecimalField("Monto a Cobrar UVI", max_digits=12, decimal_places=2, default=0, editable=False),
         db_persist=True
     )
-    certificado_digital             = models.FileField(upload_to=generate_name, max_length=500, null=True, blank=True)
-    certificado_fecha_carga         = models.DateField("Fecha de carga", default=timezone.now)
-    certificado_fecha_carga_legacy  = models.BooleanField("Es Certificado Viejo", default=False)
+    certificado_digital = models.FileField(upload_to=generate_name, max_length=500, null=True, blank=True)
+    certificado_fecha_carga = models.DateField("Fecha de carga", default=timezone.now)
+    certificado_fecha_carga_legacy = models.BooleanField("Es Certificado Viejo", default=False)
     certificado_history = HistoricalRecords(excluded_fields=['certificado_monto_cobrar', "certificado_monto_cobrar_uvi"])
     
     def __str__(self):
@@ -607,11 +606,11 @@ class ResolucionesDigitales(models.Model):
         verbose_name_plural = "Resoluciones Digitales"
         ordering = ["resoluciondigital_numero"]
     
-    resoluciondigital_uuid          = models.UUIDField(default=compat.uuid7, editable=False)
-    resoluciondigital_obra          = models.ManyToManyField("Obra", related_name="obra_resoluciones", verbose_name="Obras", blank=True)
-    resoluciondigital_descripcion   = models.TextField("Descripción")
-    resoluciondigital_numero        = models.CharField("Resolución", max_length=15)
-    resoluciondigital_archivo       = models.FileField(upload_to=generate_name_resoluciones, max_length=500)
+    resoluciondigital_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    resoluciondigital_obra = models.ManyToManyField("Obra", related_name="obra_resoluciones", verbose_name="Obras", blank=True)
+    resoluciondigital_descripcion = models.TextField("Descripción")
+    resoluciondigital_numero = models.CharField("Resolución", max_length=15)
+    resoluciondigital_archivo = models.FileField(upload_to=generate_name_resoluciones, max_length=500)
     resoluciondigital_history = HistoricalRecords()
     
     def __str__(self):
@@ -619,12 +618,16 @@ class ResolucionesDigitales(models.Model):
 class Uvi(models.Model):
     class Meta:
         verbose_name_plural = "UVI"
-        ordering = ["uvi_fecha"]
+        ordering = ["-uvi_fecha",]
+        get_latest_by = "-uvi_fecha"
 
     uvi_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     uvi_fecha = models.DateField("Fecha UVI:")
     uvi_valor = models.DecimalField("Valor", max_digits=15, decimal_places=2)
     uvi_history = HistoricalRecords()
+
+    def __str__(self):
+        return f"({self.id})-{self.uvi_fecha} - {self.uvi_valor}"
 
 class INDEC(models.Model):
 
@@ -634,30 +637,30 @@ class INDEC(models.Model):
 
     indec_uuid                        = models.UUIDField(default=compat.uuid7, editable=False)
 
-    mes                         = models.DateField("Fecha de Medición")
-    indec_manodeobra            = models.DecimalField("Mano de Obra", max_digits=20, decimal_places=10)
-    indec_albanileria           = models.DecimalField("Albañilería", max_digits=20, decimal_places=10)
-    indec_carpinterías          = models.DecimalField("Carpinterías", max_digits=20, decimal_places=10)
-    indec_andamios              = models.DecimalField("Andamios", max_digits=20, decimal_places=10)
-    indec_iluminación           = models.DecimalField("Artefactos de iluminación y cableado", max_digits=20, decimal_places=10)
-    indec_pvc                   = models.DecimalField("Caños de PVC para instalaciones varias", max_digits=20, decimal_places=10)
-    indec_gastos                = models.DecimalField("Gastos Generales", max_digits=20, decimal_places=10)
-    indec_artefactos            = models.DecimalField("Artefactos para baño y grifería", max_digits=20, decimal_places=10)
-    indec_hormigon              = models.DecimalField("Hormigón", max_digits=20, decimal_places=10)
-    indec_valvulas              = models.DecimalField("Válvulas de bronce", max_digits=20, decimal_places=10)
-    indec_electrobombas         = models.DecimalField("Electrobombas", max_digits=20, decimal_places=10)
-    indec_quimicos              = models.DecimalField("Productos Químicos", max_digits=20, decimal_places=10)
-    indec_motores               = models.DecimalField("Motores eléctricos y equipos de aire acondicionado", max_digits=20, decimal_places=10)
-    indec_asfaltos              = models.DecimalField("Asfaltos, combustibles y lubricantes", max_digits=20, decimal_places=10)
-    indec_medidores             = models.DecimalField("Medidores de caudal", max_digits=20, decimal_places=10)
-    indec_membrana              = models.DecimalField("Membrana impermeabilizante", max_digits=20, decimal_places=10)
-    indec_equipo                = models.DecimalField("Equipo - Amortización de equipo", max_digits=20,decimal_places=10)
-    indec_pisos                 = models.DecimalField("Pisos y revestimientos", max_digits=20, decimal_places=10)
-    indec_aceros                = models.DecimalField("Aceros - Hierro aletado", max_digits=20, decimal_places=10)
-    indec_cemento               = models.DecimalField("Cemento", max_digits=20, decimal_places=10)
-    indec_arena                 = models.DecimalField("Arena", max_digits=20, decimal_places=10)
-    indec_costo_financiero      = models.DecimalField("Costo Financiero", max_digits=20, decimal_places=10, default=18.85)
-    indec_transporte            = models.DecimalField("Transporte", max_digits=20, decimal_places=10, default=134.98)
+    mes = models.DateField("Fecha de Medición")
+    indec_manodeobra = models.DecimalField("Mano de Obra", max_digits=20, decimal_places=10)
+    indec_albanileria = models.DecimalField("Albañilería", max_digits=20, decimal_places=10)
+    indec_carpinterías = models.DecimalField("Carpinterías", max_digits=20, decimal_places=10)
+    indec_andamios = models.DecimalField("Andamios", max_digits=20, decimal_places=10)
+    indec_iluminación = models.DecimalField("Artefactos de iluminación y cableado", max_digits=20, decimal_places=10)
+    indec_pvc = models.DecimalField("Caños de PVC para instalaciones varias", max_digits=20, decimal_places=10)
+    indec_gastos = models.DecimalField("Gastos Generales", max_digits=20, decimal_places=10)
+    indec_artefactos = models.DecimalField("Artefactos para baño y grifería", max_digits=20, decimal_places=10)
+    indec_hormigon = models.DecimalField("Hormigón", max_digits=20, decimal_places=10)
+    indec_valvulas = models.DecimalField("Válvulas de bronce", max_digits=20, decimal_places=10)
+    indec_electrobombas = models.DecimalField("Electrobombas", max_digits=20, decimal_places=10)
+    indec_quimicos = models.DecimalField("Productos Químicos", max_digits=20, decimal_places=10)
+    indec_motores = models.DecimalField("Motores eléctricos y equipos de aire acondicionado", max_digits=20, decimal_places=10)
+    indec_asfaltos = models.DecimalField("Asfaltos, combustibles y lubricantes", max_digits=20, decimal_places=10)
+    indec_medidores = models.DecimalField("Medidores de caudal", max_digits=20, decimal_places=10)
+    indec_membrana = models.DecimalField("Membrana impermeabilizante", max_digits=20, decimal_places=10)
+    indec_equipo = models.DecimalField("Equipo - Amortización de equipo", max_digits=20,decimal_places=10)
+    indec_pisos = models.DecimalField("Pisos y revestimientos", max_digits=20, decimal_places=10)
+    indec_aceros = models.DecimalField("Aceros - Hierro aletado", max_digits=20, decimal_places=10)
+    indec_cemento = models.DecimalField("Cemento", max_digits=20, decimal_places=10)
+    indec_arena = models.DecimalField("Arena", max_digits=20, decimal_places=10)
+    indec_costo_financiero = models.DecimalField("Costo Financiero", max_digits=20, decimal_places=10, default=18.85)
+    indec_transporte = models.DecimalField("Transporte", max_digits=20, decimal_places=10, default=134.98)
     indec_history = HistoricalRecords()
 
     def __str__(self):

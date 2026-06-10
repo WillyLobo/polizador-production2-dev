@@ -116,6 +116,7 @@ reporte_patterns = [
     path("reporte/crear-reporte/", CrearReporteView.as_view(), name="crear-reporte"),
     path("reporte/ver-reporte/", VerReporteView.as_view(), name="ver-reporte"),
     path("reporte/lista-uvi/", CrearListaUvi.as_view(), name="crear-lista-uvi"),
+    path("reporte/refresh_uvi", refresh_uvi_from_bcra, name="refresh-uvi-from-bcra"),
 ]
 documentos_digitales = [
     path("digitales/crear-contrato-digital/", CrearContratoDigital.as_view(), name="crear-contrato-digital"),
