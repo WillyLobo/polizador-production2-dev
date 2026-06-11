@@ -28,14 +28,14 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         # Ruta del archivo CSV de salida
-            for certificado in Certificado.objects.all():
+            for poliza in Poliza.objects.all():
                 # Solo procesa certificados que tengan un archivo digital asociado
-                if certificado.certificado_digital:
+                if poliza.poliza_digital:
                     # Construye la ruta local a partir del path del FileField.
                     # Se asume que el nombre del archivo tiene formato "subida/..."
                     
                     # VARIABLES DIRECTORIO
-                    directorio_full_path = certificado.certificado_digital.name.split('/')
+                    directorio_full_path = poliza.poliza_digital.name.split('/')
                     directorio_base = directorio_full_path[0]
                     directorio_fecha = directorio_full_path[1]
                     directorio_fecha_mes = directorio_fecha.split('-')[0]
@@ -53,12 +53,12 @@ class Command(BaseCommand):
                         os.makedirs(directorio)
 
                     # Descarga el archivo remoto
-                    response = requests.get(certificado.certificado_digital.url)
+                    response = requests.get(poliza.poliza_digital.url)
 
                     # Si la descarga fue exitosa, guarda el archivo localmente
                     if response.status_code == 200:
                         nombre_local = (
-                            f"{directorio}{certificado.certificado_uuid}_{certificado.certificado_expediente}.pdf"
+                            f"{directorio}{poliza.poliza_uuid}_{poliza.poliza_expediente}.pdf"
                         )
                         with open(nombre_local, "wb") as f:
                             f.write(response.content)
@@ -66,11 +66,11 @@ class Command(BaseCommand):
                         self.stdout.write(
                             self.style.WARNING(
                                 f"Error {response.status_code} al descargar "
-                                f"certificado {certificado.certificado_uuid}"
+                                f"Poliza {poliza.poliza_uuid}"
                             )
                         )
                         continue
 
                     self.stdout.write(
-                        f"Descargado certificado {directorio}{certificado.certificado_uuid}_{certificado.certificado_expediente}.pdf"
+                        f"Descargada Poliza {directorio}{poliza.poliza_uuid}_{poliza.poliza_expediente}.pdf"
                     )

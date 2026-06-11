@@ -7,23 +7,33 @@ from django.db.models import Sum, F, FloatField
 from django.core.validators import MinValueValidator, MaxValueValidator
 from uuid_utils import compat
 import os
+from secretariador.functions import FileValidator, CuitValidator
+
 
 # from .models import User
 
-def generate_name(instance, filename):
+def generate_name_certificados(instance, filename):
     directorio = "certificados/"
-    fecha = datetime.now().strftime("%m-%Y")
-    extension = filename.split(".")[-1]
-    filename = "{}.{}".format(instance, extension).replace("#","-").replace("/","-").replace("[","(").replace("]",")").replace("*","-").replace("?","-")
-    name = os.path.join(directorio, fecha, filename)
+    anio = str(instance.certificado_fecha.year)
+    mes = str(instance.certificado_fecha.month)
+    mes = mes.zfill(2)
+    extension = "pdf"
+    filename = f"{instance.certificado_uuid}_{instance.certificado_expediente}.{extension}"
+    name = os.path.join(directorio, anio, mes, filename)
     return name
 
-def generate_name_poliza(instance, filename):
+#     directorio = "instrumentoslegales/decretos/"
+#     filename = f"{instance.instrumentolegaldecretos_numero}-{instance.instrumentolegaldecretos_ano}-{instance.instrumentolegaldecretos_tipo}.pdf"
+#     name = os.path.join(directorio, filename)
+
+def generate_name_polizas(instance, filename):
     directorio = "polizas/"
-    fecha = datetime.now().strftime("%m-%Y")
-    extension = filename.split(".")[-1]
-    filename = "{} - {} - {}.{}".format(instance.poliza_numero, instance.poliza_aseguradora, instance.poliza_expediente, extension).replace("#","-").replace("/","-").replace("[","(").replace("]",")").replace("*","-").replace("?","-")
-    name = os.path.join(directorio, fecha, filename)
+    anio = str(instance.poliza_fecha.year)
+    mes = str(instance.poliza_fecha.month)
+    mes = mes.zfill(2)
+    extension = "pdf"
+    filename = f"{instance.poliza_uuid}_{instance.poliza_expediente}.{extension}"
+    name = os.path.join(directorio, anio, mes, filename)
     return name
 
 def generate_name_contratos(instance, filename):
@@ -143,7 +153,7 @@ class Poliza(models.Model):
     poliza_obra = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.CASCADE)
     poliza_monto_pesos = models.DecimalField("Monto Sustituido en Pesos", max_digits=15, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)])
     poliza_monto_uvi = models.DecimalField("Monto Sustituido en UVI", max_digits=15, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)])
-    poliza_digital = models.FileField(verbose_name="Póliza Digital", upload_to=generate_name_poliza, max_length=500, null=True, blank=True)
+    poliza_digital = models.FileField(verbose_name="Póliza Digital", upload_to=generate_name_polizas, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], max_length=500, null=True, blank=True)
     poliza_history = HistoricalRecords()
     
     def __str__(self):
@@ -377,7 +387,7 @@ class Prototipo(models.Model):
         ("o", "Otro")
     )
 
-    class meta:
+    class Meta:
         verbose_name = "Prototipo Habitacional"
         verbose_name_plural = "Prototipos Habitacionales"
     
@@ -502,7 +512,7 @@ class Certificado(models.Model):
         output_field=models.DecimalField("Monto a Cobrar UVI", max_digits=12, decimal_places=2, default=0, editable=False),
         db_persist=True
     )
-    certificado_digital = models.FileField(upload_to=generate_name, max_length=500, null=True, blank=True)
+    certificado_digital = models.FileField(upload_to=generate_name_certificados, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], null=True, blank=True)
     certificado_fecha_carga = models.DateField("Fecha de carga", default=timezone.now)
     certificado_fecha_carga_legacy = models.BooleanField("Es Certificado Viejo", default=False)
     certificado_history = HistoricalRecords(excluded_fields=['certificado_monto_cobrar', "certificado_monto_cobrar_uvi"])
