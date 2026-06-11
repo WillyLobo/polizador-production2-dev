@@ -900,7 +900,7 @@ class Migration(migrations.Migration):
                 ('poliza_recibo', models.CharField(max_length=100, verbose_name='Número de Recibo')),
                 ('poliza_monto_pesos', models.DecimalField(blank=True, decimal_places=2, max_digits=15, null=True, validators=[django.core.validators.MinValueValidator(0)], verbose_name='Monto Sustituido en Pesos')),
                 ('poliza_monto_uvi', models.DecimalField(blank=True, decimal_places=2, max_digits=15, null=True, validators=[django.core.validators.MinValueValidator(0)], verbose_name='Monto Sustituido en UVI')),
-                ('poliza_digital', models.FileField(blank=True, max_length=500, null=True, upload_to=carga.models.generate_name_poliza, verbose_name='Póliza Digital')),
+                ('poliza_digital', models.FileField(blank=True, max_length=500, null=True, upload_to=carga.models.generate_name_polizas, verbose_name='Póliza Digital')),
             ],
             options={
                 'verbose_name': 'Póliza',
@@ -1035,7 +1035,7 @@ class Migration(migrations.Migration):
                 ('certificado_fecha', models.DateField(default=django.utils.timezone.now, verbose_name='Fecha')),
                 ('certificado_monto_cobrar', models.DecimalField(decimal_places=2, default=0, editable=False, max_digits=12, verbose_name='Monto a Cobrar Pesos')),
                 ('certificado_monto_cobrar_uvi', models.DecimalField(decimal_places=2, default=0, editable=False, max_digits=12, verbose_name='Monto a Cobrar UVI')),
-                ('certificado_digital', models.FileField(blank=True, max_length=500, null=True, upload_to=carga.models.generate_name)),
+                ('certificado_digital', models.FileField(blank=True, max_length=500, null=True, upload_to=carga.models.generate_name_certificados)),
                 ('certificado_fecha_carga', models.DateField(default=django.utils.timezone.now, verbose_name='Fecha de carga')),
                 ('certificado_fecha_carga_legacy', models.BooleanField(default=False, verbose_name='Es Certificado Viejo')),
                 ('certificado_rubro_db', models.ForeignKey(default=1, on_delete=django.db.models.deletion.DO_NOTHING, to='carga.certificadorubro', verbose_name='Rubro')),
