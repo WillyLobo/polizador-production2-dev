@@ -11,6 +11,8 @@
     border-color: black !important;
 }
 .page-item .page-link {
+    font-size: 0.8rem;
+    font-family: Lato, Arial, sans-serif;
     color: black !important;
 }
 .required { 
