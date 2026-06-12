@@ -113,8 +113,7 @@ contrato_patterns = [
 reporte_patterns = [
     path("reporte/crear-reporte-mes/", CrearReporteCertificadoPorMes.as_view(), name="crear-reporte-certificado"),
 	path("reporte/ver-reporte-mes/", VerReporteCertificadoPorMes.as_view(), name="ver-reporte-certificado"),
-    path("reporte/crear-reporte/", CrearReporteView.as_view(), name="crear-reporte"),
-    path("reporte/ver-reporte/", VerReporteView.as_view(), name="ver-reporte"),
+    path("reporte/crear-reporte-obra/", CrearReporteObraView.as_view(), name="crear-reporte-obra"),
     path("reporte/lista-uvi/", CrearListaUvi.as_view(), name="crear-lista-uvi"),
     path("reporte/refresh_uvi", refresh_uvi_from_bcra, name="refresh-uvi-from-bcra"),
 ]

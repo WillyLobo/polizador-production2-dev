@@ -8,15 +8,15 @@
     [+] Direccion General
     [+] Gerencia Operativa
     [ ] Grupos para edición y grupos para vistas(tipo invitado solo para ver reportes)?
-[ ] Repasar los permisos en los Views
-[ ] Ordenar el cuadro busqueda de datatables
+[+] Repasar los permisos en los Views
+[+] Ordenar el cuadro busqueda de datatables
 [ ] Rehacer la integracion para contratos y resoluciones digitales de obras
 [ ] Reparar los templates para ajustar viewport size
-[ ] Ajustar los templates de reportes de la app carga para ajustarse al resto del sitio
-[ ] Corregir los Select en las páginas de creación de reportes
+[?] Ajustar los templates de reportes de la app carga para ajustarse al resto del sitio
+[?] Corregir los Select en las páginas de creación de reportes
 [ ] Redireccionar usuarios con permisos fuera de la vista sin permisos
 [ ] Modificar modelo Agente para vincularlo a los agentes de la app secretariador
-
+[ ] VerReporteCertificadoPorMes deberia dar opción de ver los certificados por fecha de carga o fecha de certificado
 
 # Models
 [+] Create model Incorporacion.

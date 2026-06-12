@@ -6,11 +6,9 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.shortcuts import render, redirect
 from carga.models import Certificado, Obra, Localidad, Empresa, Programa, CertificadoRubro, Uvi
-from carga.forms.certificadoforms import *
-from django.db.models import Q, FilteredRelation, Subquery, OuterRef, Sum, F
+from django.db.models import Q, FilteredRelation, Subquery, Sum, F
 from django.core.exceptions import ValidationError
 from django.core.management import call_command
-from django.views.decorators.cache import cache_page
 from datetime import datetime, timedelta
 
 @method_decorator(login_required, name="dispatch")
@@ -29,126 +27,91 @@ class VerReporteCertificadoPorMes(PermissionRequiredMixin, generic.ListView):
 	def get_queryset(self):
 		mes_list = self.request.GET.getlist("mes")
 		ano = self.request.GET.get("ano")
-
-		certificados = Certificado.objects.filter(certificado_fecha_carga__year=ano,certificado_fecha_carga__month__in=mes_list).order_by("certificado_obra__obra_programa").prefetch_related("certificado_obra").select_related("certificado_obra__obra_empresa","certificado_obra__obra_programa")
-		
+		certificados = Certificado.objects.filter(certificado_fecha__year=ano, certificado_fecha__month__in=mes_list).order_by("certificado_obra__obra_programa").prefetch_related("certificado_obra").select_related("certificado_obra__obra_empresa", "certificado_obra__obra_programa")
 		return certificados
 
 @method_decorator(login_required, name="dispatch")
-class CrearReporteView(PermissionRequiredMixin, generic.TemplateView) :
+class CrearReporteObraView(PermissionRequiredMixin, generic.ListView):
 	permission_required = "carga.view_certificado"
-	template_name = "reportes/crear-reporteobra.html"
+	model = Obra
+	context_object_name = "object_list"
+	template_name = "reportes/crear-reporte-obra.html"
+	
+	def get_queryset(self):
+		if not self.request.GET:
+			return Obra.objects.none()
+
+		localidad_ids = self.request.GET.getlist("localidad")
+		programa_ids = self.request.GET.getlist("programa")
+		empresa_ids = self.request.GET.getlist("empresa")
+		pctavance = self.request.GET.get("pctavance")
+		tipodefiltro = self.request.GET.get("tipodefiltro")
+		rubro_ids = self.request.GET.getlist("rubro")
+
+		qs = Obra.objects.all().select_related("obra_empresa", "obra_programa").prefetch_related("obra_localidad_m", "certificado_set")
+
+		if localidad_ids:
+			locality_q = Q()
+			for l in localidad_ids:
+				locality_q |= Q(obra_localidad_m=l)
+			qs = qs.filter(locality_q)
+
+		if empresa_ids:
+			empresa_q = Q()
+			for e in empresa_ids:
+				empresa_q |= Q(obra_empresa__id=e)
+			qs = qs.filter(empresa_q)
+
+		if programa_ids:
+			programa_q = Q()
+			for p in programa_ids:
+				programa_q |= Q(obra_programa__id=p)
+			qs = qs.filter(programa_q)
+
+		if tipodefiltro and pctavance:
+			try:
+				pct_val = float(pctavance)
+				annotated = qs.annotate(pct=Sum(F("certificado__certificado_mes_pct")))
+				if tipodefiltro == "1":
+					qs = annotated.filter(pct__exact=pct_val)
+				elif tipodefiltro == "2":
+					qs = annotated.filter(pct__lt=pct_val)
+				elif tipodefiltro == "3":
+					qs = annotated.filter(pct__gt=pct_val)
+			except (ValidationError, ValueError):
+				pass
+
+		if rubro_ids:
+			rubro_id_list = [int(r) for r in rubro_ids]
+			qs = qs.filter(certificado__certificado_rubro_db_id__in=rubro_id_list).distinct()
+
+		financiamiento = self.request.GET.get("financiamiento")
+		if financiamiento == "2":
+			qs = qs.filter(certificado__certificado_financiamiento="N").distinct()
+		elif financiamiento == "3":
+			qs = qs.filter(certificado__certificado_financiamiento="P").distinct()
+		elif financiamiento == "4":
+			qs = qs.filter(certificado__certificado_financiamiento="T").distinct()
+
+		return qs
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-
-		localidades = Localidad.objects.all()
-		empresas = Empresa.objects.all()
-		programas = Programa.objects.all()
-		rubros = CertificadoRubro.objects.all()
-		
-		context["localidades"] = localidades
-		context["empresas"] = empresas
-		context["programas"] = programas
-		context["rubros"] = rubros
-
+		for obra in context["object_list"]:
+			acum_pesos = 0
+			acum_uvi = 0
+			certs = obra.certificado_set.all()
+			if certs:
+				acum_pesos = sum(c.certificado_monto_cobrar or 0 for c in certs)
+				acum_uvi = sum(c.certificado_monto_cobrar_uvi or 0 for c in certs)
+			setattr(obra, "obra_acum_pesos", acum_pesos)
+			setattr(obra, "obra_acum_uvi", acum_uvi)
+			saldo = obra.obra_contrato_total_uvi - acum_uvi
+			setattr(obra, "saldo_uvi", saldo)
+		context["localidades"] = Localidad.objects.all()
+		context["empresas"] = Empresa.objects.all()
+		context["programas"] = Programa.objects.all()
 		return context
-
-@method_decorator(login_required, name="dispatch")
-@method_decorator(cache_page(60*15), name="dispatch")
-class VerReporteView(PermissionRequiredMixin, generic.ListView):
-	permission_required = "carga.view_certificado"
-
-	model = Obra
-	context_object_name = "object_list"
-	template_name = "reportes/ver-reporteobra.html"
-	
-	def get_queryset(self):
-		localidad = self.request.GET.getlist("localidad")
-		programa = self.request.GET.getlist("programa")
-		empresa = self.request.GET.getlist("empresa")
-		pctavance = self.request.GET.get("pctavance")
-		tipodefiltro = self.request.GET.get("tipodefiltro")
-		rubro = self.request.GET.get("rubro")
-		financiamiento = self.request.GET.get("financiamiento")
-		# print(self.request.GET)
-		# object_list = Obra.objects.all()
-		
-		# Crea un query vacio, para anexarle los subsiguientes querys.
-		objects_query = Q()
-		try:
-			localidad_query = Q()
-			for l in localidad:
-				localidad_query |= Q(obra_localidad_m=l)
-		except IndexError:
-			pass
-		try:
-			empresa_query = Q()
-			for e in empresa:
-				empresa_query |= Q(obra_empresa__id=e)
-		except IndexError:
-			pass
-		try:
-			programa_query = Q()
-			for p in programa:
-				programa_query |= Q(obra_programa__id=p)
-		except IndexError:
-			pass
-		
-		# Generar un filtro previo a fin de acortar el chequeo sobre la base de datos de los acumulados porcentuales.
-		pre_listado = Obra.objects.all().filter(localidad_query, empresa_query, programa_query, objects_query)
-		
-		# Filtrado de avances porcentuales.
-		# Tipo de filtro: 1 = Igual a - 2 = Menor a - 3 = Mayor a
-		try:
-			if tipodefiltro == "1":
-				mas_nuevo = pre_listado.annotate(pct=Sum(F("certificado__certificado_mes_pct"))).filter(pct__exact=pctavance)
-				pre_listado = mas_nuevo
-			elif tipodefiltro == "2":
-				mas_nuevo = pre_listado.annotate(pct=Sum(F("certificado__certificado_mes_pct"))).filter(pct__lt=pctavance)
-				pre_listado = mas_nuevo
-			elif tipodefiltro == "3":
-				mas_nuevo = pre_listado.annotate(pct=Sum(F("certificado__certificado_mes_pct"))).filter(pct__gt=pctavance)
-				pre_listado = mas_nuevo
-			else:
-				pre_listado = pre_listado
-		except ValidationError:
-				pre_listado = pre_listado
-
-		# Rubro Values:
-		# value="1" Vivienda
-		# value="2" Infraestructura Frentista
-		# value="3" Terreno
-		# value="4" Redeterminación
-		# value="5" Nexos y Redes
-		# value="8" Reconocimiento de Trabajos
-		# value="9" Ampliación de Contrato
-		
-		# Monstruosidad asquerosa para filtrar por rubro de contrato.
-		# Genera una lista "cmid" con los id del modelo Obra, tomados desde el modelo "CertificadoRubro", sobre los que filtra los id.
-		cmid = []
-		try:
-			for r in rubro:
-				contrato = pre_listado.filter(contrato__contrato_descripcion="Contrato Base")
-				for cset in contrato:
-					try:
-						c = cset.contrato_set.first().contratomonto_set
-						c = c.filter(contratomonto_rubro=r).last()
-						try:
-							cmid.append(c.contratomonto_contrato.contrato_obra.id)
-						except TypeError:
-							pass
-					except AttributeError:
-						pass
-			pre_listado=pre_listado.filter(id__in=cmid)
-		except ValidationError:
-			pass
-		except TypeError:
-			pass
-
-		
-		listado = pre_listado
-		return listado
 
 @method_decorator(login_required, name="dispatch")
 class CrearListaUvi(PermissionRequiredMixin, generic.ListView):
@@ -160,20 +123,11 @@ class CrearListaUvi(PermissionRequiredMixin, generic.ListView):
 	template_name = "reportes/crear-lista-uvi.html"
 	
 	def get_queryset(self, **kwargs):
-		"""
-		Returns a queryset of Uvi objects based on the dates provided in the request.GET parameters. 
-		If no parameters are provided, it fetches Uvi objects within a default date range and orders them by date.
-		If parameters are provided, it fetches Uvi objects within the specified date range and orders them by date.
-		
-		:param kwargs: Additional keyword arguments
-		:return: A queryset of Uvi objects filtered and ordered based on the request parameters
-		"""		
 		if not self.request.GET:
-			fecha_final = datetime.today()
-			fecha_final += timedelta(days=10)
+			fecha_final = datetime.today() + timedelta(days=10)
 			fecha_inicial = fecha_final - timedelta(days=60)
-			uvi = Uvi.objects.filter(uvi_fecha__range=[fecha_inicial,fecha_final]).order_by("-uvi_fecha")
-		elif self.request.GET:
+			uvi = Uvi.objects.filter(uvi_fecha__range=[fecha_inicial, fecha_final]).order_by("-uvi_fecha")
+		else:
 			fecha_final = self.request.GET.get("fecha_final")
 			fecha_final = datetime.strptime(fecha_final, "%d/%m/%Y")
 			fecha_inicial = self.request.GET.get("fecha_inicial")

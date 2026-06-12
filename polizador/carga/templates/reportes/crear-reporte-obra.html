@@ -1,0 +1,214 @@
+{% extends "base.html"%}
+{% load l10n %}
+{% block content %}
+{% load static%}
+{%block title%}<title>Reporte</title>{%endblock title%}
+
+<div class="min-vh-100 min-vw-100 p-5">
+  <form action="{% url "carga:crear-reporte-obra" %}" method="get">
+    <!-- Select Localidad -->
+      <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <label class="input-group-text" for="inputGroupSelectLocalidad">Localidad</label>
+          </div>
+          <select name="localidad" class="customSelect2" id="inputGroupSelectLocalidad" multiple>
+            {% for localidad in localidades %}
+            <option value="{{localidad.id|safe}}">{{localidad.localidad_nombre}}</option>
+            {%endfor%}
+          </select>
+      </div>
+      <!-- Select Empresa -->
+      <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <label class="input-group-text" for="inputGroupSelectEmpresa">Empresa</label>
+          </div>
+          <select name="empresa" class="customSelect2" id="inputGroupSelectEmpresa" multiple>
+            {% for empresa in empresas %}
+            <option value="{{empresa.id|safe}}">{{empresa.empresa_nombre}}</option>
+            {%endfor%}
+          </select>
+      </div>
+      <!-- Select Programa-->
+      <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <label class="input-group-text" for="inputGroupSelectPrograma">Programa</label>
+          </div>
+          <select name="programa" class="customSelect2" id="inputGroupSelectPrograma" multiple>
+            {% for programa in programas %}
+            <option value="{{programa.id|safe}}">{{programa.programa_nombre}}</option>
+            {%endfor%}
+          </select>
+      </div>
+      <!-- Select Rubro y Financiamiento -->
+      <div class="input-group">
+          <div class="input-group-prepend">
+              <label class="input-group-text" for="inputGroupSelectRubro">Rubro</label>
+          </div>
+          <select name="rubro" class="customSelect2" id="inputGroupSelectRubro" multiple>
+              <option value="1" selected>Vivienda</option>
+              <option value="2">Infraestructura Frentista</option>
+              <option value="3">Terreno</option>
+              <option value="4">Redeterminación</option>
+              <option value="5">Nexos y Redes</option>
+              <option value="8">Reconocimiento de Trabajos</option>
+              <option value="9">Ampliación de Contrato</option>
+          </select>
+          <div class="input-group-prepend">
+              <label class="input-group-text" for="inputGroupFinanciamiento">Financiamiento</label>
+          </div>
+              <select name="financiamiento" class="customSelect2" id="inputGroupFinanciamiento">
+                  <option value="1" selected>Todos</option>
+                  <option value="2">Nación</option>
+                  <option value="3">Provincia</option>
+                  <option value="4">Otros</option>
+              </select>
+      </div>
+      <!-- Filtro Porcentual -->
+      <div class="input-group">
+          <div class="input-group-prepend">
+            <label class="input-group-text" id="inputGroupTipodeFiltro">% Avance</label>
+          </div>
+          <select name="tipodefiltro" class="customSelect2" id="inputGroupTipodeFiltro">
+              <option value="1">Igual a</option>
+              <option value="2">Menor a</option>
+              <option value="3" selected>Mayor a</option>
+          </select>
+          <input type="text" class="form-control" name="pctavance" placeholder="Porcentaje" default=0>
+      </div>
+        <div class="container ml-2 pt-2">
+          <input type='submit' value='Buscar' class="btn btn-primary" />
+        </div>
+  </form>
+
+
+    <table width="auto" class="table table-striped table-bordered align-middle" id="tablaReporte">
+        <thead>
+            <tr>
+                <th scope="col">ID#</th>
+                <th scope="col">Obra</th>
+                <th scope="col">Soluciones</th>
+                <th scope="col">Localidad</th>
+                <th scope="col">Contratista</th>
+                <th scope="col">Programa</th>
+                <th scope="col">Convenio</th>
+                <th scope="col">Expediente</th>
+                <th scope="col">Monto Pesos</th>
+                <th scope="col">Monto UVI</th>
+                <th scope="col">Saldo UVI</th>
+                <th scope="col">% Ultimo Mes</th>
+                <th scope="col">Acumulado</th>
+                <th scope="col">Acumulado en Pesos</th>
+                <th scope="col">Acumulado en UVI</th>
+                <th scope="col">Link</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for instance in object_list %}
+            <tr>
+                {% load humanize %}
+                <th class="border" scope="row">{{instance.id}}</th>
+                <td class="border">{{instance.obra_nombre}}</td>
+                <td class="border">{{instance.obra_soluciones|default_if_none:"-"}}</td>
+                <td class="border">{{instance.lista_localidades}}</td>
+                <td class="border">{{instance.obra_empresa.empresa_nombre}}</td>
+                <td class="border">{{instance.obra_programa}}</td>
+                <td class="border">{{instance.obra_convenio|default_if_none:"-"}}</td>
+                <td class="border">{{instance.obra_expediente}}</td>
+                <td class="border">{{instance.obra_contrato_total_pesos}}</td>
+                <td class="border">{{instance.obra_contrato_total_uvi}}</td>
+                <td class="border">{{instance.saldo_uvi|default_if_none:0}}</td>
+                <td class="border">{{instance.certificado_set.latest.certificado_mes_pct|default:0}}</td>
+                <td class="border">{{instance.certificado_set.latest.certificado_acum_pct|default:0}}</td>
+                <td class="border">{{instance.obra_acum_pesos|default_if_none:0}}</td>
+                <td class="border">{{instance.obra_acum_uvi|default_if_none:0}}</td>
+                <td class="d-print-none" ><a href="{% url "carga:estado-obra" instance.id %}">{{detalleimglink|safe}}</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th id="totalSoluciones" scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th id="totalPesos" scope="col"></th>
+                <th id="totalUVI" scope="col"></th>
+                <th id="saldoUVI" scope="col"></th>
+                <th scope="col"></th>
+                <th scope="col"></th>
+                <th id="acumuladoPesos" scope="col"></th>
+                <th id="acumuladoUVI" scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+<script>
+    new DataTable('#tablaReporte', {
+    info: false,
+    paging: false,
+    order: [[ 1, 'desc' ]],
+    language: {
+            "emptyTable": "Ningún dato disponible en esta tabla",
+            "search": "Buscar:",
+    },
+    "footerCallback": function ( row, data, start, end, display ) {
+            var api = this.api(), data;
+            const columnsToSum = [2, 8, 9, 10, 13, 14];
+ 
+            // Remove the formatting to get integer data for summation
+            var intVal = function ( i ) {
+                return typeof i === 'string' ?
+                    i.replace(/[.]/g, '').replace(/[,]/g,'.')*1 :
+                    typeof i === 'number' ?
+                        i : 0;
+            };
+            for (const n of columnsToSum) {
+            // Total over all pages
+            total = api.column( n ).data().reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+ 
+            // Total over this page
+            pageTotal = api.column( n, { page: 'current'} ).data().reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+ 
+            // Update footer
+            $( api.column( n ).footer() ).html(
+                '$'+pageTotal.toLocaleString() +' ( $'+ total.toLocaleString() +' total)'
+            );
+        }
+    }
+});
+</script>
+
+{% comment %} <script>
+    $(document).ready(function () {
+        $('#id_agente').select2({
+            theme: "bootstrap-5",
+            ajax: {
+                url: '/viaticos/ajax/get_agentes/',
+                dataType: "json",
+                type: "GET",
+                delay: 250,
+                data: function (params) {
+                    console.log(params);
+                    var queryParameters = {
+                        q: params.term
+                    }
+                    return queryParameters;
+                },
+            },
+            placeholder: 'Nombre del Agente a buscar',
+            minimumInputLength: 2
+        });
+    });
+</script> {% endcomment %}
+
+{%endblock content%}
