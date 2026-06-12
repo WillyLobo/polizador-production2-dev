@@ -22,10 +22,6 @@ def generate_name_certificados(instance, filename):
     name = os.path.join(directorio, anio, mes, filename)
     return name
 
-#     directorio = "instrumentoslegales/decretos/"
-#     filename = f"{instance.instrumentolegaldecretos_numero}-{instance.instrumentolegaldecretos_ano}-{instance.instrumentolegaldecretos_tipo}.pdf"
-#     name = os.path.join(directorio, filename)
-
 def generate_name_polizas(instance, filename):
     directorio = "polizas/"
     anio = str(instance.poliza_fecha.year)
@@ -37,20 +33,16 @@ def generate_name_polizas(instance, filename):
     return name
 
 def generate_name_contratos(instance, filename):
-    file = filename.split("/")[-1]
-    extension = file.split(".")[-1]
-    filename = file.split(".")[0]
-    directorio = "contratos/"
-    filename = "{}.{}".format(filename, extension).replace("#","-").replace("/","-").replace("[","(").replace("]",")").replace("*","-").replace("?","-")
+    directorio = "contratos_obra/"
+    extension = "pdf"
+    filename = f"{instance.contratodigital_uuid}.{extension}"
     name = os.path.join(directorio, filename)
     return name
 
 def generate_name_resoluciones(instance, filename):
-    file = filename.split("/")[-1]
-    extension = file.split(".")[-1]
-    filename = file.split(".")[0]
-    directorio = "resoluciones/"
-    filename = "{}.{}".format(filename, extension).replace("#","-").replace("/","-").replace("[","(").replace("]",")").replace("*","-").replace("?","-")
+    directorio = "resoluciones_obra/"
+    extension = "pdf"
+    filename = f"{instance.resoluciondigital_uuid}.{extension}"
     name = os.path.join(directorio, filename)
     return name
 
@@ -608,7 +600,7 @@ class ContratosDigitales(models.Model):
     contratodigital_nombre_archivo = models.CharField("Nombre del Archivo", max_length=100, blank=True, null=True)
     contratodigital_descripcion = models.TextField("Descripción")
     contratodigital_tipo = models.ForeignKey("ContratoRubro", verbose_name="Rubro Contrato", on_delete=models.CASCADE)
-    contratodigital_archivo = models.FileField(upload_to=generate_name_contratos, max_length=500)
+    contratodigital_archivo = models.FileField(upload_to=generate_name_contratos, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], max_length=500, null=True, blank=True)
     contratodigital_history = HistoricalRecords()
 
 class ResolucionesDigitales(models.Model):
@@ -620,7 +612,7 @@ class ResolucionesDigitales(models.Model):
     resoluciondigital_obra = models.ManyToManyField("Obra", related_name="obra_resoluciones", verbose_name="Obras", blank=True)
     resoluciondigital_descripcion = models.TextField("Descripción")
     resoluciondigital_numero = models.CharField("Resolución", max_length=15)
-    resoluciondigital_archivo = models.FileField(upload_to=generate_name_resoluciones, max_length=500)
+    resoluciondigital_archivo = models.FileField(upload_to=generate_name_resoluciones, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], max_length=500, null=True, blank=True)
     resoluciondigital_history = HistoricalRecords()
     
     def __str__(self):
