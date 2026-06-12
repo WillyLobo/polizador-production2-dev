@@ -15,8 +15,10 @@ class Command(BaseCommand):
     """
 
     CONTRATOS_DIR = os.path.join(
-        os.path.dirname(__file__),  # .../carga/management/commands/
-        "../../../media/contratos_obra",
+        os.path.dirname(os.path.abspath(__file__)),  # .../polizador/carga/management/commands/
+        "../..",      # .../polizador/carga/
+        "../media",   # .../polizador/media/
+        "contratos_obra",
     )
 
     def handle(self, *args, **kwargs):
