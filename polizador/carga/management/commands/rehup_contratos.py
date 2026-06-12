@@ -45,7 +45,7 @@ class Command(BaseCommand):
         for filepath in sorted(archivos):
             filename = os.path.basename(filepath)
             # El nombre del archivo es: {uuid}.pdf
-            uuid_str = filename
+            uuid_str = filename.split(".")[0]
 
             # Buscar contrato por contratodigital_uuid
             try:

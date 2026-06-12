@@ -32,7 +32,7 @@ class Command(BaseCommand):
                     
                     # VARIABLES DIRECTORIO
                     directorio_full_path = contrato.contratodigital_archivo.name.split('/')
-                    directorio_base = directorio_full_path[0]+"_obras"
+                    directorio_base = directorio_full_path[0]+"_obra"
                     
                     directorio = (
                         f"polizador/media/"
