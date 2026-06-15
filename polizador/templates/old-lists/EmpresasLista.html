@@ -53,7 +53,7 @@ $(document).ready( function() {
     "language": {"url": 'https://cdn.datatables.net/plug-ins/1.10.24/i18n/Spanish.json'},
 		"ajax": {"url": "/api/api/empresas/?format=datatables"},
 		columnDefs: [{"targets": -1, "data": "id", "render": function ( data, type, row, meta ) 
-		{ return '<a href="/polizas/crear/empresa/'+data+'"><img src="/static/edit.png" title="Editar" width="30" height="30" /></a> <a href="/polizas/crear/empresa/obra/'+data+'"><img src="/static/print.png" title="Detalle" width="30" heigth="30 /"></a>'
+		{ return '<a href="/obra/crear/empresa/'+data+'"><img src="/static/edit.png" title="Editar" width="30" height="30" /></a> <a href="/obra/crear/empresa/obra/'+data+'"><img src="/static/print.png" title="Detalle" width="30" heigth="30 /"></a>'
     ;} }],
     columns: [
       {"data": "id", searchable: false},

@@ -113,9 +113,9 @@ class ListaObrasView(AjaxDatatableView):
 			row['obra_acumulado'] = ''
 
 		id = str(obj.id)
-		editarlink = f"<a href='/polizas/crear/obra/{id}'>{editlinkimg}</a>"
-		detallelink = f"<a href='/polizas/crear/obra/estado/{id}'>{detallelinkimg}</a>"
-		eliminarlink = f"<a href='/polizas/eliminar/obra/{id}'>{eliminarlinkimg}</a>"
+		editarlink = f"<a href='/obra/crear/obra/{id}'>{editlinkimg}</a>"
+		detallelink = f"<a href='/obra/crear/obra/estado/{id}'>{detallelinkimg}</a>"
+		eliminarlink = f"<a href='/obra/eliminar/obra/{id}'>{eliminarlinkimg}</a>"
 		if self.request.user.has_perm("carga.delete_obra"):
 			row["edit"] = f"{editarlink}{detallelink}{eliminarlink}"
 		elif self.request.user.has_perm("carga.change_obra"):
@@ -258,9 +258,9 @@ class ListaObrasExtendidaView(AjaxDatatableView):
 		
 		id = str(obj.id)
 		if self.request.user.has_perm("carga.change_obra"):
-			row["edit"] = '<a href="/polizas/crear/obra/{id}"><img src="/static/edit.png" title="Editar" width="30" height="30" /></a> <a href="/polizas/crear/obra/estado/{id}"><img src="/static/search.svg" title="Detalles" width="30" heigth="30" /></a>'.format(id=id)
+			row["edit"] = '<a href="/obra/crear/obra/{id}"><img src="/static/edit.png" title="Editar" width="30" height="30" /></a> <a href="/obra/crear/obra/estado/{id}"><img src="/static/search.svg" title="Detalles" width="30" heigth="30" /></a>'.format(id=id)
 		else:
-			row["edit"] = '<a href="/polizas/crear/obra/estado/{id}"><img src="/static/search.svg" title="Detalles" width="30" heigth="30" /></a>'.format(id=id)
+			row["edit"] = '<a href="/obra/crear/obra/estado/{id}"><img src="/static/search.svg" title="Detalles" width="30" heigth="30" /></a>'.format(id=id)
 		
 		# Conversion de numeros con separador de miles "." y decimales ",2"
 		locale.setlocale(locale.LC_ALL, "")

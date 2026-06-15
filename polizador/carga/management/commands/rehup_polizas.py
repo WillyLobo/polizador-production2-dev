@@ -7,7 +7,7 @@ from carga.models import Poliza
 class Command(BaseCommand):
     """
     Management command: escanea archivos en la carpeta
-    polizador/media/polizas/ (recursivamente), extrae el UUID del nombre
+    polizador/media/obra/ (recursivamente), extrae el UUID del nombre
     de cada archivo, busca la Poliza correspondiente en la base de datos
     y sube el archivo al campo poliza_digital.
 

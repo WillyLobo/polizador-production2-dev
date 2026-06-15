@@ -90,9 +90,9 @@ class ListaMunicipiosView(AjaxDatatableView):
 	]
 	def customize_row(self, row, obj):
 		id = str(obj.id)
-		editarlink = f'<a href="/polizas/crear/municipio/{id}">{editlinkimg}</a>'
-		detallelink = f'<a href="/polizas/crear/municipio/obra/{id}">{detallelinkimg}</a>'
-		eliminarlink = f'<a href="/polizas/eliminar/municipio/{id}">{eliminarlinkimg}</a>'
+		editarlink = f'<a href="/obra/crear/municipio/{id}">{editlinkimg}</a>'
+		detallelink = f'<a href="/obra/crear/municipio/obra/{id}">{detallelinkimg}</a>'
+		eliminarlink = f'<a href="/obra/eliminar/municipio/{id}">{eliminarlinkimg}</a>'
 		if self.request.user.has_perm("carga.delete_municipio"):
 			row["edit"] = f"{editarlink}{detallelink}{eliminarlink}"
 		elif self.request.user.has_perm("carga.change_municipio"):

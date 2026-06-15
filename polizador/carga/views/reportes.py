@@ -147,4 +147,4 @@ class CrearListaUvi(PermissionRequiredMixin, generic.ListView):
 @permission_required('carga.view_certificado', raise_exception=True)
 def refresh_uvi_from_bcra(request):
 	call_command("bcra_uvi")
-	return redirect('/polizas/reporte/lista-uvi/')
+	return redirect('/obra/reporte/lista-uvi/')

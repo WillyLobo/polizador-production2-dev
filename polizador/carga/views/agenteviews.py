@@ -94,9 +94,9 @@ class ListaAgentesView(AjaxDatatableView):
 
 	def customize_row(self, row, obj):
 		id = str(obj.id)
-		editarlink = f'<a href="/polizas/crear/agente/{id}">{editlinkimg}</a>'
-		detallelink = f'<a href="/polizas/crear/agente/obra/{id}">{detallelinkimg}</a>'
-		eliminarlink = f'<a href="/polizas/eliminar/agente/{id}">{eliminarlinkimg}</a>'
+		editarlink = f'<a href="/obra/crear/agente/{id}">{editlinkimg}</a>'
+		detallelink = f'<a href="/obra/crear/agente/obra/{id}">{detallelinkimg}</a>'
+		eliminarlink = f'<a href="/obra/eliminar/agente/{id}">{eliminarlinkimg}</a>'
 		if self.request.user.has_perm("carga.delete_agente"):
 			row["edit"] = f"{editarlink}{detallelink}{eliminarlink}"
 		elif self.request.user.has_perm("carga.change_agente"):

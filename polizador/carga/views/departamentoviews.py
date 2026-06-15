@@ -90,9 +90,9 @@ class ListaDepartamentosView(AjaxDatatableView):
 	def customize_row(self, row, obj):
 		id = str(obj.id)
 				
-		editarlink = f'<a href="/polizas/crear/departamento/{id}">{editlinkimg}</a>'
-		detallelink = f'<a href="/viaticos/crearsolicitud/ver/{id}">{detallelinkimg}</a>'
-		eliminarlink = f'<a href="/viaticos/eliminar/solicitud/{id}">{eliminarlinkimg}</a>'
+		editarlink = f'<a href="/obra/crear/departamento/{id}">{editlinkimg}</a>'
+		detallelink = f'<a href="/obra/crear/departamento/{id}">{detallelinkimg}</a>'
+		eliminarlink = f'<a href="/obra/eliminar/departamento/{id}">{eliminarlinkimg}</a>'
 		
 		if self.request.user.has_perm("carga.delete_departamento"):
 			row["edit"] = f"{editarlink}{detallelink}{eliminarlink}"

@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 urlpatterns = [
     path("", TemplateView.as_view(template_name="index.html")),
     path("accounts/", include('allauth.urls')),
-    path("polizas/", include("carga.urls")),
+    path("obra/", include("carga.urls")),
     path("viaticos/", include("secretariador.urls")),
     path("personal/)", include("personalizador.urls")),
     #path("api/", include("api.urls")),

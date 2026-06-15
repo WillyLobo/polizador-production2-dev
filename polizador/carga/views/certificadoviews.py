@@ -119,9 +119,9 @@ class ListaCertificadosView(AjaxDatatableView):
 		id = str(obj.id)
 		obra = str(obj.certificado_obra.id)
 		
-		editarlink = f'<a href="/polizas/crear/certificado/{id}">{editlinkimg}</a>'
-		detallelink = f'<a href="/polizas/crear/obra/estado/{obra}">{detallelinkimg}</a>'
-		eliminarlink = f'<a href="/polizas/eliminar/certificado/{id}">{eliminarlinkimg}</a>'
+		editarlink = f'<a href="/obra/crear/certificado/{id}">{editlinkimg}</a>'
+		detallelink = f'<a href="/obra/crear/obra/estado/{obra}">{detallelinkimg}</a>'
+		eliminarlink = f'<a href="/obra/eliminar/certificado/{id}">{eliminarlinkimg}</a>'
 		
 		if self.request.user.has_perm("carga.delete_certificado"):
 			row["edit"] = f"{editarlink}{detallelink}{eliminarlink}"

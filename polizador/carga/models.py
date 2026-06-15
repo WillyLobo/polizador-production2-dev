@@ -2,6 +2,7 @@ from datetime import datetime
 from django.utils import timezone
 from wsgiref.validate import validator
 from django.db import models
+from django.urls import reverse
 from simple_history.models import HistoricalRecords
 from django.db.models import Sum, F, FloatField
 from django.core.validators import MinValueValidator, MaxValueValidator
@@ -60,8 +61,7 @@ class Receptor(models.Model):
         return self.receptor_nombre
     
     def get_absolute_url(self):
-        return f"/polizas/crear/receptor/{self.id}"
-    
+        return reverse('update-receptor', kwargs={'id': self.pk})
 
 class Area(models.Model):
     class Meta:
@@ -77,7 +77,7 @@ class Area(models.Model):
         return self.area_nombre
     
     def get_absoute_url(self):
-        return f"/polizas/crear/area/{self.id}"
+        return reverse('update-area', kwargs={'id': self.pk})
 
 class Aseguradora(models.Model):
     class Meta:
@@ -93,7 +93,7 @@ class Aseguradora(models.Model):
         return self.aseguradora_nombre
     
     def get_absolute_url(self):
-        return f"/polizas/crear/aseguradora/{self.id}"
+        return reverse('update-aseguradora', kwargs={'id': self.pk})
 
 class Empresa(models.Model):
     class Meta:
@@ -118,7 +118,7 @@ class Empresa(models.Model):
         return self.empresa_nombre
     
     def get_absolute_url(self):
-        return f"/polizas/crear/empresa/{self.id}"
+        return reverse('update-empresa', kwargs={'id': self.pk})
 
 class Poliza(models.Model):
     CONCEPTO = (
@@ -152,7 +152,7 @@ class Poliza(models.Model):
         return f"{self.poliza_numero} - {self.poliza_aseguradora.aseguradora_nombre} - {self.poliza_obra.obra_nombre} - {self.poliza_tomador.empresa_nombre} "
 
     def get_absolute_url(self):
-        return f"/polizas/crear/poliza/estado/{self.id}"
+        return reverse('estado-poliza', kwargs={'id': self.pk})
 
 class Poliza_Movimiento(models.Model):
     class Meta:
@@ -171,7 +171,7 @@ class Poliza_Movimiento(models.Model):
         return f"{self.poliza_movimiento_numero} - {self.poliza_movimiento_area} - ({self.poliza_movimiento_fecha})"
     
     def get_absolute_url(self):
-        return f"/polizas/crear/poliza/estado/{self.poliza_movimiento_numero.id}"
+        return reverse('estado-poliza', kwargs={'id': self.poliza_movimiento_numero.pk})
 
 class Programa(models.Model):
     class Meta:
@@ -187,7 +187,7 @@ class Programa(models.Model):
         return self.programa_nombre
     
     def get_absolute_url(self):
-        return f"/polizas/crear/programa/{self.id}"
+        return reverse('update-programa', kwargs={'id': self.pk})
 
 class Provincia(models.Model):
     class Meta:
@@ -216,7 +216,7 @@ class Region(models.Model):
         return self.region_numero
     
     def get_absolute_url(self):
-        return f"/polizas/crear/region/{self.id}"
+        return reverse('update-region', kwargs={'id': self.pk})
 
 
 class Departamento(models.Model):
@@ -233,7 +233,7 @@ class Departamento(models.Model):
         return self.departamento_nombre
 
     def get_abolute_url(self):
-        return f"/polizas/crear/departamento/{self.id}"
+        return reverse('update-departamento', kwargs={'id': self.pk})
 
 class Localidad(models.Model):
     class Meta:
@@ -255,7 +255,7 @@ class Localidad(models.Model):
     # return "{} - Departamento {}".format(self.localidad_nombre, self.localidad_departamento)
 
     def get_absolute_url(self):
-        return f"/polizas/crear/localidad/{self.id}"
+        return reverse('update-localidad', kwargs={'id': self.pk})
 
 class Municipio(models.Model):
     class Meta:
@@ -273,7 +273,7 @@ class Municipio(models.Model):
         return self.municipio_nombre
     
     def get_absolute_url(self):
-        return f"/polizas/crear/municipio/{self.id}"
+        return reverse('update-municipio', kwargs={'id': self.pk})
 
 class Obra(models.Model):
     COMPULSA = (
@@ -368,7 +368,7 @@ class Obra(models.Model):
         return ", ".join(str(localidad) for localidad in self.obra_localidad_m.all())
     
     def get_absolute_url(self):
-        return f"/polizas/crear/obra/estado/{self.id}"
+        return reverse('estado-obra', kwargs={'id': self.pk})
 
 class Prototipo(models.Model):
     TIPO = (
@@ -425,7 +425,7 @@ class Agente(models.Model):
         return f"{self.agente_nombre} {self.agente_apellido}"
 
     def get_absolute_url(self):
-        return f"/polizas/crear/agente/{self.id}"
+        return reverse('update-agente', kwargs={'id': self.pk})
 	
 class CertificadoRubro(models.Model):
     class Meta:
@@ -513,7 +513,7 @@ class Certificado(models.Model):
         return f"{self.certificado_obra} - {self.certificado_expediente} - Rubro: {self.get_certificado_rubro_display()} - Financiamiento: {self.get_certificado_financiamiento_display()} - Ant. N°{self.certificado_rubro_anticipo} - Ob. N°{self.certificado_rubro_obra} - Dev. N°{self.certificado_rubro_devanticipo}"
     
     def get_absolute_url(self):
-        return f"/polizas/crear/certificado/{self.id}"
+        return reverse('update-certificado', kwargs={'id': self.pk})
 
 class ConjuntoLicitado(models.Model):
     class Meta:
@@ -531,7 +531,7 @@ class ConjuntoLicitado(models.Model):
         return f"{self.conjunto_nombre}"
     
     def get_absolute_url(self):
-        return f"/polizas/crear/conjunto/{self.id}"
+        return reverse('update-conjunto', kwargs={'id': self.pk})
 
 class PlanDeTrabajos(models.Model):
     """
@@ -617,6 +617,7 @@ class ResolucionesDigitales(models.Model):
     
     def __str__(self):
         return f"{self.resoluciondigital_numero}"
+
 class Uvi(models.Model):
     class Meta:
         verbose_name_plural = "UVI"
@@ -637,8 +638,7 @@ class INDEC(models.Model):
         verbose_name_plural = "INDEC"
         ordering = ["mes"]
 
-    indec_uuid                        = models.UUIDField(default=compat.uuid7, editable=False)
-
+    indec_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     mes = models.DateField("Fecha de Medición")
     indec_manodeobra = models.DecimalField("Mano de Obra", max_digits=20, decimal_places=10)
     indec_albanileria = models.DecimalField("Albañilería", max_digits=20, decimal_places=10)
