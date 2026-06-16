@@ -81,7 +81,7 @@ class CrearReporteObraView(PermissionRequiredMixin, generic.ListView):
 			except (ValidationError, ValueError):
 				pass
 
-		if rubro_ids:
+		if rubro_ids and "0" not in rubro_ids:
 			rubro_id_list = [int(r) for r in rubro_ids]
 			qs = qs.filter(certificado__certificado_rubro_db_id__in=rubro_id_list).distinct()
 

@@ -1,0 +1,25 @@
+<script>
+    $(document).ready(function () {
+        $('#{{ id_field }}').select2({
+            theme: "bootstrap-5",
+            placeholder: 'Parametro de busqueda...',
+            minimumInputLength: 2,
+            ajax: {
+                url: '{{ url }}',
+                dataType: "json",
+                type: "GET",
+                delay: 250,
+                data: function (params) {
+                return {
+                    q: params.term // Map Select2's search term to the API parameter 'q'
+                };
+            },
+            processResults: function (data) {
+                return {
+                    results: data.results
+                };
+            },
+            },
+        });
+    });
+</script>

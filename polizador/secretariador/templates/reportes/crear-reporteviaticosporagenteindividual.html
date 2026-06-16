@@ -9,7 +9,7 @@
 <br>
 <form action="{% url "secretariador:crear-reporte-viaticos-por-agente-individual" %}" method="get">
     <hr>
-    <div class="input-group">
+    <div class="container-fluid min-vw-100 input-group">
         <div class="input-group-prepend">
             <label class="input-group-text" for="inputGroupSelectAno">Año</label>
           </div>
@@ -59,26 +59,5 @@
 
 <div class="container-fluid" id='calendar'></div>
 
-<script>
-    $(document).ready(function () {
-        $('#id_agente').select2({
-            theme: "bootstrap-5",
-            ajax: {
-                url: '/viaticos/ajax/get_agentes/',
-                dataType: "json",
-                type: "GET",
-                delay: 250,
-                data: function (params) {
-                    console.log(params);
-                    var queryParameters = {
-                        q: params.term
-                    }
-                    return queryParameters;
-                },
-            },
-            placeholder: 'Nombre del Agente a buscar',
-            minimumInputLength: 2
-        });
-    });
-</script>
+{% include "partials/select2-script-partial.html" with id_field="id_agente" url="/v1/api/select2_comisionado/" %}
 {% endblock %}

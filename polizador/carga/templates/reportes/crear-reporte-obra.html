@@ -12,9 +12,6 @@
             <label class="input-group-text" for="inputGroupSelectLocalidad">Localidad</label>
           </div>
           <select name="localidad" class="customSelect2" id="inputGroupSelectLocalidad" multiple>
-            {% for localidad in localidades %}
-            <option value="{{localidad.id|safe}}">{{localidad.localidad_nombre}}</option>
-            {%endfor%}
           </select>
       </div>
       <!-- Select Empresa -->
@@ -23,9 +20,6 @@
             <label class="input-group-text" for="inputGroupSelectEmpresa">Empresa</label>
           </div>
           <select name="empresa" class="customSelect2" id="inputGroupSelectEmpresa" multiple>
-            {% for empresa in empresas %}
-            <option value="{{empresa.id|safe}}">{{empresa.empresa_nombre}}</option>
-            {%endfor%}
           </select>
       </div>
       <!-- Select Programa-->
@@ -34,9 +28,6 @@
             <label class="input-group-text" for="inputGroupSelectPrograma">Programa</label>
           </div>
           <select name="programa" class="customSelect2" id="inputGroupSelectPrograma" multiple>
-            {% for programa in programas %}
-            <option value="{{programa.id|safe}}">{{programa.programa_nombre}}</option>
-            {%endfor%}
           </select>
       </div>
       <!-- Select Rubro y Financiamiento -->
@@ -45,7 +36,8 @@
               <label class="input-group-text" for="inputGroupSelectRubro">Rubro</label>
           </div>
           <select name="rubro" class="customSelect2" id="inputGroupSelectRubro" multiple>
-              <option value="1" selected>Vivienda</option>
+              <option value="0" selected>Todos</option>
+              <option value="1">Vivienda</option>
               <option value="2">Infraestructura Frentista</option>
               <option value="3">Terreno</option>
               <option value="4">Redeterminación</option>
@@ -108,7 +100,7 @@
                 {% load humanize %}
                 <th class="border" scope="row">{{instance.id}}</th>
                 <td class="border">{{instance.obra_nombre}}</td>
-                <td class="border">{{instance.obra_soluciones|default_if_none:"-"}}</td>
+                <td class="border">{{instance.obra_soluciones|default_if_none:"0"}}</td>
                 <td class="border">{{instance.lista_localidades}}</td>
                 <td class="border">{{instance.obra_empresa.empresa_nombre}}</td>
                 <td class="border">{{instance.obra_programa}}</td>
@@ -181,34 +173,14 @@
  
             // Update footer
             $( api.column( n ).footer() ).html(
-                '$'+pageTotal.toLocaleString() +' ( $'+ total.toLocaleString() +' total)'
+                pageTotal.toLocaleString() +' ('+ total.toLocaleString() +' total)'
             );
         }
     }
 });
 </script>
-
-{% comment %} <script>
-    $(document).ready(function () {
-        $('#id_agente').select2({
-            theme: "bootstrap-5",
-            ajax: {
-                url: '/viaticos/ajax/get_agentes/',
-                dataType: "json",
-                type: "GET",
-                delay: 250,
-                data: function (params) {
-                    console.log(params);
-                    var queryParameters = {
-                        q: params.term
-                    }
-                    return queryParameters;
-                },
-            },
-            placeholder: 'Nombre del Agente a buscar',
-            minimumInputLength: 2
-        });
-    });
-</script> {% endcomment %}
+{% include "partials/select2-script-partial.html" with id_field="inputGroupSelectLocalidad" url="/v1/api/select2_localidad/" %}
+{% include "partials/select2-script-partial.html" with id_field="inputGroupSelectEmpresa" url="/v1/api/select2_empresa/" %}
+{% include "partials/select2-script-partial.html" with id_field="inputGroupSelectPrograma" url="/v1/api/select2_programa/" %}
 
 {%endblock content%}

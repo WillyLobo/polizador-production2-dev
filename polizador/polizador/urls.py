@@ -13,6 +13,7 @@ urlpatterns = [
     path("viaticos/", include("secretariador.urls")),
     path("personal/)", include("personalizador.urls")),
     #path("api/", include("api.urls")),
+    path("v1/api/", include(("api.urls", "api"), namespace="api-1.0")),
     path('admin/', admin.site.urls),
     path("select2/", include("django_select2.urls")),
     path("home/", login_required(TemplateView.as_view(template_name='index.html')), name="home")

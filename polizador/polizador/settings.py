@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     "carga",
 	"secretariador",
     "personalizador",
+    "api",
 ]
 SITE_ID = 1
 # Widget template override. Place "widgetX.html" into "templates/django/forms/widgets/"
@@ -205,7 +206,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Redirects after Authentication
 
 LOGOUT_REDIRECT_URL = '/home/'
-LOGIN_REDIRECT_URL = "/accounts/login/"
+LOGIN_REDIRECT_URL = "/home/"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/

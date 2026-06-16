@@ -14,9 +14,10 @@
 [ ] Reparar los templates para ajustar viewport size
 [?] Ajustar los templates de reportes de la app carga para ajustarse al resto del sitio
 [?] Corregir los Select en las páginas de creación de reportes
-[ ] Redireccionar usuarios con permisos fuera de la vista sin permisos
+[+] Redireccionar usuarios con permisos fuera de la vista sin permisos
 [ ] Modificar modelo Agente para vincularlo a los agentes de la app secretariador
 [ ] VerReporteCertificadoPorMes deberia dar opción de ver los certificados por fecha de carga o fecha de certificado
+[ ] Crear API view que devuelva los meses/años disponibles en los certificados para su utilizacion en select2
 
 # Models
 [+] Create model Incorporacion.
