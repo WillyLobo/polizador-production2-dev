@@ -101,7 +101,7 @@ def select2_programa(request, q: str = None):
 
 # --- Rubros de Obra ---
 @api.get("/select2_rubro_obra/", response=Select2ResponseSchema, tags=["select2"])
-def select2_programa(request, q: str = None):
+def select2_rubro_obra(request, q: str = None):
     user = require_auth(request)
     from carga.models import ContratoRubro
 
@@ -122,7 +122,7 @@ def select2_programa(request, q: str = None):
 
 # --- Rubros de Certificado ---
 @api.get("/select2_rubro_certificado/", response=Select2ResponseSchema, tags=["select2"])
-def select2_programa(request, q: str = None):
+def select2_rubro_certificado(request, q: str = None):
     user = require_auth(request)
     from carga.models import CertificadoRubro
 
