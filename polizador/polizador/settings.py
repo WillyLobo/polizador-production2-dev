@@ -154,8 +154,8 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
-AUTH_USER_MODEL = 'secretariador.CustomUser'  # Format: 'app_label.ModelName'
-ACCOUNT_FORMS = {'signup': 'secretariador.forms.customuserform.CustomUserForm'}
+AUTH_USER_MODEL = 'personalizador.CustomUser'  # Format: 'app_label.ModelName'
+ACCOUNT_FORMS = {'signup': 'personalizador.forms.customuserform.CustomUserForm'}
 ACCOUNT_SIGNUP_FIELDS = ['username*', 'first_name', 'last_name', 'email', 'password1*', 'password2*']
 # ACCOUNT_ADAPTER = 'secretariador.adapters.InactiveSignupAdapter'
 

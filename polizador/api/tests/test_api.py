@@ -106,15 +106,16 @@ class SchemaTest(TestCase):
 
     def test_secretariador_schemas_import(self):
         from api.schemas.secretariador_schemas import (
-            CustomUserOut, SolicitudOut, ComisionadoOut,
+            SolicitudOut, ComisionadoOut,
         )
-        assert CustomUserOut.model_fields is not None
+        assert SolicitudOut.model_fields is not None
 
     def test_personalizador_schemas_import(self):
         from api.schemas.personalizador_schemas import (
-            CargosOut, GerenciaOut, CargoTipoOut,
+            CargosOut, GerenciaOut, CargoTipoOut, CustomUserOut,
         )
         assert CargosOut.model_fields is not None
+        assert CustomUserOut.model_fields is not None
 
 
 class OpenAPITest(TestCase):

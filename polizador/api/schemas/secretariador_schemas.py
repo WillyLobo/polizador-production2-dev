@@ -3,30 +3,6 @@ from pydantic import BaseModel
 from typing import Optional
 
 
-class CustomUserOut(BaseModel):
-    id: int
-    username: str
-    first_name: str
-    last_name: str
-    email: str
-    usuario_dni: Optional[float] = None
-
-class CustomUserCreate(BaseModel):
-    username: str
-    password: str
-    first_name: str
-    last_name: str
-    email: str
-    usuario_dni: Optional[float] = None
-
-class CustomUserUpdate(BaseModel):
-    username: Optional[str] = None
-    first_name: Optional[str] = None
-    last_name: Optional[str] = None
-    email: Optional[str] = None
-    usuario_dni: Optional[float] = None
-
-
 # === InstrumentosLegalesMemorandum ===
 class MemoruandOut(BaseModel):
     id: int

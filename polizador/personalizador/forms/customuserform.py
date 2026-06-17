@@ -1,6 +1,6 @@
 from django import forms
 from allauth.account.forms import SignupForm
-from secretariador.models import CustomUser
+from personalizador.models import CustomUser
 
 class CustomUserForm(SignupForm, forms.ModelForm):
     class Meta:
@@ -9,7 +9,7 @@ class CustomUserForm(SignupForm, forms.ModelForm):
 
         first_name = forms.CharField(max_length=150, label='Nombre')
         last_name = forms.CharField(max_length=150, label='Apellido')
-    
+
     def save(self, request):
 
         # Ensure you call the parent class's save.

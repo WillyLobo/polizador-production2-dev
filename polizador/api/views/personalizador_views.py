@@ -3,6 +3,55 @@ from api.router import api
 from api.permissions import require_auth
 
 
+# --- CustomUser ---
+@api.get("/users/", tags=["personalizador"])
+def list_users(request):
+    user = require_auth(request)
+    from django.contrib.auth import get_user_model
+
+    User = get_user_model()
+    qs = User.objects.all().order_by("username")
+    page = int(request.GET.get("page", 1))
+    per_page = min(int(request.GET.get("per_page", 50)), 200)
+    start = (page - 1) * per_page
+    end = start + per_page
+    total = qs.count()
+    results = [
+        {
+            "id": u.id,
+            "username": u.username,
+            "first_name": u.first_name,
+            "last_name": u.last_name,
+            "email": u.email,
+        }
+        for u in qs[start:end]
+    ]
+    return {
+        "count": total,
+        "next": f"?page={page + 1}&per_page={per_page}" if end < total else None,
+        "previous": f"?page={page - 1}&per_page={per_page}" if page > 1 else None,
+        "results": results,
+    }
+
+
+@api.get("/user/{id}/", tags=["personalizador"])
+def retrieve_user(request, id: int):
+    require_auth(request)
+    from django.contrib.auth import get_user_model
+
+    User = get_user_model()
+    u = User.objects.filter(id=id).first()
+    if not u:
+        return {"detail": "Not found"}, 404
+    return {
+        "id": u.id,
+        "username": u.username,
+        "first_name": u.first_name,
+        "last_name": u.last_name,
+        "email": u.email,
+    }
+
+
 # --- Gerencia ---
 @api.get("/gerencias/", tags=["personalizador"])
 def list_gerencias(request):

@@ -1,23 +1,10 @@
 from django.contrib import admin
 from import_export.admin import ImportExportMixin
 from simple_history.admin import SimpleHistoryAdmin
-from django.contrib.auth.admin import UserAdmin
 from secretariador.models import *
 from secretariador.resources import OrganigramaResource, ComisionadoResource, VehiculoResource, IncorporacionResource
 from django.contrib.auth.models import Group
 
-class CustomUserAdmin(UserAdmin):
-    model = CustomUser
-    # Display custom fields in the admin list view
-    list_display = ['username', 'email', 'usuario_dni']
-    
-    # Include custom fields inside the admin user edit forms
-    fieldsets = UserAdmin.fieldsets + (
-        (None, {'fields': ('usuario_dni',)}),
-    )
-    add_fieldsets = UserAdmin.add_fieldsets + (
-        (None, {'fields': ('usuario_dni',)}),
-    )
 class InstrumentosLegalesMemorandumAdmin(SimpleHistoryAdmin):
     model = InstrumentosLegalesMemorandum
     search_fields = ["instrumentolegalmemorandum_tipo", "instrumentolegalmemorandum_numero", "instrumentolegalmemorandum_ano"]
@@ -103,7 +90,6 @@ class ComisionadoSolicitudAdmin(SimpleHistoryAdmin):
     ]
 
 # Registro de los modelos en Admin
-admin.site.register(CustomUser, CustomUserAdmin)
 admin.site.register(InstrumentosLegalesMemorandum, InstrumentosLegalesMemorandumAdmin)
 admin.site.register(InstrumentosLegalesResoluciones, InstrumentosLegalesResolucionesAdmin)
 admin.site.register(InstrumentosLegalesDecretos, InstrumentosLegalesDecretoAdmin)

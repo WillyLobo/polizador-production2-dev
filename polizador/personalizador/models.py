@@ -1,8 +1,22 @@
 from django.db import models
 from simple_history.models import HistoricalRecords
 from django.core.validators import MinValueValidator
+from django.contrib.auth.models import AbstractUser
 from secretariador.functions import FileValidator, CuitValidator
 from uuid_utils import compat
+
+
+class CustomUser(AbstractUser):
+    first_name = models.CharField("Nombre", max_length=128)
+    last_name = models.CharField("Apellido", max_length=128)
+    usuario_dni = models.DecimalField(
+        "DNI:", max_digits=9, decimal_places=0,
+         validators=[MinValueValidator(0)],
+         unique=True,
+         null=True,
+         blank=True
+         )
+    usuario_history = HistoricalRecords()
 
 
 # class Agente(models.Model):
