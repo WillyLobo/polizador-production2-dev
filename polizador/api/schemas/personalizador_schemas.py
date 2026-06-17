@@ -3,17 +3,6 @@ from pydantic import BaseModel
 from typing import Optional
 
 
-class CargoTipoOut(BaseModel):
-    id: int
-    cargotipo_uuid: str
-    cargotipo: str
-
-class CargoTipoCreate(BaseModel):
-    cargotipo: str
-
-class CargoTipoUpdate(BaseModel):
-    cargotipo: Optional[str] = None
-
 
 class GerenciaOut(BaseModel):
     id: int
@@ -58,24 +47,3 @@ class DepartamentoPerCreate(BaseModel):
 class DepartamentoPerUpdate(BaseModel):
     departamento_nombre: Optional[str] = None
     departamento_cuof: Optional[str] = None
-
-
-class CargosOut(BaseModel):
-    id: int
-    cargos_uuid: str
-    cargo_tipo_id: int
-    gerencia_id: Optional[int] = None
-    direccion_id: Optional[int] = None
-    departamento_id: Optional[int] = None
-
-class CargosCreate(BaseModel):
-    cargo_tipo_id: int
-    gerencia_id: Optional[int] = None
-    direccion_id: Optional[int] = None
-    departamento_id: Optional[int] = None
-
-class CargosUpdate(BaseModel):
-    cargo_tipo_id: Optional[int] = None
-    gerencia_id: Optional[int] = None
-    direccion_id: Optional[int] = None
-    departamento_id: Optional[int] = None

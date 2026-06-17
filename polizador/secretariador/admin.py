@@ -64,7 +64,7 @@ class SolicitudAdmin(SimpleHistoryAdmin):
 class ComisionadoAdmin(ImportExportMixin, SimpleHistoryAdmin):
     resource_class = ComisionadoResource
     search_fields = ["comisionado_nombreyapellido", "comisionado_dni"]
-    autocomplete_fields = ["comisionado_cargo", "comisionado_cargo_decreto", "comisionado_cargo_interno", "comisionado_cargo_interno_resolucion"]
+    autocomplete_fields = []
 
 class VehiculoAdmin(ImportExportMixin, SimpleHistoryAdmin):
     model = Vehiculo
