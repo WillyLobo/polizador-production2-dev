@@ -330,8 +330,6 @@ class Comisionado(models.Model):
     comisionado_abreviatura = models.CharField("Abreviatura", max_length=10, help_text="(Sr., Sra., Dr., Dra., Etc.)")
     comisionado_sexo = models.CharField("Sexo", max_length=1, choices=SEXO)
     comisionado_cargo = models.ForeignKey("Organigrama", on_delete=models.CASCADE)
-    comisionado_cargo_decreto = models.ForeignKey("personalizador.Cargos", verbose_name="Cargo Decreto", related_name="cargo_decreto", on_delete=models.CASCADE, null=True, blank=True)
-    comisionado_cargo_interno = models.ForeignKey("personalizador.Cargos", verbose_name="Cargo Interno", related_name="cargo_interno", on_delete=models.CASCADE, null=True, blank=True)
     comisionado_cargo_interno_resolucion = models.ForeignKey("InstrumentosLegalesResoluciones", on_delete=models.CASCADE, null=True, blank=True)
     comisionado_dni = models.DecimalField("DNI:", max_digits=9, decimal_places=0, validators=[MinValueValidator(0)], unique=True)
     comisionado_cuit = models.CharField("CUIT", max_length=13, validators=[CuitValidator()])
