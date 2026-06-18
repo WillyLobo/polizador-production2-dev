@@ -122,7 +122,7 @@
         {% endif %}
 		
 		<!-- Herramientas -->
-        {% if "gciaoperativa_usuarios" in groups or "secretariador_usuarios" in groups or request.user.is_superuser %}
+        {% if "gciaoperativa_usuarios" in groups or "dirgral_usuarios" in groups or request.user.is_superuser %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-briefcase me-1"></i>Herramientas
@@ -133,7 +133,7 @@
         </li>
         {% endif %}
         <!-- Reportes (Mega-menu justificado por la cantidad de links) -->
-        {% if "gciaoperativa_usuarios" in groups or "secretariador_usuarios" in groups or request.user.is_superuser %}
+        {% if "gciaoperativa_usuarios" in groups or "dirgral_usuarios" in groups or request.user.is_superuser %}
         <li class="nav-item dropdown position-static">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-bar-chart me-1"></i>Reportes
