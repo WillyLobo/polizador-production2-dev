@@ -27,7 +27,15 @@ class VerReporteCertificadoPorMes(PermissionRequiredMixin, generic.ListView):
 	def get_queryset(self):
 		mes_list = self.request.GET.getlist("mes")
 		ano = self.request.GET.get("ano")
-		certificados = Certificado.objects.filter(certificado_fecha__year=ano, certificado_fecha__month__in=mes_list).order_by("certificado_obra__obra_programa").prefetch_related("certificado_obra").select_related("certificado_obra__obra_empresa", "certificado_obra__obra_programa")
+		buscarPorFechaIngreso = self.request.GET.get("buscarPorFechaIngreso")
+		if buscarPorFechaIngreso:
+			certificados = Certificado.objects.filter(
+				certificado_fecha_carga__year=ano, certificado_fecha_carga__month__in=mes_list
+				).order_by("certificado_obra__obra_programa").prefetch_related("certificado_obra").select_related("certificado_obra__obra_empresa", "certificado_obra__obra_programa")
+		else:
+			certificados = Certificado.objects.filter(
+				certificado_fecha__year=ano, certificado_fecha__month__in=mes_list
+				).order_by("certificado_obra__obra_programa").prefetch_related("certificado_obra").select_related("certificado_obra__obra_empresa", "certificado_obra__obra_programa")
 		return certificados
 
 @method_decorator(login_required, name="dispatch")

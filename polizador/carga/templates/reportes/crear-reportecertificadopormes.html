@@ -8,6 +8,8 @@
 <div div class="min-vh-100 min-vw-100 p-5">
 <form action="{% url "carga:ver-reporte-certificado" %}" method="get">
   <!-- Select Fecha-->
+  <h3 class="text-center">Seleccione el mes y año para el reporte</h3>
+  <p class="text-center">Puede seleccionar más de un mes</p>
   <div class="input-group">
     <div class="input-group-prepend">
       <label class="input-group-text" for="inputGroupSelectMes">Mes</label>
@@ -47,6 +49,10 @@
         <option value="2026" selected>2026</option>
       </select>
   </div>
+      <div class="form-check form-switch">
+        <input class="form-check-input" name="buscarPorFechaIngreso" type="checkbox" role="switch" id="switchFechaIngresoalSistema">
+        <label class="form-check-label" for="switchFechaIngresoalSistema">Buscar por fecha de ingreso al sistema</label>
+      </div>
   <div class="container ml-2 pt-2">
     <input type='submit' value='Buscar' class="btn btn-primary" />
   </div>
