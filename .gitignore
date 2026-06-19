@@ -154,3 +154,4 @@ scripts/test.py
 polizador-production-dd5c413dde2f.json
 snippets.py
 .kilo/kilo.jsonc
+polizador/personalizador/management/commands/fill_data.py

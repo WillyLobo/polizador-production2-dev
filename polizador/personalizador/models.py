@@ -193,7 +193,9 @@ class Directorio(models.Model):
         verbose_name_plural = "Directorios"
     
     directorio_nombre = models.CharField("Directorio", max_length=200)
+    directorio_autoridad_a_cargo = models.CharField("Autoridad a Cargo", max_length=200, null=True, blank=True)
     directorio_cuof = models.CharField("CUOF", max_length=10)
+    directorio_ungi = models.CharField("UNGI", max_length=10, null=True, blank=True)
     directorio_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     directorio_history = HistoricalRecords()
 
@@ -207,7 +209,10 @@ class Gerencia(models.Model):
 
     gerencia_directorio = models.ForeignKey("Directorio", on_delete=models.CASCADE)
     gerencia_nombre = models.CharField("Gerencia", max_length=200)
+    gerencia_autoridad_a_cargo = models.CharField("Autoridad a Cargo", max_length=200, null=True, blank=True)
     gerencia_cuof = models.CharField("CUOF", max_length=10)
+    gerencia_ungi = models.CharField("UNGI", max_length=10, null=True, blank=True)
+    gerencia_responsabilidadprimaria = models.TextField("Responsabilidad Primaria", null=True, blank=True)
     gerencia_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     gerencia_history = HistoricalRecords()
 
@@ -222,7 +227,10 @@ class Direccion(models.Model):
     direccion_directorio = models.ForeignKey("Directorio", on_delete=models.CASCADE, null=True, blank=True)
     direccion_gerencia = models.ForeignKey("Gerencia", on_delete=models.CASCADE, null=True, blank=True)
     direccion_nombre = models.CharField("Direccion", max_length=200)
+    direccion_autoridad_a_cargo = models.CharField("Autoridad a Cargo", max_length=200, null=True, blank=True)
     direccion_cuof = models.CharField("CUOF", max_length=10)
+    direccion_ungi = models.CharField("UNGI", max_length=10, null=True, blank=True)
+    direccion_responsabilidadprimaria = models.TextField("Responsabilidad Primaria", null=True, blank=True)
     direccion_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     direccion_history = HistoricalRecords()
 
@@ -235,9 +243,13 @@ class Departamento(models.Model):
         verbose_name_plural = "Departamentos"
     
     departamento_directorio = models.ForeignKey("Directorio", on_delete=models.CASCADE, null=True, blank=True)
+    departamento_gerencia = models.ForeignKey("Gerencia", on_delete=models.CASCADE, null=True, blank=True)
     departamento_direccion = models.ForeignKey("Direccion", on_delete=models.CASCADE, null=True, blank=True)
     departamento_nombre = models.CharField("Departamento", max_length=200)
+    departamento_autoridad_a_cargo = models.CharField("Autoridad a Cargo", max_length=200, null=True, blank=True)
     departamento_cuof = models.CharField("CUOF", max_length=10)
+    departamento_ungi = models.CharField("UNGI", max_length=10, null=True, blank=True)
+    departamento_responsabilidadprimaria = models.TextField("Responsabilidad Primaria", null=True, blank=True)
     departamento_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     departamento_history = HistoricalRecords()
 
