@@ -19,19 +19,19 @@ def _parse_date(s):
 @api.get("/select2_comisionado/", response=Select2ResponseSchema, tags=["select2"])
 def select2_comisionados(request, q: str = None):
     user = require_auth(request)
-    from secretariador.models import Comisionado
+    from personalizador.models import Agente
 
-    queryset = Comisionado.objects.all()
+    queryset = Agente.objects.all()
 
     if q:
         queryset = queryset.filter(
-            Q(comisionado_nombreyapellido__icontains=q)
+            Q(agente_nombreyapellido__icontains=q)
         )
     # Limit results to keep payloads fast and responsive
     results_limit = queryset[:20]
 
     formatted_results = [
-        {"id": item.id, "text": item.comisionado_nombreyapellido} for item in results_limit
+        {"id": item.id, "text": item.agente_nombreyapellido} for item in results_limit
     ]
 
     return {"results": formatted_results}

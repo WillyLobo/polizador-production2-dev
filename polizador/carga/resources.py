@@ -101,10 +101,6 @@ class PrototipoResource(resources.ModelResource):
 	class Meta:
 		model = models.Prototipo
 
-class AgenteResource(resources.ModelResource):
-	class Meta:
-		model = models.Agente
-
 class CertificadoResource(resources.ModelResource):
 	class Meta:
 		model = models.Certificado

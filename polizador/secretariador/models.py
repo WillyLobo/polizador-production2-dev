@@ -1,7 +1,7 @@
 from django.db import models
 from simple_history.models import HistoricalRecords
 from django.core.validators import MinValueValidator
-from secretariador.functions import FileValidator, CuitValidator
+from secretariador.functions import FileValidator
 from datetime import datetime, timedelta
 from django.utils import timezone
 from django.urls import reverse
@@ -294,53 +294,6 @@ class MontoViaticoDiario(models.Model):
     def __str__(self):
         return f"{self.montoviaticodiario_decreto_reglamentario}"
 
-class Comisionado(models.Model):
-    class Meta:
-        ordering = ("comisionado_apellidos",)
-        verbose_name = "Comisionado"
-        verbose_name_plural = "Comisionados"
-        constraints = [
-            models.UniqueConstraint(
-                fields=["comisionado_nombres", "comisionado_apellidos", "comisionado_dni"],
-                name='unique_comisionado_1'
-            ),
-        ]
-    SEXO = (
-        ("M", "Masculino"),
-        ("F", "Femenino")
-    )
-
-    comisionado_nombres = models.CharField("Nombres", max_length=120)
-    comisionado_apellidos = models.CharField("Apellidos", max_length=120)
-    comisionado_abreviatura = models.CharField("Abreviatura", max_length=10, help_text="(Sr., Sra., Dr., Dra., Etc.)")
-    comisionado_sexo = models.CharField("Sexo", max_length=1, choices=SEXO)
-    comisionado_cargo = models.ForeignKey("Organigrama", on_delete=models.CASCADE)
-    comisionado_cargo_interno_resolucion = models.ForeignKey("InstrumentosLegalesResoluciones", on_delete=models.CASCADE, null=True, blank=True)
-    comisionado_dni = models.DecimalField("DNI:", max_digits=9, decimal_places=0, validators=[MinValueValidator(0)], unique=True)
-    comisionado_cuit = models.CharField("CUIT", max_length=13, validators=[CuitValidator()])
-    comisionado_nombreyapellido = GeneratedField(
-        expression=ConcatOp('comisionado_apellidos', models.Value(", "), 'comisionado_nombres'),
-        output_field=models.TextField(),
-        db_persist=True,
-    )
-    comisionado_verificado_contra_padron = models.BooleanField("Chequeado",default=False)
-    comisionado_personal_transitorio = models.BooleanField("Personal Transitorio",default=False)
-    comisionado_personal_de_gabinete = models.BooleanField("Personal de Gabinete",default=False)
-    comisionado_uuid = models.UUIDField(default=compat.uuid7, editable=False)
-    comisionado_history = HistoricalRecords()
-
-    def __str__(self):
-        if self.comisionado_personal_transitorio:
-            return f"(C){self.comisionado_apellidos}, {self.comisionado_nombres} - DNI Nº{self.comisionado_dni}"
-        else:
-            return f"{self.comisionado_apellidos}, {self.comisionado_nombres} - DNI Nº{self.comisionado_dni}"
-    
-    def nombreydni(self):
-        return f"{self.comisionado_abreviatura} {self.comisionado_apellidos}, {self.comisionado_nombres}-DNI Nº{self.comisionado_dni}"
-
-    def comisionado_nombre(self):
-        return f"{self.comisionado_apellidos}, {self.comisionado_nombres}"
-
 class Organigrama(models.Model):
     class Meta:
         verbose_name = "Organigrama"
@@ -381,7 +334,7 @@ class Vehiculo(models.Model):
         output_field=models.TextField(),
         db_persist=True,
     )
-    vehiculo_titular_agente = models.ForeignKey("Comisionado", on_delete=models.CASCADE, null=True, blank=True)
+    vehiculo_titular_agente = models.ForeignKey("personalizador.Agente", on_delete=models.CASCADE, null=True, blank=True)
     vehiculo_titular_empresa = models.ForeignKey("carga.Empresa", on_delete=models.CASCADE, null=True, blank=True)
     vehiculo_n_motor = models.CharField("Número de Motor", max_length=100, null=True, blank=True)
     vehiculo_n_chasis = models.CharField("Número de Chasis", max_length=100, null=True, blank=True)
@@ -419,7 +372,7 @@ class Solicitud(models.Model):
     solicitud_actuacion_jurisdiccion = models.CharField("Jurisdicción", max_length=3, default="E10")
     solicitud_actuacion_numero = models.DecimalField("N° Actuación", max_digits=6, decimal_places=0, validators=[MinValueValidator(0)], default=0, help_text="Solo el número de la actuación. Sin prefijo, sufijo o Año.")
     solicitud_actuacion_ano = models.DecimalField("Año Actuación", max_digits=4, decimal_places=0, validators=[MinValueValidator(0)], default=int(timezone.now().year))
-    solicitud_solicitante = models.ForeignKey("Comisionado", on_delete=models.CASCADE) # Encargado del area solicitante
+    solicitud_solicitante = models.ForeignKey("personalizador.Agente", on_delete=models.CASCADE) # Encargado del area solicitante
     solicitud_provincia = models.ForeignKey("carga.Provincia", on_delete=models.CASCADE)
     solicitud_localidades = models.ManyToManyField("carga.Localidad", blank=True)
     solicitud_ciudad = models.CharField("Ciudad", help_text="... en la ciudad de #Texto ingresado en el formulario#", max_length=200, blank=True, null=True)
@@ -446,7 +399,7 @@ class Solicitud(models.Model):
         return fechas
 
     def get_comisionados(self):
-        serialized_q = self.comisionadosolicitud_set.values_list("comisionadosolicitud_nombre__comisionado_nombreyapellido", flat=True)
+        serialized_q = self.comisionadosolicitud_set.values_list("comisionadosolicitud_nombre__agente_nombreyapellido", flat=True)
         return list(serialized_q)
 
     def __str__(self):
@@ -470,7 +423,7 @@ class ComisionadoSolicitud(models.Model):
 
     comisionadosolicitud_foreign = models.ForeignKey("Solicitud", on_delete=models.CASCADE, null=True, blank=True)
     comisionadosolicitud_incorporacion_foreign = models.ForeignKey("Incorporacion", on_delete=models.CASCADE, null=True, blank=True)
-    comisionadosolicitud_nombre = models.ForeignKey("Comisionado", on_delete=models.CASCADE)
+    comisionadosolicitud_nombre = models.ForeignKey("personalizador.Agente", on_delete=models.CASCADE)
     comisionadosolicitud_colaborador = models.BooleanField("Colab.?")
     comisionadosolicitud_chofer = models.BooleanField("Chofer?")
     comisionadosolicitud_combustible = models.DecimalField("Combustible", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
@@ -497,7 +450,7 @@ class ComisionadoSolicitud(models.Model):
             str: A string representation of the object.
         """
         foreign = self.get_origin()
-        return f"{foreign} - {self.comisionadosolicitud_nombre.comisionado_apellidos}, {self.comisionadosolicitud_nombre.comisionado_nombres}"
+        return f"{foreign} - {self.comisionadosolicitud_nombre.agente_apellidos}, {self.comisionadosolicitud_nombre.agente_nombres}"
     
     def clean(self):
         """
@@ -518,14 +471,18 @@ class ComisionadoSolicitud(models.Model):
             float: The daily viatic value. Returns 0 if the position is "Vocal" or "Presidente".
         """
         foreign = self.get_origin()
-        gabinete = self.comisionadosolicitud_nombre.comisionado_cargo.organigrama_cargo
-        estrato = self.comisionadosolicitud_nombre.comisionado_cargo.organigrama_escalafon
+        
+        estrato = self.comisionadosolicitud_nombre.oficina if self.comisionadosolicitud_nombre.oficina else 2
+
+        # TODO: comisionado_cargo (Organigrama) was dropped when Comisionado merged into
+        # personalizador.Agente; the "Vocal"/"Presidente" override and per-cargo escalafon
+        # used to come from Organigrama. Until Agente.oficina is mapped back to that data
+        # (pending data orchestration), default to escalafon 2 and skip the override.
         decreto = foreign.solicitud_decreto_viaticos
         es_chaco = foreign.solicitud_provincia.provincia_nombre == "Chaco"
 
-        if gabinete in ["Vocal", "Presidente"]:
-            return 0 if es_chaco else decreto.montoviaticodiario_estrato_cuatro_exterior
-        
+        if self.comisionadosolicitud_nombre.directorio_set.all() or self.comisionadosolicitud_nombre.agente_personal_de_gabinete or self.comisionadosolicitud_nombre.agente_personal_transitorio or es_chaco:
+            return 0
         if self.comisionadosolicitud_colaborador:
             return 0
         
@@ -591,7 +548,7 @@ class Incorporacion(models.Model):
     incorporacion_actuacion_jurisdiccion = models.CharField("Jurisdicción", max_length=3, default="E10")
     incorporacion_actuacion_numero = models.DecimalField("N° Actuación", max_digits=6, decimal_places=0, validators=[MinValueValidator(0)], default=0, help_text="Solo el número de la actuación. Sin prefijo, sufijo o Año.")
     incorporacion_actuacion_ano = models.DecimalField("Año Actuación", max_digits=4, decimal_places=0, validators=[MinValueValidator(0)], default=int(timezone.now().year))
-    incorporacion_solicitante = models.ForeignKey("Comisionado", on_delete=models.CASCADE) # Encargado del area solicitante
+    incorporacion_solicitante = models.ForeignKey("personalizador.Agente", on_delete=models.CASCADE) # Encargado del area solicitante
     incorporacion_resolucion = models.ForeignKey("InstrumentosLegalesResoluciones", verbose_name="Resolución Aprobada", help_text="Resolución que aprueba la incorporación de los agentes.", on_delete=models.CASCADE, blank=True, null=True)
     incorporacion_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     incorporacion_history = HistoricalRecords()

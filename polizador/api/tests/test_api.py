@@ -40,7 +40,7 @@ class LoadDataMixin:
         super().setUp()
         from carga.models import (
             Aseguradora, Empresa, Obra, Programa, Region,
-            CertificadoRubro, CertificadoFinanciamiento, Agente,
+            CertificadoRubro, CertificadoFinanciamiento,
         )
         from personalizador.models import CargoTipo, Gerencia, Direccion
 
@@ -99,7 +99,6 @@ class SchemaTest(TestCase):
     def test_carga_schemas_import(self):
         from api.schemas.carga_schemas import (
             AseguradoraOut, EmpresaOut, ObraOut, CertificadoOut,
-            AgenteOut,
         )
         assert AseguradoraOut.model_fields is not None
         assert len(AseguradoraOut.model_fields) > 0

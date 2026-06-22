@@ -1,49 +1,49 @@
 from django import forms
-from secretariador.models import Comisionado
+from personalizador.models import Agente
 from secretariador.forms.mixins import BaseFormMixin
 from polizador.custom_forms import CustomCheckboxInput
 
 class ComisionadoForm(BaseFormMixin, forms.ModelForm):
     class Meta:
-        model = Comisionado
+        model = Agente
         fields = (
-            "comisionado_apellidos",
-            "comisionado_nombres",
-            "comisionado_abreviatura",
-            "comisionado_sexo",
-            "comisionado_cargo",
-            "comisionado_dni",
-            "comisionado_cuit",
-            "comisionado_personal_transitorio",
-            "comisionado_personal_de_gabinete",
+            "agente_apellidos",
+            "agente_nombres",
+            "abreviatura",
+            "sexo",
+            "oficina",
+            "dni",
+            "cuil",
+            "agente_personal_transitorio",
+            "agente_personal_de_gabinete",
         )
         widgets = {
-            "comisionado_nombres":forms.TextInput(attrs={
+            "agente_nombres":forms.TextInput(attrs={
                 "class":"form-control"
                 }),
-            "comisionado_apellidos":forms.TextInput(attrs={
+            "agente_apellidos":forms.TextInput(attrs={
                 "class":"form-control"
                 }),
-            "comisionado_abreviatura":forms.TextInput(attrs={
+            "abreviatura":forms.TextInput(attrs={
                 "class":"form-control"
                 }),
-            "comisionado_sexo":forms.Select(attrs={
+            "sexo":forms.Select(attrs={
                 "class":"form-control",
                 }),
-            "comisionado_cargo":forms.Select(attrs={
+            "oficina":forms.Select(attrs={
                 "class":"form-control",
                 }),
-            "comisionado_dni":forms.NumberInput(attrs={
+            "dni":forms.NumberInput(attrs={
                 "class":"form-control",
                 "placeholder":"0"
                 }),
-            "comisionado_cuit":forms.TextInput(attrs={
+            "cuil":forms.TextInput(attrs={
                 "class":"form-control"
                 }),
-            "comisionado_personal_transitorio":CustomCheckboxInput(attrs={
+            "agente_personal_transitorio":CustomCheckboxInput(attrs={
                 "class":"form-check-input"
                 }),
-            "comisionado_personal_de_gabinete":CustomCheckboxInput(attrs={
+            "agente_personal_de_gabinete":CustomCheckboxInput(attrs={
                 "class":"form-check-input"
                 }),
         }

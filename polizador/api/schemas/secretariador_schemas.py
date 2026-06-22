@@ -140,43 +140,34 @@ class MontoViaticoUpdate(BaseModel):
     monto_viatico_cuatro_exterior: Optional[float] = None
 
 
-# === Comisionado ===
+# === Comisionado (personalizador.Agente) ===
 class ComisionadoOut(BaseModel):
     id: int
     comisionado_nombres: str
     comisionado_apellidos: str
     comisionado_abreviatura: str
-    comisionado_sexo: str
-    cargo_id: int
-    cargo_decreto_id: Optional[int] = None
-    cargo_interno_id: Optional[int] = None
-    cargo_interno_resolucion_id: Optional[int] = None
+    sexo_id: int
+    oficina_id: Optional[int] = None
     dni: float
-    cuit: str
+    cuil: str
 
 class ComisionadoCreate(BaseModel):
     comisionado_nombres: str
     comisionado_apellidos: str
     comisionado_abreviatura: str = "Sr."
-    comisionado_sexo: str
-    cargo_id: int
-    cargo_decreto_id: Optional[int] = None
-    cargo_interno_id: Optional[int] = None
-    cargo_interno_resolucion_id: Optional[int] = None
+    sexo_id: int
+    oficina_id: Optional[int] = None
     dni: float
-    cuit: str
+    cuil: str
 
 class ComisionadoUpdate(BaseModel):
     comisionado_nombres: Optional[str] = None
     comisionado_apellidos: Optional[str] = None
     comisionado_abreviatura: Optional[str] = None
-    comisionado_sexo: Optional[str] = None
-    cargo_id: Optional[int] = None
-    cargo_decreto_id: Optional[int] = None
-    cargo_interno_id: Optional[int] = None
-    cargo_interno_resolucion_id: Optional[int] = None
+    sexo_id: Optional[int] = None
+    oficina_id: Optional[int] = None
     dni: Optional[float] = None
-    cuit: Optional[str] = None
+    cuil: Optional[str] = None
 
 
 # === Organigrama ===

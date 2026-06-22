@@ -8,7 +8,7 @@ from typing import Optional
 from django.core.management.base import BaseCommand, CommandError
 from django.core.files import File
 from secretariador.functions import FileValidator
-from secretariador.models import Solicitud, Comisionado, generate_name_resoluciones, InstrumentosLegalesMemorandum
+from secretariador.models import Solicitud, generate_name_resoluciones, InstrumentosLegalesMemorandum
 import time
 
 class Resolucion(typing.TypedDict):

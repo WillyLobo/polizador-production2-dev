@@ -7,20 +7,20 @@ from django.template import loader, TemplateDoesNotExist
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
-from secretariador.models import Comisionado
+from personalizador.models import Agente
 from secretariador.forms.comisionadoform import ComisionadoForm
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg
 from carga.views.generics import get_deleted_objects
 
 @method_decorator(login_required, name="dispatch")
 class CrearComisionado(PermissionRequiredMixin, generic.CreateView):
-	permission_required = "secretariador.add_comisionado"
+	permission_required = "personalizador.add_agente"
 
-	model = Comisionado
+	model = Agente
 	template_name = "comisionado/crear-comisionado.html"
 	form_class = ComisionadoForm
 	success_url = reverse_lazy("secretariador:crear-comisionado")
-	
+
 	title = "Crear Comisionado"
 
 	def get_title(self):
@@ -30,21 +30,21 @@ class CrearComisionado(PermissionRequiredMixin, generic.CreateView):
 		context = super().get_context_data(**kwargs)
 		context["title"] = self.get_title()
 		return context
-	
+
 @method_decorator(login_required, name="dispatch")
 class UpdateComisionado(PermissionRequiredMixin, generic.UpdateView):
-	permission_required = "secretariador.change_comisionado"
+	permission_required = "personalizador.change_agente"
 
-	model = Comisionado
+	model = Agente
 	template_name = "comisionado/update-comisionado.html"
 	form_class = ComisionadoForm
 	success_url = reverse_lazy("secretariador:crear-comisionado")
 
 @method_decorator(login_required, name="dispatch")
 class EliminarComisionado(PermissionRequiredMixin, generic.DeleteView):
-	permission_required = "secretariador.delete_comisionado"
+	permission_required = "personalizador.delete_agente"
 
-	model = Comisionado
+	model = Agente
 	template_name = "generic/confirm_delete.html"
 	success_url = reverse_lazy("secretariador:lista-comisionados")
 
@@ -64,18 +64,18 @@ class EliminarComisionado(PermissionRequiredMixin, generic.DeleteView):
 # 	template_name = "certificado/certificado.html"
 
 @login_required
-@permission_required("secretariador.view_comisionado", raise_exception=True)
+@permission_required("personalizador.view_agente", raise_exception=True)
 def PaginaListaComisionados(request):
 	template_name = "Lista-comisionados.html"
 
 	return render(request, template_name, {})
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("secretariador.view_comisionado", raise_exception=True), name="dispatch")
+@method_decorator(permission_required("personalizador.view_agente", raise_exception=True), name="dispatch")
 class ListaComisionadosView(AjaxDatatableView):
-	model = Comisionado
+	model = Agente
 	title = "Comisionados"
-	initial_order = [["comisionado_apellidos", "asc"], ]
+	initial_order = [["agente_apellidos", "asc"], ]
 	length_menu = [[50, 100, -1], [50, 100, "all"]]
 	search_values_separator = "+"
 
@@ -83,12 +83,12 @@ class ListaComisionadosView(AjaxDatatableView):
 		AjaxDatatableView.render_row_tools_column_def(),
 		{'name': 'edit', 'title': '', 'placeholder': True, 'searchable': False, 'orderable': False, "width":81},
 		{"name": "id","title":"ID", "visible": False},
-		{"name":"comisionado_apellidos", "title":"Apellidos", "className": "align-left"},
-		{"name":"comisionado_nombres", "title":"Nombre", "className": "align-left"},
-		{"name":"comisionado_cargo", "title":"Cargo", "foreign_field":"comisionado_cargo__organigrama_cargo"},
-		{"name":"comisionado_cuit", "title":"CUIT"},
-		{"name":"comisionado_personal_transitorio", "title":"Personal Contratado", "choices":True, "autofilter":True},
-		{"name":"comisionado_personal_de_gabinete", "title":"Personal de Gabinete", "choices":True, "autofilter":True},
+		{"name":"agente_apellidos", "title":"Apellidos", "className": "align-left"},
+		{"name":"agente_nombres", "title":"Nombre", "className": "align-left"},
+		{"name":"oficina", "title":"Cargo", "foreign_field":"oficina__cargo_tipo__cargotipo"},
+		{"name":"cuil", "title":"CUIT"},
+		{"name":"agente_personal_transitorio", "title":"Personal Contratado", "choices":True, "autofilter":True},
+		{"name":"agente_personal_de_gabinete", "title":"Personal de Gabinete", "choices":True, "autofilter":True},
 	]
 
 	def customize_row(self, row, obj):
@@ -98,9 +98,9 @@ class ListaComisionadosView(AjaxDatatableView):
 		detallelink = f'<a href="">{detallelinkimg}</a>'
 		eliminarlink = f'<a href="/viaticos/eliminar/comisionado/{id}">{eliminarlinkimg}</a>'
 		
-		if self.request.user.has_perm("secretariador.delete_comisionado"):
+		if self.request.user.has_perm("personalizador.delete_agente"):
 			row["edit"] = f"{editarlink}{detallelink}{eliminarlink}"
-		elif self.request.user.has_perm("secretariador.change_comisionado"):
+		elif self.request.user.has_perm("personalizador.change_agente"):
 			row["edit"] = f"{editarlink}{detallelink}"
 		else:
 			row["edit"] = f"{detallelink}"

@@ -11,8 +11,12 @@ from carga.models import Provincia
 from secretariador.forms.incorporacionform import *
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg, generarlinkimg
 from carga.views.generics import get_deleted_objects
+from pathlib import Path
+from django.conf import settings
 import jinja2
 
+BASE = Path(settings.BASE_DIR)
+template_path_incorporacion = BASE / "secretariador/media/solicitud_incorporacion.docx"
 
 from docxtpl import DocxTemplate
 
@@ -52,8 +56,8 @@ def incorporacion_docx(request, pk):
 		for agente in agentes:
 			chofer = ""
 			colaborador = ""
-			agente_denominacion = f"{agente.comisionadosolicitud_nombre.comisionado_abreviatura} {agente.comisionadosolicitud_nombre.comisionado_nombres} {agente.comisionadosolicitud_nombre.comisionado_apellidos}"
-			if agente.comisionadosolicitud_nombre.comisionado_sexo == "M":
+			agente_denominacion = f"{agente.comisionadosolicitud_nombre.abreviatura} {agente.comisionadosolicitud_nombre.agente_nombres} {agente.comisionadosolicitud_nombre.agente_apellidos}"
+			if agente.comisionadosolicitud_nombre.sexo.generoagente_nombre == "Masculino":
 				text = "el"
 			else:
 				text = "la"
@@ -64,7 +68,7 @@ def incorporacion_docx(request, pk):
 				colaborador = ""
 		
 			if agente.comisionadosolicitud_chofer:
-				if agente.comisionadosolicitud_nombre.comisionado_sexo == "M":
+				if agente.comisionadosolicitud_nombre.sexo.generoagente_nombre == "Masculino":
 					chofer = f"el {agente_denominacion}"
 				else:
 					chofer = f"la {agente_denominacion}"
@@ -74,7 +78,7 @@ def incorporacion_docx(request, pk):
 			else:
 				traslado = "trasladar al mencionado agente"
 			
-			dni = "{:,}".format(agente.comisionadosolicitud_nombre.comisionado_dni).replace(",", "@").replace(".", ",").replace("@", ".")
+			dni = "{:,}".format(agente.comisionadosolicitud_nombre.dni).replace(",", "@").replace(".", ",").replace("@", ".")
 			lista_agentes.append(f"{text} {agente_denominacion} - D.N.I.Nº{dni}{colaborador}")
 		lista_agentes = separate_items(lista_agentes)
 
@@ -119,7 +123,7 @@ def incorporacion_docx(request, pk):
 		final_text = []
 		for agente in agentes:
 			lista_agentes = []
-			agente_cuit = f"{agente.comisionadosolicitud_nombre.comisionado_abreviatura} {agente.comisionadosolicitud_nombre.comisionado_nombreyapellido} – CUIL Nº{agente.comisionadosolicitud_nombre.comisionado_cuit}"
+			agente_cuit = f"{agente.comisionadosolicitud_nombre.abreviatura} {agente.comisionadosolicitud_nombre.agente_nombreyapellido} – CUIL Nº{agente.comisionadosolicitud_nombre.cuil}"
 			cantidad_de_dias = f"{actuacion.incorporacion_solicitud.solicitud_cantidad_de_dias.days} {' dias' if actuacion.incorporacion_solicitud.solicitud_cantidad_de_dias.days > 1 else ' dia'}"
 			comisionadosolicitud_combustible = "{:,.2f}".format(agente.comisionadosolicitud_combustible).replace(",", "@").replace(".", ",").replace("@", ".")
 			comisionadosolicitud_pasaje = "{:,.2f}".format(agente.comisionadosolicitud_pasaje).replace(",", "@").replace(".", ",").replace("@", ".")
@@ -157,7 +161,7 @@ def incorporacion_docx(request, pk):
 	articulo_uno            = f"Incorporar a los agentes, detallados a continuación, a trasladarse a {lista_localidades}, {lista_fechas} a fin de {tareas} y anticipar los importes que se consignan, conforme con el Visto y Considerando de la presente, debiendo rendir cuentas documentadas de sus inversiones, de acuerdo con las reglamentaciones vigentes."
 	articulo_dos            = lista_agentes_incorporacion_articulo
 
-	doc = DocxTemplate("secretariador/media/solicitud_incorporacion.docx")
+	doc = DocxTemplate(template_path_incorporacion)
 	context = {
 		"actuacion":actuacion,
 		"numero_actuacion":numero_actuacion,
@@ -344,7 +348,7 @@ class ListaIncorporacionesView(AjaxDatatableView):
 		{"name":"incorporacion_actuacion_ano"},
 		{"name":"incorporacion_actuacion_numero"},
 		{"name":"incorporacion_solicitud", "foreign_field":"incorporacion_solicitud__solicitud_actuacion"},
-		{"name":"incorporacion_solicitante", "foreign_field":"incorporacion_solicitante__comisionado_nombreyapellido"},
+		{"name":"incorporacion_solicitante", "foreign_field":"incorporacion_solicitante__agente_nombreyapellido"},
 	]
 
 	def render_clip_value_as_html(self, long_text, short_text, is_clipped):

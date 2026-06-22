@@ -11,9 +11,16 @@ from carga.models import Provincia
 from secretariador.forms.solicitudform import *
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg, generarlinkimg, pdflinkimg
 from carga.views.generics import get_deleted_objects
+from pathlib import Path
+from django.conf import settings
 import jinja2
 from docxtpl import DocxTemplate
 from secretariador.forms.mixins import FormsetViewMixin
+
+# Resolve relative to the project root:
+BASE = Path(settings.BASE_DIR)
+template_path_chaco = BASE / "secretariador/media/solicitud_template.docx"
+template_path_exterior = BASE / "secretariador/media/solicitud_exterior.docx"
 
 @login_required
 @permission_required("secretariador.view_solicitud", raise_exception=True)
@@ -57,8 +64,8 @@ def solicitud_docx(request, pk):
 		for agente in agentes:
 			chofer = ""
 			colaborador = ""
-			agente_denominacion = f"{agente.comisionadosolicitud_nombre.comisionado_abreviatura} {agente.comisionadosolicitud_nombre.comisionado_nombres} {agente.comisionadosolicitud_nombre.comisionado_apellidos}"
-			if agente.comisionadosolicitud_nombre.comisionado_sexo == "M":
+			agente_denominacion = f"{agente.comisionadosolicitud_nombre.abreviatura} {agente.comisionadosolicitud_nombre.agente_nombres} {agente.comisionadosolicitud_nombre.agente_apellidos}"
+			if agente.comisionadosolicitud_nombre.sexo.generoagente_nombre == "Masculino":
 				text = "el"
 			else:
 				text = "la"
@@ -69,7 +76,7 @@ def solicitud_docx(request, pk):
 				colaborador = ""
 		
 			if agente.comisionadosolicitud_chofer:
-				if agente.comisionadosolicitud_nombre.comisionado_sexo == "M":
+				if agente.comisionadosolicitud_nombre.sexo.generoagente_nombre == "Masculino":
 					chofer = f"el {agente_denominacion}"
 				else:
 					chofer = f"la {agente_denominacion}"
@@ -79,7 +86,7 @@ def solicitud_docx(request, pk):
 			else:
 				traslado = "trasladar al mencionado agente"
 			
-			dni = "{:,}".format(agente.comisionadosolicitud_nombre.comisionado_dni).replace(",", "@").replace(".", ",").replace("@", ".")
+			dni = "{:,}".format(agente.comisionadosolicitud_nombre.dni).replace(",", "@").replace(".", ",").replace("@", ".")
 			lista_agentes.append(f"{text} {agente_denominacion} - D.N.I.Nº{dni}{colaborador}")
 		lista_agentes = separate_items(lista_agentes)
 
@@ -124,7 +131,7 @@ def solicitud_docx(request, pk):
 		final_text = []
 		for agente in agentes:
 			lista_agentes = []
-			agente_cuit = f"{agente.comisionadosolicitud_nombre.comisionado_abreviatura} {agente.comisionadosolicitud_nombre.comisionado_nombreyapellido} – CUIL Nº{agente.comisionadosolicitud_nombre.comisionado_cuit}"
+			agente_cuit = f"{agente.comisionadosolicitud_nombre.abreviatura} {agente.comisionadosolicitud_nombre.agente_nombreyapellido} – CUIL Nº{agente.comisionadosolicitud_nombre.cuil}"
 			cantidad_de_dias = f"{actuacion.solicitud_cantidad_de_dias.days} {' dias' if actuacion.solicitud_cantidad_de_dias.days > 1 else ' dia'}"
 			comisionadosolicitud_combustible = "{:,.2f}".format(agente.comisionadosolicitud_combustible).replace(",", "@").replace(".", ",").replace("@", ".")
 			comisionadosolicitud_pasaje = "{:,.2f}".format(agente.comisionadosolicitud_pasaje).replace(",", "@").replace(".", ",").replace("@", ".")
@@ -165,7 +172,7 @@ def solicitud_docx(request, pk):
 	articulo_dos            = lista_agentes_articulo
 
 	if actuacion.solicitud_provincia.provincia_nombre == "Chaco":
-		doc = DocxTemplate("secretariador/media/solicitud_template.docx")
+		doc = DocxTemplate(template_path_chaco)
 		context = {
 			"actuacion":actuacion,
 			"parrafo_uno":parrafo_uno,
@@ -177,7 +184,7 @@ def solicitud_docx(request, pk):
 			"articulo_dos":articulo_dos,
 		}
 	else:
-		doc = DocxTemplate("secretariador/media/solicitud_exterior.docx")
+		doc = DocxTemplate(template_path_exterior)
 		context = {
 			"actuacion":actuacion,
 			"parrafo_uno":parrafo_uno,
@@ -267,7 +274,7 @@ class ListaSolicitudesView(AjaxDatatableView):
 		{"name": "id","title":"ID", "visible": False},
 		{"name":"solicitud_actuacion_ano"},
 		{"name":"solicitud_actuacion_numero"},
-		{"name":"solicitud_solicitante", "foreign_field":"solicitud_solicitante__comisionado_nombreyapellido"},
+		{"name":"solicitud_solicitante", "foreign_field":"solicitud_solicitante__agente_nombreyapellido"},
 		{"name":"Comisionados", "placeholder":True, "searchable": False, "orderable": False},
 		{"name":"solicitud_localidades", "m2m_foreign_field": "solicitud_localidades__localidad_nombre", "visible": True},
 		{"name":"solicitud_fecha_desde"},
@@ -320,7 +327,7 @@ class ListaSolicitudesView(AjaxDatatableView):
 
 		# Get list of comisionados for this solicitud, joining them wih ";" for display
 		comisionados = obj.comisionadosolicitud_set.all()
-		row["Comisionados"] = "; ".join(c.comisionadosolicitud_nombre.comisionado_nombreyapellido for c in comisionados)
+		row["Comisionados"] = "; ".join(c.comisionadosolicitud_nombre.agente_nombreyapellido for c in comisionados)
 	
 	def render_row_details(self, pk, request=None):
 

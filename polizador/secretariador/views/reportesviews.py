@@ -5,6 +5,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.shortcuts import render, get_object_or_404
 from secretariador.models import *
+from personalizador.models import Agente
 from django.db.models import Q, FilteredRelation, Subquery, OuterRef, Sum, F, Min, Max
 from django.core.exceptions import ValidationError
 from django.views.decorators.cache import cache_page
@@ -19,7 +20,7 @@ class PDFMergeTemplateView(PermissionRequiredMixin, generic.TemplateView):
 class CrearReporteViaticosPorAgente(PermissionRequiredMixin, generic.ListView):
     permission_required = "secretariador.view_solicitud"
 
-    model = Comisionado
+    model = Agente
     context_object_name = "solicitud"
     template_name = "reportes/crear-reporteviaticosporagente.html"
 	
@@ -37,7 +38,7 @@ class CrearReporteViaticosPorAgente(PermissionRequiredMixin, generic.ListView):
             solicitudes = ComisionadoSolicitud.objects.filter(Q(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial, fecha_final]) | Q(
                 comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__range=[fecha_inicial, fecha_final])).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
 
-        agentes = Comisionado.objects.all()
+        agentes = Agente.objects.all()
         queryset = {}
         final_queryset = {}
         for agente in agentes:
@@ -61,7 +62,7 @@ class CrearReporteViaticosPorAgente(PermissionRequiredMixin, generic.ListView):
             
             if solicitudes_annotated["cantidad_de_dias"] is not None:
                 queryset.update({
-                        agente.comisionado_nombreyapellido: {
+                        agente.agente_nombreyapellido: {
                             "cantidad_de_dias": solicitudes_annotated["cantidad_de_dias"].days,
                             "viatico":          solicitudes_annotated["viatico"],
                             "pasaje":           solicitudes_annotated["pasaje"],
@@ -81,7 +82,7 @@ class CrearReporteViaticosPorAgente(PermissionRequiredMixin, generic.ListView):
 class CrearReporteViaticosporArea(PermissionRequiredMixin, generic.ListView):
     permission_required = "secretariador.view_solicitud"
 
-    model = Comisionado
+    model = Agente
     context_object_name = "solicitud"
     template_name = "reportes/crear-reporteviaticosporarea.html"
 
@@ -100,7 +101,7 @@ class CrearReporteViaticosporArea(PermissionRequiredMixin, generic.ListView):
             solicitudes = ComisionadoSolicitud.objects.filter(Q(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial, fecha_final]) | Q(
                 comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__range=[fecha_inicial, fecha_final])).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
         
-        agentes = Comisionado.objects.all()
+        agentes = Agente.objects.all()
         queryset = {}
         final_queryset = {}
         for agente in agentes:
@@ -126,7 +127,7 @@ class CrearReporteViaticosporArea(PermissionRequiredMixin, generic.ListView):
             
             if solicitudes_annotated["cantidad_de_dias"] is not None:
                 queryset.update({
-                        agente.comisionado_nombreyapellido: {
+                        agente.agente_nombreyapellido: {
                             "cantidad_de_dias": solicitudes_annotated["cantidad_de_dias"].days,
                             "viatico":          solicitudes_annotated["viatico"],
                             "pasaje":           solicitudes_annotated["pasaje"],
@@ -146,7 +147,7 @@ class CrearReporteViaticosporArea(PermissionRequiredMixin, generic.ListView):
 class CrearReporteAusenciasPorAgente(PermissionRequiredMixin, generic.ListView):
     permission_required = "secretariador.view_solicitud"
 
-    model = Comisionado
+    model = Agente
     context_object_name = "solicitud"
     template_name = "reportes/crear-reporteausenciasporagente.html"
 	
@@ -164,7 +165,7 @@ class CrearReporteAusenciasPorAgente(PermissionRequiredMixin, generic.ListView):
             solicitudes = ComisionadoSolicitud.objects.filter(Q(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial, fecha_final]) | Q(
                 comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__range=[fecha_inicial, fecha_final])).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
 
-        agentes = Comisionado.objects.all()
+        agentes = Agente.objects.all()
         queryset = {}
         final_queryset = {}
         for agente in agentes:
@@ -190,7 +191,7 @@ class CrearReporteAusenciasPorAgente(PermissionRequiredMixin, generic.ListView):
             days_list = ", ".join(days_list)
             if solicitudes_annotated["cantidad_de_dias"] is not None:
                 queryset.update({
-                        agente.comisionado_nombreyapellido: {
+                        agente.agente_nombreyapellido: {
                             "cantidad_de_dias": solicitudes_annotated["cantidad_de_dias"].days,
                             "fechas_en_comision": days_list
                         }
@@ -241,7 +242,7 @@ class CrearReporteComisionesDuplicadas(PermissionRequiredMixin, generic.ListView
                                 "cantidad_de_dias": solicitud.solicitud_cantidad_de_dias.days,
                                 "localidades": [localidad.localidad_nombre for localidad in solicitud.solicitud_localidades.all()],
                                 "fechas": solicitud.solicitud_fechas(),
-                                "solicitante": solicitud.solicitud_solicitante.comisionado_nombreyapellido,
+                                "solicitante": solicitud.solicitud_solicitante.agente_nombreyapellido,
                                 "comisionados": solicitud.get_comisionados(),
                                 "tareas": solicitud.solicitud_tareas,
                             }
@@ -285,14 +286,14 @@ class CrearReporteComisionesDuplicadas(PermissionRequiredMixin, generic.ListView
 class CrearReporteViaticosPorAgenteIndividual(PermissionRequiredMixin, generic.ListView):
     permission_required = "secretariador.view_solicitud"
 
-    model = Comisionado
+    model = Agente
     context_object_name = "solicitud"
     template_name = "reportes/crear-reporteviaticosporagenteindividual.html"
 	
     def get_queryset(self):
         if self.request.GET:
-            agente = get_object_or_404(Comisionado, id=self.request.GET.get("agente"))
-            #agente = Comisionado.objects.get(id=self.request.GET.get("agente"))
+            agente = get_object_or_404(Agente, id=self.request.GET.get("agente"))
+            #agente = Agente.objects.get(id=self.request.GET.get("agente"))
             ano = self.request.GET.get("ano")
             comisiones = agente.comisionadosolicitud_set.select_related(
                 "comisionadosolicitud_foreign",
@@ -336,7 +337,7 @@ class CrearReporteViaticosPorAgenteIndividual(PermissionRequiredMixin, generic.L
 class CalendarioSemanal(PermissionRequiredMixin, generic.ListView):
     permission_required = "secretariador.view_solicitud"
 
-    model = Comisionado
+    model = Agente
     context_object_name = "solicitud"
     template_name = "reportes/calendario-semanal.html"
 	
@@ -360,9 +361,9 @@ class CalendarioSemanal(PermissionRequiredMixin, generic.ListView):
                 foreign = comisionado.comisionadosolicitud_foreign if comisionado.comisionadosolicitud_foreign is not None else comisionado.comisionadosolicitud_incorporacion_foreign.incorporacion_solicitud
 
                 # if comisionado is already in the list, append it with "red" background color
-                if check_value_in_list_of_lists(comisiones_list, comisionado.comisionadosolicitud_nombre.comisionado_nombreyapellido, foreign.solicitud_fecha_desde):
+                if check_value_in_list_of_lists(comisiones_list, comisionado.comisionadosolicitud_nombre.agente_nombreyapellido, foreign.solicitud_fecha_desde):
                     comisiones_list.append([
-                            comisionado.comisionadosolicitud_nombre.comisionado_nombreyapellido,
+                            comisionado.comisionadosolicitud_nombre.agente_nombreyapellido,
                             foreign.solicitud_fecha_desde,
                             foreign.solicitud_fecha_hasta,
                             foreign.get_absolute_url(),
@@ -371,7 +372,7 @@ class CalendarioSemanal(PermissionRequiredMixin, generic.ListView):
                     ])
                 else:
                     comisiones_list.append([
-                            comisionado.comisionadosolicitud_nombre.comisionado_nombreyapellido,
+                            comisionado.comisionadosolicitud_nombre.agente_nombreyapellido,
                             foreign.solicitud_fecha_desde,
                             foreign.solicitud_fecha_hasta,
                             foreign.get_absolute_url(),
@@ -392,7 +393,7 @@ class CalendarioSemanal(PermissionRequiredMixin, generic.ListView):
 class CalendarioAnual(PermissionRequiredMixin, generic.ListView):
     permission_required = "secretariador.view_solicitud"
 
-    model = Comisionado
+    model = Agente
     context_object_name = "solicitud"
     template_name = "reportes/calendario-anual.html"
 	
@@ -423,9 +424,9 @@ class CalendarioAnual(PermissionRequiredMixin, generic.ListView):
                 foreign = comisionado.comisionadosolicitud_foreign if comisionado.comisionadosolicitud_foreign is not None else comisionado.comisionadosolicitud_incorporacion_foreign.incorporacion_solicitud
 
                 # if comisionado is already in the list, append it with "red" background color
-                if check_value_in_list_of_lists(comisiones_list, comisionado.comisionadosolicitud_nombre.comisionado_nombreyapellido, foreign.solicitud_fecha_desde):
+                if check_value_in_list_of_lists(comisiones_list, comisionado.comisionadosolicitud_nombre.agente_nombreyapellido, foreign.solicitud_fecha_desde):
                     comisiones_list.append([
-                            comisionado.comisionadosolicitud_nombre.comisionado_nombreyapellido,
+                            comisionado.comisionadosolicitud_nombre.agente_nombreyapellido,
                             foreign.solicitud_fecha_desde,
                             foreign.solicitud_fecha_hasta,
                             foreign.get_absolute_url(),
@@ -434,7 +435,7 @@ class CalendarioAnual(PermissionRequiredMixin, generic.ListView):
                     ])
                 else:
                     comisiones_list.append([
-                            comisionado.comisionadosolicitud_nombre.comisionado_nombreyapellido,
+                            comisionado.comisionadosolicitud_nombre.agente_nombreyapellido,
                             foreign.solicitud_fecha_desde,
                             foreign.solicitud_fecha_hasta,
                             foreign.get_absolute_url(),

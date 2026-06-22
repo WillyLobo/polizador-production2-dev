@@ -38,14 +38,20 @@ class Agente(models.Model):
         output_field=models.CharField("Nombre y Apellido", max_length=256, editable=False),
         db_persist=True
     )
-    n_legajo = models.IntegerField("Numero de legajo")
+    agente_apellidoynombre_coma = models.GeneratedField(
+        expression=ConcatOp(models.F("agente_apellidos"), models.Value(", "), models.F("agente_nombres")),
+        output_field=models.CharField("Apellido y Nombres", max_length=256, editable=False),
+        db_persist=True
+    )
+    n_legajo = models.IntegerField("Numero de legajo", blank=True, null=True)
     # Datos Personales
     sexo = models.ForeignKey("GeneroAgente", on_delete=models.CASCADE)
+    abreviatura = models.CharField("Abreviatura", max_length=10, blank=True, null=True)
     telefono = models.CharField("Telefono", max_length=20, blank=True, null=True)
     email = models.EmailField("Email", blank=True,null=True)
     titulo_profesional = models.ManyToManyField("TituloProfesional", blank=True)
     matricula = models.CharField("Matricula Profesional", max_length=10, blank=True, null=True)
-    dni = models.DecimalField("DNI:", max_digits=9, decimal_places=0, validators=[MinValueValidator(0)])
+    dni = models.DecimalField("DNI:", max_digits=9, decimal_places=0, unique=True, validators=[MinValueValidator(0)])
     cuil = models.CharField("CUIT", max_length=13, validators=[CuitValidator()])
     fecha_nacimiento = models.DateField("Fecha de Nacimiento", blank=True, null=True)
     # Datos Dependencia
@@ -58,7 +64,7 @@ class Agente(models.Model):
     denominacion_cargo = models.ForeignKey("DenominacionCargo", related_name="agente_denominacion_cargo", on_delete=models.CASCADE, blank=True, null=True)
     cargo_interno = models.ForeignKey("DenominacionCargo", related_name="agente_cargo_interno", on_delete=models.CASCADE, blank=True, null=True)
     n_resolucion_cargo_interno = models.CharField(max_length=13, blank=True, null=True)
-    apartado = models.ForeignKey("ApartadoCargo", on_delete=models.CASCADE, blank=True)
+    apartado = models.ForeignKey("ApartadoCargo", on_delete=models.CASCADE, blank=True, null=True)
     ceic = models.ForeignKey("CEIC", on_delete=models.CASCADE, blank=True, null=True)
     grupo = models.ForeignKey("GrupoCargo", on_delete=models.CASCADE, blank=True, null=True)
     activdad_central = models.CharField(max_length=1, default="1")
@@ -77,6 +83,7 @@ class Agente(models.Model):
     # fecha_carga_interna = models.DateField("Fecha de inicio de aportes", blank=True, null=True)
     # FLAGS
     agente_verificado_contra_padron = models.BooleanField("Chequeado",default=False)
+    agente_es_inpector_obra = models.BooleanField("Inspector de Obra",default=False)
     agente_personal_transitorio = models.BooleanField("Personal Transitorio",default=False)
     agente_personal_de_gabinete = models.BooleanField("Personal de Gabinete",default=False)
     # Otros
@@ -85,10 +92,10 @@ class Agente(models.Model):
 
     @property
     def edad(self):
-        return int((datetime.now().year - self.agente_fecha_nacimiento.year))
-    
+        return int((datetime.now().year - self.fecha_nacimiento.year))
+
     def __str__(self):
-        return f"{self.agente_nombreyapellido} - DNI Nº{self.agente_dni}"
+        return f"{self.agente_nombreyapellido} - DNI Nº{self.dni}"
 
 class GeneroAgente(models.Model):
     class Meta:
@@ -97,6 +104,9 @@ class GeneroAgente(models.Model):
 
     generoagente_nombre = models.CharField(max_length=20, unique=True)
     generoagente_history = HistoricalRecords()
+
+    def __str__(self):
+        return self.generoagente_nombre
 
 class TituloProfesional(models.Model):
     class Meta:
@@ -107,6 +117,9 @@ class TituloProfesional(models.Model):
     tituloprofesional_grado = models.CharField(max_length=50, help_text="Grado académico del título, ej: Universitario, Terciario, etc.")
     tituloprofesional_history = HistoricalRecords()
 
+    def __str__(self):
+        return self.tituloprofesional_nombre
+
 class Categoria(models.Model):
     class Meta:
         verbose_name = "Categoría"
@@ -116,6 +129,9 @@ class Categoria(models.Model):
     categoria_nombre = models.CharField(max_length=100)
     categoria_history = HistoricalRecords()
 
+    def __str__(self):
+        return self.categoria_nombre
+
 class DenominacionCargo(models.Model):
     class Meta:
         verbose_name = "Denominación de Cargo"
@@ -123,6 +139,9 @@ class DenominacionCargo(models.Model):
 
     denominacion = models.CharField(max_length=100)
     denominacioncargo_history = HistoricalRecords()
+
+    def __str__(self):
+        return self.denominacion
 
 class ApartadoCargo(models.Model):
     class Meta:
@@ -132,6 +151,9 @@ class ApartadoCargo(models.Model):
     apartadocargo_denominacion = models.CharField(max_length=1, unique=True)
     apartadocargo_history = HistoricalRecords()
 
+    def __str__(self):
+        return self.apartadocargo_denominacion
+
 class CEIC(models.Model):
     class Meta:
         verbose_name = "CEIC"
@@ -139,6 +161,9 @@ class CEIC(models.Model):
 
     ceic = models.CharField(max_length=10, unique=True)
     ceic_history = HistoricalRecords()
+
+    def __str__(self):
+        return self.ceic
 
 class GrupoCargo(models.Model):
     class Meta:
@@ -156,6 +181,9 @@ class ActividadEspecifica(models.Model):
     actividad_especifica_codigo = models.DecimalField(max_digits=2, decimal_places=0)
     actividad_especifica_nombre = models.CharField(max_length=100)
     actividad_especifica_history = HistoricalRecords()
+
+    def __str__(self):
+        return self.actividad_especifica_nombre
 
 class Oficina(models.Model):
     class Meta:
@@ -186,6 +214,9 @@ class CargoTipo(models.Model):
     cargotipo_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     cargotipo_history = HistoricalRecords()
 
+    def __str__(self):
+        return self.cargotipo
+
 class Directorio(models.Model):
     class Meta:
         # Ej. Presidencia, Vocalia 1, Vocalia 2, etc.
@@ -194,6 +225,7 @@ class Directorio(models.Model):
     
     directorio_nombre = models.CharField("Directorio", max_length=200)
     directorio_autoridad_a_cargo = models.CharField("Autoridad a Cargo", max_length=200, null=True, blank=True)
+    directorio_autoridad_a_cargo_fk = models.ForeignKey("Agente", on_delete=models.CASCADE, null=True, blank=True)
     directorio_cuof = models.CharField("CUOF", max_length=10)
     directorio_ungi = models.CharField("UNGI", max_length=10, null=True, blank=True)
     directorio_uuid = models.UUIDField(default=compat.uuid7, editable=False)
@@ -210,6 +242,7 @@ class Gerencia(models.Model):
     gerencia_directorio = models.ForeignKey("Directorio", on_delete=models.CASCADE)
     gerencia_nombre = models.CharField("Gerencia", max_length=200)
     gerencia_autoridad_a_cargo = models.CharField("Autoridad a Cargo", max_length=200, null=True, blank=True)
+    gerencia_autoridad_a_cargo_fk = models.ForeignKey("Agente", on_delete=models.CASCADE, null=True, blank=True)
     gerencia_cuof = models.CharField("CUOF", max_length=10)
     gerencia_ungi = models.CharField("UNGI", max_length=10, null=True, blank=True)
     gerencia_responsabilidadprimaria = models.TextField("Responsabilidad Primaria", null=True, blank=True)
@@ -228,6 +261,7 @@ class Direccion(models.Model):
     direccion_gerencia = models.ForeignKey("Gerencia", on_delete=models.CASCADE, null=True, blank=True)
     direccion_nombre = models.CharField("Direccion", max_length=200)
     direccion_autoridad_a_cargo = models.CharField("Autoridad a Cargo", max_length=200, null=True, blank=True)
+    direccion_autoridad_a_cargo_fk = models.ForeignKey("Agente", on_delete=models.CASCADE, null=True, blank=True)
     direccion_cuof = models.CharField("CUOF", max_length=10)
     direccion_ungi = models.CharField("UNGI", max_length=10, null=True, blank=True)
     direccion_responsabilidadprimaria = models.TextField("Responsabilidad Primaria", null=True, blank=True)
@@ -247,6 +281,7 @@ class Departamento(models.Model):
     departamento_direccion = models.ForeignKey("Direccion", on_delete=models.CASCADE, null=True, blank=True)
     departamento_nombre = models.CharField("Departamento", max_length=200)
     departamento_autoridad_a_cargo = models.CharField("Autoridad a Cargo", max_length=200, null=True, blank=True)
+    departamento_autoridad_a_cargo_fk = models.ForeignKey("Agente", on_delete=models.CASCADE, null=True, blank=True)
     departamento_cuof = models.CharField("CUOF", max_length=10)
     departamento_ungi = models.CharField("UNGI", max_length=10, null=True, blank=True)
     departamento_responsabilidadprimaria = models.TextField("Responsabilidad Primaria", null=True, blank=True)

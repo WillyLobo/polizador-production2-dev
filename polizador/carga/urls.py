@@ -12,7 +12,6 @@ from carga.views.receptorviews import *
 from carga.views.areaviews import *
 from carga.views.aseguradoraviews import *
 from carga.views.programaviews import *
-from carga.views.agenteviews import *
 from carga.views.conjuntoviews import *
 from carga.views.reportes import *
 from carga.views.contratoviews import *
@@ -94,12 +93,6 @@ programa_patterns = [
 	path("crear/programa/obra/<pk>", ProgramaObra.as_view(), name="programa-obra"),
     path("eliminar/programa/<pk>", EliminarPrograma.as_view(), name="eliminar-programa")
 ]
-agente_patterns = [
-	path("crear/agente/", CrearAgente.as_view(), name="crear-agente"),
-	path("crear/agente/<pk>", UpdateAgente.as_view(), name="update-agente"),
-	path("crear/agente/obra/<pk>", AgenteObra.as_view(), name="agente-obra"),
-    path("eliminar/agente/<pk>", EliminarAgente.as_view(), name="eliminar-agente")
-]
 conjunto_patterns = [
 	path("crear/conjunto/", CrearConjunto.as_view(), name="crear-conjunto"),
 	path("crear/conjunto/<pk>", UpdateConjunto.as_view(), name="update-conjunto"),
@@ -132,9 +125,6 @@ ajax = [
 	# Certificados
 	path("listas/certificados", PaginaListaCertificados, name="lista-certificados"),
 	path("ajax_datatables/certificados/", ListaCertificadosView.as_view(), name="lista-certificados-datatables"),
-	# Agentes
-	path("listas/agentes", PaginaListaAgentes, name="lista-agentes"),
-	path("ajax_datatables/agentes/", ListaAgentesView.as_view(), name="lista-agentes-datatables"),
 	# Aseguradoras
 	path("listas/aseguradoras", PaginaListaAseguradoras, name="lista-aseguradoras"),
 	path("ajax_datatables/aseguradoras/", ListaAseguradorasView.as_view(), name="lista-aseguradoras-datatables"),
@@ -175,7 +165,6 @@ urlpatterns += reporte_patterns
 urlpatterns += contrato_patterns
 urlpatterns += ajax
 urlpatterns += conjunto_patterns
-urlpatterns += agente_patterns
 urlpatterns += programa_patterns
 urlpatterns += aseguradora_patterns
 urlpatterns += area_patterns

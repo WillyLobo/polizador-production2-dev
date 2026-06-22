@@ -22,12 +22,14 @@ class programawidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
 
 class agentemultiplewidget(LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget):
     search_fields = [
-        "agente_nombre__icontains",
+        "agente_nombres__icontains",
+        "agente_apellidos__icontains",
     ]
 
 class agentewidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
     search_fields = [
-        "agente_nombre__icontains",
+        "agente_nombres__icontains",
+        "agente_apellidos__icontains",
     ]
 
 class aseguradorawidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):

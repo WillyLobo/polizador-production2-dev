@@ -300,37 +300,6 @@ class PrototipoUpdate(BaseModel):
     prototipo_incremento: Optional[float] = None
     prototipo_discapacitado: Optional[bool] = None
 
-# === Agente ===
-class AgenteOut(BaseModel):
-    id: int
-    agente_uuid: str
-    agente_nombre: str
-    agente_apellido: str
-    agente_dni: Optional[float] = None
-    agente_telefono: Optional[str] = None
-    agente_email: Optional[str] = None
-    agente_profesion: Optional[str] = None
-    agente_matricula: Optional[str] = None
-    agente_nombre_completo: Optional[str] = None
-
-class AgenteCreate(BaseModel):
-    agente_nombre: str
-    agente_apellido: str
-    agente_dni: Optional[float] = None
-    agente_telefono: Optional[str] = None
-    agente_email: Optional[str] = None
-    agente_profesion: Optional[str] = None
-    agente_matricula: Optional[str] = None
-
-class AgenteUpdate(BaseModel):
-    agente_nombre: Optional[str] = None
-    agente_apellido: Optional[str] = None
-    agente_dni: Optional[float] = None
-    agente_telefono: Optional[str] = None
-    agente_email: Optional[str] = None
-    agente_profesion: Optional[str] = None
-    agente_matricula: Optional[str] = None
-
 # === CertificadoRubro ===
 class CertificadoRubroOut(BaseModel):
     id: int

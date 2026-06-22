@@ -2,7 +2,7 @@ from django.contrib import admin
 from import_export.admin import ImportExportMixin
 from simple_history.admin import SimpleHistoryAdmin
 from secretariador.models import *
-from secretariador.resources import OrganigramaResource, ComisionadoResource, VehiculoResource, IncorporacionResource
+from secretariador.resources import OrganigramaResource, VehiculoResource, IncorporacionResource
 from django.contrib.auth.models import Group
 
 class InstrumentosLegalesMemorandumAdmin(SimpleHistoryAdmin):
@@ -32,7 +32,7 @@ class OrganigramaAdmin(ImportExportMixin, SimpleHistoryAdmin):
 
 class ComisionadoSolicitudAdminInline(admin.TabularInline):
     model = ComisionadoSolicitud
-    search_fields = ["comisionadosolicitud_nombre__comisionado_nombreyapellido"]
+    search_fields = ["comisionadosolicitud_nombre__agente_nombreyapellido"]
     fields = [
         "comisionadosolicitud_nombre",
         "comisionadosolicitud_colaborador",
@@ -47,11 +47,6 @@ class SolicitudAdmin(SimpleHistoryAdmin):
     inlines = [ComisionadoSolicitudAdminInline]
     search_fields = ["solicitud_actuacion"]
     autocomplete_fields = ["solicitud_solicitante", "solicitud_provincia", "solicitud_localidades", "solicitud_decreto_viaticos", "solicitud_vehiculo", "solicitud_resolucion"]
-
-class ComisionadoAdmin(ImportExportMixin, SimpleHistoryAdmin):
-    resource_class = ComisionadoResource
-    search_fields = ["comisionado_nombreyapellido", "comisionado_dni"]
-    autocomplete_fields = []
 
 class VehiculoAdmin(ImportExportMixin, SimpleHistoryAdmin):
     model = Vehiculo
@@ -68,7 +63,7 @@ class IncorporacionAdmin(ImportExportMixin, SimpleHistoryAdmin):
 
 class ComisionadoSolicitudAdmin(SimpleHistoryAdmin):
     model = ComisionadoSolicitud
-    search_fields = ["comisionadosolicitud_foreign__solicitud_actuacion", "comisionadosolicitud_incorporacion_foreign__incorporacion_actuacion", "comisionadosolicitud_nombre__comisionado_nombreyapellido"]
+    search_fields = ["comisionadosolicitud_foreign__solicitud_actuacion", "comisionadosolicitud_incorporacion_foreign__incorporacion_actuacion", "comisionadosolicitud_nombre__agente_nombreyapellido"]
     fields = [
         "comisionadosolicitud_foreign",
         "comisionadosolicitud_incorporacion_foreign",
@@ -94,7 +89,6 @@ admin.site.register(InstrumentosLegalesMemorandum, InstrumentosLegalesMemorandum
 admin.site.register(InstrumentosLegalesResoluciones, InstrumentosLegalesResolucionesAdmin)
 admin.site.register(InstrumentosLegalesDecretos, InstrumentosLegalesDecretoAdmin)
 admin.site.register(MontoViaticoDiario, MontoViaticoDiarioAdmin)
-admin.site.register(Comisionado, ComisionadoAdmin)
 admin.site.register(Organigrama, OrganigramaAdmin)
 admin.site.register(Vehiculo, VehiculoAdmin)
 admin.site.register(Solicitud, SolicitudAdmin)

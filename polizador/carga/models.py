@@ -312,7 +312,7 @@ class Obra(models.Model):
     obra_fecha_entrega = models.DateField("Fecha de Entrega de la Obra", blank=True, null=True)
     obra_fecha_contrato = models.DateField("Fecha de Firma de Contrato", blank=True, null=True)
     obra_expediente_costo = models.CharField("Expediente de Costos", max_length=18, blank=True, null=True)
-    obra_inspector = models.ManyToManyField("Agente", related_name="obra_inspector", verbose_name="Inspector")
+    obra_inspector = models.ManyToManyField("personalizador.Agente", related_name="obra_inspector", verbose_name="Inspector")
     obra_observaciones = models.TextField("Observaciones", blank=True, null=True)
     obra_contrato_nacion_pesos = models.DecimalField("Monto Nación en Pesos", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
     obra_contrato_nacion_uvi = models.DecimalField("Monto Nación en UVI", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
@@ -393,40 +393,6 @@ class Prototipo(models.Model):
     prototipo_discapacitado = models.BooleanField("Es Prototipo para Discapacitado", default=False)
     prototipo_history = HistoricalRecords()
 
-class Agente(models.Model):
-    class Meta:
-        verbose_name_plural = "Agentes"
-        ordering = ["agente_nombre", "agente_apellido"]
-
-    agente_uuid			= models.UUIDField(default=compat.uuid7, editable=False)
-
-    PROFESION = (
-        ("A", "Arquitecto"),
-        ("IC", "Ingeniero Civil"),
-        ("IE", "Ingeniero Electromecánico"),
-        ("MO", "Maestro Mayor de Obras")
-    )
-
-    agente_nombre = models.CharField("Nombre/s", max_length=60)
-    agente_apellido = models.CharField("Apellido/s", max_length=60)
-    agente_dni = models.DecimalField("DNI", max_digits=9, decimal_places=0, blank=True, null=True, validators=[MinValueValidator(0)])
-    agente_telefono = models.CharField("Telefono", max_length=20, blank=True, null=True)
-    agente_email = models.EmailField("Email", blank=True,null=True)
-    agente_profesion = models.CharField("Profesion", max_length=2, choices=PROFESION, default=None, blank=True, null=True)
-    agente_matricula = models.CharField("Matricula Profesional", max_length=10, blank=True, null=True)
-    agente_nombre_completo = models.CharField("Nombre Completo", max_length=200, editable=False, blank=True, null=True)
-    agente_history = HistoricalRecords()
-
-    def save(self):
-        self.agente_nombre_completo = f"{self.agente_nombre} {self.agente_apellido}"
-        return super(Agente, self).save()
-    
-    def __str__(self):
-        return f"{self.agente_nombre} {self.agente_apellido}"
-
-    def get_absolute_url(self):
-        return reverse('update-agente', kwargs={'id': self.pk})
-	
 class CertificadoRubro(models.Model):
     class Meta:
         verbose_name_plural = "Rubros"

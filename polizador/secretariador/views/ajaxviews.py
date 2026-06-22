@@ -1,5 +1,7 @@
 from secretariador.models import *
 from secretariador.forms import *
+from personalizador.models import Agente
+from django.db import models
 from django_select2 import forms as s2forms
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -9,7 +11,7 @@ from django.http import JsonResponse
 @permission_required("secretariador.add_solicitud", login_url="/")
 def get_agentes(request):
     q = request.GET.get("q")
-    agentes = Comisionado.objects.filter(comisionado_nombreyapellido__icontains=q).values("id", text=models.F("comisionado_nombreyapellido"))
+    agentes = Agente.objects.filter(agente_nombreyapellido__icontains=q).values("id", text=models.F("agente_nombreyapellido"))
     return JsonResponse({'results':list(agentes)},safe=False)
 
 @login_required
@@ -44,8 +46,8 @@ class SolicitudWidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
 
 class ComisionadoWidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
     search_fields = [
-        "comisionado_nombres__icontains",
-        "comisionado_apellidos__icontains",
+        "agente_nombres__icontains",
+        "agente_apellidos__icontains",
     ]
 
 class VehiculoWidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):

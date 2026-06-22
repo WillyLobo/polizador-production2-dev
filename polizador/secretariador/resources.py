@@ -7,10 +7,6 @@ class OrganigramaResource(resources.ModelResource):
 	class Meta:
 		model = models.Organigrama
 
-class ComisionadoResource(resources.ModelResource):
-	class Meta:
-		model = models.Comisionado
-
 class VehiculoResource(resources.ModelResource):
 	class Meta:
 		model = models.Vehiculo

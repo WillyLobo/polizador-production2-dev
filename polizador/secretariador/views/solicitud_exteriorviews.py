@@ -11,8 +11,13 @@ from carga.models import Provincia
 from secretariador.forms.solicitud_exteriorform import *
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg, generarlinkimg
 from carga.views.generics import get_deleted_objects
+from pathlib import Path
+from django.conf import settings
 import jinja2
 
+BASE = Path(settings.BASE_DIR)
+template_path_chaco = BASE / "secretariador/media/solicitud_template.docx"
+template_path_exterior = BASE / "secretariador/media/solicitud_exterior.docx"
 
 from docxtpl import DocxTemplate
 
@@ -56,8 +61,8 @@ def exterior_docx(request, pk):
 		for agente in agentes:
 			chofer = ""
 			colaborador = ""
-			agente_denominacion = f"{agente.comisionadosolicitud_nombre.comisionado_abreviatura} {agente.comisionadosolicitud_nombre.comisionado_nombres} {agente.comisionadosolicitud_nombre.comisionado_apellidos}"
-			if agente.comisionadosolicitud_nombre.comisionado_sexo == "M":
+			agente_denominacion = f"{agente.comisionadosolicitud_nombre.abreviatura} {agente.comisionadosolicitud_nombre.agente_nombres} {agente.comisionadosolicitud_nombre.agente_apellidos}"
+			if agente.comisionadosolicitud_nombre.sexo.generoagente_nombre == "Masculino":
 				text = "el"
 			else:
 				text = "la"
@@ -68,7 +73,7 @@ def exterior_docx(request, pk):
 				colaborador = ""
 		
 			if agente.comisionadosolicitud_chofer:
-				if agente.comisionadosolicitud_nombre.comisionado_sexo == "M":
+				if agente.comisionadosolicitud_nombre.sexo.generoagente_nombre == "Masculino":
 					chofer = f"el {agente_denominacion}"
 				else:
 					chofer = f"la {agente_denominacion}"
@@ -82,7 +87,7 @@ def exterior_docx(request, pk):
 				traslado_parrafo_uno = "quien se trasladará"
 				plural_agente_articulo_uno = "al agente, detallado"
 			
-			dni = "{:,}".format(agente.comisionadosolicitud_nombre.comisionado_dni).replace(",", "@").replace(".", ",").replace("@", ".")
+			dni = "{:,}".format(agente.comisionadosolicitud_nombre.dni).replace(",", "@").replace(".", ",").replace("@", ".")
 			lista_agentes.append(f"{text} {agente_denominacion} - D.N.I.Nº{dni}{colaborador}")
 		lista_agentes = separate_items(lista_agentes)
 
@@ -115,7 +120,7 @@ def exterior_docx(request, pk):
 		final_text = []
 		for agente in agentes:
 			lista_agentes = []
-			agente_cuit = f"{agente.comisionadosolicitud_nombre.comisionado_abreviatura} {agente.comisionadosolicitud_nombre.comisionado_nombreyapellido} – CUIL Nº{agente.comisionadosolicitud_nombre.comisionado_cuit}"
+			agente_cuit = f"{agente.comisionadosolicitud_nombre.abreviatura} {agente.comisionadosolicitud_nombre.agente_nombreyapellido} – CUIL Nº{agente.comisionadosolicitud_nombre.cuil}"
 			cantidad_de_dias = f"{actuacion.solicitud_cantidad_de_dias.days} {'dias' if actuacion.solicitud_cantidad_de_dias.days > 1 else 'dia'}"
 			comisionadosolicitud_combustible = "{:,.2f}".format(agente.comisionadosolicitud_combustible).replace(",", "@").replace(".", ",").replace("@", ".")
 			comisionadosolicitud_pasaje = "{:,.2f}".format(agente.comisionadosolicitud_pasaje).replace(",", "@").replace(".", ",").replace("@", ".")
@@ -157,7 +162,7 @@ def exterior_docx(request, pk):
 	articulo_dos    = lista_agentes_articulo
 
 	if actuacion.solicitud_provincia.provincia_nombre == "Chaco":
-		doc = DocxTemplate("secretariador/media/solicitud_template.docx")
+		doc = DocxTemplate(template_path_chaco)
 		context = {
 			"actuacion":actuacion,
 			"parrafo_uno":parrafo_uno,
@@ -168,7 +173,7 @@ def exterior_docx(request, pk):
 			"articulo_dos":articulo_dos,
 		}
 	else:
-		doc = DocxTemplate("secretariador/media/solicitud_exterior.docx")
+		doc = DocxTemplate(template_path_exterior)
 		context = {
 			"actuacion":actuacion,
 			"parrafo_uno":parrafo_uno,

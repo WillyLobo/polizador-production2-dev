@@ -7,7 +7,7 @@ from django.template import loader, TemplateDoesNotExist
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
-from secretariador.models import Comisionado, Organigrama, Vehiculo, Solicitud
+from secretariador.models import Organigrama, Vehiculo, Solicitud
 from .forms.solicitudform import SolicitudForm
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg
 from carga.views.generics import get_deleted_objects

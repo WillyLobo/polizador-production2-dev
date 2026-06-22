@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
-from secretariador.models import Solicitud, Comisionado
+from secretariador.models import Solicitud
+from personalizador.models import Agente
 import sqlite3
 import time
 
@@ -31,8 +32,8 @@ class Command(BaseCommand):
         sqliteConnection = sqlite3.connect("/home/willy/dev/padron/padron/db.sqlite3")
         cursor = sqliteConnection.cursor()
         agente_padron = {}
-        for agente in Comisionado.objects.all():
-            query = f'SELECT "listado_padron"."id", "listado_padron"."DISTRITO", "listado_padron"."TX_TIPO_EJEMPLAR", "listado_padron"."NU_MATRICULA", "listado_padron"."TX_APELLIDO", "listado_padron"."TX_NOMBRE", "listado_padron"."TX_CLASE", "listado_padron"."TX_GENERO", "listado_padron"."TX_DOMICILIO", "listado_padron"."TX_SECCION", "listado_padron"."TX_CIRCUITO", "listado_padron"."TX_LOCALIDAD", "listado_padron"."TX_CODIGO_POSTAL", "listado_padron"."TX_TIPO_NACIONALIDAD", "listado_padron"."NUMERO_MESA", "listado_padron"."NU_ORDEN_MESA" FROM "listado_padron" WHERE "listado_padron"."NU_MATRICULA" = {agente.comisionado_dni}'
+        for agente in Agente.objects.all():
+            query = f'SELECT "listado_padron"."id", "listado_padron"."DISTRITO", "listado_padron"."TX_TIPO_EJEMPLAR", "listado_padron"."NU_MATRICULA", "listado_padron"."TX_APELLIDO", "listado_padron"."TX_NOMBRE", "listado_padron"."TX_CLASE", "listado_padron"."TX_GENERO", "listado_padron"."TX_DOMICILIO", "listado_padron"."TX_SECCION", "listado_padron"."TX_CIRCUITO", "listado_padron"."TX_LOCALIDAD", "listado_padron"."TX_CODIGO_POSTAL", "listado_padron"."TX_TIPO_NACIONALIDAD", "listado_padron"."NUMERO_MESA", "listado_padron"."NU_ORDEN_MESA" FROM "listado_padron" WHERE "listado_padron"."NU_MATRICULA" = {agente.dni}'
             cursor.execute(query)
             result = cursor.fetchall()
             try:
@@ -46,16 +47,16 @@ class Command(BaseCommand):
                 })
                 nombreyapellido_padron = f"{agente_padron['apellido']}, {agente_padron['nombres']}"
                 dni_padron = agente_padron['dni']
-                nombreyapellido_carga = f"{agente.comisionado_apellidos}, {agente.comisionado_nombres}"
-                dni_carga = agente.comisionado_dni
+                nombreyapellido_carga = f"{agente.agente_apellidos}, {agente.agente_nombres}"
+                dni_carga = agente.dni
 
-                if f"{agente_padron['apellido']}, {agente_padron['nombres']}" != f"{agente.comisionado_apellidos}, {agente.comisionado_nombres}":
+                if f"{agente_padron['apellido']}, {agente_padron['nombres']}" != f"{agente.agente_apellidos}, {agente.agente_nombres}":
                     self.stdout.write(f"{self.style.NOTICE('CARGA Y PADRON NO COINCIDEN:')}")
                     self.stdout.write(f"    Padron: {nombreyapellido_padron} - DNI: {dni_padron}")
                     self.stdout.write(f"    Carga: {nombreyapellido_carga} - DNI: {dni_carga}")
-                    agente.comisionado_apellidos=agente_padron["apellido"]
-                    agente.comisionado_nombres=agente_padron["nombres"]
-                    agente.comisionado_verificado_contra_padron=True
+                    agente.agente_apellidos=agente_padron["apellido"]
+                    agente.agente_nombres=agente_padron["nombres"]
+                    agente.agente_verificado_contra_padron=True
                     self.stdout.write(f"{self.style.WARNING('Actualizando nombre y apellidos...')}")
                     agente.save()
                     time.sleep(0.01)
@@ -63,10 +64,10 @@ class Command(BaseCommand):
                     self.stdout.write(f"{'----------'*8}")
                 else:
                     # self.stdout.write(f"Padron: {nombreyapellido_padron} // Carga: {nombreyapellido_carga}")
-                    agente.comisionado_verificado_contra_padron=True
+                    agente.agente_verificado_contra_padron=True
                     agente.save()
                 
                 # print(agente.comisionado_nombreyapellido)
                 
             except IndexError:
-                self.stdout.write(self.style.ERROR(f"Agente {agente.comisionado_apellidos}, {agente.comisionado_nombres} - {agente.comisionado_dni}, no se encuentra en el padron"))
+                self.stdout.write(self.style.ERROR(f"Agente {agente.agente_apellidos}, {agente.agente_nombres} - {agente.dni}, no se encuentra en el padron"))

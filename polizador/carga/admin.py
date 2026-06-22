@@ -58,9 +58,6 @@ class ObraAdmin(ImportExportMixin, SimpleHistoryAdmin):
 class PrototipoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.PrototipoResource
 
-class AgenteAdmin(ImportExportMixin, SimpleHistoryAdmin):
-	resource_class = resources.AgenteResource
-
 class CertificadoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	autocomplete_fields = ["certificado_obra"]
 	resource_class = resources.CertificadoResource
@@ -121,7 +118,6 @@ admin.site.register(models.Localidad, LocalidadAdmin)
 admin.site.register(models.Municipio, MunicipioAdmin)
 admin.site.register(models.Obra, ObraAdmin)
 admin.site.register(models.Prototipo, PrototipoAdmin)
-admin.site.register(models.Agente, AgenteAdmin)
 admin.site.register(models.Certificado, CertificadoAdmin)
 admin.site.register(models.Poliza, PolizaAdmin)
 admin.site.register(models.Poliza_Movimiento, PolizaMovimientoAdmin)

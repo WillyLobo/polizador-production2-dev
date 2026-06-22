@@ -375,20 +375,17 @@ def delete_monto_viatico(request, id: int):
     return {"deleted": bool(deleted)}
 
 
-# --- Comisionado ---
+# --- Comisionado (personalizador.Agente) ---
 @api.get("/comisionados/", tags=["secretariador"])
 def list_comisionados(request):
     user = require_auth(request)
-    from secretariador.models import Comisionado
+    from personalizador.models import Agente
 
-    qs = Comisionado.objects.select_related(
-        "comisionado_cargo", "comisionado_cargo_decreto",
-        "comisionado_cargo_interno"
-    ).all().order_by("comisionado_apellidos")
+    qs = Agente.objects.select_related("sexo", "oficina").all().order_by("agente_apellidos")
     search = request.GET.get("q", "").strip()
     if search:
         qs = qs.filter(
-            Q(comisionado_nombres__icontains=search) | Q(comisionado_apellidos__icontains=search)
+            Q(agente_nombres__icontains=search) | Q(agente_apellidos__icontains=search)
         )
     page = int(request.GET.get("page", 1))
     per_page = min(int(request.GET.get("per_page", 50)), 200)
@@ -397,13 +394,13 @@ def list_comisionados(request):
     total = qs.count()
     results = [
         {
-            "id": c.id,
-            "nombres": c.comisionado_nombres,
-            "apellidos": c.comisionado_apellidos,
-            "dni": float(c.comisionado_dni),
-            "cargo_id": c.comisionado_cargo_id,
+            "id": a.id,
+            "nombres": a.agente_nombres,
+            "apellidos": a.agente_apellidos,
+            "dni": float(a.dni),
+            "oficina_id": a.oficina_id,
         }
-        for c in qs[start:end]
+        for a in qs[start:end]
     ]
     return {
         "count": total,
@@ -416,43 +413,43 @@ def list_comisionados(request):
 @api.get("/comisionado/{id}/", tags=["secretariador"])
 def retrieve_comisionado(request, id: int):
     require_auth(request)
-    from secretariador.models import Comisionado
+    from personalizador.models import Agente
 
-    c = Comisionado.objects.filter(id=id).first()
-    if not c:
+    a = Agente.objects.filter(id=id).first()
+    if not a:
         return {"detail": "Not found"}, 404
     return {
-        "id": c.id,
-        "nombres": c.comisionado_nombres,
-        "apellidos": c.comisionado_apellidos,
-        "dni": float(c.comisionado_dni),
-        "cargo_id": c.comisionado_cargo_id,
+        "id": a.id,
+        "nombres": a.agente_nombres,
+        "apellidos": a.agente_apellidos,
+        "dni": float(a.dni),
+        "oficina_id": a.oficina_id,
     }
 
 
 @api.post("/comisionados/", tags=["secretariador"])
 def create_comisionado(request, payload: dict):
     require_auth(request)
-    from secretariador.models import Comisionado
+    from personalizador.models import Agente
 
-    c = Comisionado.objects.create(
-        comisionado_nombres=payload.get("nombres", ""),
-        comisionado_apellidos=payload.get("apellidos", ""),
-        comisionado_abreviatura=payload.get("abreviatura", "Sr."),
-        comisionado_sexo=payload.get("sexo"),
-        comisionado_cargo_id=payload.get("cargo_id"),
-        comisionado_dni=payload.get("dni"),
-        comisionado_cuit=payload.get("cuit"),
+    a = Agente.objects.create(
+        agente_nombres=payload.get("nombres", ""),
+        agente_apellidos=payload.get("apellidos", ""),
+        abreviatura=payload.get("abreviatura", "Sr."),
+        sexo_id=payload.get("sexo_id"),
+        oficina_id=payload.get("oficina_id"),
+        dni=payload.get("dni"),
+        cuil=payload.get("cuil"),
     )
-    return {"id": c.id, "nombre_y_apellido": c.comisionado_nombreyapellido}
+    return {"id": a.id, "nombre_y_apellido": a.agente_nombreyapellido}
 
 
 @api.delete("/comisionado/{id}/", tags=["secretariador"])
 def delete_comisionado(request, id: int):
     require_auth(request)
-    from secretariador.models import Comisionado
+    from personalizador.models import Agente
 
-    deleted, _ = Comisionado.objects.filter(id=id).delete()
+    deleted, _ = Agente.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
 
 
