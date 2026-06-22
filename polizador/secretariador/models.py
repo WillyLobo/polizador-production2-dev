@@ -472,7 +472,7 @@ class ComisionadoSolicitud(models.Model):
         """
         foreign = self.get_origin()
         
-        estrato = self.comisionadosolicitud_nombre.oficina if self.comisionadosolicitud_nombre.oficina else 2
+        estrato = 2
 
         # TODO: comisionado_cargo (Organigrama) was dropped when Comisionado merged into
         # personalizador.Agente; the "Vocal"/"Presidente" override and per-cargo escalafon
@@ -481,11 +481,12 @@ class ComisionadoSolicitud(models.Model):
         decreto = foreign.solicitud_decreto_viaticos
         es_chaco = foreign.solicitud_provincia.provincia_nombre == "Chaco"
 
-        if self.comisionadosolicitud_nombre.directorio_set.all() or self.comisionadosolicitud_nombre.agente_personal_de_gabinete or self.comisionadosolicitud_nombre.agente_personal_transitorio or es_chaco:
+        if self.comisionadosolicitud_nombre.directorio_set.all() and es_chaco:
+            return 0
+        if self.comisionadosolicitud_nombre.agente_personal_de_gabinete:
             return 0
         if self.comisionadosolicitud_colaborador:
             return 0
-        
         if self.comisionadosolicitud_sin_viatico:
             return 0
         

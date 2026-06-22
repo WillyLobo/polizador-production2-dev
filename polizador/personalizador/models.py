@@ -95,7 +95,10 @@ class Agente(models.Model):
         return int((datetime.now().year - self.fecha_nacimiento.year))
 
     def __str__(self):
-        return f"{self.agente_nombreyapellido} - DNI Nº{self.dni}"
+        if self.agente_personal_transitorio:
+            return f"(C){self.agente_nombreyapellido} - DNI Nº{self.dni}"
+        else:
+            return f"{self.agente_nombreyapellido} - DNI Nº{self.dni}"
 
 class GeneroAgente(models.Model):
     class Meta:
