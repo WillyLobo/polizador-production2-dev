@@ -1,22 +1,21 @@
 [+] Agregar los campos nombre y apellido al formulario de registro de cuenta
 [+] Eliminar easy Audit
-[ ] Reacomodar los menues en el panel admin
 [+] Crear script para recopilar datos del valor UVI con fuente del BCRA
 [+] Revisar los campos de modelos que requieren operaciones aritmeticas y aplicar campos generados
     a nivel base de datos.
 [?] Crear grupos de permisos para los usuarios:
     [+] Direccion General
     [+] Gerencia Operativa
-    [ ] Grupos para edición y grupos para vistas(tipo invitado solo para ver reportes)?
+    [+] Grupos para edición y grupos para vistas(tipo invitado solo para ver reportes)?
 [+] Repasar los permisos en los Views
 [+] Ordenar el cuadro busqueda de datatables
-[ ] Rehacer la integracion para contratos y resoluciones digitales de obras
-[ ] Reparar los templates para ajustar viewport size
 [?] Ajustar los templates de reportes de la app carga para ajustarse al resto del sitio
 [?] Corregir los Select en las páginas de creación de reportes
 [+] Redireccionar usuarios con permisos fuera de la vista sin permisos
-[ ] Modificar modelo Agente para vincularlo a los agentes de la app secretariador
+[+] Modificar modelo Agente para vincularlo a los agentes de la app secretariador
 [+] VerReporteCertificadoPorMes deberia dar opción de ver los certificados por fecha de carga o fecha de certificado
+[ ] Reparar los templates para ajustar viewport size
+[ ] Rehacer la integracion para contratos y resoluciones digitales de obras
 [ ] Crear API view que devuelva los meses/años disponibles en los certificados para su utilizacion en select2
 [ ] Hacer un favicon mas decente
 

@@ -1,7 +1,7 @@
 # secretariador/adapters.py
 from allauth.account.adapter import DefaultAccountAdapter
 
-class InactiveSignupAdapter(DefaultAccountAdapter):
+class InactiveSignupAdapter(DefaultAccountAdapter): # DEPRECATED!!!
     def save_user(self, request, user, form, commit=True):
         """
         Saves a new user instance and forces their status to inactive.

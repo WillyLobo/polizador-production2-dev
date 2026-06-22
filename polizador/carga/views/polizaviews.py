@@ -50,13 +50,6 @@ class CrearPoliza(PermissionRequiredMixin, FormsetViewMixin, generic.CreateView)
 		context["title"] = self.get_title()
 		return context
 
-	def form_valid(self, form):
-		self.object = form.save(commit=False)
-		self.object.poliza_creador = self.request.user
-		self.object.poliza_editor = self.request.user
-		self.object.save()
-		return super().form_valid(form)
-
 @method_decorator(login_required, name="dispatch")
 class UpdatePoliza(PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView):
 	permission_required = "carga.change_poliza"
@@ -67,12 +60,6 @@ class UpdatePoliza(PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView
 	template_name = "poliza/update-poliza.html"
 	form_class = PolizaForm
 	success_url = reverse_lazy("carga:lista-polizas")
-
-	def form_valid(self, form):
-		self.object = form.save(commit=False)
-		self.object.poliza_editor = self.request.user
-		self.object.save()
-		return super().form_valid(form)
 
 @method_decorator(login_required, name="dispatch")
 class EliminarPolizaMovimiento(PermissionRequiredMixin, generic.DeleteView):

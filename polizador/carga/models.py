@@ -336,30 +336,44 @@ class Obra(models.Model):
     obra_principal = models.ManyToManyField("Obra", related_name="obra_madre", verbose_name="Obra Madre", blank=True)
     obra_history = HistoricalRecords(excluded_fields=['obra_contrato_total_pesos', "obra_contrato_total_uvi"])
         
-    # def obra_acum_pesos(self):
-    #     if self.certificado_set:
-    #         return self.certificado_set.aggregate(Sum(F("certificado_monto_cobrar"), output_field=FloatField()))
-    #     else:
-    #         return 0
-    # def obra_acum_uvi(self):
-    #     if self.certificado_set:
-    #         return self.certificado_set.aggregate(Sum(F("certificado_monto_cobrar_uvi"), output_field=FloatField()))
-    #     else:
-    #         return 0
-    # def saldo_uvi(self):
-    #     try:
-    #         if self.certificado_set:
-    #             agregado = self.certificado_set.aggregate(Sum(F("certificado_monto_cobrar_uvi")))["certificado_monto_cobrar_uvi__sum"]
-    #             contrato = self.obra_contrato_total_uvi
-    #             saldo = contrato - agregado
-    #             return saldo
-    #         else:
-    #             return self.obra_contrato_total_uvi
-    #     except TypeError:
-    #         return 0
-    # def obra_acum_pct(self):
-    #     if self.certificado_set:
-    #         return self.certificado_set.latest().certificado_acum_pct
+    def obra_acum_pesos(self):
+        if self.certificado_set:
+            return self.certificado_set.aggregate(Sum(F("certificado_monto_cobrar"), output_field=FloatField()))
+        else:
+            return 0
+        
+    def obra_acum_uvi(self):
+        if self.certificado_set:
+            return self.certificado_set.aggregate(Sum(F("certificado_monto_cobrar_uvi"), output_field=FloatField()))
+        else:
+            return 0
+    
+    def saldo_uvi(self):
+        try:
+            if self.certificado_set:
+                agregado = self.certificado_set.aggregate(Sum(F("certificado_monto_cobrar_uvi")))["certificado_monto_cobrar_uvi__sum"]
+                contrato = self.obra_contrato_total_uvi
+                saldo = contrato - agregado
+                return saldo
+            else:
+                return self.obra_contrato_total_uvi
+        except TypeError:
+            return 0
+    
+    def obra_acum_pct(self):
+        if self.certificado_set:
+            return self.certificado_set.latest().certificado_acum_pct
+        
+    def clean(self):
+        self.obra_contrato_nacion_pesos = 0 if self.obra_contrato_nacion_pesos is None else self.obra_contrato_nacion_pesos
+        self.obra_contrato_nacion_uvi = 0 if self.obra_contrato_nacion_uvi is None else self.obra_contrato_nacion_uvi
+        self.obra_contrato_nacion_uvi_fecha = 0 if self.obra_contrato_nacion_uvi_fecha is None else self.obra_contrato_nacion_uvi_fecha
+        self.obra_contrato_provincia_pesos = 0 if self.obra_contrato_provincia_pesos is None else self.obra_contrato_provincia_pesos
+        self.obra_contrato_provincia_uvi = 0 if self.obra_contrato_provincia_uvi is None else self.obra_contrato_provincia_uvi
+        self.obra_contrato_provincia_uvi_fecha = 0 if self.obra_contrato_provincia_uvi_fecha is None else self.obra_contrato_provincia_uvi_fecha
+        self.obra_contrato_terceros_pesos = 0 if self.obra_contrato_terceros_pesos is None else self.obra_contrato_terceros_pesos
+        self.obra_contrato_terceros_uvi = 0 if self.obra_contrato_terceros_uvi is None else self.obra_contrato_terceros_uvi
+        self.obra_contrato_terceros_uvi_fecha = 0 if self.obra_contrato_terceros_uvi_fecha is None else self.obra_contrato_terceros_uvi_fecha
     
     def __str__(self):
         return f"({self.obra_convenio if self.obra_convenio else ''}) {self.obra_nombre} - {self.obra_empresa}"
@@ -475,6 +489,15 @@ class Certificado(models.Model):
     certificado_fecha_carga_legacy = models.BooleanField("Es Certificado Viejo", default=False)
     certificado_history = HistoricalRecords(excluded_fields=['certificado_monto_cobrar', "certificado_monto_cobrar_uvi"])
     
+    def clean(self):
+        self.certificado_rubro_anticipo = 0 if self.certificado_rubro_anticipo else self.certificado_rubro_anticipo
+        self.certificado_rubro_obra = 0 if self.certificado_rubro_obra else self.certificado_rubro_obra
+        self.certificado_rubro_devanticipo = 0 if self.certificado_rubro_devanticipo else self.certificado_rubro_devanticipo
+        self.certificado_monto_pesos = 0 if self.certificado_monto_pesos else self.certificado_monto_pesos
+        self.certificado_devolucion_monto = 0 if self.certificado_devolucion_monto else self.certificado_devolucion_monto
+        self.certificado_devolucion_monto_uvi = 0 if self.certificado_devolucion_monto_uvi else self.certificado_devolucion_monto_uvi
+        self.certificado_monto_uvi = 0 if self.certificado_monto_uvi else self.certificado_monto_uvi
+
     def __str__(self):
         return f"{self.certificado_obra} - {self.certificado_expediente} - Rubro: {self.get_certificado_rubro_display()} - Financiamiento: {self.get_certificado_financiamiento_display()} - Ant. N°{self.certificado_rubro_anticipo} - Ob. N°{self.certificado_rubro_obra} - Dev. N°{self.certificado_rubro_devanticipo}"
     

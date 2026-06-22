@@ -51,8 +51,6 @@ class CrearCertificado(PermissionRequiredMixin, generic.CreateView):
 
 	def form_valid(self, form):
 		self.object = form.save(commit=False)
-		self.object.certificado_creador = self.request.user
-		self.object.certificado_editor = self.request.user
 		self.object.certificado_fecha_carga = timezone.now() if self.object.certificado_fecha_carga_legacy == False else self.object.certificado_fecha
 		self.object.save()
 		return super().form_valid(form)
@@ -69,7 +67,6 @@ class UpdateCertificado(PermissionRequiredMixin, generic.UpdateView):
 
 	def form_valid(self, form):
 		self.object = form.save(commit=False)
-		self.object.certificado_editor = self.request.user
 		self.object.save()
 		return super().form_valid(form)
 

@@ -33,14 +33,6 @@ class CrearContratoDigital(PermissionRequiredMixin, generic.CreateView):
         context["title"] = self.get_title()
         return context
 
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.contratodigital_creador = self.request.user
-        self.object.contratodigital_editor = self.request.user
-        self.object.save()
-        return super().form_valid(form)
-
-
 @method_decorator(login_required, name="dispatch")
 class UpdateContratoDigital(PermissionRequiredMixin, generic.UpdateView):
     permission_required = "carga.change_certificado"
@@ -49,13 +41,6 @@ class UpdateContratoDigital(PermissionRequiredMixin, generic.UpdateView):
     template_name = "digitales/update-contratodigital.html"
     form_class = ContratoDigitalForm
     success_url = reverse_lazy("carga:crear-contrato-digital")
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.contratodigital_editor = self.request.user
-        self.object.save()
-        return super().form_valid(form)
-
 
 @method_decorator(login_required, name="dispatch")
 class EliminarContratoDigital(PermissionRequiredMixin, generic.DeleteView):
@@ -93,13 +78,6 @@ class CrearResolucionDigital(PermissionRequiredMixin, generic.CreateView):
         context["title"] = self.get_title()
         return context
 
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.resoluciondigital_creador = self.request.user
-        self.object.resoluciondigital_editor = self.request.user
-        self.object.save()
-        return super().form_valid(form)
-
 
 @method_decorator(login_required, name="dispatch")
 class UpdateResolucionDigital(PermissionRequiredMixin, generic.UpdateView):
@@ -109,13 +87,6 @@ class UpdateResolucionDigital(PermissionRequiredMixin, generic.UpdateView):
     template_name = "digitales/update-resoluciondigital.html"
     form_class = ResolucionDigitalForm
     success_url = reverse_lazy("carga:crear-resolucion-digital")
-
-    def form_valid(self, form):
-        self.object = form.save(commit=False)
-        self.object.resoluciondigital_editor = self.request.user
-        self.object.save()
-        return super().form_valid(form)
-
 
 @method_decorator(login_required, name="dispatch")
 class EliminarResolucionDigital(PermissionRequiredMixin, generic.DeleteView):
