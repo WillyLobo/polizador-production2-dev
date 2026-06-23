@@ -16,6 +16,8 @@ from carga.views.conjuntoviews import *
 from carga.views.reportes import *
 from carga.views.contratoviews import *
 from carga.views.documentosdigitalesviews import *
+from carga.views.plandetrabajosviews import *
+from carga.views.fojademedicionviews import *
 
 app_name = "carga"
 
@@ -103,6 +105,14 @@ contrato_patterns = [
     path("crear/contrato/", CrearContrato.as_view(), name="crear-contrato"),
     path("crear/contrato/<pk>", UpdateContrato.as_view(), name="update-contrato"),
 ]
+plandetrabajos_patterns = [
+    path("crear/plandetrabajos/", CrearPlanDeTrabajos.as_view(), name="crear-plandetrabajos"),
+    path("crear/plandetrabajos/<pk>", UpdatePlanDeTrabajos.as_view(), name="update-plandetrabajos"),
+]
+fojademedicion_patterns = [
+    path("crear/foja-medicion/", CrearFojaDeMedicion.as_view(), name="crear-fojademedicion"),
+    path("crear/foja-medicion/<pk>", UpdateFojaDeMedicion.as_view(), name="update-fojademedicion"),
+]
 reporte_patterns = [
     path("reporte/crear-reporte-mes/", CrearReporteCertificadoPorMes.as_view(), name="crear-reporte-certificado"),
 	path("reporte/ver-reporte-mes/", VerReporteCertificadoPorMes.as_view(), name="ver-reporte-certificado"),
@@ -163,6 +173,8 @@ ajax = [
 urlpatterns += documentos_digitales
 urlpatterns += reporte_patterns
 urlpatterns += contrato_patterns
+urlpatterns += plandetrabajos_patterns
+urlpatterns += fojademedicion_patterns
 urlpatterns += ajax
 urlpatterns += conjunto_patterns
 urlpatterns += programa_patterns

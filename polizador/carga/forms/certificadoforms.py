@@ -12,6 +12,7 @@ class CertificadoForm(forms.ModelForm):
 		model = models.Certificado
 		fields = (
 		"certificado_obra",
+		"certificado_foja",
 		"certificado_rubro_anticipo",
 		"certificado_rubro_obra",
 		"certificado_rubro_devanticipo",
@@ -33,6 +34,7 @@ class CertificadoForm(forms.ModelForm):
 
 		widgets = {
 		"certificado_obra":obrawidget(attrs={"class":"form-control customSelect2"}),
+		"certificado_foja":forms.HiddenInput(),
 		"certificado_rubro_anticipo":forms.NumberInput(attrs={"class":"form-control"}),
 		"certificado_rubro_obra":forms.NumberInput(attrs={"class":"form-control"}),
 		"certificado_rubro_devanticipo":forms.NumberInput(attrs={"class":"form-control"}),

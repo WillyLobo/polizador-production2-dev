@@ -148,6 +148,54 @@
     {%endfor%}
 </div>
 <br>
+<div> <!-- Plan de Trabajos y Fojas de Medición -->
+    <div class="col">
+        <div class="row border-bottom border-dark text-center"> <h6>Plan de Trabajos y Fojas de Medición</h6></div>
+    </div>
+    {% for plan in object.plandetrabajos_set.all %}
+        <div class="col">
+            <div class="row g-0">
+                <div class="col border"><b>Items:</b></div>
+                <div class="col border">
+                    {% for item in plan.items.all %}
+                        {{ item.planitem_nombre }} ({{ item.planitem_incidencia_pct }}%){% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="col border"><b>Editar:</b></div>
+                <div class="col border"><a href="{% url "carga:update-plandetrabajos" plan.id %}">{{editimglink|safe}}</a></div>
+            </div>
+        </div>
+        {% for foja in plan.fojas.all %}
+            <div class="col">
+                <div class="row g-0">
+                    <div class="col border"><b>Período:</b></div><div class="col border">{{foja.foja_periodo}}</div>
+                    <div class="col border"><b>Avance del Mes:</b></div><div class="col border">{{foja.foja_pct_avance_mes|floatformat:3}}%</div>
+                    <div class="col border"><b>Acumulado:</b></div><div class="col border">{{foja.foja_pct_acumulado|floatformat:3}}%</div>
+                    <div class="col border"><b>Inspector:</b></div><div class="col border">{{foja.foja_inspector|default_if_none:"-"}}</div>
+                    <div class="col border"><b>Editar:</b></div><div class="col border"><a href="{% url "carga:update-fojademedicion" foja.id %}">{{editimglink|safe}}</a></div>
+                    {% if perms.carga.add_certificado %}
+                        <div class="col border"><b>Certificado:</b></div><div class="col border"><a href="{% url "carga:crear-certificado" %}?foja={{foja.id}}">Generar Certificado</a></div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+        {% if perms.carga.add_fojademedicion %}
+            <div class="col">
+                <div class="row g-0">
+                    <div class="col border"><a href="{% url "carga:crear-fojademedicion" %}?plan={{plan.id}}">Nueva Foja de Medición</a></div>
+                </div>
+            </div>
+        {% endif %}
+    {% endfor %}
+    {% if perms.carga.add_plandetrabajos %}
+        <div class="col">
+            <div class="row g-0">
+                <div class="col border"><a href="{% url "carga:crear-plandetrabajos" %}">Nuevo Plan de Trabajos</a></div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+<br>
 <div> <!-- Documentos Digitales-->
     {% if object.obra_contratos.all or object.obra_resoluciones.all %}
         <div class="col">

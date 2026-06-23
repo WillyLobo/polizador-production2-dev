@@ -131,6 +131,18 @@ class PlandeTrabajosResource(resources.ModelResource):
 	class Meta:
 		model = models.PlanDeTrabajos
 
+class PlanDeTrabajosItemResource(resources.ModelResource):
+	class Meta:
+		model = models.PlanDeTrabajosItem
+
+class FojaDeMedicionResource(resources.ModelResource):
+	class Meta:
+		model = models.FojaDeMedicion
+
+class FojaDeMedicionItemResource(resources.ModelResource):
+	class Meta:
+		model = models.FojaDeMedicionItem
+
 class ContratoResource(resources.ModelResource):
 	class Meta:
 		model = models.Contrato

@@ -487,6 +487,7 @@ class Certificado(models.Model):
     certificado_digital = models.FileField(upload_to=generate_name_certificados, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], null=True, blank=True)
     certificado_fecha_carga = models.DateField("Fecha de carga", default=timezone.now)
     certificado_fecha_carga_legacy = models.BooleanField("Es Certificado Viejo", default=False)
+    certificado_foja = models.ForeignKey("FojaDeMedicion", verbose_name="Foja de Medición de Origen", on_delete=models.SET_NULL, null=True, blank=True)
     certificado_history = HistoricalRecords(excluded_fields=['certificado_monto_cobrar', "certificado_monto_cobrar_uvi"])
     
     def clean(self):
@@ -523,15 +524,84 @@ class ConjuntoLicitado(models.Model):
         return reverse('update-conjunto', kwargs={'id': self.pk})
 
 class PlanDeTrabajos(models.Model):
-    """
-    Ver como verga construir el plan de trabajos
-    """
     class Meta:
         verbose_name_plural = "Plan de Trabajos"
 
     trabajos_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     trabajos_obra = models.ForeignKey("Obra", on_delete=models.DO_NOTHING)
     trabajos_history = HistoricalRecords()
+
+    def __str__(self):
+        return f"Plan de Trabajos - {self.trabajos_obra}"
+
+    def get_absolute_url(self):
+        return reverse('carga:update-plandetrabajos', kwargs={'pk': self.pk})
+
+class PlanDeTrabajosItem(models.Model):
+    class Meta:
+        verbose_name = "Item de Plan de Trabajos"
+        verbose_name_plural = "Items de Plan de Trabajos"
+        ordering = ["planitem_plan", "planitem_orden"]
+
+    planitem_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    planitem_plan = models.ForeignKey("PlanDeTrabajos", verbose_name="Plan de Trabajos", on_delete=models.CASCADE, related_name="items")
+    planitem_nombre = models.CharField("Item", max_length=200)
+    planitem_orden = models.PositiveIntegerField("Orden", default=0)
+    planitem_incidencia_pct = models.DecimalField("Incidencia %", max_digits=5, decimal_places=3, validators=[MinValueValidator(0), MaxValueValidator(100)])
+    planitem_history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.planitem_nombre} ({self.planitem_incidencia_pct}%) - {self.planitem_plan}"
+
+class FojaDeMedicion(models.Model):
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["foja_plan", "foja_periodo"], name="foja-periodo-unico")]
+        verbose_name = "Foja de Medición"
+        verbose_name_plural = "Fojas de Medición"
+        ordering = ["foja_periodo"]
+
+    foja_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    foja_plan = models.ForeignKey("PlanDeTrabajos", verbose_name="Plan de Trabajos", on_delete=models.CASCADE, related_name="fojas")
+    foja_periodo = models.DateField("Período (Mes)")
+    foja_fecha = models.DateField("Fecha de Medición", default=timezone.now)
+    foja_inspector = models.ForeignKey("personalizador.Agente", verbose_name="Inspector", on_delete=models.PROTECT, null=True, blank=True)
+    foja_observaciones = models.TextField("Observaciones", blank=True, null=True)
+    foja_history = HistoricalRecords()
+
+    def foja_pct_avance_mes(self):
+        total = 0
+        for item in self.items.all():
+            total += item.fojaitem_pct_avance_mes * item.fojaitem_planitem.planitem_incidencia_pct
+        return total / 100
+
+    def foja_pct_acumulado(self):
+        total = 0
+        for item in self.items.all():
+            total += item.fojaitem_pct_acumulado * item.fojaitem_planitem.planitem_incidencia_pct
+        return total / 100
+
+    def __str__(self):
+        return f"Foja {self.foja_periodo} - {self.foja_plan.trabajos_obra}"
+
+    def get_absolute_url(self):
+        return reverse('carga:update-fojademedicion', kwargs={'pk': self.pk})
+
+class FojaDeMedicionItem(models.Model):
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["fojaitem_foja", "fojaitem_planitem"], name="fojaitem-planitem-unico")]
+        verbose_name = "Item de Foja de Medición"
+        verbose_name_plural = "Items de Foja de Medición"
+        ordering = ["fojaitem_planitem__planitem_orden"]
+
+    fojaitem_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    fojaitem_foja = models.ForeignKey("FojaDeMedicion", verbose_name="Foja de Medición", on_delete=models.CASCADE, related_name="items")
+    fojaitem_planitem = models.ForeignKey("PlanDeTrabajosItem", verbose_name="Item del Plan", on_delete=models.CASCADE)
+    fojaitem_pct_avance_mes = models.DecimalField("Avance del Mes %", max_digits=5, decimal_places=3, default=0, validators=[MinValueValidator(0), MaxValueValidator(100)])
+    fojaitem_pct_acumulado = models.DecimalField("Acumulado %", max_digits=5, decimal_places=3, default=0, validators=[MinValueValidator(0), MaxValueValidator(100)])
+    fojaitem_history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.fojaitem_planitem.planitem_nombre} - {self.fojaitem_foja}"
 
 class Contrato(models.Model):
     class Meta:

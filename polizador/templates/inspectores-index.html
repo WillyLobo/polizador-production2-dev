@@ -1,0 +1,6 @@
+{% if "inspeccion" in groups %}
+
+{% for obra in request.user.agente.obra_inspector.all %}
+<P>{{obra.obra_nombre}}</p>
+{% endfor %}
+{% endif %}

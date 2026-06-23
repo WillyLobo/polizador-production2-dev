@@ -15,6 +15,11 @@ class conjuntowidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
         "conjunto_nombre__icontains",
     ]
 
+class planwidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
+    search_fields = [
+        "trabajos_obra__obra_nombre__icontains",
+    ]
+
 class programawidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
     search_fields = [
         "programa_nombre__icontains",

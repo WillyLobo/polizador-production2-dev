@@ -1,0 +1,38 @@
+{{formset.management_form}}
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Items Medidos</legend>
+    <div id="fojademedicionitem-form" class="fojademedicionitem-form">
+        {% for form in formset %}
+            <div class="row m-1 border border-dark rounded" id="fojademedicionitem-form-{{form.prefix}}">
+
+                {% csrf_token %}
+                {% for hidden in form.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
+
+                <div class="row">
+                    <div class="col pb-1">
+                        <label class="form-label">{{ form.instance.fojaitem_planitem.planitem_nombre }}</label>
+                        <span class="text-muted">({{ form.instance.fojaitem_planitem.planitem_incidencia_pct }}%)</span>
+                    </div>
+                    <div class="col-2 pb-1">
+                        <label for="id_items-0-incidencia-{{form.prefix}}">Incidencia %:</label><br>
+                        <input type="number" name="incidencia" placeholder="{{form.instance.fojaitem_planitem.planitem_incidencia_pct}}" class="form-control" id="id_items-0-incidencia-{{form.prefix}}" disabled>
+                    </div>
+                    <div class="col-2 pb-1">
+                        {{form.fojaitem_pct_avance_mes.as_field_group}}
+                    </div>
+                    <div class="col-2 pb-1">
+                        {{form.fojaitem_pct_acumulado.as_field_group}}
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+        {% for dict in formset.errors %}
+            {% for error in dict.values %}
+                {{ error }}
+            {% endfor %}
+        {% endfor %}
+        {{ formset.non_form_errors }}
+    </div>
+</fieldset>

@@ -74,9 +74,26 @@ class CertificadoRubroAdmin(ImportExportMixin, SimpleHistoryAdmin):
 class CertificadoFinanciamientoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.FinanciamientoResource
 
+class PlanDeTrabajosItemInline(admin.TabularInline):
+	model = models.PlanDeTrabajosItem
+
 class PlandeTrabajosAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	autocomplete_fields = ["trabajos_obra"]
+	search_fields = ["trabajos_obra__obra_nombre"]
+	inlines = [
+		PlanDeTrabajosItemInline,
+	]
 	resource_class = resources.PlandeTrabajosResource
+
+class FojaDeMedicionItemInline(admin.TabularInline):
+	model = models.FojaDeMedicionItem
+
+class FojaDeMedicionAdmin(ImportExportMixin, SimpleHistoryAdmin):
+	autocomplete_fields = ["foja_plan", "foja_inspector"]
+	inlines = [
+		FojaDeMedicionItemInline,
+	]
+	resource_class = resources.FojaDeMedicionResource
 
 class ContratoMontoInline(admin.TabularInline):
 	model = models.ContratoMonto
@@ -126,6 +143,7 @@ admin.site.register(models.Region, RegionAdmin)
 admin.site.register(models.CertificadoRubro, CertificadoRubroAdmin)
 admin.site.register(models.CertificadoFinanciamiento, CertificadoFinanciamientoAdmin)
 admin.site.register(models.PlanDeTrabajos, PlandeTrabajosAdmin)
+admin.site.register(models.FojaDeMedicion, FojaDeMedicionAdmin)
 admin.site.register(models.Contrato, ContratoAdmin)
 admin.site.register(models.ContratoMonto, ContratoMontoAdmin)
 admin.site.register(models.ContratoRubro, ContratoRubroAdmin)

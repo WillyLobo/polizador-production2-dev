@@ -7,7 +7,7 @@ from django.template import loader, TemplateDoesNotExist
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
-from carga.models import Certificado
+from carga.models import Certificado, FojaDeMedicion
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg
 from carga.forms.certificadoforms import *
 from carga.views.generics import get_deleted_objects
@@ -48,6 +48,18 @@ class CrearCertificado(PermissionRequiredMixin, generic.CreateView):
 		context = super().get_context_data(**kwargs)
 		context["title"] = self.get_title()
 		return context
+
+	def get_initial(self):
+		initial = super().get_initial()
+		foja_id = self.request.GET.get("foja")
+		if foja_id:
+			foja = FojaDeMedicion.objects.filter(pk=foja_id).first()
+			if foja:
+				initial["certificado_foja"] = foja.pk
+				initial["certificado_obra"] = foja.foja_plan.trabajos_obra_id
+				initial["certificado_mes_pct"] = foja.foja_pct_avance_mes()
+				initial["certificado_acum_pct"] = foja.foja_pct_acumulado()
+		return initial
 
 	def form_valid(self, form):
 		self.object = form.save(commit=False)

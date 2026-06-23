@@ -30,7 +30,7 @@ class Agente(models.Model):
         verbose_name_plural = "Agentes"
         ordering = ("agente_apellidos","agente_nombres")
 
-    agente_usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=True, null=True)
+    agente_usuario = models.OneToOneField(CustomUser, on_delete=models.CASCADE, blank=True, null=True)
     agente_nombres = models.CharField("Nombres", max_length=120)
     agente_apellidos = models.CharField("Apellidos", max_length=120)
     agente_nombreyapellido = models.GeneratedField(
