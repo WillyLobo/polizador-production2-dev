@@ -1,38 +1,235 @@
 {{formset.management_form}}
-<fieldset class="border rounded border-dark p-1">
-    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Items Medidos</legend>
-    <div id="fojademedicionitem-form" class="fojademedicionitem-form">
-        {% for form in formset %}
-            <div class="row m-1 border border-dark rounded" id="fojademedicionitem-form-{{form.prefix}}">
-
-                {% csrf_token %}
-                {% for hidden in form.hidden_fields %}
-                    {{ hidden }}
+<div class="row">
+    <div class="col-md-9">
+        <fieldset class="border rounded border-dark p-1">
+            <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Items Medidos</legend>
+            <div id="fojademedicionitem-form" class="fojademedicionitem-form">
+        <table class="table table-bordered table-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Plan Item</th>
+                    <th class="text-center">Incidencia %</th>
+                    <th class="text-center">Anterior %</th>
+                    <th class="text-center">Avance Mes %</th>
+                    <th class="text-center">Acumulado %</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for form in formset %}
+                    {% csrf_token %}
+                    {% for hidden in form.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+                    <tr id="fojademedicionitem-form-{{form.prefix}}">
+                        <td>
+                            <label class="form-label">{{ form.instance.fojaitem_planitem.planitem_nombre }}</label>
+                        </td>
+                        <td class="text-center">
+                            <input type="number" name="incidencia" placeholder="{{form.instance.fojaitem_planitem.planitem_incidencia_pct}}" class="form-control form-control-sm text-center" id="id_items-0-incidencia-{{form.prefix}}" disabled>
+                        </td>
+                        <td class="text-center">
+                            {{form.fojaitem_pct_anterior}}
+                        </td>
+                        <td class="text-center">
+                            {{form.fojaitem_pct_avance_mes}}
+                        </td>
+                        <td class="text-center">
+                            {{form.fojaitem_pct_acumulado}}
+                        </td>
+                    </tr>
                 {% endfor %}
-
-                <div class="row">
-                    <div class="col pb-1">
-                        <label class="form-label">{{ form.instance.fojaitem_planitem.planitem_nombre }}</label>
-                        <span class="text-muted">({{ form.instance.fojaitem_planitem.planitem_incidencia_pct }}%)</span>
-                    </div>
-                    <div class="col-2 pb-1">
-                        <label for="id_items-0-incidencia-{{form.prefix}}">Incidencia %:</label><br>
-                        <input type="number" name="incidencia" placeholder="{{form.instance.fojaitem_planitem.planitem_incidencia_pct}}" class="form-control" id="id_items-0-incidencia-{{form.prefix}}" disabled>
-                    </div>
-                    <div class="col-2 pb-1">
-                        {{form.fojaitem_pct_avance_mes.as_field_group}}
-                    </div>
-                    <div class="col-2 pb-1">
-                        {{form.fojaitem_pct_acumulado.as_field_group}}
-                    </div>
-                </div>
-            </div>
-        {% endfor %}
-        {% for dict in formset.errors %}
-            {% for error in dict.values %}
-                {{ error }}
+            </tbody>
+            <tfoot class="table-light fw-bold">
+                <tr>
+                    <td>Totales</td>
+                    <td class="text-center" id="total-incidencia">0.00</td>
+                    <td class="text-center" id="total-anterior">0.00</td>
+                    <td class="text-center" id="total-mes">0.00</td>
+                    <td class="text-center" id="total-acumulado">0.00</td>
+                </tr>
+            </tfoot>
+        </table>
+            {% for dict in formset.errors %}
+                {% for error in dict.values %}
+                    {{ error }}
+                {% endfor %}
             {% endfor %}
-        {% endfor %}
-        {{ formset.non_form_errors }}
+            {{ formset.non_form_errors }}
+        </div>
+        </fieldset>
     </div>
-</fieldset>
+    <div class="col-md-3">
+        <div class="border rounded border-dark p-3 bg-light sticky-top" style="top: 20px;">
+            <h5 class="border-bottom pb-2 mb-3">Calculadora de Incidencia</h5>
+
+            <div class="mb-3">
+                <label for="calc-item-select" class="form-label">Seleccionar Item:</label>
+                <select id="calc-item-select" class="form-select form-select-sm">
+                    <option value="">-- Elegir item --</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Valor Incidencia:</label>
+                <div id="calc-incidencia-value" class="bg-white border rounded p-2 text-center fw-bold">-</div>
+            </div>
+
+            <div class="mb-3">
+                <label for="calc-percentage" class="form-label">Porcentaje (%):</label>
+                <input type="number" id="calc-percentage" class="form-control form-control-sm" placeholder="0" step="0.001" min="0">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Resultado:</label>
+                <div id="calc-result" class="bg-white border rounded p-2 text-center fw-bold text-success">0.000</div>
+            </div>
+
+            <button type="button" id="calc-add-btn" class="btn btn-primary btn-sm w-100" disabled>
+                Agregar a %Mes
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function calculateTotals() {
+    const incidenciaInputs = document.querySelectorAll('input[name="incidencia"]');
+    const anteriorInputs = document.querySelectorAll('input[name$="fojaitem_pct_anterior"]');
+    const mesInputs = document.querySelectorAll('input[name$="fojaitem_pct_avance_mes"]');
+    const acumuladoInputs = document.querySelectorAll('input[name$="fojaitem_pct_acumulado"]');
+
+    let totalIncidencia = 0;
+    let totalAnterior = 0;
+    let totalMes = 0;
+    let totalAcumulado = 0;
+
+    incidenciaInputs.forEach(input => {
+        totalIncidencia += parseFloat((input.placeholder || '').replace(',', '.')) || 0;
+    });
+    anteriorInputs.forEach(input => {
+        totalAnterior += parseFloat(input.value) || 0;
+    });
+    mesInputs.forEach(input => {
+        totalMes += parseFloat(input.value) || 0;
+    });
+    acumuladoInputs.forEach(input => {
+        totalAcumulado += parseFloat(input.value) || 0;
+    });
+
+    document.getElementById('total-incidencia').textContent = totalIncidencia.toFixed(3);
+    document.getElementById('total-anterior').textContent = totalAnterior.toFixed(3);
+    document.getElementById('total-mes').textContent = totalMes.toFixed(3);
+    document.getElementById('total-acumulado').textContent = totalAcumulado.toFixed(3);
+}
+
+function setupCalculator() {
+    const itemSelect = document.getElementById('calc-item-select');
+    const incidenciaValue = document.getElementById('calc-incidencia-value');
+    const percentageInput = document.getElementById('calc-percentage');
+    const resultDiv = document.getElementById('calc-result');
+    const addBtn = document.getElementById('calc-add-btn');
+
+    const rows = document.querySelectorAll('#fojademedicionitem-form tbody tr');
+    const itemsData = {};
+
+    rows.forEach(row => {
+        const nameCell = row.querySelector('td:nth-child(1) label');
+        const incidenciaInput = row.querySelector('input[name="incidencia"]');
+        const anteriorInput = row.querySelector('input[name$="fojaitem_pct_anterior"]');
+        const mesInput = row.querySelector('input[name$="fojaitem_pct_avance_mes"]');
+
+        if (nameCell && incidenciaInput && mesInput && anteriorInput) {
+            const itemName = nameCell.textContent.trim();
+            const placeholderVal = incidenciaInput.placeholder || '';
+            const incidenciaVal = parseFloat(placeholderVal.replace(',', '.')) || 0;
+            itemsData[itemName] = {
+                incidencia: incidenciaVal,
+                anteriorInput: anteriorInput,
+                mesInput: mesInput,
+                row: row
+            };
+
+            const option = document.createElement('option');
+            option.value = itemName;
+            option.textContent = itemName;
+            itemSelect.appendChild(option);
+        }
+    });
+
+    function updateCalculation() {
+        const selectedItem = itemSelect.value;
+        const percentage = parseFloat(percentageInput.value) || 0;
+
+        if (!selectedItem) {
+            incidenciaValue.textContent = '-';
+            resultDiv.textContent = '0.000';
+            addBtn.disabled = true;
+            return;
+        }
+
+        const itemData = itemsData[selectedItem];
+        incidenciaValue.textContent = itemData.incidencia.toFixed(3);
+
+        const result = (percentage / 100) * itemData.incidencia;
+        resultDiv.textContent = result.toFixed(3);
+        addBtn.disabled = false;
+    }
+
+    itemSelect.addEventListener('change', updateCalculation);
+    percentageInput.addEventListener('input', updateCalculation);
+
+    addBtn.addEventListener('click', function() {
+        const selectedItem = itemSelect.value;
+        if (!selectedItem) return;
+
+        const itemData = itemsData[selectedItem];
+        const result = parseFloat(resultDiv.textContent);
+        const currentValue = parseFloat(itemData.mesInput.value) || 0;
+        const anteriorValue = parseFloat(itemData.anteriorInput.value) || 0;
+        let newValue = currentValue + result;
+
+        // Cap the value: acumulado (anterior + mes) cannot exceed incidence
+        const maxMesValue = itemData.incidencia - anteriorValue;
+        if (newValue > maxMesValue) {
+            newValue = maxMesValue;
+        }
+
+        itemData.mesInput.value = newValue.toFixed(3);
+        itemData.mesInput.dispatchEvent(new Event('input', { bubbles: true }));
+
+        percentageInput.value = '';
+        updateCalculation();
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    setupCalculator();
+
+    const mesInputs = document.querySelectorAll('input[name$="fojaitem_pct_avance_mes"]');
+
+    mesInputs.forEach(mesInput => {
+        const match = mesInput.name.match(/^(.+?)-fojaitem_pct_avance_mes$/);
+        if (match) {
+            const prefix = match[1];
+            const anteriorInput = document.querySelector(`input[name="${prefix}-fojaitem_pct_anterior"]`);
+            const acumuladoInput = document.querySelector(`input[name="${prefix}-fojaitem_pct_acumulado"]`);
+
+            if (anteriorInput && acumuladoInput) {
+                const syncAcumulado = function() {
+                    const anteriorValue = parseFloat(anteriorInput.value) || 0;
+                    const mesValue = parseFloat(mesInput.value) || 0;
+                    const acumulado = anteriorValue + mesValue;
+                    acumuladoInput.value = acumulado.toFixed(3);
+                    calculateTotals();
+                };
+
+                mesInput.addEventListener('input', syncAcumulado);
+                anteriorInput.addEventListener('input', syncAcumulado);
+                syncAcumulado();
+            }
+        }
+    });
+
+    calculateTotals();
+});
+</script>

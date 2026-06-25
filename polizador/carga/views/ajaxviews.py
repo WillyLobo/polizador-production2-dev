@@ -20,6 +20,12 @@ class planwidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
         "trabajos_obra__obra_nombre__icontains",
     ]
 
+class rubrowidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
+    search_fields = [
+        "rubro_nombre__icontains",
+        "rubro_plan__trabajos_obra__obra_nombre__icontains",
+    ]
+
 class programawidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
     search_fields = [
         "programa_nombre__icontains",

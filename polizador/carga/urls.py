@@ -17,6 +17,7 @@ from carga.views.reportes import *
 from carga.views.contratoviews import *
 from carga.views.documentosdigitalesviews import *
 from carga.views.plandetrabajosviews import *
+from carga.views.plandetrabajosrubroviews import *
 from carga.views.fojademedicionviews import *
 
 app_name = "carga"
@@ -39,6 +40,7 @@ obra_patterns = [
 	path("crear/obra/", CrearObra.as_view(), name="crear-obra"),
 	path("crear/obra/<pk>", UpdateObra.as_view(), name="update-obra"),
 	path("crear/obra/estado/<pk>", EstadoObra.as_view(), name = "estado-obra"),
+	path("crear/obra/planes-anteriores/<pk>", PlanesAnterioresObra.as_view(), name="planes-anteriores-obra"),
     path("eliminar/obra/<pk>", EliminarObra.as_view(), name="eliminar-obra"),
 ]
 poliza_patterns = [
@@ -109,6 +111,10 @@ plandetrabajos_patterns = [
     path("crear/plandetrabajos/", CrearPlanDeTrabajos.as_view(), name="crear-plandetrabajos"),
     path("crear/plandetrabajos/<pk>", UpdatePlanDeTrabajos.as_view(), name="update-plandetrabajos"),
 ]
+plandetrabajosrubro_patterns = [
+    path("crear/plandetrabajosrubro/", CrearPlanDeTrabajosRubro.as_view(), name="crear-plandetrabajosrubro"),
+    path("crear/plandetrabajosrubro/<pk>", UpdatePlanDeTrabajosRubro.as_view(), name="update-plandetrabajosrubro"),
+]
 fojademedicion_patterns = [
     path("crear/foja-medicion/", CrearFojaDeMedicion.as_view(), name="crear-fojademedicion"),
     path("crear/foja-medicion/<pk>", UpdateFojaDeMedicion.as_view(), name="update-fojademedicion"),
@@ -174,6 +180,7 @@ urlpatterns += documentos_digitales
 urlpatterns += reporte_patterns
 urlpatterns += contrato_patterns
 urlpatterns += plandetrabajos_patterns
+urlpatterns += plandetrabajosrubro_patterns
 urlpatterns += fojademedicion_patterns
 urlpatterns += ajax
 urlpatterns += conjunto_patterns

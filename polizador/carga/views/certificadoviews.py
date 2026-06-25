@@ -56,7 +56,7 @@ class CrearCertificado(PermissionRequiredMixin, generic.CreateView):
 			foja = FojaDeMedicion.objects.filter(pk=foja_id).first()
 			if foja:
 				initial["certificado_foja"] = foja.pk
-				initial["certificado_obra"] = foja.foja_plan.trabajos_obra_id
+				initial["certificado_obra"] = foja.foja_rubro.rubro_plan.trabajos_obra_id
 				initial["certificado_mes_pct"] = foja.foja_pct_avance_mes()
 				initial["certificado_acum_pct"] = foja.foja_pct_acumulado()
 		return initial

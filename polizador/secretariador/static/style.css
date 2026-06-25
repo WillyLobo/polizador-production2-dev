@@ -33,6 +33,36 @@ p.poliza-e-p {
     height: 100%;
 } */
 
+/* Let single-select Select2 boxes wrap their text and grow vertically
+   instead of truncating long option labels with an ellipsis. */
+.select2-container--bootstrap-5 .select2-selection--single {
+    height: auto !important;
+}
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: initial !important;
+    word-break: break-word;
+}
+
+/* Same idea for multi-select choice badges: wrap long labels (e.g. agent
+   names with DNI numbers) instead of letting them overflow the widget. */
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice {
+    display: block;
+    position: relative;
+    max-width: 100%;
+    white-space: normal;
+    word-break: break-word;
+    padding-right: 1.5rem;
+    padding-left: 1.75rem;
+}
+.select2-container--bootstrap-5 .select2-selection--multiple .select2-selection__rendered .select2-selection__choice .select2-selection__choice__remove {
+    position: absolute;
+    top: 0.5em;
+    left: 0.5rem;
+    margin-right: 0;
+}
+
 .img-small {
     width: 20;
     height: 20;

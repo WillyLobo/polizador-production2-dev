@@ -46,10 +46,10 @@
 <body class="min-vh-100 d-flex flex-shrink-0 flex-column py-5 px-3">
   {% include "navbar.html" %}
 
-  <div class="min-vh-100 flex-grow-1 bg-white d-flex flex-column justify-content-center align-items-center content py-2">
+  <div class="min-vh-100 flex-grow-1 bg-white d-flex flex-column justify-content-center align-items-stretch content py-2">
     {% block style %}   {%endblock%}
     {% block content %} {% endblock %}
-</div>
+  </div>
 
 </body>
 
@@ -57,12 +57,6 @@
         integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
         crossorigin="anonymous"></script>
 <script>
-  $('customSelect2').select2().on("select2-close", function () {
-      setTimeout(function() {
-          $('.select2-container-active').removeClass('select2-container-active');
-          $(':focus').blur(); 
-      }, 1);
-  });
   $('.customSelect2').select2({
     theme: 'bootstrap-5'
   });

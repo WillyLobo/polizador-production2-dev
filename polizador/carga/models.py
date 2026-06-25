@@ -363,7 +363,11 @@ class Obra(models.Model):
     def obra_acum_pct(self):
         if self.certificado_set:
             return self.certificado_set.latest().certificado_acum_pct
-        
+
+    def plan_vigente(self):
+        """Retorna el Plan de Trabajos más reciente (vigente) de la obra."""
+        return self.plandetrabajos_set.order_by("-trabajos_fecha", "-pk").first()
+
     def clean(self):
         self.obra_contrato_nacion_pesos = 0 if self.obra_contrato_nacion_pesos is None else self.obra_contrato_nacion_pesos
         self.obra_contrato_nacion_uvi = 0 if self.obra_contrato_nacion_uvi is None else self.obra_contrato_nacion_uvi
@@ -529,7 +533,18 @@ class PlanDeTrabajos(models.Model):
 
     trabajos_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     trabajos_obra = models.ForeignKey("Obra", on_delete=models.DO_NOTHING)
+    trabajos_fecha = models.DateField("Fecha de Vigencia", default=timezone.now)
     trabajos_history = HistoricalRecords()
+
+    @classmethod
+    def vigentes(cls):
+        """Devuelve el queryset con el plan vigente (más reciente) de cada obra."""
+        from django.db.models import OuterRef, Subquery
+        ultimo = cls.objects.filter(trabajos_obra=OuterRef("trabajos_obra")).order_by("-trabajos_fecha", "-pk")
+        return cls.objects.filter(pk=Subquery(ultimo.values("pk")[:1]))
+
+    def es_vigente(self):
+        return PlanDeTrabajos.vigentes().filter(pk=self.pk).exists()
 
     def __str__(self):
         return f"Plan de Trabajos - {self.trabajos_obra}"
@@ -537,51 +552,128 @@ class PlanDeTrabajos(models.Model):
     def get_absolute_url(self):
         return reverse('carga:update-plandetrabajos', kwargs={'pk': self.pk})
 
+class PlanDeTrabajosRubro(models.Model):
+    class Meta:
+        verbose_name = "Rubro de Plan de Trabajos"
+        verbose_name_plural = "Rubros de Plan de Trabajos"
+        ordering = ["rubro_plan", "rubro_orden"]
+
+    rubro_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    rubro_plan = models.ForeignKey("PlanDeTrabajos", verbose_name="Plan de Trabajos", on_delete=models.CASCADE, related_name="rubros")
+    rubro_nombre = models.CharField("Rubro", max_length=200)
+    rubro_orden = models.PositiveIntegerField("Orden", default=0)
+    rubro_presupuesto = models.DecimalField("Presupuesto", max_digits=15, decimal_places=2, default=0, validators=[MinValueValidator(0)])
+    rubro_anterior = models.ForeignKey("self", verbose_name="Rubro Anterior (Plan Previo)", on_delete=models.SET_NULL, null=True, blank=True, related_name="rubro_siguiente")
+    rubro_history = HistoricalRecords()
+
+    def rubro_cadena_ids(self):
+        """IDs de este rubro y todos sus predecesores (reprogramaciones anteriores)."""
+        ids = [self.pk]
+        actual = self
+        while actual.rubro_anterior_id:
+            actual = actual.rubro_anterior
+            ids.append(actual.pk)
+        return ids
+
+    def __str__(self):
+        return f"{self.rubro_nombre} - {self.rubro_plan}"
+
+    def get_absolute_url(self):
+        return reverse('carga:update-plandetrabajosrubro', kwargs={'pk': self.pk})
+
 class PlanDeTrabajosItem(models.Model):
     class Meta:
         verbose_name = "Item de Plan de Trabajos"
         verbose_name_plural = "Items de Plan de Trabajos"
-        ordering = ["planitem_plan", "planitem_orden"]
+        ordering = ["planitem_rubro", "planitem_orden"]
 
     planitem_uuid = models.UUIDField(default=compat.uuid7, editable=False)
-    planitem_plan = models.ForeignKey("PlanDeTrabajos", verbose_name="Plan de Trabajos", on_delete=models.CASCADE, related_name="items")
+    planitem_rubro = models.ForeignKey("PlanDeTrabajosRubro", verbose_name="Rubro de Plan de Trabajos", on_delete=models.CASCADE, related_name="items")
     planitem_nombre = models.CharField("Item", max_length=200)
     planitem_orden = models.PositiveIntegerField("Orden", default=0)
-    planitem_incidencia_pct = models.DecimalField("Incidencia %", max_digits=5, decimal_places=3, validators=[MinValueValidator(0), MaxValueValidator(100)])
+    planitem_incidencia_pct = models.DecimalField("Incidencia %", max_digits=6, decimal_places=3, validators=[MinValueValidator(0), MaxValueValidator(100)])
+    item_anterior = models.ForeignKey("self", verbose_name="Item Anterior (Plan Previo)", on_delete=models.SET_NULL, null=True, blank=True, related_name="item_siguiente")
     planitem_history = HistoricalRecords()
 
+    def item_cadena_ids(self):
+        """IDs de este item y todos sus predecesores (reprogramaciones anteriores)."""
+        ids = [self.pk]
+        actual = self
+        while actual.item_anterior_id:
+            actual = actual.item_anterior
+            ids.append(actual.pk)
+        return ids
+
     def __str__(self):
-        return f"{self.planitem_nombre} ({self.planitem_incidencia_pct}%) - {self.planitem_plan}"
+        return f"{self.planitem_nombre} ({self.planitem_incidencia_pct}%) - {self.planitem_rubro}"
 
 class FojaDeMedicion(models.Model):
     class Meta:
-        constraints = [models.UniqueConstraint(fields=["foja_plan", "foja_periodo"], name="foja-periodo-unico")]
+        constraints = [
+            models.UniqueConstraint(fields=["foja_rubro", "foja_numero"], name="foja-numero-unico")
+        ]
         verbose_name = "Foja de Medición"
         verbose_name_plural = "Fojas de Medición"
-        ordering = ["foja_periodo"]
+        ordering = ["foja_rubro", "foja_numero"]
 
     foja_uuid = models.UUIDField(default=compat.uuid7, editable=False)
-    foja_plan = models.ForeignKey("PlanDeTrabajos", verbose_name="Plan de Trabajos", on_delete=models.CASCADE, related_name="fojas")
+    foja_rubro = models.ForeignKey("PlanDeTrabajosRubro", verbose_name="Rubro de Plan de Trabajos", on_delete=models.CASCADE, related_name="fojas")
+    foja_numero = models.PositiveIntegerField("Número de Foja", editable=False, default=1)
     foja_periodo = models.DateField("Período (Mes)")
     foja_fecha = models.DateField("Fecha de Medición", default=timezone.now)
-    foja_inspector = models.ForeignKey("personalizador.Agente", verbose_name="Inspector", on_delete=models.PROTECT, null=True, blank=True)
+    foja_inspector = models.ManyToManyField("personalizador.Agente", related_name="foja_inspector", verbose_name="Inspector", blank=True)
     foja_observaciones = models.TextField("Observaciones", blank=True, null=True)
     foja_history = HistoricalRecords()
 
     def foja_pct_avance_mes(self):
         total = 0
         for item in self.items.all():
-            total += item.fojaitem_pct_avance_mes * item.fojaitem_planitem.planitem_incidencia_pct
-        return total / 100
+            total += item.fojaitem_pct_avance_mes
+        return total
 
     def foja_pct_acumulado(self):
         total = 0
         for item in self.items.all():
-            total += item.fojaitem_pct_acumulado * item.fojaitem_planitem.planitem_incidencia_pct
-        return total / 100
+            total += item.fojaitem_pct_acumulado
+        return total
+
+    def foja_anterior(self):
+        """Retorna la foja anterior, considerando también rubros de planes reprogramados."""
+        chain_ids = self.foja_rubro.rubro_cadena_ids()
+        return FojaDeMedicion.objects.filter(
+            foja_rubro_id__in=chain_ids, foja_numero__lt=self.foja_numero
+        ).order_by('-foja_numero').first()
+
+    @staticmethod
+    def anterior_items_map(rubro, items=None, exclude_foja_numero=None):
+        """Acumulado %% de cada item en la foja anterior (misma lógica que FojaDeMedicionItem.save()).
+
+        La foja anterior se determina por número de foja dentro de la cadena de rubros
+        reprogramados, no por período: el período es solo una etiqueta y el número de
+        foja se asigna por orden de creación (ver signals.auto_increment_foja_numero).
+        """
+        chain_ids = rubro.rubro_cadena_ids()
+        qs = FojaDeMedicion.objects.filter(foja_rubro_id__in=chain_ids)
+        if exclude_foja_numero is not None:
+            qs = qs.filter(foja_numero__lt=exclude_foja_numero)
+        foja_anterior = qs.order_by('-foja_numero').first()
+        if not foja_anterior:
+            return {}
+
+        if items is None:
+            items = PlanDeTrabajosItem.objects.filter(planitem_rubro=rubro)
+
+        anterior_map = {}
+        for item in items:
+            previous_item = foja_anterior.items.filter(
+                fojaitem_planitem_id__in=item.item_cadena_ids()
+            ).first()
+            if previous_item:
+                anterior_map[item.pk] = previous_item.fojaitem_pct_acumulado
+        return anterior_map
 
     def __str__(self):
-        return f"Foja {self.foja_periodo} - {self.foja_plan.trabajos_obra}"
+        return f"Foja {self.foja_numero} - {self.foja_rubro}"
 
     def get_absolute_url(self):
         return reverse('carga:update-fojademedicion', kwargs={'pk': self.pk})
@@ -596,13 +688,30 @@ class FojaDeMedicionItem(models.Model):
     fojaitem_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     fojaitem_foja = models.ForeignKey("FojaDeMedicion", verbose_name="Foja de Medición", on_delete=models.CASCADE, related_name="items")
     fojaitem_planitem = models.ForeignKey("PlanDeTrabajosItem", verbose_name="Item del Plan", on_delete=models.CASCADE)
-    fojaitem_pct_avance_mes = models.DecimalField("Avance del Mes %", max_digits=5, decimal_places=3, default=0, validators=[MinValueValidator(0), MaxValueValidator(100)])
-    fojaitem_pct_acumulado = models.DecimalField("Acumulado %", max_digits=5, decimal_places=3, default=0, validators=[MinValueValidator(0), MaxValueValidator(100)])
+    fojaitem_pct_avance_mes = models.DecimalField("Avance del Mes %", max_digits=6, decimal_places=3, default=0, validators=[MinValueValidator(0), MaxValueValidator(100)])
+    fojaitem_pct_acumulado = models.DecimalField("Acumulado %", max_digits=6, decimal_places=3, default=0, editable=False, validators=[MinValueValidator(0), MaxValueValidator(100)])
     fojaitem_history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.fojaitem_planitem.planitem_nombre} - {self.fojaitem_foja}"
 
+    def save(self, *args, **kwargs):
+        foja_anterior = self.fojaitem_foja.foja_anterior()
+
+        previous_item = None
+        if foja_anterior:
+            item_chain_ids = self.fojaitem_planitem.item_cadena_ids()
+            previous_item = FojaDeMedicionItem.objects.filter(
+                fojaitem_foja=foja_anterior,
+                fojaitem_planitem_id__in=item_chain_ids
+            ).first()
+
+        if previous_item:
+            self.fojaitem_pct_acumulado = previous_item.fojaitem_pct_acumulado + self.fojaitem_pct_avance_mes
+        else:
+            self.fojaitem_pct_acumulado = self.fojaitem_pct_avance_mes
+
+        super(FojaDeMedicionItem, self).save(*args, **kwargs)
 class Contrato(models.Model):
     class Meta:
         verbose_name_plural = "Contratos"

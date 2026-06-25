@@ -3,13 +3,13 @@
 {% block title %}<title>{{title}}</title>{% endblock title %}
 
 {{ form.media.css }}
-<form id="fojademedicion-form" action="{% url "carga:crear-fojademedicion"%}?plan={{ request.GET.plan }}" method="POST">
+<form id="fojademedicion-form" action="{% url "carga:crear-fojademedicion"%}?rubro={{ request.GET.rubro }}" method="POST">
   {% csrf_token %}
 
   <div class="row flex-xl-nowrap">
     <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
-      {% include "partials/floating-generic-menu.html" %}
       {% include "partials/administrative-sidebar.html" %}
+      {% include "partials/floating-generic-menu.html" %}
     </div>
     <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
       {% include "partials/fojademedicion-form-partial.html" %}

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block content %}
+{% block title %}<title>Planes Anteriores - {{object.obra_nombre}}</title>{% endblock title %}
+
+<div class="container-flex bg-body">
+    <div class="col">
+        <div class="row border-bottom border-dark text-center"> <h6>Planes de Trabajo Anteriores - {{object.obra_nombre}}</h6></div>
+    </div>
+    <div class="col">
+        <a href="{% url "carga:estado-obra" object.id %}">&laquo; Volver a la Obra</a>
+    </div>
+    <br>
+    {% for plan in planes_anteriores %}
+        <div class="col">
+            <div class="row g-0">
+                <div class="col border"><b>Plan de Trabajos ({{plan.trabajos_fecha}}):</b></div>
+            </div>
+        </div>
+        {% for rubro in plan.rubros.all %}
+            <div class="col">
+                <div class="row g-0">
+                    <div class="col border"><b>Rubro:</b></div><div class="col border">{{rubro.rubro_nombre}}</div>
+                    <div class="col border"><b>Presupuesto:</b></div><div class="col border">{{rubro.rubro_presupuesto}}</div>
+                    <div class="col border">
+                        <table class="table table-sm table-bordered mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Orden</th>
+                                    <th>Nombre</th>
+                                    <th>Incidencia</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in rubro.items.all %}
+                                <tr>
+                                    <td>{{ item.planitem_orden }}</td>
+                                    <td>{{ item.planitem_nombre }}</td>
+                                    <td>{{ item.planitem_incidencia_pct }}%</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% if rubro.fojas.all %}
+                <div class="col">
+                    <table class="table table-sm table-bordered mb-0">
+                        <thead>
+                            <tr>
+                                <th>Foja N°</th>
+                                <th>Período</th>
+                                <th>Avance del Mes</th>
+                                <th>Acumulado</th>
+                                <th>Inspector</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for foja in rubro.fojas.all %}
+                            <tr>
+                                <td>{{foja.foja_numero}}</td>
+                                <td>{{foja.foja_periodo}}</td>
+                                <td>{{foja.foja_pct_avance_mes|floatformat:3}}%</td>
+                                <td>{{foja.foja_pct_acumulado|floatformat:3}}%</td>
+                                <td>{% for inspector in foja.foja_inspector.all %}{{inspector}}{% if not forloop.last %}, {% endif %}{% empty %}-{% endfor %}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        {% endfor %}
+        <hr>
+    {% empty %}
+        <div class="col">No hay planes anteriores.</div>
+    {% endfor %}
+</div>
+{% endblock %}

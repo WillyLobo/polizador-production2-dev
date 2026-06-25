@@ -131,6 +131,10 @@ class PlandeTrabajosResource(resources.ModelResource):
 	class Meta:
 		model = models.PlanDeTrabajos
 
+class PlanDeTrabajosRubroResource(resources.ModelResource):
+	class Meta:
+		model = models.PlanDeTrabajosRubro
+
 class PlanDeTrabajosItemResource(resources.ModelResource):
 	class Meta:
 		model = models.PlanDeTrabajosItem

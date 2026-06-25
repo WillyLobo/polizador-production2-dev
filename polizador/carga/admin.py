@@ -77,19 +77,30 @@ class CertificadoFinanciamientoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 class PlanDeTrabajosItemInline(admin.TabularInline):
 	model = models.PlanDeTrabajosItem
 
+class PlanDeTrabajosRubroInline(admin.TabularInline):
+	model = models.PlanDeTrabajosRubro
+
 class PlandeTrabajosAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	autocomplete_fields = ["trabajos_obra"]
 	search_fields = ["trabajos_obra__obra_nombre"]
 	inlines = [
-		PlanDeTrabajosItemInline,
+		PlanDeTrabajosRubroInline,
 	]
 	resource_class = resources.PlandeTrabajosResource
+
+class PlanDeTrabajosRubroAdmin(ImportExportMixin, SimpleHistoryAdmin):
+	autocomplete_fields = ["rubro_plan"]
+	search_fields = ["rubro_nombre", "rubro_plan__trabajos_obra__obra_nombre"]
+	inlines = [
+		PlanDeTrabajosItemInline,
+	]
+	resource_class = resources.PlanDeTrabajosRubroResource
 
 class FojaDeMedicionItemInline(admin.TabularInline):
 	model = models.FojaDeMedicionItem
 
 class FojaDeMedicionAdmin(ImportExportMixin, SimpleHistoryAdmin):
-	autocomplete_fields = ["foja_plan", "foja_inspector"]
+	autocomplete_fields = ["foja_rubro", "foja_inspector"]
 	inlines = [
 		FojaDeMedicionItemInline,
 	]
@@ -143,6 +154,7 @@ admin.site.register(models.Region, RegionAdmin)
 admin.site.register(models.CertificadoRubro, CertificadoRubroAdmin)
 admin.site.register(models.CertificadoFinanciamiento, CertificadoFinanciamientoAdmin)
 admin.site.register(models.PlanDeTrabajos, PlandeTrabajosAdmin)
+admin.site.register(models.PlanDeTrabajosRubro, PlanDeTrabajosRubroAdmin)
 admin.site.register(models.FojaDeMedicion, FojaDeMedicionAdmin)
 admin.site.register(models.Contrato, ContratoAdmin)
 admin.site.register(models.ContratoMonto, ContratoMontoAdmin)

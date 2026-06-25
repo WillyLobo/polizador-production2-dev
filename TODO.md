@@ -21,10 +21,11 @@
 
 # Fojas y Planes de Trabajo
 [ ] Agregar listado de fojas y planes de trabajo con DataTables
-[ ] Crear Home para la inspección donde muestren las obras que no han sido medidas aún
-[ ] Crear funciones que generen acumulado total en las fojas de medicion
-[ ] Crear vista que devuelva las obras donde el usuario es inspector
-[ ] Verificar que una obra pueda tener varios planes de trabajo... pero solo uno activo
+[?] Crear Home para la inspección donde muestren las obras que no han sido medidas aún
+[+] Crear funciones que generen acumulado total en las fojas de medicion
+[+] Crear vista que devuelva las obras donde el usuario es inspector
+[+] Verificar que una obra pueda tener varios planes de trabajo... pero solo uno activo
+[ ] Imagenes para fojas de medicion
 
 # Models
 [+] Create model Incorporacion.

@@ -1,57 +1,127 @@
 {{formset.management_form}}
-<fieldset class="border rounded border-dark p-1">
-    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Items</legend>
-    <div id="plandetrabajositem-form" class="plandetrabajositem-form">
-        {% for form in formset %}
-            <div class="row m-1 border border-dark rounded" id="plandetrabajositem-form-{{form.prefix}}">
+<div class="row">
+    <div class="col-md-9">
+        <fieldset class="border rounded border-dark p-1">
+            <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Items</legend>
+            <div id="plandetrabajositem-form" class="plandetrabajositem-form">
+                {% for form in formset %}
+                    <div class="row m-1 border border-dark rounded" id="plandetrabajositem-form-{{form.prefix}}">
 
-                {% csrf_token %}
-                {% for hidden in form.hidden_fields %}
-                    {{ hidden }}
+                        {% csrf_token %}
+                        {% for hidden in form.hidden_fields %}
+                            {{ hidden }}
+                        {% endfor %}
+
+                        <div class="row">
+                            <div class="col-2 pb-1">
+                                {{form.planitem_orden.as_field_group}}
+                            </div>
+                            <div class="col pb-1">
+                                {{form.planitem_nombre.as_field_group}}
+                            </div>
+                            <div class="col-2 pb-1">
+                                {{form.planitem_incidencia_pct.as_field_group}}
+                            </div>
+                            {% if form.DELETE %}
+                            <div class="col-1 pb-1">
+                                {{form.DELETE.as_field_group}}
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
                 {% endfor %}
-
-                <div class="row">
-                    <div class="col-2 pb-1">
-                        {{form.planitem_orden.as_field_group}}
+                {% for dict in formset.errors %}
+                    {% for error in dict.values %}
+                        {{ error }}
+                    {% endfor %}
+                {% endfor %}
+                {{ formset.non_form_errors }}
+            </div>
+            <div id="empty_form" style="display:none">
+                <div class="row m-1 border border-dark rounded" id="plandetrabajositem-form-{{form.prefix}}">
+                    {% csrf_token %}
+                    {% for hidden in form.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+                    <div class="row">
+                        <div class="col-2 pb-1">
+                            {{formset.empty_form.planitem_orden.as_field_group}}
+                        </div>
+                        <div class="col pb-1">
+                            {{formset.empty_form.planitem_nombre.as_field_group}}
+                        </div>
+                        <div class="col-2 pb-1">
+                            {{formset.empty_form.planitem_incidencia_pct.as_field_group}}
+                        </div>
                     </div>
-                    <div class="col pb-1">
-                        {{form.planitem_nombre.as_field_group}}
-                    </div>
-                    <div class="col-2 pb-1">
-                        {{form.planitem_incidencia_pct.as_field_group}}
-                    </div>
-                    {% if form.DELETE %}
-                    <div class="col-1 pb-1">
-                        {{form.DELETE.as_field_group}}
-                    </div>
-                    {% endif %}
                 </div>
             </div>
-        {% endfor %}
-        {% for dict in formset.errors %}
-            {% for error in dict.values %}
-                {{ error }}
-            {% endfor %}
-        {% endfor %}
-        {{ formset.non_form_errors }}
+        </fieldset>
     </div>
-<div id="empty_form" style="display:none">
-    <div class="row m-1 border border-dark rounded" id="plandetrabajositem-form-{{form.prefix}}">
-        {% csrf_token %}
-        {% for hidden in form.hidden_fields %}
-            {{ hidden }}
-        {% endfor %}
-        <div class="row">
-            <div class="col-2 pb-1">
-                {{formset.empty_form.planitem_orden.as_field_group}}
+    <div class="col-md-3">
+        <div class="border rounded border-dark p-3 bg-light sticky-top" style="top: 20px;">
+            <h5 class="border-bottom pb-2 mb-3">Suma de Incidencias</h5>
+
+            <div class="mb-3">
+                <label class="form-label">Total agregado:</label>
+                <div id="planitem-total-incidencia" class="bg-white border rounded p-2 text-center fw-bold">0.000%</div>
             </div>
-            <div class="col pb-1">
-                {{formset.empty_form.planitem_nombre.as_field_group}}
-            </div>
-            <div class="col-2 pb-1">
-                {{formset.empty_form.planitem_incidencia_pct.as_field_group}}
+
+            <div class="mb-3">
+                <label class="form-label">Faltante para 100%:</label>
+                <div id="planitem-faltante-incidencia" class="bg-white border rounded p-2 text-center fw-bold">100.000%</div>
             </div>
         </div>
     </div>
 </div>
-</fieldset>
+
+<script>
+function calculatePlanitemIncidenciaTotal() {
+    const container = document.getElementById('plandetrabajositem-form');
+    if (!container) return;
+
+    const totalDiv = document.getElementById('planitem-total-incidencia');
+    const faltanteDiv = document.getElementById('planitem-faltante-incidencia');
+    if (!totalDiv || !faltanteDiv) return;
+
+    let total = 0;
+    container.querySelectorAll('input[name$="-planitem_incidencia_pct"]').forEach(function(input) {
+        const prefixMatch = input.name.match(/^(.+)-planitem_incidencia_pct$/);
+        if (prefixMatch) {
+            const deleteInput = container.querySelector('input[name="' + prefixMatch[1] + '-DELETE"]');
+            if (deleteInput && deleteInput.checked) {
+                return;
+            }
+        }
+        total += parseFloat((input.value || '').replace(',', '.')) || 0;
+    });
+
+    const faltante = 100 - total;
+    totalDiv.textContent = total.toFixed(3) + '%';
+    faltanteDiv.textContent = faltante.toFixed(3) + '%';
+
+    const isComplete = Math.abs(faltante) < 0.01;
+    totalDiv.classList.toggle('text-success', isComplete);
+    totalDiv.classList.toggle('text-danger', !isComplete);
+    faltanteDiv.classList.toggle('text-success', isComplete);
+    faltanteDiv.classList.toggle('text-danger', !isComplete);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    calculatePlanitemIncidenciaTotal();
+
+    const container = document.getElementById('plandetrabajositem-form');
+    if (container) {
+        container.addEventListener('input', function(e) {
+            if (e.target.name && e.target.name.endsWith('-planitem_incidencia_pct')) {
+                calculatePlanitemIncidenciaTotal();
+            }
+        });
+        container.addEventListener('change', function(e) {
+            if (e.target.name && e.target.name.endsWith('-DELETE')) {
+                calculatePlanitemIncidenciaTotal();
+            }
+        });
+    }
+});
+</script>

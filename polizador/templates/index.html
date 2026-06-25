@@ -3,7 +3,7 @@
 {% load static %}
 {% block content %}
 
-{% if not "gciaoperativa_usuarios" in groups or "secretariador_usuarios" in groups %}
+{% if "gciaoperativa_usuarios" not in groups and "dirgral_usuarios" not in groups %}
 <div class="flex-grow-1 bg-white d-flex flex-column justify-content-center">
         <div class="flex-grow-0 flex-shrink-0 container">
             <div class="row justify-content-md-center">
@@ -18,5 +18,7 @@
         </div>
     </div>
 {% endif %}
-{% include "inspectores-index.html" %}
+{% if "inspeccion" in groups %}
+    {% include "inspeccion-index.html" %}
+{% endif %}
 {% endblock content %}

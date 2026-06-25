@@ -6,7 +6,8 @@ from django.utils.decorators import method_decorator
 from django.template import loader, TemplateDoesNotExist
 from django.views import generic
 from django.urls import reverse_lazy
-from carga.models import Obra
+from django.db.models import OuterRef, Subquery
+from carga.models import Obra, Certificado
 from carga.forms.obraforms import *
 from django.utils.formats import date_format
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg
@@ -62,9 +63,32 @@ class UpdateObra(PermissionRequiredMixin, generic.UpdateView):
 class EstadoObra(PermissionRequiredMixin, generic.DetailView):
 	permission_required = "carga.view_obra"
 	queryset = Obra.objects.select_related("obra_empresa", "obra_programa", "obra_conjunto").prefetch_related("certificado_set__certificado_rubro_db")
-	
+
 	model = Obra
 	template_name = "obra/estado-obra.html"
+
+@method_decorator(login_required, name="dispatch")
+class PlanesAnterioresObra(PermissionRequiredMixin, generic.DetailView):
+	permission_required = "carga.view_plandetrabajos"
+
+	model = Obra
+	template_name = "obra/planes-anteriores.html"
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		vigente = self.object.plan_vigente()
+		planes = self.object.plandetrabajos_set.prefetch_related("rubros__items", "rubros__fojas__foja_inspector")
+		if vigente:
+			planes = planes.exclude(pk=vigente.pk)
+		context["planes_anteriores"] = planes.order_by("-trabajos_fecha", "-pk")
+		return context
+
+def _con_acumulado_anotado(queryset):
+	"""Anota el % acumulado del último certificado de cada obra en una sola query (evita N+1)."""
+	ultimo_acumulado = Certificado.objects.filter(
+		certificado_obra=OuterRef("pk")
+	).order_by("-certificado_fecha").values("certificado_acum_pct")[:1]
+	return queryset.annotate(obra_acum_pct_anotado=Subquery(ultimo_acumulado))
 
 @login_required
 @permission_required("carga.view_obra", raise_exception=True)
@@ -101,16 +125,12 @@ class ListaObrasView(AjaxDatatableView):
 		{'name': 'edit', 'title': 'Acciones', 'placeholder': True, 'searchable': False, 'orderable': False},
 	]
 	
+	def get_initial_queryset(self, request=None):
+		return _con_acumulado_anotado(super().get_initial_queryset(request))
+
 	def customize_row(self, row, obj):
-		if obj.certificado_set:
-				if obj.certificado_set.last():
-					acumulado = str(obj.certificado_set.latest("certificado_fecha").certificado_acum_pct)
-				else:
-					acumulado = "0.00"
-		if obj is not None:
-			row['obra_acumulado'] = acumulado+"%"
-		else:
-			row['obra_acumulado'] = ''
+		acumulado = obj.obra_acum_pct_anotado
+		row['obra_acumulado'] = (str(acumulado) if acumulado is not None else "0.00") + "%"
 
 		id = str(obj.id)
 		editarlink = f"<a href='/obra/crear/obra/{id}'>{editlinkimg}</a>"
@@ -240,22 +260,19 @@ class ListaObrasExtendidaView(AjaxDatatableView):
 		{'name': 'edit', 'title': '', 'placeholder': True, 'searchable': False, 'orderable': False},
 	]
 
+	def get_initial_queryset(self, request=None):
+		qs = _con_acumulado_anotado(super().get_initial_queryset(request))
+		return qs.prefetch_related("obra_inspector")
+
 	def customize_row(self, row, obj):
 		"""
 		Obtiene último % Acumulado en la Columna "obra_acumulado".
 		"""
-		if obj.certificado_set:
-				if obj.certificado_set.last():
-					acumulado = str(obj.certificado_set.last().certificado_acum_pct)
-				else:
-					acumulado = "0.00"
-		if obj is not None:
-			row['obra_acumulado'] = acumulado+"%"
-		else:
-			row['obra_acumulado'] = ''
-		
-		row["obra_inspector"] = ", ".join(str(agente) for agente in obj.obra_inspector.all() if obj.obra_inspector.all())
-		
+		acumulado = obj.obra_acum_pct_anotado
+		row['obra_acumulado'] = (str(acumulado) if acumulado is not None else "0.00") + "%"
+
+		row["obra_inspector"] = ", ".join(str(agente) for agente in obj.obra_inspector.all())
+
 		id = str(obj.id)
 		if self.request.user.has_perm("carga.change_obra"):
 			row["edit"] = '<a href="/obra/crear/obra/{id}"><img src="/static/edit.png" title="Editar" width="30" height="30" /></a> <a href="/obra/crear/obra/estado/{id}"><img src="/static/search.svg" title="Detalles" width="30" heigth="30" /></a>'.format(id=id)

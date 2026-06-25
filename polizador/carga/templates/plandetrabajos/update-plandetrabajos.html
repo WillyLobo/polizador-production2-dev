@@ -9,31 +9,62 @@
   <div class="row flex-xl-nowrap">
     <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
       {% include "partials/administrative-sidebar.html" %}
-      {% include "partials/floating-inlines-menu.html" %}
+      {% include "partials/floating-generic-menu.html" %}
     </div>
     <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
       {% include "partials/plandetrabajos-form-partial.html" %}
-      {% include "partials/plandetrabajositem-form-partial.html" %}
+
+      <fieldset class="border rounded border-dark p-1">
+        <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Rubros</legend>
+        <div class="table-responsive">
+          <table class="table table-bordered table-sm">
+            <thead class="table-dark">
+              <tr>
+                <th>Orden</th>
+                <th>Rubro</th>
+                <th>Presupuesto</th>
+                <th>Items</th>
+                <th>Editar</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for rubro in object.rubros.all %}
+                <tr>
+                  <td>{{ rubro.rubro_orden }}</td>
+                  <td>{{ rubro.rubro_nombre }}</td>
+                  <td>{{ rubro.rubro_presupuesto }}</td>
+                  <td>
+                    <table class="table table-sm table-bordered mb-0">
+                      <thead>
+                        <tr>
+                          <th>Orden</th>
+                          <th>Nombre</th>
+                          <th>Incidencia</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for item in rubro.items.all %}
+                        <tr>
+                          <td>{{ item.planitem_orden }}</td>
+                          <td>{{ item.planitem_nombre }}</td>
+                          <td>{{ item.planitem_incidencia_pct }}%</td>
+                        </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </td>
+                  <td><a href="{% url "carga:update-plandetrabajosrubro" rubro.id %}">{{editimglink|safe}}</a></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <a href="{% url "carga:crear-plandetrabajosrubro" %}?plan={{ object.id }}" class="btn btn-success btn-sm">Agregar Rubro</a>
+      </fieldset>
     </main>
     <div class="d-none d-xl-block col-xl-2 bd-toc">
     </div>
   </div>
 </form>
 {{ form.media.js }}
-
-<script>
-$('#addForm').click(function() {
-$(".customSelect2").select2("destroy");
-	var form_idx = $('#id_{{ formset.prefix }}-TOTAL_FORMS').val();
-$('#plandetrabajositem-form').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
-$('#id_{{ formset.prefix }}-TOTAL_FORMS').val(parseInt(form_idx) + 1);
-$(".customSelect2").select2({
-    theme: 'bootstrap-5',
-  });
-$('html, body').animate({
-            scrollTop: $('html, body').height()
-        }, 'slow');
-$(".customSelect2").djangoSelect2()
-});
-</script>
 {% endblock %}

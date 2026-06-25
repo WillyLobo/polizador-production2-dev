@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+{% block title %}<title>{{title}}</title>{% endblock title %}
+
+{{ form.media.css }}
+<form id="plandetrabajosrubro-form" action="{% url "carga:crear-plandetrabajosrubro"%}?plan={{ request.GET.plan }}" method="POST">
+  {% csrf_token %}
+
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
+      {% include "partials/administrative-sidebar.html" %}
+      {% include "partials/floating-inlines-menu.html" %}
+    </div>
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
+      {% include "partials/plandetrabajosrubro-form-partial.html" %}
+      {% include "partials/plandetrabajositem-form-partial.html" %}
+    </main>
+    <div class="d-none d-xl-block col-xl-2 bd-toc">
+    </div>
+  </div>
+</form>
+{{ form.media.js }}
+
+<script>
+$('#addForm').click(function() {
+$(".customSelect2").select2("destroy");
+	var form_idx = $('#id_{{ formset.prefix }}-TOTAL_FORMS').val();
+$('#plandetrabajositem-form').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
+$('#id_{{ formset.prefix }}-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+$(".customSelect2").select2({
+    theme: 'bootstrap-5',
+  });
+$('html, body').animate({
+            scrollTop: $('html, body').height()
+        }, 'slow');
+$(".customSelect2").djangoSelect2()
+calculatePlanitemIncidenciaTotal();
+});
+</script>
+{% endblock %}

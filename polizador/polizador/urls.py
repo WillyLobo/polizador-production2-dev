@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import TemplateView
+from carga.views.inspeccionviews import InspeccionHomeView
 from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
@@ -16,7 +17,7 @@ urlpatterns = [
     path("v1/api/", include(("api.urls", "api"), namespace="api-1.0")),
     path('admin/', admin.site.urls),
     path("select2/", include("django_select2.urls")),
-    path("home/", login_required(TemplateView.as_view(template_name='index.html')), name="home")
+    path("home/", InspeccionHomeView.as_view(), name="home")
 ]
 debugpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),

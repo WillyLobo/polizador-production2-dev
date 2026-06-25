@@ -1,0 +1,114 @@
+{% load static %}
+<div class="min-vh-100 min-vw-100">
+    <div class="row">
+        <div class="col-6">
+            <table width="auto" class="table table-striped table-bordered align-middle" id="tablaReporte">
+                <thead>
+                    <tr>
+                        <th scope="col">Obra</th>
+                        <th scope="col">Localidad</th>
+                        <th scope="col">Contratista</th>
+                        <th scope="col">Programa</th>
+                        <th scope="col">Convenio</th>
+                        <th scope="col">Expediente</th>
+                        <th scope="col">Links</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for obra in obras %}
+                    <tr>
+                        {% load humanize %}
+                        <td class="border">{{obra.obra_nombre}}</td>
+                        <td class="border">{{obra.lista_localidades}}</td>
+                        <td class="border">{{obra.obra_empresa.empresa_nombre}}</td>
+                        <td class="border">{{obra.obra_programa}}</td>
+                        <td class="border">{{obra.obra_convenio|default_if_none:"-"}}</td>
+                        <td class="border">{{obra.obra_expediente}}</td>
+                        <td class="d-print-none">
+                            <a href="{% url "carga:estado-obra" obra.id %}">{{detalleimglink|safe}}</a>
+                            {% with vigente=obra.plan_vigente %}
+                                {% if vigente %}
+                                    {% for rubro in vigente.rubros.all %}
+                                        <br><a href="{% url "carga:crear-fojademedicion" %}?rubro={{rubro.id}}">Nueva Foja - {{rubro.rubro_nombre}}</a>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endwith %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="col-6">
+            <table width="auto" class="table table-striped table-bordered align-middle" id="tablaFojas">
+                <thead>
+                    <tr>
+                        <th scope="col">Obra</th>
+                        <th scope="col">Rubro</th>
+                        <th scope="col">Foja N°</th>
+                        <th scope="col">Período</th>
+                        <th scope="col">Avance del Mes</th>
+                        <th scope="col">Acumulado</th>
+                        <th scope="col">Link</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for foja in fojas %}
+                    <tr>
+                        <td class="border">{{foja.foja_rubro.rubro_plan.trabajos_obra.obra_nombre}}</td>
+                        <td class="border">{{foja.foja_rubro.rubro_nombre}}</td>
+                        <td class="border">{{foja.foja_numero}}</td>
+                        <td class="border">{{foja.foja_periodo}}</td>
+                        <td class="border">{{foja.foja_pct_avance_mes|floatformat:3}}%</td>
+                        <td class="border">{{foja.foja_pct_acumulado|floatformat:3}}%</td>
+                        <td class="d-print-none"><a href="{% url "carga:update-fojademedicion" foja.id %}">{{detalleimglink|safe}}</a></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                        <th scope="col"></th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    new DataTable('#tablaReporte', {
+    info: false,
+    paging: false,
+    order: [[ 1, 'desc' ]],
+    language: {
+            "emptyTable": "Ningún dato disponible en esta tabla",
+            "search": "Buscar:",
+    },
+});
+new DataTable('#tablaFojas', {
+    info: false,
+    paging: false,
+    order: [[ 3, 'desc' ]],
+    language: {
+            "emptyTable": "Ningún dato disponible en esta tabla",
+            "search": "Buscar:",
+    },
+});
+</script>
