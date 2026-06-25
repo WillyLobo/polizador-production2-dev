@@ -147,6 +147,10 @@ class FojaDeMedicionItemResource(resources.ModelResource):
 	class Meta:
 		model = models.FojaDeMedicionItem
 
+class FojaDeMedicionFotoResource(resources.ModelResource):
+	class Meta:
+		model = models.FojaDeMedicionFoto
+
 class ContratoResource(resources.ModelResource):
 	class Meta:
 		model = models.Contrato

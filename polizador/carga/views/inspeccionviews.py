@@ -14,8 +14,9 @@ class InspeccionHomeView(generic.ListView):
     context_object_name = "obras"
 
     def get_queryset(self):
-        if self.request.user.groups.filter(name="inspeccion").exists():
-            return Obra.objects.filter(obra_inspector=self.request.user.agente)
+        agente = getattr(self.request.user, "agente", None)
+        if agente is not None and self.request.user.groups.filter(name="inspeccion").exists():
+            return Obra.objects.filter(obra_inspector=agente)
         else:
             return Obra.objects.none()
 

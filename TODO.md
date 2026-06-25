@@ -14,7 +14,7 @@
 [+] Redireccionar usuarios con permisos fuera de la vista sin permisos
 [+] Modificar modelo Agente para vincularlo a los agentes de la app secretariador
 [+] VerReporteCertificadoPorMes deberia dar opción de ver los certificados por fecha de carga o fecha de certificado
-[ ] Reparar los templates para ajustar viewport size
+[+] Reparar los templates para ajustar viewport size
 [ ] Rehacer la integracion para contratos y resoluciones digitales de obras
 [ ] Crear API view que devuelva los meses/años disponibles en los certificados para su utilizacion en select2
 [?] Hacer un favicon mas decente
@@ -25,7 +25,8 @@
 [+] Crear funciones que generen acumulado total en las fojas de medicion
 [+] Crear vista que devuelva las obras donde el usuario es inspector
 [+] Verificar que una obra pueda tener varios planes de trabajo... pero solo uno activo
-[ ] Imagenes para fojas de medicion
+[+] Imagenes multiples para fojas de medicion
+[+] Campo archivo para planes de trabajo dititalizados
 
 # Models
 [+] Create model Incorporacion.

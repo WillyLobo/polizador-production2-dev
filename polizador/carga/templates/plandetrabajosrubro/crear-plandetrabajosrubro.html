@@ -3,7 +3,7 @@
 {% block title %}<title>{{title}}</title>{% endblock title %}
 
 {{ form.media.css }}
-<form id="plandetrabajosrubro-form" action="{% url "carga:crear-plandetrabajosrubro"%}?plan={{ request.GET.plan }}" method="POST">
+<form id="plandetrabajosrubro-form" action="{% url "carga:crear-plandetrabajosrubro"%}?plan={{ request.GET.plan }}" method="POST" enctype="multipart/form-data">
   {% csrf_token %}
 
   <div class="row flex-xl-nowrap">

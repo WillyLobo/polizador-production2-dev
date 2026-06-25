@@ -3,7 +3,7 @@
 {% block title %}<title>{{title}}</title>{% endblock title %}
 
 {{ form.media.css }}
-<form id="fojademedicion-form" action="{% url "carga:crear-fojademedicion"%}?rubro={{ request.GET.rubro }}" method="POST">
+<form id="fojademedicion-form" action="{% url "carga:crear-fojademedicion"%}?rubro={{ request.GET.rubro }}" method="POST" enctype="multipart/form-data">
   {% csrf_token %}
 
   <div class="row flex-xl-nowrap">
@@ -13,6 +13,7 @@
     </div>
     <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
       {% include "partials/fojademedicion-form-partial.html" %}
+      {% include "partials/fojademedicionfoto-form-partial.html" %}
       {% include "partials/fojademedicionitem-form-partial.html" %}
     </main>
     <div class="d-none d-xl-block col-xl-2 bd-toc">

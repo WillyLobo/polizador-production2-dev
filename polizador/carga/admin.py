@@ -99,10 +99,14 @@ class PlanDeTrabajosRubroAdmin(ImportExportMixin, SimpleHistoryAdmin):
 class FojaDeMedicionItemInline(admin.TabularInline):
 	model = models.FojaDeMedicionItem
 
+class FojaDeMedicionFotoInline(admin.TabularInline):
+	model = models.FojaDeMedicionFoto
+
 class FojaDeMedicionAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	autocomplete_fields = ["foja_rubro", "foja_inspector"]
 	inlines = [
 		FojaDeMedicionItemInline,
+		FojaDeMedicionFotoInline,
 	]
 	resource_class = resources.FojaDeMedicionResource
 

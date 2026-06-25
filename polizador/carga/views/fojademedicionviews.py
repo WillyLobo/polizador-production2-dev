@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.http import HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from django.urls import reverse, reverse_lazy
 from django.views import generic
@@ -12,6 +13,7 @@ from secretariador.forms.mixins import FormsetViewMixin
 class CrearFojaDeMedicion(PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
 	permission_required = "carga.add_fojademedicion"
 	formset_name = FojaDeMedicionItemFormset
+	foto_formset_name = FojaDeMedicionFotoFormset
 	view_type = "create"
 
 	model = FojaDeMedicion
@@ -66,13 +68,32 @@ class CrearFojaDeMedicion(PermissionRequiredMixin, FormsetViewMixin, generic.Cre
 		for sub_form, item in zip(formset.forms, items):
 			sub_form.instance.fojaitem_planitem = item
 
-		return self.render_to_response(self.get_context_data(form=form, formset=formset))
+		foto_formset = self.foto_formset_name(instance=self.object)
+
+		return self.render_to_response(self.get_context_data(form=form, formset=formset, foto_formset=foto_formset))
 
 	def post(self, request, *args, **kwargs):
 		rubro_id = self.request.POST.get("foja_rubro")
 		if rubro_id:
 			self._set_success_url(rubro_id)
-		return super().post(request, *args, **kwargs)
+
+		form_class = self.get_form_class()
+		form = self.get_form(form_class)
+		formset = self.formset_name(self.request.POST, self.request.FILES, instance=self.object)
+		foto_formset = self.foto_formset_name(self.request.POST, self.request.FILES, instance=self.object)
+		self.prepare_formset(formset)
+
+		form_is_valid = form.is_valid()
+		formset_is_valid = formset.is_valid()
+		foto_formset_is_valid = foto_formset.is_valid()
+		if form_is_valid and formset_is_valid and foto_formset_is_valid:
+			self.object = form.save()
+			formset.instance = self.object
+			formset.save()
+			foto_formset.instance = self.object
+			foto_formset.save()
+			return HttpResponseRedirect(self.get_success_url())
+		return self.render_to_response(self.get_context_data(form=form, formset=formset, foto_formset=foto_formset))
 
 	def prepare_formset(self, formset):
 		"""Repuebla el %% Anterior de cada fila al reconstruir el formset bindeado en el POST."""
@@ -101,6 +122,7 @@ class CrearFojaDeMedicion(PermissionRequiredMixin, FormsetViewMixin, generic.Cre
 class UpdateFojaDeMedicion(PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView):
 	permission_required = "carga.change_fojademedicion"
 	formset_name = FojaDeMedicionItemFormset
+	foto_formset_name = FojaDeMedicionFotoFormset
 	view_type = "update"
 
 	model = FojaDeMedicion
@@ -114,12 +136,36 @@ class UpdateFojaDeMedicion(PermissionRequiredMixin, FormsetViewMixin, generic.Up
 	def get(self, request, *args, **kwargs):
 		self.object = self.get_object()
 		self._set_success_url()
-		return super().get(request, *args, **kwargs)
+
+		form_class = self.get_form_class()
+		form = self.get_form(form_class)
+		formset = self.formset_name(instance=self.object)
+		self.prepare_formset(formset)
+		foto_formset = self.foto_formset_name(instance=self.object)
+
+		return self.render_to_response(self.get_context_data(form=form, formset=formset, foto_formset=foto_formset))
 
 	def post(self, request, *args, **kwargs):
 		self.object = self.get_object()
 		self._set_success_url()
-		return super().post(request, *args, **kwargs)
+
+		form_class = self.get_form_class()
+		form = self.get_form(form_class)
+		formset = self.formset_name(self.request.POST, self.request.FILES, instance=self.object)
+		foto_formset = self.foto_formset_name(self.request.POST, self.request.FILES, instance=self.object)
+		self.prepare_formset(formset)
+
+		form_is_valid = form.is_valid()
+		formset_is_valid = formset.is_valid()
+		foto_formset_is_valid = foto_formset.is_valid()
+		if form_is_valid and formset_is_valid and foto_formset_is_valid:
+			self.object = form.save()
+			formset.instance = self.object
+			formset.save()
+			foto_formset.instance = self.object
+			foto_formset.save()
+			return HttpResponseRedirect(self.get_success_url())
+		return self.render_to_response(self.get_context_data(form=form, formset=formset, foto_formset=foto_formset))
 
 	def prepare_formset(self, formset):
 		if not self.object:

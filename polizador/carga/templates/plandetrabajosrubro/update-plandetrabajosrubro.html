@@ -3,7 +3,7 @@
 {% block title %}<title>{{object.id}}-{{object.rubro_nombre}}</title>{% endblock title %}
 
 {{ form.media.css }}
-<form id="plandetrabajosrubro-form" action="{% url "carga:update-plandetrabajosrubro" object.id%}" method="POST">
+<form id="plandetrabajosrubro-form" action="{% url "carga:update-plandetrabajosrubro" object.id%}" method="POST" enctype="multipart/form-data">
   {% csrf_token %}
 
   <div class="row flex-xl-nowrap">

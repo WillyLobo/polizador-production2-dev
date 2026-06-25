@@ -1,0 +1,49 @@
+{{foto_formset.management_form}}
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Fotos</legend>
+    <div id="fojademedicionfoto-form" class="fojademedicionfoto-form">
+        {% for form in foto_formset %}
+            <div class="row m-1 border border-dark rounded align-items-center" id="fojademedicionfoto-form-{{form.prefix}}">
+                {% for hidden in form.hidden_fields %}
+                    {{ hidden }}
+                {% endfor %}
+                <div class="col pb-1">
+                    {{form.fotofoja_archivo.as_field_group}}
+                </div>
+                {% if form.DELETE %}
+                <div class="col-1 pb-1">
+                    {{form.DELETE.as_field_group}}
+                </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+        {% for dict in foto_formset.errors %}
+            {% for error in dict.values %}
+                {{ error }}
+            {% endfor %}
+        {% endfor %}
+        {{ foto_formset.non_form_errors }}
+    </div>
+    <div id="empty_foto_form" style="display:none">
+        <div class="row m-1 border border-dark rounded align-items-center" id="fojademedicionfoto-form-__prefix__">
+            <div class="col pb-1">
+                {{foto_formset.empty_form.fotofoja_archivo.as_field_group}}
+            </div>
+        </div>
+    </div>
+    <button type="button" id="addFotoForm" class="btn btn-secondary btn-sm mt-2">Agregar Foto</button>
+</fieldset>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const addBtn = document.getElementById('addFotoForm');
+    if (!addBtn) return;
+    addBtn.addEventListener('click', function() {
+        const totalForms = document.getElementById('id_{{ foto_formset.prefix }}-TOTAL_FORMS');
+        const formIdx = parseInt(totalForms.value);
+        const newFormHtml = document.getElementById('empty_foto_form').innerHTML.replace(/__prefix__/g, formIdx);
+        document.getElementById('fojademedicionfoto-form').insertAdjacentHTML('beforeend', newFormHtml);
+        totalForms.value = formIdx + 1;
+    });
+});
+</script>

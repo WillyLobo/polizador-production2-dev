@@ -143,3 +143,20 @@ def build_foja_item_formset_class(extra):
 		extra=extra,
 		can_delete=False,
 	)
+
+class FojaDeMedicionFotoForm(forms.ModelForm):
+	class Meta:
+		model = models.FojaDeMedicionFoto
+		fields = ("fotofoja_archivo",)
+		widgets = {
+			"fotofoja_archivo": forms.ClearableFileInput(attrs={"class": "form-control"}),
+		}
+
+FojaDeMedicionFotoFormset = inlineformset_factory(
+	parent_model=models.FojaDeMedicion,
+	model=models.FojaDeMedicionFoto,
+	form=FojaDeMedicionFotoForm,
+	fk_name="fotofoja_foja",
+	extra=1,
+	can_delete=True,
+)

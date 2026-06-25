@@ -13,6 +13,7 @@ class PlanDeTrabajosRubroForm(forms.ModelForm):
 			"rubro_orden",
 			"rubro_presupuesto",
 			"rubro_anterior",
+			"rubro_documento_digital",
 		)
 		widgets = {
 			"rubro_plan": planwidget(attrs={"class": "form-control customSelect2"}),
@@ -20,6 +21,7 @@ class PlanDeTrabajosRubroForm(forms.ModelForm):
 			"rubro_orden": forms.NumberInput(attrs={"class": "form-control"}),
 			"rubro_presupuesto": forms.NumberInput(attrs={"class": "form-control"}),
 			"rubro_anterior": rubrowidget(attrs={"class": "form-control customSelect2"}),
+			"rubro_documento_digital": forms.ClearableFileInput(attrs={"class": "form-control"}),
 		}
 
 class PlanDeTrabajosItemFormset(forms.models.BaseInlineFormSet):

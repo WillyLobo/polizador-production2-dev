@@ -47,6 +47,20 @@ def generate_name_resoluciones(instance, filename):
     name = os.path.join(directorio, filename)
     return name
 
+def generate_name_rubro_documento(instance, filename):
+    directorio = "documentos_rubro_plan/"
+    extension = "pdf"
+    filename = f"{instance.rubro_uuid}.{extension}"
+    name = os.path.join(directorio, filename)
+    return name
+
+def generate_name_foja_foto(instance, filename):
+    directorio = "fotos_foja_medicion/"
+    extension = os.path.splitext(filename)[1].lstrip(".")
+    filename = f"{instance.fotofoja_uuid}.{extension}"
+    name = os.path.join(directorio, filename)
+    return name
+
 class Receptor(models.Model):
     class Meta:
         verbose_name = "Receptor"
@@ -564,6 +578,7 @@ class PlanDeTrabajosRubro(models.Model):
     rubro_orden = models.PositiveIntegerField("Orden", default=0)
     rubro_presupuesto = models.DecimalField("Presupuesto", max_digits=15, decimal_places=2, default=0, validators=[MinValueValidator(0)])
     rubro_anterior = models.ForeignKey("self", verbose_name="Rubro Anterior (Plan Previo)", on_delete=models.SET_NULL, null=True, blank=True, related_name="rubro_siguiente")
+    rubro_documento_digital = models.FileField(verbose_name="Documento Digital", upload_to=generate_name_rubro_documento, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], max_length=500, null=True, blank=True)
     rubro_history = HistoricalRecords()
 
     def rubro_cadena_ids(self):
@@ -712,6 +727,20 @@ class FojaDeMedicionItem(models.Model):
             self.fojaitem_pct_acumulado = self.fojaitem_pct_avance_mes
 
         super(FojaDeMedicionItem, self).save(*args, **kwargs)
+
+class FojaDeMedicionFoto(models.Model):
+    class Meta:
+        verbose_name = "Foto de Foja de Medición"
+        verbose_name_plural = "Fotos de Foja de Medición"
+
+    fotofoja_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    fotofoja_foja = models.ForeignKey("FojaDeMedicion", verbose_name="Foja de Medición", on_delete=models.CASCADE, related_name="fotos")
+    fotofoja_archivo = models.FileField(verbose_name="Foto", upload_to=generate_name_foja_foto, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("image/jpeg", "image/png"))], max_length=500)
+    fotofoja_history = HistoricalRecords()
+
+    def __str__(self):
+        return f"Foto - {self.fotofoja_foja}"
+
 class Contrato(models.Model):
     class Meta:
         verbose_name_plural = "Contratos"
