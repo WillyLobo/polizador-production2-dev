@@ -26,10 +26,13 @@ class CrearPlanDeTrabajos(PermissionRequiredMixin, generic.CreateView):
 		form = self.get_form(form_class)
 
 		origen_id = self._origen_id()
+		obra_id = None
 		if origen_id:
 			obra_id = PlanDeTrabajos.objects.filter(pk=origen_id).values_list("trabajos_obra_id", flat=True).first()
-			if obra_id:
-				form.fields["trabajos_obra"].initial = obra_id
+		if not obra_id:
+			obra_id = self.request.GET.get("obra")
+		if obra_id:
+			form.fields["trabajos_obra"].initial = obra_id
 
 		return self.render_to_response(self.get_context_data(form=form))
 

@@ -163,7 +163,15 @@
         {% for rubro in vigente.rubros.all %}
             <div class="col">
                 <div class="row g-0">
-                    <div class="col border"><b>Rubro:</b></div><div class="col border">{{rubro.rubro_nombre}}</div>
+                    <div class="col border"><b>Rubro:</b></div><div class="col border">
+                    {% if rubro.rubro_documento_digital %}
+                        <a href="{{rubro.rubro_documento_digital.url}}" target="_blank">
+                        {{rubro.rubro_nombre}}
+                        </a>
+                    {% else %}
+                        {{rubro.rubro_nombre}}
+                    {% endif %}
+                    </div>
                     <div class="col border"><b>Presupuesto:</b></div><div class="col border">{{rubro.rubro_presupuesto}}</div>
                     <div class="col border">
                         <table class="table table-sm table-bordered mb-0">
@@ -212,7 +220,7 @@
                                 <td>{% for inspector in foja.foja_inspector.all %}{{inspector}}{% if not forloop.last %}, {% endif %}{% empty %}-{% endfor %}</td>
                                 <td><a href="{% url "carga:update-fojademedicion" foja.id %}">Editar</a></td>
                                 {% if perms.carga.add_certificado %}
-                                    <td><a href="{% url "carga:crear-certificado" %}?foja={{foja.id}}">Generar Certificado</a></td>
+                                    <td><a href="{% url "carga:crear-certificado" %}?foja={{foja.id|safe}}">Generar Certificado</a></td>
                                 {% endif %}
                             </tr>
                             {% endfor %}
@@ -223,7 +231,7 @@
             {% if perms.carga.add_fojademedicion %}
                 <div class="col">
                     <div class="row g-0">
-                        <div class="col border"><a href="{% url "carga:crear-fojademedicion" %}?rubro={{rubro.id}}">Nueva Foja de Medición</a></div>
+                        <div class="col border"><a href="{% url "carga:crear-fojademedicion" %}?rubro={{rubro.id|safe}}">Nueva Foja de Medición</a></div>
                     </div>
                 </div>
             {% endif %}
@@ -231,7 +239,7 @@
         {% if perms.carga.add_plandetrabajosrubro %}
             <div class="col">
                 <div class="row g-0">
-                    <div class="col border"><a href="{% url "carga:crear-plandetrabajosrubro" %}?plan={{vigente.id}}">Nuevo Rubro</a></div>
+                    <div class="col border"><a href="{% url "carga:crear-plandetrabajosrubro" %}?plan={{vigente.id|safe}}">Nuevo Rubro</a></div>
                 </div>
             </div>
         {% endif %}
@@ -240,9 +248,9 @@
         <div class="col">
             <div class="row g-0">
                 {% if vigente %}
-                    <div class="col border"><a href="{% url "carga:crear-plandetrabajos" %}?clonar={{ vigente.id }}">Reprogramar Plan de Trabajos</a></div>
+                    <div class="col border"><a href="{% url "carga:crear-plandetrabajos" %}?clonar={{ vigente.id|safe }}">Reprogramar Plan de Trabajos</a></div>
                 {% else %}
-                    <div class="col border"><a href="{% url "carga:crear-plandetrabajos" %}">Nuevo Plan de Trabajos</a></div>
+                    <div class="col border"><a href="{% url "carga:crear-plandetrabajos" %}?obra={{ object.id|safe }}">Nuevo Plan de Trabajos</a></div> 
                 {% endif %}
             </div>
         </div>
@@ -268,12 +276,15 @@
             </div>   
             {%for documento in object.obra_contratos.all%}
                 <div class="row g-0">
-                    <div class="col border"><b>Rubro:</b></div><div class="col border">{{documento.contratodigital_tipo.contratorubro_tipo}}</div>
+                    <div class="col border"><b>Rubro:</b></div><div class="col border">
+                        {% if documento.contratodigital_archivo %}
+                        <a href="{{documento.contratodigital_archivo.url}}" target="_blank">{{documento.contratodigital_tipo.contratorubro_tipo}}</a>
+                        {% else %}
+                        {{documento.contratodigital_tipo.contratorubro_tipo}}
+                        {% endif %}
+                    </div>
                     <div class="col border"><b>Descripción:</b></div><div class="col border">{{documento.contratodigital_descripcion}}</div>
                     <div class="col border"><b>Archivo:</b></div><div class="col border">
-                        {% if documento.contratodigital_archivo %}
-                            <a href="{{documento.contratodigital_archivo.url}}">{{pdfimglink|safe}}</a>
-                        {% endif%}
                         {% if perms.carga.change_certificado %}
                             <a href="{% url "carga:update-contrato-digital" documento.id %}">{{editimglink|safe}}</a>
                         {% endif %}
