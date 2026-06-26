@@ -4,7 +4,7 @@ from wsgiref.validate import validator
 from django.db import models
 from django.urls import reverse
 from simple_history.models import HistoricalRecords
-from django.db.models import Sum, F, FloatField
+from django.db.models import Sum, F, FloatField, Max
 from django.core.validators import MinValueValidator, MaxValueValidator
 from uuid_utils import compat
 import os
@@ -382,16 +382,65 @@ class Obra(models.Model):
         """Retorna el Plan de Trabajos más reciente (vigente) de la obra."""
         return self.plandetrabajos_set.order_by("-trabajos_fecha", "-pk").first()
 
+    def contrato_vigente(self):
+        """Retorna el Contrato más reciente (vigente) de la obra."""
+        return self.contrato_set.order_by("-contrato_fecha", "-pk").first()
+
+    def documentos_contrato(self):
+        """Documentos digitales (PDF) de los Contratos de la obra."""
+        return ContratosDigitales.objects.filter(contratodigital_contrato__contrato_obra=self)
+
+    def documentos_resolucion(self):
+        """Resoluciones digitales (PDF) de los Contratos de la obra."""
+        return ResolucionesDigitales.objects.filter(resoluciondigital_contrato__contrato_obra=self)
+
+    def recalcular_montos_contrato(self):
+        """Recalcula obra_contrato_{nacion,provincia,terceros}_{pesos,uvi,uvi_fecha} como
+        la suma/fecha más reciente de los ContratoMonto de todos los Contratos de la obra,
+        agrupados por el código de financiamiento (N/P/T)."""
+        montos = ContratoMonto.objects.filter(contratomonto_contrato__contrato_obra=self)
+        valores = {}
+        for codigo, prefijo in (("N", "nacion"), ("P", "provincia"), ("T", "terceros")):
+            agregado = montos.filter(
+                contratomonto_financiamiento__certificadofinanciamiento_nombre_corto=codigo
+            ).aggregate(
+                pesos=Sum("contratomonto_pesos"),
+                uvi=Sum("contratomonto_uvi"),
+                uvi_fecha=Max("contratomonto_uvi_fecha"),
+            )
+            valores[f"obra_contrato_{prefijo}_pesos"] = agregado["pesos"] or 0
+            valores[f"obra_contrato_{prefijo}_uvi"] = agregado["uvi"] or 0
+            valores[f"obra_contrato_{prefijo}_uvi_fecha"] = agregado["uvi_fecha"]
+        Obra.objects.filter(pk=self.pk).update(**valores)
+        for campo, valor in valores.items():
+            setattr(self, campo, valor)
+
+    def _pesos_actualizado(self, monto_uvi, fecha):
+        """Convierte un monto en UVI a pesos usando la cotización vigente a la fecha
+        (o la cotización anterior más cercana si no hay un valor exacto para ese día)."""
+        if not monto_uvi or not fecha:
+            return None
+        tasa = Uvi.objects.filter(uvi_fecha__lte=fecha).order_by("-uvi_fecha").first()
+        return monto_uvi * tasa.uvi_valor if tasa else None
+
+    def obra_contrato_nacion_pesos_actualizado(self):
+        return self._pesos_actualizado(self.obra_contrato_nacion_uvi, datetime.today())
+
+    def obra_contrato_provincia_pesos_actualizado(self):
+        return self._pesos_actualizado(self.obra_contrato_provincia_uvi, datetime.today())
+
+    def obra_contrato_terceros_pesos_actualizado(self):
+        return self._pesos_actualizado(self.obra_contrato_terceros_uvi, datetime.today())
+
     def clean(self):
+        # Los _uvi_fecha quedan en None cuando no hay un ContratoMonto que los origine
+        # (DateField, a diferencia de los montos no tiene un "0" representable).
         self.obra_contrato_nacion_pesos = 0 if self.obra_contrato_nacion_pesos is None else self.obra_contrato_nacion_pesos
         self.obra_contrato_nacion_uvi = 0 if self.obra_contrato_nacion_uvi is None else self.obra_contrato_nacion_uvi
-        self.obra_contrato_nacion_uvi_fecha = 0 if self.obra_contrato_nacion_uvi_fecha is None else self.obra_contrato_nacion_uvi_fecha
         self.obra_contrato_provincia_pesos = 0 if self.obra_contrato_provincia_pesos is None else self.obra_contrato_provincia_pesos
         self.obra_contrato_provincia_uvi = 0 if self.obra_contrato_provincia_uvi is None else self.obra_contrato_provincia_uvi
-        self.obra_contrato_provincia_uvi_fecha = 0 if self.obra_contrato_provincia_uvi_fecha is None else self.obra_contrato_provincia_uvi_fecha
         self.obra_contrato_terceros_pesos = 0 if self.obra_contrato_terceros_pesos is None else self.obra_contrato_terceros_pesos
         self.obra_contrato_terceros_uvi = 0 if self.obra_contrato_terceros_uvi is None else self.obra_contrato_terceros_uvi
-        self.obra_contrato_terceros_uvi_fecha = 0 if self.obra_contrato_terceros_uvi_fecha is None else self.obra_contrato_terceros_uvi_fecha
     
     def __str__(self):
         return f"({self.obra_convenio if self.obra_convenio else ''}) {self.obra_nombre} - {self.obra_empresa}"
@@ -509,13 +558,13 @@ class Certificado(models.Model):
     certificado_history = HistoricalRecords(excluded_fields=['certificado_monto_cobrar', "certificado_monto_cobrar_uvi"])
     
     def clean(self):
-        self.certificado_rubro_anticipo = 0 if self.certificado_rubro_anticipo else self.certificado_rubro_anticipo
-        self.certificado_rubro_obra = 0 if self.certificado_rubro_obra else self.certificado_rubro_obra
-        self.certificado_rubro_devanticipo = 0 if self.certificado_rubro_devanticipo else self.certificado_rubro_devanticipo
-        self.certificado_monto_pesos = 0 if self.certificado_monto_pesos else self.certificado_monto_pesos
-        self.certificado_devolucion_monto = 0 if self.certificado_devolucion_monto else self.certificado_devolucion_monto
-        self.certificado_devolucion_monto_uvi = 0 if self.certificado_devolucion_monto_uvi else self.certificado_devolucion_monto_uvi
-        self.certificado_monto_uvi = 0 if self.certificado_monto_uvi else self.certificado_monto_uvi
+        self.certificado_rubro_anticipo = self.certificado_rubro_anticipo or 0
+        self.certificado_rubro_obra = self.certificado_rubro_obra or 0
+        self.certificado_rubro_devanticipo = self.certificado_rubro_devanticipo or 0
+        self.certificado_monto_pesos = self.certificado_monto_pesos or 0
+        self.certificado_devolucion_monto = self.certificado_devolucion_monto or 0
+        self.certificado_devolucion_monto_uvi = self.certificado_devolucion_monto_uvi or 0
+        self.certificado_monto_uvi = self.certificado_monto_uvi or 0
 
     def __str__(self):
         return f"{self.certificado_obra} - {self.certificado_expediente} - Rubro: {self.get_certificado_rubro_display()} - Financiamiento: {self.get_certificado_financiamiento_display()} - Ant. N°{self.certificado_rubro_anticipo} - Ob. N°{self.certificado_rubro_obra} - Dev. N°{self.certificado_rubro_devanticipo}"
@@ -793,7 +842,7 @@ class ContratosDigitales(models.Model):
         ordering = ["id"]
     
     contratodigital_uuid = models.UUIDField(default=compat.uuid7, editable=False)
-    contratodigital_obra = models.ManyToManyField("Obra", related_name="obra_contratos", verbose_name="Obras", blank=True)
+    contratodigital_contrato = models.ForeignKey("Contrato", verbose_name="Contrato", on_delete=models.CASCADE, related_name="documentos_contrato")
     contratodigital_nombre_archivo = models.CharField("Nombre del Archivo", max_length=100, blank=True, null=True)
     contratodigital_descripcion = models.TextField("Descripción")
     contratodigital_tipo = models.ForeignKey("ContratoRubro", verbose_name="Rubro Contrato", on_delete=models.CASCADE)
@@ -806,9 +855,9 @@ class ResolucionesDigitales(models.Model):
         ordering = ["resoluciondigital_numero"]
     
     resoluciondigital_uuid = models.UUIDField(default=compat.uuid7, editable=False)
-    resoluciondigital_obra = models.ManyToManyField("Obra", related_name="obra_resoluciones", verbose_name="Obras", blank=True)
+    resoluciondigital_contrato = models.ForeignKey("Contrato", verbose_name="Contrato", on_delete=models.CASCADE, related_name="documentos_resolucion")
     resoluciondigital_descripcion = models.TextField("Descripción")
-    resoluciondigital_numero = models.CharField("Resolución", max_length=15)
+    resoluciondigital_numero = models.CharField("Número de Resolución:", max_length=15)
     resoluciondigital_archivo = models.FileField(upload_to=generate_name_resoluciones, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], max_length=500, null=True, blank=True)
     resoluciondigital_history = HistoricalRecords()
     

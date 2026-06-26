@@ -104,37 +104,79 @@
 
 <fieldset class="border rounded border-dark p-1">
     <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Montos de Contrato</legend>
-    <div class="row">
-        <div class="col-md-4">
-            {{form.obra_contrato_nacion_pesos.as_field_group}}
-        </div>
-        <div class="col-md-4">
-            {{form.obra_contrato_nacion_uvi.as_field_group}}
-        </div>
-        <div class="col-md-4">
-            {{form.obra_contrato_nacion_uvi_fecha.as_field_group}}
-        </div>
+    {% if form.instance.pk %}
+    <p class="text-muted small mb-2">Calculados automáticamente a partir de los Contratos cargados para esta Obra.</p>
+    <table class="table table-sm table-bordered">
+        <thead>
+            <tr>
+                <th>Fuente</th>
+                <th>Monto Pesos</th>
+                <th>Monto UVI</th>
+                <th>Fecha UVI</th>
+                <th>Pesos Actualizado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Nación</td>
+                <td>{{ form.instance.obra_contrato_nacion_pesos }}</td>
+                <td>{{ form.instance.obra_contrato_nacion_uvi }}</td>
+                <td>{{ form.instance.obra_contrato_nacion_uvi_fecha|default:"-" }}</td>
+                <td>{{ form.instance.obra_contrato_nacion_pesos_actualizado|default:"-" }}</td>
+            </tr>
+            <tr>
+                <td>Provincia</td>
+                <td>{{ form.instance.obra_contrato_provincia_pesos }}</td>
+                <td>{{ form.instance.obra_contrato_provincia_uvi }}</td>
+                <td>{{ form.instance.obra_contrato_provincia_uvi_fecha|default:"-" }}</td>
+                <td>{{ form.instance.obra_contrato_provincia_pesos_actualizado|default:"-" }}</td>
+            </tr>
+            <tr>
+                <td>Terceros</td>
+                <td>{{ form.instance.obra_contrato_terceros_pesos }}</td>
+                <td>{{ form.instance.obra_contrato_terceros_uvi }}</td>
+                <td>{{ form.instance.obra_contrato_terceros_uvi_fecha|default:"-" }}</td>
+                <td>{{ form.instance.obra_contrato_terceros_pesos_actualizado|default:"-" }}</td>
+            </tr>
+            <tr class="fw-bold">
+                <td>Total</td>
+                <td>{{ form.instance.obra_contrato_total_pesos }}</td>
+                <td>{{ form.instance.obra_contrato_total_uvi }}</td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    {% if contrato_vigente %}
+    <div class="border rounded border-secondary p-2 mb-2">
+        <h6 class="mb-1">Contrato vigente</h6>
+        <p class="mb-1">{{ contrato_vigente.contrato_descripcion }} ({{ contrato_vigente.contrato_fecha }})</p>
+        <table class="table table-sm">
+            <thead>
+                <tr><th>Rubro</th><th>Financiamiento</th><th>Pesos</th><th>UVI</th><th>Fecha UVI</th></tr>
+            </thead>
+            <tbody>
+                {% for monto in montos_contrato_vigente %}
+                <tr>
+                    <td>{{ monto.contratomonto_rubro }}</td>
+                    <td>{{ monto.contratomonto_financiamiento }}</td>
+                    <td>{{ monto.contratomonto_pesos }}</td>
+                    <td>{{ monto.contratomonto_uvi }}</td>
+                    <td>{{ monto.contratomonto_uvi_fecha|default:"-" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'carga:update-contrato' contrato_vigente.pk %}" class="btn btn-sm btn-outline-secondary">Editar Contrato</a>
+        {% if tiene_contratos_anteriores %}
+        <a href="{% url 'carga:contratos-anteriores-obra' form.instance.pk %}" class="ms-2">Ver historial de contratos</a>
+        {% endif %}
     </div>
-    <div class="row">
-        <div class="col-md-4">
-            {{form.obra_contrato_provincia_pesos.as_field_group}}
-        </div>
-        <div class="col-md-4">
-            {{form.obra_contrato_provincia_uvi.as_field_group}}
-        </div>
-        <div class="col-md-4">
-            {{form.obra_contrato_provincia_uvi_fecha.as_field_group}}
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-4">
-            {{form.obra_contrato_terceros_pesos.as_field_group}}
-        </div>
-        <div class="col-md-4">
-            {{form.obra_contrato_terceros_uvi.as_field_group}}
-        </div>
-        <div class="col-md-4">
-            {{form.obra_contrato_terceros_uvi_fecha.as_field_group}}
-        </div>
-    </div>
+    {% else %}
+    <a href="{% url 'carga:crear-contrato' %}?obra={{ form.instance.pk|safe }}" class="btn btn-sm btn-outline-primary">Cargar Contrato</a>
+    {% endif %}
+    {% else %}
+    <p class="text-muted">Los montos se completan al cargar el Contrato de esta Obra (después de guardar).</p>
+    {% endif %}
 </fieldset>

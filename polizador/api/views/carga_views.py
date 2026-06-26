@@ -1886,6 +1886,7 @@ def list_contratos_digitales(request):
     results = [
         {
             "id": cd.id,
+            "contrato_id": cd.contratodigital_contrato_id,
             "descripcion": cd.contratodigital_descripcion,
             "tipo_id": cd.contratodigital_tipo_id,
         }
@@ -1905,6 +1906,7 @@ def create_contrato_digital(request, payload: dict):
     from carga.models import ContratosDigitales
 
     cd = ContratosDigitales.objects.create(
+        contratodigital_contrato_id=payload.get("contrato_id"),
         contratodigital_descripcion=payload.get("descripcion", ""),
         contratodigital_tipo_id=payload.get("tipo_id"),
     )
@@ -1919,7 +1921,7 @@ def update_contrato_digital(request, id: int, payload: dict):
     cd = ContratosDigitales.objects.filter(id=id).first()
     if not cd:
         return {"detail": "Not found"}, 404
-    for field in ["contratodigital_descripcion", "contratodigital_tipo_id"]:
+    for field in ["contratodigital_contrato_id", "contratodigital_descripcion", "contratodigital_tipo_id"]:
         key = field.replace("contratodigital_", "")
         if key in payload:
             setattr(cd, field, payload[key])
@@ -1951,6 +1953,7 @@ def list_resoluciones_digitales(request):
     results = [
         {
             "id": rd.id,
+            "contrato_id": rd.resoluciondigital_contrato_id,
             "descripcion": rd.resoluciondigital_descripcion,
             "numero": rd.resoluciondigital_numero,
         }
@@ -1970,6 +1973,7 @@ def create_resolucion_digital(request, payload: dict):
     from carga.models import ResolucionesDigitales
 
     rd = ResolucionesDigitales.objects.create(
+        resoluciondigital_contrato_id=payload.get("contrato_id"),
         resoluciondigital_descripcion=payload.get("descripcion", ""),
         resoluciondigital_numero=payload.get("numero", ""),
     )
@@ -1984,7 +1988,7 @@ def update_resolucion_digital(request, id: int, payload: dict):
     rd = ResolucionesDigitales.objects.filter(id=id).first()
     if not rd:
         return {"detail": "Not found"}, 404
-    for field in ["resoluciondigital_descripcion", "resoluciondigital_numero"]:
+    for field in ["resoluciondigital_contrato_id", "resoluciondigital_descripcion", "resoluciondigital_numero"]:
         key = field.replace("resoluciondigital_", "")
         if key in payload:
             setattr(rd, field, payload[key])

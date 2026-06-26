@@ -22,7 +22,14 @@ class CrearContrato(PermissionRequiredMixin, FormsetViewMixin, generic.CreateVie
 
 	def get_title(self):
 		return self.title
-	
+
+	def get_initial(self):
+		initial = super().get_initial()
+		obra_id = self.request.GET.get("obra")
+		if obra_id:
+			initial["contrato_obra"] = obra_id
+		return initial
+
 @method_decorator(login_required, name="dispatch")
 class UpdateContrato(PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView):
 	permission_required = "carga.add_certificado"

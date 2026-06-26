@@ -26,3 +26,33 @@
         </div>
     </div>
 </fieldset>
+
+{% if form.instance.pk %}
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Documentación Digital</legend>
+    <div class="row">
+        <div class="col-md-6">
+            <p class="mb-1"><b>Contratos:</b></p>
+            <ul>
+                {% for documento in form.instance.documentos_contrato.all %}
+                <li>{{ documento.contratodigital_tipo }} - {{ documento.contratodigital_descripcion }}{% if documento.contratodigital_archivo %} (<a href="{{ documento.contratodigital_archivo.url }}" target="_blank">ver PDF</a>){% endif %}</li>
+                {% empty %}
+                <li class="text-muted">Sin documentos.</li>
+                {% endfor %}
+            </ul>
+            <a href="{% url 'carga:crear-contrato-digital' %}?contrato={{ form.instance.pk|safe }}" class="btn btn-sm btn-outline-primary">Agregar Documento de Contrato</a>
+        </div>
+        <div class="col-md-6">
+            <p class="mb-1"><b>Resoluciones:</b></p>
+            <ul>
+                {% for documento in form.instance.documentos_resolucion.all %}
+                <li>{{ documento.resoluciondigital_numero }} - {{ documento.resoluciondigital_descripcion }}{% if documento.resoluciondigital_archivo %} (<a href="{{ documento.resoluciondigital_archivo.url }}" target="_blank">ver PDF</a>){% endif %}</li>
+                {% empty %}
+                <li class="text-muted">Sin resoluciones.</li>
+                {% endfor %}
+            </ul>
+            <a href="{% url 'carga:crear-resolucion-digital' %}?contrato={{ form.instance.pk|safe }}" class="btn btn-sm btn-outline-primary">Agregar Resolución</a>
+        </div>
+    </div>
+</fieldset>
+{% endif %}

@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+{% block title %}<title>Contratos Anteriores - {{object.obra_nombre}}</title>{% endblock title %}
+
+<div class="container-flex bg-body">
+    <div class="col">
+        <div class="row border-bottom border-dark text-center"> <h6>Contratos Anteriores - {{object.obra_nombre}}</h6></div>
+    </div>
+    <div class="col">
+        <a href="{% url "carga:estado-obra" object.id %}">&laquo; Volver a la Obra</a>
+    </div>
+    <br>
+    {% for contrato in contratos_anteriores %}
+        <div class="col">
+            <div class="row g-0">
+                <div class="col border"><b>Contrato ({{contrato.contrato_fecha}}):</b></div><div class="col border">{{contrato.contrato_descripcion}}</div>
+                <div class="col border"><b>Resolución:</b></div><div class="col border">{{contrato.contrato_resolucion|default:"-"}}</div>
+            </div>
+            <div class="row g-0">
+                <div class="col border">
+                    <table class="table table-sm table-bordered mb-0">
+                        <thead>
+                            <tr>
+                                <th>Rubro</th>
+                                <th>Financiamiento</th>
+                                <th>Pesos</th>
+                                <th>UVI</th>
+                                <th>Fecha UVI</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for monto in contrato.contratomonto_set.all %}
+                            <tr>
+                                <td>{{ monto.contratomonto_rubro }}</td>
+                                <td>{{ monto.contratomonto_financiamiento }}</td>
+                                <td>{{ monto.contratomonto_pesos }}</td>
+                                <td>{{ monto.contratomonto_uvi }}</td>
+                                <td>{{ monto.contratomonto_uvi_fecha|default:"-" }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <a href="{% url "carga:update-contrato" contrato.pk %}">Editar Contrato</a>
+        </div>
+        <hr>
+    {% empty %}
+        <div class="col">No hay contratos anteriores.</div>
+    {% endfor %}
+</div>
+{% endblock %}

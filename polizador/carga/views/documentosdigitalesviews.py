@@ -28,6 +28,13 @@ class CrearContratoDigital(PermissionRequiredMixin, generic.CreateView):
     def get_title(self):
         return self.title
 
+    def get_initial(self):
+        initial = super().get_initial()
+        contrato_id = self.request.GET.get("contrato")
+        if contrato_id:
+            initial["contratodigital_contrato"] = contrato_id
+        return initial
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["title"] = self.get_title()
@@ -72,6 +79,13 @@ class CrearResolucionDigital(PermissionRequiredMixin, generic.CreateView):
 
     def get_title(self):
         return self.title
+
+    def get_initial(self):
+        initial = super().get_initial()
+        contrato_id = self.request.GET.get("contrato")
+        if contrato_id:
+            initial["resoluciondigital_contrato"] = contrato_id
+        return initial
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

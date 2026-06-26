@@ -41,6 +41,7 @@ obra_patterns = [
 	path("crear/obra/<pk>", UpdateObra.as_view(), name="update-obra"),
 	path("crear/obra/estado/<pk>", EstadoObra.as_view(), name = "estado-obra"),
 	path("crear/obra/planes-anteriores/<pk>", PlanesAnterioresObra.as_view(), name="planes-anteriores-obra"),
+	path("crear/obra/contratos-anteriores/<pk>", ContratosAnterioresObra.as_view(), name="contratos-anteriores-obra"),
     path("eliminar/obra/<pk>", EliminarObra.as_view(), name="eliminar-obra"),
 ]
 poliza_patterns = [

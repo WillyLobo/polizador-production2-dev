@@ -38,15 +38,6 @@ class ObraForm(forms.ModelForm):
 			"obra_fecha_entrega",
 			"obra_inspector",
 			"obra_observaciones",
-			"obra_contrato_nacion_pesos",
-			"obra_contrato_nacion_uvi",
-			"obra_contrato_nacion_uvi_fecha",
-			"obra_contrato_provincia_pesos",
-			"obra_contrato_provincia_uvi",
-			"obra_contrato_provincia_uvi_fecha",
-			"obra_contrato_terceros_pesos",
-			"obra_contrato_terceros_uvi",
-			"obra_contrato_terceros_uvi_fecha",
 			"obra_principal",
 		)
 		
@@ -131,41 +122,6 @@ class ObraForm(forms.ModelForm):
 			"obra_observaciones": forms.TextInput(attrs={
 				"class": "form-control",
 				"placeholder": "Observaciones"
-			}),
-			"obra_contrato_nacion_pesos": forms.NumberInput(attrs={
-				"class": "form-control",
-			}),
-			"obra_contrato_nacion_uvi": forms.NumberInput(attrs={
-				"class": "form-control",
-				"placeholder": "0"
-			}),
-			"obra_contrato_nacion_uvi_fecha": DateHTMLWidget(attrs={
-				"type":"date",
-				"class": "form-control",
-			}),
-			"obra_contrato_provincia_pesos": forms.NumberInput(attrs={
-				"class": "form-control",
-				"placeholder": "0"
-			}),
-			"obra_contrato_provincia_uvi": forms.NumberInput(attrs={
-				"class": "form-control",
-				"placeholder": "0"
-			}),
-			"obra_contrato_provincia_uvi_fecha": DateHTMLWidget(attrs={
-				"type":"date",
-				"class": "form-control",
-			}),
-			"obra_contrato_terceros_pesos": forms.NumberInput(attrs={
-				"class": "form-control",
-				"placeholder": "0"
-			}),
-			"obra_contrato_terceros_uvi": forms.NumberInput(attrs={
-				"class": "form-control",
-				"placeholder": "0"
-			}),
-			"obra_contrato_terceros_uvi_fecha": DateHTMLWidget(attrs={
-				"type":"date",
-				"class": "form-control",
 			}),
 			"obra_principal":obramultiplewidget(attrs={
 				"class": "form-control customSelect2"

@@ -266,15 +266,15 @@
 </div>
 <br>
 <div> <!-- Documentos Digitales-->
-    {% if object.obra_contratos.all or object.obra_resoluciones.all %}
+    {% if object.documentos_contrato.all or object.documentos_resolucion.all %}
         <div class="col">
             <div class="row border-bottom border-dark text-center"> <h6>Documentación Digital</h6></div>
         </div>
-        {% if object.obra_contratos.all %}
+        {% if object.documentos_contrato.all %}
             <div class="col">
                 <div class="border-bottom border-dark text-center"> <h6>Contratos</h6></div>
             </div>   
-            {%for documento in object.obra_contratos.all%}
+            {%for documento in object.documentos_contrato.all%}
                 <div class="row g-0">
                     <div class="col border"><b>Rubro:</b></div><div class="col border">
                         {% if documento.contratodigital_archivo %}
@@ -296,11 +296,11 @@
             {%endfor%}
         {%endif%}
         <br>
-        {% if object.obra_resoluciones.all %}
+        {% if object.documentos_resolucion.all %}
             <div class="col">
                 <div class="border-bottom border-dark text-center"> <h6>Resoluciones</h6></div>
             </div>   
-            {%for documento in object.obra_resoluciones.all%}
+            {%for documento in object.documentos_resolucion.all%}
                 <div class="row g-0">
                     <div class="col border"><b>Número:</b></div><div class="col border">{{documento.resoluciondigital_numero}}</div>
                     <div class="col border"><b>Descripción:</b></div><div class="col border">{{documento.resoluciondigital_descripcion}}</div>

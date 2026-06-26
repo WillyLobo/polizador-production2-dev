@@ -115,6 +115,7 @@ class ContratoMontoInline(admin.TabularInline):
 
 class ContratoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	autocomplete_fields = ["contrato_obra"]
+	search_fields = ["contrato_descripcion", "contrato_obra__obra_nombre"]
 	inlines = [
 		ContratoMontoInline,
 	]
@@ -127,10 +128,11 @@ class ContratoRubroAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.ContratoRubroResource
 
 class ContratoDigitalAdmin(ImportExportMixin, SimpleHistoryAdmin):
-	autocomplete_fields = ["contratodigital_obra"]
+	autocomplete_fields = ["contratodigital_contrato"]
 	resource_class = resources.ContratoDigitalResource
 
 class ResolucionDigitalAdmin(ImportExportMixin, SimpleHistoryAdmin):
+	autocomplete_fields = ["resoluciondigital_contrato"]
 	resource_class = resources.ResolucionDigitalResource
 
 class UviAdmin(ImportExportMixin, SimpleHistoryAdmin):

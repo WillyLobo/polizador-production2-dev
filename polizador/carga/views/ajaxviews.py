@@ -118,3 +118,9 @@ class contratomontowidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
     search_fields = [
         "contratomonto_contrato__icontains",
     ]
+
+class contratowidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
+    search_fields = [
+        "contrato_descripcion__icontains",
+        "contrato_obra__obra_nombre__icontains",
+    ]

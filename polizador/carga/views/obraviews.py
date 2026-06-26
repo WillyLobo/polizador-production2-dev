@@ -1,5 +1,6 @@
 from ajax_datatable.views import AjaxDatatableView
 from django.shortcuts import render
+from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
@@ -7,6 +8,7 @@ from django.template import loader, TemplateDoesNotExist
 from django.views import generic
 from django.urls import reverse_lazy
 from django.db.models import OuterRef, Subquery
+from django.urls import reverse
 from carga.models import Obra, Certificado
 from carga.forms.obraforms import *
 from django.utils.formats import date_format
@@ -49,6 +51,12 @@ class CrearObra(PermissionRequiredMixin, generic.CreateView):
 		context["title"] = self.get_title()
 		return context
 
+	def form_valid(self, form):
+		response = super().form_valid(form)
+		if self.request.POST.get("next") == "contrato":
+			return HttpResponseRedirect(f"{reverse('carga:crear-contrato')}?obra={self.object.pk}")
+		return response
+
 
 @method_decorator(login_required, name="dispatch")
 class UpdateObra(PermissionRequiredMixin, generic.UpdateView):
@@ -58,6 +66,17 @@ class UpdateObra(PermissionRequiredMixin, generic.UpdateView):
 	template_name = "obra/update-obra.html"
 	form_class = ObraForm
 	success_url = reverse_lazy("carga:lista-obras")
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		contrato_vigente = self.object.contrato_vigente()
+		context["contrato_vigente"] = contrato_vigente
+		if contrato_vigente:
+			context["montos_contrato_vigente"] = contrato_vigente.contratomonto_set.select_related(
+				"contratomonto_rubro", "contratomonto_financiamiento"
+			)
+		context["tiene_contratos_anteriores"] = self.object.contrato_set.count() > 1
+		return context
 
 @method_decorator(login_required, name="dispatch")
 class EstadoObra(PermissionRequiredMixin, generic.DetailView):
@@ -81,6 +100,22 @@ class PlanesAnterioresObra(PermissionRequiredMixin, generic.DetailView):
 		if vigente:
 			planes = planes.exclude(pk=vigente.pk)
 		context["planes_anteriores"] = planes.order_by("-trabajos_fecha", "-pk")
+		return context
+
+@method_decorator(login_required, name="dispatch")
+class ContratosAnterioresObra(PermissionRequiredMixin, generic.DetailView):
+	permission_required = "carga.view_contrato"
+
+	model = Obra
+	template_name = "obra/contratos-anteriores.html"
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		vigente = self.object.contrato_vigente()
+		contratos = self.object.contrato_set.prefetch_related("contratomonto_set__contratomonto_rubro", "contratomonto_set__contratomonto_financiamiento")
+		if vigente:
+			contratos = contratos.exclude(pk=vigente.pk)
+		context["contratos_anteriores"] = contratos.order_by("-contrato_fecha", "-pk")
 		return context
 
 def _con_acumulado_anotado(queryset):

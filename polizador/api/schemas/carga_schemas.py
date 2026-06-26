@@ -497,19 +497,19 @@ class ContratoRubroUpdate(BaseModel):
 class ContratosDigitalesOut(BaseModel):
     id: int
     contratodigital_uuid: str
-    obra_ids: list[int] = []
+    contrato_id: int
     nombre_archivo: Optional[str] = None
     descripcion: str
     tipo_id: int
 
 class ContratosDigitalesCreate(BaseModel):
-    obra_ids: list[int] = []
+    contrato_id: int
     nombre_archivo: Optional[str] = None
     descripcion: str
     tipo_id: int
 
 class ContratosDigitalesUpdate(BaseModel):
-    obra_ids: Optional[list[int]] = None
+    contrato_id: Optional[int] = None
     nombre_archivo: Optional[str] = None
     descripcion: Optional[str] = None
     tipo_id: Optional[int] = None
@@ -518,17 +518,17 @@ class ContratosDigitalesUpdate(BaseModel):
 class ResolucionesDigitalesOut(BaseModel):
     id: int
     resoluciondigital_uuid: str
-    obra_ids: list[int] = []
+    contrato_id: int
     descripcion: str
     numero: str
 
 class ResolucionesDigitalesCreate(BaseModel):
-    obra_ids: list[int] = []
+    contrato_id: int
     descripcion: str
     numero: str
 
 class ResolucionesDigitalesUpdate(BaseModel):
-    obra_ids: Optional[list[int]] = None
+    contrato_id: Optional[int] = None
     descripcion: Optional[str] = None
     numero: Optional[str] = None
 
