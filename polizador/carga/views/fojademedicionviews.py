@@ -73,6 +73,8 @@ class CrearFojaDeMedicion(PermissionRequiredMixin, FormsetViewMixin, generic.Cre
 		return self.render_to_response(self.get_context_data(form=form, formset=formset, foto_formset=foto_formset))
 
 	def post(self, request, *args, **kwargs):
+		self.object = None
+
 		rubro_id = self.request.POST.get("foja_rubro")
 		if rubro_id:
 			self._set_success_url(rubro_id)

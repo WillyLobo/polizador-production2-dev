@@ -25,12 +25,9 @@ class PolizaAdmin(ImportExportMixin, SimpleHistoryAdmin):
 class PolizaMovimientoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.PolizaMovimientoResource
 
-# class LegacyPolizaAdmin(ImportExportMixin, SimpleHistoryAdmin):
-# 	resource_class = resources.LegacyPolizaResource
-# 	list_display = ("legacy_poliza_receptor", "legacy_poliza_concepto", "legacy_poliza_numero", "legacy_poliza_tomador")
-
 class ProgramaAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.ProgramaResource
+	search_fields = ["programa_nombre"]
 
 class ProvinciaResourceAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	model = models.Provincia
@@ -39,6 +36,7 @@ class ProvinciaResourceAdmin(ImportExportMixin, SimpleHistoryAdmin):
 
 class DepartamentoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.DepartamentoResource
+	search_fields = ["departamento_nombre"]
 	list_display = ("id", "departamento_nombre")
 
 class LocalidadAdmin(ImportExportMixin, SimpleHistoryAdmin):
@@ -48,11 +46,24 @@ class LocalidadAdmin(ImportExportMixin, SimpleHistoryAdmin):
 
 class MunicipioAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.MunicipioResource
+	search_fields = ["municipio_nombre"]
 	list_display = ("id", "municipio_nombre", "municipio_departamento", "municipio_region")
 
 class ObraAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	ordering = ["id"]
+	autocomplete_fields = [
+		"obra_empresa",
+		"obra_region",
+		"obra_departamento_m",
+		"obra_municipio_m",
+		"obra_localidad_m",
+		"obra_conjunto",
+		"obra_programa",
+		"obra_inspector",
+		"obra_principal"
+	]
 	search_fields = ["id","obra_convenio","obra_nombre", "obra_empresa__empresa_nombre"]
+	list_display = ["id", "obra_convenio", "obra_nombre", "obra_empresa"]
 	resource_class = resources.ObraResource
 
 class PrototipoAdmin(ImportExportMixin, SimpleHistoryAdmin):
@@ -60,13 +71,25 @@ class PrototipoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 
 class CertificadoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	autocomplete_fields = ["certificado_obra"]
+	list_display = [
+		"id",
+		"certificado_obra__obra_nombre",
+		"certificado_rubro_anticipo",
+		"certificado_rubro_obra",
+		"certificado_rubro_devanticipo",
+		"certificado_fecha",
+		"certificado_fecha_carga"
+		]
+	
 	resource_class = resources.CertificadoResource
 
 class ConjuntoLicitadoAdmin(ImportExportMixin, SimpleHistoryAdmin):
+	search_fields = ["conjunto_nombre"]
 	resource_class = resources.ConjuntoLicitadoResource
 
 class RegionAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.RegionResource
+	search_fields = ["region_numero"]
 
 class CertificadoRubroAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.CertificadoRubroResource
