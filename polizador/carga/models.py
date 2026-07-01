@@ -361,7 +361,7 @@ class Obra(models.Model):
     obra_history = HistoricalRecords(excluded_fields=['obra_contrato_total_pesos', "obra_contrato_total_uvi"])
 
     def compulsa(self):
-        if self.obra_licitacion_numero is 0 or None:
+        if self.obra_licitacion_numero == 0 or self.obra_licitacion_numero is None:
             return f"{self.get_obra_licitacion_tipo_display()} - {self.obra_licitacion_ano}"
         else:
             return f"{self.get_obra_licitacion_tipo_display()} N°{self.obra_licitacion_numero}/{self.obra_licitacion_ano}"
