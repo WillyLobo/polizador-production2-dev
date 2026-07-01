@@ -5,8 +5,45 @@ from django.utils.decorators import method_decorator
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 from carga.models import FojaDeMedicion, PlanDeTrabajosItem, PlanDeTrabajosRubro
+from personalizador.models import Gerencia
 from carga.forms.fojademedicionforms import *
 from secretariador.forms.mixins import FormsetViewMixin
+
+
+def _foja_detalle_context(foja):
+    rubro = foja.foja_rubro
+    plan = rubro.rubro_plan
+    obra = plan.trabajos_obra
+    items = list(
+        foja.items
+        .select_related("fojaitem_planitem")
+        .order_by("fojaitem_planitem__planitem_orden")
+    )
+    anterior_map = FojaDeMedicion.anterior_items_map(rubro, exclude_foja_numero=foja.foja_numero)
+    rows = [
+        {
+            "fojaitem": fi,
+            "pct_anterior": anterior_map.get(fi.fojaitem_planitem_id, 0),
+        }
+        for fi in items
+    ]
+    responsable_institucional = Gerencia.objects.get(gerencia_nombre="Gerencia Operativa").gerencia_autoridad_a_cargo_fk
+    total_pct_anterior = sum(r["pct_anterior"] for r in rows)
+    total_pct_mes = sum(fi.fojaitem_pct_avance_mes for fi in items)
+    total_pct_acumulado = sum(fi.fojaitem_pct_acumulado for fi in items)
+    fotos = list(foja.fotos.all())
+    foto_paginas = [fotos[i:i + 6] for i in range(0, len(fotos), 6)]
+    return {
+        "obra": obra,
+        "plan": plan,
+        "rubro": rubro,
+        "rows": rows,
+		"responsable_institucional": responsable_institucional,
+        "total_pct_anterior": total_pct_anterior,
+        "total_pct_mes": total_pct_mes,
+        "total_pct_acumulado": total_pct_acumulado,
+        "foto_paginas": foto_paginas,
+    }
 
 
 @method_decorator(login_required, name="dispatch")
@@ -31,6 +68,17 @@ class CrearFojaDeMedicion(PermissionRequiredMixin, FormsetViewMixin, generic.Cre
 		if rubro_id:
 			initial["foja_rubro"] = rubro_id
 		return initial
+
+	def _get_rubro(self):
+		rubro_id = self.request.GET.get("rubro") or self.request.POST.get("foja_rubro")
+		if rubro_id:
+			return PlanDeTrabajosRubro.objects.filter(pk=rubro_id).select_related("rubro_plan").first()
+		return None
+
+	def get_form_kwargs(self):
+		kwargs = super().get_form_kwargs()
+		kwargs["rubro"] = self._get_rubro()
+		return kwargs
 
 	def _set_success_url(self, rubro_id):
 		obra_id = PlanDeTrabajosRubro.objects.filter(pk=rubro_id).values_list("rubro_plan__trabajos_obra_id", flat=True).first()
@@ -90,12 +138,30 @@ class CrearFojaDeMedicion(PermissionRequiredMixin, FormsetViewMixin, generic.Cre
 		foto_formset_is_valid = foto_formset.is_valid()
 		if form_is_valid and formset_is_valid and foto_formset_is_valid:
 			self.object = form.save()
+			self._save_fecha_inicio(form)
+			self._vincular_certificados_legacy(form)
 			formset.instance = self.object
 			formset.save()
 			foto_formset.instance = self.object
 			foto_formset.save()
 			return HttpResponseRedirect(self.get_success_url())
 		return self.render_to_response(self.get_context_data(form=form, formset=formset, foto_formset=foto_formset))
+
+	def _vincular_certificados_legacy(self, form):
+		if not self.object.foja_legacy:
+			return
+		for certificado in form.cleaned_data.get("foja_legacy_certificados") or []:
+			certificado.certificado_foja = self.object
+			certificado.save(update_fields=["certificado_foja"])
+
+	def _save_fecha_inicio(self, form):
+		fecha_inicio = form.cleaned_data.get("trabajos_fecha_inicio")
+		if not fecha_inicio:
+			return
+		plan = self.object.foja_rubro.rubro_plan
+		if not plan.trabajos_fecha_inicio:
+			plan.trabajos_fecha_inicio = fecha_inicio
+			plan.save(update_fields=["trabajos_fecha_inicio"])
 
 	def prepare_formset(self, formset):
 		"""Repuebla el %% Anterior de cada fila al reconstruir el formset bindeado en el POST."""
@@ -180,3 +246,28 @@ class UpdateFojaDeMedicion(PermissionRequiredMixin, FormsetViewMixin, generic.Up
 			planitem_id = sub_form.instance.fojaitem_planitem_id
 			if planitem_id in anterior_map:
 				sub_form.initial["fojaitem_pct_anterior"] = anterior_map[planitem_id]
+
+
+@method_decorator(login_required, name="dispatch")
+class DetalleFojaDeMedicion(PermissionRequiredMixin, generic.DetailView):
+	permission_required = "carga.view_fojademedicion"
+	model = FojaDeMedicion
+	template_name = "foja/detalle-fojademedicion.html"
+
+	def get_context_data(self, **kwargs):
+		ctx = super().get_context_data(**kwargs)
+		ctx.update(_foja_detalle_context(self.object))
+		return ctx
+
+
+@method_decorator(login_required, name="dispatch")
+class ImprimirFojaDeMedicion(PermissionRequiredMixin, generic.DetailView):
+	permission_required = "carga.view_fojademedicion"
+	model = FojaDeMedicion
+	template_name = "foja/detalle-fojademedicion.html"
+
+	def get_context_data(self, **kwargs):
+		ctx = super().get_context_data(**kwargs)
+		ctx.update(_foja_detalle_context(self.object))
+		ctx["auto_print"] = True
+		return ctx

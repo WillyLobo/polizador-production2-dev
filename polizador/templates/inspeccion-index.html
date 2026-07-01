@@ -1,94 +1,97 @@
 {% load static %}
+{% load humanize %}
 <div class="min-vh-100 min-vw-100">
-    <div class="row">
-        <div class="col-6">
-            <table width="auto" class="table table-striped table-bordered align-middle" id="tablaReporte">
-                <thead>
-                    <tr>
-                        <th scope="col">Obra</th>
-                        <th scope="col">Localidad</th>
-                        <th scope="col">Contratista</th>
-                        <th scope="col">Programa</th>
-                        <th scope="col">Convenio</th>
-                        <th scope="col">Expediente</th>
-                        <th scope="col">Links</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for obra in obras %}
-                    <tr>
-                        {% load humanize %}
-                        <td class="border">{{obra.obra_nombre}}</td>
-                        <td class="border">{{obra.lista_localidades}}</td>
-                        <td class="border">{{obra.obra_empresa.empresa_nombre}}</td>
-                        <td class="border">{{obra.obra_programa}}</td>
-                        <td class="border">{{obra.obra_convenio|default_if_none:"-"}}</td>
-                        <td class="border">{{obra.obra_expediente}}</td>
-                        <td class="d-print-none">
-                            <a href="{% url "carga:estado-obra" obra.id %}">{{detalleimglink|safe}}</a>
-                            {% with vigente=obra.plan_vigente %}
-                                {% if vigente %}
-                                    {% for rubro in vigente.rubros.all %}
-                                        <br><a href="{% url "carga:crear-fojademedicion" %}?rubro={{rubro.id}}">Nueva Foja - {{rubro.rubro_nombre}}</a>
-                                    {% endfor %}
-                                {% endif %}
-                            {% endwith %}
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
-                    </tr>
-                </tfoot>
-            </table>
+    <div class="d-flex justify-content-end mb-2 d-print-none">
+        <a href="{% url "carga:ayuda-plan-fojas" %}" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-question-circle me-1"></i>¿Cómo cargo una Foja de Medición? Ver Manual
+        </a>
+    </div>
+    <div class="row g-3">
+
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header py-2 bg-light fw-semibold small">Obras</div>
+                <div class="card-body p-2">
+                    <div class="table-responsive">
+                        <table width="auto" class="table table-sm table-bordered table-hover align-middle mb-0" id="tablaReporte">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="small" scope="col">Obra</th>
+                                    <th class="small" scope="col">Localidad</th>
+                                    <th class="small" scope="col">Contratista</th>
+                                    <th class="small" scope="col">Programa</th>
+                                    <th class="small" scope="col">Convenio</th>
+                                    <th class="small" scope="col">Expediente</th>
+                                    <th class="small" scope="col">Links</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for obra in obras %}
+                                <tr>
+                                    <td class="small">{{obra.obra_nombre}}</td>
+                                    <td class="small">{{obra.lista_localidades}}</td>
+                                    <td class="small">{{obra.obra_empresa.empresa_nombre}}</td>
+                                    <td class="small">{{obra.obra_programa}}</td>
+                                    <td class="small">{{obra.obra_convenio|default_if_none:"—"}}</td>
+                                    <td class="small">{{obra.obra_expediente}}</td>
+                                    <td class="small d-print-none">
+                                        <a href="{% url "carga:estado-obra" obra.id %}">{{detalleimglink|safe}}</a>
+                                        {% with vigente=obra.plan_vigente %}
+                                            {% if vigente %}
+                                                {% for rubro in vigente.rubros.all %}
+                                                    <br><a href="{% url "carga:crear-fojademedicion" %}?rubro={{rubro.id}}">Nueva Foja - {{rubro.rubro_nombre}}</a>
+                                                {% endfor %}
+                                            {% endif %}
+                                        {% endwith %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="col-6">
-            <table width="auto" class="table table-striped table-bordered align-middle" id="tablaFojas">
-                <thead>
-                    <tr>
-                        <th scope="col">Obra</th>
-                        <th scope="col">Rubro</th>
-                        <th scope="col">Foja N°</th>
-                        <th scope="col">Período</th>
-                        <th scope="col">Avance del Mes</th>
-                        <th scope="col">Acumulado</th>
-                        <th scope="col">Link</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for foja in fojas %}
-                    <tr>
-                        <td class="border">{{foja.foja_rubro.rubro_plan.trabajos_obra.obra_nombre}}</td>
-                        <td class="border">{{foja.foja_rubro.rubro_nombre}}</td>
-                        <td class="border">{{foja.foja_numero}}</td>
-                        <td class="border">{{foja.foja_periodo}}</td>
-                        <td class="border">{{foja.foja_pct_avance_mes|floatformat:3}}%</td>
-                        <td class="border">{{foja.foja_pct_acumulado|floatformat:3}}%</td>
-                        <td class="d-print-none"><a href="{% url "carga:update-fojademedicion" foja.id %}">{{detalleimglink|safe}}</a></td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
-                        <th scope="col"></th>
-                    </tr>
-                </tfoot>
-            </table>
+
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header py-2 bg-light fw-semibold small">Fojas de Medición</div>
+                <div class="card-body p-2">
+                    <div class="table-responsive">
+                        <table width="auto" class="table table-sm table-bordered table-hover align-middle mb-0" id="tablaFojas">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="small" scope="col">Obra</th>
+                                    <th class="small" scope="col">Rubro</th>
+                                    <th class="small" scope="col">Foja N°</th>
+                                    <th class="small" scope="col">Período</th>
+                                    <th class="small" scope="col">Avance del Mes</th>
+                                    <th class="small" scope="col">Acumulado</th>
+                                    <th class="small" scope="col">Link</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for foja in fojas %}
+                                <tr>
+                                    <td class="small">{{foja.foja_rubro.rubro_plan.trabajos_obra.obra_nombre}}</td>
+                                    <td class="small">{{foja.foja_rubro.rubro_nombre}}</td>
+                                    <td class="small">{{foja.foja_numero}}</td>
+                                    <td class="small">{{foja.foja_periodo}}</td>
+                                    <td class="small">{{foja.foja_pct_avance_mes|floatformat:3}}%</td>
+                                    <td class="small">{{foja.foja_pct_acumulado|floatformat:3}}%</td>
+                                    <td class="small d-print-none">
+                                        <a href="{% url "carga:update-fojademedicion" foja.id %}">Editar</a>
+                                        <a href="{% url "carga:detalle-fojademedicion" foja.id %}">Ver</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
+
     </div>
 </div>
 

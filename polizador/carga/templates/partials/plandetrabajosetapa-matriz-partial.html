@@ -1,0 +1,166 @@
+{% load l10n %}
+{% for hidden in form.hidden_fields %}
+    {{ hidden }}
+{% endfor %}
+
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Etapas Proyectadas - {{rubro.rubro_nombre}}</legend>
+    <div class="row mb-2">
+        <div class="col-md-6"><b>Rubro:</b> {{rubro.rubro_nombre}}</div>
+        <div class="col-md-6">
+            <b>Presupuesto:</b>
+            {% if rubro_monto_base_pesos is not None %}
+                ${{rubro_monto_base_pesos|floatformat:2}}
+                {% if rubro_monto_base_uvi is not None %}
+                    / {{rubro_monto_base_uvi|floatformat:2}} UVI
+                {% endif %}
+            {% else %}-{% endif %}
+        </div>
+    </div>
+
+    {{ form.non_field_errors }}
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-sm align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Item</th>
+                    <th class="text-center">% Incidencia</th>
+                    {% for columna in columnas %}
+                        <th class="text-center">
+                            {% if columna.numero %}Etapa {{columna.numero}}<br>{{columna.fecha|date:"F-Y"}}{% else %}(nueva){% endif %}
+                        </th>
+                    {% endfor %}
+                    <th class="text-center">Suma</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        <td>{{row.item.planitem_nombre}}</td>
+                        <td class="text-center">{{row.item.planitem_incidencia_pct}}</td>
+                        {% for cell in row.cells %}
+                            <td class="text-center">
+                                {{cell}}
+                                {{cell.errors}}
+                            </td>
+                        {% endfor %}
+                        <td class="text-center fw-bold" id="suma-item-{{row.item.pk}}">0.000</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot class="table-light fw-bold">
+                <tr>
+                    <td colspan="2">Avance Físico - Por Período</td>
+                    {% for columna in columnas %}
+                        <td class="text-center" id="total-periodo-{{forloop.counter0}}">0.000</td>
+                    {% endfor %}
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="2">Avance Físico - Acumulado</td>
+                    {% for columna in columnas %}
+                        <td class="text-center" id="total-acumulado-{{forloop.counter0}}">0.000</td>
+                    {% endfor %}
+                    <td></td>
+                </tr>
+                {% if rubro_monto_base_pesos is not None %}
+                <tr>
+                    <td colspan="2">Inversiones ($) - Por Período</td>
+                    {% for columna in columnas %}
+                        <td class="text-center" id="inversion-pesos-periodo-{{forloop.counter0}}">-</td>
+                    {% endfor %}
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="2">Inversiones ($) - Acumulado</td>
+                    {% for columna in columnas %}
+                        <td class="text-center" id="inversion-pesos-acumulado-{{forloop.counter0}}">-</td>
+                    {% endfor %}
+                    <td></td>
+                </tr>
+                {% if rubro_monto_base_uvi is not None %}
+                <tr>
+                    <td colspan="2">Inversiones (UVI) - Por Período</td>
+                    {% for columna in columnas %}
+                        <td class="text-center" id="inversion-uvi-periodo-{{forloop.counter0}}">-</td>
+                    {% endfor %}
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="2">Inversiones (UVI) - Acumulado</td>
+                    {% for columna in columnas %}
+                        <td class="text-center" id="inversion-uvi-acumulado-{{forloop.counter0}}">-</td>
+                    {% endfor %}
+                    <td></td>
+                </tr>
+                {% endif %}
+                {% endif %}
+            </tfoot>
+        </table>
+    </div>
+</fieldset>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const RUBRO_MONTO_BASE_PESOS = {% if rubro_monto_base_pesos is not None %}{{ rubro_monto_base_pesos|unlocalize }}{% else %}null{% endif %};
+    const RUBRO_MONTO_BASE_UVI = {% if rubro_monto_base_uvi is not None %}{{ rubro_monto_base_uvi|unlocalize }}{% else %}null{% endif %};
+    const TOTAL_COLUMNS = {{ total_columns }};
+
+    function formatPesos(valor) {
+        return valor.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+
+    function formatUvi(valor) {
+        return valor.toLocaleString('es-AR', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+
+    function recalcular() {
+        const porPeriodo = new Array(TOTAL_COLUMNS).fill(0);
+        const porItem = {};
+
+        document.querySelectorAll('.matriz-cell').forEach(function(input) {
+            const match = input.name.match(/^item_(\d+)_col_(\d+)$/);
+            if (!match) return;
+            const itemPk = match[1];
+            const valor = parseFloat(input.value) || 0;
+            porPeriodo[parseInt(match[2], 10)] += valor;
+            porItem[itemPk] = (porItem[itemPk] || 0) + valor;
+        });
+
+        for (const itemPk in porItem) {
+            const sumaCell = document.getElementById('suma-item-' + itemPk);
+            if (sumaCell) sumaCell.textContent = porItem[itemPk].toFixed(3);
+        }
+
+        let acumulado = 0;
+        for (let col = 0; col < TOTAL_COLUMNS; col++) {
+            acumulado += porPeriodo[col];
+
+            const periodoCell = document.getElementById('total-periodo-' + col);
+            const acumuladoCell = document.getElementById('total-acumulado-' + col);
+            if (periodoCell) periodoCell.textContent = porPeriodo[col].toFixed(3);
+            if (acumuladoCell) acumuladoCell.textContent = acumulado.toFixed(3);
+
+            if (RUBRO_MONTO_BASE_PESOS !== null) {
+                const invPesosPeriodoCell = document.getElementById('inversion-pesos-periodo-' + col);
+                const invPesosAcumuladoCell = document.getElementById('inversion-pesos-acumulado-' + col);
+                if (invPesosPeriodoCell) invPesosPeriodoCell.textContent = '$' + formatPesos((porPeriodo[col] / 100) * RUBRO_MONTO_BASE_PESOS);
+                if (invPesosAcumuladoCell) invPesosAcumuladoCell.textContent = '$' + formatPesos((acumulado / 100) * RUBRO_MONTO_BASE_PESOS);
+            }
+
+            if (RUBRO_MONTO_BASE_UVI !== null) {
+                const invUviPeriodoCell = document.getElementById('inversion-uvi-periodo-' + col);
+                const invUviAcumuladoCell = document.getElementById('inversion-uvi-acumulado-' + col);
+                if (invUviPeriodoCell) invUviPeriodoCell.textContent = formatUvi((porPeriodo[col] / 100) * RUBRO_MONTO_BASE_UVI) + ' UVI';
+                if (invUviAcumuladoCell) invUviAcumuladoCell.textContent = formatUvi((acumulado / 100) * RUBRO_MONTO_BASE_UVI) + ' UVI';
+            }
+        }
+    }
+
+    document.querySelectorAll('.matriz-cell').forEach(function(input) {
+        input.addEventListener('input', recalcular);
+    });
+    recalcular();
+});
+</script>

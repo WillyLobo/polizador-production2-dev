@@ -117,6 +117,7 @@ class TituloProfesional(models.Model):
         verbose_name_plural = "Títulos Profesionales"
    
     tituloprofesional_nombre = models.CharField(max_length=200)
+    tituloprofesional_abreviatura = models.CharField(max_length=10, null=True, blank=True)
     tituloprofesional_grado = models.CharField(max_length=50, help_text="Grado académico del título, ej: Universitario, Terciario, etc.")
     tituloprofesional_history = HistoricalRecords()
 
@@ -293,3 +294,23 @@ class Departamento(models.Model):
 
     def __str__(self):
         return self.departamento_nombre
+    
+class RepresentanteTecnico(models.Model):
+    class Meta:
+        verbose_name = "Representante Técnico"
+        verbose_name_plural = "Representantes Técnicos"
+        ordering = ("representantetecnico_apellido", "representantetecnico_nombre")
+    
+    representantetecnico_nombre = models.CharField("Nombre", max_length=200)
+    representantetecnico_apellido = models.CharField("Apellido", max_length=200)
+    representantetecnico_dni = models.DecimalField("DNI:", max_digits=9, decimal_places=0, unique=True, validators=[MinValueValidator(0)])
+    representantetecnico_cuil = models.CharField("CUIT", max_length=13, validators=[CuitValidator()])
+    representantetecnico_email = models.EmailField("Email", max_length=200, null=True, blank=True)
+    representantetecnico_telefono = models.CharField("Telefono", max_length=200, null=True, blank=True)
+    representantetecnico_profesion = models.ForeignKey("TituloProfesional", on_delete=models.CASCADE)
+    representantetecnico_matricula = models.CharField("Matricula", max_length=10)
+    representantetecnico_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    representantetecnico_history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.representantetecnico_profesion.tituloprofesional_abreviatura} {self.representantetecnico_nombre} {self.representantetecnico_apellido}"

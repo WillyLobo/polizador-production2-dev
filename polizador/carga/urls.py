@@ -19,6 +19,8 @@ from carga.views.documentosdigitalesviews import *
 from carga.views.plandetrabajosviews import *
 from carga.views.plandetrabajosrubroviews import *
 from carga.views.fojademedicionviews import *
+from carga.views.plandetrabajosetapaviews import *
+from carga.views.ayudaviews import *
 
 app_name = "carga"
 
@@ -119,6 +121,14 @@ plandetrabajosrubro_patterns = [
 fojademedicion_patterns = [
     path("crear/foja-medicion/", CrearFojaDeMedicion.as_view(), name="crear-fojademedicion"),
     path("crear/foja-medicion/<pk>", UpdateFojaDeMedicion.as_view(), name="update-fojademedicion"),
+    path("foja-medicion/<pk>/detalle/", DetalleFojaDeMedicion.as_view(), name="detalle-fojademedicion"),
+    path("foja-medicion/<pk>/imprimir/", ImprimirFojaDeMedicion.as_view(), name="imprimir-fojademedicion"),
+]
+plandetrabajosetapa_patterns = [
+    path("crear/plandetrabajosetapa/<int:pk>/", PlanDeTrabajosEtapaMatriz.as_view(), name="plandetrabajosetapa-matriz"),
+]
+ayuda_patterns = [
+    path("ayuda/plan-de-trabajos-fojas/", ManualObraPlanFojaView.as_view(), name="ayuda-plan-fojas"),
 ]
 reporte_patterns = [
     path("reporte/crear-reporte-mes/", CrearReporteCertificadoPorMes.as_view(), name="crear-reporte-certificado"),
@@ -183,6 +193,8 @@ urlpatterns += contrato_patterns
 urlpatterns += plandetrabajos_patterns
 urlpatterns += plandetrabajosrubro_patterns
 urlpatterns += fojademedicion_patterns
+urlpatterns += plandetrabajosetapa_patterns
+urlpatterns += ayuda_patterns
 urlpatterns += ajax
 urlpatterns += conjunto_patterns
 urlpatterns += programa_patterns

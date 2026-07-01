@@ -220,6 +220,15 @@
         </li>
         {% endif %}
 
+        <!-- Ayuda -->
+        {% if request.user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url "carga:ayuda-plan-fojas" %}">
+            <i class="bi bi-question-circle me-1"></i>Ayuda
+          </a>
+        </li>
+        {% endif %}
+
       </ul>
 
 

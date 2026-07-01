@@ -3,7 +3,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.urls import reverse
 from django.views import generic
-from carga.models import PlanDeTrabajos, PlanDeTrabajosRubro
+from carga.models import PlanDeTrabajos, PlanDeTrabajosRubro, ContratoMonto, Certificado
 from carga.forms.plandetrabajosrubroforms import *
 from secretariador.forms.mixins import FormsetViewMixin
 
@@ -25,15 +25,57 @@ class CrearPlanDeTrabajosRubro(PermissionRequiredMixin, FormsetViewMixin, generi
 	def _plan_id(self):
 		return self.request.GET.get("plan") or self.request.POST.get("rubro_plan")
 
+	def _plan(self):
+		if not hasattr(self, "_plan_cache"):
+			plan_id = self._plan_id()
+			self._plan_cache = PlanDeTrabajos.objects.filter(pk=plan_id).first() if plan_id else None
+		return self._plan_cache
+
+	def _pedir_foja_numero_inicial(self):
+		"""True si este rubro va a ser necesariamente raíz (sin rubro_anterior posible) para
+		una obra que ya tiene certificados cargados: en ese caso hay que preguntar desde qué
+		número arrancar la numeración de Fojas."""
+		plan = self._plan()
+		if not plan:
+			return False
+		obra_id = plan.trabajos_obra_id
+		if not Certificado.objects.filter(certificado_obra_id=obra_id).exists():
+			return False
+		hay_candidatos_rubro_anterior = PlanDeTrabajosRubro.objects.filter(
+			rubro_plan__trabajos_obra_id=obra_id
+		).exclude(rubro_plan_id=plan.pk).exists()
+		return not hay_candidatos_rubro_anterior
+
+	def get_form_kwargs(self):
+		kwargs = super().get_form_kwargs()
+		kwargs["pedir_foja_numero_inicial"] = self._pedir_foja_numero_inicial()
+		return kwargs
+
 	def get_form(self, form_class=None):
 		form = super().get_form(form_class)
 		plan_id = self._plan_id()
 		if plan_id:
-			obra_id = PlanDeTrabajos.objects.filter(pk=plan_id).values_list("trabajos_obra_id", flat=True).first()
+			plan = self._plan()
+			obra_id = plan.trabajos_obra_id if plan else None
 			form.fields["rubro_anterior"].queryset = PlanDeTrabajosRubro.objects.filter(
 				rubro_plan__trabajos_obra_id=obra_id
 			).exclude(rubro_plan_id=plan_id)
+			if plan and plan.trabajos_contrato_id:
+				form.fields["rubro_contratomonto"].queryset = ContratoMonto.objects.filter(
+					contratomonto_contrato_id=plan.trabajos_contrato_id
+				)
+			else:
+				form.fields["rubro_contratomonto"].queryset = ContratoMonto.objects.filter(
+					contratomonto_contrato__contrato_obra_id=obra_id
+				)
 		return form
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		plan = self._plan()
+		context["contrato_vinculado"] = plan.trabajos_contrato if plan and plan.trabajos_contrato_id else None
+		context["pedir_foja_numero_inicial"] = self._pedir_foja_numero_inicial()
+		return context
 
 	def get(self, request, *args, **kwargs):
 		self.object = None
@@ -63,6 +105,37 @@ class UpdatePlanDeTrabajosRubro(PermissionRequiredMixin, FormsetViewMixin, gener
 	model = PlanDeTrabajosRubro
 	template_name = "plandetrabajosrubro/update-plandetrabajosrubro.html"
 	form_class = PlanDeTrabajosRubroForm
+
+	def _pedir_foja_numero_inicial(self):
+		"""En edición, "pedir" el campo equivale a "permitir editarlo": solo se habilita
+		si el rubro todavía no tiene ninguna foja real (no-legacy) cargada, para no romper
+		la continuidad de numeración ya materializada."""
+		return not self.object.fojas.filter(foja_legacy=False).exists()
+
+	def get_form_kwargs(self):
+		kwargs = super().get_form_kwargs()
+		kwargs["pedir_foja_numero_inicial"] = self._pedir_foja_numero_inicial()
+		return kwargs
+
+	def get_form(self, form_class=None):
+		form = super().get_form(form_class)
+		plan = self.object.rubro_plan
+		if plan.trabajos_contrato_id:
+			form.fields["rubro_contratomonto"].queryset = ContratoMonto.objects.filter(
+				contratomonto_contrato_id=plan.trabajos_contrato_id
+			)
+		else:
+			form.fields["rubro_contratomonto"].queryset = ContratoMonto.objects.filter(
+				contratomonto_contrato__contrato_obra_id=plan.trabajos_obra_id
+			)
+		return form
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		plan = self.object.rubro_plan
+		context["contrato_vinculado"] = plan.trabajos_contrato if plan.trabajos_contrato_id else None
+		context["pedir_foja_numero_inicial"] = self._pedir_foja_numero_inicial()
+		return context
 
 	def get(self, request, *args, **kwargs):
 		self.object = self.get_object()

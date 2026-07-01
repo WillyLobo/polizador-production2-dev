@@ -61,3 +61,8 @@ class DireccionResource(resources.ModelResource):
 class DepartamentoResource(resources.ModelResource):
     class Meta:
         model = models.Departamento
+
+class RepresentanteTecnicoResource(resources.ModelResource):
+
+    class Meta:
+        model = models.RepresentanteTecnico

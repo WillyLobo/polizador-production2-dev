@@ -1,0 +1,27 @@
+
+<div class="declaracion">LA PRESENTE INFORMACIÓN REVISTE EL CARÁCTER DE DECLARACIÓN JURADA</div>
+
+<div class="firmas">
+    <div class="firma">
+    <div class="nombre">{{ responsable_institucional.agente_nombreyapellido }}</div>
+    <div>{% for titulo in responsable_institucional.titulo_profesional.all %}{{ titulo }}{% if not forloop.last %}, {% endif %}{% endfor %} - Matricula N°{{responsable_institucional.matricula}}</div>
+    <div><b>RESPONSABLE INSTITUCIONAL</b></div>
+    </div>
+{% if inspectores %}
+    {% for ag in inspectores %}
+    <div class="firma">
+    <div class="nombre">{{ ag.agente_nombreyapellido }}</div>
+    <div>{% for titulo in ag.titulo_profesional.all %}{{ titulo }}{% if not forloop.last %}, {% endif %}{% endfor %} - Matricula N°{{ag.matricula}}</div>
+    <div><b>INSPECTOR</b></div>
+    </div>
+    {% endfor %}
+{% endif %}
+{% if representantetecnico %}
+    {% for ag in representantetecnico %}
+    <div class="firma">
+    <div class="nombre">{{ ag }}</div>
+    <div>{{ ag.representantetecnico_profesion }} - Matricula N° {{ ag.representantetecnico_matricula }}</div>
+    <div><b>REPRESENTANTE TÉCNICO</b></div>
+    </div>
+    {% endfor %}
+{% endif %}

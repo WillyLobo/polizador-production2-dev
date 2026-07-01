@@ -7,11 +7,20 @@ from simple_history.models import HistoricalRecords
 from django.db.models import Sum, F, FloatField, Max
 from django.core.validators import MinValueValidator, MaxValueValidator
 from uuid_utils import compat
+import calendar
 import os
 from secretariador.functions import FileValidator, CuitValidator
 
 
 # from .models import User
+
+def add_months(fecha, n):
+    """Suma `n` meses a `fecha`, ajustando el día si el mes destino es más corto."""
+    mes_total = fecha.month - 1 + n
+    anio = fecha.year + mes_total // 12
+    mes = mes_total % 12 + 1
+    dia = min(fecha.day, calendar.monthrange(anio, mes)[1])
+    return fecha.replace(year=anio, month=mes, day=dia)
 
 def generate_name_certificados(instance, filename):
     directorio = "certificados/"
@@ -327,6 +336,7 @@ class Obra(models.Model):
     obra_fecha_contrato = models.DateField("Fecha de Firma de Contrato", blank=True, null=True)
     obra_expediente_costo = models.CharField("Expediente de Costos", max_length=18, blank=True, null=True)
     obra_inspector = models.ManyToManyField("personalizador.Agente", related_name="obra_inspector", verbose_name="Inspector")
+    obra_representantetecnico = models.ManyToManyField("personalizador.RepresentanteTecnico", related_name="obra_representantetecnico", verbose_name="Representante Técnico")
     obra_observaciones = models.TextField("Observaciones", blank=True, null=True)
     obra_contrato_nacion_pesos = models.DecimalField("Monto Nación en Pesos", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
     obra_contrato_nacion_uvi = models.DecimalField("Monto Nación en UVI", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)
@@ -349,7 +359,13 @@ class Obra(models.Model):
     )
     obra_principal = models.ManyToManyField("Obra", related_name="obra_madre", verbose_name="Obra Madre", blank=True)
     obra_history = HistoricalRecords(excluded_fields=['obra_contrato_total_pesos', "obra_contrato_total_uvi"])
-        
+
+    def compulsa(self):
+        if self.obra_licitacion_numero is 0 or None:
+            return f"{self.get_obra_licitacion_tipo_display()} - {self.obra_licitacion_ano}"
+        else:
+            return f"{self.get_obra_licitacion_tipo_display()} N°{self.obra_licitacion_numero}/{self.obra_licitacion_ano}"
+    
     def obra_acum_pesos(self):
         if self.certificado_set:
             return self.certificado_set.aggregate(Sum(F("certificado_monto_cobrar"), output_field=FloatField()))
@@ -418,10 +434,7 @@ class Obra(models.Model):
     def _pesos_actualizado(self, monto_uvi, fecha):
         """Convierte un monto en UVI a pesos usando la cotización vigente a la fecha
         (o la cotización anterior más cercana si no hay un valor exacto para ese día)."""
-        if not monto_uvi or not fecha:
-            return None
-        tasa = Uvi.objects.filter(uvi_fecha__lte=fecha).order_by("-uvi_fecha").first()
-        return monto_uvi * tasa.uvi_valor if tasa else None
+        return Uvi.pesos_equivalentes(monto_uvi, fecha)
 
     def obra_contrato_nacion_pesos_actualizado(self):
         return self._pesos_actualizado(self.obra_contrato_nacion_uvi, datetime.today())
@@ -533,9 +546,9 @@ class Certificado(models.Model):
     certificado_expediente = models.CharField("Número de Expediente", max_length=18)
     certificado_periodo = models.CharField("Periodo", max_length=13, null=True, blank=True)
     certificado_monto_pesos = models.DecimalField("Monto en Pesos", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
-    certificado_mes_pct = models.DecimalField("Mes %", max_digits=5, decimal_places=2, default=0, validators=[MaxValueValidator(100)])
-    certificado_ante_pct = models.DecimalField("Anterior %", max_digits=5, decimal_places=2, default=0, validators=[MaxValueValidator(100)])
-    certificado_acum_pct = models.DecimalField("Acumulado %", max_digits=5, decimal_places=2, default=0, validators=[MaxValueValidator(100)])
+    certificado_mes_pct = models.DecimalField("Mes %", max_digits=6, decimal_places=3, default=0, validators=[MaxValueValidator(100)])
+    certificado_ante_pct = models.DecimalField("Anterior %", max_digits=6, decimal_places=3, default=0, validators=[MaxValueValidator(100)])
+    certificado_acum_pct = models.DecimalField("Acumulado %", max_digits=6, decimal_places=3, default=0, validators=[MaxValueValidator(100)])
     certificado_devolucion_expte = models.CharField("Número de Expediente Devolución", max_length=18, null=True, blank=True)
     certificado_devolucion_monto = models.DecimalField("Monto Devolución en Pesos", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
     certificado_devolucion_monto_uvi = models.DecimalField("Monto Devolución en UVI", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
@@ -597,6 +610,9 @@ class PlanDeTrabajos(models.Model):
     trabajos_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     trabajos_obra = models.ForeignKey("Obra", on_delete=models.DO_NOTHING)
     trabajos_fecha = models.DateField("Fecha de Vigencia", default=timezone.now)
+    trabajos_meses = models.PositiveIntegerField("Duración (meses)", default=1, validators=[MinValueValidator(1)])
+    trabajos_fecha_inicio = models.DateField("Fecha de Inicio de Obra", null=True, blank=True)
+    trabajos_contrato = models.ForeignKey("Contrato", verbose_name="Contrato Vinculado", on_delete=models.SET_NULL, null=True, blank=True, related_name="planes_trabajo")
     trabajos_history = HistoricalRecords()
 
     @classmethod
@@ -628,6 +644,14 @@ class PlanDeTrabajosRubro(models.Model):
     rubro_presupuesto = models.DecimalField("Presupuesto", max_digits=15, decimal_places=2, default=0, validators=[MinValueValidator(0)])
     rubro_anterior = models.ForeignKey("self", verbose_name="Rubro Anterior (Plan Previo)", on_delete=models.SET_NULL, null=True, blank=True, related_name="rubro_siguiente")
     rubro_documento_digital = models.FileField(verbose_name="Documento Digital", upload_to=generate_name_rubro_documento, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], max_length=500, null=True, blank=True)
+    rubro_contratomonto = models.ForeignKey("ContratoMonto", verbose_name="Monto de Contrato", on_delete=models.SET_NULL, null=True, blank=True, related_name="rubros_plan")
+    rubro_foja_numero_inicial = models.PositiveIntegerField(
+        "Número de Foja Inicial",
+        default=1,
+        validators=[MinValueValidator(1)],
+        help_text="Número de la primera Foja de Medición real de este rubro. Permite continuar "
+                   "la numeración cuando hubo fojas anteriores cargadas fuera del sistema.",
+    )
     rubro_history = HistoricalRecords()
 
     def rubro_cadena_ids(self):
@@ -638,6 +662,23 @@ class PlanDeTrabajosRubro(models.Model):
             actual = actual.rubro_anterior
             ids.append(actual.pk)
         return ids
+
+    def monto_base_pesos(self):
+        """Monto en pesos a distribuir entre las Etapas proyectadas: si hay un
+        ContratoMonto vinculado se usa su valor (convirtiendo UVI->pesos según su
+        fecha), si no se usa el rubro_presupuesto cargado a mano."""
+        if self.rubro_contratomonto_id:
+            cm = self.rubro_contratomonto
+            if cm.contratomonto_uvi:
+                pesos = Uvi.pesos_equivalentes(cm.contratomonto_uvi, cm.contratomonto_uvi_fecha)
+                return pesos if pesos is not None else cm.contratomonto_pesos
+            return cm.contratomonto_pesos
+        return self.rubro_presupuesto
+
+    def monto_base_uvi(self):
+        if self.rubro_contratomonto_id and self.rubro_contratomonto.contratomonto_uvi:
+            return self.rubro_contratomonto.contratomonto_uvi
+        return None
 
     def __str__(self):
         return f"{self.rubro_nombre} - {self.rubro_plan}"
@@ -671,6 +712,129 @@ class PlanDeTrabajosItem(models.Model):
     def __str__(self):
         return f"{self.planitem_nombre} ({self.planitem_incidencia_pct}%) - {self.planitem_rubro}"
 
+class PlanDeTrabajosEtapa(models.Model):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["etapa_rubro", "etapa_numero"], name="etapa-numero-unico")
+        ]
+        verbose_name = "Etapa Proyectada de Plan de Trabajos"
+        verbose_name_plural = "Etapas Proyectadas de Plan de Trabajos"
+        ordering = ["etapa_rubro", "etapa_numero"]
+
+    etapa_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    etapa_rubro = models.ForeignKey("PlanDeTrabajosRubro", verbose_name="Rubro de Plan de Trabajos", on_delete=models.CASCADE, related_name="etapas")
+    etapa_numero = models.PositiveIntegerField("Número de Etapa", editable=False, default=1)
+    etapa_fecha = models.DateField("Mes Proyectado", editable=False)
+    etapa_history = HistoricalRecords()
+
+    def etapa_anterior(self):
+        """Retorna la etapa anterior, considerando también rubros de planes reprogramados."""
+        chain_ids = self.etapa_rubro.rubro_cadena_ids()
+        return PlanDeTrabajosEtapa.objects.filter(
+            etapa_rubro_id__in=chain_ids, etapa_numero__lt=self.etapa_numero
+        ).order_by('-etapa_numero').first()
+
+    @staticmethod
+    def anterior_items_map(rubro, items=None, exclude_etapa_numero=None):
+        """Acumulado %% proyectado de cada item en la etapa anterior (misma lógica
+        que FojaDeMedicion.anterior_items_map())."""
+        chain_ids = rubro.rubro_cadena_ids()
+        qs = PlanDeTrabajosEtapa.objects.filter(etapa_rubro_id__in=chain_ids)
+        if exclude_etapa_numero is not None:
+            qs = qs.filter(etapa_numero__lt=exclude_etapa_numero)
+        etapa_anterior = qs.order_by('-etapa_numero').first()
+        if not etapa_anterior:
+            return {}
+
+        if items is None:
+            items = PlanDeTrabajosItem.objects.filter(planitem_rubro=rubro)
+
+        anterior_map = {}
+        for item in items:
+            previous_item = etapa_anterior.items.filter(
+                etapaitem_planitem_id__in=item.item_cadena_ids()
+            ).first()
+            if previous_item:
+                anterior_map[item.pk] = previous_item.etapaitem_pct_proyectado_acumulado
+        return anterior_map
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            # No se usa self.etapa_anterior() porque self.etapa_numero todavía no
+            # fue asignado por la señal auto_increment_etapa_numero (corre dentro
+            # de super().save()); se busca directamente la última etapa de la cadena.
+            chain_ids = self.etapa_rubro.rubro_cadena_ids()
+            anterior = PlanDeTrabajosEtapa.objects.filter(
+                etapa_rubro_id__in=chain_ids
+            ).order_by('-etapa_numero').first()
+            self.etapa_fecha = add_months(anterior.etapa_fecha, 1) if anterior else self.etapa_rubro.rubro_plan.trabajos_fecha
+        super().save(*args, **kwargs)
+
+    def etapa_pct_proyectado_mes(self):
+        total = 0
+        for item in self.items.all():
+            total += item.etapaitem_pct_proyectado_mes
+        return total
+
+    def etapa_pct_proyectado_acumulado(self):
+        total = 0
+        for item in self.items.all():
+            total += item.etapaitem_pct_proyectado_acumulado
+        return total
+
+    def etapa_monto_pesos(self):
+        base = self.etapa_rubro.monto_base_pesos()
+        return (self.etapa_pct_proyectado_mes() / 100) * base if base else None
+
+    def etapa_monto_uvi(self):
+        base = self.etapa_rubro.monto_base_uvi()
+        return (self.etapa_pct_proyectado_mes() / 100) * base if base else None
+
+    def __str__(self):
+        return f"Etapa {self.etapa_numero} - {self.etapa_rubro}"
+
+    def get_absolute_url(self):
+        return reverse('carga:plandetrabajosetapa-matriz', kwargs={'pk': self.etapa_rubro_id})
+
+class PlanDeTrabajosEtapaItem(models.Model):
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=["etapaitem_etapa", "etapaitem_planitem"], name="etapaitem-planitem-unico")]
+        verbose_name = "Item de Etapa Proyectada"
+        verbose_name_plural = "Items de Etapa Proyectada"
+        ordering = ["etapaitem_planitem__planitem_orden"]
+
+    etapaitem_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    etapaitem_etapa = models.ForeignKey("PlanDeTrabajosEtapa", verbose_name="Etapa Proyectada", on_delete=models.CASCADE, related_name="items")
+    etapaitem_planitem = models.ForeignKey("PlanDeTrabajosItem", verbose_name="Item del Plan", on_delete=models.CASCADE)
+    etapaitem_pct_proyectado_mes = models.DecimalField("Proyectado del Mes %", max_digits=6, decimal_places=3, default=0, validators=[MinValueValidator(0), MaxValueValidator(100)])
+    etapaitem_pct_proyectado_acumulado = models.DecimalField("Acumulado Proyectado %", max_digits=6, decimal_places=3, default=0, editable=False, validators=[MinValueValidator(0), MaxValueValidator(100)])
+    etapaitem_history = HistoricalRecords()
+
+    def etapaitem_monto_pesos(self):
+        base = self.etapaitem_etapa.etapa_rubro.monto_base_pesos()
+        return (self.etapaitem_pct_proyectado_mes / 100) * base if base else None
+
+    def __str__(self):
+        return f"{self.etapaitem_planitem.planitem_nombre} - {self.etapaitem_etapa}"
+
+    def save(self, *args, **kwargs):
+        etapa_anterior = self.etapaitem_etapa.etapa_anterior()
+
+        previous_item = None
+        if etapa_anterior:
+            item_chain_ids = self.etapaitem_planitem.item_cadena_ids()
+            previous_item = PlanDeTrabajosEtapaItem.objects.filter(
+                etapaitem_etapa=etapa_anterior,
+                etapaitem_planitem_id__in=item_chain_ids
+            ).first()
+
+        if previous_item:
+            self.etapaitem_pct_proyectado_acumulado = previous_item.etapaitem_pct_proyectado_acumulado + self.etapaitem_pct_proyectado_mes
+        else:
+            self.etapaitem_pct_proyectado_acumulado = self.etapaitem_pct_proyectado_mes
+
+        super(PlanDeTrabajosEtapaItem, self).save(*args, **kwargs)
+
 class FojaDeMedicion(models.Model):
     class Meta:
         constraints = [
@@ -683,6 +847,7 @@ class FojaDeMedicion(models.Model):
     foja_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     foja_rubro = models.ForeignKey("PlanDeTrabajosRubro", verbose_name="Rubro de Plan de Trabajos", on_delete=models.CASCADE, related_name="fojas")
     foja_numero = models.PositiveIntegerField("Número de Foja", editable=False, default=1)
+    foja_legacy = models.BooleanField("Es Foja Vieja", default=False)
     foja_periodo = models.DateField("Período (Mes)")
     foja_fecha = models.DateField("Fecha de Medición", default=timezone.now)
     foja_inspector = models.ManyToManyField("personalizador.Agente", related_name="foja_inspector", verbose_name="Inspector", blank=True)
@@ -874,6 +1039,15 @@ class Uvi(models.Model):
     uvi_fecha = models.DateField("Fecha UVI:")
     uvi_valor = models.DecimalField("Valor", max_digits=15, decimal_places=2)
     uvi_history = HistoricalRecords()
+
+    @classmethod
+    def pesos_equivalentes(cls, monto_uvi, fecha):
+        """Convierte un monto en UVI a pesos usando la cotización vigente a la fecha
+        (o la cotización anterior más cercana si no hay un valor exacto para ese día)."""
+        if not monto_uvi or not fecha:
+            return None
+        tasa = cls.objects.filter(uvi_fecha__lte=fecha).order_by("-uvi_fecha").first()
+        return monto_uvi * tasa.uvi_valor if tasa else None
 
     def __str__(self):
         return f"({self.id})-{self.uvi_fecha} - {self.uvi_valor}"

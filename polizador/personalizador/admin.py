@@ -81,6 +81,10 @@ class DepartamentoAdmin(ImportExportMixin, SimpleHistoryAdmin):
     resource_class = DepartamentoResource
     list_display = ["departamento_nombre", "departamento_direccion", "departamento_cuof"]
 
+class RepresentanteTecnicoAdmin(ImportExportMixin, SimpleHistoryAdmin):
+    resource_class = RepresentanteTecnicoResource
+    list_display = ["representantetecnico_nombre", "representantetecnico_apellido", "representantetecnico_cuil", "representantetecnico_matricula"]
+
 admin.site.register(Agente, AgenteAdmin)
 admin.site.register(GeneroAgente, GeneroAgenteAdmin)
 admin.site.register(TituloProfesional, TituloProfesionalAdmin)
@@ -96,3 +100,4 @@ admin.site.register(Directorio, DirectorioAdmin)
 admin.site.register(Gerencia, GerenciaAdmin)
 admin.site.register(Direccion, DireccionAdmin)
 admin.site.register(Departamento, DepartamentoAdmin)
+admin.site.register(RepresentanteTecnico, RepresentanteTecnicoAdmin)

@@ -2,15 +2,30 @@ from decimal import Decimal
 from django import forms
 from django.forms import inlineformset_factory, BaseInlineFormSet
 from carga import models
-from carga.views.ajaxviews import rubrowidget, agentemultiplewidget
+from carga.models import Certificado
+from carga.views.ajaxviews import rubrowidget, agentemultiplewidget, certificadolegacywidget
 from personalizador.models import Agente
 from polizador.custom_forms import DateHTMLWidget
 
 class FojaDeMedicionForm(forms.ModelForm):
+	foja_numero_manual = forms.IntegerField(
+		label="Número de Foja",
+		required=False,
+		min_value=1,
+		widget=forms.NumberInput(attrs={"class": "form-control"}),
+	)
+	foja_legacy_certificados = forms.ModelMultipleChoiceField(
+		label="Certificados a vincular",
+		queryset=Certificado.objects.none(),
+		required=False,
+		widget=certificadolegacywidget(attrs={"class": "form-control customSelect2"}),
+	)
+
 	class Meta:
 		model = models.FojaDeMedicion
 		fields = (
 			"foja_rubro",
+			"foja_legacy",
 			"foja_periodo",
 			"foja_fecha",
 			"foja_inspector",
@@ -18,6 +33,7 @@ class FojaDeMedicionForm(forms.ModelForm):
 		)
 		widgets = {
 			"foja_rubro": rubrowidget(attrs={"class": "form-control customSelect2"}),
+			"foja_legacy": forms.CheckboxInput(attrs={"class": "form-check-input"}),
 			"foja_periodo": DateHTMLWidget(attrs={"type": "date", "class": "form-control"}),
 			"foja_fecha": DateHTMLWidget(attrs={"type": "date", "class": "form-control"}),
 			"foja_inspector": agentemultiplewidget(attrs={"class": "form-control customSelect2"}),
@@ -25,6 +41,7 @@ class FojaDeMedicionForm(forms.ModelForm):
 		}
 
 	def __init__(self, *args, **kwargs):
+		rubro = kwargs.pop("rubro", None)
 		super().__init__(*args, **kwargs)
 		self.fields["foja_rubro"].queryset = models.PlanDeTrabajosRubro.objects.filter(
 			rubro_plan__in=models.PlanDeTrabajos.vigentes()
@@ -35,12 +52,74 @@ class FojaDeMedicionForm(forms.ModelForm):
 			inspectores = Agente.objects.filter(
 				obra_inspector__plandetrabajos__rubros__pk=rubro_id
 			).distinct()
+			obra_id = models.PlanDeTrabajosRubro.objects.filter(pk=rubro_id).values_list(
+				"rubro_plan__trabajos_obra_id", flat=True
+			).first()
+			self.fields["foja_legacy_certificados"].queryset = (
+				Certificado.objects.filter(certificado_obra_id=obra_id, certificado_foja__isnull=True)
+				if obra_id else Certificado.objects.none()
+			)
 		else:
 			inspectores = Agente.objects.none()
 
 		self.fields["foja_inspector"].queryset = inspectores
 		if not self.is_bound and not self.instance.pk:
 			self.initial["foja_inspector"] = list(inspectores.values_list("pk", flat=True))
+
+		if self.instance.pk and self.instance.foja_legacy:
+			self.initial["foja_numero_manual"] = self.instance.foja_numero
+
+		if rubro is not None and not rubro.rubro_plan.trabajos_fecha_inicio:
+			label = (
+				"Fecha de Reinicio de Obra"
+				if rubro.rubro_anterior_id
+				else "Fecha de Inicio de Obra"
+			)
+			self.fields["trabajos_fecha_inicio"] = forms.DateField(
+				label=label,
+				required=True,
+				widget=DateHTMLWidget(attrs={"type": "date", "class": "form-control"}),
+			)
+
+	def clean(self):
+		cleaned_data = super().clean()
+		if not cleaned_data.get("foja_legacy"):
+			return cleaned_data
+
+		foja_rubro = cleaned_data.get("foja_rubro")
+		numero = cleaned_data.get("foja_numero_manual")
+
+		if numero is None:
+			self.add_error("foja_numero_manual", "Ingresá el número de foja para una foja legacy.")
+			return cleaned_data
+
+		if not foja_rubro:
+			return cleaned_data
+
+		if numero >= foja_rubro.rubro_foja_numero_inicial:
+			if foja_rubro.rubro_foja_numero_inicial <= 1:
+				self.add_error(
+					"foja_numero_manual",
+					"Para cargar fojas legacy primero hay que configurar el 'Número de Foja "
+					"Inicial' en el Rubro de Plan de Trabajos."
+				)
+			else:
+				self.add_error(
+					"foja_numero_manual",
+					f"El número debe ser menor al Número de Foja Inicial configurado en el "
+					f"Rubro ({foja_rubro.rubro_foja_numero_inicial})."
+				)
+			return cleaned_data
+
+		duplicado = models.FojaDeMedicion.objects.filter(foja_rubro=foja_rubro, foja_numero=numero)
+		if self.instance.pk:
+			duplicado = duplicado.exclude(pk=self.instance.pk)
+		if duplicado.exists():
+			self.add_error("foja_numero_manual", f"Ya existe una Foja N°{numero} para este Rubro.")
+			return cleaned_data
+
+		self.instance.foja_numero = numero
+		return cleaned_data
 
 class FojaDeMedicionItemForm(forms.ModelForm):
 	fojaitem_pct_anterior = forms.DecimalField(

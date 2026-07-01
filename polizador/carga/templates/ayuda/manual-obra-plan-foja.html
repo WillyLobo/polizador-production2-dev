@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}<title>Manual de Usuario — Obras, Planes de Trabajo y Fojas | Polizador</title>{% endblock title %}
+{% block content %}
+<div class="container my-4" style="max-width: 980px;">
+
+    <h1 class="mb-1"><i class="bi bi-question-circle me-2"></i>Manual de Usuario</h1>
+    <p class="text-muted mb-4">Cómo cargar una Obra, su Plan de Trabajos y las Fojas de Medición, paso a paso.</p>
+
+    {# ─── Índice ─── #}
+    <div class="card mb-4">
+        <div class="card-header py-2 bg-light fw-semibold small">Índice</div>
+        <div class="card-body p-2">
+            <ol class="small mb-0">
+                <li><a href="#conceptos">Antes de empezar: los conceptos básicos</a></li>
+                <li><a href="#paso1">Paso 1 — Crear la Obra</a></li>
+                <li><a href="#paso2">Paso 2 — Cargar el Contrato</a></li>
+                <li><a href="#paso3">Paso 3 — Crear el Plan de Trabajos</a></li>
+                <li><a href="#paso4">Paso 4 — Agregar un Rubro y sus Ítems</a></li>
+                <li><a href="#paso5">Paso 5 — Proyectar las Etapas (avance planificado)</a></li>
+                <li><a href="#paso6">Paso 6 — Cargar la Foja de Medición (avance real)</a></li>
+                <li><a href="#paso7">Paso 7 — Generar el Certificado</a></li>
+                <li><a href="#resultado">Resultado final</a></li>
+                <li><a href="#faq">Preguntas frecuentes y errores comunes</a></li>
+            </ol>
+        </div>
+    </div>
+
+    {# ─── Conceptos ─── #}
+    <div class="card mb-4" id="conceptos">
+        <div class="card-header py-2 bg-light fw-semibold small">Antes de empezar: los conceptos básicos</div>
+        <div class="card-body p-3">
+            <p>El sistema organiza la información de una obra en una cadena de pasos. Cada uno depende del anterior, así que conviene cargarlos en este orden:</p>
+            <ol>
+                <li><strong>Obra</strong>: el proyecto de construcción en sí (nombre, empresa contratista, programa, expediente, inspector).</li>
+                <li><strong>Contrato</strong>: los montos adjudicados a la obra, separados por Nación / Provincia / Terceros.</li>
+                <li><strong>Plan de Trabajos</strong>: define la duración total (en meses) del plan vigente para esa obra.</li>
+                <li><strong>Rubro</strong>: cada gran ítem presupuestario del plan (por ejemplo "Viviendas"), dividido en <strong>Ítems</strong> (por ejemplo "Fundaciones", "Mampostería") a los que se les asigna un <strong>% de incidencia</strong> sobre el rubro. La suma de los % de incidencia de todos los ítems de un rubro <strong>debe dar exactamente 100%</strong>.</li>
+                <li><strong>Etapas</strong>: la proyección mes a mes de cuánto % de cada ítem se planea ejecutar. Es la "foto planificada" del avance.</li>
+                <li><strong>Foja de Medición</strong>: el registro real de avance de obra en un mes determinado, cargado por el inspector. Es la "foto real" del avance, y se compara contra lo proyectado en las Etapas.</li>
+                <li><strong>Certificado</strong>: el documento de pago que se genera a partir de una Foja de Medición.</li>
+            </ol>
+            <div class="alert alert-info small mb-0">
+                <i class="bi bi-info-circle me-1"></i>
+                Una obra puede tener varios Planes de Trabajo a lo largo del tiempo (por ejemplo, si se reprograma la obra), pero <strong>solo uno está "vigente"</strong> en cada momento: el más reciente. Todo lo que se carga (Rubros, Fojas) se hace siempre sobre el plan vigente.
+            </div>
+        </div>
+    </div>
+
+    {# ─── Paso 1 ─── #}
+    <div class="card mb-4" id="paso1">
+        <div class="card-header py-2 bg-light fw-semibold small">Paso 1 — Crear la Obra</div>
+        <div class="card-body p-3">
+            <p>Desde cualquier página, abrí el menú <strong>Obras</strong> de la barra superior y elegí <strong>Nueva Obra</strong>.</p>
+            <img src="{% static 'carga/img/ayuda/00-navbar-obras.png' %}" class="img-fluid border rounded mb-3" alt="Menú Obras de la barra de navegación">
+
+            <p>Completá los datos obligatorios: <strong>Nombre</strong> de la obra, <strong>Empresa</strong> contratista, <strong>Programa</strong> y <strong>Expediente</strong>. El resto de los campos (localidad, fechas, observaciones) son opcionales y se pueden completar más adelante editando la obra.</p>
+            <img src="{% static 'carga/img/ayuda/01-obra-form-vacio.png' %}" class="img-fluid border rounded mb-3" alt="Formulario de creación de Obra vacío">
+
+            <div class="alert alert-warning small">
+                <i class="bi bi-exclamation-triangle me-1"></i>
+                Los campos <strong>Inspector</strong> y <strong>Representante Técnico</strong> (en la sección "Miscelánea", al final del formulario) son obligatorios aunque no lo parezcan a simple vista. Si al hacer clic en "Guardar" no pasa nada y no aparece ningún mensaje de error, revisá que hayas elegido al menos un Inspector.
+            </div>
+
+            <p>Así se ve el formulario completo, listo para guardar:</p>
+            <img src="{% static 'carga/img/ayuda/02-obra-form-completo.png' %}" class="img-fluid border rounded mb-3" alt="Formulario de creación de Obra completo">
+
+            <p>Al guardar, el sistema te lleva a la <strong>ficha de la obra</strong>: la pantalla central desde donde vas a gestionar el contrato, el plan de trabajos, los rubros, las etapas y las fojas. Todavía no hay nada cargado más que los datos básicos:</p>
+            <img src="{% static 'carga/img/ayuda/03-obra-ficha-inicial.png' %}" class="img-fluid border rounded" alt="Ficha de la obra recién creada, sin plan de trabajos">
+        </div>
+    </div>
+
+    {# ─── Paso 2 ─── #}
+    <div class="card mb-4" id="paso2">
+        <div class="card-header py-2 bg-light fw-semibold small">Paso 2 — Cargar el Contrato</div>
+        <div class="card-body p-3">
+            <p>Desde el menú <strong>Obras → Contrato de Obra</strong>, o desde el botón correspondiente en la ficha de la obra, creá el contrato. Indicá una <strong>Descripción</strong> y agregá al menos una fila de <strong>Monto</strong>: el Rubro presupuestario (Vivienda, Infraestructura, etc.), el <strong>Financiamiento</strong> (Nación / Provincia / Terceros) y el monto en pesos (y en UVI, si corresponde).</p>
+            <img src="{% static 'carga/img/ayuda/04-contrato-form-completo.png' %}" class="img-fluid border rounded mb-3" alt="Formulario de Contrato completo, con un monto cargado">
+
+            <p>Al guardar, la ficha de la obra muestra el contrato y sus montos, y el total de la obra (sección "Montos") se actualiza automáticamente:</p>
+            <img src="{% static 'carga/img/ayuda/05-obra-ficha-con-contrato.png' %}" class="img-fluid border rounded" alt="Ficha de la obra mostrando el contrato cargado">
+
+            <div class="alert alert-info small mb-0 mt-3">
+                <i class="bi bi-info-circle me-1"></i>
+                El contrato es opcional para poder avanzar, pero es muy recomendable cargarlo: permite vincular cada Rubro del Plan de Trabajos a un monto real adjudicado, y habilita el cálculo automático de montos ($) en las Etapas y Fojas de Medición.
+            </div>
+        </div>
+    </div>
+
+    {# ─── Paso 3 ─── #}
+    <div class="card mb-4" id="paso3">
+        <div class="card-header py-2 bg-light fw-semibold small">Paso 3 — Crear el Plan de Trabajos</div>
+        <div class="card-body p-3">
+            <p>Desde la ficha de la obra, hacé clic en <strong>"+ Nuevo Plan de Trabajos"</strong>. Indicá la <strong>Duración (meses)</strong> total del plan y, si ya cargaste un contrato, vinculalo en <strong>Contrato Vinculado</strong> para poder asociar los rubros a sus montos reales.</p>
+            <img src="{% static 'carga/img/ayuda/06-plan-form-completo.png' %}" class="img-fluid border rounded mb-3" alt="Formulario de creación de Plan de Trabajos completo">
+
+            <p>Al guardar, el plan queda vacío, listo para que le agregues sus rubros:</p>
+            <img src="{% static 'carga/img/ayuda/07-plan-detalle-vacio.png' %}" class="img-fluid border rounded" alt="Plan de Trabajos recién creado, sin rubros">
+        </div>
+    </div>
+
+    {# ─── Paso 4 ─── #}
+    <div class="card mb-4" id="paso4">
+        <div class="card-header py-2 bg-light fw-semibold small">Paso 4 — Agregar un Rubro y sus Ítems</div>
+        <div class="card-body p-3">
+            <p>Un Rubro agrupa un presupuesto (por ejemplo "Viviendas") y se divide en <strong>Ítems</strong> con un <strong>% de incidencia</strong> cada uno. Completá el Nombre, el Orden y el Presupuesto del rubro, y luego cargá los ítems: la suma de sus porcentajes de incidencia <strong>tiene que dar exactamente 100%</strong>, o el sistema no va a dejar guardar.</p>
+            <img src="{% static 'carga/img/ayuda/08-rubro-form-completo.png' %}" class="img-fluid border rounded mb-3" alt="Formulario de Rubro con 3 ítems que suman 100% de incidencia">
+
+            <div class="alert alert-warning small">
+                <i class="bi bi-exclamation-triangle me-1"></i>
+                Los nombres de los ítems se guardan siempre en <strong>MAYÚSCULAS</strong>, sin importar cómo los tipees.
+            </div>
+
+            <p>La ficha de la obra ahora muestra el rubro con sus ítems (todavía sin etapas proyectadas ni fojas):</p>
+            <img src="{% static 'carga/img/ayuda/09-obra-ficha-con-rubro.png' %}" class="img-fluid border rounded" alt="Ficha de la obra mostrando el rubro Viviendas recién creado">
+
+            <div class="alert alert-info small mb-0 mt-3">
+                <i class="bi bi-info-circle me-1"></i>
+                Podés repetir este paso para cargar tantos rubros como necesite el plan (por ejemplo "Viviendas", "Infraestructura", "Terreno"), cada uno con sus propios ítems.
+            </div>
+        </div>
+    </div>
+
+    {# ─── Paso 5 ─── #}
+    <div class="card mb-4" id="paso5">
+        <div class="card-header py-2 bg-light fw-semibold small">Paso 5 — Proyectar las Etapas (avance planificado)</div>
+        <div class="card-body p-3">
+            <p>Desde la ficha de la obra, hacé clic en <strong>"Gestionar Etapas"</strong> sobre el rubro. Vas a ver una matriz con los ítems en las filas y los meses del plan en las columnas.</p>
+            <img src="{% static 'carga/img/ayuda/10-etapas-matriz-vacia.png' %}" class="img-fluid border rounded mb-3" alt="Matriz de Etapas Proyectadas vacía">
+
+            <p>Completá, para cada ítem, qué porcentaje se planea ejecutar en cada mes. Dos reglas a tener en cuenta:</p>
+            <ul>
+                <li>La suma de los porcentajes de un ítem <strong>a lo largo de todos los meses no puede superar</strong> su % de incidencia (por ejemplo, si "Fundaciones" tiene 30% de incidencia, no podés repartir más de 30 puntos entre todos los meses).</li>
+                <li>La suma de todos los ítems <strong>en un mismo mes no puede superar el 100%</strong>.</li>
+            </ul>
+            <img src="{% static 'carga/img/ayuda/11-etapas-matriz-completa.png' %}" class="img-fluid border rounded mb-3" alt="Matriz de Etapas Proyectadas completa">
+
+            <p>Guardado esto, la ficha de la obra ya muestra el cronograma planificado completo, con el % y la inversión ($) proyectada mes a mes y acumulada:</p>
+            <img src="{% static 'carga/img/ayuda/12-obra-ficha-con-etapas.png' %}" class="img-fluid border rounded" alt="Ficha de la obra mostrando la matriz de Etapas Proyectadas">
+        </div>
+    </div>
+
+    {# ─── Paso 6 ─── #}
+    <div class="card mb-4" id="paso6">
+        <div class="card-header py-2 bg-light fw-semibold small">Paso 6 — Cargar la Foja de Medición (avance real)</div>
+        <div class="card-body p-3">
+            <p>Cada mes, el inspector carga una Foja de Medición con el avance <strong>real</strong> de obra, para compararlo contra lo proyectado en las Etapas. Hacé clic en <strong>"+ Nueva Foja"</strong> sobre el rubro correspondiente.</p>
+            <img src="{% static 'carga/img/ayuda/13-foja-form-vacio.png' %}" class="img-fluid border rounded mb-3" alt="Formulario de Foja de Medición vacío">
+
+            <p>Elegí el <strong>Período</strong> (mes que se está midiendo) y la <strong>Fecha de Medición</strong>, y para cada ítem indicá el <strong>% de avance del mes</strong>. El sistema calcula automáticamente el % acumulado, sumando lo ya registrado en fojas anteriores.</p>
+            <img src="{% static 'carga/img/ayuda/14-foja-form-completo.png' %}" class="img-fluid border rounded mb-3" alt="Formulario de Foja de Medición completo, con el avance del mes cargado">
+
+            <p>Al guardar, podés ver el detalle de la foja (útil para imprimir o compartir):</p>
+            <img src="{% static 'carga/img/ayuda/15-foja-detalle.png' %}" class="img-fluid border rounded mb-3" alt="Detalle de la Foja de Medición guardada">
+
+            <p>Y la ficha de la obra ahora muestra, lado a lado, lo proyectado (Etapas) y lo realmente medido (Fojas):</p>
+            <img src="{% static 'carga/img/ayuda/16-obra-ficha-con-foja.png' %}" class="img-fluid border rounded" alt="Ficha de la obra mostrando la Foja de Medición cargada">
+
+            <div class="alert alert-info small mb-0 mt-3">
+                <i class="bi bi-info-circle me-1"></i>
+                El número de la foja (Foja 1, Foja 2, ...) lo asigna el sistema automáticamente y en orden — no hace falta indicarlo, salvo que estés cargando una foja "legacy" (una medición antigua, de antes de usar el sistema).
+            </div>
+        </div>
+    </div>
+
+    {# ─── Paso 7 ─── #}
+    <div class="card mb-4" id="paso7">
+        <div class="card-header py-2 bg-light fw-semibold small">Paso 7 — Generar el Certificado</div>
+        <div class="alert alert-warning small">
+            <i class="bi bi-exclamation-triangle me-1"></i>
+            La implementación completa está pendiente, funciona un esqueleto para la carga de certificados antiguos.
+        </div>
+        <div class="card-body p-3">
+            <p>Con la foja ya cargada, hacé clic en el enlace <strong>"Cert."</strong> que aparece junto a ella en la ficha de la obra. El formulario de Certificado se abre con varios datos ya precargados desde la foja (obra, rubro, % del mes, % acumulado).</p>
+            <img src="{% static 'carga/img/ayuda/17-certificado-form-vacio.png' %}" class="img-fluid border rounded mb-3" alt="Formulario de Certificado precargado desde la Foja de Medición">
+
+            <p>Completá el resto de los datos administrativos (Rubro presupuestario, Financiamiento, Expediente, Fecha) y guardá:</p>
+            <img src="{% static 'carga/img/ayuda/18-certificado-form-completo.png' %}" class="img-fluid border rounded" alt="Formulario de Certificado completo, listo para guardar">
+
+            <div class="alert alert-info small mb-0 mt-3">
+                <i class="bi bi-info-circle me-1"></i>
+                Al guardar, el sistema vuelve a mostrar el formulario en blanco (para poder cargar otro certificado rápidamente) — no te va a redirigir a una pantalla de "confirmación". Para verificar que se guardó, andá a la ficha de la obra y revisá la tabla "Certificados Emitidos", al final de la página.
+            </div>
+        </div>
+    </div>
+
+    {# ─── Resultado ─── #}
+    <div class="card mb-4" id="resultado">
+        <div class="card-header py-2 bg-light fw-semibold small">Resultado final</div>
+        <div class="card-body p-3">
+            <p>Con estos siete pasos, la ficha de la obra queda completa: datos generales, montos de contrato, plan de trabajos vigente con sus rubros, la matriz de etapas proyectadas, la matriz de fojas de medición reales, y el listado de certificados emitidos.</p>
+            <img src="{% static 'carga/img/ayuda/19-obra-ficha-final.png' %}" class="img-fluid border rounded" alt="Ficha de la obra completa, con contrato, plan, rubro, etapas, foja y certificado">
+            <p class="mt-3 mb-0">Los meses siguientes, el ciclo se repite solamente entre el <a href="#paso6">Paso 6</a> (cargar una nueva Foja de Medición) y el <a href="#paso7">Paso 7</a> (generar su Certificado) — la Obra, el Contrato, el Plan de Trabajos, los Rubros y las Etapas ya quedan definidos y no hace falta volver a crearlos, salvo que la obra se reprograme.</p>
+        </div>
+    </div>
+
+    {# ─── FAQ ─── #}
+    <div class="card mb-4" id="faq">
+        <div class="card-header py-2 bg-light fw-semibold small">Preguntas frecuentes y errores comunes</div>
+        <div class="card-body p-3">
+            <dl class="mb-0">
+                <dt>Hice clic en "Guardar" en el formulario de Obra y no pasó nada.</dt>
+                <dd class="mb-3">Revisá que hayas completado <strong>Inspector</strong> y <strong>Representante Técnico</strong>, al final del formulario. Son obligatorios pero el sistema no siempre muestra un mensaje de error visible.</dd>
+
+                <dt>El sistema no me deja guardar los ítems de un Rubro.</dt>
+                <dd class="mb-3">La suma de los % de incidencia de todos los ítems del rubro tiene que dar <strong>exactamente 100%</strong> (con un margen de error de hasta 0,5%).</dd>
+
+                <dt>No me deja guardar la matriz de Etapas o la Foja de Medición.</dt>
+                <dd class="mb-3">Revisá que, para cada ítem, la suma de los porcentajes cargados no supere su % de incidencia, y que la suma de todos los ítems en un mismo mes no supere el 100%.</dd>
+
+                <dt>No encuentro el Rubro que necesito al crear una Foja de Medición.</dt>
+                <dd class="mb-0">Solo se pueden cargar fojas sobre rubros del <strong>plan vigente</strong> (el más reciente) de la obra. Si el rubro pertenece a un plan anterior, primero hay que reprogramar el plan.</dd>
+            </dl>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}

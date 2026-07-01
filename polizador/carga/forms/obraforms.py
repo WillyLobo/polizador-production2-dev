@@ -10,6 +10,9 @@ from carga.views.ajaxviews import (
 	municipiomultiplewidget,
 	obramultiplewidget
 	)
+from personalizador.views.ajaxviews import (
+    representantetecnicoMultipleWidget,
+	)
 from polizador.custom_forms import DateHTMLWidget
 
 class ObraForm(forms.ModelForm):
@@ -37,6 +40,7 @@ class ObraForm(forms.ModelForm):
 			"obra_fecha_contrato",
 			"obra_fecha_entrega",
 			"obra_inspector",
+			"obra_representantetecnico",
 			"obra_observaciones",
 			"obra_principal",
 		)
@@ -117,6 +121,9 @@ class ObraForm(forms.ModelForm):
 				"class": "form-control",
 			}),
 			"obra_inspector": agentemultiplewidget(attrs={
+				"class": "form-control customSelect2",
+			}),
+			"obra_representantetecnico": representantetecnicoMultipleWidget(attrs={
 				"class": "form-control customSelect2",
 			}),
 			"obra_observaciones": forms.TextInput(attrs={

@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.views import generic
-from carga.models import PlanDeTrabajos, PlanDeTrabajosRubro, PlanDeTrabajosItem
+from carga.models import PlanDeTrabajos, PlanDeTrabajosRubro, PlanDeTrabajosItem, Contrato
 from carga.forms.plandetrabajosforms import *
 
 @method_decorator(login_required, name="dispatch")
@@ -20,17 +20,27 @@ class CrearPlanDeTrabajos(PermissionRequiredMixin, generic.CreateView):
 	def _origen_id(self):
 		return self.request.GET.get("clonar") or self.request.POST.get("clonar")
 
+	def _obra_id(self):
+		origen_id = self._origen_id()
+		if origen_id:
+			obra_id = PlanDeTrabajos.objects.filter(pk=origen_id).values_list("trabajos_obra_id", flat=True).first()
+			if obra_id:
+				return obra_id
+		return self.request.GET.get("obra") or self.request.POST.get("trabajos_obra")
+
+	def get_form(self, form_class=None):
+		form = super().get_form(form_class)
+		obra_id = self._obra_id()
+		if obra_id:
+			form.fields["trabajos_contrato"].queryset = Contrato.objects.filter(contrato_obra_id=obra_id)
+		return form
+
 	def get(self, request, *args, **kwargs):
 		self.object = None
 		form_class = self.get_form_class()
 		form = self.get_form(form_class)
 
-		origen_id = self._origen_id()
-		obra_id = None
-		if origen_id:
-			obra_id = PlanDeTrabajos.objects.filter(pk=origen_id).values_list("trabajos_obra_id", flat=True).first()
-		if not obra_id:
-			obra_id = self.request.GET.get("obra")
+		obra_id = self._obra_id()
 		if obra_id:
 			form.fields["trabajos_obra"].initial = obra_id
 
@@ -68,3 +78,8 @@ class UpdatePlanDeTrabajos(PermissionRequiredMixin, generic.UpdateView):
 	model = PlanDeTrabajos
 	template_name = "plandetrabajos/update-plandetrabajos.html"
 	form_class = PlandeTrabajoForm
+
+	def get_form(self, form_class=None):
+		form = super().get_form(form_class)
+		form.fields["trabajos_contrato"].queryset = Contrato.objects.filter(contrato_obra_id=self.object.trabajos_obra_id)
+		return form

@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+{% load l10n %}
+{% block title %}<title>Foja {{ object.foja_numero }} — {{ rubro.rubro_nombre }}</title>{% endblock %}
+
+{% block style %}
+<style>
+  :root{ --ink:#111; --line:#000; --pad:11mm; }
+  .hoja-doc, .hoja-doc *{ box-sizing:border-box; }
+  .hoja-doc{ font-family: Arial, Helvetica, sans-serif; color:var(--ink); }
+
+  .hoja{
+    width:297mm; min-height:210mm;
+    background:#fff;
+    margin:6mm auto;
+    padding:9mm var(--pad) 8mm var(--pad);
+    display:flex; flex-direction:column;
+    box-shadow:0 2px 12px rgba(0,0,0,.2);
+  }
+
+  .titulo-fila{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6mm; }
+  .titulo-doc{ font-size:16pt; font-weight:700; letter-spacing:.3px; }
+  .titulo-sub{ font-size:11pt; font-weight:400; letter-spacing:1px; color:#444; }
+
+  .datos{ display:flex; gap:6mm; font-size:8pt; line-height:1.5; }
+  .datos .col-izq{ flex:1 1 42%; }
+  .datos .col-med{ flex:0 0 30%; padding-top:1mm; }
+  .datos .col-der{ flex:1 1 28%; }
+  .datos p{ margin:0 0 1.6mm 0; }
+  .datos .sep{ height:2mm; }
+  .lbl{ font-weight:700; margin: 0; padding:0;}
+  .datos-lbl{ margin: 0 !important; padding:0;}
+
+  .caja-aporte{ width:100%; border-collapse:collapse; font-size:7.5pt; margin-bottom:3mm; }
+  .caja-aporte td{ border:1px solid var(--line); padding:1mm 1.5mm; text-align:center; }
+  .caja-aporte tr.aporte-titulo td{ font-weight:700; background:#f2f2f2; text-align:left; padding-left:2mm; }
+  .caja-aporte td.aporte-lbl{ width:34%; text-align:left; padding-left:2mm; }
+
+  .subtitulo{ font-size:9pt; font-weight:700; margin:5mm 0 1.5mm 0; }
+
+  .tabla-rubros{ width:100%; border-collapse:collapse; font-size:7.5pt; margin-top:1mm; }
+  .tabla-rubros th, .tabla-rubros td{ border:1px solid var(--line); padding:0.9mm 1.5mm; line-height:1.15; }
+  .tabla-rubros thead th{ text-align:center; font-weight:700; vertical-align:middle; }
+  .tabla-rubros td.item{ text-align:left; }
+  .tabla-rubros td.num, .tabla-rubros td.pct{ text-align:center; }
+  .tabla-rubros .col-n{ width:5%; }
+  .tabla-rubros .col-pct{ width:13%; }
+  .tabla-rubros tr.totales td{ font-weight:700; }
+
+  .tabla-avance{ width:100%; border-collapse:collapse; font-size:8pt; }
+  .tabla-avance th, .tabla-avance td{ border:1px solid var(--line); padding:1mm 2mm; }
+  .tabla-avance th{ text-align:center; font-weight:700; }
+  .tabla-avance td.concepto{ text-align:left; font-weight:700; }
+  .tabla-avance td.dato{ text-align:center; }
+
+  .nota{ font-size:8pt; margin-top:3.5mm; letter-spacing:.2px; }
+  .declaracion{ font-size:11pt; font-weight:700; margin-top:3mm; letter-spacing:.3px; text-align:center; }
+
+  .firmas{ margin-top:20mm; display:flex; justify-content:space-around; gap:5mm; padding-top:7mm; break-inside:avoid; page-break-inside:avoid; }
+  .firma{ text-align:center; font-size:8pt; line-height:1.35; min-width:55mm; break-inside:avoid; page-break-inside:avoid; }
+  .firma .raya{ border-top:1px dotted #444; margin-bottom:1mm; min-height:15mm; }
+
+  .fotos-grid{
+    flex:1 1 auto;
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    grid-template-rows:repeat(2,1fr);
+    gap:5mm; margin-top:6mm; margin-bottom:4mm;
+  }
+  .foto{
+    border:1px solid #ccc;
+    background:#f6f6f6;
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+  }
+  .foto img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+  @media print {
+    @page{ size:A4 landscape; margin:0; }
+    nav, .navbar, .d-print-none{ display:none !important; }
+    body{ background:#fff; padding:0 !important; }
+    .hoja{ margin:0; box-shadow:none; width:auto; min-height:auto; height:100vh; page-break-after:always; }
+    .hoja:last-child{ page-break-after:auto; }
+  }
+</style>
+{% endblock style %}
+
+{% block content %}
+
+{% comment %} ── Barra de acciones (solo pantalla) ── {% endcomment %}
+<div class="d-flex justify-content-between align-items-center mb-3 d-print-none">
+  <h5 class="mb-0">Foja de Medición N° {{ object.foja_numero }} — {{ rubro.rubro_nombre }}</h5>
+  <div class="d-flex gap-2">
+    <a href="{% url 'carga:update-fojademedicion' object.pk %}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-pencil"></i> Editar
+    </a>
+    <button onclick="window.print()" class="btn btn-sm btn-outline-dark">
+      <i class="bi bi-printer"></i> Imprimir / PDF
+    </button>
+    <a href="{% url 'carga:estado-obra' obra.pk %}" class="btn btn-sm btn-outline-primary">
+      <i class="bi bi-arrow-left"></i> Volver a la Obra
+    </a>
+  </div>
+</div>
+
+<div class="hoja-doc">
+
+{% comment %} ============ HOJA 1 · FOJA DE MEDICIÓN ============ {% endcomment %}
+<section class="hoja">
+{% include "foja/encabezado-fojademedicion-partial.html" with inspectores=object.foja_inspector.all representantetecnico=obra.obra_representantetecnico.all %}
+
+  {% comment %} ── Tabla de ítems del rubro ── {% endcomment %}
+  <div class="subtitulo">{{ rubro.rubro_nombre }}</div>
+  <table class="tabla-rubros">
+    <thead>
+      <tr>
+        <th class="col-n">#</th>
+        <th class="item">ITEM</th>
+        <th class="col-pct">% ITEM<br>S/ TOTAL</th>
+        <th class="col-pct">CERTIF. ACUM<br>ANTER. %</th>
+        <th class="col-pct">CERTIF.<br>ACTUAL %</th>
+        <th class="col-pct">CERTIF.<br>ACUMUL. %</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td class="num">{{ row.fojaitem.fojaitem_planitem.planitem_orden }}</td>
+        <td class="item">{{ row.fojaitem.fojaitem_planitem.planitem_nombre }}</td>
+        <td class="pct">{{ row.fojaitem.fojaitem_planitem.planitem_incidencia_pct|floatformat:3 }}</td>
+        <td class="pct">{{ row.pct_anterior|floatformat:3 }}</td>
+        <td class="pct">{{ row.fojaitem.fojaitem_pct_avance_mes|floatformat:3 }}</td>
+        <td class="pct">{{ row.fojaitem.fojaitem_pct_acumulado|floatformat:3 }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" style="text-align:center;">Sin ítems registrados</td></tr>
+      {% endfor %}
+      <tr class="totales">
+        <td class="item" colspan="2">TOTALES</td>
+        <td class="pct"></td>
+        <td class="pct">{{ total_pct_anterior|floatformat:3 }}</td>
+        <td class="pct">{{ total_pct_mes|floatformat:3 }}</td>
+        <td class="pct">{{ total_pct_acumulado|floatformat:3 }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  {% comment %} ── Detalle avance físico ── {% endcomment %}
+  <div class="subtitulo">DETALLE AVANCE FISICO</div>
+  <table class="tabla-avance">
+    <thead>
+      <tr>
+        <th style="text-align:left; width:30%;">CONCEPTO</th>
+        <th>ACUMULADO ANTERIOR</th>
+        <th>PRESENTE CERTIFICADO</th>
+        <th>ACUMULADO TOTAL</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="concepto">AVANCE FÍSICO OBRA</td>
+        <td class="dato">{{ total_pct_anterior|floatformat:3 }} %</td>
+        <td class="dato">{{ total_pct_mes|floatformat:3 }} %</td>
+        <td class="dato">{{ total_pct_acumulado|floatformat:3 }} %</td>
+      </tr>
+    </tbody>
+  </table>
+
+  {% if object.foja_observaciones %}
+  <div class="nota"><span class="lbl">Observaciones:</span> {{ object.foja_observaciones }}</div>
+  {% endif %}
+
+{% include "foja/lineafirmas-fojademedicion-partial.html" with inspectores=object.foja_inspector.all representantetecnico=obra.obra_representantetecnico.all %}
+</section>
+
+{% comment %} ============ HOJAS DE FOTOS (una por cada 6 fotos) ============ {% endcomment %}
+{% for pagina in foto_paginas %}
+<section class="hoja">
+{% include "foja/encabezado-fojademedicion-partial.html" with titulo_doc="FOTOS DE MEDICIÓN" inspectores=object.foja_inspector.all representantetecnico=obra.obra_representantetecnico.all %}
+
+  <div class="fotos-grid">
+    {% for foto in pagina %}
+    <div class="foto">
+      {% comment %} <img src="{{ foto.fotofoja_archivo.url }}" alt="Foto {{ forloop.parentloop.counter }}-{{ forloop.counter }}"> {% endcomment %}
+    </div>
+    {% endfor %}
+  </div>
+{% include "foja/lineafirmas-fojademedicion-partial.html" with inspectores=object.foja_inspector.all representantetecnico=obra.obra_representantetecnico.all %}
+</section>
+{% endfor %}
+
+</div>{# /hoja-doc #}
+
+{% if auto_print %}
+<script>window.addEventListener('load', function(){ window.print(); });</script>
+{% endif %}
+{% endblock %}

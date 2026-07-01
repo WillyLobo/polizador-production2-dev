@@ -1,0 +1,60 @@
+{% comment %} ── Datos del encabezado, reutilizados en cada hoja ── {% endcomment %}
+<div class="titulo-fila">
+  <div class="titulo-doc">{{ titulo_doc|default:"FOJA DE MEDICIÓN" }}</div>
+  <div class="titulo-sub">N° {{ object.foja_numero }}</div>
+</div>
+
+  <div class="datos">
+    <div class="col-izq">
+      <p class="datos-lbl"><span class="lbl">PROYECTO:</span> {{ obra.obra_nombre }}</p>
+      <p class="datos-lbl"><span class="lbl">CONVENIO:</span> {{ obra.obra_convenio }}</p>
+      <p class="datos-lbl"><span class="lbl">ENTE EJECUTOR:</span> INSTITUTO PROVINCIAL DE DESARROLLO URBANO Y VIVIENDA DEL CHACO</p>
+      <p class="datos-lbl"><span class="lbl">PROGRAMA:</span> {{ obra.obra_programa }}</p>
+      <div class="sep"></div>
+      <p class="datos-lbl"><span class="lbl">Gerente:</span>Ing. Fernando Cucchi</p>
+      {% if inspectores %}
+      <div class="sep"></div>
+      <p class="datos-lbl"><span class="lbl">Inspector{% if inspectores|length > 1 %}es{% endif %}:</span>
+        {% for ag in inspectores %}{{ ag.agente_nombreyapellido }}{% if not forloop.last %}, {% endif %}{% endfor %}
+      </p>
+      {% endif %}
+      {% if representantetecnico %}
+      <div class="sep"></div>
+      <p class="datos-lbl"><span class="lbl">{% if representantetecnico|length > 1 %}Representantes Técnicos{% else%}Representante Técnico{% endif %}:</span>
+        {% for ag in representantetecnico %}{{ ag }}{% if not forloop.last %}, {% endif %}{% endfor %}
+      </p>
+      {% endif %}
+
+    </div>
+    <div class="col-med">
+      <table class="caja-aporte">
+        {% if obra.obra_contrato_nacion_uvi or obra.obra_contrato_nacion_pesos %}
+        <tr class="aporte-titulo"><td colspan="2">APORTE NACIÓN</td></tr>
+        <tr><td class="aporte-lbl">UVI</td><td>{{ obra.obra_contrato_nacion_uvi|floatformat:2 }}</td></tr>
+        <tr><td class="aporte-lbl">$</td><td>{{ obra.obra_contrato_nacion_pesos|floatformat:2 }}</td></tr>
+        {% endif %}
+        {% if obra.obra_contrato_provincia_uvi or obra.obra_contrato_provincia_pesos%}
+        <tr class="aporte-titulo"><td colspan="2">APORTE PROVINCIA</td></tr>
+        <tr><td class="aporte-lbl">UVI</td><td>{{ obra.obra_contrato_provincia_uvi|floatformat:2 }}</td></tr>
+        <tr><td class="aporte-lbl">$</td><td>{{ obra.obra_contrato_provincia_pesos|floatformat:2 }}</td></tr>
+        {% endif %}
+        {% if obra.obra_contrato_terceros_uvi or obra.obra_contrato_terceros_pesos%}
+        <tr class="aporte-titulo"><td colspan="2">APORTE TERCEROS</td></tr>
+        <tr><td class="aporte-lbl">UVI</td><td>{{ obra.obra_contrato_terceros_uvi|floatformat:2 }}</td></tr>
+        <tr><td class="aporte-lbl">$</td><td>{{ obra.obra_contrato_terceros_pesos|floatformat:2 }}</td></tr>
+        {% endif %}
+      </table>
+    </div>
+    <div class="col-der">
+      <p class="datos-lbl"><span class="lbl">CERTIFICADO N°:</span> {{ object.foja_numero }}</p>
+      <p class="datos-lbl"><span class="lbl">FECHA DE MEDICIÓN:</span> {{ object.foja_fecha|date:"d/m/Y" }}</p>
+      <p class="datos-lbl"><span class="lbl">MES Y AÑO CERTIFICADO:</span> {{ object.foja_periodo|date:"F Y"|capfirst }}</p>
+      <p class="datos-lbl"><span class="lbl">FECHA INICIO:</span> {% if plan.trabajos_fecha_inicio %}{{ plan.trabajos_fecha_inicio|date:"d/m/Y" }}{% else %}—{% endif %}</p>
+      <p class="datos-lbl"><span class="lbl">PLAZO OBRA:</span> {{ obra.obra_plazo|default:"—" }}</p>
+      <p class="datos-lbl"><span class="lbl">COMPULSA:</span> {{ obra.compulsa|default:"—" }}</p>
+      <p class="datos-lbl"><span class="lbl">NOMENCLATURA CATASTRAL:</span> {{ obra.obra_nomenclatura }}</p>
+      <p class="datos-lbl"><span class="lbl">GEOREFERENCIA:</span> P/H </p>
+      <p class="datos-lbl"><span class="lbl">EMPRESA:</span> {{ obra.obra_empresa.empresa_nombre }}</p>
+      <p class="datos-lbl"><span class="lbl">CUIT:</span> {{ obra.obra_empresa.empresa_cuit }}</p>
+    </div>
+  </div>

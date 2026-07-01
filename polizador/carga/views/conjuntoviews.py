@@ -13,7 +13,7 @@ from carga.views.generics import get_deleted_objects
 
 @method_decorator(login_required, name="dispatch")
 class EliminarConjunto(PermissionRequiredMixin, generic.DeleteView):
-	permission_required = "carga.delete_conjunto"
+	permission_required = "carga.delete_conjuntolicitado"
 
 	model = ConjuntoLicitado
 	template_name = "generic/confirm_delete.html"
@@ -29,7 +29,7 @@ class EliminarConjunto(PermissionRequiredMixin, generic.DeleteView):
 
 @method_decorator(login_required, name="dispatch")
 class CrearConjunto(PermissionRequiredMixin, generic.CreateView):
-	permission_required = "carga.add_conjunto"
+	permission_required = "carga.add_conjuntolicitado"
 
 	model = ConjuntoLicitado
 	template_name = "conjunto/crear-conjunto.html"
@@ -48,7 +48,7 @@ class CrearConjunto(PermissionRequiredMixin, generic.CreateView):
 
 @method_decorator(login_required, name="dispatch")
 class UpdateConjunto(PermissionRequiredMixin, generic.UpdateView):
-	permission_required = "carga.change_conjunto"
+	permission_required = "carga.change_conjuntolicitado"
 
 	model = ConjuntoLicitado
 	template_name = "conjunto/update-conjunto.html"
@@ -57,20 +57,20 @@ class UpdateConjunto(PermissionRequiredMixin, generic.UpdateView):
 
 @method_decorator(login_required, name="dispatch")
 class ConjuntoObra(PermissionRequiredMixin, generic.DetailView):
-	permission_required = "carga.view_conjunto"
+	permission_required = "carga.view_conjuntolicitado"
 
 	model = ConjuntoLicitado
 	template_name = "conjunto/conjunto-obra.html"
 
 @login_required
-@permission_required('carga.view_conjunto', raise_exception=True)
+@permission_required('carga.view_conjuntolicitado', raise_exception=True)
 def PaginaListaConjuntos(request):
 	template_name = "Lista-conjuntos.html"
 
 	return render(request, template_name, {})
 
 @method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required('carga.view_conjunto', raise_exception=True), name="dispatch")
+@method_decorator(permission_required('carga.view_conjuntolicitado', raise_exception=True), name="dispatch")
 class ListaConjuntosView(AjaxDatatableView):
 	model = ConjuntoLicitado
 	title = "Conjuntos"

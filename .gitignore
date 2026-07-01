@@ -155,4 +155,5 @@ polizador-production-dd5c413dde2f.json
 snippets.py
 .kilo/kilo.jsonc
 .claude/
+.playwright-mcp/
 polizador/personalizador/management/commands/fill_data.py

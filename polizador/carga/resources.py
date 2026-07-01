@@ -139,6 +139,14 @@ class PlanDeTrabajosItemResource(resources.ModelResource):
 	class Meta:
 		model = models.PlanDeTrabajosItem
 
+class PlanDeTrabajosEtapaResource(resources.ModelResource):
+	class Meta:
+		model = models.PlanDeTrabajosEtapa
+
+class PlanDeTrabajosEtapaItemResource(resources.ModelResource):
+	class Meta:
+		model = models.PlanDeTrabajosEtapaItem
+
 class FojaDeMedicionResource(resources.ModelResource):
 	class Meta:
 		model = models.FojaDeMedicion
