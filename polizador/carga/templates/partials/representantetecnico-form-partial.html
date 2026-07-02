@@ -1,0 +1,38 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Datos del Representante Técnico</legend>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.representantetecnico_nombre.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.representantetecnico_apellido.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            {{form.representantetecnico_dni.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.representantetecnico_cuil.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.representantetecnico_telefono.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.representantetecnico_profesion.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.representantetecnico_matricula.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            {{form.representantetecnico_email.as_field_group}}
+        </div>
+    </div>
+</fieldset>

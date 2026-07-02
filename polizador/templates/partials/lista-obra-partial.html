@@ -30,6 +30,11 @@
                 {% include "partials/obra-body-partial.html"%}
             {% endfor %}
         {% endif %}
+        {% if object.obra_representantetecnico.all %}
+            {% for instance in object.obra_representantetecnico.all %}
+                {% include "partials/obra-body-partial.html"%}
+            {% endfor %}
+        {% endif %}
         {% if object.obra_set.all %}
             {% for instance in object.obra_set.all %}
                 {% include "partials/obra-body-partial.html"%}

@@ -21,6 +21,7 @@ from carga.views.plandetrabajosrubroviews import *
 from carga.views.fojademedicionviews import *
 from carga.views.plandetrabajosetapaviews import *
 from carga.views.ayudaviews import *
+from carga.views.representantetecnicoviews import *
 
 app_name = "carga"
 
@@ -88,6 +89,12 @@ receptor_patterns = [
 area_patterns = [
 	path("crear/area/", CrearArea.as_view(), name="crear-area"),
 	path("crear/area/<pk>", UpdateArea.as_view(), name="update-area")
+]
+representantetecnico_patterns = [
+	path("crear/representantetecnico/", CrearRepresentanteTecnico.as_view(), name="crear-representantetecnico"),
+	path("crear/representantetecnico/<pk>", UpdateRepresentanteTecnico.as_view(), name="update-representantetecnico"),
+	path("crear/representantetecnico/obra/<pk>", RepresentanteTecnicoObra.as_view(), name="representantetecnico-obra"),
+    path("eliminar/representantetecnico/<pk>", EliminarRepresentanteTecnico.as_view(), name="eliminar-representantetecnico")
 ]
 aseguradora_patterns = [
 	path("crear/aseguradora/", CrearAseguradora.as_view(), name="crear-aseguradora"),
@@ -164,6 +171,9 @@ ajax = [
 	# Departamentos
 	path("listas/departamentos", PaginaListaDepartamentos, name="lista-departamentos"),
 	path("ajax_datatables/departamentos/", ListaDepartamentosView.as_view(), name="lista-departamentos-datatables"),
+	# Representantes Técnicos
+	path("listas/representantetecnicos", PaginaListaRepresentantesTecnicos, name="lista-representantetecnicos"),
+	path("ajax_datatables/representantetecnicos/", ListaRepresentantesTecnicosView.as_view(), name="lista-representantetecnicos-datatables"),
 	# Localidades
 	path("listas/localidades", PaginaListaLocalidad, name="lista-localidades"),
 	path("ajax_datatables/localidades/", ListaLocalidadesView.as_view(), name="lista-localidades-datatables"),
@@ -200,6 +210,7 @@ urlpatterns += conjunto_patterns
 urlpatterns += programa_patterns
 urlpatterns += aseguradora_patterns
 urlpatterns += area_patterns
+urlpatterns += representantetecnico_patterns
 urlpatterns += receptor_patterns
 urlpatterns += municipio_patterns
 urlpatterns += localidad_patterns

@@ -84,6 +84,7 @@ class DepartamentoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 class RepresentanteTecnicoAdmin(ImportExportMixin, SimpleHistoryAdmin):
     resource_class = RepresentanteTecnicoResource
     list_display = ["representantetecnico_nombre", "representantetecnico_apellido", "representantetecnico_cuil", "representantetecnico_matricula"]
+    search_fields = ["representantetecnico_nombre", "representantetecnico_apellido", "representantetecnico_dni", "representantetecnico_cuil"]
 
 admin.site.register(Agente, AgenteAdmin)
 admin.site.register(GeneroAgente, GeneroAgenteAdmin)
