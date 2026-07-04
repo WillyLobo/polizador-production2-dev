@@ -1,0 +1,12 @@
+
+<div class="firmas">
+{% for firmante in firmantes %}
+    {% if firmante.agente %}
+    <div class="firma">
+    <div class="nombre">{{ firmante.agente.agente_nombreyapellido }}</div>
+    <div>{% for titulo in firmante.agente.titulo_profesional.all %}{{ titulo }}{% if not forloop.last %}, {% endif %}{% endfor %}{% if firmante.agente.matricula %} - Matricula N°{{ firmante.agente.matricula }}{% endif %}</div>
+    <div><b>{{ firmante.cargo }}</b></div>
+    </div>
+    {% endif %}
+{% endfor %}
+</div>

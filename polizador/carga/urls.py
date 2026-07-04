@@ -15,6 +15,7 @@ from carga.views.programaviews import *
 from carga.views.conjuntoviews import *
 from carga.views.reportes import *
 from carga.views.contratoviews import *
+from carga.views.contratotramopagoviews import *
 from carga.views.documentosdigitalesviews import *
 from carga.views.plandetrabajosviews import *
 from carga.views.plandetrabajosrubroviews import *
@@ -35,8 +36,13 @@ empresa_patterns = [
 ]
 certificado_patterns = [
 	path("crear/certificado/", CrearCertificado.as_view(), name="crear-certificado"),
+	path("crear/certificado/generar-desde-foja/<pk>", GenerarCertificadosDesdeFoja.as_view(), name="generar-certificados-foja"),
+	path("crear/certificado/anticipo/", CrearCertificadoAnticipo.as_view(), name="crear-certificado-anticipo"),
+	path("crear/certificado/hecho-consumado/", CrearCertificadoHechoConsumado.as_view(), name="crear-certificado-hechoconsumado"),
+	path("crear/certificado/nuevo/", NuevoCertificadoMenu.as_view(), name="nuevo-certificado-menu"),
 	path("crear/certificado/<pk>", UpdateCertificado.as_view(), name="update-certificado"),
-	path("crear/certificado/detalle/<pk>", CertificadoView.as_view(), name="detalle-certificado"),
+	path("crear/certificado/detalle/<pk>", DetalleCertificado.as_view(), name="detalle-certificado"),
+	path("crear/certificado/detalle/<pk>/imprimir", ImprimirCertificado.as_view(), name="imprimir-certificado"),
     path("eliminar/certificado/<pk>", EliminarCertificado.as_view(), name="eliminar-certificado")
 ]
 obra_patterns = [
@@ -116,6 +122,7 @@ conjunto_patterns = [
 contrato_patterns = [
     path("crear/contrato/", CrearContrato.as_view(), name="crear-contrato"),
     path("crear/contrato/<pk>", UpdateContrato.as_view(), name="update-contrato"),
+    path("crear/contrato/<pk>/tramos/", GestionarTramosContrato.as_view(), name="gestionar-tramos-contrato"),
 ]
 plandetrabajos_patterns = [
     path("crear/plandetrabajos/", CrearPlanDeTrabajos.as_view(), name="crear-plandetrabajos"),
@@ -138,8 +145,7 @@ ayuda_patterns = [
     path("ayuda/plan-de-trabajos-fojas/", ManualObraPlanFojaView.as_view(), name="ayuda-plan-fojas"),
 ]
 reporte_patterns = [
-    path("reporte/crear-reporte-mes/", CrearReporteCertificadoPorMes.as_view(), name="crear-reporte-certificado"),
-	path("reporte/ver-reporte-mes/", VerReporteCertificadoPorMes.as_view(), name="ver-reporte-certificado"),
+    path("reporte/crear-reporte-mes/", ReporteCertificadoPorMesView.as_view(), name="crear-reporte-certificado"),
     path("reporte/crear-reporte-obra/", CrearReporteObraView.as_view(), name="crear-reporte-obra"),
     path("reporte/lista-uvi/", CrearListaUvi.as_view(), name="crear-lista-uvi"),
     path("reporte/refresh_uvi", refresh_uvi_from_bcra, name="refresh-uvi-from-bcra"),

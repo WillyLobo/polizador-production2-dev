@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+{% block title %}<title>Nuevo Certificado</title>{% endblock title %}
+
+<div class="row flex-xl-nowrap">
+  <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
+    {% include "partials/administrative-sidebar.html" %}
+    {% include "partials/floating-generic-menu.html" %}
+  </div>
+  <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
+    <h3>Nuevo Certificado</h3>
+    <ul class="list-group">
+      <li class="list-group-item">
+        <strong>Certificado Parcial de Obra</strong>
+        <div class="text-muted small">Se genera desde una Foja de Medición (botón "Generar Certificado" en el detalle de la Foja): el monto se deriva automáticamente del %mes medido.</div>
+      </li>
+      <li class="list-group-item">
+        <a href="{% url "carga:crear-certificado-anticipo" %}">Certificado de Anticipo</a>
+        <div class="text-muted small">Sin Foja. Se carga un % del monto de contrato; se descuenta proporcionalmente de los certificados Parciales y de Hecho Consumado posteriores de la misma obra y financiamiento, hasta agotarse.</div>
+      </li>
+      <li class="list-group-item">
+        <a href="{% url "carga:crear-certificado-hechoconsumado" %}">Certificado por Hecho Consumado</a>
+        <div class="text-muted small">Sin Foja. Certifica directo contra un Contrato/Resolución de origen, con un % cargado a mano.</div>
+      </li>
+      {% if perms.carga.add_certificado %}
+      <li class="list-group-item">
+        <a href="{% url "carga:crear-certificado" %}">Certificado manual / legacy</a>
+        <div class="text-muted small">Carga 100% manual de todos los campos, para correcciones o registros históricos que no encajan en los flujos de arriba.</div>
+      </li>
+      {% endif %}
+    </ul>
+  </main>
+  <div class="d-none d-xl-block col-xl-2 bd-toc"></div>
+</div>
+{% endblock %}

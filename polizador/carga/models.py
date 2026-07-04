@@ -1,11 +1,13 @@
 from datetime import datetime
+from decimal import Decimal
 from django.utils import timezone
 from wsgiref.validate import validator
 from django.db import models
 from django.urls import reverse
 from simple_history.models import HistoricalRecords
-from django.db.models import Sum, F, FloatField, Max
+from django.db.models import Sum, F, FloatField, Max, Q
 from django.core.validators import MinValueValidator, MaxValueValidator
+from django.core.exceptions import ValidationError
 from uuid_utils import compat
 import calendar
 import os
@@ -390,9 +392,23 @@ class Obra(models.Model):
         except TypeError:
             return 0
     
+    def ultimo_certificado_avance(self):
+        """Último Certificado (por fecha) de tipo PARCIAL/HECHO_CONSUMADO/ETAPA (o su
+        equivalente legacy: certificado_rubro_obra>0): son los únicos que llevan
+        certificado_mes_pct/certificado_acum_pct significativos (% de avance real). Un
+        Anticipo (pool, no rubro puntual) nunca los completa; si fuera el certificado más
+        reciente de la obra, tomarlo como "el último" taparía el avance real con un 0."""
+        certificados = self.certificado_set.filter(
+            Q(certificado_tipo__in=("PARCIAL", "HECHO_CONSUMADO", "ETAPA"))
+            | Q(certificado_tipo="LEGACY", certificado_rubro_obra__gt=0)
+        )
+        if certificados:
+            return certificados.latest()
+
     def obra_acum_pct(self):
-        if self.certificado_set:
-            return self.certificado_set.latest().certificado_acum_pct
+        certificado = self.ultimo_certificado_avance()
+        if certificado:
+            return certificado.certificado_acum_pct
 
     def plan_vigente(self):
         """Retorna el Plan de Trabajos más reciente (vigente) de la obra."""
@@ -524,6 +540,13 @@ class Certificado(models.Model):
         ("P", "Provincia"),
         ("T", "Terceros")
     )
+    TIPO = (
+        ("PARCIAL", "Certificado Parcial de Obra"),
+        ("ANTICIPO", "Certificado de Anticipo"),
+        ("HECHO_CONSUMADO", "Hecho Consumado"),
+        ("ETAPA", "Certificado de Etapa de Contrato"),
+        ("LEGACY", "Legacy / Sin Clasificar"),
+    )
     # Obsoleto -> se migro a una tabla aparte(carga.models.CertificadoRubro)
     RUBRO = (
         ("V", "Vivienda"),
@@ -537,6 +560,16 @@ class Certificado(models.Model):
 
     certificado_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     certificado_obra = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.CASCADE)
+    certificado_tipo = models.CharField("Tipo de Certificado", max_length=15, choices=TIPO, default="LEGACY")
+    certificado_contrato_origen = models.ForeignKey(
+        "Contrato",
+        verbose_name="Contrato/Resolución de Origen",
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+        help_text="Obligatorio para certificados de Hecho Consumado: el Contrato cuya "
+                   "Resolución/Decreto ampara el certificado sin Foja.",
+    )
     certificado_financiamiento = models.CharField("Financiamiento", max_length=1, choices=FINANCIAMIENTO, default="N")
     certificado_rubro = models.CharField("Rubro", max_length=1, choices=RUBRO, default="V") # Obsoleto -> se migro a una tabla aparte(carga.models.CertificadoRubro)
     certificado_rubro_db = models.ForeignKey("CertificadoRubro", verbose_name="Rubro", on_delete=models.DO_NOTHING, default=1)
@@ -549,18 +582,70 @@ class Certificado(models.Model):
     certificado_mes_pct = models.DecimalField("Mes %", max_digits=6, decimal_places=3, default=0, validators=[MaxValueValidator(100)])
     certificado_ante_pct = models.DecimalField("Anterior %", max_digits=6, decimal_places=3, default=0, validators=[MaxValueValidator(100)])
     certificado_acum_pct = models.DecimalField("Acumulado %", max_digits=6, decimal_places=3, default=0, validators=[MaxValueValidator(100)])
+    certificado_anticipo_pct = models.DecimalField(
+        "% de Anticipo",
+        max_digits=6,
+        decimal_places=3,
+        default=0,
+        blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="Sólo aplica a certificados de Anticipo: % cargado a mano sobre el monto de "
+                  "contrato del financiamiento (todos los rubros/contratos de la obra para ese "
+                  "financiamiento, no un rubro puntual).",
+    )
+    certificado_contrato_tramo = models.OneToOneField(
+        "ContratoTramoPago",
+        verbose_name="Tramo de Contrato",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="certificado_etapa",
+        help_text="Obligatorio para certificados de Etapa: el Tramo de Pago de Contrato que "
+                  "este certificado salda.",
+    )
+    certificado_etapa_pct = models.DecimalField(
+        "% de Etapa",
+        max_digits=6,
+        decimal_places=3,
+        default=0,
+        editable=False,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="Sólo aplica a certificados de Etapa: snapshot del % fijo del tramo "
+                  "(certificado_contrato_tramo.tramo_pct_pago) usado para calcular el monto.",
+    )
     certificado_devolucion_expte = models.CharField("Número de Expediente Devolución", max_length=18, null=True, blank=True)
     certificado_devolucion_monto = models.DecimalField("Monto Devolución en Pesos", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
     certificado_devolucion_monto_uvi = models.DecimalField("Monto Devolución en UVI", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
     certificado_monto_uvi = models.DecimalField("Monto en UVI", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
+    certificado_descuento_anticipo_pesos = models.DecimalField("Descuento de Anticipo en Pesos", max_digits=12, decimal_places=2, default=0, editable=False)
+    certificado_descuento_anticipo_uvi = models.DecimalField("Descuento de Anticipo en UVI", max_digits=12, decimal_places=2, default=0, editable=False)
+    certificado_descuento_anticipo_pct = models.DecimalField(
+        "Descuento de Anticipo %",
+        max_digits=6,
+        decimal_places=3,
+        default=0,
+        editable=False,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="% efectivo del monto bruto de este certificado retenido para amortizar "
+                  "anticipos (calculado automáticamente, ver certificacion.aplicar_descuento_anticipo).",
+    )
+    certificado_fondoreparo_pct = models.DecimalField(
+        "Fondo de Reparo %",
+        max_digits=5,
+        decimal_places=2,
+        default=Decimal("5"),
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="Retención sobre el importe total del certificado, sin descontar el "
+                  "anticipo financiero. No aplica a certificados de Anticipo.",
+    )
     certificado_fecha = models.DateField("Fecha", default=timezone.now)
     certificado_monto_cobrar = models.GeneratedField(
-        expression=F("certificado_monto_pesos") - F("certificado_devolucion_monto"),
+        expression=F("certificado_monto_pesos") - F("certificado_devolucion_monto") - F("certificado_descuento_anticipo_pesos"),
         output_field=models.DecimalField("Monto a Cobrar Pesos", max_digits=12, decimal_places=2, default=0, editable=False),
         db_persist=True
     )
     certificado_monto_cobrar_uvi = models.GeneratedField(
-        expression=F("certificado_monto_uvi") - F("certificado_devolucion_monto_uvi"),
+        expression=F("certificado_monto_uvi") - F("certificado_devolucion_monto_uvi") - F("certificado_descuento_anticipo_uvi"),
         output_field=models.DecimalField("Monto a Cobrar UVI", max_digits=12, decimal_places=2, default=0, editable=False),
         db_persist=True
     )
@@ -568,8 +653,38 @@ class Certificado(models.Model):
     certificado_fecha_carga = models.DateField("Fecha de carga", default=timezone.now)
     certificado_fecha_carga_legacy = models.BooleanField("Es Certificado Viejo", default=False)
     certificado_foja = models.ForeignKey("FojaDeMedicion", verbose_name="Foja de Medición de Origen", on_delete=models.SET_NULL, null=True, blank=True)
+    certificado_ley27397_detalle = models.JSONField(
+        "Detalle de tramos Ley 27397",
+        null=True,
+        blank=True,
+        editable=False,
+        help_text="Snapshot de auditoría de los tramos (%, cotización UVI y fecha) usados para "
+                   "convertir este certificado a pesos. No es fuente de verdad: certificados "
+                   "futuros siempre recalculan recorriendo el historial real.",
+    )
     certificado_history = HistoricalRecords(excluded_fields=['certificado_monto_cobrar', "certificado_monto_cobrar_uvi"])
-    
+
+    def certificado_fondoreparo_monto_pesos(self):
+        if self.certificado_tipo == "ANTICIPO":
+            return Decimal("0")
+        return (self.certificado_monto_pesos or Decimal("0")) * self.certificado_fondoreparo_pct / Decimal("100")
+
+    def certificado_fondoreparo_monto_uvi(self):
+        if self.certificado_tipo == "ANTICIPO":
+            return Decimal("0")
+        return (self.certificado_monto_uvi or Decimal("0")) * self.certificado_fondoreparo_pct / Decimal("100")
+
+    @property
+    def certificado_pct_principal(self):
+        """% "principal" de este certificado para listados genéricos que no distinguen
+        tipo: el % de Anticipo si es un Anticipo (pool, no rubro puntual), si no el % Mes
+        (PARCIAL/HECHO_CONSUMADO, rubro puntual)."""
+        if self.certificado_tipo == "ANTICIPO":
+            return self.certificado_anticipo_pct
+        if self.certificado_tipo == "ETAPA":
+            return self.certificado_etapa_pct
+        return self.certificado_mes_pct
+
     def clean(self):
         self.certificado_rubro_anticipo = self.certificado_rubro_anticipo or 0
         self.certificado_rubro_obra = self.certificado_rubro_obra or 0
@@ -578,9 +693,33 @@ class Certificado(models.Model):
         self.certificado_devolucion_monto = self.certificado_devolucion_monto or 0
         self.certificado_devolucion_monto_uvi = self.certificado_devolucion_monto_uvi or 0
         self.certificado_monto_uvi = self.certificado_monto_uvi or 0
+        self.certificado_anticipo_pct = self.certificado_anticipo_pct or 0
+
+        if self.certificado_tipo == "ANTICIPO":
+            self.certificado_fondoreparo_pct = 0
+        else:
+            self.certificado_anticipo_pct = 0
+
+        if self.certificado_tipo == "PARCIAL":
+            if not self.certificado_foja_id:
+                raise ValidationError("Un Certificado Parcial de Obra requiere una Foja de Medición de origen.")
+            if self.certificado_contrato_origen_id:
+                raise ValidationError("Un Certificado Parcial de Obra no debe tener Contrato/Resolución de origen.")
+        elif self.certificado_tipo in ("ANTICIPO", "HECHO_CONSUMADO"):
+            if self.certificado_foja_id:
+                raise ValidationError("Los certificados de Anticipo y Hecho Consumado no llevan Foja de Medición.")
+            if self.certificado_tipo == "HECHO_CONSUMADO" and not self.certificado_contrato_origen_id:
+                raise ValidationError("Un certificado de Hecho Consumado requiere el Contrato/Resolución que lo ampara.")
+        elif self.certificado_tipo == "ETAPA":
+            if not self.certificado_foja_id:
+                raise ValidationError("Un Certificado de Etapa requiere la Foja de Medición que alcanzó el umbral del tramo.")
+            if self.certificado_contrato_origen_id:
+                raise ValidationError("Un Certificado de Etapa no debe tener Contrato/Resolución de origen.")
+            if not self.certificado_contrato_tramo_id:
+                raise ValidationError("Un Certificado de Etapa requiere el Tramo de Contrato que certifica.")
 
     def __str__(self):
-        return f"{self.certificado_obra} - {self.certificado_expediente} - Rubro: {self.get_certificado_rubro_display()} - Financiamiento: {self.get_certificado_financiamiento_display()} - Ant. N°{self.certificado_rubro_anticipo} - Ob. N°{self.certificado_rubro_obra} - Dev. N°{self.certificado_rubro_devanticipo}"
+        return f"{self.certificado_obra} - {self.certificado_expediente} - Rubro: {self.certificado_rubro_db} - Financiamiento: {self.get_certificado_financiamiento_display()} - Ant. N°{self.certificado_rubro_anticipo} - Ob. N°{self.certificado_rubro_obra} - Dev. N°{self.certificado_rubro_devanticipo}"
     
     def get_absolute_url(self):
         return reverse('update-certificado', kwargs={'id': self.pk})
@@ -645,6 +784,15 @@ class PlanDeTrabajosRubro(models.Model):
     rubro_anterior = models.ForeignKey("self", verbose_name="Rubro Anterior (Plan Previo)", on_delete=models.SET_NULL, null=True, blank=True, related_name="rubro_siguiente")
     rubro_documento_digital = models.FileField(verbose_name="Documento Digital", upload_to=generate_name_rubro_documento, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], max_length=500, null=True, blank=True)
     rubro_contratomonto = models.ForeignKey("ContratoMonto", verbose_name="Monto de Contrato", on_delete=models.SET_NULL, null=True, blank=True, related_name="rubros_plan")
+    rubro_certificado_rubro = models.ForeignKey(
+        "CertificadoRubro",
+        verbose_name="Rubro de Certificado",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text="Rubro normalizado usado para ubicar los montos por financiamiento "
+                   "(ContratoMonto) al generar certificados desde una Foja.",
+    )
     rubro_foja_numero_inicial = models.PositiveIntegerField(
         "Número de Foja Inicial",
         default=1,
@@ -967,10 +1115,51 @@ class Contrato(models.Model):
     contrato_resolucion = models.CharField("Resolución Aprobatoria", max_length=15, blank=True, null=True)
     contrato_autocarga = models.BooleanField("Contrato importado de formato anterior", editable=False, default=False)
     contrato_decreto = models.CharField("Decreto Aprobatorio(Si Tuviera)", max_length=15, blank=True, null=True)
+    contrato_certificacion_por_etapas = models.BooleanField(
+        "Certificación por Etapas",
+        default=False,
+        help_text="Si está tildado, este Contrato no genera certificados Parciales (%mes de "
+                  "la Foja): en su lugar se certifica en tramos fijos de %, disparados cuando "
+                  "el avance acumulado de la Foja alcanza el umbral de cada tramo (ver "
+                  "ContratoTramoPago).",
+    )
     contrato_history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.contrato_descripcion} - {self.contrato_obra}"
+
+class ContratoTramoPago(models.Model):
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["tramo_contrato", "tramo_numero"], name="tramo-numero-unico")
+        ]
+        verbose_name = "Tramo de Pago de Contrato"
+        verbose_name_plural = "Tramos de Pago de Contrato"
+        ordering = ["tramo_contrato", "tramo_numero"]
+
+    tramo_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    tramo_contrato = models.ForeignKey("Contrato", verbose_name="Contrato", on_delete=models.CASCADE, related_name="tramos_pago")
+    tramo_numero = models.PositiveIntegerField("Número de Tramo", editable=False, default=1)
+    tramo_pct_pago = models.DecimalField(
+        "% del Contrato a certificar",
+        max_digits=5,
+        decimal_places=2,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="% fijo del monto total del Contrato (todos los rubros/financiamiento) que "
+                  "se certifica cuando este tramo se dispara.",
+    )
+    tramo_pct_disparador = models.DecimalField(
+        "% de Avance Acumulado que dispara el tramo",
+        max_digits=5,
+        decimal_places=2,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="Umbral de % de avance acumulado (Foja de Medición) a partir del cual este "
+                  "tramo queda habilitado para certificarse.",
+    )
+    tramo_history = HistoricalRecords()
+
+    def __str__(self):
+        return f"Tramo {self.tramo_numero} ({self.tramo_pct_pago}%) - {self.tramo_contrato}"
 
 class ContratoMonto(models.Model):
     class Meta:

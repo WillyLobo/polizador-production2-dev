@@ -11,8 +11,8 @@
     <td>{{instance.obra_expediente}}</td>
     <td>{{instance.obra_contrato_total_pesos}}</td>
     <td>{{instance.obra_contrato_total_uvi}}</td>
-    <td>{{instance.certificado_set.latest.certificado_mes_pct|default:0}}</td>
-    <td>{{instance.certificado_set.latest.certificado_acum_pct|default:0}}</td>
+    <td>{{instance.ultimo_certificado_avance.certificado_mes_pct|default:0}}</td>
+    <td>{{instance.ultimo_certificado_avance.certificado_acum_pct|default:0}}</td>
     <td>{{instance.obra_acum_pesos.certificado_monto_cobrar__sum|default_if_none:0}}</td>
     <td>{{instance.obra_acum_uvi.certificado_monto_cobrar_uvi__sum|default_if_none:0}}</td>
     <td class="d-print-none" ><a href="{% url 'carga:estado-obra' instance.id %}">{{detalleimglink|safe}}</a></td>

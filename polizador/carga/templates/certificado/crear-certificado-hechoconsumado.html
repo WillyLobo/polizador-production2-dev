@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+{% block title %}<title>Crear Certificado por Hecho Consumado</title>{% endblock title %}
+
+{{ form.media.css }}
+
+<div class="row flex-xl-nowrap">
+  <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
+    {% include "partials/administrative-sidebar.html" %}
+    {% include "partials/floating-generic-menu.html" %}
+  </div>
+  <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
+    <h3>Certificado por Hecho Consumado</h3>
+    <p class="text-muted">Sin Foja. Certifica directamente contra el Contrato/Resolución de origen indicado, con un % cargado a mano.</p>
+
+    <form action="{% url "carga:crear-certificado-hechoconsumado" %}" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+      {% endif %}
+      <div class="row">
+        <div class="col-md-6">{{form.certificado_obra.as_field_group}}</div>
+        <div class="col-md-6">{{form.certificado_contrato_origen.as_field_group}}</div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">{{form.certificado_financiamiento.as_field_group}}</div>
+        <div class="col-md-6">{{form.certificado_rubro_db.as_field_group}}</div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">{{form.certificado_expediente.as_field_group}}</div>
+        <div class="col-md-4">{{form.certificado_fecha.as_field_group}}</div>
+        <div class="col-md-4">{{form.certificado_mes_pct.as_field_group}}</div>
+      </div>
+      <div class="row">
+        <div class="col-md-4">{{form.certificado_fondoreparo_pct.as_field_group}}</div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">{{form.certificado_digital.as_field_group}}</div>
+      </div>
+      <button type="submit" class="btn btn-primary mt-2">Guardar</button>
+    </form>
+  </main>
+  <div class="d-none d-xl-block col-xl-2 bd-toc"></div>
+</div>
+{{ form.media.js }}
+{% endblock %}

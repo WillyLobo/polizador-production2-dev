@@ -121,7 +121,7 @@ class ContratosAnterioresObra(PermissionRequiredMixin, generic.DetailView):
 def _con_acumulado_anotado(queryset):
 	"""Anota el % acumulado del último certificado de cada obra en una sola query (evita N+1)."""
 	ultimo_acumulado = Certificado.objects.filter(
-		certificado_obra=OuterRef("pk")
+		certificado_obra=OuterRef("pk"), certificado_tipo__in=("PARCIAL", "HECHO_CONSUMADO", "ETAPA", "LEGACY")
 	).order_by("-certificado_fecha").values("certificado_acum_pct")[:1]
 	return queryset.annotate(obra_acum_pct_anotado=Subquery(ultimo_acumulado))
 

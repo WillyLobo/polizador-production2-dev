@@ -166,7 +166,11 @@ class ContratoResource(resources.ModelResource):
 class ContratoMontoResource(resources.ModelResource):
 	class Meta:
 		model = models.ContratoMonto
-	
+
+class ContratoTramoPagoResource(resources.ModelResource):
+	class Meta:
+		model = models.ContratoTramoPago
+
 class ContratoRubroResource(resources.ModelResource):
 	class Meta:
 		model = models.ContratoRubro

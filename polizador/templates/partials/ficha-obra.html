@@ -148,7 +148,7 @@
             <div class="col-md-3 col-6">
                 <div class="text-muted small">Avance Acumulado</div>
                 <div class="small fw-semibold">
-                    {% with acum_pct=object.certificado_set.latest.certificado_acum_pct %}
+                    {% with acum_pct=object.ultimo_certificado_avance.certificado_acum_pct %}
                         {% if acum_pct %}{{acum_pct}}%{% else %}—{% endif %}
                     {% endwith %}
                 </div>
@@ -365,7 +365,7 @@
                                     <a href="{% url "carga:update-fojademedicion" foja.id %}" class="link-dark" style="font-size:0.7rem;">Editar</a>
                                     {% if perms.carga.add_certificado %}
                                         <span style="font-size:0.7rem;"> · </span>
-                                        <a href="{% url "carga:crear-certificado" %}?foja={{foja.id|safe}}" class="link-dark" style="font-size:0.7rem;">Cert.</a>
+                                        <a href="{% url "carga:generar-certificados-foja" foja.id %}" class="link-dark" style="font-size:0.7rem;">Cert.</a>
                                     {% endif %}
                                 </th>
                                 {% endfor %}

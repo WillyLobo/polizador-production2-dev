@@ -46,6 +46,17 @@
 <body class="min-vh-100 d-flex flex-shrink-0 flex-column py-5 px-3">
   {% include "navbar.html" %}
 
+  {% if messages %}
+  <div class="container mt-2">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+  
   <div class="min-vh-100 flex-grow-1 bg-white d-flex flex-column justify-content-center align-items-stretch content py-2">
     {% block style %}   {%endblock%}
     {% block content %} {% endblock %}

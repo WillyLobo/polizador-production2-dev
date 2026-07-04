@@ -79,17 +79,19 @@ class PrototipoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.PrototipoResource
 
 class CertificadoAdmin(ImportExportMixin, SimpleHistoryAdmin):
-	autocomplete_fields = ["certificado_obra", "certificado_rubro_db", "certificado_foja"]
+	autocomplete_fields = ["certificado_obra", "certificado_rubro_db", "certificado_foja", "certificado_contrato_origen"]
 	list_display = [
 		"id",
 		"certificado_obra__obra_nombre",
+		"certificado_tipo",
 		"certificado_rubro_anticipo",
 		"certificado_rubro_obra",
 		"certificado_rubro_devanticipo",
 		"certificado_fecha",
 		"certificado_fecha_carga"
 		]
-	
+	list_filter = ["certificado_tipo", "certificado_financiamiento"]
+
 	resource_class = resources.CertificadoResource
 
 class ConjuntoLicitadoAdmin(ImportExportMixin, SimpleHistoryAdmin):
@@ -132,9 +134,9 @@ class PlandeTrabajosAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.PlandeTrabajosResource
 
 class PlanDeTrabajosRubroAdmin(ImportExportMixin, SimpleHistoryAdmin):
-	autocomplete_fields = ["rubro_plan", "rubro_anterior", "rubro_contratomonto"]
+	autocomplete_fields = ["rubro_plan", "rubro_anterior", "rubro_contratomonto", "rubro_certificado_rubro"]
 	search_fields = ["rubro_nombre", "rubro_plan__trabajos_obra__obra_nombre"]
-	list_display = ("rubro_nombre", "rubro_plan", "rubro_presupuesto", "rubro_contratomonto")
+	list_display = ("rubro_nombre", "rubro_plan", "rubro_presupuesto", "rubro_contratomonto", "rubro_certificado_rubro")
 	inlines = [
 		PlanDeTrabajosItemInline,
 	]
@@ -172,11 +174,16 @@ class ContratoMontoInline(admin.TabularInline):
 	model = models.ContratoMonto
 	autocomplete_fields = ["contratomonto_rubro", "contratomonto_financiamiento"]
 
+class ContratoTramoPagoInline(admin.TabularInline):
+	model = models.ContratoTramoPago
+	readonly_fields = ["tramo_numero"]
+
 class ContratoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	autocomplete_fields = ["contrato_obra"]
 	search_fields = ["contrato_descripcion", "contrato_obra__obra_nombre"]
 	inlines = [
 		ContratoMontoInline,
+		ContratoTramoPagoInline,
 	]
 	resource_class = resources.ContratoResource
 
@@ -184,6 +191,12 @@ class ContratoMontoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	autocomplete_fields = ["contratomonto_contrato", "contratomonto_rubro", "contratomonto_financiamiento"]
 	search_fields = ["contratomonto_contrato__contrato_descripcion", "contratomonto_contrato__contrato_obra__obra_nombre"]
 	resource_class = resources.ContratoMontoResource
+
+class ContratoTramoPagoAdmin(ImportExportMixin, SimpleHistoryAdmin):
+	autocomplete_fields = ["tramo_contrato"]
+	search_fields = ["tramo_contrato__contrato_descripcion", "tramo_contrato__contrato_obra__obra_nombre"]
+	readonly_fields = ["tramo_numero"]
+	resource_class = resources.ContratoTramoPagoResource
 
 class ContratoRubroAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.ContratoRubroResource
@@ -228,6 +241,7 @@ admin.site.register(models.PlanDeTrabajosEtapa, PlanDeTrabajosEtapaAdmin)
 admin.site.register(models.FojaDeMedicion, FojaDeMedicionAdmin)
 admin.site.register(models.Contrato, ContratoAdmin)
 admin.site.register(models.ContratoMonto, ContratoMontoAdmin)
+admin.site.register(models.ContratoTramoPago, ContratoTramoPagoAdmin)
 admin.site.register(models.ContratoRubro, ContratoRubroAdmin)
 admin.site.register(models.ContratosDigitales, ContratoDigitalAdmin)
 admin.site.register(models.ResolucionesDigitales, ResolucionDigitalAdmin)

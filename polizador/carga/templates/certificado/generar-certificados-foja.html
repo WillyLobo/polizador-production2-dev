@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block content %}
+{% block title %}<title>Generar Certificados - Foja {{foja.foja_numero}}</title>{% endblock title %}
+
+{{ form.media.css }}
+
+<div class="row flex-xl-nowrap">
+  <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
+    {% include "partials/administrative-sidebar.html" %}
+    {% include "partials/floating-generic-menu.html" %}
+  </div>
+  <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
+    <h3>Generar Certificado{{ filas|length|pluralize }} - Foja N°{{foja.foja_numero}} ({{foja.foja_rubro}})</h3>
+    <p>Avance del mes: {{foja.foja_pct_avance_mes|floatformat:3}}% - Acumulado: {{foja.foja_pct_acumulado|floatformat:3}}%</p>
+
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    <form method="POST">
+      {% csrf_token %}
+      <div class="row">
+        <div class="col-md-6">{{form.certificado_expediente.as_field_group}}</div>
+        <div class="col-md-6">{{form.certificado_fecha.as_field_group}}</div>
+      </div>
+
+      {% if not preview %}
+        <button type="submit" class="btn btn-primary mt-2">Previsualizar</button>
+      {% endif %}
+
+      {% if preview %}
+        {% if not filas %}
+          <div class="alert alert-info mt-3">
+            {% if tipo_certificado == "ETAPA" %}
+              No hay tramos nuevos para certificar con esta Foja (el avance acumulado no alcanzó
+              ningún umbral pendiente).
+            {% else %}
+              No hay certificados nuevos para generar con esta Foja.
+            {% endif %}
+          </div>
+        {% else %}
+        <p class="mt-3">
+          {% if tipo_certificado == "ETAPA" %}
+            Se va{{ filas|pluralize:",n" }} a crear {{ filas|length }} certificado{{ filas|pluralize }} de Etapa de Contrato:
+          {% else %}
+            Se va{{ filas|pluralize:",n" }} a crear {{ filas|length }} certificado{{ filas|pluralize }} Parcial{{ filas|pluralize }} de Obra, uno por cada financiamiento del rubro:
+          {% endif %}
+        </p>
+        <table class="table table-bordered table-sm">
+          <thead>
+            <tr>
+              <th>Rubro</th>
+              <th>Financiamiento</th>
+              <th>%</th>
+              <th>Ant. N°</th>
+              <th>Obra/Tramo N°</th>
+              <th>Dev. N°</th>
+              <th>Monto $</th>
+              <th>Monto UVI</th>
+              <th>Descuento Anticipo $</th>
+              <th>Descuento Anticipo UVI</th>
+              <th>A Cobrar $</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for fila in filas %}
+            <tr>
+              <td>{{fila.certificado.certificado_rubro_db}}</td>
+              <td>{{fila.certificado.get_certificado_financiamiento_display}}</td>
+              <td>{{fila.certificado.certificado_pct_principal|floatformat:3}}</td>
+              <td>{{fila.certificado.certificado_rubro_anticipo}}</td>
+              <td>{{fila.certificado.certificado_rubro_obra}}</td>
+              <td>{{fila.certificado.certificado_rubro_devanticipo}}</td>
+              <td>{{fila.certificado.certificado_monto_pesos|floatformat:2}}</td>
+              <td>{{fila.certificado.certificado_monto_uvi|floatformat:2}}</td>
+              <td>{{fila.certificado.certificado_descuento_anticipo_pesos|floatformat:2}}</td>
+              <td>{{fila.certificado.certificado_descuento_anticipo_uvi|floatformat:2}}</td>
+              <td>{{fila.monto_cobrar_pesos|floatformat:2}}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <button type="submit" name="confirmar" value="1" class="btn btn-success">Confirmar y Crear Certificados</button>
+        {% endif %}
+      {% endif %}
+    </form>
+  </main>
+  <div class="d-none d-xl-block col-xl-2 bd-toc"></div>
+</div>
+{{ form.media.js }}
+{% endblock %}

@@ -1,76 +1,91 @@
-import os
+from django.core.management.base import BaseCommand
+from django.db import transaction
 
-from django.core.management.base import BaseCommand, CommandError
-from carga.models import *
-from secretariador.models import *
-from django.db.models import Sum, Q
-from datetime import datetime
-import requests
-import csv
-from django.conf import settings
+from carga.models import Certificado, Obra
 
-"""
-ContratosDigitales, contratodigital_archivo
-ResolucionesDigitales, resoluciondigital_archivo
-Poliza, poliza_digital
-Certificado, certificado_digital
-"""
 
 class Command(BaseCommand):
     """
-    Management command: descarga los certificados digitales almacenados como
-    archivos remotos (FileField) y los guarda localmente en el sistema de
-    archivos. Además genera un archivo output.csv con metadata de cada
-    certificado descargado.
-
+    Management command: Arreglo de los numeros de certificados(ej. anticipo 22
+    obra 22 dev.ant 22).
+    Tambien arregla las obras que se cargaron erroneamente con FO.PRO.VI. como convenio.
     Uso: python manage.py certificados
     """
 
+    help = "Corrige numeración de certificados de anticipo/Res.62 y obras con convenio FO.PRO.VI. mal cargado."
+
     def handle(self, *args, **kwargs):
-        # Ruta del archivo CSV de salida
-            for certificado in Certificado.objects.all():
-                # Solo procesa certificados que tengan un archivo digital asociado
-                if certificado.certificado_digital:
-                    # Construye la ruta local a partir del path del FileField.
-                    # Se asume que el nombre del archivo tiene formato "subida/..."
-                    
-                    # VARIABLES DIRECTORIO
-                    directorio_full_path = certificado.certificado_digital.name.split('/')
-                    directorio_base = directorio_full_path[0]
-                    directorio_fecha = directorio_full_path[1]
-                    directorio_fecha_mes = directorio_fecha.split('-')[0]
-                    directorio_fecha_anio = directorio_fecha.split('-')[1]
-                    
-                    directorio = (
-                        f"polizador/media/"
-                        f"{directorio_base}/"
-                        f"{directorio_fecha_anio}/"
-                        f"{directorio_fecha_mes}/"
-                    )
-                    
-                    # Crea los directorios si no existen
-                    if not os.path.exists(directorio):
-                        os.makedirs(directorio)
+        with transaction.atomic():
+            self._fix_anticipos_res62()
+            self._fix_anticipos_villas_asentamientos()
+            self._fix_obras_foprovi()
 
-                    # Descarga el archivo remoto
-                    response = requests.get(certificado.certificado_digital.url)
+    def _fix_anticipos_res62(self):
+        anticipos_res62 = list(
+            Certificado.objects.filter(
+                certificado_rubro_anticipo__gte=1,
+            ).exclude(
+                certificado_mes_pct=0,
+                certificado_devolucion_monto__gt=0,
+                certificado_devolucion_monto_uvi__gt=0,
+            ).filter(
+                certificado_rubro_db=11,
+            )
+        )
+        self.stdout.write(
+            f"[Res.62] Certificados a corregir (anticipo/dev.anticipo -> 0): {len(anticipos_res62)}"
+        )
+        for anticipo in anticipos_res62:
+            self.stdout.write(
+                f"  Certificado #{anticipo.pk} (Expte. {anticipo.certificado_expediente}): "
+                f"anticipo {anticipo.certificado_rubro_anticipo} -> 0, "
+                f"dev.anticipo {anticipo.certificado_rubro_devanticipo} -> 0"
+            )
+            anticipo.certificado_rubro_anticipo = 0
+            anticipo.certificado_rubro_devanticipo = 0
+            anticipo.save(update_fields=["certificado_rubro_anticipo", "certificado_rubro_devanticipo"])
+        self.stdout.write(self.style.SUCCESS(f"[Res.62] {len(anticipos_res62)} certificados corregidos."))
 
-                    # Si la descarga fue exitosa, guarda el archivo localmente
-                    if response.status_code == 200:
-                        nombre_local = (
-                            f"{directorio}{certificado.certificado_uuid}_{certificado.certificado_expediente}.pdf"
-                        )
-                        with open(nombre_local, "wb") as f:
-                            f.write(response.content)
-                    else:
-                        self.stdout.write(
-                            self.style.WARNING(
-                                f"Error {response.status_code} al descargar "
-                                f"certificado {certificado.certificado_uuid}"
-                            )
-                        )
-                        continue
+    def _fix_anticipos_villas_asentamientos(self):
+        PROGRAMAS_A_ACHURAR = [6, 10]
+        total = 0
+        for programa in PROGRAMAS_A_ACHURAR:
+            anticipos = list(
+                Certificado.objects.filter(
+                    certificado_rubro_anticipo__gte=1,
+                ).exclude(
+                    certificado_devolucion_monto__gt=0,
+                    certificado_devolucion_monto_uvi__gt=0,
+                ).filter(
+                    certificado_obra__obra_programa=programa,
+                )
+            )
+            self.stdout.write(
+                f"[Programa {programa}] Certificados de anticipo a reclasificar como obra: {len(anticipos)}"
+            )
+            for anticipo in anticipos:
+                self.stdout.write(
+                    f"  Certificado #{anticipo.pk} (Expte. {anticipo.certificado_expediente}): "
+                    f"obra {anticipo.certificado_rubro_obra} -> {anticipo.certificado_rubro_anticipo}, "
+                    f"anticipo {anticipo.certificado_rubro_anticipo} -> 0, "
+                    f"dev.anticipo {anticipo.certificado_rubro_devanticipo} -> 0"
+                )
+                anticipo.certificado_rubro_obra = anticipo.certificado_rubro_anticipo
+                anticipo.certificado_rubro_anticipo = 0
+                anticipo.certificado_rubro_devanticipo = 0
+                anticipo.save(update_fields=[
+                    "certificado_rubro_obra",
+                    "certificado_rubro_anticipo",
+                    "certificado_rubro_devanticipo",
+                ])
+            total += len(anticipos)
+        self.stdout.write(self.style.SUCCESS(f"[Villas/Asentamientos] {total} certificados reclasificados."))
 
-                    self.stdout.write(
-                        f"Descargado certificado {directorio}{certificado.certificado_uuid}_{certificado.certificado_expediente}.pdf"
-                    )
+    def _fix_obras_foprovi(self):
+        obras = list(Obra.objects.filter(obra_convenio="FO.PRO.VI."))
+        self.stdout.write(f"[FO.PRO.VI.] Obras con convenio mal cargado: {len(obras)}")
+        for obra in obras:
+            self.stdout.write(f"  Obra #{obra.pk} ({obra.obra_nombre}): convenio 'FO.PRO.VI.' -> None")
+            obra.obra_convenio = None
+            obra.save(update_fields=["obra_convenio"])
+        self.stdout.write(self.style.SUCCESS(f"[FO.PRO.VI.] {len(obras)} obras corregidas."))

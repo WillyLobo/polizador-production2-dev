@@ -15,17 +15,17 @@
 [+] Modificar modelo Agente para vincularlo a los agentes de la app secretariador
 [+] VerReporteCertificadoPorMes deberia dar opción de ver los certificados por fecha de carga o fecha de certificado
 [+] Reparar los templates para ajustar viewport size
-[ ] Rehacer la integracion para contratos y resoluciones digitales de obras
-[ ] Crear API view que devuelva los meses/años disponibles en los certificados para su utilizacion en select2
+[+] Rehacer la integracion para contratos y resoluciones digitales de obras
+[+] Crear API view que devuelva los meses/años disponibles en los certificados para su utilizacion en select2
 [?] Hacer un favicon mas decente
-[ ] Añadir campo Representante Tecnico a las obras.
+[+] Añadir campo Representante Tecnico a las obras.
 [ ] Implementar campo georeferencia(con PostGIS) para las obras
 
 # Certificados
-[ ] Una foja deberia engendrar 1 certificado por cada financiamiento.
-[ ] El certificado solo deberia utilizar el plan de trabajos vigente.
-[ ] Se debe poder crear certificado de anticipo que no llevan foja y el valor se debe descontar proporcionalmente de los certificados posteriores hasta cumplir la totalidad del anticipo.
-[ ] Se deben poder crear certificados que se aprueban con resolucion o contrato pero que no llevan foja de medicion por ser hechos consumados.
+[+] Una foja deberia engendrar 1 certificado por cada financiamiento.
+[+] El certificado solo deberia utilizar el plan de trabajos vigente.
+[+] Se debe poder crear certificado de anticipo que no llevan foja y el valor se debe descontar proporcionalmente de los certificados posteriores hasta cumplir la totalidad del anticipo.
+[+] Se deben poder crear certificados que se aprueban con resolucion o contrato pero que no llevan foja de medicion por ser hechos consumados.
 
 # Fojas y Planes de Trabajo
 [ ] Agregar listado de fojas y planes de trabajo con DataTables
@@ -43,21 +43,21 @@
 
 [+] Create concatenated fields for display.
 
-[ ] Comisionado Model:
+[+] Comisionado Model:
 
-[ ] ComisionadoSolicitud Model:
+[+] ComisionadoSolicitud Model:
 
 [+] Build Create/Update/Delete/List views.
 
 [+] Add navbar links.
 
-[ ] Create detail templates.
-    [ ] ListaIncorporacionesView
-    [ ] ListaComisionadosView
-    [ ] ListaVehiculosView
+[+] Create detail templates.
+    [+] ListaIncorporacionesView
+    [+] ListaComisionadosView
+    [+] ListaVehiculosView
 
-[ ] Create report views.
-    [ ] Filter by agent.
+[+] Create report views.
+    [+] Filter by agent.
 
 [ ] Add field localidad_distancia to Localidad model(carga app).
 [ ] Add route distance to Localidades(from Capital city, Resistencia).
@@ -71,7 +71,7 @@
 # Web Templates
 [ ] Add a right-side frame in form templates to provide help-text.
 
-[ ] Add more advanced logging capability.
+[+] Add more advanced logging capability.
 
 # Experimental features to add/check:
 

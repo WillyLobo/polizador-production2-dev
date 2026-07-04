@@ -4,140 +4,155 @@
 {% load static%}
 {%block title%}<title>Reporte</title>{%endblock title%}
 
-<div class="min-vh-100 min-vw-100 p-5">
-  <form action="{% url "carga:crear-reporte-obra" %}" method="get">
-    <!-- Select Localidad -->
-      <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <label class="input-group-text" for="inputGroupSelectLocalidad">Localidad</label>
+<div class="min-vh-100 min-vw-100 p-4">
+
+  <div class="card mb-3 d-print-none">
+    <div class="card-header py-2 bg-light fw-semibold small">Filtros</div>
+    <div class="card-body p-3">
+      <form action="{% url "carga:crear-reporte-obra" %}" method="get">
+        <div class="row g-2 mb-2">
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold mb-1" for="inputGroupSelectLocalidad">Localidad</label>
+            <select name="localidad" class="customSelect2" id="inputGroupSelectLocalidad" style="width:100%;" multiple>
+                {% for localidad in selected_localidades %}
+                <option value="{{ localidad.id|unlocalize }}" selected>{{ localidad }}</option>
+                {% endfor %}
+            </select>
           </div>
-          <select name="localidad" class="customSelect2" id="inputGroupSelectLocalidad" multiple>
-          </select>
-      </div>
-      <!-- Select Empresa -->
-      <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <label class="input-group-text" for="inputGroupSelectEmpresa">Empresa</label>
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold mb-1" for="inputGroupSelectEmpresa">Empresa</label>
+            <select name="empresa" class="customSelect2" id="inputGroupSelectEmpresa" style="width:100%;" multiple>
+                {% for empresa in selected_empresas %}
+                <option value="{{ empresa.id }}" selected>{{ empresa }}</option>
+                {% endfor %}
+            </select>
           </div>
-          <select name="empresa" class="customSelect2" id="inputGroupSelectEmpresa" multiple>
-          </select>
-      </div>
-      <!-- Select Programa-->
-      <div class="input-group mb-3">
-          <div class="input-group-prepend">
-            <label class="input-group-text" for="inputGroupSelectPrograma">Programa</label>
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold mb-1" for="inputGroupSelectPrograma">Programa</label>
+            <select name="programa" class="customSelect2" id="inputGroupSelectPrograma" style="width:100%;" multiple>
+                {% for programa in selected_programas %}
+                <option value="{{ programa.id }}" selected>{{ programa }}</option>
+                {% endfor %}
+            </select>
           </div>
-          <select name="programa" class="customSelect2" id="inputGroupSelectPrograma" multiple>
-          </select>
-      </div>
-      <!-- Select Rubro y Financiamiento -->
-      <div class="input-group">
-          <div class="input-group-prepend">
-              <label class="input-group-text" for="inputGroupSelectRubro">Rubro</label>
-          </div>
-          <select name="rubro" class="customSelect2" id="inputGroupSelectRubro" multiple>
-              <option value="0" selected>Todos</option>
-              <option value="1">Vivienda</option>
-              <option value="2">Infraestructura Frentista</option>
-              <option value="3">Terreno</option>
-              <option value="4">Redeterminación</option>
-              <option value="5">Nexos y Redes</option>
-              <option value="8">Reconocimiento de Trabajos</option>
-              <option value="9">Ampliación de Contrato</option>
-          </select>
-          <div class="input-group-prepend">
-              <label class="input-group-text" for="inputGroupFinanciamiento">Financiamiento</label>
-          </div>
-              <select name="financiamiento" class="customSelect2" id="inputGroupFinanciamiento">
-                  <option value="1" selected>Todos</option>
-                  <option value="2">Nación</option>
-                  <option value="3">Provincia</option>
-                  <option value="4">Terceros</option>
-              </select>
-      </div>
-      <!-- Filtro Porcentual -->
-      <div class="input-group">
-          <div class="input-group-prepend">
-            <label class="input-group-text" id="inputGroupTipodeFiltro">% Avance</label>
-          </div>
-          <select name="tipodefiltro" class="customSelect2" id="inputGroupTipodeFiltro">
-              <option value="1">Igual a</option>
-              <option value="2">Menor a</option>
-              <option value="3" selected>Mayor a</option>
-          </select>
-          <input type="text" class="form-control" name="pctavance" placeholder="Porcentaje" default=0>
-      </div>
-        <div class="container ml-2 pt-2">
-          <input type='submit' value='Buscar' class="btn btn-primary" />
         </div>
-  </form>
+        <div class="row g-2 mb-3">
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold mb-1" for="inputGroupSelectRubro">Rubro</label>
+            <select name="rubro" class="customSelect2" id="inputGroupSelectRubro" style="width:100%;" multiple>
+                <option value="0" {% if "0" in rubro_ids %}selected{% endif %}>Todos</option>
+                <option value="1" {% if "1" in rubro_ids %}selected{% endif %}>Vivienda</option>
+                <option value="2" {% if "2" in rubro_ids %}selected{% endif %}>Infraestructura Frentista</option>
+                <option value="3" {% if "3" in rubro_ids %}selected{% endif %}>Terreno</option>
+                <option value="4" {% if "4" in rubro_ids %}selected{% endif %}>Redeterminación</option>
+                <option value="5" {% if "5" in rubro_ids %}selected{% endif %}>Nexos y Redes</option>
+                <option value="8" {% if "8" in rubro_ids %}selected{% endif %}>Reconocimiento de Trabajos</option>
+                <option value="9" {% if "9" in rubro_ids %}selected{% endif %}>Ampliación de Contrato</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold mb-1" for="inputGroupFinanciamiento">Financiamiento</label>
+            <select name="financiamiento" class="customSelect2" id="inputGroupFinanciamiento" style="width:100%;">
+                <option value="1" {% if financiamiento == "1" %}selected{% endif %}>Todos</option>
+                <option value="2" {% if financiamiento == "2" %}selected{% endif %}>Nación</option>
+                <option value="3" {% if financiamiento == "3" %}selected{% endif %}>Provincia</option>
+                <option value="4" {% if financiamiento == "4" %}selected{% endif %}>Terceros</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold mb-1" id="inputGroupTipodeFiltro">% Avance</label>
+            <div class="row g-2">
+              <div class="col-6">
+                <select name="tipodefiltro" class="customSelect2" style="width:100%;">
+                    <option value="1" {% if tipodefiltro == "1" %}selected{% endif %}>Igual a</option>
+                    <option value="2" {% if tipodefiltro == "2" %}selected{% endif %}>Menor a</option>
+                    <option value="3" {% if tipodefiltro == "3" %}selected{% endif %}>Mayor a</option>
+                </select>
+              </div>
+              <div class="col-6">
+                <input type="text" class="form-control" name="pctavance" placeholder="Porcentaje" value="{{ pctavance }}">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="text-end">
+          <input type='submit' value='Buscar' class="btn btn-primary btn-sm" />
+        </div>
+      </form>
+    </div>
+  </div>
 
-
-    <table width="auto" class="table table-striped table-bordered align-middle" id="tablaReporte">
-        <thead>
-            <tr>
-                <th scope="col">ID#</th>
-                <th scope="col">Obra</th>
-                <th scope="col">Soluciones</th>
-                <th scope="col">Localidad</th>
-                <th scope="col">Contratista</th>
-                <th scope="col">Programa</th>
-                <th scope="col">Convenio</th>
-                <th scope="col">Expediente</th>
-                <th scope="col">Monto Pesos</th>
-                <th scope="col">Monto UVI</th>
-                <th scope="col">Saldo UVI</th>
-                <th scope="col">% Ultimo Mes</th>
-                <th scope="col">Acumulado</th>
-                <th scope="col">Acumulado en Pesos</th>
-                <th scope="col">Acumulado en UVI</th>
-                <th scope="col">Link</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for instance in object_list %}
-            <tr>
-                {% load humanize %}
-                <th class="border" scope="row">{{instance.id}}</th>
-                <td class="border">{{instance.obra_nombre}}</td>
-                <td class="border">{{instance.obra_soluciones|default_if_none:"0"}}</td>
-                <td class="border">{{instance.lista_localidades}}</td>
-                <td class="border">{{instance.obra_empresa.empresa_nombre}}</td>
-                <td class="border">{{instance.obra_programa}}</td>
-                <td class="border">{{instance.obra_convenio|default_if_none:"-"}}</td>
-                <td class="border">{{instance.obra_expediente}}</td>
-                <td class="border">{{instance.obra_contrato_total_pesos}}</td>
-                <td class="border">{{instance.obra_contrato_total_uvi}}</td>
-                <td class="border">{{instance.saldo_uvi|default_if_none:0}}</td>
-                <td class="border">{{instance.certificado_set.latest.certificado_mes_pct|default:0}}</td>
-                <td class="border">{{instance.certificado_set.latest.certificado_acum_pct|default:0}}</td>
-                <td class="border">{{instance.obra_acum_pesos|default_if_none:0}}</td>
-                <td class="border">{{instance.obra_acum_uvi|default_if_none:0}}</td>
-                <td class="d-print-none" ><a href="{% url "carga:estado-obra" instance.id %}">{{detalleimglink|safe}}</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th id="totalSoluciones" scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th id="totalPesos" scope="col"></th>
-                <th id="totalUVI" scope="col"></th>
-                <th id="saldoUVI" scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th id="acumuladoPesos" scope="col"></th>
-                <th id="acumuladoUVI" scope="col"></th>
-                <th scope="col"></th>
-            </tr>
-        </tfoot>
-    </table>
+  <div class="card">
+    <div class="card-header py-2 bg-light fw-semibold small">Resultados</div>
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table width="auto" class="table table-sm table-bordered table-hover align-middle mb-0" id="tablaReporte">
+            <thead class="table-light">
+                <tr>
+                    <th class="small" scope="col">ID#</th>
+                    <th class="small" scope="col">Obra</th>
+                    <th class="small" scope="col">Soluciones</th>
+                    <th class="small" scope="col">Localidad</th>
+                    <th class="small" scope="col">Contratista</th>
+                    <th class="small" scope="col">Programa</th>
+                    <th class="small" scope="col">Convenio</th>
+                    <th class="small" scope="col">Expediente</th>
+                    <th class="small" scope="col">Monto Pesos</th>
+                    <th class="small" scope="col">Monto UVI</th>
+                    <th class="small" scope="col">Saldo UVI</th>
+                    <th class="small" scope="col">% Ultimo Mes</th>
+                    <th class="small" scope="col">% Acumulado</th>
+                    <th class="small" scope="col">Acumulado en Pesos</th>
+                    <th class="small" scope="col">Acumulado en UVI</th>
+                    <th class="small d-print-none" scope="col">Link</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for instance in object_list %}
+                <tr>
+                    <th class="small" scope="row">{{instance.id}}</th>
+                    <td class="small">{{instance.obra_nombre}}</td>
+                    <td class="small">{{instance.obra_soluciones|default_if_none:"0"}}</td>
+                    <td class="small">{{instance.lista_localidades}}</td>
+                    <td class="small">{{instance.obra_empresa.empresa_nombre}}</td>
+                    <td class="small">{{instance.obra_programa}}</td>
+                    <td class="small">{{instance.obra_convenio|default_if_none:"-"}}</td>
+                    <td class="small">{{instance.obra_expediente}}</td>
+                    <td class="small">{{instance.obra_contrato_total_pesos}}</td>
+                    <td class="small">{{instance.obra_contrato_total_uvi}}</td>
+                    <td class="small">{{instance.saldo_uvi|default_if_none:0}}</td>
+                    <td class="small">{{instance.ultimo_certificado_avance.certificado_mes_pct|default:0}}%</td>
+                    <td class="small">{{instance.ultimo_certificado_avance.certificado_acum_pct|default:0}}%</td>
+                    <td class="small">{{instance.obra_acum_pesos|default_if_none:0}}</td>
+                    <td class="small">{{instance.obra_acum_uvi|default_if_none:0}}</td>
+                    <td class="small d-print-none"><a href="{% url "carga:estado-obra" instance.id %}">{{detalleimglink|safe}}</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot class="table-light fw-semibold">
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th class="small" id="totalSoluciones" scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th class="small" id="totalPesos" scope="col"></th>
+                    <th class="small" id="totalUVI" scope="col"></th>
+                    <th class="small" id="saldoUVI" scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th class="small" id="acumuladoPesos" scope="col"></th>
+                    <th class="small" id="acumuladoUVI" scope="col"></th>
+                    <th class="d-print-none" scope="col"></th>
+                </tr>
+            </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -152,7 +167,7 @@
     "footerCallback": function ( row, data, start, end, display ) {
             var api = this.api(), data;
             const columnsToSum = [2, 8, 9, 10, 13, 14];
- 
+
             // Remove the formatting to get integer data for summation
             var intVal = function ( i ) {
                 return typeof i === 'string' ?
@@ -165,12 +180,12 @@
             total = api.column( n ).data().reduce( function (a, b) {
                     return intVal(a) + intVal(b);
                 }, 0 );
- 
+
             // Total over this page
             pageTotal = api.column( n, { page: 'current'} ).data().reduce( function (a, b) {
                     return intVal(a) + intVal(b);
                 }, 0 );
- 
+
             // Update footer
             $( api.column( n ).footer() ).html(
                 pageTotal.toLocaleString() +' ('+ total.toLocaleString() +' total)'

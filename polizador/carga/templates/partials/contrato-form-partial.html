@@ -27,6 +27,18 @@
     </div>
 </fieldset>
 
+<fieldset class="border rounded border-dark p-1">
+    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Certificación</legend>
+    <div class="form-check">
+        {{form.contrato_certificacion_por_etapas}}
+        <label class="form-check-label" for="{{form.contrato_certificacion_por_etapas.id_for_label}}">{{form.contrato_certificacion_por_etapas.label}}</label>
+        <div class="form-text">{{form.contrato_certificacion_por_etapas.help_text}}</div>
+    </div>
+    {% if form.instance.pk and form.instance.contrato_certificacion_por_etapas %}
+    <a href="{% url 'carga:gestionar-tramos-contrato' form.instance.pk %}" class="btn btn-sm btn-outline-primary mt-1">Gestionar Tramos de Pago</a>
+    {% endif %}
+</fieldset>
+
 {% if form.instance.pk %}
 <fieldset class="border rounded border-dark p-1">
     <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Documentación Digital</legend>

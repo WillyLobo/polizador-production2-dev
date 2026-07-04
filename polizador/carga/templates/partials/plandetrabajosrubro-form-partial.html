@@ -51,6 +51,14 @@
     <div class="form-group">
         {{form.rubro_contratomonto.as_field_group}}
     </div>
+    <div class="form-group">
+        {{form.rubro_certificado_rubro.as_field_group}}
+        <small class="form-text text-muted">
+            Sólo necesario si este Rubro está financiado por más de una fuente a la vez
+            (ej. Nación + Provincia simultáneos). Si el Rubro tiene un único "Monto de
+            Contrato" arriba, no hace falta completar esto.
+        </small>
+    </div>
     {% if pedir_foja_numero_inicial %}
     <div class="form-group">
         <div class="alert alert-info mb-2" role="alert">

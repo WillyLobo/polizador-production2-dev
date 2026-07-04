@@ -1,62 +1,322 @@
 {% extends "base.html" %}
+{% block title %}<title>Certificado {{ object.certificado_expediente }} — {{ obra.obra_nombre }}</title>{% endblock %}
+
+{% block style %}
+<style>
+{% include "partials/hoja-print-style-partial.html" %}
+.hoja{ width:210mm; min-height:297mm; }
+@media print { @page{ size:A4 portrait; margin:0; } }
+.tabla-resumen{ width:100%; border-collapse:collapse; font-size:7.5pt; margin-top:1mm; }
+.tabla-resumen th, .tabla-resumen td{ border:1px solid var(--line); padding:0.9mm 1.5mm; line-height:1.15; }
+.tabla-resumen thead th{ text-align:center; font-weight:700; vertical-align:middle; }
+.tabla-resumen td.item{ text-align:left; }
+.tabla-resumen td.num{ text-align:right; }
+.tabla-resumen tr.destacada td{ font-weight:700; }
+.nota-elevacion{ font-size:9.5pt; line-height:1.6; }
+.nota-elevacion .ciudad-fecha{ text-align:right; margin-bottom:8mm; }
+.nota-elevacion .destinatario{ margin-bottom:8mm; }
+.nota-elevacion .ref{ margin:6mm 0; }
+.nota-elevacion .certificados-lista{ margin:8mm 0; }
+</style>
+{% endblock style %}
+
 {% block content %}
-{%block title%}<title>{{object.id}}-{{object.certificado_obra}}</title>{%endblock title%}
 
-{% load numletras %}
-
-<div class="container-flex border border-dark">
-    <div class="row">
-      <div class="col">
-        <p><b>INSTITUTO PROVINCIAL DE DESARROLLO URBANO Y VIVIENDA DEL CHACO</b></p>
-      </div>
-      <div class="col border border-dark">
-        <p><h4>{{object.certificado_obra.obra_convenio}}</h4></p>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col">
-        <p class="poliza-e-p"><b>PROGRAMA: </b>{{object.certificado_obra.obra_programa}}</p>
-        <p class="poliza-e-p"><b>OBRA ADJUDICADA: </b>{{object.certificado_obra.obra_nombre}}</p>
-        <p class="poliza-e-p"><b>LOCALIDAD: </b> {{object.certificado_obra.obra_localidad.localidad_nombre}} - Departamento {{object.certificado_obra.obra_localidad.localidad_departamento.departamento_nombre}} </p>
-        <p class="poliza-e-p"><b>RESOLUCION DE ADJUCICACION:</b> N°{{object.certificado_obra.obra_resolucion}} </p>
-        <p class="poliza-e-p"><b>CONTRATISTA:</b> {{object.certificado_obra.obra_empresa.empresa_nombre}} </p>
-        <p class="poliza-e-p"><b>CUIT:</b> {{object.certificado_obra.obra_empresa.empresa_cuit|cuit}} </p>
-      </div>
-      <div class="col">
-        <p class="poliza-e-p"><b>FUENTE DE FINANCIAMIENTO:</b> {{object.get_certificado_financiamiento_display}} </p>
-        <p class="poliza-e-p"><b>COMPULSA:</b> {{object.certificado_obra.get_obra_licitacion_tipo_display}} N°{{object.certificado_obra.obra_licitacion_numero}}/{{object.certificado_obra.obra_licitacion_ano}} </p>
-        <p class="poliza-e-p"><b>SISTEMA DE CONTRATO:</b> AJUSTE ALZADO</p>
-        <p class="poliza-e-p"><b>FIRMA DE CONTRATO:</b> {{object.certificado_obra.obra_fecha_contrato}}</p>
-        <p class="poliza-e-p"><b>PLAZO DE EJECUCION:</b> {{object.certificado_obra.obra_plazo}}</p>
-      </div>
-    </div>
-    <div class="row border border-dark">
-        <div class="col">
-            <p><b>RESUMEN DE LA CERTIFICACION DEL MES</b></p>
-        </div>
-        <div class="col">
-            <p><b>PERIODO:</b> {{object.certificado_fecha|date:"M-Y"}}</p>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-3 border border-dark"><p>DESCRIPCION DE RUBROS</p></div>
-        <div class="col-2 border border-dark"><p>Acumulados del Mes</p></div>
-        <div class="col-1 border border-dark"><p> % </p></div>
-        <div class="col-2 border border-dark"><p>Acumulado Anterior</p></div>
-        <div class="col-1 border border-dark"><p> % </p></div>
-        <div class="col-2 border border-dark"><p>Acumulado Total</p></div>
-        <div class="col-1 border border-dark"><p> % </p></div>
-    </div>
-    <div class="row border border-dark">
-        <div class="col-3 border border-dark"><p>CERTIFICADO PARCIAL PROVINCIAL DE OBRA</p></div>
-        <div class="col-2 border col-lg-2-border-dark"><p>{{object.certificado_monto_uvi}}</p></div>
-        <div class="col-1 border col-lg-2-border-dark"><p>{{object.certificado_mes_pct}}</p></div>
-        <div class="col-2 border col-lg-2-border-dark"><p>{{object.certificado_monto_uvi}}</p></div>
-        <div class="col-1 border col-lg-2-border-dark"><p>{{object.certificado_ante_pct}}</p></div>
-        <div class="col-2 border col-lg-2-border-dark"><p>{{object.certificado_monto_uvi}}</p></div>
-        <div class="col-1 border col-lg-2-border-dark"><p>{{object.certificado_acum_pct}}</p></div>
-    </div>
+{% comment %} ── Barra de acciones (solo pantalla) ── {% endcomment %}
+<div class="d-flex justify-content-between align-items-center mb-3 d-print-none">
+  <h5 class="mb-0">Certificado {{ object.certificado_expediente }} — {{ obra.obra_nombre }}</h5>
+  <div class="d-flex gap-2">
+    {% if perms.carga.change_certificado %}
+    <a href="{% url 'carga:update-certificado' object.pk %}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-pencil"></i> Editar
+    </a>
+    {% endif %}
+    <button onclick="window.print()" class="btn btn-sm btn-outline-dark">
+      <i class="bi bi-printer"></i> Imprimir / PDF
+    </button>
+    <a href="{% url 'carga:estado-obra' obra.pk %}" class="btn btn-sm btn-outline-primary">
+      <i class="bi bi-arrow-left"></i> Volver a la Obra
+    </a>
+  </div>
 </div>
 
+<div class="hoja-doc">
+
+{% comment %} ============ HOJA 1 · NOTA DE ELEVACIÓN ============ {% endcomment %}
+<section class="hoja">
+  <div class="nota-elevacion">
+    <div class="ciudad-fecha">RESISTENCIA, {{ object.certificado_fecha|date:"d/m/Y" }}</div>
+
+    <div class="destinatario">
+      <div>SEÑOR</div>
+      <div>PRESIDENTE DEL I.P.D.U.V. CHACO</div>
+      {% if presidente.directorio_autoridad_a_cargo_fk %}
+      <div>{{ presidente.directorio_autoridad_a_cargo_fk.agente_nombreyapellido|upper }}</div>
+      {% endif %}
+      <div>SU DESPACHO:</div>
+    </div>
+
+    <div class="ref">
+      <div class="align-right"><b>REF:</b> {{ object.certificado_expediente }}</div>
+      <div class="align-right"><b>PROGRAMA:</b> {{ obra.obra_programa }}</div>
+      <div class="align-right"><b>OBRA:</b> {{ obra.obra_nombre }}</div>
+      <div class="align-right"><b>LOCALIDAD:</b> {{ obra.lista_localidades }}</div>
+      <div class="align-right"><b>EMPRESA:</b> {{ obra.obra_empresa.empresa_nombre }}</div>
+    </div>
+
+    <p>Nos dirigimos a Ud. a los efectos de elevar la documentación de la certificación de la obra
+    de referencia, para su control y posterior aprobación:</p>
+
+    <div class="certificados-lista">
+      <div>CERTIFICADO ANTICIPO N°: {% if object.certificado_tipo == "ANTICIPO" %}{{ object.certificado_rubro_anticipo }}{% endif %}</div>
+      <div>CERTIFICADO DEVOLUCION DE ANTICIPO N°: {% if object.certificado_rubro_devanticipo %}{{ object.certificado_rubro_devanticipo }}{% endif %}</div>
+      <div>CERTIFICADO PARCIAL DE OBRA N°: {% if object.certificado_tipo == "PARCIAL" or object.certificado_tipo == "HECHO_CONSUMADO" %}{{ object.certificado_rubro_obra }}{% endif %}</div>
+      <div>CERTIFICADO DE ETAPA N°: {% if object.certificado_tipo == "ETAPA" %}{{ object.certificado_rubro_obra }}{% endif %}</div>
+    </div>
+
+    <p>Sin otro particular, saludamos a Ud. Atentamente.-</p>
+  </div>
+
+{% include "certificado/firmas-certificado-partial.html" with firmantes=hoja1_firmantes %}
+</section>
+
+{% comment %} ============ HOJA 2 · FO.PRO.VI + RESUMEN MENSUAL ============ {% endcomment %}
+<section class="hoja">
+  {% include "certificado/encabezado-certificado-partial.html" %}
+
+  <div class="row border border-dark" style="display:flex;">
+    <div class="col" style="flex:1; border:1px solid var(--line); padding:1mm 2mm;"><b>RESUMEN DE LA CERTIFICACION DEL MES</b></div>
+    <div class="col" style="flex:1; border:1px solid var(--line); padding:1mm 2mm;"><b>PERIODO:</b> {{ object.certificado_fecha|date:"F-Y"|capfirst }}</div>
+  </div>
+
+  <table class="tabla-resumen">
+    <thead>
+      <tr>
+        <th rowspan="2" style="width:26%;">DESCRIPCION DE RUBROS</th>
+        <th colspan="2">ACUMULADO DEL MES</th>
+        <th colspan="2">ACUMULADO ANTERIOR</th>
+        <th colspan="2">ACUMULADO TOTAL</th>
+      </tr>
+      <tr>
+        <th>MONTOS</th><th>%</th>
+        <th>MONTOS</th><th>%</th>
+        <th>MONTOS</th><th>%</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for fila in resumen.filas %}
+      <tr {% if fila.etiqueta == "Subtotal 1" or fila.etiqueta == "Total General" %}class="destacada"{% endif %}>
+        <td class="item">{{ fila.etiqueta|upper }} {{ resumen.unidad }}</td>
+        <td class="num">{{ fila.mes|floatformat:2 }}</td>
+        <td class="num">{{ fila.mes_pct|floatformat:2 }}</td>
+        <td class="num">{{ fila.anterior|floatformat:2 }}</td>
+        <td class="num">{{ fila.anterior_pct|floatformat:2 }}</td>
+        <td class="num">{{ fila.total|floatformat:2 }}</td>
+        <td class="num">{{ fila.total_pct|floatformat:2 }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% include "certificado/firmas-certificado-partial.html" with firmantes=hoja2_firmantes %}
+</section>
+
+{% comment %} ============ HOJA 3 · CERTIFICADO DE OBRA ============ {% endcomment %}
+<section class="hoja">
+  {% include "certificado/encabezado-certificado-partial.html" %}
+
+  <div class="subtitulo">{% if object.certificado_tipo == "ETAPA" %}CERTIFICADO DE ETAPA{% else %}CERTIFICADO DE OBRA{% endif %} — PERIODO: {{ object.certificado_fecha|date:"F-Y"|capfirst }}</div>
+
+  <table class="tabla-avance" style="margin-bottom:5mm;">
+    <thead>
+      <tr><th style="text-align:left;">&nbsp;</th><th>UVI</th><th>PESOS</th></tr>
+    </thead>
+    <tbody>
+      {% if object.certificado_tipo == "ETAPA" %}
+      <tr>
+        <td class="concepto">MONTO ACUMULADO</td>
+        <td class="dato">{{ resumen.etapa.total_uvi|floatformat:2 }}</td>
+        <td class="dato">{{ resumen.etapa.total_pesos|floatformat:2 }}</td>
+      </tr>
+      <tr>
+        <td class="concepto">MONTO ACUMULADO ANTERIOR</td>
+        <td class="dato">{{ resumen.etapa.anterior_uvi|floatformat:2 }}</td>
+        <td class="dato">{{ resumen.etapa.anterior_pesos|floatformat:2 }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td class="concepto">MONTO ACUMULADO</td>
+        <td class="dato">{{ resumen.certificado_obra.total_uvi|floatformat:2 }}</td>
+        <td class="dato">{{ resumen.certificado_obra.total_pesos|floatformat:2 }}</td>
+      </tr>
+      <tr>
+        <td class="concepto">MONTO ACUMULADO ANTERIOR</td>
+        <td class="dato">{{ resumen.certificado_obra.anterior_uvi|floatformat:2 }}</td>
+        <td class="dato">{{ resumen.certificado_obra.anterior_pesos|floatformat:2 }}</td>
+      </tr>
+      {% endif %}
+      <tr>
+        <td class="concepto">IMPORTE PRESENTE CERTIFICADO</td>
+        <td class="dato">{{ object.certificado_monto_uvi|floatformat:2 }}</td>
+        <td class="dato">{{ object.certificado_monto_pesos|floatformat:2 }}</td>
+      </tr>
+      <tr>
+        <td class="concepto">DESCUENTO ANTICIPO</td>
+        <td class="dato">{{ object.certificado_descuento_anticipo_uvi|floatformat:2 }}</td>
+        <td class="dato">{{ object.certificado_descuento_anticipo_pesos|floatformat:2 }}</td>
+      </tr>
+      <tr>
+        <td class="concepto">DESCUENTO FONDO DE REPARO ({{ object.certificado_fondoreparo_pct|floatformat:2 }}%)</td>
+        <td class="dato">{{ object.certificado_fondoreparo_monto_uvi|floatformat:2 }}</td>
+        <td class="dato">{{ object.certificado_fondoreparo_monto_pesos|floatformat:2 }}</td>
+      </tr>
+      <tr>
+        <td class="concepto">IMPORTE A ABONARSE</td>
+        <td class="dato">{{ object.certificado_monto_cobrar_uvi|floatformat:2 }}</td>
+        <td class="dato">{{ object.certificado_monto_cobrar|floatformat:2 }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  {% if desglose_items is not None %}
+  <table class="tabla-rubros" id="tablaDesgloseItemsCertificado">
+    <thead>
+      <tr>
+        <th rowspan="2" class="item" style="text-align:left;">ITEM</th>
+        <th rowspan="2">% INCIDENCIA</th>
+        <th rowspan="2">MONTO BASICO UVI</th>
+        <th rowspan="2">MONTO BASICO $</th>
+        <th colspan="3">% AVANCE DE OBRA</th>
+        <th rowspan="2">MONTO TOTAL UVI</th>
+        <th rowspan="2">MONTO TOTAL $</th>
+      </tr>
+      <tr>
+        <th>ANTERIOR</th><th>MES</th><th>ACUMULADO</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for fila in desglose_items %}
+      <tr>
+        <td class="item">{{ fila.nombre }}</td>
+        <td class="pct">{{ fila.incidencia_pct|floatformat:3 }}</td>
+        <td class="pct">{% if fila.monto_basico_uvi is not None %}{{ fila.monto_basico_uvi|floatformat:2 }}{% else %}—{% endif %}</td>
+        <td class="pct">{{ fila.monto_basico_pesos|floatformat:2 }}</td>
+        <td class="pct">{{ fila.pct_anterior|floatformat:3 }}</td>
+        <td class="pct">{{ fila.pct_mes|floatformat:3 }}</td>
+        <td class="pct">{{ fila.pct_acumulado|floatformat:3 }}</td>
+        <td class="pct">{% if fila.monto_total_uvi is not None %}{{ fila.monto_total_uvi|floatformat:2 }}{% else %}—{% endif %}</td>
+        <td class="pct">{{ fila.monto_total_pesos|floatformat:2 }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="9" style="text-align:center;">Sin ítems registrados en la Foja de origen</td></tr>
+      {% endfor %}
+    </tbody>
+    {% if desglose_items %}
+    <tfoot>
+      <tr class="totales">
+        <td class="item">TOTALES</td>
+        <td class="pct"></td>
+        <td class="pct"></td>
+        <td class="pct"></td>
+        <td class="pct"></td>
+        <td class="pct"></td>
+        <td class="pct"></td>
+        <td class="pct"></td>
+        <td class="pct"></td>
+      </tr>
+    </tfoot>
+    {% endif %}
+  </table>
+  <script>
+    (function () {
+      var tabla = document.getElementById("tablaDesgloseItemsCertificado");
+      if (!tabla || !tabla.tFoot) return;
+      var filaTotales = tabla.tFoot.rows[0];
+      var totales = {};
+      Array.prototype.forEach.call(tabla.tBodies[0].rows, function (fila) {
+        Array.prototype.forEach.call(fila.cells, function (celda, indice) {
+          if (indice === 0) return;
+          var valor = parseFloat((celda.textContent || "").trim().replace(/\./g, "").replace(",", "."));
+          if (isNaN(valor)) return;
+          totales[indice] = (totales[indice] || 0) + valor;
+        });
+      });
+      Object.keys(totales).forEach(function (indice) {
+        filaTotales.cells[indice].textContent = totales[indice].toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      });
+    })();
+  </script>
+  {% else %}
+  <table class="tabla-rubros">
+    <thead>
+      <tr>
+        <th rowspan="2" class="item" style="text-align:left;">DESCRIPCION</th>
+        <th rowspan="2">MONTO BASICO</th>
+        <th rowspan="2">% INCIDENCIA</th>
+        <th colspan="3">% AVANCE DE OBRA</th>
+        <th rowspan="2">MONTO TOTAL</th>
+      </tr>
+      <tr>
+        <th>ANTERIOR</th><th>MES</th><th>ACUMULADO</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if contratomonto_rubro %}
+      <tr>
+        <td class="item">{{ object.certificado_rubro_db }} {{ object.get_certificado_financiamiento_display|upper }} PESOS</td>
+        <td class="pct">{{ contratomonto_rubro.contratomonto_pesos|floatformat:2 }}</td>
+        <td class="pct">{% if incidencia_pct_pesos %}{{ incidencia_pct_pesos|floatformat:2 }}{% else %}—{% endif %}</td>
+        {% if object.certificado_tipo == "ANTICIPO" %}
+        <td class="pct">—</td>
+        <td class="pct">{{ object.certificado_anticipo_pct|floatformat:3 }}</td>
+        <td class="pct">—</td>
+        <td class="pct">{{ resumen.certificado_obra.total_pesos|floatformat:2 }}</td>
+        {% elif object.certificado_tipo == "ETAPA" %}
+        <td class="pct">—</td>
+        <td class="pct">{{ object.certificado_etapa_pct|floatformat:3 }}</td>
+        <td class="pct">{{ tramo.tramo_pct_disparador|floatformat:3 }}</td>
+        <td class="pct">{{ resumen.etapa.total_pesos|floatformat:2 }}</td>
+        {% else %}
+        <td class="pct">{{ object.certificado_ante_pct|floatformat:3 }}</td>
+        <td class="pct">{{ object.certificado_mes_pct|floatformat:3 }}</td>
+        <td class="pct">{{ object.certificado_acum_pct|floatformat:3 }}</td>
+        <td class="pct">{{ resumen.certificado_obra.total_pesos|floatformat:2 }}</td>
+        {% endif %}
+      </tr>
+      <tr>
+        <td class="item">{{ object.certificado_rubro_db }} {{ object.get_certificado_financiamiento_display|upper }} UVI</td>
+        <td class="pct">{{ contratomonto_rubro.contratomonto_uvi|floatformat:2 }}</td>
+        <td class="pct">{% if incidencia_pct_uvi %}{{ incidencia_pct_uvi|floatformat:2 }}{% else %}—{% endif %}</td>
+        {% if object.certificado_tipo == "ANTICIPO" %}
+        <td class="pct">—</td>
+        <td class="pct">{{ object.certificado_anticipo_pct|floatformat:3 }}</td>
+        <td class="pct">—</td>
+        <td class="pct">{{ resumen.certificado_obra.total_uvi|floatformat:2 }}</td>
+        {% elif object.certificado_tipo == "ETAPA" %}
+        <td class="pct">—</td>
+        <td class="pct">{{ object.certificado_etapa_pct|floatformat:3 }}</td>
+        <td class="pct">{{ tramo.tramo_pct_disparador|floatformat:3 }}</td>
+        <td class="pct">{{ resumen.etapa.total_uvi|floatformat:2 }}</td>
+        {% else %}
+        <td class="pct">{{ object.certificado_ante_pct|floatformat:3 }}</td>
+        <td class="pct">{{ object.certificado_mes_pct|floatformat:3 }}</td>
+        <td class="pct">{{ object.certificado_acum_pct|floatformat:3 }}</td>
+        <td class="pct">{{ resumen.certificado_obra.total_uvi|floatformat:2 }}</td>
+        {% endif %}
+      </tr>
+      {% else %}
+      <tr><td colspan="7" style="text-align:center;">Sin monto de contrato vinculado a este rubro/financiamiento</td></tr>
+      {% endif %}
+    </tbody>
+  </table>
+  {% endif %}
+
+{% include "certificado/firmas-certificado-partial.html" with firmantes=hoja3_firmantes %}
+</section>
+
+</div>{# /hoja-doc #}
+
+{% if auto_print %}
+<script>window.addEventListener('load', function(){ window.print(); });</script>
+{% endif %}
 {% endblock %}

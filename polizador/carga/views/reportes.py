@@ -11,32 +11,47 @@ from django.core.exceptions import ValidationError
 from django.core.management import call_command
 from datetime import datetime, timedelta
 
-@method_decorator(login_required, name="dispatch")
-class CrearReporteCertificadoPorMes(PermissionRequiredMixin, generic.TemplateView) :
-	permission_required = "carga.view_certificado"
-	template_name = "reportes/crear-reportecertificadopormes.html"
+MESES_NOMBRES = {
+	1: "Enero", 2: "Febrero", 3: "Marzo", 4: "Abril", 5: "Mayo", 6: "Junio",
+	7: "Julio", 8: "Agosto", 9: "Septiembre", 10: "Octubre", 11: "Noviembre", 12: "Diciembre",
+}
 
 @method_decorator(login_required, name="dispatch")
-class VerReporteCertificadoPorMes(PermissionRequiredMixin, generic.ListView):
+class ReporteCertificadoPorMesView(PermissionRequiredMixin, generic.ListView):
 	permission_required = "carga.view_certificado"
-
 	model = Certificado
 	context_object_name = "object_list"
-	template_name = "reportes/ver-reportecertificadopormes.html"
-	
+	template_name = "reportes/reporte-certificado-por-mes.html"
+
 	def get_queryset(self):
 		mes_list = self.request.GET.getlist("mes")
 		ano = self.request.GET.get("ano")
+		if not mes_list or not ano:
+			return Certificado.objects.none()
+
 		buscarPorFechaIngreso = self.request.GET.get("buscarPorFechaIngreso")
 		if buscarPorFechaIngreso:
-			certificados = Certificado.objects.filter(
-				certificado_fecha_carga__year=ano, certificado_fecha_carga__month__in=mes_list
-				).order_by("certificado_obra__obra_programa").prefetch_related("certificado_obra").select_related("certificado_obra__obra_empresa", "certificado_obra__obra_programa")
+			filtro = Q(certificado_fecha_carga__year=ano, certificado_fecha_carga__month__in=mes_list)
 		else:
-			certificados = Certificado.objects.filter(
-				certificado_fecha__year=ano, certificado_fecha__month__in=mes_list
-				).order_by("certificado_obra__obra_programa").prefetch_related("certificado_obra").select_related("certificado_obra__obra_empresa", "certificado_obra__obra_programa")
-		return certificados
+			filtro = Q(certificado_fecha__year=ano, certificado_fecha__month__in=mes_list)
+
+		return Certificado.objects.filter(filtro).order_by(
+			"certificado_obra__obra_programa"
+			).prefetch_related("certificado_obra").select_related("certificado_obra__obra_empresa", "certificado_obra__obra_programa")
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		anos_disponibles = {d.year for d in Certificado.objects.dates("certificado_fecha", "year")}
+		anos_disponibles |= {d.year for d in Certificado.objects.dates("certificado_fecha_carga", "year")}
+		meses_disponibles = {d.month for d in Certificado.objects.dates("certificado_fecha", "month")}
+		meses_disponibles |= {d.month for d in Certificado.objects.dates("certificado_fecha_carga", "month")}
+
+		context["anos"] = sorted(anos_disponibles, reverse=True)
+		context["meses"] = [(mes, MESES_NOMBRES[mes]) for mes in sorted(meses_disponibles)]
+		context["mes_list"] = [int(mes) for mes in self.request.GET.getlist("mes")]
+		context["ano"] = self.request.GET.get("ano", "")
+		context["buscarPorFechaIngreso"] = self.request.GET.get("buscarPorFechaIngreso")
+		return context
 
 @method_decorator(login_required, name="dispatch")
 class CrearReporteObraView(PermissionRequiredMixin, generic.ListView):
@@ -116,9 +131,13 @@ class CrearReporteObraView(PermissionRequiredMixin, generic.ListView):
 			setattr(obra, "obra_acum_uvi", acum_uvi)
 			saldo = obra.obra_contrato_total_uvi - acum_uvi
 			setattr(obra, "saldo_uvi", saldo)
-		context["localidades"] = Localidad.objects.all()
-		context["empresas"] = Empresa.objects.all()
-		context["programas"] = Programa.objects.all()
+		context["selected_localidades"] = Localidad.objects.filter(id__in=self.request.GET.getlist("localidad"))
+		context["selected_empresas"] = Empresa.objects.filter(id__in=self.request.GET.getlist("empresa"))
+		context["selected_programas"] = Programa.objects.filter(id__in=self.request.GET.getlist("programa"))
+		context["rubro_ids"] = self.request.GET.getlist("rubro") or ["0"]
+		context["financiamiento"] = self.request.GET.get("financiamiento") or "1"
+		context["tipodefiltro"] = self.request.GET.get("tipodefiltro") or "3"
+		context["pctavance"] = self.request.GET.get("pctavance", "")
 		return context
 
 @method_decorator(login_required, name="dispatch")

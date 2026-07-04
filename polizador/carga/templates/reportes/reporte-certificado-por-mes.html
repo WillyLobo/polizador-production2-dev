@@ -1,0 +1,156 @@
+{% extends "base.html"%}
+{% load l10n %}
+{% block content %}
+{% load static%}
+{%block title%}<title>Reporte de Certificados por Mes</title>{%endblock title%}
+
+<div class="min-vh-100 min-vw-100 p-4">
+
+  <div class="card mb-3 d-print-none">
+    <div class="card-header py-2 bg-light fw-semibold small">Filtros</div>
+    <div class="card-body p-3">
+      <form action="{% url "carga:crear-reporte-certificado" %}" method="get">
+        <div class="row g-2 mb-3">
+          <div class="col-md-5">
+            <label class="form-label small fw-semibold mb-1" for="inputGroupSelectMes">Mes</label>
+            <select name="mes" class="form-select form-select-sm" id="inputGroupSelectMes" multiple>
+                {% for valor, nombre in meses %}
+                <option value="{{ valor }}" {% if valor in mes_list %}selected{% endif %}>{{ nombre }}</option>
+                {% endfor %}
+            </select>
+            <div class="form-text">Puede seleccionar más de un mes.</div>
+          </div>
+          <div class="col-md-3">
+            <label class="form-label small fw-semibold mb-1" for="inputGroupSelectAno">Año</label>
+            <select name="ano" class="form-select form-select-sm" id="inputGroupSelectAno">
+                {% for anio in anos %}
+                <option value="{{ anio|unlocalize }}" {% if anio|stringformat:"s" == ano %}selected{% endif %}>{{ anio|unlocalize }}</option>
+                {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4 d-flex align-items-end">
+            <div class="form-check form-switch">
+              <input class="form-check-input" name="buscarPorFechaIngreso" type="checkbox" role="switch" id="switchFechaIngresoalSistema" {% if buscarPorFechaIngreso %}checked{% endif %}>
+              <label class="form-check-label small" for="switchFechaIngresoalSistema">Buscar por fecha de ingreso al sistema</label>
+            </div>
+          </div>
+        </div>
+        <div class="text-end">
+          <input type='submit' value='Buscar' class="btn btn-primary btn-sm" />
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header py-2 bg-light fw-semibold small">Resultados</div>
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table width="auto" class="table table-sm table-bordered table-hover align-middle mb-0" id="tablaReporte">
+            <thead class="table-light">
+                <tr>
+                    <th class="small" scope="col">Programa</th>
+                    <th class="small" scope="col">Convenio</th>
+                    <th class="small" scope="col">Empresa</th>
+                    <th class="small" scope="col">Obra</th>
+                    <th class="small" scope="col">Localidad</th>
+                    <th class="small" scope="col">Expediente</th>
+                    <th class="small" scope="col">Certificado</th>
+                    <th class="small" scope="col">Período</th>
+                    <th class="small" scope="col">Mes %</th>
+                    <th class="small" scope="col">Acum %</th>
+                    <th class="small" scope="col">Monto a Cobrar($)</th>
+                    <th class="small" scope="col">Monto a Cobrar(UVI)</th>
+                    <th class="small d-print-none" scope="col">PDF</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for object in object_list %}
+                <tr id="{{object.id}}">
+                    <td class="small">{{object.certificado_obra.obra_programa}}</td>
+                    <td class="small">{{object.certificado_obra.obra_convenio|default_if_none:"-"}}</td>
+                    <td class="small">{{object.certificado_obra.obra_empresa}}</td>
+                    <td class="small">{{object.certificado_obra.obra_nombre}}</td>
+                    <td class="small">{{object.certificado_obra.lista_localidades}}</td>
+                    <td class="small"><a href="{% url "carga:update-certificado" object.id %}">{{object.certificado_expediente}}</a></td>
+                    <td class="small">Anticipo N°: {{object.certificado_rubro_anticipo}}<br>
+                                        Obra N°: {{object.certificado_rubro_obra}}<br>
+                                        Dev. Anticipo N°: {{object.certificado_rubro_devanticipo}}
+                    </td>
+                    <td class="small">{{object.certificado_fecha|date:"F/Y"|capfirst}}</td>
+                    <td class="small">{{object.certificado_pct_principal}}</td>
+                    <td class="small">{{object.certificado_acum_pct}}</td>
+                    <td class="small">{{object.certificado_monto_cobrar}}</td>
+                    <td class="small">{{object.certificado_monto_cobrar_uvi}}</td>
+                    {% if object.certificado_digital %}
+                    <td class="small d-print-none"><a href="{{object.certificado_digital.url}}">{{pdfimglink|safe}}</a></td>
+                    {% else %}
+                    <td class="small d-print-none">{{nofileimglink|safe}}</td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot class="table-light fw-semibold">
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th class="small" scope="col">Totales</th>
+                    <th class="small" id="sumaMontoPesos" scope="col"></th>
+                    <th class="small" id="sumaMontoUVI" scope="col"></th>
+                    <th class="d-print-none" scope="col"></th>
+                </tr>
+            </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    new DataTable('#tablaReporte', {
+    info: false,
+    paging: false,
+    order: [[ 7, 'desc' ]],
+    language: {
+            "emptyTable": "Ningún dato disponible en esta tabla",
+            "search": "Buscar:",
+    },
+    "footerCallback": function ( row, data, start, end, display ) {
+            var api = this.api(), data;
+            const columnsToSum = [10, 11];
+
+            // Remove the formatting to get integer data for summation
+            var intVal = function ( i ) {
+                return typeof i === 'string' ?
+                    i.replace(/[.]/g, '').replace(/[,]/g,'.')*1 :
+                    typeof i === 'number' ?
+                        i : 0;
+            };
+            for (const n of columnsToSum) {
+            // Total over all pages
+            total = api.column( n ).data().reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+
+            // Total over this page
+            pageTotal = api.column( n, { page: 'current'} ).data().reduce( function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0 );
+
+            // Update footer
+            $( api.column( n ).footer() ).html(
+                pageTotal.toLocaleString() +' ('+ total.toLocaleString() +' total)'
+            );
+        }
+    }
+});
+</script>
+
+{%endblock content%}

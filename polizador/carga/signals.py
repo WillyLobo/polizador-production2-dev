@@ -1,6 +1,6 @@
 from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
-from .models import FojaDeMedicion, PlanDeTrabajosEtapa, ContratoMonto
+from .models import FojaDeMedicion, PlanDeTrabajosEtapa, ContratoMonto, ContratoTramoPago
 
 
 @receiver(pre_save, sender=FojaDeMedicion)
@@ -43,3 +43,14 @@ def auto_increment_etapa_numero(sender, instance, **kwargs):
 def recalcular_montos_obra(sender, instance, **kwargs):
     """Mantiene los montos de Obra sincronizados con los ContratoMonto de sus Contratos."""
     instance.contratomonto_contrato.contrato_obra.recalcular_montos_contrato()
+
+
+@receiver(pre_save, sender=ContratoTramoPago)
+def auto_increment_tramo_numero(sender, instance, **kwargs):
+    """Auto-incrementa el número de tramo para mantener continuidad."""
+    if not instance.pk:
+        last_tramo = ContratoTramoPago.objects.filter(
+            tramo_contrato=instance.tramo_contrato
+        ).order_by('-tramo_numero').first()
+
+        instance.tramo_numero = (last_tramo.tramo_numero + 1) if last_tramo else 1

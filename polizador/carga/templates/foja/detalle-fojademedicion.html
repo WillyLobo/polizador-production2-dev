@@ -4,82 +4,7 @@
 
 {% block style %}
 <style>
-  :root{ --ink:#111; --line:#000; --pad:11mm; }
-  .hoja-doc, .hoja-doc *{ box-sizing:border-box; }
-  .hoja-doc{ font-family: Arial, Helvetica, sans-serif; color:var(--ink); }
-
-  .hoja{
-    width:297mm; min-height:210mm;
-    background:#fff;
-    margin:6mm auto;
-    padding:9mm var(--pad) 8mm var(--pad);
-    display:flex; flex-direction:column;
-    box-shadow:0 2px 12px rgba(0,0,0,.2);
-  }
-
-  .titulo-fila{ display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6mm; }
-  .titulo-doc{ font-size:16pt; font-weight:700; letter-spacing:.3px; }
-  .titulo-sub{ font-size:11pt; font-weight:400; letter-spacing:1px; color:#444; }
-
-  .datos{ display:flex; gap:6mm; font-size:8pt; line-height:1.5; }
-  .datos .col-izq{ flex:1 1 42%; }
-  .datos .col-med{ flex:0 0 30%; padding-top:1mm; }
-  .datos .col-der{ flex:1 1 28%; }
-  .datos p{ margin:0 0 1.6mm 0; }
-  .datos .sep{ height:2mm; }
-  .lbl{ font-weight:700; margin: 0; padding:0;}
-  .datos-lbl{ margin: 0 !important; padding:0;}
-
-  .caja-aporte{ width:100%; border-collapse:collapse; font-size:7.5pt; margin-bottom:3mm; }
-  .caja-aporte td{ border:1px solid var(--line); padding:1mm 1.5mm; text-align:center; }
-  .caja-aporte tr.aporte-titulo td{ font-weight:700; background:#f2f2f2; text-align:left; padding-left:2mm; }
-  .caja-aporte td.aporte-lbl{ width:34%; text-align:left; padding-left:2mm; }
-
-  .subtitulo{ font-size:9pt; font-weight:700; margin:5mm 0 1.5mm 0; }
-
-  .tabla-rubros{ width:100%; border-collapse:collapse; font-size:7.5pt; margin-top:1mm; }
-  .tabla-rubros th, .tabla-rubros td{ border:1px solid var(--line); padding:0.9mm 1.5mm; line-height:1.15; }
-  .tabla-rubros thead th{ text-align:center; font-weight:700; vertical-align:middle; }
-  .tabla-rubros td.item{ text-align:left; }
-  .tabla-rubros td.num, .tabla-rubros td.pct{ text-align:center; }
-  .tabla-rubros .col-n{ width:5%; }
-  .tabla-rubros .col-pct{ width:13%; }
-  .tabla-rubros tr.totales td{ font-weight:700; }
-
-  .tabla-avance{ width:100%; border-collapse:collapse; font-size:8pt; }
-  .tabla-avance th, .tabla-avance td{ border:1px solid var(--line); padding:1mm 2mm; }
-  .tabla-avance th{ text-align:center; font-weight:700; }
-  .tabla-avance td.concepto{ text-align:left; font-weight:700; }
-  .tabla-avance td.dato{ text-align:center; }
-
-  .nota{ font-size:8pt; margin-top:3.5mm; letter-spacing:.2px; }
-  .declaracion{ font-size:11pt; font-weight:700; margin-top:3mm; letter-spacing:.3px; text-align:center; }
-
-  .firmas{ margin-top:20mm; display:flex; justify-content:space-around; gap:5mm; padding-top:7mm; break-inside:avoid; page-break-inside:avoid; }
-  .firma{ text-align:center; font-size:8pt; line-height:1.35; min-width:55mm; break-inside:avoid; page-break-inside:avoid; }
-  .firma .raya{ border-top:1px dotted #444; margin-bottom:1mm; min-height:15mm; }
-
-  .fotos-grid{
-    flex:1 1 auto;
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    grid-template-rows:repeat(2,1fr);
-    gap:5mm; margin-top:6mm; margin-bottom:4mm;
-  }
-  .foto{
-    border:1px solid #ccc;
-    background:#f6f6f6;
-    display:flex; align-items:center; justify-content:center; overflow:hidden;
-  }
-  .foto img{ width:100%; height:100%; object-fit:cover; display:block; }
-
-  @media print {
-    @page{ size:A4 landscape; margin:0; }
-    nav, .navbar, .d-print-none{ display:none !important; }
-    body{ background:#fff; padding:0 !important; }
-    .hoja{ margin:0; box-shadow:none; width:auto; min-height:auto; height:100vh; page-break-after:always; }
-    .hoja:last-child{ page-break-after:auto; }
-  }
+{% include "partials/hoja-print-style-partial.html" %}
 </style>
 {% endblock style %}
 
@@ -92,6 +17,11 @@
     <a href="{% url 'carga:update-fojademedicion' object.pk %}" class="btn btn-sm btn-outline-secondary">
       <i class="bi bi-pencil"></i> Editar
     </a>
+    {% if perms.carga.add_certificado %}
+    <a href="{% url 'carga:generar-certificados-foja' object.pk %}" class="btn btn-sm btn-outline-success">
+      <i class="bi bi-file-earmark-plus"></i> Generar Certificado
+    </a>
+    {% endif %}
     <button onclick="window.print()" class="btn btn-sm btn-outline-dark">
       <i class="bi bi-printer"></i> Imprimir / PDF
     </button>

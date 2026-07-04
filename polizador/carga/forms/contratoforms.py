@@ -14,6 +14,7 @@ class ContratoForm(forms.ModelForm):
 			"contrato_descripcion",
 			"contrato_resolucion",
 			"contrato_decreto",
+			"contrato_certificacion_por_etapas",
 		)
 		widgets = {
 			"contrato_obra":obrawidget(attrs={"class":"form-control customSelect2"}),
@@ -21,6 +22,7 @@ class ContratoForm(forms.ModelForm):
 			"contrato_descripcion":forms.TextInput(attrs={"class":"form-control"}),
 			"contrato_resolucion":forms.TextInput(attrs={"class":"form-control"}),
 			"contrato_decreto":forms.TextInput(attrs={"class":"form-control"}),
+			"contrato_certificacion_por_etapas":forms.CheckboxInput(attrs={"class":"form-check-input"}),
 		}
 
 	def __init__(self, *args, **kwargs):

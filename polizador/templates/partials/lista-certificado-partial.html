@@ -14,9 +14,9 @@
             <th scope="col">Rubro</th>
             <th scope="col">Financiamiento</th>
             <th scope="col">Monto $</th>
-            <th scope="col">Dev. $</th>
+            <th scope="col">Dev./Desc. $</th>
             <th scope="col">Monto UVI</th>
-            <th scope="col">Dev. UVI</th>
+            <th scope="col">Dev./Desc. UVI</th>
             <th scope="col">Total $</th>
             <th scope="col">Total UVI</th>
             <th scope="col d-print-none">Acción</th>
@@ -31,15 +31,23 @@
             <td class="p-0 mt-0">{{instance.certificado_rubro_obra}}</td>
             <td class="p-0 mt-0">{{instance.certificado_rubro_devanticipo}}</td>
             <td class="p-0 mt-0">{{instance.certificado_fecha|date:"M-Y"}}</td>
-            <td class="p-0 mt-0">{{instance.certificado_mes_pct}}</td>
+            <td class="p-0 mt-0">{{instance.certificado_pct_principal}}</td>
             <td class="p-0 mt-0">{{instance.certificado_ante_pct}}</td>
             <td class="p-0 mt-0">{{instance.certificado_acum_pct}}</td>
             <td class="p-0 mt-0">{{instance.certificado_rubro_db.certificadorubro_nombre}}</td>
             <td class="p-0 mt-0">{{instance.get_certificado_financiamiento_display}}</td>
             <td class="p-0 mt-0">{{instance.certificado_monto_pesos}}</td>
+            {% if instance.certificado_tipo == "LEGACY" %}
             <td class="p-0 mt-0">{{instance.certificado_devolucion_monto}}</td>
+            {% else %}
+            <td class="p-0 mt-0">{{instance.certificado_descuento_anticipo_pesos}}</td>
+            {% endif %}
             <td class="p-0 mt-0">{{instance.certificado_monto_uvi}}</td>
+            {% if instance.certificado_tipo == "LEGACY" %}
             <td class="p-0 mt-0">{{instance.certificado_devolucion_monto_uvi}}</td>
+            {% else %}
+            <td class="p-0 mt-0">{{instance.certificado_descuento_anticipo_uvi}}</td>
+            {% endif %}
             <td class="p-0 mt-0">{{instance.certificado_monto_cobrar}}</td>
             <td class="p-0 mt-0">{{instance.certificado_monto_cobrar_uvi}}</td>
             <td class="p-0 mt-0 d-print-none">
@@ -48,6 +56,7 @@
                 {% else %}
                     {{nofileimglink|safe}}
                 {% endif %}
+                <a href="{% url "carga:detalle-certificado" instance.id %}">{{detalleimglink|safe}}</a>
                     {% if perms.carga.change_certificado %}
                   <a href="{% url "carga:update-certificado" instance.id %}">{{editimglink|safe}}</a>
                 {% endif %}
@@ -72,9 +81,9 @@
             <th scope="col"></th>
             <th scope="col">Totales</th>
             <th id="totalPesos{{object.id}}" scope="col">Monto $</th>
-            <th id="totalDevolucion{{object.id}}" scope="col">Devolucion</th>
+            <th id="totalDevolucion{{object.id}}" scope="col">Dev./Desc.</th>
             <th id="totalUvi{{object.id}}" scope="col">Monto UVI</th>
-            <th id="totalDevolucionUvi{{object.id}}" scope="col">Devolucion UVI</th>
+            <th id="totalDevolucionUvi{{object.id}}" scope="col">Dev./Desc. UVI</th>
             <th id="montoCobrar{{object.id}}" scope="col">Monto a Cobrar</th>
             <th id="montoCobrarUvi{{object.id}}" scope="col">Monto a Cobrar UVI</th>
             <th scope="col d-print-none"> </th>

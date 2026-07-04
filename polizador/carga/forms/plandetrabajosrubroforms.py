@@ -13,6 +13,7 @@ class PlanDeTrabajosRubroForm(forms.ModelForm):
 			"rubro_orden",
 			"rubro_presupuesto",
 			"rubro_contratomonto",
+			"rubro_certificado_rubro",
 			"rubro_anterior",
 			"rubro_foja_numero_inicial",
 			"rubro_documento_digital",
@@ -25,6 +26,7 @@ class PlanDeTrabajosRubroForm(forms.ModelForm):
 			"rubro_contratomonto": contratomontowidget(
 				attrs={"class": "form-control customSelect2"}
 				),
+			"rubro_certificado_rubro": forms.Select(attrs={"class": "form-control"}),
 			"rubro_anterior": rubroanteriorwidget(
 				attrs={"class": "form-control customSelect2"}
 				),
