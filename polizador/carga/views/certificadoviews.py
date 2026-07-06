@@ -21,7 +21,8 @@ from carga.certificacion import (
 	resumen_certificacion_mensual,
 	siguiente_numero,
 )
-from carga.models import Certificado, CertificadoFinanciamiento, ContratoMonto, FojaDeMedicion, Uvi
+from carga.ley27397 import _contratomonto_de_rubro
+from carga.models import Certificado, CertificadoFinanciamiento, ContratoMonto, FojaDeMedicion, PlanDeTrabajosEtapa, Uvi
 from personalizador.models import Departamento, Direccion, Directorio, Gerencia
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg
 from carga.forms.certificadoforms import *
@@ -114,6 +115,26 @@ def _certificado_detalle_context(certificado):
 		else None
 	)
 	plan = certificado.certificado_foja.foja_rubro.rubro_plan if certificado.certificado_foja_id else obra.plan_vigente()
+
+	# Monto en UVI/pesos de cada tramo, misma cuenta que carga.ley27397.tramos_a_pesos: el
+	# ContratoMonto puede ser el de una versión anterior del rubro (reprogramación), no
+	# necesariamente el vigente que se resolvió arriba para `contratomonto_rubro`.
+	tramos_ley27397 = []
+	for tramo in (certificado.certificado_ley27397_detalle or []):
+		etapa = PlanDeTrabajosEtapa.objects.filter(pk=tramo["etapa_id"]).select_related("etapa_rubro").first()
+		contratomonto_lote = _contratomonto_de_rubro(etapa.etapa_rubro, financiamiento) if etapa and financiamiento else None
+		if contratomonto_lote:
+			monto_uvi_tramo = Decimal(tramo["pct"]) / Decimal("100") * contratomonto_lote.contratomonto_uvi
+			monto_pesos_tramo = monto_uvi_tramo * Decimal(tramo["tasa_valor"])
+		else:
+			monto_uvi_tramo = monto_pesos_tramo = None
+		tramos_ley27397.append({
+			**tramo,
+			"tasa_fecha": date.fromisoformat(tramo["tasa_fecha"]),
+			"monto_uvi": monto_uvi_tramo,
+			"monto_pesos": monto_pesos_tramo,
+		})
+
 	ultimo_tramo = (certificado.certificado_ley27397_detalle or [None])[-1]
 
 	# Cotización UVI efectivamente usada para pasar este certificado a pesos: el último
@@ -148,6 +169,7 @@ def _certificado_detalle_context(certificado):
 		"incidencia_pct_uvi": incidencia_pct_uvi,
 		"tramo": certificado.certificado_contrato_tramo,
 		"desglose_items": _desglose_items_certificado(certificado, contratomonto_rubro),
+		"tramos_ley27397": tramos_ley27397,
 		"ultimo_tramo": ultimo_tramo,
 		"uvi_fecha_calculo": uvi_fecha_calculo,
 		"uvi_valor_calculo": uvi_valor_calculo,

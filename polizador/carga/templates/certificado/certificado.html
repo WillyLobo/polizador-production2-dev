@@ -84,9 +84,9 @@
 <section class="hoja">
   {% include "certificado/encabezado-certificado-partial.html" %}
 
-  <div class="row border border-dark" style="display:flex;">
-    <div class="col" style="flex:1; border:1px solid var(--line); padding:1mm 2mm;"><b>RESUMEN DE LA CERTIFICACION DEL MES</b></div>
-    <div class="col" style="flex:1; border:1px solid var(--line); padding:1mm 2mm;"><b>PERIODO:</b> {{ object.certificado_fecha|date:"F-Y"|capfirst }}</div>
+  <div style="display:flex; border:1px solid var(--line);">
+    <div style="flex:1; border:1px solid var(--line); padding:1mm 2mm;"><b>RESUMEN DE LA CERTIFICACION DEL MES</b></div>
+    <div style="flex:1; border:1px solid var(--line); padding:1mm 2mm;"><b>PERIODO:</b> {{ object.certificado_fecha|date:"F-Y"|capfirst }}</div>
   </div>
 
   <table class="tabla-resumen">
@@ -177,6 +177,39 @@
       </tr>
     </tbody>
   </table>
+
+  {% if tramos_ley27397 %}
+  <table class="tabla-rubros" style="margin-bottom:1mm;">
+    <thead>
+      <tr>
+        <th class="item" style="text-align:left;">TRAMO (LEY 27397)</th>
+        <th>% CERTIFICADO</th>
+        <th>FECHA COTIZACION</th>
+        <th>VALOR UVI</th>
+        <th>MONTO UVI</th>
+        <th>MONTO PESOS</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for tramo in tramos_ley27397 %}
+      <tr>
+        <td class="item">Etapa N° {{ tramo.etapa_numero }}</td>
+        <td class="pct">{{ tramo.pct|floatformat:3 }}</td>
+        <td class="pct">{{ tramo.tasa_fecha|date:"d/m/Y" }}</td>
+        <td class="pct">{{ tramo.tasa_valor|floatformat:2 }}</td>
+        <td class="pct">{% if tramo.monto_uvi is not None %}{{ tramo.monto_uvi|floatformat:2 }}{% else %}—{% endif %}</td>
+        <td class="pct">{% if tramo.monto_pesos is not None %}{{ tramo.monto_pesos|floatformat:2 }}{% else %}—{% endif %}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% if tramos_ley27397|length > 1 %}
+  <p style="font-size:7.5pt; margin:0 0 4mm;">
+    (*) El Importe Presente Certificado en Pesos surge de sumar cada tramo de arriba valorizado a su
+    propia cotización UVI (Ley 27397), no de multiplicar el Monto UVI total por un único índice.
+  </p>
+  {% endif %}
+  {% endif %}
 
   {% if desglose_items is not None %}
   <table class="tabla-rubros" id="tablaDesgloseItemsCertificado">
