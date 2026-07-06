@@ -978,6 +978,49 @@ class AnticipoTests(TestCase):
         self.assertEqual(certificado.certificado_monto_uvi, Decimal("0"))
         self.assertEqual(certificado.certificado_monto_pesos, Decimal("50000.00"))
 
+    def test_calcular_monto_anticipo_calcula_anterior_y_acumulado(self):
+        self._crear_certificado(
+            certificado_tipo="ANTICIPO", certificado_anticipo_pct=Decimal("10")
+        ).save()
+
+        certificado = self._crear_certificado(certificado_tipo="ANTICIPO", certificado_anticipo_pct=Decimal("15"))
+        certificacion.calcular_monto_anticipo(certificado)
+
+        self.assertEqual(certificado.certificado_anticipo_anterior, Decimal("10.000"))
+        self.assertEqual(certificado.certificado_anticipo_acumulado, Decimal("25.000"))
+
+    def test_calcular_monto_anticipo_anterior_no_cuenta_otro_financiamiento(self):
+        self._crear_certificado(
+            certificado_tipo="ANTICIPO", certificado_financiamiento="P", certificado_anticipo_pct=Decimal("10")
+        ).save()
+
+        certificado = self._crear_certificado(certificado_tipo="ANTICIPO", certificado_anticipo_pct=Decimal("15"))
+        certificacion.calcular_monto_anticipo(certificado)
+
+        self.assertEqual(certificado.certificado_anticipo_anterior, Decimal("0.000"))
+        self.assertEqual(certificado.certificado_anticipo_acumulado, Decimal("15.000"))
+
+    def test_saldo_pendiente_anticipo_baja_con_devoluciones_y_llega_a_cero(self):
+        anticipo = self._crear_certificado(certificado_tipo="ANTICIPO", certificado_anticipo_pct=Decimal("20"))
+        certificacion.calcular_monto_anticipo(anticipo)
+        self.assertEqual(anticipo.certificado_anticipo_saldo_pct, Decimal("20.000"))
+        anticipo.save()
+
+        cert1 = self._crear_certificado(certificado_tipo="PARCIAL", certificado_monto_uvi=Decimal("5000"))
+        certificacion.aplicar_descuento_anticipo(cert1)
+        # El acumulado (bruto otorgado) no baja...
+        self.assertEqual(cert1.certificado_descuento_anticipo_pct, Decimal("20.000"))
+        # ...pero el saldo pendiente (neto) sí, a medida que se recupera el anticipo.
+        self.assertEqual(cert1.certificado_anticipo_saldo_pct, Decimal("10.000"))
+        cert1.save()
+
+        cert2 = self._crear_certificado(certificado_tipo="PARCIAL", certificado_monto_uvi=Decimal("5000"))
+        certificacion.aplicar_descuento_anticipo(cert2)
+
+        self.assertEqual(cert2.certificado_anticipo_saldo_pct, Decimal("0.000"))
+        # El acumulado bruto de anticipo, en cambio, se mantiene en el 20% otorgado.
+        self.assertEqual(anticipo.certificado_anticipo_acumulado, Decimal("20.000"))
+
     def test_sin_anticipo_no_hay_descuento(self):
         certificado = self._crear_certificado(
             certificado_tipo="PARCIAL", certificado_monto_uvi=Decimal("1000"), certificado_monto_pesos=Decimal("100000")

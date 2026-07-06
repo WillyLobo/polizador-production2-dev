@@ -188,6 +188,19 @@ def _saldo_a_certificar(obra, financiamiento_codigo, moneda, excluir_pk=None):
     return _monto_contrato_financiamiento(obra, financiamiento_codigo, moneda) - ya_certificado
 
 
+def _pct_pool(obra, financiamiento_codigo, valor_pesos, valor_uvi):
+    """Expresa valor_pesos/valor_uvi como % del monto de contrato total del financiamiento
+    (_monto_contrato_financiamiento) — misma base y mismo criterio de moneda (UVI si el
+    financiamiento tiene componente UVI, si no pesos) que usa certificado_anticipo_pct."""
+    base_uvi = _monto_contrato_financiamiento(obra, financiamiento_codigo, "uvi")
+    if base_uvi:
+        return _redondear_pct(valor_uvi / base_uvi * _CIEN)
+    base_pesos = _monto_contrato_financiamiento(obra, financiamiento_codigo, "pesos")
+    if not base_pesos:
+        return Decimal("0")
+    return _redondear_pct(valor_pesos / base_pesos * _CIEN)
+
+
 def _tasa_descuento(saldo_pendiente, saldo_a_certificar):
     if not saldo_pendiente or saldo_pendiente <= 0:
         return Decimal("0")
@@ -201,7 +214,10 @@ def aplicar_descuento_anticipo(certificado):
     asigna in-place, sobre el monto bruto ya resuelto (Ley 27397 u hecho consumado). El
     anticipo se amortiza dinámicamente: la tasa de descuento de cada certificado es
     saldo_pendiente_de_anticipos / saldo_a_certificar_de_ese_financiamiento, recalculada en
-    cada certificado nuevo. Un certificado ANTICIPO nunca se descuenta a sí mismo."""
+    cada certificado nuevo. Un certificado ANTICIPO nunca se descuenta a sí mismo. De paso
+    deja un snapshot neto en certificado_anticipo_saldo_pct: saldo pendiente de anticipo, en
+    % del pool, inmediatamente después de este descuento (ver también calcular_monto_anticipo,
+    que lo setea del lado de los ANTICIPO que otorgan)."""
     obra = certificado.certificado_obra
     financiamiento = certificado.certificado_financiamiento
     excluir_pk = certificado.pk
@@ -238,6 +254,14 @@ def aplicar_descuento_anticipo(certificado):
     else:
         certificado.certificado_descuento_anticipo_pct = Decimal("0")
 
+    # Saldo pendiente de anticipo (neto, en % del pool) inmediatamente después de aplicar
+    # el descuento de este certificado — ver certificado_anticipo_saldo_pct.
+    certificado.certificado_anticipo_saldo_pct = _pct_pool(
+        obra, financiamiento,
+        saldo_pendiente_pesos - certificado.certificado_descuento_anticipo_pesos,
+        saldo_pendiente_uvi - certificado.certificado_descuento_anticipo_uvi,
+    )
+
     # Numeración correlativa "Dev. N°" (misma convención que usaban los certificados
     # legacy marcados a mano): sólo se asigna cuando efectivamente hay descuento.
     if certificado.certificado_descuento_anticipo_pesos or certificado.certificado_descuento_anticipo_uvi:
@@ -257,10 +281,23 @@ def calcular_monto_anticipo(certificado):
     el financiamiento tiene componente UVI, convierte a pesos con la cotización del día de
     creación del certificado (no la pactada del contrato ni la de fin de mes: el Anticipo
     no tiene Foja/Etapa detrás, no le aplica ningún tramo de Ley 27397); si no, calcula
-    pesos directo sobre el monto de contrato en pesos."""
+    pesos directo sobre el monto de contrato en pesos.
+
+    De paso, deja un snapshot en certificado_anticipo_anterior/certificado_anticipo_acumulado
+    (suma de certificado_anticipo_pct de los Anticipos previos de esta obra+financiamiento,
+    y esa suma más el % de este certificado) para que las datatables puedan mostrar el
+    avance de Anticipo sin tener que recorrer el pool en cada fila. También deja un
+    snapshot neto en certificado_anticipo_saldo_pct (a diferencia del acumulado, éste sí
+    baja cuando aplicar_descuento_anticipo recupera anticipo en certificados posteriores)."""
     obra = certificado.certificado_obra
     financiamiento = certificado.certificado_financiamiento
     pct = certificado.certificado_anticipo_pct or Decimal("0")
+
+    anterior_pct = Certificado.objects.filter(
+        certificado_obra=obra, certificado_financiamiento=financiamiento, certificado_tipo="ANTICIPO"
+    ).exclude(pk=certificado.pk).aggregate(total=Sum("certificado_anticipo_pct"))["total"] or Decimal("0")
+    certificado.certificado_anticipo_anterior = _redondear_pct(anterior_pct)
+    certificado.certificado_anticipo_acumulado = _redondear_pct(anterior_pct + pct)
 
     base_uvi = _monto_contrato_financiamiento(obra, financiamiento, "uvi")
     if base_uvi:
@@ -277,6 +314,16 @@ def calcular_monto_anticipo(certificado):
         base_pesos = _monto_contrato_financiamiento(obra, financiamiento, "pesos")
         certificado.certificado_monto_uvi = Decimal("0")
         certificado.certificado_monto_pesos = _redondear_pesos(base_pesos * pct / _CIEN)
+
+    # Saldo pendiente de anticipo (neto, en % del pool) inmediatamente después de otorgar
+    # este Anticipo — ver certificado_anticipo_saldo_pct.
+    saldo_pendiente_pesos = _saldo_pendiente_anticipo(obra, financiamiento, "pesos", certificado.pk)
+    saldo_pendiente_uvi = _saldo_pendiente_anticipo(obra, financiamiento, "uvi", certificado.pk)
+    certificado.certificado_anticipo_saldo_pct = _pct_pool(
+        obra, financiamiento,
+        saldo_pendiente_pesos + certificado.certificado_monto_pesos,
+        saldo_pendiente_uvi + certificado.certificado_monto_uvi,
+    )
 
 
 def validar_anticipo_nuevo(obra, financiamiento, pct_nuevo):

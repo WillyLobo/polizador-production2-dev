@@ -593,6 +593,44 @@ class Certificado(models.Model):
                   "contrato del financiamiento (todos los rubros/contratos de la obra para ese "
                   "financiamiento, no un rubro puntual).",
     )
+    certificado_anticipo_anterior = models.DecimalField(
+        "% de Anticipo Anterior",
+        max_digits=6,
+        decimal_places=3,
+        default=0,
+        editable=False,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="Sólo aplica a certificados de Anticipo: snapshot de la suma de "
+                  "certificado_anticipo_pct de los Anticipos previos de esta obra+financiamiento "
+                  "(calculado automáticamente, ver certificacion.calcular_monto_anticipo).",
+    )
+    certificado_anticipo_acumulado = models.DecimalField(
+        "% de Anticipo Acumulado",
+        max_digits=6,
+        decimal_places=3,
+        default=0,
+        editable=False,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="Sólo aplica a certificados de Anticipo: certificado_anticipo_anterior + "
+                  "certificado_anticipo_pct (calculado automáticamente, ver "
+                  "certificacion.calcular_monto_anticipo).",
+    )
+    certificado_anticipo_saldo_pct = models.DecimalField(
+        "% Saldo Pendiente de Anticipo",
+        max_digits=6,
+        decimal_places=3,
+        default=0,
+        editable=False,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="Aplica a certificados de Anticipo, Parcial y Hecho Consumado: snapshot del % "
+                  "(sobre el monto de contrato del financiamiento) de anticipo otorgado y aún no "
+                  "recuperado, justo después de este certificado — sube al otorgarse un Anticipo, "
+                  "baja cuando un Parcial/Hecho Consumado le aplica descuento de anticipo. A "
+                  "diferencia de certificado_anticipo_acumulado (bruto otorgado, nunca baja), este "
+                  "campo neteado sirve para verificar/reportar que el anticipo llegue a 0% cuando "
+                  "la obra termina de certificarse (ver certificacion.calcular_monto_anticipo, "
+                  "certificacion.aplicar_descuento_anticipo).",
+    )
     certificado_contrato_tramo = models.OneToOneField(
         "ContratoTramoPago",
         verbose_name="Tramo de Contrato",

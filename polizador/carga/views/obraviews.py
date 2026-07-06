@@ -119,11 +119,18 @@ class ContratosAnterioresObra(PermissionRequiredMixin, generic.DetailView):
 		return context
 
 def _con_acumulado_anotado(queryset):
-	"""Anota el % acumulado del último certificado de cada obra en una sola query (evita N+1)."""
+	"""Anota el % acumulado del último certificado (Obra) y el % acumulado de Anticipo del
+	último certificado de Anticipo de cada obra, en una sola query (evita N+1)."""
 	ultimo_acumulado = Certificado.objects.filter(
 		certificado_obra=OuterRef("pk"), certificado_tipo__in=("PARCIAL", "HECHO_CONSUMADO", "ETAPA", "LEGACY")
 	).order_by("-certificado_fecha").values("certificado_acum_pct")[:1]
-	return queryset.annotate(obra_acum_pct_anotado=Subquery(ultimo_acumulado))
+	ultimo_anticipo_acumulado = Certificado.objects.filter(
+		certificado_obra=OuterRef("pk"), certificado_tipo="ANTICIPO"
+	).order_by("-certificado_fecha").values("certificado_anticipo_acumulado")[:1]
+	return queryset.annotate(
+		obra_acum_pct_anotado=Subquery(ultimo_acumulado),
+		obra_anticipo_acumulado_anotado=Subquery(ultimo_anticipo_acumulado),
+	)
 
 @login_required
 @permission_required("carga.view_obra", raise_exception=True)
@@ -157,15 +164,19 @@ class ListaObrasView(AjaxDatatableView):
 		{"name": "obra_empresa", "foreign_field": "obra_empresa__empresa_nombre", "visible": True},
 		{"name": "obra_localidad_m", "m2m_foreign_field": "obra_localidad_m__localidad_nombre", "visible": True},
 		{"name": "obra_acumulado", "title":"Avance Acumulado", "searchable":False, "orderable":False},
+		{"name": "obra_anticipo_acumulado", "title":"Avance Anticipo", "searchable":False, "orderable":False},
 		{'name': 'edit', 'title': 'Acciones', 'placeholder': True, 'searchable': False, 'orderable': False},
 	]
-	
+
 	def get_initial_queryset(self, request=None):
 		return _con_acumulado_anotado(super().get_initial_queryset(request))
 
 	def customize_row(self, row, obj):
 		acumulado = obj.obra_acum_pct_anotado
 		row['obra_acumulado'] = (str(acumulado) if acumulado is not None else "0.00") + "%"
+
+		anticipo_acumulado = obj.obra_anticipo_acumulado_anotado
+		row['obra_anticipo_acumulado'] = (str(anticipo_acumulado) if anticipo_acumulado is not None else "0.00") + "%"
 
 		id = str(obj.id)
 		editarlink = f"<a href='/obra/crear/obra/{id}'>{editlinkimg}</a>"
@@ -292,6 +303,7 @@ class ListaObrasExtendidaView(AjaxDatatableView):
 		{"name": "obra_contrato_terceros_uvi_fecha", "title": "Fecha UVI"},
 		{"name": "obra_principal", "title": "Obra Madre", "m2m_foreign_field": "obra_principal__obra_nombre", "max_length":100},
 		{"name": "obra_acumulado", "title":"Avance Acumulado", "searchable":False},
+		{"name": "obra_anticipo_acumulado", "title":"Avance Anticipo", "searchable":False, "orderable":False},
 		{'name': 'edit', 'title': '', 'placeholder': True, 'searchable': False, 'orderable': False},
 	]
 
@@ -305,6 +317,9 @@ class ListaObrasExtendidaView(AjaxDatatableView):
 		"""
 		acumulado = obj.obra_acum_pct_anotado
 		row['obra_acumulado'] = (str(acumulado) if acumulado is not None else "0.00") + "%"
+
+		anticipo_acumulado = obj.obra_anticipo_acumulado_anotado
+		row['obra_anticipo_acumulado'] = (str(anticipo_acumulado) if anticipo_acumulado is not None else "0.00") + "%"
 
 		row["obra_inspector"] = ", ".join(str(agente) for agente in obj.obra_inspector.all())
 

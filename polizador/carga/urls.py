@@ -143,6 +143,7 @@ plandetrabajosetapa_patterns = [
 ]
 ayuda_patterns = [
     path("ayuda/plan-de-trabajos-fojas/", ManualObraPlanFojaView.as_view(), name="ayuda-plan-fojas"),
+    path("ayuda/certificados/", ManualCertificadosView.as_view(), name="ayuda-certificados"),
 ]
 reporte_patterns = [
     path("reporte/crear-reporte-mes/", ReporteCertificadoPorMesView.as_view(), name="crear-reporte-certificado"),

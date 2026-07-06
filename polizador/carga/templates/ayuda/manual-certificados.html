@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}<title>Manual de Usuario — Certificados de Obra | Polizador</title>{% endblock title %}
+{% block content %}
+<div class="container my-4" style="max-width: 980px;">
+
+    <h1 class="mb-1"><i class="bi bi-question-circle me-2"></i>Manual de Usuario</h1>
+    <p class="text-muted mb-4">Cómo generar los Certificados de Obra: desde una Foja de Medición, de Anticipo, por Hecho Consumado, o manual/legacy.</p>
+
+    {# ─── Índice ─── #}
+    <div class="card mb-4">
+        <div class="card-header py-2 bg-light fw-semibold small">Índice</div>
+        <div class="card-body p-2">
+            <ol class="small mb-0">
+                <li><a href="#conceptos">Antes de empezar: los 4 tipos de Certificado</a></li>
+                <li><a href="#parcial">Certificado Parcial de Obra (desde una Foja de Medición)</a></li>
+                <li><a href="#anticipo">Certificado de Anticipo</a></li>
+                <li><a href="#hechoconsumado">Certificado por Hecho Consumado</a></li>
+                <li><a href="#manual">Certificado manual / legacy</a></li>
+                <li><a href="#resultado">Resultado final</a></li>
+                <li><a href="#faq">Preguntas frecuentes y errores comunes</a></li>
+            </ol>
+        </div>
+    </div>
+
+    {# ─── Conceptos ─── #}
+    <div class="card mb-4" id="conceptos">
+        <div class="card-header py-2 bg-light fw-semibold small">Antes de empezar: los 4 tipos de Certificado</div>
+        <div class="card-body p-3">
+            <p>Un Certificado es el documento de pago de una obra. El sistema soporta cuatro caminos para generarlo, según de dónde salga el % que se está certificando. Se accede a los cuatro desde <strong>Obras → Nuevo Certificado</strong> en la barra superior:</p>
+            <img src="{% static 'carga/img/ayuda/certificados/01-navbar-nuevo-certificado.png' %}" class="img-fluid border rounded mb-3" alt="Menú Obras de la barra de navegación, con la opción Nuevo Certificado">
+            <img src="{% static 'carga/img/ayuda/certificados/02-menu-nuevo-certificado.png' %}" class="img-fluid border rounded mb-3" alt="Pantalla Nuevo Certificado con los cuatro tipos disponibles">
+            <ol class="mb-0">
+                <li><strong>Certificado Parcial de Obra</strong>: el caso normal de cada mes. Se genera desde una Foja de Medición ya cargada; el % y el monto salen automáticamente del avance medido. Ver <a href="#parcial">sección</a>.</li>
+                <li><strong>Certificado de Anticipo</strong>: sin Foja. Un % cargado a mano sobre el monto de contrato del financiamiento, que se va descontando de los certificados Parciales y de Hecho Consumado posteriores de esa obra+financiamiento hasta agotarse.</li>
+                <li><strong>Certificado por Hecho Consumado</strong>: sin Foja. Certifica directo contra un Contrato/Resolución de origen puntual, con un % cargado a mano (por ejemplo, una redeterminación de precios).</li>
+                <li><strong>Certificado manual / legacy</strong>: carga 100% manual de todos los campos, sin ninguno de los cálculos automáticos de arriba. Para correcciones o para registrar certificados viejos, de antes de usar el sistema.</li>
+            </ol>
+        </div>
+    </div>
+
+    {# ─── Parcial de Obra ─── #}
+    <div class="card mb-4" id="parcial">
+        <div class="card-header py-2 bg-light fw-semibold small">Certificado Parcial de Obra (desde una Foja de Medición)</div>
+        <div class="card-body p-3">
+            <p>Es el flujo principal: se usa cada vez que ya se cargó la Foja de Medición del mes (ver el <a href="{% url 'carga:ayuda-plan-fojas' %}">Manual de Obras, Plan de Trabajos y Fojas</a>). En la ficha de la obra, hacé clic en el enlace <strong>"Cert."</strong> que aparece junto a la Foja:</p>
+            <img src="{% static 'carga/img/ayuda/certificados/00-obra-ficha-foja-cert-link.png' %}" class="img-fluid border rounded mb-3" alt="Tabla de Fojas de Medición en la ficha de la obra, con el enlace Cert. junto a la Foja">
+
+            <p>Completá el <strong>Número de Expediente</strong> y la <strong>Fecha</strong>, y hacé clic en <strong>"Previsualizar"</strong>:</p>
+            <img src="{% static 'carga/img/ayuda/certificados/03-generar-desde-foja-form-completo.png' %}" class="img-fluid border rounded mb-3" alt="Formulario Generar Certificados desde Foja, completo">
+
+            <p>El sistema muestra una previsualización con un renglón por cada financiamiento del Rubro de la Foja (Nación/Provincia/Terceros), calculando automáticamente el % certificado, el monto en pesos y en UVI, y descontando el saldo de Anticipo pendiente si lo hay:</p>
+            <img src="{% static 'carga/img/ayuda/certificados/04-generar-desde-foja-preview.png' %}" class="img-fluid border rounded mb-3" alt="Previsualización de los certificados a generar, con montos calculados">
+
+            <div class="alert alert-info small">
+                <i class="bi bi-info-circle me-1"></i>
+                Si el avance acumulado de la Foja cruza alguno de los umbrales mensuales proyectados en las Etapas, el sistema también genera certificados de <strong>Etapa de Contrato</strong> (Ley 27397): la previsualización lo indica con un mensaje distinto ("...certificado(s) de Etapa de Contrato") y una fila por tramo.
+            </div>
+
+            <p>Con la previsualización correcta, hacé clic en <strong>"Confirmar y Crear Certificados"</strong>. El sistema vuelve a la ficha de la obra con un mensaje de confirmación, y el/los certificado(s) recién creado(s) aparecen en la tabla <strong>"Certificados Emitidos"</strong>, al final de la página:</p>
+            <img src="{% static 'carga/img/ayuda/certificados/05-mensaje-certificados-generados.png' %}" class="img-fluid border rounded mb-3" alt="Mensaje de confirmación: se generaron certificados a partir de la Foja">
+            <img src="{% static 'carga/img/ayuda/certificados/06-obra-ficha-certificados-emitidos.png' %}" class="img-fluid border rounded" alt="Tabla Certificados Emitidos mostrando el certificado recién generado">
+
+            <p class="mt-3">Desde ahí, el enlace <strong>"Ver Detalle"</strong> abre el certificado completo, listo para imprimir: nota de elevación, resumen mensual y el detalle de Certificado de Obra con el desglose por ítem y, si corresponde, la tabla de <strong>tramos (Ley 27397)</strong> con la cotización UVI congelada de cada uno:</p>
+            <img src="{% static 'carga/img/ayuda/certificados/08-certificado-detalle-header.png' %}" class="img-fluid border rounded mb-3" alt="Encabezado del detalle del Certificado, con los botones Editar, Imprimir/PDF y Volver a la Obra">
+            <img src="{% static 'carga/img/ayuda/certificados/07-certificado-detalle-tramos-ley27397.png' %}" class="img-fluid border rounded" alt="Tabla de tramos Ley 27397 y desglose por ítem en el detalle del Certificado">
+        </div>
+    </div>
+
+    {# ─── Anticipo ─── #}
+    <div class="card mb-4" id="anticipo">
+        <div class="card-header py-2 bg-light fw-semibold small">Certificado de Anticipo</div>
+        <div class="card-body p-3">
+            <p>Desde <strong>Nuevo Certificado → Certificado de Anticipo</strong>. Elegí la <strong>Obra</strong> y el <strong>Financiamiento</strong>, y cargá el <strong>% de Anticipo</strong> sobre el monto de contrato de ese financiamiento (todos los rubros/contratos de la obra para ese financiamiento, no un rubro puntual):</p>
+            <img src="{% static 'carga/img/ayuda/certificados/09-certificado-anticipo-form-completo.png' %}" class="img-fluid border rounded mb-3" alt="Formulario de Certificado de Anticipo completo">
+
+            <div class="alert alert-warning small">
+                <i class="bi bi-exclamation-triangle me-1"></i>
+                El anticipo pendiente de una obra (lo otorgado, neto de lo ya devuelto/descontado) no puede superar el <strong>30%</strong> del monto de contrato del financiamiento, y tiene que haber margen suficiente en el saldo aún no certificado para poder recuperarlo. Si el financiamiento tiene componente UVI, además hace falta una cotización UVI cargada para la fecha del certificado.
+            </div>
+
+            <p>Al guardar, el sistema vuelve al listado de Certificados. El anticipo generado se va descontando automáticamente, en proporción, de los certificados <strong>Parciales</strong> y de <strong>Hecho Consumado</strong> siguientes de la misma obra y financiamiento, hasta agotarse — se ve en las columnas "Dev./Desc." de la tabla:</p>
+            <img src="{% static 'carga/img/ayuda/certificados/10-lista-certificados-anticipo.png' %}" class="img-fluid border rounded" alt="Listado de Certificados mostrando el Certificado de Anticipo recién creado">
+        </div>
+    </div>
+
+    {# ─── Hecho Consumado ─── #}
+    <div class="card mb-4" id="hechoconsumado">
+        <div class="card-header py-2 bg-light fw-semibold small">Certificado por Hecho Consumado</div>
+        <div class="card-body p-3">
+            <p>Desde <strong>Nuevo Certificado → Certificado por Hecho Consumado</strong>. A diferencia del Parcial, este certifica directo contra un <strong>Contrato/Resolución de Origen</strong> puntual (por ejemplo, una redeterminación o un reconocimiento de trabajos), no contra el contrato vigente de la obra ni contra una Foja. Elegí la Obra, el Contrato/Resolución de Origen, el Financiamiento, el Rubro presupuestario y el <strong>% Certificado</strong>:</p>
+            <img src="{% static 'carga/img/ayuda/certificados/11-certificado-hechoconsumado-form-completo.png' %}" class="img-fluid border rounded mb-3" alt="Formulario de Certificado por Hecho Consumado completo">
+
+            <div class="alert alert-warning small">
+                <i class="bi bi-exclamation-triangle me-1"></i>
+                El Rubro elegido tiene que tener un monto cargado en ese Contrato de Origen para el Financiamiento seleccionado — si el combo de Rubro no incluye el que necesitás, revisá los Montos de Contrato cargados en la obra.
+            </div>
+
+            <p>Igual que el Parcial, si hay saldo de Anticipo pendiente para esa obra+financiamiento, se descuenta automáticamente del monto a cobrar:</p>
+            <img src="{% static 'carga/img/ayuda/certificados/12-lista-certificados-hechoconsumado.png' %}" class="img-fluid border rounded" alt="Listado de Certificados mostrando el Certificado por Hecho Consumado, con el descuento de Anticipo aplicado">
+        </div>
+    </div>
+
+    {# ─── Manual / Legacy ─── #}
+    <div class="card mb-4" id="manual">
+        <div class="card-header py-2 bg-light fw-semibold small">Certificado manual / legacy</div>
+        <div class="card-body p-3">
+            <p>Desde <strong>Nuevo Certificado → Certificado manual / legacy</strong> (requiere el permiso <code>carga.add_certificado</code>). No hay ningún cálculo automático: se cargan a mano la Obra, el Rubro y Financiamiento, los números de Anticipo/Obra/Devolución de Anticipo, la Actuación y Período, los Porcentajes y los Montos:</p>
+            <img src="{% static 'carga/img/ayuda/certificados/13-certificado-manual-form-obra-rubro.png' %}" class="img-fluid border rounded mb-3" alt="Formulario de Certificado manual: secciones Obra, Rubro y Actuación y Período">
+            <img src="{% static 'carga/img/ayuda/certificados/14-certificado-manual-form-porcentajes-montos.png' %}" class="img-fluid border rounded mb-3" alt="Formulario de Certificado manual: secciones Porcentajes y Montos">
+
+            <div class="alert alert-info small">
+                <i class="bi bi-info-circle me-1"></i>
+                Tildá <strong>"Es Certificado Viejo"</strong> cuando estés cargando un registro histórico (de antes de usar el sistema) con una fecha pasada — evita que se lo confunda con la carga del día.
+            </div>
+
+            <div class="alert alert-warning small mb-0">
+                <i class="bi bi-exclamation-triangle me-1"></i>
+                Al guardar, el sistema vuelve a mostrar el formulario en blanco (para poder cargar otro certificado rápidamente) — no te va a redirigir a una pantalla de "confirmación". Para verificar que se guardó, andá a la ficha de la obra y revisá la tabla "Certificados Emitidos", o el listado general en <strong>Obras → Certificados</strong>.
+            </div>
+        </div>
+    </div>
+
+    {# ─── Resultado ─── #}
+    <div class="card mb-4" id="resultado">
+        <div class="card-header py-2 bg-light fw-semibold small">Resultado final</div>
+        <div class="card-body p-3">
+            <p>Todos los certificados de una obra, sin importar por cuál de los cuatro caminos se generaron, terminan en la misma tabla <strong>"Certificados Emitidos"</strong> de su ficha, con sus totales acumulados:</p>
+            <img src="{% static 'carga/img/ayuda/certificados/15-obra-ficha-certificados-emitidos-completo.png' %}" class="img-fluid border rounded" alt="Tabla Certificados Emitidos con los cuatro tipos de certificado y sus totales">
+        </div>
+    </div>
+
+    {# ─── FAQ ─── #}
+    <div class="card mb-4" id="faq">
+        <div class="card-header py-2 bg-light fw-semibold small">Preguntas frecuentes y errores comunes</div>
+        <div class="card-body p-3">
+            <dl class="mb-0">
+                <dt>La previsualización desde la Foja dice "No hay certificados nuevos para generar con esta Foja".</dt>
+                <dd class="mb-3">Ya se generaron todos los certificados posibles con el avance medido hasta ahora, o la Foja no tiene avance nuevo respecto a la anterior.</dd>
+
+                <dt>No encuentro el Rubro que necesito al crear un Certificado por Hecho Consumado.</dt>
+                <dd class="mb-3">El combo de Rubro sólo tiene sentido si el Contrato/Resolución de Origen elegido tiene un Monto de Contrato cargado para ese Rubro y Financiamiento — revisalo en la ficha de la obra, sección "Montos de Contrato".</dd>
+
+                <dt>Quiero cargar un Certificado de Anticipo y me dice "No hay cotización UVI disponible para la fecha del certificado".</dt>
+                <dd class="mb-3">El financiamiento tiene componente en UVI y no hay ningún valor de UVI cargado en o antes de la fecha elegida. Cargá la cotización UVI correspondiente (ver <strong>Reportes → Cotización UVI</strong>) o elegí una fecha con cotización disponible.</dd>
+
+                <dt>¿Cuál elijo si no estoy seguro?</dt>
+                <dd class="mb-0">Si ya cargaste la Foja del mes, casi siempre es <strong>Certificado Parcial de Obra</strong> (el botón "Cert." de la Foja). Los otros tres son para excepciones: adelantar fondos sin Foja (Anticipo), certificar algo puntual sin Foja contra un Contrato/Resolución específico (Hecho Consumado), o corregir/migrar datos históricos (manual/legacy).</dd>
+            </dl>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}

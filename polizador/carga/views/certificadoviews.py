@@ -296,9 +296,17 @@ class CrearCertificadoAnticipo(PermissionRequiredMixin, generic.CreateView):
 	form_class = CertificadoAnticipoForm
 	success_url = reverse_lazy("carga:lista-certificados")
 
+	def get_form_kwargs(self):
+		# El tipo tiene que estar en la instancia ANTES de que el ModelForm la valide
+		# (Certificado.clean() decide qué campos zapatear según certificado_tipo, y
+		# corre automáticamente dentro de form.is_valid()/_post_clean, antes de que
+		# form_valid() llegue a ejecutarse).
+		kwargs = super().get_form_kwargs()
+		kwargs["instance"] = Certificado(certificado_tipo="ANTICIPO")
+		return kwargs
+
 	def form_valid(self, form):
 		self.object = form.save(commit=False)
-		self.object.certificado_tipo = "ANTICIPO"
 		self.object.certificado_rubro_anticipo = siguiente_numero(
 			self.object.certificado_obra, self.object.certificado_financiamiento, "ANTICIPO"
 		)
@@ -322,9 +330,14 @@ class CrearCertificadoHechoConsumado(PermissionRequiredMixin, generic.CreateView
 	form_class = CertificadoHechoConsumadoForm
 	success_url = reverse_lazy("carga:lista-certificados")
 
+	def get_form_kwargs(self):
+		# Ver comentario análogo en CrearCertificadoAnticipo.get_form_kwargs.
+		kwargs = super().get_form_kwargs()
+		kwargs["instance"] = Certificado(certificado_tipo="HECHO_CONSUMADO")
+		return kwargs
+
 	def form_valid(self, form):
 		self.object = form.save(commit=False)
-		self.object.certificado_tipo = "HECHO_CONSUMADO"
 		self.object.certificado_rubro_obra = siguiente_numero(
 			self.object.certificado_obra, self.object.certificado_financiamiento, "HECHO_CONSUMADO"
 		)

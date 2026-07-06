@@ -1,0 +1,66 @@
+{% load static %}
+{% load humanize %}
+<div class="min-vh-100">
+    <div class="d-flex justify-content-end mb-2 d-print-none">
+        <a href="#" target="_blank" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-question-circle me-1"></i>¿Cómo creo un certificado? Ver Manual
+        </a>
+    </div>
+    <div class="row g-3">
+
+        <div class="col-12">
+            <div class="card h-100">
+                <div class="card-header py-2 bg-light fw-semibold small">Fojas sin Certificado</div>
+                <div class="card-body p-2">
+                    <div class="table-responsive">
+                        <table width="auto" class="table table-sm table-bordered table-hover align-middle mb-0" id="tablaFojasSinCertificado">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="small" scope="col">Obra</th>
+                                    <th class="small" scope="col">Rubro</th>
+                                    <th class="small" scope="col">Foja N°</th>
+                                    <th class="small" scope="col">Período</th>
+                                    <th class="small" scope="col">Avance del Mes</th>
+                                    <th class="small" scope="col">Acumulado</th>
+                                    <th class="small d-print-none" scope="col">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {% for foja in fojas_sin_certificado %}
+                                <tr>
+                                    <td class="small">{{foja.foja_rubro.rubro_plan.trabajos_obra.obra_nombre}}</td>
+                                    <td class="small">{{foja.foja_rubro.rubro_nombre}}</td>
+                                    <td class="small">{{foja.foja_numero}}</td>
+                                    <td class="small">{{foja.foja_periodo}}</td>
+                                    <td class="small">{{foja.foja_pct_avance_mes|floatformat:3}}%</td>
+                                    <td class="small">{{foja.foja_pct_acumulado|floatformat:3}}%</td>
+                                    <td class="small d-print-none">
+                                        {% if perms.carga.add_certificado %}
+                                        <a href="{% url "carga:generar-certificados-foja" foja.id %}" class="btn btn-sm btn-outline-success">
+                                            <i class="bi bi-file-earmark-plus"></i> Generar Certificado
+                                        </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    new DataTable('#tablaFojasSinCertificado', {
+    info: false,
+    paging: false,
+    order: [[ 3, 'desc' ]],
+    language: {
+            "emptyTable": "Ningún dato disponible en esta tabla",
+            "search": "Buscar:",
+    },
+});
+</script>
