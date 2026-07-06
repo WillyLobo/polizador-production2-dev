@@ -4,26 +4,15 @@
 {% block title %}<title>{{title}}</title>{% endblock title %}
 
 {{ form.media.css }}
-<form action='{% url "secretariador:crear-solicitud-exterior" %}' method="POST" enctype="multipart/form-data"> 
+<form id="mainForm" action='{% url "secretariador:crear-solicitud-exterior" %}' method="POST" enctype="multipart/form-data">
   {% csrf_token %}
-  
-  <div class="row flex-xl-nowrap">
-    <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
-      {% include "partials/administrative-sidebar.html" %}
-      {% include "partials/floating-solicitudes-menu.html" %}
-    </div>
-    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
-      {% include "partials/solicitud-exterior-form-partial.html" %}
-      {% include "partials/comisionadosolicitud-exterior-form-partial.html" %}
-    </main>
-    <div class="d-none d-xl-block col-xl-2 bd-toc">
-    </div>
-  </div>
+  {% include "partials/solicitud-exterior-form-partial.html" %}
+  {% include "partials/comisionadosolicitud-exterior-form-partial.html" %}
 </form>
 {{ form.media.js }}
 
 <script>
-$('#addForm').click(function() {
+$(document).on('click', '#addForm', function() {
 $(".customSelect2").select2("destroy");
 	var form_idx = $('#id_comisionadosolicitud_set-TOTAL_FORMS').val();
 $('#comisionadosolicitud-form').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
@@ -42,4 +31,9 @@ function eliminarComisionado(prefix) {
   $(namex).val("").trigger("change")
 }
 </script>
+{% endblock %}
+
+{% block actions %}
+  {% url 'secretariador:lista-solicitudes' as volver_target %}
+  {% include "partials/form-actions.html" with volver_url=volver_target show_add=True add_label="Nuevo Comisionado" %}
 {% endblock %}

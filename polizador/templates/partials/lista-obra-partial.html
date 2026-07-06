@@ -1,22 +1,25 @@
-<div class="container-flex bg-body">
-<table id="tablaObras{{object.id}}" class="table">
-    <thead>
+<div class="card mb-3">
+<div class="card-header py-2 bg-light fw-semibold small">Obras</div>
+<div class="card-body p-2">
+<div class="table-responsive">
+<table id="tablaObras{{object.id}}" class="table table-sm table-bordered table-hover align-middle mb-0">
+    <thead class="table-light">
         <tr>
-            <th scope="col">ID#</th>
-            <th scope="col">Obra</th>
-            <th scope="col">Soluciones</th>
-            <th scope="col">Localidad</th>
-            <th scope="col">Contratista</th>
-            <th scope="col">Programa</th>
-            <th scope="col">Convenio</th>
-            <th scope="col">Expediente</th>
-            <th scope="col">Monto Pesos</th>
-            <th scope="col">Monto UVI</th>
-            <th scope="col">% Ultimo Mes</th>
-            <th scope="col">Acumulado</th>
-            <th scope="col">Acumulado en Pesos</th>
-            <th scope="col">Acumulado en UVI</th>
-            <th scope="col">Link</th>
+            <th class="small" scope="col">ID#</th>
+            <th class="small" scope="col">Obra</th>
+            <th class="small" scope="col">Soluciones</th>
+            <th class="small" scope="col">Localidad</th>
+            <th class="small" scope="col">Contratista</th>
+            <th class="small" scope="col">Programa</th>
+            <th class="small" scope="col">Convenio</th>
+            <th class="small" scope="col">Expediente</th>
+            <th class="small" scope="col">Monto Pesos</th>
+            <th class="small" scope="col">Monto UVI</th>
+            <th class="small" scope="col">% Ultimo Mes</th>
+            <th class="small" scope="col">Acumulado</th>
+            <th class="small" scope="col">Acumulado en Pesos</th>
+            <th class="small" scope="col">Acumulado en UVI</th>
+            <th class="small d-print-none" scope="col">Link</th>
         </tr>
     </thead>
     <tbody>
@@ -51,27 +54,28 @@
             {% endfor %}
         {% endif %}
     </tbody>
-    <tfoot>
-        
+    <tfoot class="table-light fw-semibold">
         <tr>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th id="totalSoluciones{{object.id}}" scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col">Totales</th>
-            <th id="totalPesos{{object.id}}" scope="col"></th>
-            <th id="totalUVI{{object.id}}" scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th id="acumuladoPesos{{object.id}}" scope="col"></th>
-            <th id="acumuladoUVI{{object.id}}" scope="col"></th>
-            <th scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" id="totalSoluciones{{object.id}}" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col">Totales</th>
+            <th class="small" id="totalPesos{{object.id}}" scope="col"></th>
+            <th class="small" id="totalUVI{{object.id}}" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" id="acumuladoPesos{{object.id}}" scope="col"></th>
+            <th class="small" id="acumuladoUVI{{object.id}}" scope="col"></th>
+            <th class="small d-print-none" scope="col"></th>
         </tr>
     </tfoot>
 </table>
+</div>
+</div>
 </div>
 
 <script>

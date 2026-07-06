@@ -1,0 +1,31 @@
+{% comment %}
+Barra de acciones para formularios (Guardar / Volver / Agregar), pensada para
+usarse dentro de {% block actions %} en un template que extiende base.html.
+
+Como este bloque se renderiza fuera del <form> (para poder quedar fijo abajo
+de toda la página), el botón Guardar referencia el form por id con el
+atributo HTML "form" — por eso el <form> del template debe tener id="mainForm".
+
+Variables:
+  volver_url  (opcional) — si se define, muestra un botón "Volver" con ese href.
+  show_add    (opcional) — si es True, muestra un botón "Agregar" con id="addForm"
+                            (el JS de formsets de cada template ya escucha ese id).
+  add_label   (opcional) — texto del botón Agregar. Default: "Agregar".
+{% endcomment %}
+<nav class="form-actions-bar py-2 d-print-none">
+  <div class="container-fluid d-flex flex-wrap gap-2 justify-content-end">
+    {% if show_add %}
+    <button type="button" id="addForm" class="btn btn-sm btn-outline-success">
+      <i class="bi bi-plus-circle me-1"></i>{{ add_label|default:"Agregar" }}
+    </button>
+    {% endif %}
+    {% if volver_url %}
+    <a href="{{ volver_url }}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>Volver
+    </a>
+    {% endif %}
+    <button type="submit" form="mainForm" class="btn btn-sm btn-primary">
+      <i class="bi bi-check2 me-1"></i>Guardar
+    </button>
+  </div>
+</nav>

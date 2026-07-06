@@ -6,62 +6,74 @@
 
 {% block title %}<title>Reporte Comisiones que se repiten en la misma fecha y localidad</title>{% endblock title %}
 
-<br>
-<form action="{% url "secretariador:crear-reporte-duplicados" %}" method="get">
+<div class="min-vh-100 min-vw-100 p-4">
 
-    <!-- Select Fecha-->
-    <!-- Select Mes -->
-    <div class="input-group">
-        <div class="form-floating col-3 d-print-none">
-            <input type="date" name="fecha_inicial" placeholder="Fecha Inicial" rows="3" autocomplete="off" class="form-control" id="id_fecha_inicial">
-            <label for="id_fecha_inicial">Fecha Desde</label>
+  <div class="card mb-3 d-print-none">
+    <div class="card-header py-2 bg-light fw-semibold small">Filtros</div>
+    <div class="card-body p-3">
+      <form action="{% url "secretariador:crear-reporte-duplicados" %}" method="get">
+        <div class="row g-2 mb-2">
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold mb-1" for="id_fecha_inicial">Fecha Desde</label>
+            <input type="date" name="fecha_inicial" placeholder="Fecha Inicial" autocomplete="off" class="form-control" id="id_fecha_inicial">
           </div>
-          <!-- Select Final-->
-          <div class="form-floating col-3 d-print-none">
-            <input type="date" name="fecha_final" placeholder="Fecha Final" rows="3" autocomplete="off" class="form-control" id="id_fecha_final">
-            <label for="id_fecha_final">Fecha Hasta(Fecha mas actual)</label>
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold mb-1" for="id_fecha_final">Fecha Hasta(Fecha mas actual)</label>
+            <input type="date" name="fecha_final" placeholder="Fecha Final" autocomplete="off" class="form-control" id="id_fecha_final">
           </div>
+        </div>
+        <div class="text-end">
+          <input type='submit' value='Buscar' class="btn btn-primary btn-sm" />
+        </div>
+      </form>
     </div>
-    
-    <input type='submit' value='Buscar' class="px-5 btn btn-primary d-print-none" />
-</form>
-<span class="text-center"><h4>Mostrando registros desde el {{solicitud.fechas.fecha_inicial|date:"SHORT_DATE_FORMAT"}} hasta el {{solicitud.fechas.fecha_final|date:"SHORT_DATE_FORMAT"}}.</h4></span>
-<TABLE class="table table-bordered" id="tablaReporte">
-    <THEAD>
-        <TR>
-            <TH class="align-middle">Fecha</TH>
-            <TH class="align-middle">Actuación</TH>
-            <TH class="align-middle">Solicitante</TH>
-            <TH class="align-middle">Cantidad de días</TH>
-            <TH class="align-middle">Localidades</TH>
-            <TH class="align-middle">Comisionados</TH>
-            <TH class="align-middle">Tareas</TH>
-        </TR>
-    </THEAD>
-    <TBODY>
-        {% for s, d in solicitud.duplicados.items %}
-        <TR id="{{object.id}}">
-            <TD class="align-middle bg-secondary text-white">{{s.0}}</TD>
-            <TD class="align-middle bg-secondary text-white"></TD>
-            <TD class="align-middle bg-secondary text-white"></TD>
-            <TD class="align-middle bg-secondary text-white"></TD>
-            <TD class="align-middle bg-secondary text-white"></TD>
-            <TD class="align-middle bg-secondary text-white"></TD>
-            <TD class="align-middle bg-secondary text-white"></TD>
-        </TR>
-            {% for actuacion in d %}
-            <TR id="{{object.id}}_detalle">
-                <TD class="align-middle"></TD>
-                <TD class="align-middle">{{actuacion.0}}</TD>
-                <TD class="align-middle">{{actuacion.1}}</TD>
-                <TD class="align-middle">{{actuacion.4}}</TD>
-                <TD class="align-middle">{% for a in actuacion.5 %}{{a}}{% if not forloop.last %}, {% endif %}{% endfor %}</TD>
-                <TD class="align-middle">{% for a in actuacion.2 %}{{a}}{% if not forloop.last %}, {% endif %}{% endfor %}</TD>
-                <TD class="align-middle">{{actuacion.3}}</TD>
-            </TR>
-            {% endfor %}
-        {% endfor %}
-    </TBODY>
-</TABLE>
+  </div>
+
+  <div class="card">
+    <div class="card-header py-2 bg-light fw-semibold small">Resultados</div>
+    <div class="card-body p-2">
+      <div class="small text-muted mb-2">Mostrando registros desde el {{solicitud.fechas.fecha_inicial|date:"SHORT_DATE_FORMAT"}} hasta el {{solicitud.fechas.fecha_final|date:"SHORT_DATE_FORMAT"}}.</div>
+      <div class="table-responsive">
+        <table class="table table-sm table-bordered table-hover align-middle mb-0" id="tablaReporte">
+            <thead class="table-light">
+                <tr>
+                    <th class="small" scope="col">Fecha</th>
+                    <th class="small" scope="col">Actuación</th>
+                    <th class="small" scope="col">Solicitante</th>
+                    <th class="small" scope="col">Cantidad de días</th>
+                    <th class="small" scope="col">Localidades</th>
+                    <th class="small" scope="col">Comisionados</th>
+                    <th class="small" scope="col">Tareas</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s, d in solicitud.duplicados.items %}
+                <tr id="{{object.id}}">
+                    <td class="small bg-secondary text-white">{{s.0}}</td>
+                    <td class="small bg-secondary text-white"></td>
+                    <td class="small bg-secondary text-white"></td>
+                    <td class="small bg-secondary text-white"></td>
+                    <td class="small bg-secondary text-white"></td>
+                    <td class="small bg-secondary text-white"></td>
+                    <td class="small bg-secondary text-white"></td>
+                </tr>
+                    {% for actuacion in d %}
+                    <tr id="{{object.id}}_detalle">
+                        <td class="small"></td>
+                        <td class="small">{{actuacion.0}}</td>
+                        <td class="small">{{actuacion.1}}</td>
+                        <td class="small">{{actuacion.4}}</td>
+                        <td class="small">{% for a in actuacion.5 %}{{a}}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                        <td class="small">{% for a in actuacion.2 %}{{a}}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                        <td class="small">{{actuacion.3}}</td>
+                    </tr>
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}

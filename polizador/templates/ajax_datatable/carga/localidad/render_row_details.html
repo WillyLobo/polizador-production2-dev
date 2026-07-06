@@ -1,22 +1,57 @@
 {% load humanize %}
 
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <p class="poliza-e-p"><b>ID:</b> {{object.id}}</p>
-            <p class="poliza-e-p"><b>Localidad:</b> {{object.localidad_nombre}}</p>
-            <p class="poliza-e-p"><b>Municipio:</b> {{object.localidad_municipio.municipio_nombre}}</p>
-            <p class="poliza-e-p"><b>Departamento:</b> {{object.localidad_departamento.departamento_nombre}}</p>
-            <p class="poliza-e-p"><b>Región:</b> {{object.localidad_municipio.municipio_region.region_numero}}</p>
-        </div>
-        <div class="col">
-            <p class="poliza-e-p"><b>Función:</b> {{object.localidad_funcion}}</p>
-            <p class="poliza-e-p"><b>Centroide(Latitud):</b> {{object.localidad_centroide_lat}}</p>
-            <p class="poliza-e-p"><b>Centroide(Longitud):</b> {{object.localidad_centroide_lon}}</p>
+<div class="row g-3 mb-3">
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-light fw-semibold small">Datos de la Localidad</div>
+            <div class="card-body p-2">
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">ID</div>
+                    <div class="col-8 small">{{object.id}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Localidad</div>
+                    <div class="col-8 small">{{object.localidad_nombre}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Municipio</div>
+                    <div class="col-8 small">{{object.localidad_municipio.municipio_nombre}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Departamento</div>
+                    <div class="col-8 small">{{object.localidad_departamento.departamento_nombre}}</div>
+                </div>
+                <div class="row g-1">
+                    <div class="col-4 text-muted small fw-semibold">Región</div>
+                    <div class="col-8 small">{{object.localidad_municipio.municipio_region.region_numero}}</div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-light fw-semibold small">Ubicación Geográfica</div>
+            <div class="card-body p-2">
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Función</div>
+                    <div class="col-8 small">{{object.localidad_funcion}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Centroide(Latitud)</div>
+                    <div class="col-8 small">{{object.localidad_centroide_lat}}</div>
+                </div>
+                <div class="row g-1">
+                    <div class="col-4 text-muted small fw-semibold">Centroide(Longitud)</div>
+                    <div class="col-8 small">{{object.localidad_centroide_lon}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
-    
-    {% if object.obra_localidad.all %}
-        {% include "partials/lista-obra-partial.html" %}
-    {% endif %}
+
+{% if object.obra_localidad.all %}
+    {% include "partials/lista-obra-partial.html" %}
+{% endif %}

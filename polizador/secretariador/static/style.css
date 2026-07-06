@@ -118,3 +118,49 @@ tr-striped:nth-child(odd) {
     top: 100px;
     left: 10px;
   }
+
+/* Labels dentro de los form-cards nuevos (ver templates/partials/*-form-partial.html
+   migrados a <div class="card">...<div class="card-body">) — evita repetir estas
+   clases en cada label de cada form-partial. */
+.card-body label,
+.card-body legend {
+    font-size: 0.875rem;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+/* DataTables' own chrome (search box, length menu, pagination, info text) is
+   rendered by the DataTables/yadcf JS, not our templates, so it can't take the
+   "small" class directly — this brings it down to match, everywhere at once. */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_paginate .page-link,
+.dataTables_wrapper .yadcf-filter,
+.dataTables_wrapper .yadcf-filter-range {
+    font-size: 0.875em;
+}
+
+/* Same reasoning for the table body itself: Lista-*.html tables are populated
+   entirely client-side by AjaxDatatableViewUtils from the Python column config,
+   so template-level "small" classes never reach these cells. table.dataTable is
+   added automatically by DataTables.net to every table it initializes.
+   :not(.table-sm) excludes tables (e.g. reportes/*.html) whose cells already
+   carry an explicit "small" class in the template — those would otherwise get
+   shrunk twice (once here, once by .small computing relative to this rule). */
+table.dataTable:not(.table-sm) {
+    font-size: 0.875em;
+}
+
+/* Sticky bottom action bar for form pages (block "actions" in base.html) */
+.form-actions-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1030;
+    background: #fff;
+    border-top: 1px solid var(--bs-border-color, #dee2e6);
+    box-shadow: 0 -0.25rem 0.75rem rgba(0, 0, 0, 0.08);
+}

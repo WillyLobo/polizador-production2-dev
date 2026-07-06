@@ -1,33 +1,59 @@
 {% load humanize %}
 
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <p class="poliza-e-p"><b>ID:</b> {{object.id}}</p>
-            <p class="poliza-e-p"><b>Region:</b> {{object.region_numero}}</p>
-        </div>
-        <div class="col">
-            <p class="poliza-e-p"><b>Municipios:</b></p>
-                {% for municipios in object.municipio_set.all %} 
-                    <p class="poliza-e-p">{{municipios.municipio_nombre}}</p>
-                {% endfor %} 
-        </div>
-        <div class="col">
-            <p class="poliza-e-p"><b>Departamento:</b></p>
-                {% for municipios in object.municipio_set.all %} 
-                    <p class="poliza-e-p">{{municipios.municipio_departamento}}</p>
-                {% endfor %} 
-        </div>
-        <div class="col">
-            <p class="poliza-e-p"><b>Localidades:</b></p>
-                {% for municipios in object.municipio_set.all %}
-                    {% for localidades in municipios.localidad_set.all %}
-                        <p class="poliza-e-p">{{localidades}}</p>
-                    {% endfor %}
-                {% endfor %}
+<div class="row g-3 mb-3">
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-light fw-semibold small">Datos de la Región</div>
+            <div class="card-body p-2">
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">ID</div>
+                    <div class="col-8 small">{{object.id}}</div>
+                </div>
+                <div class="row g-1">
+                    <div class="col-4 text-muted small fw-semibold">Region</div>
+                    <div class="col-8 small">{{object.region_numero}}</div>
+                </div>
+            </div>
         </div>
     </div>
-</div>    
-    {% if object.obra_set.all %}
-        {% include "partials/lista-obra-partial.html" %}
-    {% endif %}
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-light fw-semibold small">Municipios, Departamentos y Localidades</div>
+            <div class="card-body p-2">
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Municipios</div>
+                    <div class="col-8 small">
+                        {% for municipios in object.municipio_set.all %}
+                            <div>{{municipios.municipio_nombre}}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Departamento</div>
+                    <div class="col-8 small">
+                        {% for municipios in object.municipio_set.all %}
+                            <div>{{municipios.municipio_departamento}}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="row g-1">
+                    <div class="col-4 text-muted small fw-semibold">Localidades</div>
+                    <div class="col-8 small">
+                        {% for municipios in object.municipio_set.all %}
+                            {% for localidades in municipios.localidad_set.all %}
+                                <div>{{localidades}}</div>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% if object.obra_set.all %}
+    {% include "partials/lista-obra-partial.html" %}
+{% endif %}

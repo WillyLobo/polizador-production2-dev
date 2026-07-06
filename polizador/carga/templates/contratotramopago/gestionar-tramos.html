@@ -2,67 +2,61 @@
 {% block content %}
 {% block title %}<title>Tramos de Pago - {{contrato}}</title>{% endblock title %}
 
+<h3>Tramos de Pago - {{contrato}}</h3>
+<p class="text-muted">La suma de "% del Contrato a certificar" de todos los tramos debe dar 100%. Los tramos se disparan en orden cuando el % de avance acumulado de una Foja de Medición alcanza el umbral del tramo.</p>
+
 <form id="tramos-form" method="POST">
   {% csrf_token %}
 
-  <div class="row flex-xl-nowrap">
-    <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
-      {% include "partials/administrative-sidebar.html" %}
+  {{formset.management_form}}
+  {% if formset.non_form_errors %}
+    <div class="alert alert-danger">
+      {% for error in formset.non_form_errors %}{{ error }}{% endfor %}
     </div>
-    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
-      <h3>Tramos de Pago - {{contrato}}</h3>
-      <p class="text-muted">La suma de "% del Contrato a certificar" de todos los tramos debe dar 100%. Los tramos se disparan en orden cuando el % de avance acumulado de una Foja de Medición alcanza el umbral del tramo.</p>
+  {% endif %}
 
-      {{formset.management_form}}
-      {% if formset.non_form_errors %}
-        <div class="alert alert-danger">
-          {% for error in formset.non_form_errors %}{{ error }}{% endfor %}
-        </div>
-      {% endif %}
-
-      <fieldset class="border rounded border-dark p-1">
-        <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Tramos</legend>
-        <div id="tramo-form">
-          {% for form in formset %}
-            <div class="row m-1 border border-dark rounded" id="tramo-form-{{form.prefix}}">
-              {% for hidden in form.hidden_fields %}
-                {{ hidden }}
-              {% endfor %}
-              <div class="col-md-4 pb-1">
-                {{form.tramo_pct_pago.as_field_group}}
-              </div>
-              <div class="col-md-4 pb-1">
-                {{form.tramo_pct_disparador.as_field_group}}
-              </div>
-              {% if form.instance.pk %}
-              <div class="col-md-4 pb-1 form-check mt-4">
-                {{form.DELETE}}
-                <label class="form-check-label" for="{{form.DELETE.id_for_label}}">Eliminar</label>
-              </div>
-              {% endif %}
-            </div>
+  <div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Tramos</div>
+    <div class="card-body p-2">
+    <div id="tramo-form">
+      {% for form in formset %}
+        <div class="row m-1 border rounded p-2" id="tramo-form-{{form.prefix}}">
+          {% for hidden in form.hidden_fields %}
+            {{ hidden }}
           {% endfor %}
-        </div>
-        <div id="empty_form" style="display:none">
-          <div class="row m-1 border border-dark rounded" id="tramo-form-{{formset.empty_form.prefix}}">
-            {% for hidden in formset.empty_form.hidden_fields %}
-              {{ hidden }}
-            {% endfor %}
-            <div class="col-md-4 pb-1">
-              {{formset.empty_form.tramo_pct_pago.as_field_group}}
-            </div>
-            <div class="col-md-4 pb-1">
-              {{formset.empty_form.tramo_pct_disparador.as_field_group}}
-            </div>
+          <div class="col-md-4 pb-1">
+            {{form.tramo_pct_pago.as_field_group}}
           </div>
+          <div class="col-md-4 pb-1">
+            {{form.tramo_pct_disparador.as_field_group}}
+          </div>
+          {% if form.instance.pk %}
+          <div class="col-md-4 pb-1 form-check mt-4">
+            {{form.DELETE}}
+            <label class="form-check-label" for="{{form.DELETE.id_for_label}}">Eliminar</label>
+          </div>
+          {% endif %}
         </div>
-        <button type="button" id="addTramoForm" class="btn btn-sm btn-outline-primary mt-2">Agregar Tramo</button>
-      </fieldset>
-
-      <button type="submit" class="btn btn-primary mt-3">Guardar</button>
-    </main>
-    <div class="d-none d-xl-block col-xl-2 bd-toc"></div>
+      {% endfor %}
+    </div>
+    <div id="empty_form" style="display:none">
+      <div class="row m-1 border rounded p-2" id="tramo-form-{{formset.empty_form.prefix}}">
+        {% for hidden in formset.empty_form.hidden_fields %}
+          {{ hidden }}
+        {% endfor %}
+        <div class="col-md-4 pb-1">
+          {{formset.empty_form.tramo_pct_pago.as_field_group}}
+        </div>
+        <div class="col-md-4 pb-1">
+          {{formset.empty_form.tramo_pct_disparador.as_field_group}}
+        </div>
+      </div>
+    </div>
+    <button type="button" id="addTramoForm" class="btn btn-sm btn-outline-primary mt-2">Agregar Tramo</button>
+    </div>
   </div>
+
+  <button type="submit" class="btn btn-primary mt-3">Guardar</button>
 </form>
 
 <script>

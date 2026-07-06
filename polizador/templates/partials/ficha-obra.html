@@ -363,6 +363,7 @@
                                     Foja {{foja.foja_numero}}<br>
                                     <span style="font-size:0.7rem;font-weight:normal;">{{foja.foja_periodo|date:"M/y"}}</span><br>
                                     <a href="{% url "carga:update-fojademedicion" foja.id %}" class="link-dark" style="font-size:0.7rem;">Editar</a>
+                                    <a href="{% url "carga:detalle-fojademedicion" foja.id %}" class="link-dark" style="font-size:0.7rem;">Ver</a>
                                     {% if perms.carga.add_certificado %}
                                         <span style="font-size:0.7rem;"> · </span>
                                         <a href="{% url "carga:generar-certificados-foja" foja.id %}" class="link-dark" style="font-size:0.7rem;">Cert.</a>

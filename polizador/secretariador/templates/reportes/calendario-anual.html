@@ -6,10 +6,7 @@
 
 {% block title%}<title>Crear Reporte Viaticos por Agente</title>{% endblock title %}
 
-<br>
-
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
-<center><h3>Calendario Anual</h3></center>
 <script>
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -43,6 +40,14 @@
 
 </script>
 
-<div class="container-fluid" id='calendar'></div>
+<div class="min-vh-100 min-vw-100 p-4">
+
+  <div class="card">
+    <div class="card-header py-2 bg-light fw-semibold small">Calendario Anual</div>
+    <div class="card-body p-3">
+      <div class="container-fluid" id='calendar'></div>
+    </div>
+  </div>
+</div>
 
 {% endblock %}

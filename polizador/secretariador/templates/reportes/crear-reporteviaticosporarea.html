@@ -6,61 +6,75 @@
 
 {% block title %}<title>Crear Reporte Viaticos por Agente</title>{% endblock title %}
 
-<br>
-<form action="{% url "secretariador:crear-reporte-viaticos-por-area" %}" method="get">
+<div class="min-vh-100 min-vw-100 p-4">
 
-    <!-- Select Fecha-->
-    <!-- Select Mes -->
-    <div class="input-group">
-        <div class="form-floating col-3">
-            <input type="date" name="fecha_inicial" placeholder="Fecha Inicial" rows="3" autocomplete="off" class="form-control" id="id_fecha_inicial">
-            <label for="id_fecha_inicial">Fecha Desde</label>
+  <div class="card mb-3 d-print-none">
+    <div class="card-header py-2 bg-light fw-semibold small">Filtros</div>
+    <div class="card-body p-3">
+      <form action="{% url "secretariador:crear-reporte-viaticos-por-area" %}" method="get">
+        <div class="row g-2 mb-2">
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold mb-1" for="id_fecha_inicial">Fecha Desde</label>
+            <input type="date" name="fecha_inicial" placeholder="Fecha Inicial" autocomplete="off" class="form-control" id="id_fecha_inicial">
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold mb-1" for="id_fecha_final">Fecha Hasta(Fecha mas actual)</label>
+            <input type="date" name="fecha_final" placeholder="Fecha Final" autocomplete="off" class="form-control" id="id_fecha_final">
+          </div>
         </div>
-        <!-- Select Final-->
-        <div class="form-floating col-3">
-            <input type="date" name="fecha_final" placeholder="Fecha Final" rows="3" autocomplete="off" class="form-control" id="id_fecha_final">
-            <label for="id_fecha_final">Fecha Hasta(Fecha mas actual)</label>
+        <div class="text-end">
+          <input type='submit' value='Buscar' class="btn btn-primary btn-sm" />
         </div>
+      </form>
     </div>
+  </div>
 
-    <input type='submit' value='Buscar' class="px-5 btn btn-primary" />
-</form>
-<span class="text-center"><h4>Mostrando registros desde el {{solicitud.fecha_inicial|date:"SHORT_DATE_FORMAT"}} hasta el {{solicitud.fecha_final|date:"SHORT_DATE_FORMAT"}}.</h4></span>
-<TABLE class="table table-bordered" id="tablaReporte">
-    <THEAD>
-        <TR>
-            <TH class="align-middle">Agente</TH>
-            <TH class="align-middle">Días</TH>
-            <TH class="align-middle">Viáticos</TH>
-            <TH class="align-middle">Combustible</TH>
-            <TH class="align-middle">Gastos</TH>
-            <TH class="align-middle">Pasajes</TH>
-            <TH class="align-middle">Total</TH>
-        </TR>
-    </THEAD>
-    <TBODY>
-        {% for s, d in solicitud.comisionados.items %}
-        <TR id="{{object.id}}">
-            <TD class="col border align-middle">{{s}}</TD>
-            <TD class="col border align-middle">{{d.cantidad_de_dias}}</TD>
-            <TD class="col border align-middle">{{d.viatico}}</TD>
-            <TD class="col border align-middle">{{d.combustible}}</TD>
-            <TD class="col border align-middle">{{d.gastos}}</TD>
-            <TD class="col border align-middle">{{d.pasaje}}</TD>
-            <TD class="col border align-middle">{{d.valor_viatico}}</TD>
-        {% endfor %}
-
-        <TFOOT>
-        <tr>
-            <th scope="col" style="text-align:right">Totales:</th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-        </tr>
-</TABLE>
+  <div class="card">
+    <div class="card-header py-2 bg-light fw-semibold small">Resultados</div>
+    <div class="card-body p-2">
+      <div class="small text-muted mb-2">Mostrando registros desde el {{solicitud.fecha_inicial|date:"SHORT_DATE_FORMAT"}} hasta el {{solicitud.fecha_final|date:"SHORT_DATE_FORMAT"}}.</div>
+      <div class="table-responsive">
+        <table class="table table-sm table-bordered table-hover align-middle mb-0" id="tablaReporte">
+            <thead class="table-light">
+                <tr>
+                    <th class="small" scope="col">Agente</th>
+                    <th class="small" scope="col">Días</th>
+                    <th class="small" scope="col">Viáticos</th>
+                    <th class="small" scope="col">Combustible</th>
+                    <th class="small" scope="col">Gastos</th>
+                    <th class="small" scope="col">Pasajes</th>
+                    <th class="small" scope="col">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s, d in solicitud.comisionados.items %}
+                <tr id="{{object.id}}">
+                    <td class="small">{{s}}</td>
+                    <td class="small">{{d.cantidad_de_dias}}</td>
+                    <td class="small">{{d.viatico}}</td>
+                    <td class="small">{{d.combustible}}</td>
+                    <td class="small">{{d.gastos}}</td>
+                    <td class="small">{{d.pasaje}}</td>
+                    <td class="small">{{d.valor_viatico}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot class="table-light fw-semibold">
+                <tr>
+                    <th class="small" scope="col" style="text-align:right">Totales:</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
+                </tr>
+            </tfoot>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
 
 <script>
     new DataTable('#tablaReporte', {
@@ -69,7 +83,7 @@
     order: [[ 1, 'desc' ]],
     "footerCallback": function ( row, data, start, end, display ) {
             var api = this.api(), data;
- 
+
             // Remove the formatting to get integer data for summation
             var intVal = function ( i ) {
                 return typeof i === 'string' ?
@@ -82,12 +96,12 @@
             total = api.column( n ).data().reduce( function (a, b) {
                     return intVal(a) + intVal(b);
                 }, 0 );
- 
+
             // Total over this page
             pageTotal = api.column( n, { page: 'current'} ).data().reduce( function (a, b) {
                     return intVal(a) + intVal(b);
                 }, 0 );
- 
+
             // Update footer
             $( api.column( n ).footer() ).html(
                 '$'+pageTotal.toLocaleString() +' ( $'+ total.toLocaleString() +' total)'
@@ -96,12 +110,12 @@
         totalDias = api.column( 1 ).data().reduce( function (a, b) {
                     return intVal(a) + intVal(b);
                 }, 0 );
- 
+
             // Total over this page
             pageTotalDias = api.column( 1, { page: 'current'} ).data().reduce( function (a, b) {
                     return intVal(a) + intVal(b);
                 }, 0 );
- 
+
             // Update footer
             $( api.column( 1 ).footer() ).html(
                 pageTotalDias.toLocaleString() +' ( '+ totalDias.toLocaleString() +' total)'

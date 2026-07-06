@@ -1,33 +1,55 @@
 {% load humanize %}
 
-<div class="container">
-<div class="row">
-    <div class="col">
-        <p class="poliza-e-p"><b>ID:</b> {{object.id}}</p>
-        <p class="poliza-e-p"><b>Departamento:</b> {{object.departamento_nombre}}</p>
+<div class="row g-3 mb-3">
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-light fw-semibold small">Datos del Departamento</div>
+            <div class="card-body p-2">
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">ID</div>
+                    <div class="col-8 small">{{object.id}}</div>
+                </div>
+                <div class="row g-1">
+                    <div class="col-4 text-muted small fw-semibold">Departamento</div>
+                    <div class="col-8 small">{{object.departamento_nombre}}</div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col">
-        <p class="poliza-e-p"><b>Municipios:</b> 
-            {% for municipios in object.municipio_set.all %}
-                <p class="poliza-e-p">{{municipios|join:", "}}</p>
-            {% endfor %} 
-        </p>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-light fw-semibold small">Municipios y Localidades</div>
+            <div class="card-body p-2">
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Municipios</div>
+                    <div class="col-8 small">
+                        {% for municipios in object.municipio_set.all %}
+                            <div>{{municipios|join:", "}}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="row g-1">
+                    <div class="col-4 text-muted small fw-semibold">Localidades</div>
+                    <div class="col-8 small">
+                        {% for municipios in object.municipio_set.all %}
+                            {% for localidades in municipios.localidad_set.all %}
+                                {% if localidades.localidad_funcion == "CABECERA_DEPARTAMENTO" %}
+                                    <div>{{localidades}} (Cabecera de Departamento)</div>
+                                {% else %}
+                                    <div>{{localidades|join:", "}}</div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="col">
-        <p class="poliza-e-p"><b>Localidades:</b> 
-            {% for municipios in object.municipio_set.all %}
-                {% for localidades in municipios.localidad_set.all %}
-                    {% if localidades.localidad_funcion == "CABECERA_DEPARTAMENTO" %}
-                        <p class="poliza-e-p">{{localidades}} (Cabecera de Departamento)</p>
-                    {% else %}
-                        <p class="poliza-e-p">{{localidades|join:", "}}</p>
-                    {% endif %}
-                {% endfor %}
-            {% endfor %}
-        </p>
-    </div>
+
 </div>
 
-    {% if object.obra_departamento.all %}
-        {% include "partials/lista-obra-partial.html" %}
-    {% endif %}
+{% if object.obra_departamento.all %}
+    {% include "partials/lista-obra-partial.html" %}
+{% endif %}

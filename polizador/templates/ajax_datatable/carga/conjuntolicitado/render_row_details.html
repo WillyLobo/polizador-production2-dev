@@ -1,25 +1,26 @@
 {% load humanize %}
 
-<div class="container">
-<div class="row">
-    <div class="col">
-        <p class="poliza-e-p"><b>Conjunto:</b> {{object.conjunto_nombre}}</p>
-    </div>
-    <div class="col">
-        <p class="poliza-e-p"><b>Resolución:</b> {{object.conjunto_resolucion}}</p>
-        </p>
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Datos del Conjunto Licitado</div>
+    <div class="card-body p-2">
+        <div class="row g-1 mb-1">
+            <div class="col-4 text-muted small fw-semibold">Conjunto</div>
+            <div class="col-8 small">{{object.conjunto_nombre}}</div>
+        </div>
+        <div class="row g-1">
+            <div class="col-4 text-muted small fw-semibold">Resolución</div>
+            <div class="col-8 small">{{object.conjunto_resolucion}}</div>
+        </div>
     </div>
 </div>
-<div class="container">
-    {% if object.conjuntolicitado_set.all %}
-        {% for object in object.conjuntolicitado_set.all %}
-            <h5>{{object.conjunto_nombre}}</h5>
-            {% include "partials/lista-obra-partial.html" %}
-        {%endfor%}
-    {% endif %}
-</div>
-<div class="container">
-    {% if object.obra_set.all %}
+
+{% if object.conjuntolicitado_set.all %}
+    {% for object in object.conjuntolicitado_set.all %}
+        <h5>{{object.conjunto_nombre}}</h5>
         {% include "partials/lista-obra-partial.html" %}
-    {% endif %}
-</div>
+    {%endfor%}
+{% endif %}
+
+{% if object.obra_set.all %}
+    {% include "partials/lista-obra-partial.html" %}
+{% endif %}

@@ -3,26 +3,15 @@
 {% block title %}<title>{{title}}</title>{% endblock title %}
 
 {{ form.media.css }}
-<form id="contrato-form" action="{% url "carga:crear-contrato"%}" method="POST">
+<form id="mainForm" action="{% url "carga:crear-contrato"%}" method="POST">
   {% csrf_token %}
-    
-  <div class="row flex-xl-nowrap">
-    <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
-      {% include "partials/administrative-sidebar.html" %}
-      {% include "partials/floating-inlines-menu.html" %}
-    </div>
-    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
-      {% include "partials/contrato-form-partial.html" %}
-      {% include "partials/contratomonto-form-partial.html" %}
-    </main>
-    <div class="d-none d-xl-block col-xl-2 bd-toc">
-    </div>
-  </div>
+  {% include "partials/contrato-form-partial.html" %}
+  {% include "partials/contratomonto-form-partial.html" %}
 </form>
 {{ form.media.js }}
 
 <script>
-$('#addForm').click(function() {
+$(document).on('click', '#addForm', function() {
 $(".customSelect2").select2("destroy");
 	var form_idx = $('#id_contratomonto_set-TOTAL_FORMS').val();
 $('#contratomonto-form').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
@@ -36,4 +25,8 @@ $('html, body').animate({
 $(".customSelect2").djangoSelect2()
 });
 </script>
+{% endblock %}
+
+{% block actions %}
+  {% include "partials/form-actions.html" with volver_url=view.success_url show_add=True add_label="Agregar Monto" %}
 {% endblock %}

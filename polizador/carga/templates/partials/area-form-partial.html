@@ -1,9 +1,11 @@
 {% for hidden in form.hidden_fields %}
       {{ hidden }}
 {% endfor %}
-<fieldset class="border rounded border-dark p-1">
-    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Datos del Área</legend>
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Datos del Área</div>
+    <div class="card-body p-2">
     <div class="form-group">
         {{form.area_nombre.as_field_group}}
     </div>
-</fieldset>
+    </div>
+</div>

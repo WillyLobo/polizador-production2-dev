@@ -1,22 +1,49 @@
 {% load humanize %}
 
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <p class="poliza-e-p"><b>ID:</b> {{object.id}}</p>
-            <p class="poliza-e-p"><b>Municipio:</b> {{object.municipio_nombre}}</p>
-            <p class="poliza-e-p"><b>Departamento:</b> {{object.municipio_departamento.departamento_nombre}}</p>
-            <p class="poliza-e-p"><b>Región:</b> {{object.municipio_region.region_numero}}</p>
-        </div>
-        <div class="col">
-            <p class="poliza-e-p"><b>Localidades:</b>{% for localidades in object.localidad_set.all %}
-                                                        <p class="poliza-e-p">{{localidades|join:", "}}</p>
-                                                    {% endfor %}
-            </p>
+<div class="row g-3 mb-3">
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-light fw-semibold small">Datos del Municipio</div>
+            <div class="card-body p-2">
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">ID</div>
+                    <div class="col-8 small">{{object.id}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Municipio</div>
+                    <div class="col-8 small">{{object.municipio_nombre}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Departamento</div>
+                    <div class="col-8 small">{{object.municipio_departamento.departamento_nombre}}</div>
+                </div>
+                <div class="row g-1">
+                    <div class="col-4 text-muted small fw-semibold">Región</div>
+                    <div class="col-8 small">{{object.municipio_region.region_numero}}</div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-light fw-semibold small">Localidades</div>
+            <div class="card-body p-2">
+                <div class="row g-1">
+                    <div class="col-4 text-muted small fw-semibold">Localidades</div>
+                    <div class="col-8 small">
+                        {% for localidades in object.localidad_set.all %}
+                            <div>{{localidades|join:", "}}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
-    {% if object.obra_municipio.all %}
-        {% include "partials/lista-obra-partial.html" %}
-    {% endif %}
+{% if object.obra_municipio.all %}
+    {% include "partials/lista-obra-partial.html" %}
+{% endif %}

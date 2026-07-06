@@ -1,212 +1,281 @@
 {% load numletras %}
 {% load static %}
-<div class="container-flex bg-body">
-<div class="row g-0">
-    <div class="col border">
-        <div class="row g-0">
-            <div class="col border"><b>ID:</b></div><div class="col border">{{object.certificado_obra.id}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Programa:</b></div><div class="col border">{{object.certificado_obra.obra_programa}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Convenio:</b></div><div class="col border">{{object.certificado_obra.obra_convenio|default_if_none:"-"}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Concepto:</b></div><div class="col border">{{object.certificado_obra.obra_nombre}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Grupo:</b></div><div class="col border">{{object.certificado_obra.obra_grupo|default_if_none:"-"}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Localidad:</b></div><div class="col border">{% for localidad in object.certificado_obra.obra_localidad_m.all %} {{localidad|join:", "}} {%endfor%}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Contratista:</b></div><div class="col border">{{object.certificado_obra.obra_empresa.empresa_nombre}}</div>
-        </div>
-    </div>    
-    <div class="col">
-        <div class="row g-0">
-            <div class="col border"><b>Expediente:</b></div><div class="col border">{{object.certificado_obra.obra_expediente}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Compulsa:</b></div><div class="col border">{{object.certificado_obra.get_obra_licitacion_tipo_display}} N°{{object.certificado_obra.obra_licitacion_numero}}/{{object.certificado_obra.obra_licitacion_ano}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Resolución:</b></div><div class="col border">{{object.certificado_obra.obra_resolucion}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Fecha de Contrato:</b></div><div class="col border">{{object.certificado_obra.obra_fecha_contrato}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Nomenclatura Catastral:</b></div><div class="col border">{{object.certificado_obra.obra_nomenclatura|default_if_none:"-"}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Plazo de Ejecución:</b></div><div class="col border">{{object.certificado_obra.obra_plazo}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Inspector:</b></div><div class="col border">{%for inspector in object.certificado_obra.obra_inspector.all%}{{inspector|join:", "}}<br>{%endfor%}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Observaciones:</b></div><div class="col border">{{object.certificado_obra.obra_observaciones}}</div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="row g-0">
-            <div class="col border"><b>Monto Contrato Total(Pesos):</b></div><div class="col border">${{object.certificado_obra.obra_contrato_total_pesos|default_if_none:"-"}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Monto Contrato Total(UVI):</b></div><div class="col border">{{object.certificado_obra.obra_contrato_total_uvi|default_if_none:"-"}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Monto Nación(Pesos):</b></div><div class="col border">${{object.certificado_obra.obra_contrato_nacion_pesos|default_if_none:"-"}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Monto Nación(UVI):</b></div><div class="col border">{{object.certificado_obra.obra_contrato_nacion_uvi|default_if_none:"-"}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Fecha UVI:</b></div><div class="col border">{{object.certificado_obra.obra_contrato_nacion_uvi_fecha|default_if_none:"-"}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Monto Provincia(Pesos):</b></div><div class="col border">${{object.certificado_obra.obra_contrato_provincia_pesos|default_if_none:"-"}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Monto Provincia(UVI):</b></div><div class="col border">{{object.certificado_obra.obra_contrato_provincia_uvi|default_if_none:"-"}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Fecha UVI:</b></div><div class="col border">{{object.certificado_obra.obra_contrato_provincia_uvi_fecha|default_if_none:"-"}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><br></div><div class="col border"></div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Ultimo Acumulado en Pesos:</b></div><div class="col border">{{object.certificado_obra.obra_acum_pesos.certificado_monto_cobrar__sum|default_if_none:"-"}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Ultimo Acumulado en UVI:</b></div><div class="col border">{{object.certificado_obra.obra_acum_uvi.certificado_monto_cobrar_uvi__sum|default_if_none:"-"}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Saldo en UVI:</b></div><div class="col border">{{object.certificado_obra.saldo_uvi|default_if_none:"-"}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border"><b>Ultimo Acumulado Porcentual:</b></div><div class="col border">{{object.certificado_obra.ultimo_certificado_avance.certificado_acum_pct|default_if_none:"-"}}</div>
-        </div>
-    </div>
-    <div>
-        {%for contrato in object.certificado_obra.contrato_set.all%}
-        <div class="col">
-            <div class="row g-0">
-                <div class="col border"><b>Fecha de Firma:</b></div><div class="col border">{{contrato.contrato_fecha}}</div>
-                <div class="col border"><b>Objeto:</b></div><div class="col border">{{contrato.contrato_descripcion}}</div>
-                <div class="col border"><b>Resolución:</b></div><div class="col border">{{contrato.contrato_resolucion}}</div>
-                <div class="col border"><b>Importado:</b></div><div class="col border">{{contrato.contrato_autocarga}}</div>
-                <div class="col border"><b>Decreto Aprobatorio:</b></div><div class="col border">{{contrato.contrato_decreto|default_if_none:"-"}}</div>
-                <div class="col border"><b>Editar:</b></div><div class="col border"><a href="{% url "carga:update-contrato" contrato.id %}">{{editimglink|safe}}</a></div>
+
+<div class="row g-3 mb-3">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-light fw-semibold small">Datos Generales</div>
+            <div class="card-body p-2">
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">ID</div>
+                    <div class="col-8 small">{{object.certificado_obra.id}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Programa</div>
+                    <div class="col-8 small">{{object.certificado_obra.obra_programa}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Convenio</div>
+                    <div class="col-8 small">{{object.certificado_obra.obra_convenio|default_if_none:"-"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Concepto</div>
+                    <div class="col-8 small">{{object.certificado_obra.obra_nombre}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Grupo</div>
+                    <div class="col-8 small">{{object.certificado_obra.obra_grupo|default_if_none:"-"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Localidad</div>
+                    <div class="col-8 small">{% for localidad in object.certificado_obra.obra_localidad_m.all %}{{localidad|join:", "}}{% if not forloop.last %}, {% endif %}{% endfor %}</div>
+                </div>
+                <div class="row g-1">
+                    <div class="col-4 text-muted small fw-semibold">Contratista</div>
+                    <div class="col-8 small">{{object.certificado_obra.obra_empresa.empresa_nombre}}</div>
+                </div>
             </div>
         </div>
-            {%for contratomonto in contrato.contratomonto_set.all%}
-        <div class="col">
-            <div class="row g-0">
-                <div class="col border"><b>Rubro:</b></div><div class="col border">{{contratomonto.contratomonto_rubro}}</div>
-                <div class="col border"><b>Financiamiento:</b></div><div class="col border">{{contratomonto.contratomonto_financiamiento}}</div>
-                <div class="col border"><b>Monto Pesos:</b></div><div class="col border">{{contratomonto.contratomonto_pesos}}</div>
-                <div class="col border"><b>Monto UVI:</b></div><div class="col border">{{contratomonto.contratomonto_uvi}}</div>
-                <div class="col border"><b>Fecha UVI:</b></div><div class="col border">{{contratomonto.contratomonto_uvi_fecha|default_if_none:"-"}}</div>
-                <div class="col border"><b>Editar:</b></div><div class="col border"><a href="{% url "carga:update-contrato" contrato.id %}">{{editimglink|safe}}</a></div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-light fw-semibold small">Administrativo</div>
+            <div class="card-body p-2">
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Expediente</div>
+                    <div class="col-7 small">{{object.certificado_obra.obra_expediente}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Compulsa</div>
+                    <div class="col-7 small">{{object.certificado_obra.get_obra_licitacion_tipo_display}} N°{{object.certificado_obra.obra_licitacion_numero}}/{{object.certificado_obra.obra_licitacion_ano}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Resolución</div>
+                    <div class="col-7 small">{{object.certificado_obra.obra_resolucion}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Fecha de Contrato</div>
+                    <div class="col-7 small">{{object.certificado_obra.obra_fecha_contrato}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Nomenclatura Catastral</div>
+                    <div class="col-7 small">{{object.certificado_obra.obra_nomenclatura|default_if_none:"-"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Plazo de Ejecución</div>
+                    <div class="col-7 small">{{object.certificado_obra.obra_plazo}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Inspector</div>
+                    <div class="col-7 small">{% for inspector in object.certificado_obra.obra_inspector.all %}{{inspector|join:", "}}{% if not forloop.last %}, {% endif %}{% endfor %}</div>
+                </div>
+                <div class="row g-1">
+                    <div class="col-5 text-muted small fw-semibold">Observaciones</div>
+                    <div class="col-7 small">{{object.certificado_obra.obra_observaciones|default_if_none:"-"}}</div>
+                </div>
             </div>
         </div>
-            {%endfor%}
-            <div class="row g-0">
-                <div class="col border"></div>
-            </div>
-        {%endfor%}
     </div>
-    
-    <table id="tablaObras" class="table table-bordered table-sm table-hover align-middle border border-dark data dataTables_wrapper">
-    <thead>
+
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-light fw-semibold small">Montos</div>
+            <div class="card-body p-2">
+                <div class="row g-1 mb-1">
+                    <div class="col-7 text-muted small fw-semibold">Monto Contrato Total (Pesos)</div>
+                    <div class="col-5 small">${{object.certificado_obra.obra_contrato_total_pesos|default_if_none:"-"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-7 text-muted small fw-semibold">Monto Contrato Total (UVI)</div>
+                    <div class="col-5 small">{{object.certificado_obra.obra_contrato_total_uvi|default_if_none:"-"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-7 text-muted small fw-semibold">Monto Nación (Pesos)</div>
+                    <div class="col-5 small">${{object.certificado_obra.obra_contrato_nacion_pesos|default_if_none:"-"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-7 text-muted small fw-semibold">Monto Nación (UVI)</div>
+                    <div class="col-5 small">{{object.certificado_obra.obra_contrato_nacion_uvi|default_if_none:"-"}} <span class="text-muted">({{object.certificado_obra.obra_contrato_nacion_uvi_fecha|default_if_none:"-"}})</span></div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-7 text-muted small fw-semibold">Monto Provincia (Pesos)</div>
+                    <div class="col-5 small">${{object.certificado_obra.obra_contrato_provincia_pesos|default_if_none:"-"}}</div>
+                </div>
+                <div class="row g-1 mb-2 pb-2 border-bottom">
+                    <div class="col-7 text-muted small fw-semibold">Monto Provincia (UVI)</div>
+                    <div class="col-5 small">{{object.certificado_obra.obra_contrato_provincia_uvi|default_if_none:"-"}} <span class="text-muted">({{object.certificado_obra.obra_contrato_provincia_uvi_fecha|default_if_none:"-"}})</span></div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-7 text-muted small fw-semibold">Último Acumulado (Pesos)</div>
+                    <div class="col-5 small">{{object.certificado_obra.obra_acum_pesos.certificado_monto_cobrar__sum|default_if_none:"-"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-7 text-muted small fw-semibold">Último Acumulado (UVI)</div>
+                    <div class="col-5 small">{{object.certificado_obra.obra_acum_uvi.certificado_monto_cobrar_uvi__sum|default_if_none:"-"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-7 text-muted small fw-semibold">Saldo (UVI)</div>
+                    <div class="col-5 small">{{object.certificado_obra.saldo_uvi|default_if_none:"-"}}</div>
+                </div>
+                <div class="row g-1">
+                    <div class="col-7 text-muted small fw-semibold">Último Acumulado %</div>
+                    <div class="col-5 small">{{object.certificado_obra.ultimo_certificado_avance.certificado_acum_pct|default_if_none:"-"}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Montos de Contrato</div>
+    <div class="card-body p-2">
+        {% for contrato in object.certificado_obra.contrato_set.all %}
+        <div class="border rounded p-2 {% if not forloop.last %}mb-2{% endif %}">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <div>
+                    <span class="small fw-semibold">{{contrato.contrato_fecha}}</span>
+                    {% if contrato.contrato_descripcion %}
+                        <span class="small text-muted ms-2">{{contrato.contrato_descripcion}}</span>
+                    {% endif %}
+                    {% if contrato.contrato_resolucion %}
+                        <span class="small ms-2">Res. {{contrato.contrato_resolucion}}</span>
+                    {% endif %}
+                    {% if contrato.contrato_decreto %}
+                        <span class="small text-muted ms-2">Dec. {{contrato.contrato_decreto}}</span>
+                    {% endif %}
+                    {% if contrato.contrato_autocarga %}
+                        <span class="badge bg-secondary ms-1" style="font-size:0.65rem;">Importado</span>
+                    {% endif %}
+                </div>
+                <a href="{% url "carga:update-contrato" contrato.id %}" class="btn btn-sm btn-outline-secondary ms-2 flex-shrink-0">Editar</a>
+            </div>
+            {% if contrato.contratomonto_set.all %}
+            <table class="table table-sm table-bordered mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="small">Rubro</th>
+                        <th class="small">Financiamiento</th>
+                        <th class="small">Pesos</th>
+                        <th class="small">UVI</th>
+                        <th class="small">Fecha UVI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contratomonto in contrato.contratomonto_set.all %}
+                    <tr>
+                        <td class="small">{{contratomonto.contratomonto_rubro}}</td>
+                        <td class="small">{{contratomonto.contratomonto_financiamiento}}</td>
+                        <td class="small">{{contratomonto.contratomonto_pesos}}</td>
+                        <td class="small">{{contratomonto.contratomonto_uvi}}</td>
+                        <td class="small">{{contratomonto.contratomonto_uvi_fecha|default_if_none:"-"}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+        {% empty %}
+        <p class="small text-muted fst-italic mb-0">Sin contratos registrados.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Certificados</div>
+    <div class="card-body p-2">
+    <div class="table-responsive">
+    <table id="tablaObras" class="table table-sm table-bordered table-hover align-middle mb-0">
+    <thead class="table-light">
         <tr>
-            <th scope="col">ID#</th>
-            <th scope="col">Expediente</th>
-            <th scope="col">Ant. N°</th>
-            <th scope="col">Obra N°</th>
-            <th scope="col">Dev. N°</th>
-            <th scope="col">Periodo</th>
-            <th scope="col">Mes %</th>
-            <th scope="col">Ant %</th>
-            <th scope="col">Acu %</th>
-            <th scope="col">Rubro</th>
-            <th scope="col">Financiamiento</th>
-            <th scope="col">Monto $</th>
-            <th scope="col">Dev./Desc. $</th>
-            <th scope="col">Monto UVI</th>
-            <th scope="col">Dev./Desc. UVI</th>
-            <th scope="col">Monto a Cobrar</th>
-            <th scope="col">Monto a Cobrar UVI</th>
-            <th scope="col">Digital</th>
+            <th class="small" scope="col">ID#</th>
+            <th class="small" scope="col">Expediente</th>
+            <th class="small" scope="col">Ant. N°</th>
+            <th class="small" scope="col">Obra N°</th>
+            <th class="small" scope="col">Dev. N°</th>
+            <th class="small" scope="col">Periodo</th>
+            <th class="small" scope="col">Mes %</th>
+            <th class="small" scope="col">Ant %</th>
+            <th class="small" scope="col">Acu %</th>
+            <th class="small" scope="col">Rubro</th>
+            <th class="small" scope="col">Financiamiento</th>
+            <th class="small" scope="col">Monto $</th>
+            <th class="small" scope="col">Dev./Desc. $</th>
+            <th class="small" scope="col">Monto UVI</th>
+            <th class="small" scope="col">Dev./Desc. UVI</th>
+            <th class="small" scope="col">Monto a Cobrar</th>
+            <th class="small" scope="col">Monto a Cobrar UVI</th>
+            <th class="small" scope="col">Digital</th>
+            <th class="small d-print-none" scope="col">Editar</th>
         </tr>
     </thead>
     <tbody>
         {% for instance in object.certificado_obra.certificado_set.all|dictsort:"certificado_fecha" %}
         <tr>
-            <th scope="row">{{instance.id}}</th>
-            <td>{{instance.certificado_expediente}}</td>
-            <td>{{instance.certificado_rubro_anticipo}}</td>
-            <td>{{instance.certificado_rubro_obra}}</td>
-            <td>{{instance.certificado_rubro_devanticipo}}</td>
-            <td>{{instance.certificado_fecha|date:"M-Y"}}</td>
-            <td>{{instance.certificado_pct_principal}}</td>
-            <td>{{instance.certificado_ante_pct}}</td>
-            <td>{{instance.certificado_acum_pct}}</td>
-            <td>{{instance.certificado_rubro_db.certificadorubro_nombre}}</td>
-            <td>{{instance.get_certificado_financiamiento_display}}</td>
-            <td>{{instance.certificado_monto_pesos}}</td>
+            <th class="small" scope="row">{{instance.id}}</th>
+            <td class="small">{{instance.certificado_expediente}}</td>
+            <td class="small">{{instance.certificado_rubro_anticipo}}</td>
+            <td class="small">{{instance.certificado_rubro_obra}}</td>
+            <td class="small">{{instance.certificado_rubro_devanticipo}}</td>
+            <td class="small">{{instance.certificado_fecha|date:"M-Y"}}</td>
+            <td class="small">{{instance.certificado_pct_principal}}</td>
+            <td class="small">{{instance.certificado_ante_pct}}</td>
+            <td class="small">{{instance.certificado_acum_pct}}</td>
+            <td class="small">{{instance.certificado_rubro_db.certificadorubro_nombre}}</td>
+            <td class="small">{{instance.get_certificado_financiamiento_display}}</td>
+            <td class="small">{{instance.certificado_monto_pesos}}</td>
             {% if instance.certificado_tipo == "LEGACY" %}
-            <td>{{instance.certificado_devolucion_monto}}</td>
+            <td class="small">{{instance.certificado_devolucion_monto}}</td>
             {% else %}
-            <td>{{instance.certificado_descuento_anticipo_pesos}}</td>
+            <td class="small">{{instance.certificado_descuento_anticipo_pesos}}</td>
             {% endif %}
-            <td>{{instance.certificado_monto_uvi}}</td>
+            <td class="small">{{instance.certificado_monto_uvi}}</td>
             {% if instance.certificado_tipo == "LEGACY" %}
-            <td>{{instance.certificado_devolucion_monto_uvi}}</td>
+            <td class="small">{{instance.certificado_devolucion_monto_uvi}}</td>
             {% else %}
-            <td>{{instance.certificado_descuento_anticipo_uvi}}</td>
+            <td class="small">{{instance.certificado_descuento_anticipo_uvi}}</td>
             {% endif %}
-            <td>{{instance.certificado_monto_cobrar}}</td>
-            <td>{{instance.certificado_monto_cobrar_uvi}}</td>
+            <td class="small">{{instance.certificado_monto_cobrar}}</td>
+            <td class="small">{{instance.certificado_monto_cobrar_uvi}}</td>
             {% if instance.certificado_digital %}
-            <td class="d-print-none"><a href="{{instance.certificado_digital.url}}">{{pdfimglink|safe}}</a></td>
+            <td class="small d-print-none"><a href="{{instance.certificado_digital.url}}">{{pdfimglink|safe}}</a></td>
             {% else %}
-            <td>{{nofileimglink|safe}}</td>
+            <td class="small">{{nofileimglink|safe}}</td>
             {% endif %}
             {% if perms.carga.change_certificado %}
-            <td class="d-print-none"><a href="{% url "carga:update-certificado" instance.id %}">{{editimglink|safe}}</td>
+            <td class="small d-print-none"><a href="{% url "carga:update-certificado" instance.id %}">{{editimglink|safe}}</a></td>
+            {% else %}
+            <td class="small d-print-none"></td>
             {% endif %}
         </tr>
         {% endfor %}
     </tbody>
-    <tfoot>
+    <tfoot class="table-light fw-semibold">
         <tr>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col">Totales</th>
-            <th id="totalPesos" scope="col">Monto $</th>
-            <th id="totalDevolucion" scope="col">Dev./Desc.</th>
-            <th id="totalUvi" scope="col">Monto UVI</th>
-            <th id="totalDevolucionUvi" scope="col">Dev./Desc. UVI</th>
-            <th id="montoCobrar" scope="col">Monto a Cobrar</th>
-            <th id="montoCobrarUvi" scope="col">Monto a Cobrar UVI</th>
-            <th scope="col"> </th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col">Totales</th>
+            <th class="small" id="totalPesos" scope="col">Monto $</th>
+            <th class="small" id="totalDevolucion" scope="col">Dev./Desc.</th>
+            <th class="small" id="totalUvi" scope="col">Monto UVI</th>
+            <th class="small" id="totalDevolucionUvi" scope="col">Dev./Desc. UVI</th>
+            <th class="small" id="montoCobrar" scope="col">Monto a Cobrar</th>
+            <th class="small" id="montoCobrarUvi" scope="col">Monto a Cobrar UVI</th>
+            <th class="small" scope="col"></th>
+            <th class="small d-print-none" scope="col"></th>
         </tr>
     </tfoot>
 </table>
+</div>
+</div>
 </div>
 
 <script>

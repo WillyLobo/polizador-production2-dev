@@ -2,69 +2,77 @@
       {{ hidden }}
 {% endfor %}
 
-<fieldset class="border rounded border-dark p-1">
-    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Obra</legend>
-    <div class="form-group">
-        {{form.contrato_obra.as_field_group}}
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Obra</div>
+    <div class="card-body p-2">
+        <div class="form-group">
+            {{form.contrato_obra.as_field_group}}
+        </div>
     </div>
-</fieldset>
+</div>
 
-<fieldset class="border rounded border-dark p-1">
-    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Detalles del Contrato</legend>
-    <div class="form-group">
-        {{form.contrato_descripcion.as_field_group}}
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Detalles del Contrato</div>
+    <div class="card-body p-2">
+        <div class="form-group">
+            {{form.contrato_descripcion.as_field_group}}
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                {{form.contrato_fecha.as_field_group}}
+            </div>
+            <div class="col-md-4">
+                {{form.contrato_resolucion.as_field_group}}
+            </div>
+            <div class="col-md-4">
+                {{form.contrato_decreto.as_field_group}}
+            </div>
+        </div>
     </div>
-    <div class="row">
-        <div class="col-md-4">
-            {{form.contrato_fecha.as_field_group}}
-        </div>
-        <div class="col-md-4">
-            {{form.contrato_resolucion.as_field_group}}
-        </div>
-        <div class="col-md-4">
-            {{form.contrato_decreto.as_field_group}}
-        </div>
-    </div>
-</fieldset>
+</div>
 
-<fieldset class="border rounded border-dark p-1">
-    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Certificación</legend>
-    <div class="form-check">
-        {{form.contrato_certificacion_por_etapas}}
-        <label class="form-check-label" for="{{form.contrato_certificacion_por_etapas.id_for_label}}">{{form.contrato_certificacion_por_etapas.label}}</label>
-        <div class="form-text">{{form.contrato_certificacion_por_etapas.help_text}}</div>
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Certificación</div>
+    <div class="card-body p-2">
+        <div class="form-check">
+            {{form.contrato_certificacion_por_etapas}}
+            <label class="form-check-label" for="{{form.contrato_certificacion_por_etapas.id_for_label}}">{{form.contrato_certificacion_por_etapas.label}}</label>
+            <div class="form-text">{{form.contrato_certificacion_por_etapas.help_text}}</div>
+        </div>
+        {% if form.instance.pk and form.instance.contrato_certificacion_por_etapas %}
+        <a href="{% url 'carga:gestionar-tramos-contrato' form.instance.pk %}" class="btn btn-sm btn-outline-primary mt-1">Gestionar Tramos de Pago</a>
+        {% endif %}
     </div>
-    {% if form.instance.pk and form.instance.contrato_certificacion_por_etapas %}
-    <a href="{% url 'carga:gestionar-tramos-contrato' form.instance.pk %}" class="btn btn-sm btn-outline-primary mt-1">Gestionar Tramos de Pago</a>
-    {% endif %}
-</fieldset>
+</div>
 
 {% if form.instance.pk %}
-<fieldset class="border rounded border-dark p-1">
-    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Documentación Digital</legend>
-    <div class="row">
-        <div class="col-md-6">
-            <p class="mb-1"><b>Contratos:</b></p>
-            <ul>
-                {% for documento in form.instance.documentos_contrato.all %}
-                <li>{{ documento.contratodigital_tipo }} - {{ documento.contratodigital_descripcion }}{% if documento.contratodigital_archivo %} (<a href="{{ documento.contratodigital_archivo.url }}" target="_blank">ver PDF</a>){% endif %}</li>
-                {% empty %}
-                <li class="text-muted">Sin documentos.</li>
-                {% endfor %}
-            </ul>
-            <a href="{% url 'carga:crear-contrato-digital' %}?contrato={{ form.instance.pk|safe }}" class="btn btn-sm btn-outline-primary">Agregar Documento de Contrato</a>
-        </div>
-        <div class="col-md-6">
-            <p class="mb-1"><b>Resoluciones:</b></p>
-            <ul>
-                {% for documento in form.instance.documentos_resolucion.all %}
-                <li>{{ documento.resoluciondigital_numero }} - {{ documento.resoluciondigital_descripcion }}{% if documento.resoluciondigital_archivo %} (<a href="{{ documento.resoluciondigital_archivo.url }}" target="_blank">ver PDF</a>){% endif %}</li>
-                {% empty %}
-                <li class="text-muted">Sin resoluciones.</li>
-                {% endfor %}
-            </ul>
-            <a href="{% url 'carga:crear-resolucion-digital' %}?contrato={{ form.instance.pk|safe }}" class="btn btn-sm btn-outline-primary">Agregar Resolución</a>
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Documentación Digital</div>
+    <div class="card-body p-2">
+        <div class="row">
+            <div class="col-md-6">
+                <p class="mb-1"><b>Contratos:</b></p>
+                <ul>
+                    {% for documento in form.instance.documentos_contrato.all %}
+                    <li>{{ documento.contratodigital_tipo }} - {{ documento.contratodigital_descripcion }}{% if documento.contratodigital_archivo %} (<a href="{{ documento.contratodigital_archivo.url }}" target="_blank">ver PDF</a>){% endif %}</li>
+                    {% empty %}
+                    <li class="text-muted">Sin documentos.</li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'carga:crear-contrato-digital' %}?contrato={{ form.instance.pk|safe }}" class="btn btn-sm btn-outline-primary">Agregar Documento de Contrato</a>
+            </div>
+            <div class="col-md-6">
+                <p class="mb-1"><b>Resoluciones:</b></p>
+                <ul>
+                    {% for documento in form.instance.documentos_resolucion.all %}
+                    <li>{{ documento.resoluciondigital_numero }} - {{ documento.resoluciondigital_descripcion }}{% if documento.resoluciondigital_archivo %} (<a href="{{ documento.resoluciondigital_archivo.url }}" target="_blank">ver PDF</a>){% endif %}</li>
+                    {% empty %}
+                    <li class="text-muted">Sin resoluciones.</li>
+                    {% endfor %}
+                </ul>
+                <a href="{% url 'carga:crear-resolucion-digital' %}?contrato={{ form.instance.pk|safe }}" class="btn btn-sm btn-outline-primary">Agregar Resolución</a>
+            </div>
         </div>
     </div>
-</fieldset>
+</div>
 {% endif %}

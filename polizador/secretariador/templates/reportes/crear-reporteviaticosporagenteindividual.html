@@ -6,25 +6,6 @@
 
 {% block title %}<title>Crear Reporte Viaticos por Agente</title>{% endblock title %}
 
-<br>
-<form action="{% url "secretariador:crear-reporte-viaticos-por-agente-individual" %}" method="get">
-    <hr>
-    <div class="container-fluid min-vw-100 input-group">
-        <div class="input-group-prepend">
-            <label class="input-group-text" for="inputGroupSelectAno">Año</label>
-          </div>
-            <select name="ano" class="custom-select customSelect2" id="inputGroupSelectAno">
-              <option value="2026" selected>2026</option>
-              <option value="2025">2025</option>
-              <option value="2024">2024</option>
-            </select>
-          </div>
-        <select name="agente" class="form-control" id="id_agente">
-        </select>
-        <hr>
-    <input type='submit' value='Buscar' class="px-5 btn btn-primary" />
-</form>
-
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
 <script>
 
@@ -57,7 +38,41 @@
 
 </script>
 
-<div class="container-fluid" id='calendar'></div>
+<div class="min-vh-100 min-vw-100 p-4">
+
+  <div class="card mb-3 d-print-none">
+    <div class="card-header py-2 bg-light fw-semibold small">Filtros</div>
+    <div class="card-body p-3">
+      <form action="{% url "secretariador:crear-reporte-viaticos-por-agente-individual" %}" method="get">
+        <div class="row g-2 mb-2">
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold mb-1" for="inputGroupSelectAno">Año</label>
+            <select name="ano" class="customSelect2" id="inputGroupSelectAno" style="width:100%;">
+              <option value="2026" selected>2026</option>
+              <option value="2025">2025</option>
+              <option value="2024">2024</option>
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label class="form-label small fw-semibold mb-1" for="id_agente">Agente</label>
+            <select name="agente" class="form-control" id="id_agente">
+            </select>
+          </div>
+        </div>
+        <div class="text-end">
+          <input type='submit' value='Buscar' class="btn btn-primary btn-sm" />
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header py-2 bg-light fw-semibold small">Resultados</div>
+    <div class="card-body p-3">
+      <div class="container-fluid" id='calendar'></div>
+    </div>
+  </div>
+</div>
 
 {% include "partials/select2-script-partial.html" with id_field="id_agente" url="/v1/api/select2_comisionado/" %}
 {% endblock %}

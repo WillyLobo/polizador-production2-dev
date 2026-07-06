@@ -3,26 +3,15 @@
 {% block title %}<title>{{object.id}}-{{object.poliza_numero}}({{object.poliza_aseguradora}})</title>{% endblock title %}
 
 {{ form.media.css }}
-<form action="{% url "carga:update-poliza" object.id %}" method="POST" enctype="multipart/form-data">
+<form id="mainForm" action="{% url "carga:update-poliza" object.id %}" method="POST" enctype="multipart/form-data">
   {% csrf_token %}
-    
-  <div class="row flex-xl-nowrap">
-    <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
-      {% include "partials/administrative-sidebar.html" %}
-      {% include "partials/floating-inlines-menu.html" %}
-    </div>
-    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
-      {% include "partials/poliza-form-partial.html" %}
-      {% include "partials/polizamovimiento-form-partial.html" %}
-    </main>
-      <div class="d-none d-xl-block col-xl-2 bd-toc">
-    </div>
-  </div>
+  {% include "partials/poliza-form-partial.html" %}
+  {% include "partials/polizamovimiento-form-partial.html" %}
 </form>
 {{ form.media.js }}
 
 <script>
-$('#addForm').click(function() {
+$(document).on('click', '#addForm', function() {
 $(".customSelect2").select2("destroy");
 	var form_idx = $('#id_poliza_movimiento_set-TOTAL_FORMS').val();
 $('#poliza_movimiento-form').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
@@ -36,4 +25,8 @@ $('html, body').animate({
 $(".customSelect2").djangoSelect2()
 });
 </script>
+{% endblock %}
+
+{% block actions %}
+  {% include "partials/form-actions.html" with volver_url=view.success_url show_add=True add_label="Agregar Movimiento" %}
 {% endblock %}

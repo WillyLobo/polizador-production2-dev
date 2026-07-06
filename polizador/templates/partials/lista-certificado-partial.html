@@ -1,56 +1,57 @@
 {% load static %}
-<table id="tablaCertificados{{object.id}}" class="table">
-    <thead>
+<div class="table-responsive">
+<table id="tablaCertificados{{object.id}}" class="table table-sm table-bordered table-hover align-middle mb-0">
+    <thead class="table-light">
         <tr>
-            <th scope="col">ID#</th>
-            <th scope="col">Expediente</th>
-            <th scope="col">A.</th>
-            <th scope="col">O.</th>
-            <th scope="col">D.A.</th>
-            <th scope="col">Periodo</th>
-            <th scope="col">Mes %</th>
-            <th scope="col">Ant %</th>
-            <th scope="col">Acu %</th>
-            <th scope="col">Rubro</th>
-            <th scope="col">Financiamiento</th>
-            <th scope="col">Monto $</th>
-            <th scope="col">Dev./Desc. $</th>
-            <th scope="col">Monto UVI</th>
-            <th scope="col">Dev./Desc. UVI</th>
-            <th scope="col">Total $</th>
-            <th scope="col">Total UVI</th>
-            <th scope="col d-print-none">Acción</th>
+            <th class="small" scope="col">ID#</th>
+            <th class="small" scope="col">Expediente</th>
+            <th class="small" scope="col">A.</th>
+            <th class="small" scope="col">O.</th>
+            <th class="small" scope="col">D.A.</th>
+            <th class="small" scope="col">Periodo</th>
+            <th class="small" scope="col">Mes %</th>
+            <th class="small" scope="col">Ant %</th>
+            <th class="small" scope="col">Acu %</th>
+            <th class="small" scope="col">Rubro</th>
+            <th class="small" scope="col">Financiamiento</th>
+            <th class="small" scope="col">Monto $</th>
+            <th class="small" scope="col">Dev./Desc. $</th>
+            <th class="small" scope="col">Monto UVI</th>
+            <th class="small" scope="col">Dev./Desc. UVI</th>
+            <th class="small" scope="col">Total $</th>
+            <th class="small" scope="col">Total UVI</th>
+            <th class="small d-print-none" scope="col">Acción</th>
         </tr>
     </thead>
     <tbody>
         {% for instance in object.certificado_set.all|dictsort:"certificado_fecha" %}
         <tr>
-            <td class="p-0 mt-0">{{instance.id}}</th>
-            <td class="p-0 mt-0">{{instance.certificado_expediente}}</td>
-            <td class="p-0 mt-0">{{instance.certificado_rubro_anticipo}}</td>
-            <td class="p-0 mt-0">{{instance.certificado_rubro_obra}}</td>
-            <td class="p-0 mt-0">{{instance.certificado_rubro_devanticipo}}</td>
-            <td class="p-0 mt-0">{{instance.certificado_fecha|date:"M-Y"}}</td>
-            <td class="p-0 mt-0">{{instance.certificado_pct_principal}}</td>
-            <td class="p-0 mt-0">{{instance.certificado_ante_pct}}</td>
-            <td class="p-0 mt-0">{{instance.certificado_acum_pct}}</td>
-            <td class="p-0 mt-0">{{instance.certificado_rubro_db.certificadorubro_nombre}}</td>
-            <td class="p-0 mt-0">{{instance.get_certificado_financiamiento_display}}</td>
-            <td class="p-0 mt-0">{{instance.certificado_monto_pesos}}</td>
+            <td class="small">{{instance.id}}</td>
+            <td class="small">{{instance.certificado_expediente}}</td>
+            <td class="small">{{instance.certificado_rubro_anticipo}}</td>
+            <td class="small">{{instance.certificado_rubro_obra}}</td>
+            <td class="small">{{instance.certificado_rubro_devanticipo}}</td>
+            <td class="small">{{instance.certificado_fecha|date:"M-Y"}}</td>
+            <td class="small">{{instance.certificado_pct_principal}}</td>
+            <td class="small">{{instance.certificado_ante_pct}}</td>
+            <td class="small">{{instance.certificado_acum_pct}}</td>
+            <td class="small">{{instance.certificado_rubro_db.certificadorubro_nombre}}</td>
+            <td class="small">{{instance.get_certificado_financiamiento_display}}</td>
+            <td class="small">{{instance.certificado_monto_pesos}}</td>
             {% if instance.certificado_tipo == "LEGACY" %}
-            <td class="p-0 mt-0">{{instance.certificado_devolucion_monto}}</td>
+            <td class="small">{{instance.certificado_devolucion_monto}}</td>
             {% else %}
-            <td class="p-0 mt-0">{{instance.certificado_descuento_anticipo_pesos}}</td>
+            <td class="small">{{instance.certificado_descuento_anticipo_pesos}}</td>
             {% endif %}
-            <td class="p-0 mt-0">{{instance.certificado_monto_uvi}}</td>
+            <td class="small">{{instance.certificado_monto_uvi}}</td>
             {% if instance.certificado_tipo == "LEGACY" %}
-            <td class="p-0 mt-0">{{instance.certificado_devolucion_monto_uvi}}</td>
+            <td class="small">{{instance.certificado_devolucion_monto_uvi}}</td>
             {% else %}
-            <td class="p-0 mt-0">{{instance.certificado_descuento_anticipo_uvi}}</td>
+            <td class="small">{{instance.certificado_descuento_anticipo_uvi}}</td>
             {% endif %}
-            <td class="p-0 mt-0">{{instance.certificado_monto_cobrar}}</td>
-            <td class="p-0 mt-0">{{instance.certificado_monto_cobrar_uvi}}</td>
-            <td class="p-0 mt-0 d-print-none">
+            <td class="small">{{instance.certificado_monto_cobrar}}</td>
+            <td class="small">{{instance.certificado_monto_cobrar_uvi}}</td>
+            <td class="small d-print-none">
                 {% if instance.certificado_digital %}
                     <a href="{{instance.certificado_digital.url}}">{{pdfimglink|safe}}</a>
                 {% else %}
@@ -67,29 +68,30 @@
         </tr>
         {% endfor %}
     </tbody>
-    <tfoot>
+    <tfoot class="table-light fw-semibold">
         <tr>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col"></th>
-            <th scope="col">Totales</th>
-            <th id="totalPesos{{object.id}}" scope="col">Monto $</th>
-            <th id="totalDevolucion{{object.id}}" scope="col">Dev./Desc.</th>
-            <th id="totalUvi{{object.id}}" scope="col">Monto UVI</th>
-            <th id="totalDevolucionUvi{{object.id}}" scope="col">Dev./Desc. UVI</th>
-            <th id="montoCobrar{{object.id}}" scope="col">Monto a Cobrar</th>
-            <th id="montoCobrarUvi{{object.id}}" scope="col">Monto a Cobrar UVI</th>
-            <th scope="col d-print-none"> </th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col"></th>
+            <th class="small" scope="col">Totales</th>
+            <th class="small" id="totalPesos{{object.id}}" scope="col">Monto $</th>
+            <th class="small" id="totalDevolucion{{object.id}}" scope="col">Dev./Desc.</th>
+            <th class="small" id="totalUvi{{object.id}}" scope="col">Monto UVI</th>
+            <th class="small" id="totalDevolucionUvi{{object.id}}" scope="col">Dev./Desc. UVI</th>
+            <th class="small" id="montoCobrar{{object.id}}" scope="col">Monto a Cobrar</th>
+            <th class="small" id="montoCobrarUvi{{object.id}}" scope="col">Monto a Cobrar UVI</th>
+            <th class="small d-print-none" scope="col"> </th>
         </tr>
     </tfoot>
 </table>
+</div>
 
 <script>
     sumaColumnaPesos("tablaCertificados{{object.id}}", 11, "totalPesos{{object.id}}");

@@ -1,106 +1,114 @@
 {% load humanize %}
 {% load static %}
-<div class="container-sm bg-body">
-<div class="row g-0">
-    <div class="col border">
-        <div class="row g-0">
-            <div class="col border align-left"><b>Actuación Electrónica:</b></div>
-            <div class="col border align-left">{{object.solicitud_actuacion}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border align-left"><b>Solicitante:</b></div>
-            <div class="col border align-left">{{object.solicitud_solicitante}}</div>
-        </div>
-        <div class="row g-0">
-            <div class="col border align-left"><b>Fechas:</b></div>
-            <div class="col border align-left">{%for fecha in object.solicitud_fechas %}{{fecha}}{%if not forloop.last %}, {%endif%} {%endfor%}</div>
-        </div>
-        {%if object.solicitud_localidades.all|length > 1%}
-        <div class="row g-0">
-            <div class="col border align-left"><b>Localidades:</b></div>
-            <div class="col border align-left">{%for localidad in object.solicitud_localidades.all %}{{localidad}}{%if not forloop.last %}, {%endif%} {%endfor%}</div>
-        </div>
-        {%endif%}
 
-        <div class="row g-0">
-            <div class="col border align-left"><b>Provincia:</b></div>
-            <div class="col border align-left">{{object.solicitud_provincia.provincia_nombre}}</div>
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Datos Generales</div>
+    <div class="card-body p-2">
+        <div class="row g-1 mb-1">
+            <div class="col-4 text-muted small fw-semibold">Actuación Electrónica</div>
+            <div class="col-8 small">{{object.solicitud_actuacion}}</div>
         </div>
-        {%if object.solicitud_provincia.provincia_nombre != "Chaco" %}
-        <div class="row g-0">
-            <div class="col border align-left"><b>Ciudad:</b></div>
-            <div class="col border align-left">{{object.solicitud_ciudad}}</div>
+        <div class="row g-1 mb-1">
+            <div class="col-4 text-muted small fw-semibold">Solicitante</div>
+            <div class="col-8 small">{{object.solicitud_solicitante}}</div>
         </div>
-        {%endif%}
-        <div class="row g-0">
-            <div class="col border align-left"><b>Tareas:</b></div>
-            <div class="col border align-left">{{object.solicitud_tareas|capfirst}}</div>
+        <div class="row g-1 mb-1">
+            <div class="col-4 text-muted small fw-semibold">Fechas</div>
+            <div class="col-8 small">{% for fecha in object.solicitud_fechas %}{{fecha}}{% if not forloop.last %}, {% endif %} {% endfor %}</div>
         </div>
-        <div class="row g-0">
-            <div class="col border align-left"><b>Vehículo:</b></div>
-            <div class="col border align-left">{{object.solicitud_vehiculo}}</div>
+        {% if object.solicitud_localidades.all|length > 1 %}
+        <div class="row g-1 mb-1">
+            <div class="col-4 text-muted small fw-semibold">Localidades</div>
+            <div class="col-8 small">{% for localidad in object.solicitud_localidades.all %}{{localidad}}{% if not forloop.last %}, {% endif %} {% endfor %}</div>
         </div>
-        <div class="row g-0">
-            <div class="col border align-left"><b>Decretos Regulatorios:</b></div>
-            {%if object.solicitud_decreto_viaticos%}
-            <div class="col border align-left">
-                <a href="{{object.solicitud_decreto_viaticos.instrumentolegaldecretos.url}}">{{object.solicitud_decreto_viaticos}}</a>
+        {% endif %}
+        <div class="row g-1 mb-1">
+            <div class="col-4 text-muted small fw-semibold">Provincia</div>
+            <div class="col-8 small">{{object.solicitud_provincia.provincia_nombre}}</div>
+        </div>
+        {% if object.solicitud_provincia.provincia_nombre != "Chaco" %}
+        <div class="row g-1 mb-1">
+            <div class="col-4 text-muted small fw-semibold">Ciudad</div>
+            <div class="col-8 small">{{object.solicitud_ciudad}}</div>
+        </div>
+        {% endif %}
+        <div class="row g-1 mb-1">
+            <div class="col-4 text-muted small fw-semibold">Tareas</div>
+            <div class="col-8 small">{{object.solicitud_tareas|capfirst}}</div>
+        </div>
+        <div class="row g-1 mb-1">
+            <div class="col-4 text-muted small fw-semibold">Vehículo</div>
+            <div class="col-8 small">{{object.solicitud_vehiculo}}</div>
+        </div>
+        <div class="row g-1 mb-1">
+            <div class="col-4 text-muted small fw-semibold">Decretos Regulatorios</div>
+            <div class="col-8 small">
+                {% if object.solicitud_decreto_viaticos %}
+                    <a href="{{object.solicitud_decreto_viaticos.instrumentolegaldecretos.url}}">{{object.solicitud_decreto_viaticos}}</a>
+                {% else %}
+                    <span class="text-danger">Decreto digital no disponible.</span>
+                {% endif %}
             </div>
-            {%else%}
-                <div class="col border align-left text-danger">Decreto digital no disponible.</div>
-            {%endif%}
         </div>
-        <div class="row g-0">
-            <div class="col border align-left"><b>Resolución aprobatoria:</b></div>
-            {%if object.solicitud_resolucion%}
-            <div class="col border align-left"><a href="{{object.solicitud_resolucion.instrumentolegalresoluciones.url}}">{{object.solicitud_resolucion}}</a></div>
-            {%else%}
-            <div class="col border align-left">Resolución digital no disponible.</div>
-            {%endif%}
+        <div class="row g-1">
+            <div class="col-4 text-muted small fw-semibold">Resolución aprobatoria</div>
+            <div class="col-8 small">
+                {% if object.solicitud_resolucion %}
+                    <a href="{{object.solicitud_resolucion.instrumentolegalresoluciones.url}}">{{object.solicitud_resolucion}}</a>
+                {% else %}
+                    Resolución digital no disponible.
+                {% endif %}
+            </div>
         </div>
-
     </div>
 </div>
-    <table id="tablaSolicitud{{object.id}}" class="table">
-        <thead>
+
+<div class="card">
+    <div class="card-header py-2 bg-light fw-semibold small">Comisionados</div>
+    <div class="card-body p-2">
+    <div class="table-responsive">
+    <table id="tablaSolicitud{{object.id}}" class="table table-sm table-bordered table-hover align-middle mb-0">
+        <thead class="table-light">
             <tr>
-                <th scope="col">Agentes</th>
-                <th scope="col">Cant. días</th>
-                <th scope="col">Viáticos</th>
-                <th scope="col">Gastos</th>
-                <th scope="col">Combustible</th>
-                <th scope="col">Pasajes</th>
-                <th scope="col">Total</th>
-                <th scope="col">Link</th>
+                <th class="small" scope="col">Agentes</th>
+                <th class="small" scope="col">Cant. días</th>
+                <th class="small" scope="col">Viáticos</th>
+                <th class="small" scope="col">Gastos</th>
+                <th class="small" scope="col">Combustible</th>
+                <th class="small" scope="col">Pasajes</th>
+                <th class="small" scope="col">Total</th>
+                <th class="small d-print-none" scope="col">Link</th>
             </tr>
         </thead>
         <tbody>
-            {%for agente in object.comisionadosolicitud_set.all %}
+            {% for agente in object.comisionadosolicitud_set.all %}
             <tr>
-                <th class="align-left" scope="row">{{agente.comisionadosolicitud_nombre.abreviatura}} {{agente.comisionadosolicitud_nombre.agente_apellidos}}, {{agente.comisionadosolicitud_nombre.agente_nombres}}</td>
-                <td class="align-left">{{object.solicitud_cantidad_de_dias.days}}</td>
-                <td class="align-left">{{agente.viaticos_computado}}</td>
-                <td class="align-left">{{agente.comisionadosolicitud_gastos}}</td>
-                <td class="align-left">{{agente.comisionadosolicitud_combustible}}</td>
-                <td class="align-left">{{agente.comisionadosolicitud_pasaje}}</td>
-                <td class="align-left">{{agente.viaticos_total}}</td>
-                <td class="d-print-none align-right" ><a href="{% url 'secretariador:update-comisionado' agente.id %}">{{editimglink|safe}}</a></td>
+                <th class="small" scope="row">{{agente.comisionadosolicitud_nombre.abreviatura}} {{agente.comisionadosolicitud_nombre.agente_apellidos}}, {{agente.comisionadosolicitud_nombre.agente_nombres}}</th>
+                <td class="small">{{object.solicitud_cantidad_de_dias.days}}</td>
+                <td class="small">{{agente.viaticos_computado}}</td>
+                <td class="small">{{agente.comisionadosolicitud_gastos}}</td>
+                <td class="small">{{agente.comisionadosolicitud_combustible}}</td>
+                <td class="small">{{agente.comisionadosolicitud_pasaje}}</td>
+                <td class="small">{{agente.viaticos_total}}</td>
+                <td class="small d-print-none"><a href="{% url 'secretariador:update-comisionado' agente.id %}">{{editimglink|safe}}</a></td>
             </tr>
-            {%endfor%}
+            {% endfor %}
         </tbody>
-        <tfoot>
+        <tfoot class="table-light fw-semibold">
             <tr>
-                <th scope="col"></th>
-                <th scope="col">Totales</th>
-                <th id="totalViaticos{{object.id}}" scope="col"></th>
-                <th id="totalGastos{{object.id}}" scope="col"></th>
-                <th id="totalCombustible{{object.id}}" scope="col"></th>
-                <th id="totalPasaje{{object.id}}" scope="col"></th>
-                <th id="totalTotal{{object.id}}" scope="col"></th>
-                <th scope="col"></th>
+                <th class="small" scope="col"></th>
+                <th class="small" scope="col">Totales</th>
+                <th class="small" id="totalViaticos{{object.id}}" scope="col"></th>
+                <th class="small" id="totalGastos{{object.id}}" scope="col"></th>
+                <th class="small" id="totalCombustible{{object.id}}" scope="col"></th>
+                <th class="small" id="totalPasaje{{object.id}}" scope="col"></th>
+                <th class="small" id="totalTotal{{object.id}}" scope="col"></th>
+                <th class="small d-print-none" scope="col"></th>
             </tr>
         </tfoot>
     </table>
+    </div>
+    </div>
 </div>
 
 <script>

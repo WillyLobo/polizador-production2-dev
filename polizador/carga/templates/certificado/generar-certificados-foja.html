@@ -4,19 +4,15 @@
 
 {{ form.media.css }}
 
-<div class="row flex-xl-nowrap">
-  <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
-    {% include "partials/administrative-sidebar.html" %}
-    {% include "partials/floating-generic-menu.html" %}
-  </div>
-  <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
-    <h3>Generar Certificado{{ filas|length|pluralize }} - Foja N°{{foja.foja_numero}} ({{foja.foja_rubro}})</h3>
-    <p>Avance del mes: {{foja.foja_pct_avance_mes|floatformat:3}}% - Acumulado: {{foja.foja_pct_acumulado|floatformat:3}}%</p>
+<p>Avance del mes: {{foja.foja_pct_avance_mes|floatformat:3}}% - Acumulado: {{foja.foja_pct_acumulado|floatformat:3}}%</p>
 
-    {% if form.non_field_errors %}
-      <div class="alert alert-danger">{{ form.non_field_errors }}</div>
-    {% endif %}
+{% if form.non_field_errors %}
+  <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+{% endif %}
 
+<div class="card mb-3">
+  <div class="card-header py-2 bg-light fw-semibold small">Generar Certificado{{ filas|length|pluralize }} - Foja N°{{foja.foja_numero}} ({{foja.foja_rubro}})</div>
+  <div class="card-body p-3">
     <form method="POST">
       {% csrf_token %}
       <div class="row">
@@ -46,6 +42,7 @@
             Se va{{ filas|pluralize:",n" }} a crear {{ filas|length }} certificado{{ filas|pluralize }} Parcial{{ filas|pluralize }} de Obra, uno por cada financiamiento del rubro:
           {% endif %}
         </p>
+        <div class="table-responsive">
         <table class="table table-bordered table-sm">
           <thead>
             <tr>
@@ -80,12 +77,12 @@
             {% endfor %}
           </tbody>
         </table>
+        </div>
         <button type="submit" name="confirmar" value="1" class="btn btn-success">Confirmar y Crear Certificados</button>
         {% endif %}
       {% endif %}
     </form>
-  </main>
-  <div class="d-none d-xl-block col-xl-2 bd-toc"></div>
+  </div>
 </div>
 {{ form.media.js }}
 {% endblock %}

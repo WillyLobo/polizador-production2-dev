@@ -1,22 +1,57 @@
 {% load humanize %}
 
-<div class="container">
-    <div class="row">
-        <div class="col">
-            <p class="poliza-e-p"><b>ID:</b> {{object.id}}</p>
-            <p class="poliza-e-p"><b>Nombre:</b> {{object.empresa_nombre}}</p>
-            <p class="poliza-e-p"><b>Dirección:</b> {{object.empresa_direccion}}</p>
-            <p class="poliza-e-p"><b>CUIT:</b> {%if object.empresa_cuit == "None" %} - {% else %} {{object.empresa_cuit}} {% endif %} </p>
-            <p class="poliza-e-p"><b>Titular:</b> {{object.empresa_titular_nombre}} ({{object.empresa_titular_titulo}})</p>
-        </div>
-        <div class="col">
-            <p class="poliza-e-p"><b>Correo Primario:</b> {{object.empresa_correo_p}}</p>
-            <p class="poliza-e-p"><b>Correo Secundario:</b> {{object.empresa_correo_s}}</p>
-            <p class="poliza-e-p"><b>Inscipción:</b> {{object.empresa_inscripcion}}</p>
+<div class="row g-3 mb-3">
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-light fw-semibold small">Datos de la Empresa</div>
+            <div class="card-body p-2">
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">ID</div>
+                    <div class="col-8 small">{{object.id}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Nombre</div>
+                    <div class="col-8 small">{{object.empresa_nombre}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Dirección</div>
+                    <div class="col-8 small">{{object.empresa_direccion}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">CUIT</div>
+                    <div class="col-8 small">{%if object.empresa_cuit == "None" %} - {% else %} {{object.empresa_cuit}} {% endif %}</div>
+                </div>
+                <div class="row g-1">
+                    <div class="col-4 text-muted small fw-semibold">Titular</div>
+                    <div class="col-8 small">{{object.empresa_titular_nombre}} ({{object.empresa_titular_titulo}})</div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-light fw-semibold small">Contacto e Inscripción</div>
+            <div class="card-body p-2">
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Correo Primario</div>
+                    <div class="col-8 small">{{object.empresa_correo_p}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Correo Secundario</div>
+                    <div class="col-8 small">{{object.empresa_correo_s}}</div>
+                </div>
+                <div class="row g-1">
+                    <div class="col-4 text-muted small fw-semibold">Inscipción</div>
+                    <div class="col-8 small">{{object.empresa_inscripcion}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div>
 
-    {% if object.obra_set.all %}
-        {% include "partials/lista-obra-partial.html" %}
-    {% endif %}
+{% if object.obra_set.all %}
+    {% include "partials/lista-obra-partial.html" %}
+{% endif %}

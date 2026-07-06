@@ -3,20 +3,13 @@
 {% block title %}<title>{{object.id}}-{{object.localidad_nombre}}</title>{% endblock title %}
 
 {{ form.media.css }}
-<form action="{% url "carga:update-localidad" object.id %}" method="POST">
+<form id="mainForm" action="{% url "carga:update-localidad" object.id %}" method="POST">
   {% csrf_token %}
-    
-  <div class="row flex-xl-nowrap">
-    <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
-      {% include "partials/administrative-sidebar.html" %}
-      {% include "partials/floating-generic-menu.html" %}
-    </div>
-    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
-      {% include "partials/localidad-form-partial.html" %}
-    </main>
-      <div class="d-none d-xl-block col-xl-2 bd-toc">
-    </div>
-  </div>
+  {% include "partials/localidad-form-partial.html" %}
 </form>
 {{ form.media.js }}
+{% endblock %}
+
+{% block actions %}
+  {% include "partials/form-actions.html" %}
 {% endblock %}

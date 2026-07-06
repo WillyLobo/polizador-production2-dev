@@ -3,8 +3,9 @@
     {{ hidden }}
 {% endfor %}
 
-<fieldset class="border rounded border-dark p-1">
-    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Etapas Proyectadas - {{rubro.rubro_nombre}}</legend>
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Etapas Proyectadas - {{rubro.rubro_nombre}}</div>
+    <div class="card-body p-2">
     <div class="row mb-2">
         <div class="col-md-6"><b>Rubro:</b> {{rubro.rubro_nombre}}</div>
         <div class="col-md-6">
@@ -99,7 +100,8 @@
             </tfoot>
         </table>
     </div>
-</fieldset>
+    </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

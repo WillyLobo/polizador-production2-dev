@@ -1,9 +1,10 @@
 {{foto_formset.management_form}}
-<fieldset class="border rounded border-dark p-1">
-    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Fotos</legend>
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Fotos</div>
+    <div class="card-body p-2">
     <div id="fojademedicionfoto-form" class="fojademedicionfoto-form">
         {% for form in foto_formset %}
-            <div class="row m-1 border border-dark rounded align-items-center" id="fojademedicionfoto-form-{{form.prefix}}">
+            <div class="row m-1 border rounded p-2 align-items-center" id="fojademedicionfoto-form-{{form.prefix}}">
                 {% for hidden in form.hidden_fields %}
                     {{ hidden }}
                 {% endfor %}
@@ -25,14 +26,15 @@
         {{ foto_formset.non_form_errors }}
     </div>
     <div id="empty_foto_form" style="display:none">
-        <div class="row m-1 border border-dark rounded align-items-center" id="fojademedicionfoto-form-__prefix__">
+        <div class="row m-1 border rounded p-2 align-items-center" id="fojademedicionfoto-form-__prefix__">
             <div class="col pb-1">
                 {{foto_formset.empty_form.fotofoja_archivo.as_field_group}}
             </div>
         </div>
     </div>
     <button type="button" id="addFotoForm" class="btn btn-secondary btn-sm mt-2">Agregar Foto</button>
-</fieldset>
+    </div>
+</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

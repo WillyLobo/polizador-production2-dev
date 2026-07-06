@@ -1,19 +1,22 @@
-<div class="container">
-    {% if object.poliza_set.all %}
-    <table id="tablaObraPolizas{{object.id}}" class="table table-bordered table-sm table-hover align-middle border border-dark data dataTables_wrapper">
-        <thead>
+{% if object.poliza_set.all %}
+<div class="card">
+    <div class="card-header py-2 bg-light fw-semibold small">Pólizas</div>
+    <div class="card-body p-2">
+    <div class="table-responsive">
+    <table id="tablaObraPolizas{{object.id}}" class="table table-sm table-bordered table-hover align-middle mb-0 data dataTables_wrapper">
+        <thead class="table-light">
             <tr>
-                <th scope="col">Poliza</th>
-                <th scope="col">Expediente Poliza</th>
-                <th scope="col">Obra</th>
-                <th scope="col">Localidad</th>
-                <th scope="col">Contratista</th>
-                <th scope="col">Programa</th>
-                <th scope="col">Convenio</th>
-                <th scope="col">Expediente Obra</th>
-                <th scope="col">Monto Pesos</th>
-                <th scope="col">Monto UVI</th>
-                <th scope="col">Link</th>
+                <th class="small" scope="col">Poliza</th>
+                <th class="small" scope="col">Expediente Poliza</th>
+                <th class="small" scope="col">Obra</th>
+                <th class="small" scope="col">Localidad</th>
+                <th class="small" scope="col">Contratista</th>
+                <th class="small" scope="col">Programa</th>
+                <th class="small" scope="col">Convenio</th>
+                <th class="small" scope="col">Expediente Obra</th>
+                <th class="small" scope="col">Monto Pesos</th>
+                <th class="small" scope="col">Monto UVI</th>
+                <th class="small d-print-none" scope="col">Link</th>
             </tr>
         </thead>
         <tbody>
@@ -21,25 +24,27 @@
                 {% include "partials/polizas-body-partial.html"%}
             {% endfor %}
         </tbody>
-        <tfoot>
+        <tfoot class="table-light fw-semibold">
             <tr>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col"></th>
-                <th scope="col">Totales</th>
-                <th id="totalPesos{{object.id}}" scope="col"></th>
-                <th id="totalUVI{{object.id}}" scope="col"></th>
-                <th scope="col"></th>
+                <th class="small" scope="col"></th>
+                <th class="small" scope="col"></th>
+                <th class="small" scope="col"></th>
+                <th class="small" scope="col"></th>
+                <th class="small" scope="col"></th>
+                <th class="small" scope="col"></th>
+                <th class="small" scope="col"></th>
+                <th class="small" scope="col">Totales</th>
+                <th class="small" id="totalPesos{{object.id}}" scope="col"></th>
+                <th class="small" id="totalUVI{{object.id}}" scope="col"></th>
+                <th class="small d-print-none" scope="col"></th>
             </tr>
         </tfoot>
     </table>
-    {% endif %}
     </div>
-    
+    </div>
+</div>
+{% endif %}
+
     <script>
         sumaColumnaPesos("tablaObraPolizas{{object.id}}", 8, "totalPesos{{object.id}}");
         sumaColumnaUvi("tablaObraPolizas{{object.id}}", 9, "totalUVI{{object.id}}");

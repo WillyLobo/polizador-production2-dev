@@ -3,68 +3,63 @@
 {% block title %}<title>{{object.id}}-{{object.trabajos_obra}}</title>{% endblock title %}
 
 {{ form.media.css }}
-<form id="plandetrabajos-form" action="{% url "carga:update-plandetrabajos" object.id%}" method="POST">
+<form id="mainForm" action="{% url "carga:update-plandetrabajos" object.id%}" method="POST">
   {% csrf_token %}
+  {% include "partials/plandetrabajos-form-partial.html" %}
 
-  <div class="row flex-xl-nowrap">
-    <div class="col-12 col-md-3 col-xl-2 bd-sidebar">
-      {% include "partials/administrative-sidebar.html" %}
-      {% include "partials/floating-generic-menu.html" %}
-    </div>
-    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 bd-content">
-      {% include "partials/plandetrabajos-form-partial.html" %}
-
-      <fieldset class="border rounded border-dark p-1">
-        <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Rubros</legend>
-        <div class="table-responsive">
-          <table class="table table-bordered table-sm">
-            <thead class="table-dark">
+  <div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Rubros</div>
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm">
+          <thead class="table-dark">
+            <tr>
+              <th>Orden</th>
+              <th>Rubro</th>
+              <th>Presupuesto</th>
+              <th>Items</th>
+              <th>Editar</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for rubro in object.rubros.all %}
               <tr>
-                <th>Orden</th>
-                <th>Rubro</th>
-                <th>Presupuesto</th>
-                <th>Items</th>
-                <th>Editar</th>
+                <td>{{ rubro.rubro_orden }}</td>
+                <td>{{ rubro.rubro_nombre }}</td>
+                <td>{{ rubro.rubro_presupuesto }}</td>
+                <td>
+                  <table class="table table-sm table-bordered mb-0">
+                    <thead>
+                      <tr>
+                        <th>Orden</th>
+                        <th>Nombre</th>
+                        <th>Incidencia</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for item in rubro.items.all %}
+                      <tr>
+                        <td>{{ item.planitem_orden }}</td>
+                        <td>{{ item.planitem_nombre }}</td>
+                        <td>{{ item.planitem_incidencia_pct }}%</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </td>
+                <td><a href="{% url "carga:update-plandetrabajosrubro" rubro.id %}">{{editimglink|safe}}</a></td>
               </tr>
-            </thead>
-            <tbody>
-              {% for rubro in object.rubros.all %}
-                <tr>
-                  <td>{{ rubro.rubro_orden }}</td>
-                  <td>{{ rubro.rubro_nombre }}</td>
-                  <td>{{ rubro.rubro_presupuesto }}</td>
-                  <td>
-                    <table class="table table-sm table-bordered mb-0">
-                      <thead>
-                        <tr>
-                          <th>Orden</th>
-                          <th>Nombre</th>
-                          <th>Incidencia</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {% for item in rubro.items.all %}
-                        <tr>
-                          <td>{{ item.planitem_orden }}</td>
-                          <td>{{ item.planitem_nombre }}</td>
-                          <td>{{ item.planitem_incidencia_pct }}%</td>
-                        </tr>
-                        {% endfor %}
-                      </tbody>
-                    </table>
-                  </td>
-                  <td><a href="{% url "carga:update-plandetrabajosrubro" rubro.id %}">{{editimglink|safe}}</a></td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-        <a href="{% url "carga:crear-plandetrabajosrubro" %}?plan={{ object.id }}" class="btn btn-success btn-sm">Agregar Rubro</a>
-      </fieldset>
-    </main>
-    <div class="d-none d-xl-block col-xl-2 bd-toc">
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <a href="{% url "carga:crear-plandetrabajosrubro" %}?plan={{ object.id }}" class="btn btn-success btn-sm">Agregar Rubro</a>
     </div>
   </div>
 </form>
 {{ form.media.js }}
+{% endblock %}
+
+{% block actions %}
+  {% include "partials/form-actions.html" %}
 {% endblock %}

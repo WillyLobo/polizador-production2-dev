@@ -2,74 +2,76 @@
       {{ hidden }}
 {% endfor %}
 
-<fieldset class="border rounded border-dark p-1">
-    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Rubro de Plan de Trabajos</legend>
-    <div class="form-group">
-        {{form.rubro_plan.as_field_group}}
-    </div>
-    <div class="form-group">
-        {{form.rubro_anterior.as_field_group}}
-    </div>
-    <div class="row">
-        <div class="col-md-2">
-            {{form.rubro_orden.as_field_group}}
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Rubro de Plan de Trabajos</div>
+    <div class="card-body p-2">
+        <div class="form-group">
+            {{form.rubro_plan.as_field_group}}
         </div>
-        <div class="col-md-6">
-            {{form.rubro_nombre.as_field_group}}
+        <div class="form-group">
+            {{form.rubro_anterior.as_field_group}}
         </div>
-        <div class="col-md-4">
-            {{form.rubro_presupuesto.as_field_group}}
+        <div class="row">
+            <div class="col-md-2">
+                {{form.rubro_orden.as_field_group}}
+            </div>
+            <div class="col-md-6">
+                {{form.rubro_nombre.as_field_group}}
+            </div>
+            <div class="col-md-4">
+                {{form.rubro_presupuesto.as_field_group}}
+            </div>
+        </div>
+        {% if contrato_vinculado %}
+        <div class="form-group">
+            <table class="table table-sm table-bordered mb-0">
+                <caption class="caption-top">Montos de "{{ contrato_vinculado.contrato_descripcion }}"</caption>
+                <thead>
+                    <tr>
+                        <th>Rubro</th>
+                        <th>Financiamiento</th>
+                        <th>Pesos</th>
+                        <th>UVI</th>
+                        <th>Fecha UVI</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for monto in contrato_vinculado.contratomonto_set.all %}
+                    <tr>
+                        <td>{{ monto.contratomonto_rubro }}</td>
+                        <td>{{ monto.contratomonto_financiamiento }}</td>
+                        <td>{{ monto.contratomonto_pesos }}</td>
+                        <td>{{ monto.contratomonto_uvi }}</td>
+                        <td>{{ monto.contratomonto_uvi_fecha|default:"-" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+        <div class="form-group">
+            {{form.rubro_contratomonto.as_field_group}}
+        </div>
+        <div class="form-group">
+            {{form.rubro_certificado_rubro.as_field_group}}
+            <small class="form-text text-muted">
+                Sólo necesario si este Rubro está financiado por más de una fuente a la vez
+                (ej. Nación + Provincia simultáneos). Si el Rubro tiene un único "Monto de
+                Contrato" arriba, no hace falta completar esto.
+            </small>
+        </div>
+        {% if pedir_foja_numero_inicial %}
+        <div class="form-group">
+            <div class="alert alert-info mb-2" role="alert">
+                Este rubro será la raíz de numeración de Fojas de Medición para esta Obra. Si ya
+                existen fojas cargadas fuera del sistema, indicá acá el número que le corresponde
+                a la próxima foja real a cargar.
+            </div>
+            {{form.rubro_foja_numero_inicial.as_field_group}}
+        </div>
+        {% endif %}
+        <div class="form-group">
+            {{form.rubro_documento_digital.as_field_group}}
         </div>
     </div>
-    {% if contrato_vinculado %}
-    <div class="form-group">
-        <table class="table table-sm table-bordered mb-0">
-            <caption class="caption-top">Montos de "{{ contrato_vinculado.contrato_descripcion }}"</caption>
-            <thead>
-                <tr>
-                    <th>Rubro</th>
-                    <th>Financiamiento</th>
-                    <th>Pesos</th>
-                    <th>UVI</th>
-                    <th>Fecha UVI</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for monto in contrato_vinculado.contratomonto_set.all %}
-                <tr>
-                    <td>{{ monto.contratomonto_rubro }}</td>
-                    <td>{{ monto.contratomonto_financiamiento }}</td>
-                    <td>{{ monto.contratomonto_pesos }}</td>
-                    <td>{{ monto.contratomonto_uvi }}</td>
-                    <td>{{ monto.contratomonto_uvi_fecha|default:"-" }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% endif %}
-    <div class="form-group">
-        {{form.rubro_contratomonto.as_field_group}}
-    </div>
-    <div class="form-group">
-        {{form.rubro_certificado_rubro.as_field_group}}
-        <small class="form-text text-muted">
-            Sólo necesario si este Rubro está financiado por más de una fuente a la vez
-            (ej. Nación + Provincia simultáneos). Si el Rubro tiene un único "Monto de
-            Contrato" arriba, no hace falta completar esto.
-        </small>
-    </div>
-    {% if pedir_foja_numero_inicial %}
-    <div class="form-group">
-        <div class="alert alert-info mb-2" role="alert">
-            Este rubro será la raíz de numeración de Fojas de Medición para esta Obra. Si ya
-            existen fojas cargadas fuera del sistema, indicá acá el número que le corresponde
-            a la próxima foja real a cargar.
-        </div>
-        {{form.rubro_foja_numero_inicial.as_field_group}}
-    </div>
-    {% endif %}
-    <div class="form-group">
-        {{form.rubro_documento_digital.as_field_group}}
-    </div>
-</fieldset>
+</div>

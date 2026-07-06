@@ -1,8 +1,9 @@
 {% for hidden in form.hidden_fields %}
       {{ hidden }}
 {% endfor %}
-<fieldset class="border rounded border-dark p-1">
-    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Identificador</legend>
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Identificador</div>
+    <div class="card-body p-2">
     <div class="form-group">
         {{form.instrumentolegalresoluciones_tipo.as_field_group}}
     </div>
@@ -17,26 +18,33 @@
     <div class="form-group">
         {{form.instrumentolegalresoluciones_fecha_aprobacion.as_field_group}}
     </div>
-</fieldset>
+    </div>
+</div>
 
-<fieldset class="border rounded border-dark p-1">
-    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Sumario</legend>
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Sumario</div>
+    <div class="card-body p-2">
     <div class="form-group">
         {{form.instrumentolegalresoluciones_descripcion.as_field_group}}
     </div>
-</fieldset>
+    </div>
+</div>
 
-<fieldset class="border rounded border-dark p-1">
-    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">Instrumentos legales</legend>
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Instrumentos legales</div>
+    <div class="card-body p-2">
     <div class="form-group">
         {{form.instrumentolegalresoluciones.as_field_group}}
     </div>
-</fieldset>
+    </div>
+</div>
 
-<fieldset class="border rounded border-dark p-1">
-    <legend class="border-bottom border-dark bg-dark text-white rounded p-1">OCR</legend>
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">OCR</div>
+    <div class="card-body p-2">
     <div class="form-group">
         {{form.instrumentolegalresoluciones_document.as_field_group}}
     </div>
-</fieldset>
+    </div>
+</div>
 
