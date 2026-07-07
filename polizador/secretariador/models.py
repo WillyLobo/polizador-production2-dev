@@ -137,7 +137,7 @@ class InstrumentosLegalesResoluciones(models.Model):
         ordering = ["-instrumentolegalresoluciones_ano", "-instrumentolegalresoluciones_numero"]
         constraints = [
             models.UniqueConstraint(
-                fields=["instrumentolegalresoluciones_tipo", "instrumentolegalresoluciones_numero", "instrumentolegalresoluciones_ano"],
+                fields=["instrumentolegalresoluciones_tipo", "instrumentolegalresoluciones_numero", "instrumentolegalresoluciones_acta", "instrumentolegalresoluciones_ano"],
                 name='unique_resolucion_1'
             ),
         ]
@@ -187,46 +187,6 @@ class InstrumentosLegalesResoluciones(models.Model):
             return reverse('secretariador:update-resolucion-presidencia', kwargs={"pk": str(self.id)})
         elif self.instrumentolegalresoluciones_tipo == "D":
             return reverse('secretariador:update-resolucion-directorio', kwargs={"pk": str(self.id)})
-
-class InstrumentosLegalesResolucionesDirectorio(models.Model):
-    class Meta:
-        verbose_name = "Instrumento Legal(Resolución Directorio)"
-        verbose_name_plural = "Instrumentos Legales(Resoluciones Directorio)"
-        ordering = ["-instrumentolegalresolucionesdirectorio_ano", "-instrumentolegalresolucionesdirectorio_numero"]
-        constraints = [
-            models.UniqueConstraint(
-                fields=["instrumentolegalresolucionesdirectorio_tipo", "instrumentolegalresolucionesdirectorio_numero", "instrumentolegalresolucionesdirectorio_acta", "instrumentolegalresolucionesdirectorio_ano"],
-                name='unique_resolucion_directorio_1'
-            ),
-        ]
-
-    TIPO = (
-        ("D", "Resolución de Directorio"),
-    )
-
-    instrumentolegalresolucionesdirectorio_tipo = models.CharField("Tipo", max_length=1, choices=TIPO, default="P")
-    instrumentolegalresolucionesdirectorio_numero = models.CharField("Número", max_length=7)
-    instrumentolegalresolucionesdirectorio_acta = models.CharField("Acta", max_length=3, default="")
-    instrumentolegalresolucionesdirectorio_ano = models.CharField("Año", max_length=5)
-    instrumentolegalresolucionesdirectorio_fecha_aprobacion = models.DateField("Fecha de Aprobación", default=timezone.now)
-    instrumentolegalresolucionesdirectorio_descripcion = models.CharField("Descripción", max_length=600, default="")
-    instrumentolegalresolucionesdirectorio = models.FileField(upload_to=generate_name_resoluciones, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], null=True, blank=True)
-    instrumentolegalresolucionesdirectorio_str = GeneratedField(
-        expression=ConcatOp('instrumentolegalresolucionesdirectorio_numero', models.Value(" - "), 'instrumentolegalresolucionesdirectorio_ano', models.Value(" - "), 'instrumentolegalresolucionesdirectorio_tipo'),
-        output_field=models.TextField(),
-        db_persist=True,
-    )
-    # Fields related to the automatic extraction of text from the digitalized resolution.
-    instrumentolegalresolucionesdirectorio_autocarga = models.BooleanField("Resolución importada sin intervención.", default=False)
-    instrumentolegalresolucionesdirectorio_document = models.TextField("Texto Extraído por OCR", null=True, blank=True)
-    instrumentolegalresolucionesdirectorio_uuid = models.UUIDField(default=compat.uuid7, editable=False)
-    instrumentolegalresolucionesdirectorio_history = HistoricalRecords()
-
-    def __str__(self):
-        return f"{self.get_instrumentolegalresolucionesdirectorio_tipo_display()} Nº{self.instrumentolegalresolucionesdirectorio_numero}/{self.instrumentolegalresolucionesdirectorio_acta}/{self.instrumentolegalresolucionesdirectorio_ano}"
-    
-    def get_absolute_url(self):
-        return reverse('secretariador:update-resolucion-directorio', kwargs={"pk": str(self.id)})
 
 class InstrumentosLegalesDecretos(models.Model):
     class Meta:

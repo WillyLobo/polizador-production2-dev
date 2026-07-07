@@ -5,7 +5,7 @@ from django.utils.decorators import method_decorator
 from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import generic
-from secretariador.models import InstrumentosLegalesMemorandum, InstrumentosLegalesDecretos, InstrumentosLegalesResoluciones, InstrumentosLegalesResolucionesDirectorio
+from secretariador.models import InstrumentosLegalesMemorandum, InstrumentosLegalesDecretos, InstrumentosLegalesResoluciones
 from secretariador.forms.instrumentoslegalesform import *
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg, pdflinkimg
 from carga.views.generics import get_deleted_objects
@@ -56,7 +56,7 @@ class CrearInstrumentoLegalResolucionPresidencia(PermissionRequiredMixin, generi
 class CrearInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, generic.CreateView):
 	permission_required = "secretariador.add_instrumentoslegalesresoluciones"
 
-	model = InstrumentosLegalesResolucionesDirectorio
+	model = InstrumentosLegalesResoluciones
 	template_name = "instrumentoslegales/crear-instrumento-legal-resolucion-directorio.html"
 	form_class = InstrumentosLegalesResolucionesDirectorioForm
 	success_url = reverse_lazy("secretariador:crear-resolucion-directorio")
@@ -127,7 +127,7 @@ class UpdateInstrumentoLegalResolucionPresidencia(PermissionRequiredMixin, gener
 class UpdateInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, generic.UpdateView):
 	permission_required = "secretariador.change_instrumentoslegalesresoluciones"
 
-	model = InstrumentosLegalesResolucionesDirectorio
+	model = InstrumentosLegalesResoluciones
 	template_name = "instrumentoslegales/update-instrumento-legal-resolucion-directorio.html"
 	form_class = InstrumentosLegalesResolucionesDirectorioForm
 	success_url = reverse_lazy("secretariador:lista-resoluciones-directorio")
@@ -194,7 +194,7 @@ class EliminarInstrumentoLegalResolucionPresidencia(PermissionRequiredMixin, gen
 class EliminarInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, generic.DeleteView):
 	permission_required = "secretariador.delete_instrumentoslegalesresoluciones"
 
-	model = InstrumentosLegalesResolucionesDirectorio
+	model = InstrumentosLegalesResoluciones
 	template_name = "generic/confirm_delete.html"
 	success_url = reverse_lazy("secretariador:lista-resoluciones-directorio")
 
@@ -404,9 +404,9 @@ def PaginaListaInstrumentosLegalesResolucionesDirectorio(request):
 @method_decorator(login_required, name="dispatch")
 @method_decorator(permission_required("secretariador.view_instrumentoslegalesresolucionesdirectorio", raise_exception=True), name="dispatch")
 class ListaListaInstrumentosLegalesResolucionesDirectorioView(AjaxDatatableView):
-	model = InstrumentosLegalesResolucionesDirectorio
+	model = InstrumentosLegalesResoluciones
 	title = "Instrumentos Legales(Resoluciones Directorio)"
-	initial_order = [["instrumentolegalresolucionesdirectorio_ano", "desc"], ["instrumentolegalresolucionesdirectorio_numero", "desc"] ]
+	initial_order = [["instrumentolegalresoluciones_ano", "desc"], ["instrumentolegalresoluciones_numero", "desc"] ]
 	length_menu = [[50, 100, -1], [50, 100, "all"]]
 	search_values_separator = "+"
 
@@ -414,14 +414,17 @@ class ListaListaInstrumentosLegalesResolucionesDirectorioView(AjaxDatatableView)
 		AjaxDatatableView.render_row_tools_column_def(),
 		{'name': 'edit', 'title': '', 'placeholder': True, 'searchable': False, 'orderable': False, "width":65},
 		{"name": "id","title":"ID", "visible": False},
-		{"name":"instrumentolegalresolucionesdirectorio_tipo", "className":"align-left"},
-		{"name":"instrumentolegalresolucionesdirectorio_numero", "className":"align-left"},
-		{"name":"instrumentolegalresolucionesdirectorio_acta", "className":"align-left"},
-		{"name":"instrumentolegalresolucionesdirectorio_ano", "className":"align-left "},
-		{"name":"instrumentolegalresolucionesdirectorio_fecha_aprobacion", "className":"align-left "},
-		{"name":"instrumentolegalresolucionesdirectorio_descripcion", "className":"align-right", "max_length":200},
-		{"name":"instrumentolegalresolucionesdirectorio_document", "className":"align-right", "max_length":200, "orderable": False},
+		{"name":"instrumentolegalresoluciones_tipo", "className":"align-left"},
+		{"name":"instrumentolegalresoluciones_numero", "className":"align-left"},
+		{"name":"instrumentolegalresoluciones_acta", "className":"align-left"},
+		{"name":"instrumentolegalresoluciones_ano", "className":"align-left "},
+		{"name":"instrumentolegalresoluciones_fecha_aprobacion", "className":"align-left "},
+		{"name":"instrumentolegalresoluciones_descripcion", "className":"align-right", "max_length":200},
+		{"name":"instrumentolegalresoluciones_document", "className":"align-right", "max_length":200, "orderable": False},
 	]
+
+	def get_initial_queryset(self, request=None):
+		return super().get_initial_queryset(request).filter(instrumentolegalresoluciones_tipo="D")
 
 	def render_clip_value_as_html(self, long_text, short_text, is_clipped):
 		"""
@@ -438,7 +441,7 @@ class ListaListaInstrumentosLegalesResolucionesDirectorioView(AjaxDatatableView)
 
 	def customize_row(self, row, obj):
 		id = str(obj.id)
-				
+
 		editarlink = f'<a href="/viaticos/crearresoluciondirectorio/{id}">{editlinkimg}</a>'
 		detallelink = f'<a href="/viaticos/crearresoluciondirectorio/ver/{id}">{detallelinkimg}</a>'
 		eliminarlink = f'<a href="/viaticos/eliminar/resoluciondirectorio/{id}">{eliminarlinkimg}</a>'

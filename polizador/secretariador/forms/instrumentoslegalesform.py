@@ -1,5 +1,5 @@
 from django import forms
-from secretariador.models import InstrumentosLegalesMemorandum, InstrumentosLegalesDecretos, InstrumentosLegalesResoluciones, InstrumentosLegalesResolucionesDirectorio
+from secretariador.models import InstrumentosLegalesMemorandum, InstrumentosLegalesDecretos, InstrumentosLegalesResoluciones
 from carga.views.ajaxviews import (
 	localidadmultiplewidget,
 	)
@@ -154,42 +154,42 @@ class InstrumentosLegalesResolucionesPresidenciaForm(BaseFormMixin, forms.ModelF
     
 class InstrumentosLegalesResolucionesDirectorioForm(BaseFormMixin, forms.ModelForm):
     class Meta:
-        model = InstrumentosLegalesResolucionesDirectorio
+        model = InstrumentosLegalesResoluciones
         fields = (
-            "instrumentolegalresolucionesdirectorio_tipo",
-            "instrumentolegalresolucionesdirectorio_numero",
-            "instrumentolegalresolucionesdirectorio_acta",
-            "instrumentolegalresolucionesdirectorio_ano",
-            "instrumentolegalresolucionesdirectorio_fecha_aprobacion",
-            "instrumentolegalresolucionesdirectorio_descripcion",
-            "instrumentolegalresolucionesdirectorio",
-            "instrumentolegalresolucionesdirectorio_document"
+            "instrumentolegalresoluciones_tipo",
+            "instrumentolegalresoluciones_numero",
+            "instrumentolegalresoluciones_acta",
+            "instrumentolegalresoluciones_ano",
+            "instrumentolegalresoluciones_fecha_aprobacion",
+            "instrumentolegalresoluciones_descripcion",
+            "instrumentolegalresoluciones",
+            "instrumentolegalresoluciones_document"
         )
         widgets = {
-            "instrumentolegalresolucionesdirectorio_tipo":forms.Select(attrs={
+            "instrumentolegalresoluciones_tipo":forms.Select(attrs={
                 "class":"form-control customSelect2"
             }),
-            "instrumentolegalresolucionesdirectorio_numero":forms.TextInput(attrs={
+            "instrumentolegalresoluciones_numero":forms.TextInput(attrs={
                 "class":"form-control"
             }),
-            "instrumentolegalresolucionesdirectorio_acta":forms.TextInput(attrs={
+            "instrumentolegalresoluciones_acta":forms.TextInput(attrs={
                 "class":"form-control"
             }),
-            "instrumentolegalresolucionesdirectorio_ano":forms.TextInput(attrs={
+            "instrumentolegalresoluciones_ano":forms.TextInput(attrs={
                 "class":"form-control"
             }),
-            "instrumentolegalresolucionesdirectorio_fecha_aprobacion":DateHTMLWidget(attrs={
+            "instrumentolegalresoluciones_fecha_aprobacion":DateHTMLWidget(attrs={
                 "type":"date",
                 "class":"form-control",
                 "autocomplete":"off"
                 }),
-            "instrumentolegalresolucionesdirectorio_descripcion":forms.TextInput(attrs={
+            "instrumentolegalresoluciones_descripcion":forms.TextInput(attrs={
                 "class":"form-control"
             }),
-            "instrumentolegalresolucionesdirectorio":forms.ClearableFileInput(attrs={
+            "instrumentolegalresoluciones":forms.ClearableFileInput(attrs={
                 "class":"form-control"
             }),
-            "instrumentolegalresolucionesdirectorio_document":forms.Textarea(attrs={
+            "instrumentolegalresoluciones_document":forms.Textarea(attrs={
                 "class":"form-control",
                 "rows":10,
                 "cols":50,
@@ -199,12 +199,12 @@ class InstrumentosLegalesResolucionesDirectorioForm(BaseFormMixin, forms.ModelFo
 
     def clean(self):
         cleaned_data = super().clean()
-        numero = cleaned_data.get("instrumentolegalresolucionesdirectorio_numero")
+        numero = cleaned_data.get("instrumentolegalresoluciones_numero")
         if numero:
-            cleaned_data["instrumentolegalresolucionesdirectorio_numero"] = numero.zfill(5)
+            cleaned_data["instrumentolegalresoluciones_numero"] = numero.zfill(5)
         return cleaned_data
-    
+
     def __init__(self, *args, **kwargs):
         super(type(self), self).__init__(*args, **kwargs)
-        self.fields['instrumentolegalresolucionesdirectorio_tipo'].initial = "D"
-        self.fields['instrumentolegalresolucionesdirectorio_ano'].initial = datetime.now().year
+        self.fields['instrumentolegalresoluciones_tipo'].initial = "D"
+        self.fields['instrumentolegalresoluciones_ano'].initial = datetime.now().year

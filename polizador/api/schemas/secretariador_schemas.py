@@ -54,33 +54,6 @@ class ResolucionUpdate(BaseModel):
     instrumentolegalresoluciones_descripcion: Optional[str] = None
 
 
-# === InstrumentosLegalesResolucionesDirectorio ===
-class ResolucionDirOut(BaseModel):
-    id: int
-    instrumentolegalresolucionesdirectorio_tipo: str
-    instrumentolegalresolucionesdirectorio_numero: str
-    instrumentolegalresolucionesdirectorio_acta: str
-    instrumentolegalresolucionesdirectorio_ano: str
-    instrumentolegalresolucionesdirectorio_fecha_aprobacion: str
-    instrumentolegalresolucionesdirectorio_descripcion: str
-    instrumentolegalresolucionesdirectorio_str: str
-
-class ResolucionDirCreate(BaseModel):
-    instrumentolegalresolucionesdirectorio_tipo: str = "D"
-    instrumentolegalresolucionesdirectorio_numero: str
-    instrumentolegalresolucionesdirectorio_acta: str = ""
-    instrumentolegalresolucionesdirectorio_ano: str
-    instrumentolegalresolucionesdirectorio_descripcion: str = ""
-
-class ResolucionDirUpdate(BaseModel):
-    instrumentolegalresolucionesdirectorio_tipo: Optional[str] = None
-    instrumentolegalresolucionesdirectorio_numero: Optional[str] = None
-    instrumentolegalresolucionesdirectorio_acta: Optional[str] = None
-    instrumentolegalresolucionesdirectorio_ano: Optional[str] = None
-    instrumentolegalresolucionesdirectorio_fecha_aprobacion: Optional[str] = None
-    instrumentolegalresolucionesdirectorio_descripcion: Optional[str] = None
-
-
 # === InstrumentosLegalesDecretos ===
 class DecretoOut(BaseModel):
     id: int

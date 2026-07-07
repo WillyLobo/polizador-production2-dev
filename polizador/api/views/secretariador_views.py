@@ -198,12 +198,12 @@ def delete_resolucion(request, id: int):
 @api.get("/resoluciones-directorio/", tags=["secretariador"])
 def list_resoluciones_directorio(request):
     user = require_auth(request)
-    from secretariador.models import InstrumentosLegalesResolucionesDirectorio
+    from secretariador.models import InstrumentosLegalesResoluciones
 
-    qs = InstrumentosLegalesResolucionesDirectorio.objects.all().order_by("-id")
+    qs = InstrumentosLegalesResoluciones.objects.filter(instrumentolegalresoluciones_tipo="D").order_by("-id")
     ano_filter = request.GET.get("ano", "")
     if ano_filter:
-        qs = qs.filter(instrumentolegalresolucionesdirectorio_ano=ano_filter)
+        qs = qs.filter(instrumentolegalresoluciones_ano=ano_filter)
     page = int(request.GET.get("page", 1))
     per_page = min(int(request.GET.get("per_page", 50)), 200)
     start = (page - 1) * per_page
@@ -212,10 +212,10 @@ def list_resoluciones_directorio(request):
     results = [
         {
             "id": r.id,
-            "tipo": r.instrumentolegalresolucionesdirectorio_tipo,
-            "numero": r.instrumentolegalresolucionesdirectorio_numero,
-            "ano": r.instrumentolegalresolucionesdirectorio_ano,
-            "descripcion": r.instrumentolegalresolucionesdirectorio_descripcion,
+            "tipo": r.instrumentolegalresoluciones_tipo,
+            "numero": r.instrumentolegalresoluciones_numero,
+            "ano": r.instrumentolegalresoluciones_ano,
+            "descripcion": r.instrumentolegalresoluciones_descripcion,
         }
         for r in qs[start:end]
     ]
@@ -230,13 +230,14 @@ def list_resoluciones_directorio(request):
 @api.post("/resoluciones-directorio/", tags=["secretariador"])
 def create_resolucion_directorio(request, payload: dict):
     require_auth(request)
-    from secretariador.models import InstrumentosLegalesResolucionesDirectorio
+    from secretariador.models import InstrumentosLegalesResoluciones
 
-    r = InstrumentosLegalesResolucionesDirectorio.objects.create(
-        instrumentolegalresolucionesdirectorio_tipo=payload.get("tipo", "D"),
-        instrumentolegalresolucionesdirectorio_numero=payload.get("numero", ""),
-        instrumentolegalresolucionesdirectorio_ano=payload.get("ano", ""),
-        instrumentolegalresolucionesdirectorio_descripcion=payload.get("descripcion", ""),
+    r = InstrumentosLegalesResoluciones.objects.create(
+        instrumentolegalresoluciones_tipo=payload.get("tipo", "D"),
+        instrumentolegalresoluciones_numero=payload.get("numero", ""),
+        instrumentolegalresoluciones_acta=payload.get("acta", ""),
+        instrumentolegalresoluciones_ano=payload.get("ano", ""),
+        instrumentolegalresoluciones_descripcion=payload.get("descripcion", ""),
     )
     return {"id": r.id}
 
@@ -244,9 +245,9 @@ def create_resolucion_directorio(request, payload: dict):
 @api.delete("/resolucion-directorio/{id}/", tags=["secretariador"])
 def delete_resolucion_directorio(request, id: int):
     require_auth(request)
-    from secretariador.models import InstrumentosLegalesResolucionesDirectorio
+    from secretariador.models import InstrumentosLegalesResoluciones
 
-    deleted, _ = InstrumentosLegalesResolucionesDirectorio.objects.filter(id=id).delete()
+    deleted, _ = InstrumentosLegalesResoluciones.objects.filter(id=id, instrumentolegalresoluciones_tipo="D").delete()
     return {"deleted": bool(deleted)}
 
 
