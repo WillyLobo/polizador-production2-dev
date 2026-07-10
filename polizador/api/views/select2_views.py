@@ -85,6 +85,26 @@ def select2_programa(request, q: str = None):
 
     return {"results": formatted_results}
 
+# --- Obras ---
+@router.get("/select2_obra/", response=Select2ResponseSchema)
+def select2_obra(request, q: str = None):
+    from carga.models import Obra
+
+    queryset = Obra.objects.all()
+
+    if q:
+        queryset = queryset.filter(
+            Q(obra_nombre__icontains=q)
+        )
+    # Limit results to keep payloads fast and responsive
+    results_limit = queryset[:20]
+
+    formatted_results = [
+        {"id": item.id, "text": item.obra_nombre} for item in results_limit
+    ]
+
+    return {"results": formatted_results}
+
 # --- Rubros de Obra ---
 @router.get("/select2_rubro_obra/", response=Select2ResponseSchema)
 def select2_rubro_obra(request, q: str = None):

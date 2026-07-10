@@ -25,15 +25,26 @@ class ReporteCertificadoPorMesView(PermissionRequiredMixin, generic.ListView):
 
 	def get_queryset(self):
 		mes_list = self.request.GET.getlist("mes")
-		ano = self.request.GET.get("ano")
-		if not mes_list or not ano:
+		ano_list = self.request.GET.getlist("ano")
+		empresa_ids = self.request.GET.getlist("empresa")
+		obra_ids = self.request.GET.getlist("obra")
+		if not mes_list and not ano_list and not empresa_ids and not obra_ids:
 			return Certificado.objects.none()
 
-		buscarPorFechaIngreso = self.request.GET.get("buscarPorFechaIngreso")
-		if buscarPorFechaIngreso:
-			filtro = Q(certificado_fecha_carga__year=ano, certificado_fecha_carga__month__in=mes_list)
-		else:
-			filtro = Q(certificado_fecha__year=ano, certificado_fecha__month__in=mes_list)
+		filtro = Q()
+		if mes_list or ano_list:
+			ano_filtro = ano_list or [str(datetime.now().year)]
+			buscarPorFechaIngreso = self.request.GET.get("buscarPorFechaIngreso")
+			campo_fecha = "certificado_fecha_carga" if buscarPorFechaIngreso else "certificado_fecha"
+			filtro &= Q(**{f"{campo_fecha}__year__in": ano_filtro})
+			if mes_list:
+				filtro &= Q(**{f"{campo_fecha}__month__in": mes_list})
+
+		if empresa_ids:
+			filtro &= Q(certificado_obra__obra_empresa__id__in=empresa_ids)
+
+		if obra_ids:
+			filtro &= Q(certificado_obra__id__in=obra_ids)
 
 		return Certificado.objects.filter(filtro).order_by(
 			"certificado_obra__obra_programa"
@@ -43,14 +54,17 @@ class ReporteCertificadoPorMesView(PermissionRequiredMixin, generic.ListView):
 		context = super().get_context_data(**kwargs)
 		anos_disponibles = {d.year for d in Certificado.objects.dates("certificado_fecha", "year")}
 		anos_disponibles |= {d.year for d in Certificado.objects.dates("certificado_fecha_carga", "year")}
+		anos_disponibles.add(datetime.now().year)
 		meses_disponibles = {d.month for d in Certificado.objects.dates("certificado_fecha", "month")}
 		meses_disponibles |= {d.month for d in Certificado.objects.dates("certificado_fecha_carga", "month")}
 
 		context["anos"] = sorted(anos_disponibles, reverse=True)
 		context["meses"] = [(mes, MESES_NOMBRES[mes]) for mes in sorted(meses_disponibles)]
 		context["mes_list"] = [int(mes) for mes in self.request.GET.getlist("mes")]
-		context["ano"] = self.request.GET.get("ano", "")
+		context["ano_list"] = [int(ano) for ano in self.request.GET.getlist("ano")] or [datetime.now().year]
 		context["buscarPorFechaIngreso"] = self.request.GET.get("buscarPorFechaIngreso")
+		context["selected_empresas"] = Empresa.objects.filter(id__in=self.request.GET.getlist("empresa"))
+		context["selected_obras"] = Obra.objects.filter(id__in=self.request.GET.getlist("obra"))
 		return context
 
 @method_decorator(login_required, name="dispatch")

@@ -4,7 +4,7 @@
 {% load static%}
 {%block title%}<title>Reporte de Certificados por Mes</title>{%endblock title%}
 
-<div class="min-vh-100 min-vw-100 p-4">
+<div class="min-vh-100 p-4">
 
   <div class="card mb-3 d-print-none">
     <div class="card-header py-2 bg-light fw-semibold small">Filtros</div>
@@ -22,17 +22,36 @@
           </div>
           <div class="col-md-3">
             <label class="form-label small fw-semibold mb-1" for="inputGroupSelectAno">Año</label>
-            <select name="ano" class="form-select form-select-sm" id="inputGroupSelectAno">
+            <select name="ano" class="form-select form-select-sm" id="inputGroupSelectAno" multiple>
                 {% for anio in anos %}
-                <option value="{{ anio|unlocalize }}" {% if anio|stringformat:"s" == ano %}selected{% endif %}>{{ anio|unlocalize }}</option>
+                <option value="{{ anio|unlocalize }}" {% if anio in ano_list %}selected{% endif %}>{{ anio|unlocalize }}</option>
                 {% endfor %}
             </select>
+            <div class="form-text">Puede seleccionar más de un año.</div>
           </div>
           <div class="col-md-4 d-flex align-items-end">
             <div class="form-check form-switch">
               <input class="form-check-input" name="buscarPorFechaIngreso" type="checkbox" role="switch" id="switchFechaIngresoalSistema" {% if buscarPorFechaIngreso %}checked{% endif %}>
               <label class="form-check-label small" for="switchFechaIngresoalSistema">Buscar por fecha de ingreso al sistema</label>
             </div>
+          </div>
+        </div>
+        <div class="row g-2 mb-3">
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold mb-1" for="inputGroupSelectEmpresa">Empresa</label>
+            <select name="empresa" class="customSelect2" id="inputGroupSelectEmpresa" style="width:100%;" multiple>
+                {% for empresa in selected_empresas %}
+                <option value="{{ empresa.id }}" selected>{{ empresa }}</option>
+                {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label small fw-semibold mb-1" for="inputGroupSelectObra">Obra</label>
+            <select name="obra" class="customSelect2" id="inputGroupSelectObra" style="width:100%;" multiple>
+                {% for obra in selected_obras %}
+                <option value="{{ obra.id }}" selected>{{ obra.obra_nombre }}</option>
+                {% endfor %}
+            </select>
           </div>
         </div>
         <div class="text-end">
@@ -46,7 +65,7 @@
     <div class="card-header py-2 bg-light fw-semibold small">Resultados</div>
     <div class="card-body p-2">
       <div class="table-responsive">
-        <table width="auto" class="table table-sm table-bordered table-hover align-middle mb-0" id="tablaReporte">
+        <table class="table table-sm table-bordered table-hover align-middle mb-0" id="tablaReporte">
             <thead class="table-light">
                 <tr>
                     <th class="small" scope="col">Programa</th>
@@ -83,7 +102,7 @@
                     <td class="small">{{object.certificado_monto_cobrar}}</td>
                     <td class="small">{{object.certificado_monto_cobrar_uvi}}</td>
                     {% if object.certificado_digital %}
-                    <td class="small d-print-none"><a href="{{object.certificado_digital.url}}">{{pdfimglink|safe}}</a></td>
+                    <td class="small d-print-none"><a href="{{object.certificado_digital.url}}" target="_blank">{{pdfimglink|safe}}</a></td>
                     {% else %}
                     <td class="small d-print-none">{{nofileimglink|safe}}</td>
                     {% endif %}
@@ -152,5 +171,7 @@
     }
 });
 </script>
+{% include "partials/select2-script-partial.html" with id_field="inputGroupSelectEmpresa" url="/v1/api/select2_empresa/" %}
+{% include "partials/select2-script-partial.html" with id_field="inputGroupSelectObra" url="/v1/api/select2_obra/" %}
 
 {%endblock content%}
