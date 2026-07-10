@@ -1,9 +1,10 @@
-# personalizador app schemas - generated from Django models
-from pydantic import BaseModel
+# personalizador app schemas
+from ninja import Schema
+from uuid import UUID
 from typing import Optional
 
 
-class CustomUserOut(BaseModel):
+class CustomUserOut(Schema):
     id: int
     username: str
     first_name: str
@@ -11,7 +12,7 @@ class CustomUserOut(BaseModel):
     email: str
     usuario_dni: Optional[float] = None
 
-class CustomUserCreate(BaseModel):
+class CustomUserCreate(Schema):
     username: str
     password: str
     first_name: str
@@ -19,7 +20,7 @@ class CustomUserCreate(BaseModel):
     email: str
     usuario_dni: Optional[float] = None
 
-class CustomUserUpdate(BaseModel):
+class CustomUserUpdate(Schema):
     username: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
@@ -27,46 +28,49 @@ class CustomUserUpdate(BaseModel):
     usuario_dni: Optional[float] = None
 
 
-class GerenciaOut(BaseModel):
+class GerenciaOut(Schema):
     id: int
-    gerencia_uuid: str
+    gerencia_uuid: UUID
+    gerencia_directorio_id: int
     gerencia_nombre: str
     gerencia_cuof: str
 
-class GerenciaCreate(BaseModel):
+class GerenciaCreate(Schema):
+    gerencia_directorio_id: int
     gerencia_nombre: str
     gerencia_cuof: str
 
-class GerenciaUpdate(BaseModel):
+class GerenciaUpdate(Schema):
+    gerencia_directorio_id: Optional[int] = None
     gerencia_nombre: Optional[str] = None
     gerencia_cuof: Optional[str] = None
 
 
-class DireccionOut(BaseModel):
+class DireccionOut(Schema):
     id: int
-    direccion_uuid: str
+    direccion_uuid: UUID
     direccion_nombre: str
     direccion_cuof: str
 
-class DireccionCreate(BaseModel):
+class DireccionCreate(Schema):
     direccion_nombre: str
     direccion_cuof: str
 
-class DireccionUpdate(BaseModel):
+class DireccionUpdate(Schema):
     direccion_nombre: Optional[str] = None
     direccion_cuof: Optional[str] = None
 
 
-class DepartamentoPerOut(BaseModel):
+class DepartamentoPerOut(Schema):
     id: int
-    departamento_uuid: str
+    departamento_uuid: UUID
     departamento_nombre: str
     departamento_cuof: str
 
-class DepartamentoPerCreate(BaseModel):
+class DepartamentoPerCreate(Schema):
     departamento_nombre: str
     departamento_cuof: str
 
-class DepartamentoPerUpdate(BaseModel):
+class DepartamentoPerUpdate(Schema):
     departamento_nombre: Optional[str] = None
     departamento_cuof: Optional[str] = None

@@ -1,6 +1,13 @@
-from django.test import TestCase, Client
+import json
+
+from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
+from django.middleware.csrf import get_token
+from django.test import RequestFactory, TestCase, Client
 from ninja.testing import TestClient
 from api.router import api
+
+UserModel = get_user_model()
 
 
 class HealthCheckTest(TestCase):
@@ -42,7 +49,7 @@ class LoadDataMixin:
             Aseguradora, Empresa, Obra, Programa, Region,
             CertificadoRubro, CertificadoFinanciamiento,
         )
-        from personalizador.models import CargoTipo, Gerencia, Direccion
+        from personalizador.models import CargoTipo, Directorio, Gerencia, Direccion
 
         self.aseguradora = Aseguradora.objects.create(aseguradora_nombre="Aseguradora Test")
         self.programa = Programa.objects.create(programa_nombre="Programa Test")
@@ -55,7 +62,10 @@ class LoadDataMixin:
         )
 
         CargoTipo.objects.get_or_create(cargotipo="Arquitecto")
-        Gerencia.objects.get_or_create(gerencia_nombre="Gerencia Test", gerencia_cuof="G001")
+        directorio, _ = Directorio.objects.get_or_create(directorio_nombre="Presidencia", directorio_cuof="D001")
+        Gerencia.objects.get_or_create(
+            gerencia_nombre="Gerencia Test", gerencia_cuof="G001", gerencia_directorio=directorio,
+        )
 
 
 class ObraAPITest(LoadDataMixin, TestCase):
@@ -111,9 +121,9 @@ class SchemaTest(TestCase):
 
     def test_personalizador_schemas_import(self):
         from api.schemas.personalizador_schemas import (
-            CargosOut, GerenciaOut, CargoTipoOut, CustomUserOut,
+            GerenciaOut, DireccionOut, DepartamentoPerOut, CustomUserOut,
         )
-        assert CargosOut.model_fields is not None
+        assert GerenciaOut.model_fields is not None
         assert CustomUserOut.model_fields is not None
 
 
@@ -124,12 +134,88 @@ class OpenAPITest(TestCase):
         self.client = Client()
 
     def test_openapi_schema_available(self):
+        # /v1/api/openapi.json is staff-only too (same docs_decorator as /docs).
+        staff = UserModel.objects.create_user(username="openapi_staff", password="pass1234!", is_staff=True)
+        self.client.login(username="openapi_staff", password="pass1234!")
         resp = self.client.get("/v1/api/openapi.json")
         assert resp.status_code == 200
         data = resp.json()
         assert "paths" in data or "info" in data
 
     def test_docs_url_available(self):
+        # /v1/api/docs is staff-only (docs_decorator=staff_member_required in api/router.py).
+        staff = UserModel.objects.create_user(username="docs_staff", password="pass1234!", is_staff=True)
+        self.client.login(username="docs_staff", password="pass1234!")
         resp = self.client.get("/v1/api/docs")
         # Should return HTML (status 200) for Swagger UI
         assert resp.status_code == 200
+
+
+class ModelPermissionEnforcementTest(TestCase):
+    """A logged-in user with no Django permissions must be rejected (403);
+    granting the matching `carga.<action>_receptor` permission must let it through."""
+
+    def setUp(self):
+        self.client = Client()
+        self.user = UserModel.objects.create_user(username="plain_user", password="pass1234!")
+        self.client.login(username="plain_user", password="pass1234!")
+
+    def test_create_receptor_forbidden_without_permission(self):
+        resp = self.client.post(
+            "/v1/api/receptores/",
+            data=json.dumps({"receptor_nombre": "Test"}),
+            content_type="application/json",
+        )
+        assert resp.status_code == 403
+
+    def test_create_receptor_allowed_with_permission(self):
+        perm = Permission.objects.get(codename="add_receptor", content_type__app_label="carga")
+        self.user.user_permissions.add(perm)
+        resp = self.client.post(
+            "/v1/api/receptores/",
+            data=json.dumps({"receptor_nombre": "Test"}),
+            content_type="application/json",
+        )
+        assert resp.status_code in (200, 201)
+
+    def test_list_receptores_forbidden_without_view_permission(self):
+        resp = self.client.get("/v1/api/receptores/")
+        assert resp.status_code == 403
+
+    def test_delete_receptor_forbidden_without_permission(self):
+        from carga.models import Receptor
+
+        r = Receptor.objects.create(receptor_nombre="Test")
+        resp = self.client.delete(f"/v1/api/receptor/{r.id}/")
+        assert resp.status_code == 403
+
+
+class CsrfEnforcementTest(TestCase):
+    """POST/PUT/DELETE must be rejected without a valid CSRF token, even for an
+    authenticated + permissioned user, since the API relies on session cookies."""
+
+    def setUp(self):
+        self.client = Client(enforce_csrf_checks=True)
+        self.user = UserModel.objects.create_user(username="csrf_user", password="pass1234!")
+        perm = Permission.objects.get(codename="add_receptor", content_type__app_label="carga")
+        self.user.user_permissions.add(perm)
+        self.client.login(username="csrf_user", password="pass1234!")
+
+    def test_post_without_csrf_token_rejected(self):
+        resp = self.client.post(
+            "/v1/api/receptores/",
+            data=json.dumps({"receptor_nombre": "Test"}),
+            content_type="application/json",
+        )
+        assert resp.status_code == 403
+
+    def test_post_with_valid_csrf_token_accepted(self):
+        token = get_token(RequestFactory().get("/"))
+        self.client.cookies["csrftoken"] = token
+        resp = self.client.post(
+            "/v1/api/receptores/",
+            data=json.dumps({"receptor_nombre": "Test"}),
+            content_type="application/json",
+            HTTP_X_CSRFTOKEN=token,
+        )
+        assert resp.status_code in (200, 201)

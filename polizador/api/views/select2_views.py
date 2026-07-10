@@ -1,24 +1,13 @@
-# secretariador app API views
+# select2 autocomplete endpoints (used by report forms across carga/secretariador)
 from django.db.models import Q
-from django.views.decorators.cache import cache_page
-import datetime
-from api.router import api
-from api.permissions import require_auth, get_group_perms
+from ninja import Router
 from api.schemas.select2_schemas import Select2ResponseSchema
 
-
-def _parse_date(s):
-    if not s:
-        return None
-    try:
-        return datetime.date.fromisoformat(s)
-    except (ValueError, TypeError):
-        return None
+router = Router(tags=["select2"])
 
 # --- Comisionados ---
-@api.get("/select2_comisionado/", response=Select2ResponseSchema, tags=["select2"])
+@router.get("/select2_comisionado/", response=Select2ResponseSchema)
 def select2_comisionados(request, q: str = None):
-    user = require_auth(request)
     from personalizador.models import Agente
 
     queryset = Agente.objects.all()
@@ -37,9 +26,8 @@ def select2_comisionados(request, q: str = None):
     return {"results": formatted_results}
 
 # --- Localidades ---
-@api.get("/select2_localidad/", response=Select2ResponseSchema, tags=["select2"])
+@router.get("/select2_localidad/", response=Select2ResponseSchema)
 def select2_localidad(request, q: str = None):
-    user = require_auth(request)
     from carga.models import Localidad
 
     queryset = Localidad.objects.all()
@@ -58,9 +46,8 @@ def select2_localidad(request, q: str = None):
     return {"results": formatted_results}
 
 # --- Empresas ---
-@api.get("/select2_empresa/", response=Select2ResponseSchema, tags=["select2"])
+@router.get("/select2_empresa/", response=Select2ResponseSchema)
 def select2_empresa(request, q: str = None):
-    user = require_auth(request)
     from carga.models import Empresa
 
     queryset = Empresa.objects.all()
@@ -79,9 +66,8 @@ def select2_empresa(request, q: str = None):
     return {"results": formatted_results}
 
 # --- Programa ---
-@api.get("/select2_programa/", response=Select2ResponseSchema, tags=["select2"])
+@router.get("/select2_programa/", response=Select2ResponseSchema)
 def select2_programa(request, q: str = None):
-    user = require_auth(request)
     from carga.models import Programa
 
     queryset = Programa.objects.all()
@@ -100,9 +86,8 @@ def select2_programa(request, q: str = None):
     return {"results": formatted_results}
 
 # --- Rubros de Obra ---
-@api.get("/select2_rubro_obra/", response=Select2ResponseSchema, tags=["select2"])
+@router.get("/select2_rubro_obra/", response=Select2ResponseSchema)
 def select2_rubro_obra(request, q: str = None):
-    user = require_auth(request)
     from carga.models import ContratoRubro
 
     queryset = ContratoRubro.objects.all()
@@ -121,9 +106,8 @@ def select2_rubro_obra(request, q: str = None):
     return {"results": formatted_results}
 
 # --- Rubros de Certificado ---
-@api.get("/select2_rubro_certificado/", response=Select2ResponseSchema, tags=["select2"])
+@router.get("/select2_rubro_certificado/", response=Select2ResponseSchema)
 def select2_rubro_certificado(request, q: str = None):
-    user = require_auth(request)
     from carga.models import CertificadoRubro
 
     queryset = CertificadoRubro.objects.all()

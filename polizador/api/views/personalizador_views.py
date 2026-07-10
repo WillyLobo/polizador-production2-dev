@@ -1,187 +1,98 @@
 # personalizador app API views
-from api.router import api
-from api.permissions import require_auth
+from typing import List
+
+from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
+from ninja import Router
+from ninja.decorators import decorate_view
+from ninja.pagination import paginate
+
+from api.permissions import require_model_perm
+from api.views.generics import PerPagePagination
+from api.schemas.personalizador_schemas import (
+    CustomUserOut,
+    GerenciaOut, GerenciaCreate,
+    DireccionOut, DireccionCreate,
+    DepartamentoPerOut, DepartamentoPerCreate,
+)
+from personalizador.models import Departamento, Direccion, Gerencia
+
+User = get_user_model()
+router = Router(tags=["personalizador"])
 
 
 # --- CustomUser ---
-@api.get("/users/", tags=["personalizador"])
+@router.get("/users/", response=List[CustomUserOut])
+@decorate_view(require_model_perm(User))
+@paginate(PerPagePagination)
 def list_users(request):
-    user = require_auth(request)
-    from django.contrib.auth import get_user_model
-
-    User = get_user_model()
-    qs = User.objects.all().order_by("username")
-    page = int(request.GET.get("page", 1))
-    per_page = min(int(request.GET.get("per_page", 50)), 200)
-    start = (page - 1) * per_page
-    end = start + per_page
-    total = qs.count()
-    results = [
-        {
-            "id": u.id,
-            "username": u.username,
-            "first_name": u.first_name,
-            "last_name": u.last_name,
-            "email": u.email,
-        }
-        for u in qs[start:end]
-    ]
-    return {
-        "count": total,
-        "next": f"?page={page + 1}&per_page={per_page}" if end < total else None,
-        "previous": f"?page={page - 1}&per_page={per_page}" if page > 1 else None,
-        "results": results,
-    }
+    return User.objects.all().order_by("username")
 
 
-@api.get("/user/{id}/", tags=["personalizador"])
+@router.get("/user/{id}/", response=CustomUserOut)
+@decorate_view(require_model_perm(User))
 def retrieve_user(request, id: int):
-    require_auth(request)
-    from django.contrib.auth import get_user_model
-
-    User = get_user_model()
-    u = User.objects.filter(id=id).first()
-    if not u:
-        return {"detail": "Not found"}, 404
-    return {
-        "id": u.id,
-        "username": u.username,
-        "first_name": u.first_name,
-        "last_name": u.last_name,
-        "email": u.email,
-    }
+    return get_object_or_404(User, id=id)
 
 
 # --- Gerencia ---
-@api.get("/gerencias/", tags=["personalizador"])
+@router.get("/gerencias/", response=List[GerenciaOut])
+@decorate_view(require_model_perm(Gerencia))
+@paginate(PerPagePagination)
 def list_gerencias(request):
-    user = require_auth(request)
-    from personalizador.models import Gerencia
-
-    qs = Gerencia.objects.all().order_by("id")
-    page = int(request.GET.get("page", 1))
-    per_page = min(int(request.GET.get("per_page", 50)), 200)
-    start = (page - 1) * per_page
-    end = start + per_page
-    total = qs.count()
-    results = [
-        {"id": g.id, "nombre": g.gerencia_nombre, "cuof": g.gerencia_cuof}
-        for g in qs[start:end]
-    ]
-    return {
-        "count": total,
-        "next": f"?page={page + 1}&per_page={per_page}" if end < total else None,
-        "previous": f"?page={page - 1}&per_page={per_page}" if page > 1 else None,
-        "results": results,
-    }
+    return Gerencia.objects.all().order_by("id")
 
 
-@api.post("/gerencias/", tags=["personalizador"])
-def create_gerencia(request, payload: dict):
-    require_auth(request)
-    from personalizador.models import Gerencia
-
-    g = Gerencia.objects.create(
-        gerencia_nombre=payload.get("nombre", ""),
-        gerencia_cuof=payload.get("cuof", ""),
-    )
-    return {"id": g.id}
+@router.post("/gerencias/", response=GerenciaOut)
+@decorate_view(require_model_perm(Gerencia))
+def create_gerencia(request, payload: GerenciaCreate):
+    return Gerencia.objects.create(**payload.model_dump())
 
 
-@api.delete("/gerencia/{id}/", tags=["personalizador"])
+@router.delete("/gerencia/{id}/")
+@decorate_view(require_model_perm(Gerencia))
 def delete_gerencia(request, id: int):
-    require_auth(request)
-    from personalizador.models import Gerencia
-
     deleted, _ = Gerencia.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
 
 
 # --- Direccion ---
-@api.get("/direcciones/", tags=["personalizador"])
+@router.get("/direcciones/", response=List[DireccionOut])
+@decorate_view(require_model_perm(Direccion))
+@paginate(PerPagePagination)
 def list_direcciones(request):
-    user = require_auth(request)
-    from personalizador.models import Direccion
-
-    qs = Direccion.objects.all().order_by("id")
-    page = int(request.GET.get("page", 1))
-    per_page = min(int(request.GET.get("per_page", 50)), 200)
-    start = (page - 1) * per_page
-    end = start + per_page
-    total = qs.count()
-    results = [
-        {"id": d.id, "nombre": d.direccion_nombre, "cuof": d.direccion_cuof}
-        for d in qs[start:end]
-    ]
-    return {
-        "count": total,
-        "next": f"?page={page + 1}&per_page={per_page}" if end < total else None,
-        "previous": f"?page={page - 1}&per_page={per_page}" if page > 1 else None,
-        "results": results,
-    }
+    return Direccion.objects.all().order_by("id")
 
 
-@api.post("/direcciones/", tags=["personalizador"])
-def create_direccion(request, payload: dict):
-    require_auth(request)
-    from personalizador.models import Direccion
-
-    d = Direccion.objects.create(
-        direccion_nombre=payload.get("nombre", ""),
-        direccion_cuof=payload.get("cuof", ""),
-    )
-    return {"id": d.id}
+@router.post("/direcciones/", response=DireccionOut)
+@decorate_view(require_model_perm(Direccion))
+def create_direccion(request, payload: DireccionCreate):
+    return Direccion.objects.create(**payload.model_dump())
 
 
-@api.delete("/direccion/{id}/", tags=["personalizador"])
+@router.delete("/direccion/{id}/")
+@decorate_view(require_model_perm(Direccion))
 def delete_direccion(request, id: int):
-    require_auth(request)
-    from personalizador.models import Direccion
-
     deleted, _ = Direccion.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
 
 
 # --- Departamento (personalizador) ---
-@api.get("/departamentos-personal/", tags=["personalizador"])
+@router.get("/departamentos-personal/", response=List[DepartamentoPerOut])
+@decorate_view(require_model_perm(Departamento))
+@paginate(PerPagePagination)
 def list_departamentos_personal(request):
-    user = require_auth(request)
-    from personalizador.models import Departamento
-
-    qs = Departamento.objects.all().order_by("id")
-    page = int(request.GET.get("page", 1))
-    per_page = min(int(request.GET.get("per_page", 50)), 200)
-    start = (page - 1) * per_page
-    end = start + per_page
-    total = qs.count()
-    results = [
-        {"id": d.id, "nombre": d.departamento_nombre, "cuof": d.departamento_cuof}
-        for d in qs[start:end]
-    ]
-    return {
-        "count": total,
-        "next": f"?page={page + 1}&per_page={per_page}" if end < total else None,
-        "previous": f"?page={page - 1}&per_page={per_page}" if page > 1 else None,
-        "results": results,
-    }
+    return Departamento.objects.all().order_by("id")
 
 
-@api.post("/departamentos-personal/", tags=["personalizador"])
-def create_departamento_personal(request, payload: dict):
-    require_auth(request)
-    from personalizador.models import Departamento
-
-    d = Departamento.objects.create(
-        departamento_nombre=payload.get("nombre", ""),
-        departamento_cuof=payload.get("cuof", ""),
-    )
-    return {"id": d.id}
+@router.post("/departamentos-personal/", response=DepartamentoPerOut)
+@decorate_view(require_model_perm(Departamento))
+def create_departamento_personal(request, payload: DepartamentoPerCreate):
+    return Departamento.objects.create(**payload.model_dump())
 
 
-@api.delete("/departamento-personal/{id}/", tags=["personalizador"])
+@router.delete("/departamento-personal/{id}/")
+@decorate_view(require_model_perm(Departamento))
 def delete_departamento_personal(request, id: int):
-    require_auth(request)
-    from personalizador.models import Departamento
-
     deleted, _ = Departamento.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}

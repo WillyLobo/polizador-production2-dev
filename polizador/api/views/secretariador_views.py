@@ -1,748 +1,363 @@
 # secretariador app API views
+from typing import List
+
 from django.db.models import Q
-import datetime
-from api.router import api
-from api.permissions import require_auth, get_group_perms
+from django.shortcuts import get_object_or_404
+from ninja import Router
+from ninja.decorators import decorate_view
+from ninja.pagination import paginate
 
+from api.permissions import get_group_perms, require_model_perm
+from api.views.generics import PerPagePagination
+from api.schemas.secretariador_schemas import (
+    MemorandumOut, MemorandumCreate, MemorandumUpdate,
+    ResolucionOut, ResolucionCreate, ResolucionUpdate,
+    DecretoOut, DecretoCreate,
+    MontoViaticoOut, MontoViaticoCreate,
+    ComisionadoOut, ComisionadoCreate,
+    OrganigramaOut, OrganigramaCreate,
+    VehiculoOut, VehiculoCreate,
+    SolicitudOut, SolicitudCreate,
+    ComisionadoSolicitudOut, ComisionadoSolicitudCreate,
+    IncorporacionOut, IncorporacionCreate,
+)
+from secretariador.models import (
+    ComisionadoSolicitud,
+    Incorporacion,
+    InstrumentosLegalesDecretos,
+    InstrumentosLegalesMemorandum,
+    InstrumentosLegalesResoluciones,
+    MontoViaticoDiario,
+    Organigrama,
+    Solicitud,
+    Vehiculo,
+)
+from personalizador.models import Agente
 
-def _parse_date(s):
-    if not s:
-        return None
-    try:
-        return datetime.date.fromisoformat(s)
-    except (ValueError, TypeError):
-        return None
+router = Router(tags=["secretariador"])
 
 
 # --- Memorandum ---
-@api.get("/memorandums/", tags=["secretariador"])
-def list_memorandums(request):
-    user = require_auth(request)
-    from secretariador.models import InstrumentosLegalesMemorandum
-
+@router.get("/memorandums/", response=List[MemorandumOut])
+@decorate_view(require_model_perm(InstrumentosLegalesMemorandum))
+@paginate(PerPagePagination)
+def list_memorandums(request, ano: str = ""):
     qs = InstrumentosLegalesMemorandum.objects.all().order_by("-id")
-    ano_filter = request.GET.get("ano", "")
-    if ano_filter:
-        qs = qs.filter(instrumentolegalmemorandum_ano=ano_filter)
-    page = int(request.GET.get("page", 1))
-    per_page = min(int(request.GET.get("per_page", 50)), 200)
-    start = (page - 1) * per_page
-    end = start + per_page
-    total = qs.count()
-    results = [
-        {
-            "id": m.id,
-            "tipo": m.instrumentolegalmemorandum_tipo,
-            "numero": m.instrumentolegalmemorandum_numero,
-            "ano": m.instrumentolegalmemorandum_ano,
-            "descripcion": m.instrumentolegalmemorandum_descripcion,
-        }
-        for m in qs[start:end]
-    ]
-    return {
-        "count": total,
-        "next": f"?page={page + 1}&per_page={per_page}" if end < total else None,
-        "previous": f"?page={page - 1}&per_page={per_page}" if page > 1 else None,
-        "results": results,
-    }
+    if ano:
+        qs = qs.filter(instrumentolegalmemorandum_ano=ano)
+    return qs
 
 
-@api.get("/memorandum/{id}/", tags=["secretariador"])
+@router.get("/memorandum/{id}/", response=MemorandumOut)
+@decorate_view(require_model_perm(InstrumentosLegalesMemorandum))
 def retrieve_memorandum(request, id: int):
-    require_auth(request)
-    from secretariador.models import InstrumentosLegalesMemorandum
-
-    m = InstrumentosLegalesMemorandum.objects.filter(id=id).first()
-    if not m:
-        return {"detail": "Not found"}, 404
-    return {
-        "id": m.id,
-        "tipo": m.instrumentolegalmemorandum_tipo,
-        "numero": m.instrumentolegalmemorandum_numero,
-        "ano": m.instrumentolegalmemorandum_ano,
-        "descripcion": m.instrumentolegalmemorandum_descripcion,
-    }
+    return get_object_or_404(InstrumentosLegalesMemorandum, id=id)
 
 
-@api.post("/memorandums/", tags=["secretariador"])
-def create_memorandum(request, payload: dict):
-    require_auth(request)
-    from secretariador.models import InstrumentosLegalesMemorandum
-
-    m = InstrumentosLegalesMemorandum.objects.create(
-        instrumentolegalmemorandum_tipo=payload.get("tipo", "P"),
-        instrumentolegalmemorandum_numero=payload.get("numero", ""),
-        instrumentolegalmemorandum_ano=payload.get("ano", ""),
-        instrumentolegalmemorandum_descripcion=payload.get("descripcion", ""),
-    )
-    return {"id": m.id}
+@router.post("/memorandums/", response=MemorandumOut)
+@decorate_view(require_model_perm(InstrumentosLegalesMemorandum))
+def create_memorandum(request, payload: MemorandumCreate):
+    m = InstrumentosLegalesMemorandum.objects.create(**payload.model_dump())
+    m.refresh_from_db()
+    return m
 
 
-@api.put("/memorandum/{id}/", tags=["secretariador"])
-def update_memorandum(request, id: int, payload: dict):
-    require_auth(request)
-    from secretariador.models import InstrumentosLegalesMemorandum
-
-    m = InstrumentosLegalesMemorandum.objects.filter(id=id).first()
-    if not m:
-        return {"detail": "Not found"}, 404
-    for field in ["instrumentolegalmemorandum_tipo", "instrumentolegalmemorandum_numero",
-                  "instrumentolegalmemorandum_ano", "instrumentolegalmemorandum_descripcion"]:
-        key = field.replace("instrumentolegalmemorandum_", "")
-        if key in payload:
-            setattr(m, field, payload[key])
+@router.put("/memorandum/{id}/", response=MemorandumOut)
+@decorate_view(require_model_perm(InstrumentosLegalesMemorandum))
+def update_memorandum(request, id: int, payload: MemorandumUpdate):
+    m = get_object_or_404(InstrumentosLegalesMemorandum, id=id)
+    for field, value in payload.model_dump(exclude_unset=True).items():
+        setattr(m, field, value)
     m.save()
-    return {"id": m.id}
+    return m
 
 
-@api.delete("/memorandum/{id}/", tags=["secretariador"])
+@router.delete("/memorandum/{id}/")
+@decorate_view(require_model_perm(InstrumentosLegalesMemorandum))
 def delete_memorandum(request, id: int):
-    require_auth(request)
-    from secretariador.models import InstrumentosLegalesMemorandum
-
     deleted, _ = InstrumentosLegalesMemorandum.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
 
 
 # --- Resoluciones ---
-@api.get("/resoluciones/", tags=["secretariador"])
-def list_resoluciones(request):
-    user = require_auth(request)
-    from secretariador.models import InstrumentosLegalesResoluciones
-
+@router.get("/resoluciones/", response=List[ResolucionOut])
+@decorate_view(require_model_perm(InstrumentosLegalesResoluciones))
+@paginate(PerPagePagination)
+def list_resoluciones(request, ano: str = ""):
     qs = InstrumentosLegalesResoluciones.objects.all().order_by("-id")
-    ano_filter = request.GET.get("ano", "")
-    if ano_filter:
-        qs = qs.filter(instrumentolegalresoluciones_ano=ano_filter)
-    page = int(request.GET.get("page", 1))
-    per_page = min(int(request.GET.get("per_page", 50)), 200)
-    start = (page - 1) * per_page
-    end = start + per_page
-    total = qs.count()
-    results = [
-        {
-            "id": r.id,
-            "tipo": r.instrumentolegalresoluciones_tipo,
-            "numero": r.instrumentolegalresoluciones_numero,
-            "ano": r.instrumentolegalresoluciones_ano,
-            "descripcion": r.instrumentolegalresoluciones_descripcion,
-        }
-        for r in qs[start:end]
-    ]
-    return {
-        "count": total,
-        "next": f"?page={page + 1}&per_page={per_page}" if end < total else None,
-        "previous": f"?page={page - 1}&per_page={per_page}" if page > 1 else None,
-        "results": results,
-    }
+    if ano:
+        qs = qs.filter(instrumentolegalresoluciones_ano=ano)
+    return qs
 
 
-@api.get("/resolucion/{id}/", tags=["secretariador"])
+@router.get("/resolucion/{id}/", response=ResolucionOut)
+@decorate_view(require_model_perm(InstrumentosLegalesResoluciones))
 def retrieve_resolucion(request, id: int):
-    require_auth(request)
-    from secretariador.models import InstrumentosLegalesResoluciones
-
-    r = InstrumentosLegalesResoluciones.objects.filter(id=id).first()
-    if not r:
-        return {"detail": "Not found"}, 404
-    return {
-        "id": r.id,
-        "tipo": r.instrumentolegalresoluciones_tipo,
-        "numero": r.instrumentolegalresoluciones_numero,
-        "ano": r.instrumentolegalresoluciones_ano,
-        "descripcion": r.instrumentolegalresoluciones_descripcion,
-    }
+    return get_object_or_404(InstrumentosLegalesResoluciones, id=id)
 
 
-@api.post("/resoluciones/", tags=["secretariador"])
-def create_resolucion(request, payload: dict):
-    require_auth(request)
-    from secretariador.models import InstrumentosLegalesResoluciones
-
-    r = InstrumentosLegalesResoluciones.objects.create(
-        instrumentolegalresoluciones_tipo=payload.get("tipo", "P"),
-        instrumentolegalresoluciones_numero=payload.get("numero", ""),
-        instrumentolegalresoluciones_ano=payload.get("ano", ""),
-        instrumentolegalresoluciones_descripcion=payload.get("descripcion", ""),
-    )
-    return {"id": r.id}
+@router.post("/resoluciones/", response=ResolucionOut)
+@decorate_view(require_model_perm(InstrumentosLegalesResoluciones))
+def create_resolucion(request, payload: ResolucionCreate):
+    r = InstrumentosLegalesResoluciones.objects.create(**payload.model_dump())
+    r.refresh_from_db()
+    return r
 
 
-@api.put("/resolucion/{id}/", tags=["secretariador"])
-def update_resolucion(request, id: int, payload: dict):
-    require_auth(request)
-    from secretariador.models import InstrumentosLegalesResoluciones
-
-    r = InstrumentosLegalesResoluciones.objects.filter(id=id).first()
-    if not r:
-        return {"detail": "Not found"}, 404
-    for field in ["instrumentolegalresoluciones_tipo", "instrumentolegalresoluciones_numero",
-                  "instrumentolegalresoluciones_ano", "instrumentolegalresoluciones_descripcion"]:
-        key = field.replace("instrumentolegalresoluciones_", "")
-        if key in payload:
-            setattr(r, field, payload[key])
+@router.put("/resolucion/{id}/", response=ResolucionOut)
+@decorate_view(require_model_perm(InstrumentosLegalesResoluciones))
+def update_resolucion(request, id: int, payload: ResolucionUpdate):
+    r = get_object_or_404(InstrumentosLegalesResoluciones, id=id)
+    for field, value in payload.model_dump(exclude_unset=True).items():
+        setattr(r, field, value)
     r.save()
-    return {"id": r.id}
+    return r
 
 
-@api.delete("/resolucion/{id}/", tags=["secretariador"])
+@router.delete("/resolucion/{id}/")
+@decorate_view(require_model_perm(InstrumentosLegalesResoluciones))
 def delete_resolucion(request, id: int):
-    require_auth(request)
-    from secretariador.models import InstrumentosLegalesResoluciones
-
     deleted, _ = InstrumentosLegalesResoluciones.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
 
 
 # --- Resoluciones Directorio ---
-@api.get("/resoluciones-directorio/", tags=["secretariador"])
-def list_resoluciones_directorio(request):
-    user = require_auth(request)
-    from secretariador.models import InstrumentosLegalesResoluciones
-
+@router.get("/resoluciones-directorio/", response=List[ResolucionOut])
+@decorate_view(require_model_perm(InstrumentosLegalesResoluciones))
+@paginate(PerPagePagination)
+def list_resoluciones_directorio(request, ano: str = ""):
     qs = InstrumentosLegalesResoluciones.objects.filter(instrumentolegalresoluciones_tipo="D").order_by("-id")
-    ano_filter = request.GET.get("ano", "")
-    if ano_filter:
-        qs = qs.filter(instrumentolegalresoluciones_ano=ano_filter)
-    page = int(request.GET.get("page", 1))
-    per_page = min(int(request.GET.get("per_page", 50)), 200)
-    start = (page - 1) * per_page
-    end = start + per_page
-    total = qs.count()
-    results = [
-        {
-            "id": r.id,
-            "tipo": r.instrumentolegalresoluciones_tipo,
-            "numero": r.instrumentolegalresoluciones_numero,
-            "ano": r.instrumentolegalresoluciones_ano,
-            "descripcion": r.instrumentolegalresoluciones_descripcion,
-        }
-        for r in qs[start:end]
-    ]
-    return {
-        "count": total,
-        "next": f"?page={page + 1}&per_page={per_page}" if end < total else None,
-        "previous": f"?page={page - 1}&per_page={per_page}" if page > 1 else None,
-        "results": results,
-    }
+    if ano:
+        qs = qs.filter(instrumentolegalresoluciones_ano=ano)
+    return qs
 
 
-@api.post("/resoluciones-directorio/", tags=["secretariador"])
-def create_resolucion_directorio(request, payload: dict):
-    require_auth(request)
-    from secretariador.models import InstrumentosLegalesResoluciones
-
-    r = InstrumentosLegalesResoluciones.objects.create(
-        instrumentolegalresoluciones_tipo=payload.get("tipo", "D"),
-        instrumentolegalresoluciones_numero=payload.get("numero", ""),
-        instrumentolegalresoluciones_acta=payload.get("acta", ""),
-        instrumentolegalresoluciones_ano=payload.get("ano", ""),
-        instrumentolegalresoluciones_descripcion=payload.get("descripcion", ""),
-    )
-    return {"id": r.id}
+@router.post("/resoluciones-directorio/", response=ResolucionOut)
+@decorate_view(require_model_perm(InstrumentosLegalesResoluciones))
+def create_resolucion_directorio(request, payload: ResolucionCreate):
+    data = payload.model_dump()
+    data["instrumentolegalresoluciones_tipo"] = "D"
+    r = InstrumentosLegalesResoluciones.objects.create(**data)
+    r.refresh_from_db()
+    return r
 
 
-@api.delete("/resolucion-directorio/{id}/", tags=["secretariador"])
+@router.delete("/resolucion-directorio/{id}/")
+@decorate_view(require_model_perm(InstrumentosLegalesResoluciones))
 def delete_resolucion_directorio(request, id: int):
-    require_auth(request)
-    from secretariador.models import InstrumentosLegalesResoluciones
-
     deleted, _ = InstrumentosLegalesResoluciones.objects.filter(id=id, instrumentolegalresoluciones_tipo="D").delete()
     return {"deleted": bool(deleted)}
 
 
 # --- Decretos ---
-@api.get("/decretos/", tags=["secretariador"])
-def list_decretos(request):
-    user = require_auth(request)
-    from secretariador.models import InstrumentosLegalesDecretos
-
+@router.get("/decretos/", response=List[DecretoOut])
+@decorate_view(require_model_perm(InstrumentosLegalesDecretos))
+@paginate(PerPagePagination)
+def list_decretos(request, ano: str = ""):
     qs = InstrumentosLegalesDecretos.objects.all().order_by("-id")
-    ano_filter = request.GET.get("ano", "")
-    if ano_filter:
-        qs = qs.filter(instrumentolegaldecretos_ano=ano_filter)
-    page = int(request.GET.get("page", 1))
-    per_page = min(int(request.GET.get("per_page", 50)), 200)
-    start = (page - 1) * per_page
-    end = start + per_page
-    total = qs.count()
-    results = [
-        {
-            "id": d.id,
-            "tipo": d.instrumentolegaldecretos_tipo,
-            "numero": d.instrumentolegaldecretos_numero,
-            "ano": d.instrumentolegaldecretos_ano,
-            "descripcion": d.instrumentolegaldecretos_descripcion,
-        }
-        for d in qs[start:end]
-    ]
-    return {
-        "count": total,
-        "next": f"?page={page + 1}&per_page={per_page}" if end < total else None,
-        "previous": f"?page={page - 1}&per_page={per_page}" if page > 1 else None,
-        "results": results,
-    }
+    if ano:
+        qs = qs.filter(instrumentolegaldecretos_ano=ano)
+    return qs
 
 
-@api.get("/decreto/{id}/", tags=["secretariador"])
+@router.get("/decreto/{id}/", response=DecretoOut)
+@decorate_view(require_model_perm(InstrumentosLegalesDecretos))
 def retrieve_decreto(request, id: int):
-    require_auth(request)
-    from secretariador.models import InstrumentosLegalesDecretos
-
-    d = InstrumentosLegalesDecretos.objects.filter(id=id).first()
-    if not d:
-        return {"detail": "Not found"}, 404
-    return {
-        "id": d.id,
-        "tipo": d.instrumentolegaldecretos_tipo,
-        "numero": d.instrumentolegaldecretos_numero,
-        "ano": d.instrumentolegaldecretos_ano,
-        "descripcion": d.instrumentolegaldecretos_descripcion,
-    }
+    return get_object_or_404(InstrumentosLegalesDecretos, id=id)
 
 
-@api.post("/decretos/", tags=["secretariador"])
-def create_decreto(request, payload: dict):
-    require_auth(request)
-    from secretariador.models import InstrumentosLegalesDecretos
-
-    d = InstrumentosLegalesDecretos.objects.create(
-        instrumentolegaldecretos_tipo=payload.get("tipo", "P"),
-        instrumentolegaldecretos_numero=payload.get("numero", ""),
-        instrumentolegaldecretos_ano=payload.get("ano", ""),
-        instrumentolegaldecretos_descripcion=payload.get("descripcion", "Escala de viáticos"),
-    )
-    return {"id": d.id}
+@router.post("/decretos/", response=DecretoOut)
+@decorate_view(require_model_perm(InstrumentosLegalesDecretos))
+def create_decreto(request, payload: DecretoCreate):
+    d = InstrumentosLegalesDecretos.objects.create(**payload.model_dump())
+    d.refresh_from_db()
+    return d
 
 
-@api.delete("/decreto/{id}/", tags=["secretariador"])
+@router.delete("/decreto/{id}/")
+@decorate_view(require_model_perm(InstrumentosLegalesDecretos))
 def delete_decreto(request, id: int):
-    require_auth(request)
-    from secretariador.models import InstrumentosLegalesDecretos
-
     deleted, _ = InstrumentosLegalesDecretos.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
 
 
 # --- MontoViaticoDiario ---
-@api.get("/montos-viaticos/", tags=["secretariador"])
-def list_montos_viaticos(request):
-    user = require_auth(request)
-    from secretariador.models import MontoViaticoDiario
-
+@router.get("/montos-viaticos/", response=List[MontoViaticoOut])
+@decorate_view(require_model_perm(MontoViaticoDiario))
+@paginate(PerPagePagination)
+def list_montos_viaticos(request, decreto: str = ""):
     qs = MontoViaticoDiario.objects.select_related("montoviaticodiario_decreto_reglamentario").all().order_by("-id")
-    decreto_id = request.GET.get("decreto", "")
-    if decreto_id:
-        qs = qs.filter(montoviaticodiario_decreto_reglamentario_id=decreto_id)
-    page = int(request.GET.get("page", 1))
-    per_page = min(int(request.GET.get("per_page", 50)), 200)
-    start = (page - 1) * per_page
-    end = start + per_page
-    total = qs.count()
-    results = [
-        {
-            "id": mv.id,
-            "decreto_id": mv.montoviaticodiario_decreto_reglamentario_id,
-            "estrato_uno_interior": float(mv.montoviaticodiario_estrato_uno_interior),
-            "estrato_dos_interior": float(mv.montoviaticodiario_estrato_dos_interior),
-        }
-        for mv in qs[start:end]
-    ]
-    return {
-        "count": total,
-        "next": f"?page={page + 1}&per_page={per_page}" if end < total else None,
-        "previous": f"?page={page - 1}&per_page={per_page}" if page > 1 else None,
-        "results": results,
-    }
+    if decreto:
+        qs = qs.filter(montoviaticodiario_decreto_reglamentario_id=decreto)
+    return qs
 
 
-@api.post("/montos-viaticos/", tags=["secretariador"])
-def create_monto_viatico(request, payload: dict):
-    require_auth(request)
-    from secretariador.models import MontoViaticoDiario
-
-    mv = MontoViaticoDiario.objects.create(
-        montoviaticodiario_decreto_reglamentario_id=payload.get("decreto_id"),
-    )
-    return {"id": mv.id}
+@router.post("/montos-viaticos/", response=MontoViaticoOut)
+@decorate_view(require_model_perm(MontoViaticoDiario))
+def create_monto_viatico(request, payload: MontoViaticoCreate):
+    return MontoViaticoDiario.objects.create(**payload.model_dump())
 
 
-@api.delete("/monto-viatico/{id}/", tags=["secretariador"])
+@router.delete("/monto-viatico/{id}/")
+@decorate_view(require_model_perm(MontoViaticoDiario))
 def delete_monto_viatico(request, id: int):
-    require_auth(request)
-    from secretariador.models import MontoViaticoDiario
-
     deleted, _ = MontoViaticoDiario.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
 
 
 # --- Comisionado (personalizador.Agente) ---
-@api.get("/comisionados/", tags=["secretariador"])
-def list_comisionados(request):
-    user = require_auth(request)
-    from personalizador.models import Agente
-
+@router.get("/comisionados/", response=List[ComisionadoOut])
+@decorate_view(require_model_perm(Agente))
+@paginate(PerPagePagination)
+def list_comisionados(request, q: str = ""):
     qs = Agente.objects.select_related("sexo", "oficina").all().order_by("agente_apellidos")
-    search = request.GET.get("q", "").strip()
-    if search:
-        qs = qs.filter(
-            Q(agente_nombres__icontains=search) | Q(agente_apellidos__icontains=search)
-        )
-    page = int(request.GET.get("page", 1))
-    per_page = min(int(request.GET.get("per_page", 50)), 200)
-    start = (page - 1) * per_page
-    end = start + per_page
-    total = qs.count()
-    results = [
-        {
-            "id": a.id,
-            "nombres": a.agente_nombres,
-            "apellidos": a.agente_apellidos,
-            "dni": float(a.dni),
-            "oficina_id": a.oficina_id,
-        }
-        for a in qs[start:end]
-    ]
-    return {
-        "count": total,
-        "next": f"?page={page + 1}&per_page={per_page}" if end < total else None,
-        "previous": f"?page={page - 1}&per_page={per_page}" if page > 1 else None,
-        "results": results,
-    }
+    q = q.strip()
+    if q:
+        qs = qs.filter(Q(agente_nombres__icontains=q) | Q(agente_apellidos__icontains=q))
+    return qs
 
 
-@api.get("/comisionado/{id}/", tags=["secretariador"])
+@router.get("/comisionado/{id}/", response=ComisionadoOut)
+@decorate_view(require_model_perm(Agente))
 def retrieve_comisionado(request, id: int):
-    require_auth(request)
-    from personalizador.models import Agente
-
-    a = Agente.objects.filter(id=id).first()
-    if not a:
-        return {"detail": "Not found"}, 404
-    return {
-        "id": a.id,
-        "nombres": a.agente_nombres,
-        "apellidos": a.agente_apellidos,
-        "dni": float(a.dni),
-        "oficina_id": a.oficina_id,
-    }
+    return get_object_or_404(Agente, id=id)
 
 
-@api.post("/comisionados/", tags=["secretariador"])
-def create_comisionado(request, payload: dict):
-    require_auth(request)
-    from personalizador.models import Agente
-
-    a = Agente.objects.create(
-        agente_nombres=payload.get("nombres", ""),
-        agente_apellidos=payload.get("apellidos", ""),
-        abreviatura=payload.get("abreviatura", "Sr."),
-        sexo_id=payload.get("sexo_id"),
-        oficina_id=payload.get("oficina_id"),
-        dni=payload.get("dni"),
-        cuil=payload.get("cuil"),
-    )
-    return {"id": a.id, "nombre_y_apellido": a.agente_nombreyapellido}
+@router.post("/comisionados/", response=ComisionadoOut)
+@decorate_view(require_model_perm(Agente))
+def create_comisionado(request, payload: ComisionadoCreate):
+    return Agente.objects.create(**payload.model_dump())
 
 
-@api.delete("/comisionado/{id}/", tags=["secretariador"])
+@router.delete("/comisionado/{id}/")
+@decorate_view(require_model_perm(Agente))
 def delete_comisionado(request, id: int):
-    require_auth(request)
-    from personalizador.models import Agente
-
     deleted, _ = Agente.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
 
 
 # --- Organigrama ---
-@api.get("/organigramas/", tags=["secretariador"])
+@router.get("/organigramas/", response=List[OrganigramaOut])
+@decorate_view(require_model_perm(Organigrama))
+@paginate(PerPagePagination)
 def list_organigramas(request):
-    user = require_auth(request)
-    from secretariador.models import Organigrama
-
-    qs = Organigrama.objects.all().order_by("id")
-    page = int(request.GET.get("page", 1))
-    per_page = min(int(request.GET.get("per_page", 50)), 200)
-    start = (page - 1) * per_page
-    end = start + per_page
-    total = qs.count()
-    results = [
-        {
-            "id": o.id,
-            "cargo": o.organigrama_cargo,
-            "escalafon": float(o.organigrama_escalafon),
-        }
-        for o in qs[start:end]
-    ]
-    return {
-        "count": total,
-        "next": f"?page={page + 1}&per_page={per_page}" if end < total else None,
-        "previous": f"?page={page - 1}&per_page={per_page}" if page > 1 else None,
-        "results": results,
-    }
+    return Organigrama.objects.all().order_by("id")
 
 
-@api.post("/organigramas/", tags=["secretariador"])
-def create_organigrama(request, payload: dict):
-    require_auth(request)
-    from secretariador.models import Organigrama
-
-    o = Organigrama.objects.create(
-        organigrama_cargo=payload.get("cargo", ""),
-        organigrama_escalafon=payload.get("escalafon", 2),
-    )
-    return {"id": o.id, "cargo": o.organigrama_cargo}
+@router.post("/organigramas/", response=OrganigramaOut)
+@decorate_view(require_model_perm(Organigrama))
+def create_organigrama(request, payload: OrganigramaCreate):
+    return Organigrama.objects.create(**payload.model_dump())
 
 
-@api.delete("/organigrama/{id}/", tags=["secretariador"])
+@router.delete("/organigrama/{id}/")
+@decorate_view(require_model_perm(Organigrama))
 def delete_organigrama(request, id: int):
-    require_auth(request)
-    from secretariador.models import Organigrama
-
     deleted, _ = Organigrama.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
 
 
 # --- Vehiculo ---
-@api.get("/vehiculos/", tags=["secretariador"])
+@router.get("/vehiculos/", response=List[VehiculoOut])
+@decorate_view(require_model_perm(Vehiculo))
+@paginate(PerPagePagination)
 def list_vehiculos(request):
-    user = require_auth(request)
-    from secretariador.models import Vehiculo
-
-    qs = Vehiculo.objects.select_related(
+    return Vehiculo.objects.select_related(
         "vehiculo_poliza_aseguradora", "vehiculo_titular_agente", "vehiculo_titular_empresa"
     ).all().order_by("id")
-    page = int(request.GET.get("page", 1))
-    per_page = min(int(request.GET.get("per_page", 50)), 200)
-    start = (page - 1) * per_page
-    end = start + per_page
-    total = qs.count()
-    results = [
-        {
-            "id": v.id,
-            "modelo": v.vehiculo_modelo,
-            "patente": v.vehiculo_patente,
-            "caracter": v.vehiculo_caracter,
-        }
-        for v in qs[start:end]
-    ]
-    return {
-        "count": total,
-        "next": f"?page={page + 1}&per_page={per_page}" if end < total else None,
-        "previous": f"?page={page - 1}&per_page={per_page}" if page > 1 else None,
-        "results": results,
-    }
 
 
-@api.post("/vehiculos/", tags=["secretariador"])
-def create_vehiculo(request, payload: dict):
-    require_auth(request)
-    from secretariador.models import Vehiculo
-
-    v = Vehiculo.objects.create(
-        vehiculo_modelo=payload.get("modelo", ""),
-        vehiculo_patente=payload.get("patente", ""),
-        vehiculo_caracter=payload.get("caracter", "O"),
-    )
-    return {"id": v.id, "modelo": v.vehiculo_modelo}
+@router.post("/vehiculos/", response=VehiculoOut)
+@decorate_view(require_model_perm(Vehiculo))
+def create_vehiculo(request, payload: VehiculoCreate):
+    return Vehiculo.objects.create(**payload.model_dump())
 
 
-@api.delete("/vehiculo/{id}/", tags=["secretariador"])
+@router.delete("/vehiculo/{id}/")
+@decorate_view(require_model_perm(Vehiculo))
 def delete_vehiculo(request, id: int):
-    require_auth(request)
-    from secretariador.models import Vehiculo
-
     deleted, _ = Vehiculo.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
 
 
 # --- Solicitud (complex model with M2M) ---
-@api.get("/solicitudes/", tags=["secretariador"])
-def list_solicitudes(request):
-    user = require_auth(request)
-    from secretariador.models import Solicitud
-
-    qs = Solicitud.objects.select_related(
-        "solicitud_solicitante", "solicitud_provincia"
-    ).all().order_by("-id")
-    provincia_id = request.GET.get("provincia", "")
-    if provincia_id:
-        qs = qs.filter(solicitud_provincia_id=provincia_id)
-    page = int(request.GET.get("page", 1))
-    per_page = min(int(request.GET.get("per_page", 50)), 200)
-    start = (page - 1) * per_page
-    end = start + per_page
-    total = qs.count()
-    results = [
-        {
-            "id": s.id,
-            "actuacion": s.solicitud_actuacion,
-            "solicitante_id": s.solicitud_solicitante_id,
-            "provincia_id": s.solicitud_provincia_id,
-            "fecha_desde": str(s.solicitud_fecha_desde),
-            "fecha_hasta": str(s.solicitud_fecha_hasta),
-        }
-        for s in qs[start:end]
-    ]
-    return {
-        "count": total,
-        "next": f"?page={page + 1}&per_page={per_page}" if end < total else None,
-        "previous": f"?page={page - 1}&per_page={per_page}" if page > 1 else None,
-        "results": results,
-    }
+@router.get("/solicitudes/", response=List[SolicitudOut])
+@decorate_view(require_model_perm(Solicitud))
+@paginate(PerPagePagination)
+def list_solicitudes(request, provincia: str = ""):
+    qs = Solicitud.objects.select_related("solicitud_solicitante", "solicitud_provincia").all().order_by("-id")
+    if provincia:
+        qs = qs.filter(solicitud_provincia_id=provincia)
+    return qs
 
 
-@api.get("/solicitud/{id}/", tags=["secretariador"])
+@router.get("/solicitud/{id}/", response=SolicitudOut)
+@decorate_view(require_model_perm(Solicitud))
 def retrieve_solicitud(request, id: int):
-    require_auth(request)
-    from secretariador.models import Solicitud
-
-    s = Solicitud.objects.filter(id=id).first()
-    if not s:
-        return {"detail": "Not found"}, 404
-    return {
-        "id": s.id,
-        "actuacion": s.solicitud_actuacion,
-        "solicitante_id": s.solicitud_solicitante_id,
-        "provincia_id": s.solicitud_provincia_id,
-        "fecha_desde": str(s.solicitud_fecha_desde),
-        "fecha_hasta": str(s.solicitud_fecha_hasta),
-    }
+    return get_object_or_404(Solicitud, id=id)
 
 
-@api.post("/solicitudes/", tags=["secretariador"])
-def create_solicitud(request, payload: dict):
-    require_auth(request)
-    from secretariador.models import Solicitud
-
-    s = Solicitud.objects.create(
-        solicitud_solicitante_id=payload.get("solicitante_id"),
-        solicitud_provincia_id=payload.get("provincia_id"),
-        solicitud_fecha_desde=payload.get("fecha_desde"),
-        solicitud_fecha_hasta=payload.get("fecha_hasta"),
-        solicitud_tareas=payload.get("tareas", ""),
-    )
-    return {"id": s.id, "actuacion": s.solicitud_actuacion}
+@router.post("/solicitudes/", response=SolicitudOut)
+@decorate_view(require_model_perm(Solicitud))
+def create_solicitud(request, payload: SolicitudCreate):
+    data = payload.model_dump()
+    localidad_ids = data.pop("localidad_ids", None) or []
+    s = Solicitud.objects.create(**data)
+    if localidad_ids:
+        s.solicitud_localidades.set(localidad_ids)
+    return s
 
 
-@api.delete("/solicitud/{id}/", tags=["secretariador"])
+@router.delete("/solicitud/{id}/")
+@decorate_view(require_model_perm(Solicitud))
 def delete_solicitud(request, id: int):
-    require_auth(request)
-    from secretariador.models import Solicitud
-
     deleted, _ = Solicitud.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
 
 
 # --- ComisionadoSolicitud ---
-@api.get("/comisionados-solicitudes/", tags=["secretariador"])
-@get_group_perms("dirgral_usuarios")
-def list_comisionados_solicitudes(request):
-    user = require_auth(request)
-    from secretariador.models import ComisionadoSolicitud
-
-    qs = ComisionadoSolicitud.objects.select_related(
-        "comisionadosolicitud_nombre"
-    ).all().order_by("-id")
-    solicitud_id = request.GET.get("solicitud", "")
-    if solicitud_id:
-        qs = qs.filter(comisionadosolicitud_foreign_id=solicitud_id)
-    page = int(request.GET.get("page", 1))
-    per_page = min(int(request.GET.get("per_page", 50)), 200)
-    start = (page - 1) * per_page
-    end = start + per_page
-    total = qs.count()
-    results = [
-        {
-            "id": cs.id,
-            "solicitud_id": cs.comisionadosolicitud_foreign_id,
-            "comisionado_id": cs.comisionadosolicitud_nombre_id,
-            "colaborador": cs.comisionadosolicitud_colaborador,
-            "chofer": cs.comisionadosolicitud_chofer,
-        }
-        for cs in qs[start:end]
-    ]
-    return {
-        "count": total,
-        "next": f"?page={page + 1}&per_page={per_page}" if end < total else None,
-        "previous": f"?page={page - 1}&per_page={per_page}" if page > 1 else None,
-        "results": results,
-    }
+@router.get("/comisionados-solicitudes/", response=List[ComisionadoSolicitudOut])
+@decorate_view(get_group_perms("dirgral_usuarios"), require_model_perm(ComisionadoSolicitud))
+@paginate(PerPagePagination)
+def list_comisionados_solicitudes(request, solicitud: str = ""):
+    qs = ComisionadoSolicitud.objects.select_related("comisionadosolicitud_nombre").all().order_by("-id")
+    if solicitud:
+        qs = qs.filter(comisionadosolicitud_foreign_id=solicitud)
+    return qs
 
 
-@api.post("/comisionados-solicitudes/", tags=["secretariador"])
-def create_comisionado_solicitud(request, payload: dict):
-    require_auth(request)
-    from secretariador.models import ComisionadoSolicitud
-
-    cs = ComisionadoSolicitud.objects.create(
-        comisionadosolicitud_foreign_id=payload.get("solicitud_id"),
-        comisionadosolicitud_nombre_id=payload.get("comisionado_id"),
-        comisionadosolicitud_colaborador=payload.get("colaborador", False),
-        comisionadosolicitud_chofer=payload.get("chofer", False),
-    )
-    return {"id": cs.id}
+@router.post("/comisionados-solicitudes/", response=ComisionadoSolicitudOut)
+@decorate_view(require_model_perm(ComisionadoSolicitud))
+def create_comisionado_solicitud(request, payload: ComisionadoSolicitudCreate):
+    return ComisionadoSolicitud.objects.create(**payload.model_dump())
 
 
-@api.delete("/comisionado-solicitud/{id}/", tags=["secretariador"])
+@router.delete("/comisionado-solicitud/{id}/")
+@decorate_view(require_model_perm(ComisionadoSolicitud))
 def delete_comisionado_solicitud(request, id: int):
-    require_auth(request)
-    from secretariador.models import ComisionadoSolicitud
-
     deleted, _ = ComisionadoSolicitud.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
 
 
 # --- Incorporacion ---
-@api.get("/incorporaciones/", tags=["secretariador"])
-def list_incorporaciones(request):
-    user = require_auth(request)
-    from secretariador.models import Incorporacion
-
-    qs = Incorporacion.objects.select_related(
-        "incorporacion_solicitud", "incorporacion_solicitante"
-    ).all().order_by("-id")
-    solicitud_id = request.GET.get("solicitud", "")
-    if solicitud_id:
-        qs = qs.filter(incorporacion_solicitud_id=solicitud_id)
-    page = int(request.GET.get("page", 1))
-    per_page = min(int(request.GET.get("per_page", 50)), 200)
-    start = (page - 1) * per_page
-    end = start + per_page
-    total = qs.count()
-    results = [
-        {
-            "id": i.id,
-            "solicitud_id": i.incorporacion_solicitud_id,
-            "actuacion": i.incorporacion_actuacion,
-        }
-        for i in qs[start:end]
-    ]
-    return {
-        "count": total,
-        "next": f"?page={page + 1}&per_page={per_page}" if end < total else None,
-        "previous": f"?page={page - 1}&per_page={per_page}" if page > 1 else None,
-        "results": results,
-    }
+@router.get("/incorporaciones/", response=List[IncorporacionOut])
+@decorate_view(require_model_perm(Incorporacion))
+@paginate(PerPagePagination)
+def list_incorporaciones(request, solicitud: str = ""):
+    qs = Incorporacion.objects.select_related("incorporacion_solicitud", "incorporacion_solicitante").all().order_by("-id")
+    if solicitud:
+        qs = qs.filter(incorporacion_solicitud_id=solicitud)
+    return qs
 
 
-@api.post("/incorporaciones/", tags=["secretariador"])
-def create_incorporacion(request, payload: dict):
-    require_auth(request)
-    from secretariador.models import Incorporacion
-
-    i = Incorporacion.objects.create(
-        incorporacion_solicitud_id=payload.get("solicitud_id"),
-        incorporacion_solicitante_id=payload.get("solicitante_id"),
-    )
-    return {"id": i.id}
+@router.post("/incorporaciones/", response=IncorporacionOut)
+@decorate_view(require_model_perm(Incorporacion))
+def create_incorporacion(request, payload: IncorporacionCreate):
+    return Incorporacion.objects.create(**payload.model_dump())
 
 
-@api.delete("/incorporacion/{id}/", tags=["secretariador"])
+@router.delete("/incorporacion/{id}/")
+@decorate_view(require_model_perm(Incorporacion))
 def delete_incorporacion(request, id: int):
-    require_auth(request)
-    from secretariador.models import Incorporacion
-
     deleted, _ = Incorporacion.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
-
