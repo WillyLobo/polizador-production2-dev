@@ -28,7 +28,7 @@
 [+] Se deben poder crear certificados que se aprueban con resolucion o contrato pero que no llevan foja de medicion por ser hechos consumados.
 
 # Fojas y Planes de Trabajo
-[ ] Agregar listado de fojas y planes de trabajo con DataTables
+[!] Agregar listado de fojas y planes de trabajo con DataTables
 [?] Crear Home para la inspección donde muestren las obras que no han sido medidas aún
 [+] Crear funciones que generen acumulado total en las fojas de medicion
 [+] Crear vista que devuelva las obras donde el usuario es inspector
@@ -59,25 +59,25 @@
 [+] Create report views.
     [+] Filter by agent.
 
-[ ] Add field localidad_distancia to Localidad model(carga app).
-[ ] Add route distance to Localidades(from Capital city, Resistencia).
-[ ] Add save method to set Comisionados into Solicitud database field.
-[ ] Add ajax to validate if instrumentolegalresoluciones is not duplicated before filling it in the form.
-[ ] Add field instrumentolegalresoluciones_actuacion to InstrumentosLegalesResoluciones model, generated from instrumentolegalresoluciones_descripcion split.
+[!] Add field localidad_distancia to Localidad model(carga app).
+[!] Add route distance to Localidades(from Capital city, Resistencia).
+[!] Add save method to set Comisionados into Solicitud database field.
+[!] Add ajax to validate if instrumentolegalresoluciones is not duplicated before filling it in the form.
+[!] Add field instrumentolegalresoluciones_actuacion to InstrumentosLegalesResoluciones model, generated from instrumentolegalresoluciones_descripcion split.
 
 # Docx Templates
 [ ] Add a way to update template.docx(ej: upload and overwrite the original file).
 
 # Web Templates
-[ ] Add a right-side frame in form templates to provide help-text.
+[!] Add a right-side frame in form templates to provide help-text.
 
 [+] Add more advanced logging capability.
 
 # Experimental features to add/check:
 
 # Fix Bugs:
-[ ] Add field incorporacion_solicitud_jurisdiccion that is currently hardcoded.
-[ ] Fix unique constraint in solicitud and solicitud incorporacion (it should check for actuacion_jurisdiccion, actuacion_numero, actuacion_ano in the constraint).
+[1] Add field incorporacion_solicitud_jurisdiccion that is currently hardcoded.
+[1] Fix unique constraint in solicitud and solicitud incorporacion (it should check for actuacion_jurisdiccion, actuacion_numero, actuacion_ano in the constraint).
 
 # DONE:
 [+] FIXED: Model will allow to insert comisionados into a previously approved executive order.
@@ -160,7 +160,7 @@
 # ------------------------------------------- #
 
 # Models:
-[ ] Create database models based on RRHH requests.
+[+] Create database models based on RRHH requests.
 
 # ------------------------------------------- #
 # Legend:                                     #
