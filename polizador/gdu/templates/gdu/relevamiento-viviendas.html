@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}<title>{{ relevamiento.nombre }} - Viviendas</title>{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <h4 class="mb-3">{{ relevamiento.nombre }} — Viviendas</h4>
+  <table class="table table-sm table-striped align-middle">
+    <thead>
+      <tr>
+        <th>Vivienda</th>
+        <th>Adjudicatario/a</th>
+        <th>Barrio</th>
+        <th>Mz / Parc</th>
+        <th>Estado</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for v in viviendas %}
+      <tr>
+        <td>{{ v.vivienda }}</td>
+        <td>{{ v.properties.adjudicatario|default:"-" }}</td>
+        <td>{{ v.properties.barrio|default:"-" }}</td>
+        <td>{{ v.properties.mz|default:"-" }} / {{ v.properties.parc|default:"-" }}</td>
+        <td>
+          {% if v.relevado %}
+            <span class="badge bg-success">Relevada</span>
+          {% else %}
+            <span class="badge bg-secondary">Pendiente</span>
+          {% endif %}
+        </td>
+        <td>
+          <a href="{% url 'gdu:encuesta_form' relevamiento.id v.vivienda %}" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-clipboard-check me-1"></i>Encuesta
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-center text-muted">No hay viviendas cargadas para este relevamiento.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -13,6 +13,7 @@ urlpatterns = [
     path("obra/", include("carga.urls")),
     path("viaticos/", include("secretariador.urls")),
     path("personal/)", include("personalizador.urls")),
+    path("gdu/", include("gdu.urls")),
     #path("api/", include("api.urls")),
     path("v1/api/", include(("api.urls", "api"), namespace="api-1.0")),
     path('admin/', admin.site.urls),

@@ -1,0 +1,454 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}<title>GDU - Visor de Mapa</title>{% endblock %}
+
+{% block style %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@9/ol.css">
+<style>
+  #gdu-mapa-wrap { display: flex; gap: .5rem; align-items: flex-start; }
+  #gdu-map { flex: 1 1 auto; height: 75vh; min-height: 420px; border: 1px solid var(--bs-border-color); }
+  #gdu-panel { width: 300px; flex: 0 0 300px; max-height: 75vh; overflow-y: auto; }
+  #gdu-panel .card-body dt { font-size: .75rem; color: var(--bs-secondary-color); }
+  #gdu-panel .card-body dd { font-size: .85rem; margin-bottom: .4rem; }
+  .gdu-medida-tooltip {
+    background: rgba(0,0,0,.75);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: .75rem;
+    white-space: nowrap;
+  }
+  .gdu-medida-tooltip-final {
+    background: rgba(255,193,7,.9);
+    color: #000;
+  }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/ol@9/dist/ol.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const barriosUrl = "{% url 'gdu:geojson_barrios' %}";
+  const viviendasUrl = "{% url 'gdu:geojson_viviendas' %}";
+  const planoUrl = "{% url 'gdu:plano' %}";
+  const printUrl = "{% url 'gdu:imprimir' %}";
+  const consultar3450Url = "{% url 'gdu:consultar_3450' %}";
+  const actualizarNroAdjBaseUrl = "{% url 'gdu:actualizar_nro_adjudicatario' uf_id=0 %}";
+  const puedeEditarNroAdjudicatario = {{ perms.gdu.editar_nro_adjudicatario|yesno:"true,false" }};
+  const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
+
+  function bboxSource(baseUrl) {
+    return new ol.source.Vector({
+      format: new ol.format.GeoJSON(),
+      strategy: ol.loadingstrategy.bbox,
+      url: function (extent) {
+        return baseUrl + "?bbox=" + extent.join(",");
+      },
+    });
+  }
+
+  const barriosSource = bboxSource(barriosUrl);
+  const viviendasSource = bboxSource(viviendasUrl);
+
+  const barriosLayer = new ol.layer.Vector({
+    source: barriosSource,
+    style: new ol.style.Style({
+      stroke: new ol.style.Stroke({ color: "#0d6efd", width: 2 }),
+      fill: new ol.style.Fill({ color: "rgba(13,110,253,0.05)" }),
+    }),
+  });
+
+  const viviendasLayer = new ol.layer.Vector({
+    source: viviendasSource,
+    style: new ol.style.Style({
+      stroke: new ol.style.Stroke({ color: "#dc3545", width: 1 }),
+      fill: new ol.style.Fill({ color: "rgba(220,53,69,0.35)" }),
+    }),
+    minZoom: 13,
+  });
+
+  // capa de trabajo para las mediciones (distancia/área), no se persiste en el servidor
+  const measureSource = new ol.source.Vector();
+  const measureLayer = new ol.layer.Vector({
+    source: measureSource,
+    style: new ol.style.Style({
+      fill: new ol.style.Fill({ color: "rgba(255,193,7,0.2)" }),
+      stroke: new ol.style.Stroke({ color: "#ffc107", width: 2, lineDash: [10, 10] }),
+      image: new ol.style.Circle({
+        radius: 5,
+        stroke: new ol.style.Stroke({ color: "#ffc107" }),
+        fill: new ol.style.Fill({ color: "#fff" }),
+      }),
+    }),
+  });
+
+  // Centro aproximado: extensión de los barrios cargados (provincia del Chaco)
+  const centro = ol.proj.fromLonLat([-60.9, -26.15]);
+
+  const map = new ol.Map({
+    target: "gdu-map",
+    layers: [
+      new ol.layer.Tile({ source: new ol.source.OSM() }),
+      barriosLayer,
+      viviendasLayer,
+      measureLayer,
+    ],
+    view: new ol.View({ center: centro, zoom: 7 }),
+  });
+
+  document.getElementById("toggle-barrios").addEventListener("change", (e) => {
+    barriosLayer.setVisible(e.target.checked);
+  });
+  document.getElementById("toggle-viviendas").addEventListener("change", (e) => {
+    viviendasLayer.setVisible(e.target.checked);
+  });
+
+  const info = document.getElementById("gdu-map-info");
+  function actualizarInfoZoom() {
+    const z = map.getView().getZoom();
+    info.textContent = "zoom " + z.toFixed(1) + (z < 13 ? " (acercá para ver viviendas)" : "");
+  }
+  map.getView().on("change:resolution", actualizarInfoZoom);
+  actualizarInfoZoom();
+
+  // --- Selección (simple por click, múltiple con shift+click o Ctrl+arrastre) ---
+
+  const selectedFeatures = new ol.Collection();
+
+  const select = new ol.interaction.Select({
+    features: selectedFeatures,
+    layers: [barriosLayer, viviendasLayer],
+  });
+  map.addInteraction(select);
+
+  const dragBox = new ol.interaction.DragBox({
+    condition: ol.events.condition.platformModifierKeyOnly,
+  });
+  map.addInteraction(dragBox);
+
+  dragBox.on("boxend", function () {
+    const extent = dragBox.getGeometry().getExtent();
+    [barriosSource, viviendasSource].forEach(function (source) {
+      source.forEachFeatureIntersectingExtent(extent, function (feature) {
+        if (selectedFeatures.getArray().indexOf(feature) === -1) {
+          selectedFeatures.push(feature);
+        }
+      });
+    });
+  });
+
+  const panelBody = document.getElementById("gdu-panel-body");
+
+  function renderPanel() {
+    const features = selectedFeatures.getArray();
+    if (!features.length) {
+      panelBody.innerHTML = '<p class="text-muted small mb-0">Hacé click en un barrio o vivienda del mapa. Shift+click o Ctrl+arrastre para seleccionar varios.</p>';
+      return;
+    }
+    let html = `<p class="small text-muted mb-2">${features.length} elemento(s) seleccionado(s)</p>`;
+    features.forEach(function (feature, idx) {
+      const props = feature.getProperties();
+      const esVivienda = viviendasLayer.getSource().getFeatures().indexOf(feature) !== -1;
+      html += `<div class="border rounded p-2 mb-2" data-idx="${idx}"><dl class="mb-0">`;
+      for (const key in props) {
+        if (key === "geometry" || key === "planos") continue;
+        html += `<dt>${key}</dt><dd>${props[key] !== null && props[key] !== undefined ? props[key] : "-"}</dd>`;
+      }
+      html += "</dl>";
+      if (props.planos) {
+        html += '<div class="mt-1">';
+        props.planos.split(",").map(function (p) { return p.trim(); }).filter(Boolean).forEach(function (ref) {
+          const url = planoUrl + "?plano=" + encodeURIComponent(ref);
+          html += `<a href="${url}" target="_blank" class="badge text-bg-secondary text-decoration-none me-1 mb-1">${ref}</a>`;
+        });
+        html += "</div>";
+      }
+      if (esVivienda) {
+        const nroActual = props.nro_adjudicatario !== null && props.nro_adjudicatario !== undefined ? props.nro_adjudicatario : "";
+        html += `
+          <div class="input-group input-group-sm mt-2">
+            <input type="text" class="form-control" data-role="nro-3450" placeholder="Nº adjudicatario" value="${nroActual}">
+            <button class="btn btn-outline-secondary" type="button" data-action="buscar-3450">Buscar 3450</button>
+          </div>
+          <div class="small mt-1" data-role="resultado-3450"></div>
+        `;
+        if (puedeEditarNroAdjudicatario) {
+          html += `
+            <div class="input-group input-group-sm mt-2">
+              <input type="text" class="form-control" data-role="nro-editar" value="${nroActual}">
+              <button class="btn btn-outline-primary" type="button" data-action="guardar-nro-adjudicatario">Guardar Nº adjudicatario</button>
+            </div>
+            <div class="small mt-1" data-role="resultado-editar"></div>
+          `;
+        }
+      }
+      html += "</div>";
+    });
+    panelBody.innerHTML = html;
+  }
+
+  selectedFeatures.on("add", renderPanel);
+  selectedFeatures.on("remove", renderPanel);
+  renderPanel();
+
+  // --- Búsqueda 3450 y edición de Nº de adjudicatario (delegado, sobrevive a los re-render) ---
+
+  panelBody.addEventListener("click", function (evt) {
+    const boton = evt.target.closest("[data-action]");
+    if (!boton) return;
+    const contenedor = boton.closest("[data-idx]");
+    const idx = Number(contenedor.dataset.idx);
+    const feature = selectedFeatures.getArray()[idx];
+    if (!feature) return;
+
+    if (boton.dataset.action === "buscar-3450") {
+      const input = contenedor.querySelector('[data-role="nro-3450"]');
+      const resultado = contenedor.querySelector('[data-role="resultado-3450"]');
+      const nro = input.value.trim();
+      if (!nro) {
+        return;
+      }
+      resultado.textContent = "Consultando...";
+      const body = new URLSearchParams();
+      body.set("nro_adjudicatario", nro);
+      fetch(consultar3450Url, {
+        method: "POST",
+        headers: { "X-CSRFToken": csrftoken },
+        body: body,
+      })
+        .then(function (resp) {
+          return resp.json().then(function (data) { return { ok: resp.ok, data: data }; });
+        })
+        .then(function (r) {
+          if (!r.ok) {
+            resultado.innerHTML = `<span class="text-danger">${r.data.error || r.data.errors || "Error consultando 3450"}</span>`;
+            return;
+          }
+          resultado.innerHTML = "<dl class=\"mb-0\">" + Object.entries(r.data).map(function (kv) {
+            return `<dt>${kv[0]}</dt><dd>${kv[1] !== null && kv[1] !== undefined ? kv[1] : "-"}</dd>`;
+          }).join("") + "</dl>";
+        })
+        .catch(function () {
+          resultado.innerHTML = '<span class="text-danger">Error de red consultando 3450</span>';
+        });
+    }
+
+    if (boton.dataset.action === "guardar-nro-adjudicatario") {
+      const input = contenedor.querySelector('[data-role="nro-editar"]');
+      const resultado = contenedor.querySelector('[data-role="resultado-editar"]');
+      const nro = input.value.trim();
+      const url = actualizarNroAdjBaseUrl.replace("/0/", "/" + feature.get("id") + "/");
+      resultado.textContent = "Guardando...";
+      const body = new URLSearchParams();
+      body.set("nro_adjudicatario", nro);
+      fetch(url, {
+        method: "POST",
+        headers: { "X-CSRFToken": csrftoken },
+        body: body,
+      })
+        .then(function (resp) {
+          return resp.json().then(function (data) { return { ok: resp.ok, data: data }; });
+        })
+        .then(function (r) {
+          if (!r.ok) {
+            resultado.innerHTML = `<span class="text-danger">${r.data.errors || "Error guardando"}</span>`;
+            return;
+          }
+          feature.set("nro_adjudicatario", r.data.nro_adjudicatario);
+          renderPanel();
+        })
+        .catch(function () {
+          resultado.innerHTML = '<span class="text-danger">Error de red guardando</span>';
+        });
+    }
+  });
+
+  document.getElementById("btn-limpiar-seleccion").addEventListener("click", function () {
+    selectedFeatures.clear();
+  });
+
+  document.getElementById("btn-imprimir-ficha").addEventListener("click", function () {
+    const features = selectedFeatures.getArray();
+    if (!features.length) {
+      alert("Seleccioná al menos un elemento del mapa para imprimir.");
+      return;
+    }
+    const datos = features.map(function (feature) {
+      const props = Object.assign({}, feature.getProperties());
+      delete props.geometry;
+      return props;
+    });
+    // se abre la pestaña ya, en el mismo gesto del click, para no chocar con el
+    // bloqueador de popups del navegador cuando recién se abre tras el fetch
+    const ventana = window.open("", "_blank");
+    fetch(printUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "X-CSRFToken": csrftoken },
+      body: JSON.stringify({ template: "Ficha GDU", data: datos }),
+    })
+      .then(function (resp) {
+        if (!resp.ok) {
+          throw new Error("No se pudo generar la ficha (HTTP " + resp.status + ")");
+        }
+        return resp.blob();
+      })
+      .then(function (blob) {
+        const url = URL.createObjectURL(blob);
+        if (ventana) {
+          ventana.location.href = url;
+        } else {
+          window.open(url, "_blank");
+        }
+      })
+      .catch(function (err) {
+        if (ventana) {
+          ventana.close();
+        }
+        alert(err.message);
+      });
+  });
+
+  // --- Medición de distancia y área ---
+
+  let measureDraw = null;
+  let measureTooltips = [];
+
+  function crearTooltipMedida() {
+    const el = document.createElement("div");
+    el.className = "gdu-medida-tooltip";
+    const overlay = new ol.Overlay({
+      element: el,
+      offset: [0, -10],
+      positioning: "bottom-center",
+      stopEvent: false,
+    });
+    map.addOverlay(overlay);
+    measureTooltips.push(overlay);
+    return { el: el, overlay: overlay };
+  }
+
+  function formatearMedida(geom) {
+    if (geom instanceof ol.geom.Polygon) {
+      const area = ol.sphere.getArea(geom, { projection: map.getView().getProjection() });
+      return area > 10000 ? (area / 1e6).toFixed(2) + " km²" : area.toFixed(2) + " m²";
+    }
+    if (geom instanceof ol.geom.LineString) {
+      const length = ol.sphere.getLength(geom, { projection: map.getView().getProjection() });
+      return length > 1000 ? (length / 1000).toFixed(2) + " km" : length.toFixed(2) + " m";
+    }
+    return "";
+  }
+
+  function activarMedicion(tipo) {
+    if (measureDraw) {
+      map.removeInteraction(measureDraw);
+      measureDraw = null;
+    }
+    // mientras se mide, se desactiva la selección para que los clicks no elijan features
+    select.setActive(tipo === null);
+    dragBox.setActive(tipo === null);
+    if (!tipo) {
+      return;
+    }
+
+    measureDraw = new ol.interaction.Draw({
+      source: measureSource,
+      type: tipo === "distancia" ? "LineString" : "Polygon",
+    });
+    map.addInteraction(measureDraw);
+
+    measureDraw.on("drawstart", function (evt) {
+      const tooltip = crearTooltipMedida();
+      const geom = evt.feature.getGeometry();
+      geom.on("change", function (e) {
+        const g = e.target;
+        const output = formatearMedida(g);
+        const coord = g instanceof ol.geom.Polygon
+          ? g.getInteriorPoint().getCoordinates()
+          : g.getLastCoordinate();
+        tooltip.el.innerHTML = output;
+        tooltip.overlay.setPosition(coord);
+      });
+    });
+
+    measureDraw.on("drawend", function () {
+      const ultimo = measureTooltips[measureTooltips.length - 1];
+      if (ultimo) {
+        ultimo.el.className = "gdu-medida-tooltip gdu-medida-tooltip-final";
+        ultimo.overlay.setOffset([0, -7]);
+      }
+    });
+  }
+
+  document.getElementById("modo-select").addEventListener("change", function () {
+    activarMedicion(null);
+  });
+  document.getElementById("modo-distancia").addEventListener("change", function () {
+    activarMedicion("distancia");
+  });
+  document.getElementById("modo-area").addEventListener("change", function () {
+    activarMedicion("area");
+  });
+  document.getElementById("btn-borrar-medicion").addEventListener("click", function () {
+    measureSource.clear();
+    measureTooltips.forEach(function (t) {
+      map.removeOverlay(t.overlay);
+    });
+    measureTooltips = [];
+  });
+});
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  {% csrf_token %}
+  <h4 class="mb-3">Visor GDU</h4>
+
+  <div class="mb-2 d-flex gap-3 align-items-center flex-wrap">
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" id="toggle-barrios" checked>
+      <label class="form-check-label" for="toggle-barrios">Barrios</label>
+    </div>
+    <div class="form-check form-switch">
+      <input class="form-check-input" type="checkbox" id="toggle-viviendas" checked>
+      <label class="form-check-label" for="toggle-viviendas">Viviendas</label>
+    </div>
+
+    <div class="btn-group btn-group-sm" role="group" aria-label="Modo del mapa">
+      <input type="radio" class="btn-check" name="gdu-modo" id="modo-select" autocomplete="off" checked>
+      <label class="btn btn-outline-secondary" for="modo-select"><i class="bi bi-cursor"></i> Seleccionar</label>
+
+      <input type="radio" class="btn-check" name="gdu-modo" id="modo-distancia" autocomplete="off">
+      <label class="btn btn-outline-secondary" for="modo-distancia"><i class="bi bi-rulers"></i> Distancia</label>
+
+      <input type="radio" class="btn-check" name="gdu-modo" id="modo-area" autocomplete="off">
+      <label class="btn btn-outline-secondary" for="modo-area"><i class="bi bi-bounding-box"></i> Área</label>
+    </div>
+    <button type="button" class="btn btn-outline-danger btn-sm" id="btn-borrar-medicion">
+      <i class="bi bi-eraser"></i> Borrar mediciones
+    </button>
+    <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-limpiar-seleccion">
+      <i class="bi bi-x-circle"></i> Limpiar selección
+    </button>
+    <button type="button" class="btn btn-outline-primary btn-sm" id="btn-imprimir-ficha">
+      <i class="bi bi-printer"></i> Imprimir ficha
+    </button>
+
+    <span id="gdu-map-info" class="text-muted small ms-auto"></span>
+  </div>
+  <p class="text-muted small mb-2">Shift+click selecciona varios elementos de a uno; Ctrl+arrastre selecciona por rectángulo.</p>
+
+  <div id="gdu-mapa-wrap">
+    <div id="gdu-map"></div>
+    <div id="gdu-panel">
+      <div class="card">
+        <div class="card-header py-2 bg-light fw-semibold small">Elementos seleccionados</div>
+        <div class="card-body" id="gdu-panel-body">
+          <p class="text-muted small mb-0">Hacé click en un barrio o vivienda del mapa.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

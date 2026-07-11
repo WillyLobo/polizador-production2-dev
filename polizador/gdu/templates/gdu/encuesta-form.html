@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}<title>Encuesta - Vivienda {{ vivienda.vivienda }}</title>{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <h4 class="mb-1">Encuesta — {{ relevamiento.nombre }}</h4>
+  <p class="text-muted mb-3">
+    Vivienda {{ vivienda.vivienda }} — {{ vivienda.properties.adjudicatario|default:"-" }}
+    ({{ vivienda.properties.barrio|default:"-" }}, Mz {{ vivienda.properties.mz|default:"-" }} /
+    Parc {{ vivienda.properties.parc|default:"-" }})
+  </p>
+
+  {% if encuestas_previas %}
+  <div class="alert alert-info small">
+    Esta vivienda ya tiene {{ encuestas_previas|length }} encuesta(s) cargada(s) anteriormente
+    (última: {{ encuestas_previas.0.tstamp }}). Guardar este formulario agrega una encuesta nueva,
+    no reemplaza las anteriores.
+  </div>
+  {% endif %}
+
+  {% if form.errors %}
+  <div class="alert alert-danger small">Revisá los campos marcados, hay errores de validación.</div>
+  {% endif %}
+
+  <form method="post" id="mainForm">
+    {% csrf_token %}
+    {% for seccion in secciones %}
+    <div class="card mb-3">
+      <div class="card-header py-2 bg-light fw-semibold small">{{ seccion.nombre }}</div>
+      <div class="card-body p-2">
+        {% for p in seccion.preguntas %}
+        <div class="form-group mb-2"
+             data-variable="{{ p.meta.variable }}"
+             data-tipo-pregunta="{{ p.meta.tipo_pregunta }}"
+             data-visible-rule="{{ p.meta.visible|default:'' }}">
+          {% if p.campo %}
+            {{ p.campo.as_field_group }}
+          {% else %}
+            <div class="row">
+              <div class="col-md-6">{{ p.campo_anios.as_field_group }}</div>
+              <div class="col-md-6">{{ p.campo_meses.as_field_group }}</div>
+            </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </form>
+</div>
+{% endblock %}
+
+{% block actions %}
+  {% url 'gdu:relevamiento_viviendas' relevamiento.id as volver_url %}
+  {% include "partials/form-actions.html" with volver_url=volver_url %}
+{% endblock %}
+
+{% block style %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById("mainForm");
+  if (!form) return;
+  const grupos = Array.from(form.querySelectorAll("[data-visible-rule]")).filter(
+    (g) => g.dataset.visibleRule
+  );
+  if (!grupos.length) return;
+
+  function valorDeCampo(variable, tipoPregunta) {
+    const checkboxes = form.querySelectorAll(`[name="${variable}"]`);
+    if (!checkboxes.length) return null;
+    if (checkboxes.length > 1 && checkboxes[0].type === "checkbox") {
+      return Array.from(checkboxes).filter((c) => c.checked).map((c) => c.value);
+    }
+    const campo = checkboxes[0];
+    const valor = campo.value;
+    // Tipo 5 = SI/NO: convertir "true"/"false" a booleano real para comparaciones estrictas (=== true)
+    if (tipoPregunta === "5") {
+      return valor === "true" ? true : valor === "false" ? false : null;
+    }
+    return valor;
+  }
+
+  function construirEstado() {
+    const e = {};
+    form.querySelectorAll("[data-variable]").forEach((g) => {
+      e[g.dataset.variable] = valorDeCampo(g.dataset.variable, g.dataset.tipoPregunta);
+    });
+    return e;
+  }
+
+  function actualizarVisibilidad() {
+    const e = construirEstado();
+    grupos.forEach((g) => {
+      try {
+        const regla = new Function("return " + g.dataset.visibleRule)();
+        g.hidden = !regla(e);
+      } catch (err) {
+        // regla mal formada: no ocultar el campo, solo avisar en consola
+        console.warn("Regla 'visible' inválida para", g.dataset.variable, err);
+      }
+    });
+  }
+
+  form.addEventListener("change", actualizarVisibilidad);
+  form.addEventListener("input", actualizarVisibilidad);
+  actualizarVisibilidad();
+});
+</script>
+{% endblock %}

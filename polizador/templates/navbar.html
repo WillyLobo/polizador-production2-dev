@@ -205,6 +205,22 @@
           </div>
         </li>
         {% endif %}
+        <!-- GDU (catastro / relevamientos) -->
+        {% if request.user.is_superuser or perms.gdu.ver_viviendas or perms.gdu.ver_barrios or perms.gdu.view_relevamiento %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-pin-map me-1"></i>GDU
+          </a>
+          <ul class="dropdown-menu dropdown-menu-lg-start">
+            {% if request.user.is_superuser or perms.gdu.ver_viviendas or perms.gdu.ver_barrios %}
+            <li><a class="dropdown-item" href="{% url "gdu:mapa" %}"><i class="bi bi-map me-1"></i>Mapa</a></li>
+            {% endif %}
+            {% if request.user.is_superuser or perms.gdu.view_relevamiento %}
+            <li><a class="dropdown-item" href="{% url "gdu:relevamientos_list" %}"><i class="bi bi-list-ul me-1"></i>Relevamientos</a></li>
+            {% endif %}
+          </ul>
+        </li>
+        {% endif %}
         <!-- ADMIN MENU -->
         {% if request.user.is_superuser %}
         <li class="nav-item dropdown">

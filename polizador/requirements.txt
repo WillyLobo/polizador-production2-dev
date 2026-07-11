@@ -24,6 +24,7 @@ diff-match-patch==20241021
 Django==6.0.6
 django-ajax-datatable==4.5.0
 django-allauth==65.18.0
+django-auth-ldap==5.3.0
 django-anymail==15.0
 django-appconf==1.2.0
 django-debug-toolbar==6.3.0
@@ -104,16 +105,19 @@ pydantic==2.13.4
 pydantic_core==2.46.4
 pydata-google-auth==1.9.1
 Pygments==2.20.0
+pyspnego==0.12.1
 pytest==9.0.3
 pytest-cov==7.1.0
 pytest-django==4.12.0
 pytest-xdist==3.8.0
 python-dateutil==2.9.0.post0
 python-docx==1.2.0
+python-ldap==3.4.7
 python-magic==0.4.27
 pytz==2026.2
 PyYAML==6.0.3
 redis==8.0.0
+reportlab==5.0.0
 requests==2.34.2
 requests-oauthlib==2.0.0
 rich==15.0.0
@@ -122,6 +126,7 @@ sentry-sdk==2.61.1
 setuptools==82.0.1
 shellingham==1.5.4
 six==1.17.0
+smbprotocol==1.17.0
 sortedcontainers==2.4.0
 soupsieve==2.8.4
 sqlparse==0.5.5

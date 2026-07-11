@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}<title>GDU - Relevamientos</title>{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <h4 class="mb-3">Relevamientos</h4>
+  <table class="table table-sm table-striped align-middle">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Fecha</th>
+        <th>Viviendas</th>
+        <th>Relevadas</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in relevamientos %}
+      <tr>
+        <td>{{ r.nombre }}</td>
+        <td>{{ r.fecha }}</td>
+        <td>{{ r.total_viviendas }}</td>
+        <td>{{ r.total_relevadas }} / {{ r.total_viviendas }}</td>
+        <td>
+          <a href="{% url 'gdu:relevamiento_viviendas' r.id %}" class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-list-ul me-1"></i>Ver viviendas
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" class="text-center text-muted">No hay relevamientos cargados.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
