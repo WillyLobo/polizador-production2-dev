@@ -1,5 +1,4 @@
 from django.core.management.base import BaseCommand, CommandError
-from secretariador.models import Solicitud
 from personalizador.models import Agente
 import sqlite3
 import time
@@ -25,14 +24,29 @@ import time
 #     def ERROR_OUTPUT(self, text: str) -> str: ...
 
 class Command(BaseCommand):
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--dry-run",
+            action="store_true",
+            help="No guarda cambios en la base de datos, solo muestra lo que haría.",
+        )
+
     def handle(self, *args, **kwargs):
         """
         Checks if solicitud.solicitud_actuacion is correct.
         """
+        verbosity = kwargs.get("verbosity", 1)
+        dry_run = kwargs.get("dry_run", False)
         sqliteConnection = sqlite3.connect("/home/willy/dev/padron/padron/db.sqlite3")
         cursor = sqliteConnection.cursor()
         agente_padron = {}
+        total = 0
+        coincidentes = 0
+        actualizados = 0
+        no_encontrados = 0
+        discrepancias = []
         for agente in Agente.objects.all():
+            total += 1
             query = f'SELECT "listado_padron"."id", "listado_padron"."DISTRITO", "listado_padron"."TX_TIPO_EJEMPLAR", "listado_padron"."NU_MATRICULA", "listado_padron"."TX_APELLIDO", "listado_padron"."TX_NOMBRE", "listado_padron"."TX_CLASE", "listado_padron"."TX_GENERO", "listado_padron"."TX_DOMICILIO", "listado_padron"."TX_SECCION", "listado_padron"."TX_CIRCUITO", "listado_padron"."TX_LOCALIDAD", "listado_padron"."TX_CODIGO_POSTAL", "listado_padron"."TX_TIPO_NACIONALIDAD", "listado_padron"."NUMERO_MESA", "listado_padron"."NU_ORDEN_MESA" FROM "listado_padron" WHERE "listado_padron"."NU_MATRICULA" = {agente.dni}'
             cursor.execute(query)
             result = cursor.fetchall()
@@ -51,23 +65,53 @@ class Command(BaseCommand):
                 dni_carga = agente.dni
 
                 if f"{agente_padron['apellido']}, {agente_padron['nombres']}" != f"{agente.agente_apellidos}, {agente.agente_nombres}":
-                    self.stdout.write(f"{self.style.NOTICE('CARGA Y PADRON NO COINCIDEN:')}")
-                    self.stdout.write(f"    Padron: {nombreyapellido_padron} - DNI: {dni_padron}")
-                    self.stdout.write(f"    Carga: {nombreyapellido_carga} - DNI: {dni_carga}")
+                    discrepancias.append({
+                        "dni": dni_carga,
+                        "carga": nombreyapellido_carga,
+                        "padron": nombreyapellido_padron,
+                    })
+                    if verbosity >= 2:
+                        self.stdout.write(f"{self.style.NOTICE('CARGA Y PADRON NO COINCIDEN:')}")
+                        self.stdout.write(f"    Padron: {nombreyapellido_padron} - DNI: {dni_padron}")
+                        self.stdout.write(f"    Carga: {nombreyapellido_carga} - DNI: {dni_carga}")
                     agente.agente_apellidos=agente_padron["apellido"]
                     agente.agente_nombres=agente_padron["nombres"]
                     agente.agente_verificado_contra_padron=True
-                    self.stdout.write(f"{self.style.WARNING('Actualizando nombre y apellidos...')}")
-                    agente.save()
-                    time.sleep(0.01)
-                    self.stdout.write(f"{self.style.SUCCESS('OK.')}")
-                    self.stdout.write(f"{'----------'*8}")
+                    if verbosity >= 2:
+                        if dry_run:
+                            self.stdout.write(f"{self.style.WARNING('[DRY-RUN] Se actualizaría nombre y apellidos...')}")
+                        else:
+                            self.stdout.write(f"{self.style.WARNING('Actualizando nombre y apellidos...')}")
+                    if not dry_run:
+                        agente.save()
+                        time.sleep(0.01)
+                    actualizados += 1
+                    if verbosity >= 2:
+                        self.stdout.write(f"{self.style.SUCCESS('OK.')}")
+                        self.stdout.write(f"{'----------'*8}")
                 else:
-                    # self.stdout.write(f"Padron: {nombreyapellido_padron} // Carga: {nombreyapellido_carga}")
                     agente.agente_verificado_contra_padron=True
-                    agente.save()
-                
-                # print(agente.comisionado_nombreyapellido)
-                
+                    if not dry_run:
+                        agente.save()
+                    coincidentes += 1
+
             except IndexError:
-                self.stdout.write(self.style.ERROR(f"Agente {agente.agente_apellidos}, {agente.agente_nombres} - {agente.dni}, no se encuentra en el padron"))
+                no_encontrados += 1
+                if verbosity >= 1:
+                    self.stdout.write(self.style.ERROR(f"Agente {agente.agente_apellidos}, {agente.agente_nombres} - {agente.dni}, no se encuentra en el padron"))
+
+        if verbosity >= 1:
+            self.stdout.write("")
+            if dry_run:
+                self.stdout.write(self.style.NOTICE("Modo dry-run: no se guardó ningún cambio en la base de datos."))
+            self.stdout.write(self.style.MIGRATE_HEADING("Resumen:"))
+            self.stdout.write(f"    Total de agentes verificados: {total}")
+            self.stdout.write(self.style.SUCCESS(f"    Coincidentes (sin cambios): {coincidentes}"))
+            self.stdout.write(self.style.WARNING(f"    Actualizados (padron != carga): {actualizados}"))
+            self.stdout.write(self.style.ERROR(f"    No encontrados en el padron: {no_encontrados}"))
+
+        if discrepancias and verbosity >= 1:
+            self.stdout.write("")
+            self.stdout.write(self.style.MIGRATE_HEADING("Discrepancias corregidas (carga -> padron):"))
+            for d in discrepancias:
+                self.stdout.write(f"    DNI {d['dni']}: {self.style.WARNING(d['carga'])} -> {self.style.SUCCESS(d['padron'])}")
