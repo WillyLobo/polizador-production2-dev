@@ -3,6 +3,8 @@ from carga import models
 from carga.views.ajaxviews import contratowidget
 
 class ContratoDigitalForm(forms.ModelForm):
+    required_css_class = "required"
+
     class Meta:
         model = models.ContratosDigitales
         fields = (
@@ -19,6 +21,8 @@ class ContratoDigitalForm(forms.ModelForm):
         }
 
 class ResolucionDigitalForm(forms.ModelForm):
+    required_css_class = "required"
+
     class Meta:
         model = models.ResolucionesDigitales
         fields = (

@@ -4,6 +4,8 @@ from carga.views.ajaxviews import obrawidget, contratowidget
 from polizador.custom_forms import DateHTMLWidget
 
 class PlandeTrabajoForm(forms.ModelForm):
+	required_css_class = "required"
+
 	class Meta:
 		model = models.PlanDeTrabajos
 		fields = (

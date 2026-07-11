@@ -9,6 +9,8 @@ class CustomClearableFileInput(forms.widgets.ClearableFileInput):
 	pass
 
 class CertificadoForm(forms.ModelForm):
+	required_css_class = "required"
+
 	class Meta:
 		model = models.Certificado
 		fields = (
@@ -60,6 +62,8 @@ class CertificadoForm(forms.ModelForm):
 
 class GenerarCertificadosDesdeFojaForm(forms.Form):
 	"""Datos de actuación necesarios para generar los certificados Parciales de una Foja."""
+	required_css_class = "required"
+
 	certificado_expediente = forms.CharField(
 		label="Número de Expediente",
 		max_length=18,
@@ -73,6 +77,8 @@ class GenerarCertificadosDesdeFojaForm(forms.Form):
 class CertificadoAnticipoForm(forms.ModelForm):
 	"""Certificado de Anticipo: no lleva Foja, se carga a mano un % del monto de contrato
 	de la obra+financiamiento; el monto en pesos/UVI se deriva (ver certificacion.calcular_monto_anticipo)."""
+	required_css_class = "required"
+
 	class Meta:
 		model = models.Certificado
 		fields = (
@@ -110,6 +116,8 @@ class CertificadoAnticipoForm(forms.ModelForm):
 class CertificadoHechoConsumadoForm(forms.ModelForm):
 	"""Certificado por Hecho Consumado: no lleva Foja, certifica directo contra un
 	Contrato/Resolución de origen con un % cargado a mano (ver certificacion.calcular_monto_hecho_consumado)."""
+	required_css_class = "required"
+
 	class Meta:
 		model = models.Certificado
 		fields = (

@@ -3,6 +3,8 @@ from carga import models
 from carga.views.ajaxviews import departamentowidget, municipiowidget 
 
 class LocalidadForm(forms.ModelForm):
+	required_css_class = "required"
+
 	class Meta:
 		model = models.Localidad
 		fields = (

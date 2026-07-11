@@ -8,6 +8,8 @@ from personalizador.models import Agente
 from polizador.custom_forms import DateHTMLWidget
 
 class FojaDeMedicionForm(forms.ModelForm):
+	required_css_class = "required"
+
 	foja_numero_manual = forms.IntegerField(
 		label="Número de Foja",
 		required=False,
@@ -122,6 +124,8 @@ class FojaDeMedicionForm(forms.ModelForm):
 		return cleaned_data
 
 class FojaDeMedicionItemForm(forms.ModelForm):
+	required_css_class = "required"
+
 	fojaitem_pct_anterior = forms.DecimalField(
 		required=False,
 		disabled=True,
@@ -224,6 +228,8 @@ def build_foja_item_formset_class(extra):
 	)
 
 class FojaDeMedicionFotoForm(forms.ModelForm):
+	required_css_class = "required"
+
 	class Meta:
 		model = models.FojaDeMedicionFoto
 		fields = ("fotofoja_archivo",)

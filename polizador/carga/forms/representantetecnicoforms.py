@@ -2,6 +2,8 @@ from django import forms
 from personalizador import models
 
 class RepresentanteTecnicoForm(forms.ModelForm):
+	required_css_class = "required"
+
 	class Meta:
 		model = models.RepresentanteTecnico
 		fields = (

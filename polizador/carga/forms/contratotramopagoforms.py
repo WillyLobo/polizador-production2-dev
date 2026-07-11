@@ -3,6 +3,8 @@ from django.forms import inlineformset_factory
 from carga import models
 
 class ContratoTramoPagoForm(forms.ModelForm):
+	required_css_class = "required"
+
 	class Meta:
 		model = models.ContratoTramoPago
 		fields = (
