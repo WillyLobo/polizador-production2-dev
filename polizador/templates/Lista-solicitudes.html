@@ -19,32 +19,44 @@
 <script language="javascript">
 
   $(document).ready(function() {
-      AjaxDatatableViewUtils.initialize_table(
-          $('#tableSolicitudes'),
-          "{% url 'secretariador:lista-solicitudes-datatables' %}",
+      var columns = [
+          { data: 'solicitud_actuacion_ano', name: 'solicitud_actuacion_ano', title: 'Año' },
+          { data: 'solicitud_actuacion_numero', name: 'solicitud_actuacion_numero', title: 'N° Actuación' },
+          { data: 'solicitud_solicitante', name: 'solicitud_solicitante', title: 'Solicitante' },
+          { data: 'Comisionados', name: 'Comisionados', title: 'Comisionados', orderable: false },
+          { data: 'solicitud_localidades', title: 'Localidades', orderable: false },
+          { data: 'solicitud_fecha_desde', name: 'solicitud_fecha_desde', title: 'Fecha Inicio', filterType: 'date' },
+          { data: 'solicitud_fecha_hasta', name: 'solicitud_fecha_hasta', title: 'Fecha Regreso', filterType: 'date' },
+          { data: 'solicitud_tareas', name: 'solicitud_tareas', title: 'Tareas a Realizar' },
           {
-              // extra_options (example)
-              processing: false,
-              autoWidth: false,
-              full_row_select: true,
-              scrollX: false,
-              dom: "<'row'<'col-sm-12 col-md-4'><'col-sm-12 col-md-4'f><'col-sm-12 col-md-4'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-              // language: {
-              // url: "/static/DataTables/DataTables-1.11.5/i18n/es-AR.json",
-              // },
-          }, {
-              // extra_data
-              // ...
+              data: 'solicitud_vehiculo', name: 'solicitud_vehiculo', title: 'Vehículo',
+              filterType: 'select', filterChoicesUrl: '/v1/api/datatables/solicitudes/filtro-vehiculos/',
+          },
+          {
+              data: 'solicitud_dia_inhabil', name: 'solicitud_dia_inhabil', title: 'Día Inhábil',
+              filterType: 'select', filterChoices: [['true', 'Sí'], ['false', 'No']],
+          },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
+          $('#tableSolicitudes'),
+          '/v1/api/datatables/solicitudes/',
+          columns,
+          {
+              order: [[0, 'desc'], [1, 'desc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/solicitudes/{id}/detalle/',
+              dataTableOptions: {
+                  rowCallback: function(row, data) {
+                      if (data.solicitud_anulada) {
+                          $(row).css('background-color', '#ffcccc');
+                      }
+                  },
+              },
           },
       );
   });
-
-// Subscribe "rowCallback" event
-$('#tableSolicitudes').on('rowCallback', function(event, table, row, data) {
-    if (data.solicitud_anulada == 'Sí') {
-        $(row).css('background-color', '#ffcccc');
-    }
-});
 
 </script>
 

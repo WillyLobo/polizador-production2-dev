@@ -5,7 +5,7 @@ from wsgiref.validate import validator
 from django.db import models
 from django.urls import reverse
 from simple_history.models import HistoricalRecords
-from django.db.models import Sum, F, FloatField, Max, Q
+from django.db.models import Sum, F, FloatField, Max, Q, OuterRef, Subquery
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
 from uuid_utils import compat
@@ -479,6 +479,22 @@ class Obra(models.Model):
     
     def get_absolute_url(self):
         return reverse('estado-obra', kwargs={'id': self.pk})
+
+
+def obras_con_acumulado_anotado(queryset):
+    """Anota el % acumulado del último certificado (Obra) y el % acumulado de Anticipo del
+    último certificado de Anticipo de cada obra, en una sola query (evita N+1)."""
+    ultimo_acumulado = Certificado.objects.filter(
+        certificado_obra=OuterRef("pk"), certificado_tipo__in=("PARCIAL", "HECHO_CONSUMADO", "ETAPA", "LEGACY")
+    ).order_by("-certificado_fecha").values("certificado_acum_pct")[:1]
+    ultimo_anticipo_acumulado = Certificado.objects.filter(
+        certificado_obra=OuterRef("pk"), certificado_tipo="ANTICIPO"
+    ).order_by("-certificado_fecha").values("certificado_anticipo_acumulado")[:1]
+    return queryset.annotate(
+        obra_acum_pct_anotado=Subquery(ultimo_acumulado),
+        obra_anticipo_acumulado_anotado=Subquery(ultimo_anticipo_acumulado),
+    )
+
 
 class Prototipo(models.Model):
     TIPO = (

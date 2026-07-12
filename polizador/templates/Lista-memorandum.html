@@ -19,22 +19,31 @@
 <script language="javascript">
 
   $(document).ready(function() {
-      AjaxDatatableViewUtils.initialize_table(
-          $('#tableMemorandum'),
-          "{% url 'secretariador:lista-memorandum-datatables' %}",
+      var columns = [
           {
-              // extra_options (example)
-              processing: false,
-              autoWidth: false,
-              full_row_select: true,
-              scrollX: false,
-              dom: "<'row'<'col-sm-12 col-md-4'><'col-sm-12 col-md-4'f><'col-sm-12 col-md-4'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-              // language: {
-              // url: "/static/DataTables/DataTables-1.11.5/i18n/es-AR.json",
-              // },
-          }, {
-              // extra_data
-              // ...
+              data: 'instrumentolegalmemorandum_tipo', name: 'instrumentolegalmemorandum_tipo', title: 'Tipo',
+              filterType: 'select',
+              filterChoices: [['P', 'Presidencia'], ['D', 'Dirección General de Gestión Administrativa']],
+          },
+          { data: 'instrumentolegalmemorandum_numero', name: 'instrumentolegalmemorandum_numero', title: 'Número' },
+          { data: 'instrumentolegalmemorandum_ano', name: 'instrumentolegalmemorandum_ano', title: 'Año' },
+          {
+              data: 'instrumentolegalmemorandum_fecha_aprobacion', name: 'instrumentolegalmemorandum_fecha_aprobacion',
+              title: 'Fecha de Aprobación', filterType: 'date',
+          },
+          { data: 'instrumentolegalmemorandum_descripcion', name: 'instrumentolegalmemorandum_descripcion', title: 'Descripción' },
+          { data: 'instrumentolegalmemorandum_document', name: 'instrumentolegalmemorandum_document', title: 'Texto Extraído por OCR' },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
+          $('#tableMemorandum'),
+          '/v1/api/datatables/memorandums/',
+          columns,
+          {
+              order: [[2, 'desc'], [1, 'desc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/memorandums/{id}/detalle/',
           },
       );
   });

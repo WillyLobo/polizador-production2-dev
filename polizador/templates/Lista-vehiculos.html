@@ -19,22 +19,26 @@
 <script language="javascript">
 
   $(document).ready(function() {
-      AjaxDatatableViewUtils.initialize_table(
-          $('#tableVehiculos'),
-          "{% url 'secretariador:lista-vehiculos-datatables' %}",
+      var columns = [
           {
-              // extra_options (example)
-              processing: false,
-              autoWidth: false,
-              full_row_select: true,
-              scrollX: false,
-              dom: "<'row'<'col-sm-12 col-md-4'><'col-sm-12 col-md-4'f><'col-sm-12 col-md-4'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-              // language: {
-              // url: "/static/DataTables/DataTables-1.11.5/i18n/es-AR.json",
-              // },
-          }, {
-              // extra_data
-              // ...
+              data: 'vehiculo_caracter', name: 'vehiculo_caracter', title: 'Designación',
+              filterType: 'select', filterChoices: [['E', 'Empresa'], ['O', 'Oficial'], ['P', 'Particular']],
+          },
+          { data: 'vehiculo_modelo', name: 'vehiculo_modelo', title: 'Modelo' },
+          { data: 'vehiculo_patente', name: 'vehiculo_patente', title: 'Patente' },
+          { data: 'vehiculo_poliza', name: 'vehiculo_poliza', title: 'N° Póliza' },
+          { data: 'vehiculo_poliza_aseguradora', name: 'vehiculo_poliza_aseguradora', title: 'Aseguradora' },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
+          $('#tableVehiculos'),
+          '/v1/api/datatables/vehiculos/',
+          columns,
+          {
+              order: [[1, 'asc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/vehiculos/{id}/detalle/',
           },
       );
   });

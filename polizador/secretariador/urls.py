@@ -101,28 +101,20 @@ reportes_patterns = [
 ajax = [
 	# Solicitudes
 	path("listas/solicitudes", PaginaListaSolicitudes, name="lista-solicitudes"),
-	path("ajax_datatable/solicitudes/", ListaSolicitudesView.as_view(), name="lista-solicitudes-datatables"),
     # Comisionados
 	path("listas/comisionados", PaginaListaComisionados, name="lista-comisionados"),
-	path("ajax_datatable/comisionados/", ListaComisionadosView.as_view(), name="lista-comisionados-datatables"),
     # Memorandum
     path("listas/memorandum", PaginaListaInstrumentosLegalesMemorandum, name="lista-memorandum"),
-    path("ajax_datatable/memorandum/", ListaListaInstrumentosLegalesMemorandumView.as_view(), name="lista-memorandum-datatables"),
     # Decretos
     path("listas/decretos", PaginaListaInstrumentosLegalesDecretos, name="lista-decretos"),
-    path("ajax_datatable/decretos/", ListaListaInstrumentosLegalesDecretosView.as_view(), name="lista-decretos-datatables"),
     # Resoluciones
     path("listas/resoluciones", PaginaListaInstrumentosLegalesResoluciones, name="lista-resoluciones"),
-    path("ajax_datatable/resoluciones/", ListaListaInstrumentosLegalesResolucionesView.as_view(), name="lista-resoluciones-datatables"),
     # Resoluciones Directorio
     path("listas/resoluciones-directorio", PaginaListaInstrumentosLegalesResolucionesDirectorio, name="lista-resoluciones-directorio"),
-    path("ajax_datatable/resoluciones-directorio/", ListaListaInstrumentosLegalesResolucionesDirectorioView.as_view(), name="lista-resoluciones-directorio-datatables"),
     # Vehiculos
     path("listas/vehiculos", PaginaListaVehiculos, name="lista-vehiculos"),
-    path("ajax_datatable/vehiculos/", ListaVehiculosView.as_view(), name="lista-vehiculos-datatables"),
     # Incorporaciones
     path("listas/incorporaciones", PaginaListaIncorporaciones, name="lista-incorporaciones"),
-    path("ajax_datatable/incorporaciones/", ListaIncorporacionesView.as_view(), name="lista-incorporaciones-datatables"),
     # Agente Query
     path("ajax/get_agentes/", get_agentes, name="get-agentes"),
 ]

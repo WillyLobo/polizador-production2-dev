@@ -19,22 +19,19 @@
 <script language="javascript">
 
   $(document).ready(function() {
-      AjaxDatatableViewUtils.initialize_table(
+      var columns = [
+          { data: 'region_numero', name: 'region_numero', title: 'Región' },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
           $('#tableRegiones'),
-          "{% url 'carga:lista-regiones-datatables' %}",
+          '/v1/api/datatables/regiones/',
+          columns,
           {
-              // extra_options (example)
-              processing: false,
-              autoWidth: false,
-              full_row_select: true,
-              scrollX: false,
-              dom: "<'row'<'col-sm-12 col-md-4'><'col-sm-12 col-md-4'f><'col-sm-12 col-md-4'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-              // language: {
-              // url: "/static/DataTables/DataTables-1.11.5/i18n/es-AR.json",
-              // },
-          }, {
-              // extra_data
-              // ...
+              order: [[0, 'asc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/regiones/{id}/detalle/',
           },
       );
   });

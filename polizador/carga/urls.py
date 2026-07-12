@@ -162,46 +162,33 @@ documentos_digitales = [
 ajax = [
 	# Obras
     path("listas/obras", PaginaListaObras, name="lista-obras"),
-	path("ajax_datatable/obras/", ListaObrasView.as_view(), name="lista-obras-datatables"),
 	# Certificados
 	path("listas/certificados", PaginaListaCertificados, name="lista-certificados"),
-	path("ajax_datatables/certificados/", ListaCertificadosView.as_view(), name="lista-certificados-datatables"),
 	# Aseguradoras
 	path("listas/aseguradoras", PaginaListaAseguradoras, name="lista-aseguradoras"),
-	path("ajax_datatables/aseguradoras/", ListaAseguradorasView.as_view(), name="lista-aseguradoras-datatables"),
 	# Conjuntos
 	path("listas/conjuntos", PaginaListaConjuntos, name="lista-conjuntos"),
-	path("ajax_datatables/conjuntos/", ListaConjuntosView.as_view(), name="lista-conjuntos-datatables"),
 	# Empresas
 	path("listas/empresas", PaginaListaEmpresas, name="lista-empresas"),
-	path("ajax_datatables/empresas/", ListaEmpresasView.as_view(), name="lista-empresas-datatables"),
 	# Departamentos
 	path("listas/departamentos", PaginaListaDepartamentos, name="lista-departamentos"),
-	path("ajax_datatables/departamentos/", ListaDepartamentosView.as_view(), name="lista-departamentos-datatables"),
 	# Representantes Técnicos
 	path("listas/representantetecnicos", PaginaListaRepresentantesTecnicos, name="lista-representantetecnicos"),
-	path("ajax_datatables/representantetecnicos/", ListaRepresentantesTecnicosView.as_view(), name="lista-representantetecnicos-datatables"),
 	# Localidades
 	path("listas/localidades", PaginaListaLocalidad, name="lista-localidades"),
-	path("ajax_datatables/localidades/", ListaLocalidadesView.as_view(), name="lista-localidades-datatables"),
 	# Municipios
 	path("listas/municipios", PaginaListaMunicipio, name="lista-municipios"),
-	path("ajax_datatables/municipios/", ListaMunicipiosView.as_view(), name="lista-municipios-datatables"),
 	# Regiones
 	path("listas/regiones", PaginaListaRegiones, name="lista-regiones"),
-	path("ajax_datatables/regiones/", ListaRegionesView.as_view(), name="lista-regiones-datatables"),
 	# Programa
 	path("listas/programas", PaginaListaProgramas, name="lista-programas"),
-	path("ajax_datatables/programas/", ListaProgramasView.as_view(), name="lista-programas-datatables"),
 	# Polizas
 	path("listas/polizas", PaginaListaPolizas, name="lista-polizas"),
-	path("ajax_datatables/polizas", ListaPolizasView.as_view(), name="lista-polizas-datatables"),
 	# Legacy Polizas
 	# path("listas/legacypolizas", PaginaListaLegacyPolizas, name="lista-legacy-polizas"),
 	# path("ajax_datatables/legacypolizas", ListaLegacyPolizasView.as_view(), name="lista-legacy-polizas-datatables"),
 	# Obras Extendida
 	path("listas/obrasextendida", PaginaListaObrasExtendida, name="lista-obras-extendida"),
-	path("ajax_datatables/obrasextendida", ListaObrasExtendidaView.as_view(), name="lista-obras-extendida-datatables"),
 ]
 
 urlpatterns += documentos_digitales

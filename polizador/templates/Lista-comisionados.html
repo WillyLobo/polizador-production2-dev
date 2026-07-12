@@ -19,22 +19,30 @@
 <script language="javascript">
 
   $(document).ready(function() {
-      AjaxDatatableViewUtils.initialize_table(
-          $('#tableComisionados'),
-          "{% url 'secretariador:lista-comisionados-datatables' %}",
+      var columns = [
+          { data: 'agente_apellidos', name: 'agente_apellidos', title: 'Apellidos' },
+          { data: 'agente_nombres', name: 'agente_nombres', title: 'Nombre' },
+          { data: 'oficina', name: 'oficina', title: 'Cargo' },
+          { data: 'cuil', name: 'cuil', title: 'CUIT' },
           {
-              // extra_options (example)
-              processing: false,
-              autoWidth: false,
-              full_row_select: true,
-              scrollX: false,
-              dom: "<'row'<'col-sm-12 col-md-4'><'col-sm-12 col-md-4'f><'col-sm-12 col-md-4'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-              // language: {
-              // url: "/static/DataTables/DataTables-1.11.5/i18n/es-AR.json",
-              // },
-          }, {
-              // extra_data
-              // ...
+              data: 'agente_personal_transitorio', name: 'agente_personal_transitorio', title: 'Personal Contratado',
+              filterType: 'select', filterChoices: [['true', 'Sí'], ['false', 'No']],
+          },
+          {
+              data: 'agente_personal_de_gabinete', name: 'agente_personal_de_gabinete', title: 'Personal de Gabinete',
+              filterType: 'select', filterChoices: [['true', 'Sí'], ['false', 'No']],
+          },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
+          $('#tableComisionados'),
+          '/v1/api/datatables/comisionados/',
+          columns,
+          {
+              order: [[0, 'asc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/comisionados/{id}/detalle/',
           },
       );
   });

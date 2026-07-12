@@ -68,7 +68,6 @@ INSTALLED_APPS = [
     "django.contrib.sites",
 
     "django_select2",
-    "ajax_datatable",
 	"import_export",
 	"django.forms",
     "debug_toolbar",
