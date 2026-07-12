@@ -137,9 +137,12 @@ window.NinjaDatatableUtils = (function() {
             serverSide: true,
             autoWidth: false,
             language: window.DATATABLES_ES,
-            dom: "<'row'<'col-sm-12 col-md-4'><'col-sm-12 col-md-4'f><'col-sm-12 col-md-4'l>>" +
-                "<'row'<'col-sm-12'tr>>" +
-                "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+            layout: {
+                topStart: 'search',
+                topEnd: 'pageLength',
+                bottomStart: 'info',
+                bottomEnd: 'paging'
+            },
             columns: columns,
             order: options.order || [[0, 'desc']],
             lengthMenu: options.lengthMenu || [[10, 25, 50, 100], [10, 25, 50, 100]],

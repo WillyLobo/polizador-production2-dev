@@ -1,7 +1,5 @@
 @import url("https://fonts.googleapis.com/css?family=Lato:400,400i,700");
-.dataTables_info {
-   float: right !important;
-}
+
 .page-item.disabled .page-link {
     color: gray !important;
 }
@@ -133,14 +131,15 @@ tr-striped:nth-child(odd) {
 }
 
 /* DataTables' own chrome (search box, length menu, pagination, info text) is
-   rendered by the DataTables/yadcf JS, not our templates, so it can't take the
-   "small" class directly — this brings it down to match, everywhere at once. */
-.dataTables_wrapper .dataTables_length,
-.dataTables_wrapper .dataTables_filter,
-.dataTables_wrapper .dataTables_info,
-.dataTables_wrapper .dataTables_paginate .page-link,
-.dataTables_wrapper .yadcf-filter,
-.dataTables_wrapper .yadcf-filter-range {
+   rendered by the DataTables JS, not our templates, so it can't take the
+   "small" class directly — this brings it down to match, everywhere at once.
+   Class names are DataTables 2.x's (dt-container/dt-length/dt-search/dt-info/
+   dt-paging), replacing the 1.x dataTables_wrapper/_length/_filter/_info/
+   _paginate names used before the DataTables 2 + CDN migration. */
+.dt-container .dt-length,
+.dt-container .dt-search,
+.dt-container .dt-info,
+.dt-container .dt-paging .page-link {
     font-size: 0.875em;
 }
 
