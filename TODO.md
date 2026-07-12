@@ -19,7 +19,10 @@
 [+] Crear API view que devuelva los meses/años disponibles en los certificados para su utilizacion en select2
 [?] Hacer un favicon mas decente
 [+] Añadir campo Representante Tecnico a las obras.
-[ ] Implementar campo georeferencia(con PostGIS) para las obras
+[ ] Implementar campo georeferencia(con PostGIS) para las obras.
+[ ] Actualizar a la ultima version de dataTables. 
+    [ ] Convertir "dom:" a "layout:".
+    [ ] Agregar boton para exportar a pdf/excel.
 
 # Certificados
 [+] Una foja deberia engendrar 1 certificado por cada financiamiento.
