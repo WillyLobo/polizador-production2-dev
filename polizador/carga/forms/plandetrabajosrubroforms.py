@@ -5,6 +5,8 @@ from carga.forms.plandetrabajositemforms import PlanDeTrabajosItemForm
 from carga.views.ajaxviews import planwidget, contratomontowidget, rubroanteriorwidget
 
 class PlanDeTrabajosRubroForm(forms.ModelForm):
+	required_css_class = "required"
+
 	class Meta:
 		model = models.PlanDeTrabajosRubro
 		fields = (

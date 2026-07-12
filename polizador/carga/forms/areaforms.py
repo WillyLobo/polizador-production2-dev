@@ -2,6 +2,8 @@ from django import forms
 from carga import models
 
 class AreaForm(forms.ModelForm):
+	required_css_class = "required"
+
 	class Meta:
 		model = models.Area
 		fields = (

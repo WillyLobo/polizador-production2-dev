@@ -1,8 +1,8 @@
 from django import forms
 from secretariador.models import MontoViaticoDiario, InstrumentosLegalesDecretos
-from secretariador.forms.mixins import ColumnFormMixin
+from secretariador.forms.mixins import BaseFormMixin
 
-class MontoViaticoDiarioForm(ColumnFormMixin, forms.ModelForm):
+class MontoViaticoDiarioForm(BaseFormMixin, forms.ModelForm):
     class Meta:
         model = MontoViaticoDiario
         fields = (

@@ -2,6 +2,8 @@ from django import forms
 from carga import models
 
 class AseguradoraForm(forms.ModelForm):
+	required_css_class = "required"
+
 	class Meta:
 		model = models.Aseguradora
 		fields = (

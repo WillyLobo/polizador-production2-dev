@@ -1,6 +1,5 @@
 from django.core.exceptions import ImproperlyConfigured
 from django.http import HttpResponseRedirect
-from django.utils.safestring import SafeString
 from django.views import generic
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -8,14 +7,6 @@ from django.urls import reverse_lazy
 class BaseFormMixin(object):
     required_css_class = "required"
 
-    def as_div(self):
-        return SafeString(super().as_div().replace("<div>", "<div class='form-group'>"))
-    
-class ColumnFormMixin(object):
-
-    def as_div(self):
-        return SafeString(super().as_div().replace("<div>", f"<div class='col column-{self.prefix}'>"))
-    
 class FormsetViewMixin(generic.View):
     formset_name = None
     view_type = None

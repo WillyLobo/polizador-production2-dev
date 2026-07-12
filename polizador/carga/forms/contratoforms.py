@@ -6,6 +6,8 @@ from carga.views.ajaxviews import *
 from polizador.custom_forms import DateHTMLWidget
 
 class ContratoForm(forms.ModelForm):
+	required_css_class = "required"
+
 	class Meta:
 		model = Contrato
 		fields = (

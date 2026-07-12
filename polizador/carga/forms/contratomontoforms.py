@@ -3,6 +3,8 @@ from carga import models
 from polizador.custom_forms import DateHTMLWidget
 
 class ContratoMontoForm(forms.ModelForm):
+	required_css_class = "required"
+
 	class Meta:
 		model = models.ContratoMonto
 		fields = (

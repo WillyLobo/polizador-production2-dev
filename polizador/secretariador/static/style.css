@@ -15,8 +15,10 @@
     font-family: Lato, Arial, sans-serif;
     color: black !important;
 }
-.required { 
-    font-weight: bold;
+label.required::after,
+legend.required::after {
+    content: " *";
+    color: #dc3545;
 }
 .helptext {
     font-style: italic;

@@ -11,6 +11,27 @@ from django.core.exceptions import ValidationError
 from django.views.decorators.cache import cache_page
 from datetime import datetime, timedelta
 
+
+def _comisiones_list_from_queryset(comisionados):
+    # Flags an agente's second (and later) comisión on the same start date as "red".
+    comisiones_list = []
+    seen = set()
+    for comisionado in comisionados:
+        foreign = comisionado.comisionadosolicitud_foreign if comisionado.comisionadosolicitud_foreign is not None else comisionado.comisionadosolicitud_incorporacion_foreign.incorporacion_solicitud
+        nombre = comisionado.comisionadosolicitud_nombre.agente_nombreyapellido
+        key = (nombre, foreign.solicitud_fecha_desde)
+        color = "red" if key in seen else ""
+        seen.add(key)
+        comisiones_list.append([
+            nombre,
+            foreign.solicitud_fecha_desde,
+            foreign.solicitud_fecha_hasta,
+            foreign.get_absolute_url(),
+            color,
+            color,
+        ])
+    return comisiones_list
+
 @method_decorator(login_required, name="dispatch")
 class PDFMergeTemplateView(PermissionRequiredMixin, generic.TemplateView):
     permission_required = "secretariador.view_solicitud"
@@ -342,52 +363,27 @@ class CalendarioSemanal(PermissionRequiredMixin, generic.ListView):
     template_name = "reportes/calendario-semanal.html"
 	
     def get_queryset(self):
-        date = datetime.today().isocalendar().week
+        today = datetime.today()
+        start_of_week = (today - timedelta(days=today.weekday())).date()
+        end_of_next_week = start_of_week + timedelta(days=13)
         comisionados = ComisionadoSolicitud.objects.filter(
-                Q(comisionadosolicitud_foreign__solicitud_fecha_desde__week__range=[date, date+1]) |
-                Q(comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__week__range=[date, date+1])
-            ).exclude(comisionadosolicitud_foreign__solicitud_anulada=True).select_related("comisionadosolicitud_foreign", "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud", "comisionadosolicitud_nombre")
+                Q(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[start_of_week, end_of_next_week]) |
+                Q(comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__range=[start_of_week, end_of_next_week])
+            ).exclude(comisionadosolicitud_foreign__solicitud_anulada=True).select_related(
+                "comisionadosolicitud_foreign",
+                "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud",
+                "comisionadosolicitud_nombre",
+                "comisionadosolicitud_foreign__solicitud_provincia",
+                "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_provincia",
+            )
 
-        comisiones_list = []
-        
-        def check_value_in_list_of_lists(list_of_lists, *args):
-            for sublist in list_of_lists:
-                if all(arg in sublist for arg in args):
-                    return True
-            return False
-        
-        if comisionados is not None:
-            for comisionado in comisionados:
-                foreign = comisionado.comisionadosolicitud_foreign if comisionado.comisionadosolicitud_foreign is not None else comisionado.comisionadosolicitud_incorporacion_foreign.incorporacion_solicitud
+        comisiones_list = _comisiones_list_from_queryset(comisionados)
 
-                # if comisionado is already in the list, append it with "red" background color
-                if check_value_in_list_of_lists(comisiones_list, comisionado.comisionadosolicitud_nombre.agente_nombreyapellido, foreign.solicitud_fecha_desde):
-                    comisiones_list.append([
-                            comisionado.comisionadosolicitud_nombre.agente_nombreyapellido,
-                            foreign.solicitud_fecha_desde,
-                            foreign.solicitud_fecha_hasta,
-                            foreign.get_absolute_url(),
-                            "red",
-                            "red",
-                    ])
-                else:
-                    comisiones_list.append([
-                            comisionado.comisionadosolicitud_nombre.agente_nombreyapellido,
-                            foreign.solicitud_fecha_desde,
-                            foreign.solicitud_fecha_hasta,
-                            foreign.get_absolute_url(),
-                            "",
-                            "",
-                    ])
-
-        final_queryset = {}
-
-        initial_date = datetime.today().strftime("%Y-%m-%d")
-        final_queryset.update({
+        initial_date = today.strftime("%Y-%m-%d")
+        return {
             "initial_date": initial_date,
             "comisiones": comisiones_list,
-        })
-        return final_queryset
+        }
 
 @method_decorator(login_required, name="dispatch")
 class CalendarioAnual(PermissionRequiredMixin, generic.ListView):
@@ -399,7 +395,6 @@ class CalendarioAnual(PermissionRequiredMixin, generic.ListView):
 	
     def get_queryset(self):
         ano = self.request.GET.get("ano") if self.request.GET.get("ano") is not None else datetime.today().year
-        print(ano)
         comisionados = ComisionadoSolicitud.objects.filter(
                 Q(comisionadosolicitud_foreign__solicitud_fecha_desde__year=ano) |
                 Q(comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__year=ano)
@@ -411,37 +406,7 @@ class CalendarioAnual(PermissionRequiredMixin, generic.ListView):
             "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_provincia"
             )
 
-        comisiones_list = []
-        
-        def check_value_in_list_of_lists(list_of_lists, *args):
-            for sublist in list_of_lists:
-                if all(arg in sublist for arg in args):
-                    return True
-            return False
-        
-        if comisionados is not None:
-            for comisionado in comisionados:
-                foreign = comisionado.comisionadosolicitud_foreign if comisionado.comisionadosolicitud_foreign is not None else comisionado.comisionadosolicitud_incorporacion_foreign.incorporacion_solicitud
-
-                # if comisionado is already in the list, append it with "red" background color
-                if check_value_in_list_of_lists(comisiones_list, comisionado.comisionadosolicitud_nombre.agente_nombreyapellido, foreign.solicitud_fecha_desde):
-                    comisiones_list.append([
-                            comisionado.comisionadosolicitud_nombre.agente_nombreyapellido,
-                            foreign.solicitud_fecha_desde,
-                            foreign.solicitud_fecha_hasta,
-                            foreign.get_absolute_url(),
-                            "red",
-                            "red",
-                    ])
-                else:
-                    comisiones_list.append([
-                            comisionado.comisionadosolicitud_nombre.agente_nombreyapellido,
-                            foreign.solicitud_fecha_desde,
-                            foreign.solicitud_fecha_hasta,
-                            foreign.get_absolute_url(),
-                            "",
-                            "",
-                    ])
+        comisiones_list = _comisiones_list_from_queryset(comisionados)
 
         final_queryset = {}
 

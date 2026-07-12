@@ -13,6 +13,8 @@ from carga.views.ajaxviews import areawidget, polizawidget, receptorwidget
 # 		fields = "__all__"
 
 class PolizaForm(forms.ModelForm):
+	required_css_class = "required"
+
 	CONCEPTO = (
 		("C", "Garantía de Ejecución de Contrato"),
 		("F", "Garantía de Sustitución de Fondo de Reparo"),
@@ -51,6 +53,8 @@ class PolizaForm(forms.ModelForm):
 		}
 
 class PolizaMovimientoForm(forms.ModelForm):
+	required_css_class = "required"
+
 	class Meta:
 		model = models.Poliza_Movimiento
 		fields = (
