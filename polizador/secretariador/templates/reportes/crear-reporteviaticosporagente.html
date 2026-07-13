@@ -80,6 +80,8 @@
     new DataTable('#tablaReporte', {
     info: false,
     paging: false,
+    layout: { topStart: 'buttons' },
+    buttons: DatatablesExportButtons.build('Reporte de Viáticos por Agente'),
     order: [[ 1, 'desc' ]],
     "footerCallback": function ( row, data, start, end, display ) {
             var api = this.api(), data;

@@ -41,7 +41,7 @@
             <label class="form-label small fw-semibold mb-1" for="inputGroupSelectEmpresa">Empresa</label>
             <select name="empresa" class="customSelect2" id="inputGroupSelectEmpresa" style="width:100%;" multiple>
                 {% for empresa in selected_empresas %}
-                <option value="{{ empresa.id }}" selected>{{ empresa }}</option>
+                <option value="{{ empresa.id|unlocalize }}" selected>{{ empresa }}</option>
                 {% endfor %}
             </select>
           </div>
@@ -49,7 +49,7 @@
             <label class="form-label small fw-semibold mb-1" for="inputGroupSelectObra">Obra</label>
             <select name="obra" class="customSelect2" id="inputGroupSelectObra" style="width:100%;" multiple>
                 {% for obra in selected_obras %}
-                <option value="{{ obra.id }}" selected>{{ obra.obra_nombre }}</option>
+                <option value="{{ obra.id|unlocalize }}" selected>{{ obra.obra_nombre }}</option>
                 {% endfor %}
             </select>
           </div>
@@ -136,6 +136,8 @@
     new DataTable('#tablaReporte', {
     info: false,
     paging: false,
+    layout: { topStart: 'buttons' },
+    buttons: DatatablesExportButtons.build('Reporte de Certificados por Mes'),
     order: [[ 7, 'desc' ]],
     language: {
             "emptyTable": "Ningún dato disponible en esta tabla",

@@ -57,6 +57,8 @@
     new DataTable('#tablaFojasSinCertificado', {
     info: false,
     paging: false,
+    layout: { topStart: 'buttons' },
+    buttons: DatatablesExportButtons.build('Fojas sin Certificado'),
     order: [[ 3, 'desc' ]],
     language: {
             "emptyTable": "Ningún dato disponible en esta tabla",

@@ -99,6 +99,8 @@
     new DataTable('#tablaReporte', {
     info: false,
     paging: false,
+    layout: { topStart: 'buttons' },
+    buttons: DatatablesExportButtons.build('Obras'),
     order: [[ 1, 'desc' ]],
     language: {
             "emptyTable": "Ningún dato disponible en esta tabla",
@@ -108,6 +110,8 @@
 new DataTable('#tablaFojas', {
     info: false,
     paging: false,
+    layout: { topStart: 'buttons' },
+    buttons: DatatablesExportButtons.build('Fojas de Medición'),
     order: [[ 3, 'desc' ]],
     language: {
             "emptyTable": "Ningún dato disponible en esta tabla",

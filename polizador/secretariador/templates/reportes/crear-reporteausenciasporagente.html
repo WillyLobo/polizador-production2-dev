@@ -68,6 +68,8 @@
     var table = new DataTable('#tablaReporte', {
     info: false,
     paging: false,
+    layout: { topStart: 'buttons' },
+    buttons: DatatablesExportButtons.build('Reporte de Ausencias por Agente'),
     order: [[ 1, 'desc' ]],
 });
 $('#tablaReporte_filter').addClass('d-print-none');

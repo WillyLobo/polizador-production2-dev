@@ -23,7 +23,7 @@
             <label class="form-label small fw-semibold mb-1" for="inputGroupSelectEmpresa">Empresa</label>
             <select name="empresa" class="customSelect2" id="inputGroupSelectEmpresa" style="width:100%;" multiple>
                 {% for empresa in selected_empresas %}
-                <option value="{{ empresa.id }}" selected>{{ empresa }}</option>
+                <option value="{{ empresa.id|unlocalize }}" selected>{{ empresa }}</option>
                 {% endfor %}
             </select>
           </div>
@@ -31,7 +31,7 @@
             <label class="form-label small fw-semibold mb-1" for="inputGroupSelectPrograma">Programa</label>
             <select name="programa" class="customSelect2" id="inputGroupSelectPrograma" style="width:100%;" multiple>
                 {% for programa in selected_programas %}
-                <option value="{{ programa.id }}" selected>{{ programa }}</option>
+                <option value="{{ programa.id|unlocalize }}" selected>{{ programa }}</option>
                 {% endfor %}
             </select>
           </div>
@@ -159,6 +159,8 @@
     new DataTable('#tablaReporte', {
     info: false,
     paging: false,
+    layout: { topStart: 'buttons' },
+    buttons: DatatablesExportButtons.build('Reporte de Obras'),
     order: [[ 1, 'desc' ]],
     language: {
             "emptyTable": "Ningún dato disponible en esta tabla",
