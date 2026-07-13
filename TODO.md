@@ -22,7 +22,7 @@
 [ ] Implementar campo georeferencia(con PostGIS) para las obras.
 [+] Actualizar a la ultima version de dataTables. 
     [+] Convertir "dom:" a "layout:".
-    [ ] Agregar boton para exportar a pdf/excel.
+    [+] Agregar boton para exportar a pdf/excel.
 [ ] Eliminar codigo muerto JS.
 [ ] Corregir el filtrado previo de resoluciones, o agregar el filtro por tipo en datatable.
 
