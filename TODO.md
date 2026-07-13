@@ -23,6 +23,8 @@
 [+] Actualizar a la ultima version de dataTables. 
     [+] Convertir "dom:" a "layout:".
     [ ] Agregar boton para exportar a pdf/excel.
+[ ] Eliminar codigo muerto JS.
+[ ] Corregir el filtrado previo de resoluciones, o agregar el filtro por tipo en datatable.
 
 # Certificados
 [+] Una foja deberia engendrar 1 certificado por cada financiamiento.
