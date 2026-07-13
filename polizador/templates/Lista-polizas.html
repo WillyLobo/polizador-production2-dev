@@ -19,22 +19,28 @@
 <script language="javascript">
 
   $(document).ready(function() {
-      AjaxDatatableViewUtils.initialize_table(
+      var columns = [
+          { data: 'id', name: 'id', title: 'Id', searchable: false },
+          { data: 'poliza_fecha', name: 'poliza_fecha', title: 'Fecha', filterType: 'date' },
+          { data: 'poliza_expediente', name: 'poliza_expediente', title: 'Expediente' },
+          { data: 'poliza_numero', name: 'poliza_numero', title: 'Número' },
+          { data: 'poliza_concepto', name: 'poliza_concepto', title: 'Concepto' },
+          { data: 'poliza_recibo', name: 'poliza_recibo', title: 'Recibo' },
+          { data: 'poliza_aseguradora', name: 'poliza_aseguradora', title: 'Aseguradora' },
+          { data: 'poliza_tomador', name: 'poliza_tomador', title: 'Tomador' },
+          { data: 'poliza_obra', name: 'poliza_obra', title: 'Obra' },
+          { data: 'poliza_editor', title: '', orderable: false, searchable: false },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
           $('#tablePolizas'),
-          "{% url 'carga:lista-polizas-datatables' %}",
+          '/v1/api/datatables/polizas/',
+          columns,
           {
-              // extra_options (example)
-              processing: false,
-              autoWidth: false,
-              full_row_select: true,
-              scrollX: false,
-              dom: "<'row'<'col-sm-12 col-md-4'><'col-sm-12 col-md-4'f><'col-sm-12 col-md-4'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-              // language: {
-              // url: "/static/DataTables/DataTables-1.11.5/i18n/es-AR.json",
-              // },
-          }, {
-              // extra_data
-              // ...
+              order: [[0, 'desc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/polizas/{id}/detalle/',
           },
       );
   });

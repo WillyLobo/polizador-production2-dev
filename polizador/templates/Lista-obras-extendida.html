@@ -19,23 +19,76 @@
 <script language="javascript">
 
   $(document).ready(function() {
-      AjaxDatatableViewUtils.initialize_table(
-          $('#tableObrasExtendida'),
-          "{% url 'carga:lista-obras-extendida-datatables' %}",
+      var columns = [
+          { data: 'id', name: 'id', title: 'Id' },
+          { data: 'obra_nombre', name: 'obra_nombre', title: 'Obra' },
+          { data: 'obra_soluciones', name: 'obra_soluciones', title: 'Cant. Soluciones' },
+          { data: 'obra_empresa', name: 'obra_empresa', title: 'Empresa' },
+          { data: 'obra_region', name: 'obra_region', title: 'Región' },
+          { data: 'obra_departamento_m', name: 'obra_departamento_m', title: 'Departamento', orderable: false },
+          { data: 'obra_municipio_m', name: 'obra_municipio_m', title: 'Municipio', orderable: false },
+          { data: 'obra_localidad_m', name: 'obra_localidad_m', title: 'Localidad', orderable: false },
+          { data: 'obra_conjunto', name: 'obra_conjunto', title: 'Conjunto' },
+          { data: 'obra_grupo', name: 'obra_grupo', title: 'Grupo' },
+          { data: 'obra_plazo', name: 'obra_plazo', title: 'Plazo' },
           {
-              // extra_options (example)
-              processing: false,
-              autoWidth: false,
-              full_row_select: true,
-              scrollX: false,
-              dom: "<'row'<'col-sm-12 col-md-4'><'col-sm-12 col-md-4'f><'col-sm-12 col-md-4'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-              // language: {
-              // url: "/static/DataTables/DataTables-1.11.5/i18n/es-AR.json",
-              // },
-          }, {
+              data: 'obra_programa', name: 'obra_programa', title: 'Programa',
+              filterType: 'select', filterChoicesUrl: '/v1/api/datatables/obras-extendida/filtro-programa/',
+          },
+          { data: 'obra_convenio', name: 'obra_convenio', title: 'Convenio' },
+          { data: 'obra_expediente', name: 'obra_expediente', title: 'Expediente' },
+          { data: 'obra_resolucion', name: 'obra_resolucion', title: 'Resolución' },
+          {
+              data: 'obra_licitacion_tipo', name: 'obra_licitacion_tipo', title: 'Compulsa',
+              filterType: 'select',
+              filterChoices: [
+                  ['L', 'Licitación Pública'], ['P', 'Licitación Privada'],
+                  ['C', 'Concurso de Precios'], ['D', 'Contratación Directa'],
+              ],
+          },
+          { data: 'obra_licitacion_numero', name: 'obra_licitacion_numero', title: 'Numero' },
+          {
+              data: 'obra_licitacion_ano', name: 'obra_licitacion_ano', title: 'Año',
+              filterType: 'select', filterChoicesUrl: '/v1/api/datatables/obras-extendida/filtro-ano/',
+          },
+          { data: 'obra_nomenclatura', name: 'obra_nomenclatura', title: 'Nomenclatura Catastral' },
+          { data: 'obra_nomenclatura_plano', name: 'obra_nomenclatura_plano', title: 'Número de Plano' },
+          { data: 'obra_fecha_entrega', name: 'obra_fecha_entrega', title: 'Fecha de Entrega', filterType: 'date' },
+          { data: 'obra_fecha_contrato', name: 'obra_fecha_contrato', title: 'Fecha de Contrato', filterType: 'date' },
+          { data: 'obra_inspector', title: 'Inspector', orderable: false, searchable: false },
+          { data: 'obra_observaciones', name: 'obra_observaciones', title: 'Observaciones' },
+          { data: 'obra_contrato_nacion_pesos', name: 'obra_contrato_nacion_pesos', title: 'Contrato Nacion Pesos' },
+          { data: 'obra_contrato_nacion_uvi', name: 'obra_contrato_nacion_uvi', title: 'Contrato Nacion UVI' },
+          {
+              data: 'obra_contrato_nacion_uvi_fecha', name: 'obra_contrato_nacion_uvi_fecha',
+              title: 'Fecha UVI Nación', filterType: 'date',
+          },
+          { data: 'obra_contrato_provincia_pesos', name: 'obra_contrato_provincia_pesos', title: 'Contrato Provincia Pesos' },
+          { data: 'obra_contrato_provincia_uvi', name: 'obra_contrato_provincia_uvi', title: 'Contrato Provincia UVI' },
+          {
+              data: 'obra_contrato_provincia_uvi_fecha', name: 'obra_contrato_provincia_uvi_fecha',
+              title: 'Fecha UVI Provincia', filterType: 'date',
+          },
+          { data: 'obra_contrato_terceros_pesos', name: 'obra_contrato_terceros_pesos', title: 'Contrato Terceros Pesos' },
+          { data: 'obra_contrato_terceros_uvi', name: 'obra_contrato_terceros_uvi', title: 'Contrato Terceros UVI' },
+          {
+              data: 'obra_contrato_terceros_uvi_fecha', name: 'obra_contrato_terceros_uvi_fecha',
+              title: 'Fecha UVI Terceros', filterType: 'date',
+          },
+          { data: 'obra_principal', name: 'obra_principal', title: 'Obra Madre', orderable: false },
+          { data: 'obra_acumulado', title: 'Avance Acumulado', orderable: false, searchable: false },
+          { data: 'obra_anticipo_acumulado', title: 'Avance Anticipo', orderable: false, searchable: false },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
 
-              // extra_data
-              // ...
+      NinjaDatatableUtils.initialize_table(
+          $('#tableObrasExtendida'),
+          '/v1/api/datatables/obras-extendida/',
+          columns,
+          {
+              order: [[0, 'desc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/obras/{id}/detalle/',
           },
       );
   });

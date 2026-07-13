@@ -1,15 +1,25 @@
 # carga app API views
+import json
 from typing import List
 
 from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from ninja import Router
 from ninja.decorators import decorate_view
 from ninja.pagination import paginate
 
+from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg
+
 from api.permissions import get_group_perms, require_model_perm
-from api.views.generics import PerPagePagination
+from api.views.generics import (
+    PerPagePagination,
+    clip_value_html,
+    format_thousands,
+    parse_order_by,
+    register_simple_datatable,
+)
 from api.schemas.carga_schemas import (
     ReceptorOut, ReceptorCreate, ReceptorUpdate,
     AreaOut, AreaCreate, AreaUpdate,
@@ -55,6 +65,7 @@ from carga.models import (
     Localidad,
     Municipio,
     Obra,
+    obras_con_acumulado_anotado,
     PlanDeTrabajos,
     Poliza,
     Poliza_Movimiento,
@@ -181,6 +192,30 @@ def delete_aseguradora(request, id: int):
     return {"deleted": bool(deleted)}
 
 
+def _aseguradora_datatable_row(a: Aseguradora, user) -> dict:
+    id_ = str(a.id)
+    editarlink = f"<a href='/obra/crear/aseguradora/{id_}'>{editlinkimg}</a>"
+    detallelink = f"<a href='#'>{detallelinkimg}</a>"
+    eliminarlink = f"<a href='/obra/eliminar/aseguradora/{id_}'>{eliminarlinkimg}</a>"
+    if user.has_perm("carga.delete_aseguradora"):
+        acciones = f"{editarlink}{detallelink}{eliminarlink}"
+    elif user.has_perm("carga.change_aseguradora"):
+        acciones = f"{editarlink}{detallelink}"
+    else:
+        acciones = detallelink
+    return {"id": a.id, "aseguradora_nombre": a.aseguradora_nombre, "acciones": acciones}
+
+
+register_simple_datatable(
+    router, Aseguradora, "aseguradoras",
+    order_fields={"id": "id", "aseguradora_nombre": "aseguradora_nombre"},
+    filter_fields={"aseguradora_nombre": "aseguradora_nombre__icontains"},
+    search_lookups=["aseguradora_nombre__icontains"],
+    row_builder=_aseguradora_datatable_row,
+    default_order="aseguradora_nombre",
+)
+
+
 # --- Empresa ---
 @router.get("/empresas/", response=List[EmpresaOut])
 @decorate_view(require_model_perm(Empresa))
@@ -225,6 +260,46 @@ def delete_empresa(request, id: int):
     return {"deleted": bool(deleted)}
 
 
+def _empresa_datatable_row(e: Empresa, user) -> dict:
+    id_ = str(e.id)
+    editarlink = f"<a href='/obra/crear/empresa/{id_}'>{editlinkimg}</a>"
+    detallelink = f"<a href='/obra/crear/empresa/obra/{id_}'>{detallelinkimg}</a>"
+    eliminarlink = f"<a href='/obra/eliminar/empresa/{id_}'>{eliminarlinkimg}</a>"
+    if user.has_perm("carga.delete_empresa"):
+        acciones = f"{editarlink}{detallelink}{eliminarlink}"
+    elif user.has_perm("carga.change_empresa"):
+        acciones = f"{editarlink}{detallelink}"
+    else:
+        acciones = detallelink
+    return {
+        "id": e.id,
+        "empresa_nombre": e.empresa_nombre,
+        "empresa_cuit": e.empresa_cuit,
+        "empresa_titular_nombre": e.empresa_titular_nombre,
+        "empresa_direccion": e.empresa_direccion,
+        "acciones": acciones,
+    }
+
+
+register_simple_datatable(
+    router, Empresa, "empresas",
+    order_fields={
+        "id": "id", "empresa_nombre": "empresa_nombre", "empresa_cuit": "empresa_cuit",
+        "empresa_titular_nombre": "empresa_titular_nombre", "empresa_direccion": "empresa_direccion",
+    },
+    filter_fields={
+        "empresa_nombre": "empresa_nombre__icontains", "empresa_cuit": "empresa_cuit__icontains",
+        "empresa_titular_nombre": "empresa_titular_nombre__icontains",
+        "empresa_direccion": "empresa_direccion__icontains",
+    },
+    search_lookups=[
+        "empresa_nombre__icontains", "empresa_cuit__icontains",
+        "empresa_titular_nombre__icontains", "empresa_direccion__icontains",
+    ],
+    row_builder=_empresa_datatable_row,
+)
+
+
 # --- Programa ---
 @router.get("/programas/", response=List[ProgramaOut])
 @decorate_view(require_model_perm(Programa))
@@ -260,6 +335,29 @@ def update_programa(request, id: int, payload: ProgramaUpdate):
 def delete_programa(request, id: int):
     deleted, _ = Programa.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
+
+
+def _programa_datatable_row(p: Programa, user) -> dict:
+    id_ = str(p.id)
+    editarlink = f"<a href='/obra/crear/programa/{id_}'>{editlinkimg}</a>"
+    detallelink = f"<a href='/obra/crear/programa/obra/{id_}'>{detallelinkimg}</a>"
+    eliminarlink = f"<a href='/obra/eliminar/programa/{id_}'>{eliminarlinkimg}</a>"
+    if user.has_perm("carga.delete_programa"):
+        acciones = f"{editarlink}{detallelink}{eliminarlink}"
+    elif user.has_perm("carga.change_programa"):
+        acciones = f"{editarlink}{detallelink}"
+    else:
+        acciones = detallelink
+    return {"id": p.id, "programa_nombre": p.programa_nombre, "acciones": acciones}
+
+
+register_simple_datatable(
+    router, Programa, "programas",
+    order_fields={"id": "id", "programa_nombre": "programa_nombre"},
+    filter_fields={"programa_nombre": "programa_nombre__icontains"},
+    search_lookups=["programa_nombre__icontains"],
+    row_builder=_programa_datatable_row,
+)
 
 
 # --- Provincia ---
@@ -336,6 +434,30 @@ def delete_region(request, id: int):
     return {"deleted": bool(deleted)}
 
 
+def _region_datatable_row(r: Region, user) -> dict:
+    id_ = str(r.id)
+    editarlink = f"<a href='/obra/crear/region/{id_}'>{editlinkimg}</a>"
+    detallelink = f"<a href='/obra/crear/region/obra/{id_}'>{detallelinkimg}</a>"
+    eliminarlink = f"<a href='/obra/eliminar/region/{id_}'>{eliminarlinkimg}</a>"
+    if user.has_perm("carga.delete_region"):
+        acciones = f"{editarlink}{detallelink}{eliminarlink}"
+    elif user.has_perm("carga.change_region"):
+        acciones = f"{editarlink}{detallelink}"
+    else:
+        acciones = detallelink
+    return {"id": r.id, "region_numero": r.region_numero, "acciones": acciones}
+
+
+register_simple_datatable(
+    router, Region, "regiones",
+    order_fields={"region_numero": "region_numero"},
+    filter_fields={"region_numero": "region_numero__icontains"},
+    search_lookups=["region_numero__icontains"],
+    row_builder=_region_datatable_row,
+    default_order="region_numero",
+)
+
+
 # --- Departamento (carga) ---
 @router.get("/departamentos-carga/", response=List[DepartamentoCargaOut])
 @decorate_view(require_model_perm(Departamento))
@@ -371,6 +493,29 @@ def update_departamento_carga(request, id: int, payload: DepartamentoCargaUpdate
 def delete_departamento_carga(request, id: int):
     deleted, _ = Departamento.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
+
+
+def _departamento_carga_datatable_row(d: Departamento, user) -> dict:
+    id_ = str(d.id)
+    editarlink = f"<a href='/obra/crear/departamento/{id_}'>{editlinkimg}</a>"
+    detallelink = f"<a href='/obra/crear/departamento/{id_}'>{detallelinkimg}</a>"
+    eliminarlink = f"<a href='/obra/eliminar/departamento/{id_}'>{eliminarlinkimg}</a>"
+    if user.has_perm("carga.delete_departamento"):
+        acciones = f"{editarlink}{detallelink}{eliminarlink}"
+    elif user.has_perm("carga.change_departamento"):
+        acciones = f"{editarlink}{detallelink}"
+    else:
+        acciones = detallelink
+    return {"id": d.id, "departamento_nombre": d.departamento_nombre, "acciones": acciones}
+
+
+register_simple_datatable(
+    router, Departamento, "departamentos-carga",
+    order_fields={"id": "id", "departamento_nombre": "departamento_nombre"},
+    filter_fields={"departamento_nombre": "departamento_nombre__icontains"},
+    search_lookups=["departamento_nombre__icontains"],
+    row_builder=_departamento_carga_datatable_row,
+)
 
 
 # --- Municipio ---
@@ -413,6 +558,49 @@ def delete_municipio(request, id: int):
     return {"deleted": bool(deleted)}
 
 
+def _municipio_datatable_row(m: Municipio, user) -> dict:
+    id_ = str(m.id)
+    editarlink = f"<a href='/obra/crear/municipio/{id_}'>{editlinkimg}</a>"
+    detallelink = f"<a href='/obra/crear/municipio/obra/{id_}'>{detallelinkimg}</a>"
+    eliminarlink = f"<a href='/obra/eliminar/municipio/{id_}'>{eliminarlinkimg}</a>"
+    if user.has_perm("carga.delete_municipio"):
+        acciones = f"{editarlink}{detallelink}{eliminarlink}"
+    elif user.has_perm("carga.change_municipio"):
+        acciones = f"{editarlink}{detallelink}"
+    else:
+        acciones = detallelink
+    return {
+        "id": m.id,
+        "municipio_nombre": m.municipio_nombre,
+        "municipio_departamento": m.municipio_departamento.departamento_nombre,
+        "municipio_region": m.municipio_region.region_numero if m.municipio_region_id else "",
+        "acciones": acciones,
+    }
+
+
+register_simple_datatable(
+    router, Municipio, "municipios",
+    order_fields={
+        "id": "id",
+        "municipio_nombre": "municipio_nombre",
+        "municipio_departamento": "municipio_departamento__departamento_nombre",
+        "municipio_region": "municipio_region__region_numero",
+    },
+    filter_fields={
+        "municipio_nombre": "municipio_nombre__icontains",
+        "municipio_departamento": "municipio_departamento__departamento_nombre__icontains",
+        "municipio_region": "municipio_region__region_numero__icontains",
+    },
+    search_lookups=[
+        "municipio_nombre__icontains",
+        "municipio_departamento__departamento_nombre__icontains",
+        "municipio_region__region_numero__icontains",
+    ],
+    row_builder=_municipio_datatable_row,
+    queryset=Municipio.objects.select_related("municipio_departamento", "municipio_region"),
+)
+
+
 # --- Localidad ---
 @router.get("/localidades/", response=List[LocalidadOut])
 @decorate_view(require_model_perm(Localidad))
@@ -451,6 +639,66 @@ def update_localidad(request, id: int, payload: LocalidadUpdate):
 def delete_localidad(request, id: int):
     deleted, _ = Localidad.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
+
+
+def _localidad_datatable_row(l: Localidad, user) -> dict:
+    id_ = str(l.id)
+    editarlink = f"<a href='/obra/crear/localidad/{id_}'>{editlinkimg}</a>"
+    detallelink = f"<a href='/obra/crear/localidad/obra/{id_}'>{detallelinkimg}</a>"
+    eliminarlink = f"<a href='/obra/eliminar/localidad/{id_}'>{eliminarlinkimg}</a>"
+    if user.has_perm("carga.delete_localidad"):
+        acciones = f"{editarlink}{detallelink}{eliminarlink}"
+    elif user.has_perm("carga.change_localidad"):
+        acciones = f"{editarlink}{detallelink}"
+    else:
+        acciones = detallelink
+    return {
+        "id": l.id,
+        "localidad_nombre": l.localidad_nombre,
+        "localidad_municipio": l.localidad_municipio.municipio_nombre,
+        "localidad_departamento": l.localidad_departamento.departamento_nombre,
+        "localidad_funcion": l.localidad_funcion or "",
+        "acciones": acciones,
+    }
+
+
+register_simple_datatable(
+    router, Localidad, "localidades",
+    order_fields={
+        "id": "id",
+        "localidad_nombre": "localidad_nombre",
+        "localidad_municipio": "localidad_municipio__municipio_nombre",
+        "localidad_departamento": "localidad_departamento__departamento_nombre",
+        "localidad_funcion": "localidad_funcion",
+    },
+    filter_fields={
+        "localidad_nombre": "localidad_nombre__icontains",
+        "localidad_municipio": "localidad_municipio__municipio_nombre__icontains",
+        "localidad_departamento": "localidad_departamento__departamento_nombre__icontains",
+        "localidad_funcion": "localidad_funcion",
+    },
+    search_lookups=[
+        "localidad_nombre__icontains",
+        "localidad_municipio__municipio_nombre__icontains",
+        "localidad_departamento__departamento_nombre__icontains",
+    ],
+    row_builder=_localidad_datatable_row,
+    default_order="localidad_nombre",
+    queryset=Localidad.objects.select_related("localidad_municipio", "localidad_departamento"),
+)
+
+
+@router.get("/datatables/localidades/filtro-funcion/")
+@decorate_view(require_model_perm(Localidad))
+def datatable_localidades_filtro_funcion(request):
+    valores = (
+        Localidad.objects.exclude(localidad_funcion=None)
+        .exclude(localidad_funcion="")
+        .values_list("localidad_funcion", flat=True)
+        .distinct()
+        .order_by("localidad_funcion")
+    )
+    return {"choices": [[v, v] for v in valores]}
 
 
 # --- Obra (complex model with M2M fields) ---
@@ -564,6 +812,334 @@ def update_obra(request, id: int, payload: ObraUpdate):
 def delete_obra(request, id: int):
     deleted, _ = Obra.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
+
+
+# --- Obra datatable (server-side data for the DataTables listing) ---
+
+_OBRA_DATATABLE_ORDER_FIELDS = {
+    "id": "id",
+    "obra_programa": "obra_programa__programa_nombre",
+    "obra_convenio": "obra_convenio",
+    "obra_nombre": "obra_nombre",
+    "obra_empresa": "obra_empresa__empresa_nombre",
+}
+
+_OBRA_DATATABLE_FILTER_FIELDS = {
+    "id": "id__icontains",
+    "obra_programa": "obra_programa__programa_nombre__icontains",
+    "obra_convenio": "obra_convenio__icontains",
+    "obra_nombre": "obra_nombre__icontains",
+    "obra_empresa": "obra_empresa__empresa_nombre__icontains",
+    "obra_localidad": "obra_localidad_m__localidad_nombre__icontains",
+}
+
+
+def _obra_datatable_row(o: Obra, user) -> dict:
+    acumulado = getattr(o, "obra_acum_pct_anotado", None)
+    anticipo_acumulado = getattr(o, "obra_anticipo_acumulado_anotado", None)
+
+    editarlink = f"<a href='/obra/crear/obra/{o.id}'>{editlinkimg}</a>"
+    detallelink = f"<a href='/obra/crear/obra/estado/{o.id}'>{detallelinkimg}</a>"
+    eliminarlink = f"<a href='/obra/eliminar/obra/{o.id}'>{eliminarlinkimg}</a>"
+    if user.has_perm("carga.delete_obra"):
+        acciones = f"{editarlink}{detallelink}{eliminarlink}"
+    elif user.has_perm("carga.change_obra"):
+        acciones = f"{editarlink}{detallelink}"
+    else:
+        acciones = detallelink
+
+    return {
+        "id": o.id,
+        "obra_programa": o.obra_programa.programa_nombre,
+        "obra_convenio": o.obra_convenio,
+        "obra_nombre": o.obra_nombre,
+        "obra_empresa": o.obra_empresa.empresa_nombre,
+        "obra_localidad": ", ".join(l.localidad_nombre for l in o.obra_localidad_m.all()),
+        "obra_acumulado": (str(acumulado) if acumulado is not None else "0.00") + "%",
+        "obra_anticipo_acumulado": (str(anticipo_acumulado) if anticipo_acumulado is not None else "0.00") + "%",
+        "acciones": acciones,
+    }
+
+
+@router.get("/datatables/obras/")
+@decorate_view(require_model_perm(Obra))
+def datatable_obras(
+    request,
+    draw: int = 1,
+    start: int = 0,
+    length: int = 50,
+    search: str = "",
+    order_by: str = "-id",
+    filters: str = "{}",
+):
+    qs = obras_con_acumulado_anotado(
+        Obra.objects.select_related("obra_empresa", "obra_programa").prefetch_related("obra_localidad_m")
+    )
+    records_total = qs.count()
+
+    try:
+        active_filters = json.loads(filters)
+    except (TypeError, ValueError):
+        active_filters = {}
+    needs_distinct = False
+    for key, value in active_filters.items():
+        lookup = _OBRA_DATATABLE_FILTER_FIELDS.get(key)
+        if lookup and value not in (None, ""):
+            qs = qs.filter(**{lookup: value})
+            if key == "obra_localidad":
+                needs_distinct = True
+    if needs_distinct:
+        qs = qs.distinct()
+
+    if search:
+        qs = qs.filter(
+            Q(id__icontains=search)
+            | Q(obra_programa__programa_nombre__icontains=search)
+            | Q(obra_convenio__icontains=search)
+            | Q(obra_nombre__icontains=search)
+            | Q(obra_empresa__empresa_nombre__icontains=search)
+            | Q(obra_localidad_m__localidad_nombre__icontains=search)
+        ).distinct()
+
+    records_filtered = qs.count()
+
+    qs = qs.order_by(*parse_order_by(order_by, _OBRA_DATATABLE_ORDER_FIELDS), "id")
+
+    page = qs[start:] if length == -1 else qs[start:start + length]
+
+    return {
+        "draw": draw,
+        "recordsTotal": records_total,
+        "recordsFiltered": records_filtered,
+        "data": [_obra_datatable_row(o, request.user) for o in page],
+    }
+
+
+@router.get("/datatables/obras/{id}/detalle/")
+@decorate_view(require_model_perm(Obra))
+def datatable_obras_detalle(request, id: int):
+    o = get_object_or_404(
+        Obra.objects.select_related("obra_empresa", "obra_programa").prefetch_related("obra_madre"),
+        id=id,
+    )
+    html = render_to_string(
+        "ajax_datatable/carga/obra/render_row_details.html",
+        {"model": Obra, "object": o},
+        request=request,
+    )
+    return {"html": html}
+
+
+# --- Obra extendida datatable (full export-style listing, ~35 columns) ---
+
+_OBRA_EXT_ORDER_FIELDS = {
+    "id": "id",
+    "obra_nombre": "obra_nombre",
+    "obra_soluciones": "obra_soluciones",
+    "obra_empresa": "obra_empresa__empresa_nombre",
+    "obra_region": "obra_region__region_numero",
+    "obra_conjunto": "obra_conjunto__conjunto_nombre",
+    "obra_grupo": "obra_grupo",
+    "obra_plazo": "obra_plazo",
+    "obra_programa": "obra_programa__programa_nombre",
+    "obra_convenio": "obra_convenio",
+    "obra_expediente": "obra_expediente",
+    "obra_resolucion": "obra_resolucion",
+    "obra_licitacion_tipo": "obra_licitacion_tipo",
+    "obra_licitacion_numero": "obra_licitacion_numero",
+    "obra_licitacion_ano": "obra_licitacion_ano",
+    "obra_nomenclatura": "obra_nomenclatura",
+    "obra_nomenclatura_plano": "obra_nomenclatura_plano",
+    "obra_fecha_entrega": "obra_fecha_entrega",
+    "obra_fecha_contrato": "obra_fecha_contrato",
+    "obra_observaciones": "obra_observaciones",
+    "obra_contrato_nacion_pesos": "obra_contrato_nacion_pesos",
+    "obra_contrato_nacion_uvi": "obra_contrato_nacion_uvi",
+    "obra_contrato_nacion_uvi_fecha": "obra_contrato_nacion_uvi_fecha",
+    "obra_contrato_provincia_pesos": "obra_contrato_provincia_pesos",
+    "obra_contrato_provincia_uvi": "obra_contrato_provincia_uvi",
+    "obra_contrato_provincia_uvi_fecha": "obra_contrato_provincia_uvi_fecha",
+    "obra_contrato_terceros_pesos": "obra_contrato_terceros_pesos",
+    "obra_contrato_terceros_uvi": "obra_contrato_terceros_uvi",
+    "obra_contrato_terceros_uvi_fecha": "obra_contrato_terceros_uvi_fecha",
+}
+
+_OBRA_EXT_FILTER_FIELDS = {
+    "id": "id__icontains",
+    "obra_nombre": "obra_nombre__icontains",
+    "obra_soluciones": "obra_soluciones__icontains",
+    "obra_empresa": "obra_empresa__empresa_nombre__icontains",
+    "obra_region": "obra_region__region_numero__icontains",
+    "obra_departamento_m": "obra_departamento_m__departamento_nombre__icontains",
+    "obra_municipio_m": "obra_municipio_m__municipio_nombre__icontains",
+    "obra_localidad_m": "obra_localidad_m__localidad_nombre__icontains",
+    "obra_conjunto": "obra_conjunto__conjunto_nombre__icontains",
+    "obra_grupo": "obra_grupo__icontains",
+    "obra_plazo": "obra_plazo__icontains",
+    "obra_programa": "obra_programa_id",
+    "obra_convenio": "obra_convenio__icontains",
+    "obra_expediente": "obra_expediente__icontains",
+    "obra_resolucion": "obra_resolucion__icontains",
+    "obra_licitacion_tipo": "obra_licitacion_tipo",
+    "obra_licitacion_numero": "obra_licitacion_numero__icontains",
+    "obra_licitacion_ano": "obra_licitacion_ano",
+    "obra_nomenclatura": "obra_nomenclatura__icontains",
+    "obra_nomenclatura_plano": "obra_nomenclatura_plano__icontains",
+    "obra_fecha_entrega": "obra_fecha_entrega",
+    "obra_fecha_contrato": "obra_fecha_contrato",
+    "obra_observaciones": "obra_observaciones__icontains",
+    "obra_principal": "obra_principal__obra_nombre__icontains",
+    "obra_contrato_nacion_pesos": "obra_contrato_nacion_pesos__icontains",
+    "obra_contrato_nacion_uvi": "obra_contrato_nacion_uvi__icontains",
+    "obra_contrato_nacion_uvi_fecha": "obra_contrato_nacion_uvi_fecha",
+    "obra_contrato_provincia_pesos": "obra_contrato_provincia_pesos__icontains",
+    "obra_contrato_provincia_uvi": "obra_contrato_provincia_uvi__icontains",
+    "obra_contrato_provincia_uvi_fecha": "obra_contrato_provincia_uvi_fecha",
+    "obra_contrato_terceros_pesos": "obra_contrato_terceros_pesos__icontains",
+    "obra_contrato_terceros_uvi": "obra_contrato_terceros_uvi__icontains",
+    "obra_contrato_terceros_uvi_fecha": "obra_contrato_terceros_uvi_fecha",
+}
+
+_OBRA_EXT_DISTINCT_FILTER_KEYS = {"obra_departamento_m", "obra_municipio_m", "obra_localidad_m", "obra_principal"}
+
+_OBRA_EXT_SEARCH_LOOKUPS = [
+    "obra_nombre__icontains", "obra_empresa__empresa_nombre__icontains",
+    "obra_region__region_numero__icontains", "obra_departamento_m__departamento_nombre__icontains",
+    "obra_municipio_m__municipio_nombre__icontains", "obra_localidad_m__localidad_nombre__icontains",
+    "obra_conjunto__conjunto_nombre__icontains", "obra_grupo__icontains", "obra_plazo__icontains",
+    "obra_programa__programa_nombre__icontains", "obra_convenio__icontains", "obra_expediente__icontains",
+    "obra_resolucion__icontains", "obra_nomenclatura__icontains", "obra_nomenclatura_plano__icontains",
+    "obra_observaciones__icontains", "obra_principal__obra_nombre__icontains",
+]
+
+
+def _obra_ext_datatable_row(o: Obra, user) -> dict:
+    acumulado = getattr(o, "obra_acum_pct_anotado", None)
+    anticipo_acumulado = getattr(o, "obra_anticipo_acumulado_anotado", None)
+
+    id_ = str(o.id)
+    detallelink = f"<a href='/obra/crear/obra/estado/{id_}'>{detallelinkimg}</a>"
+    if user.has_perm("carga.change_obra"):
+        editarlink = f"<a href='/obra/crear/obra/{id_}'>{editlinkimg}</a>"
+        acciones = f"{editarlink}{detallelink}"
+    else:
+        acciones = detallelink
+
+    return {
+        "id": o.id,
+        "obra_nombre": clip_value_html(o.obra_nombre, 100),
+        "obra_soluciones": o.obra_soluciones,
+        "obra_empresa": o.obra_empresa.empresa_nombre,
+        "obra_region": o.obra_region.region_numero if o.obra_region_id else "",
+        "obra_departamento_m": ", ".join(d.departamento_nombre for d in o.obra_departamento_m.all()),
+        "obra_municipio_m": ", ".join(m.municipio_nombre for m in o.obra_municipio_m.all()),
+        "obra_localidad_m": ", ".join(l.localidad_nombre for l in o.obra_localidad_m.all()),
+        "obra_conjunto": clip_value_html(o.obra_conjunto.conjunto_nombre, 100) if o.obra_conjunto_id else "",
+        "obra_grupo": o.obra_grupo or "",
+        "obra_plazo": o.obra_plazo or "",
+        "obra_programa": clip_value_html(o.obra_programa.programa_nombre, 100),
+        "obra_convenio": o.obra_convenio or "",
+        "obra_expediente": o.obra_expediente,
+        "obra_resolucion": o.obra_resolucion or "",
+        "obra_licitacion_tipo": o.get_obra_licitacion_tipo_display() if o.obra_licitacion_tipo else "",
+        "obra_licitacion_numero": o.obra_licitacion_numero,
+        "obra_licitacion_ano": o.obra_licitacion_ano,
+        "obra_nomenclatura": clip_value_html(o.obra_nomenclatura or "", 100),
+        "obra_nomenclatura_plano": o.obra_nomenclatura_plano or "",
+        "obra_fecha_entrega": o.obra_fecha_entrega.isoformat() if o.obra_fecha_entrega else "",
+        "obra_fecha_contrato": o.obra_fecha_contrato.isoformat() if o.obra_fecha_contrato else "",
+        "obra_inspector": ", ".join(str(agente) for agente in o.obra_inspector.all()),
+        "obra_observaciones": clip_value_html(o.obra_observaciones or "", 100),
+        "obra_contrato_nacion_pesos": format_thousands(o.obra_contrato_nacion_pesos),
+        "obra_contrato_nacion_uvi": format_thousands(o.obra_contrato_nacion_uvi),
+        "obra_contrato_nacion_uvi_fecha": o.obra_contrato_nacion_uvi_fecha.isoformat() if o.obra_contrato_nacion_uvi_fecha else "",
+        "obra_contrato_provincia_pesos": format_thousands(o.obra_contrato_provincia_pesos),
+        "obra_contrato_provincia_uvi": format_thousands(o.obra_contrato_provincia_uvi),
+        "obra_contrato_provincia_uvi_fecha": o.obra_contrato_provincia_uvi_fecha.isoformat() if o.obra_contrato_provincia_uvi_fecha else "",
+        "obra_contrato_terceros_pesos": format_thousands(o.obra_contrato_terceros_pesos),
+        "obra_contrato_terceros_uvi": format_thousands(o.obra_contrato_terceros_uvi),
+        "obra_contrato_terceros_uvi_fecha": o.obra_contrato_terceros_uvi_fecha.isoformat() if o.obra_contrato_terceros_uvi_fecha else "",
+        "obra_principal": ", ".join(m.obra_nombre for m in o.obra_principal.all()),
+        "obra_acumulado": (str(acumulado) if acumulado is not None else "0.00") + "%",
+        "obra_anticipo_acumulado": (str(anticipo_acumulado) if anticipo_acumulado is not None else "0.00") + "%",
+        "acciones": acciones,
+    }
+
+
+@router.get("/datatables/obras-extendida/")
+@decorate_view(require_model_perm(Obra))
+def datatable_obras_extendida(
+    request,
+    draw: int = 1,
+    start: int = 0,
+    length: int = 50,
+    search: str = "",
+    order_by: str = "-id",
+    filters: str = "{}",
+):
+    qs = obras_con_acumulado_anotado(
+        Obra.objects.select_related("obra_empresa", "obra_region", "obra_conjunto", "obra_programa")
+        .prefetch_related(
+            "obra_departamento_m", "obra_municipio_m", "obra_localidad_m", "obra_inspector", "obra_principal",
+        )
+    )
+    records_total = qs.count()
+
+    try:
+        active_filters = json.loads(filters)
+    except (TypeError, ValueError):
+        active_filters = {}
+    needs_distinct = False
+    for key, value in active_filters.items():
+        lookup = _OBRA_EXT_FILTER_FIELDS.get(key)
+        if not lookup or value in (None, ""):
+            continue
+        qs = qs.filter(**{lookup: value})
+        if key in _OBRA_EXT_DISTINCT_FILTER_KEYS:
+            needs_distinct = True
+    if needs_distinct:
+        qs = qs.distinct()
+
+    if search:
+        search_q = Q()
+        for lookup in _OBRA_EXT_SEARCH_LOOKUPS:
+            search_q |= Q(**{lookup: search})
+        qs = qs.filter(search_q).distinct()
+
+    records_filtered = qs.count()
+    qs = qs.order_by(*parse_order_by(order_by, _OBRA_EXT_ORDER_FIELDS), "id")
+    page = qs[start:] if length == -1 else qs[start:start + length]
+
+    return {
+        "draw": draw,
+        "recordsTotal": records_total,
+        "recordsFiltered": records_filtered,
+        "data": [_obra_ext_datatable_row(o, request.user) for o in page],
+    }
+
+
+@router.get("/datatables/obras-extendida/filtro-programa/")
+@decorate_view(require_model_perm(Obra))
+def datatable_obras_extendida_filtro_programa(request):
+    choices = (
+        Obra.objects.exclude(obra_programa=None)
+        .values_list("obra_programa_id", "obra_programa__programa_nombre")
+        .distinct()
+        .order_by("obra_programa__programa_nombre")
+    )
+    return {"choices": list(choices)}
+
+
+@router.get("/datatables/obras-extendida/filtro-ano/")
+@decorate_view(require_model_perm(Obra))
+def datatable_obras_extendida_filtro_ano(request):
+    valores = (
+        Obra.objects.exclude(obra_licitacion_ano=None)
+        .values_list("obra_licitacion_ano", flat=True)
+        .distinct()
+        .order_by("obra_licitacion_ano")
+    )
+    return {"choices": [[str(v), str(v)] for v in valores]}
 
 
 # --- Prototipo ---
@@ -720,6 +1296,129 @@ def delete_certificado(request, id: int):
     return {"deleted": bool(deleted)}
 
 
+_CERTIFICADO_DATATABLE_ORDER_FIELDS = {
+    "id": "id",
+    "certificado_obra": "certificado_obra__obra_nombre",
+    "certificado_empresa": "certificado_obra__obra_empresa__empresa_nombre",
+    "certificado_expediente": "certificado_expediente",
+    "certificado_fecha": "certificado_fecha",
+    "certificado_financiamiento": "certificado_financiamiento",
+    "certificado_rubro_db": "certificado_rubro_db__certificadorubro_nombre",
+    "certificado_rubro_anticipo": "certificado_rubro_anticipo",
+    "certificado_rubro_obra": "certificado_rubro_obra",
+    "certificado_rubro_devanticipo": "certificado_rubro_devanticipo",
+    "certificado_monto_cobrar": "certificado_monto_cobrar",
+    "certificado_monto_cobrar_uvi": "certificado_monto_cobrar_uvi",
+    "certificado_mes_pct": "certificado_mes_pct",
+}
+
+_CERTIFICADO_DATATABLE_FILTER_FIELDS = {
+    "certificado_obra": "certificado_obra__obra_nombre__icontains",
+    "certificado_empresa": "certificado_obra__obra_empresa__empresa_nombre__icontains",
+    "certificado_expediente": "certificado_expediente__icontains",
+    "certificado_fecha": "certificado_fecha",
+    "certificado_financiamiento": "certificado_financiamiento",
+    "certificado_rubro_db": "certificado_rubro_db_id",
+}
+
+
+def _certificado_datatable_row(c: Certificado, user) -> dict:
+    id_ = str(c.id)
+    editarlink = f"<a href='/obra/crear/certificado/{id_}'>{editlinkimg}</a>"
+    detallelink = f"<a href='/obra/crear/certificado/detalle/{id_}'>{detallelinkimg}</a>"
+    eliminarlink = f"<a href='/obra/eliminar/certificado/{id_}'>{eliminarlinkimg}</a>"
+    if user.has_perm("carga.delete_certificado"):
+        acciones = f"{editarlink}{detallelink}{eliminarlink}"
+    elif user.has_perm("carga.change_certificado"):
+        acciones = f"{editarlink}{detallelink}"
+    else:
+        acciones = detallelink
+    return {
+        "id": c.id,
+        "certificado_obra": c.certificado_obra.obra_nombre,
+        "certificado_empresa": c.certificado_obra.obra_empresa.empresa_nombre,
+        "certificado_expediente": c.certificado_expediente,
+        "certificado_fecha": c.certificado_fecha.isoformat() if c.certificado_fecha else "",
+        "certificado_financiamiento": c.get_certificado_financiamiento_display(),
+        "certificado_rubro_db": c.certificado_rubro_db.certificadorubro_nombre,
+        "certificado_rubro_anticipo": c.certificado_rubro_anticipo,
+        "certificado_rubro_obra": c.certificado_rubro_obra,
+        "certificado_rubro_devanticipo": c.certificado_rubro_devanticipo,
+        "certificado_monto_cobrar": format_thousands(c.certificado_monto_cobrar),
+        "certificado_monto_cobrar_uvi": format_thousands(c.certificado_monto_cobrar_uvi),
+        "certificado_mes_pct": c.certificado_mes_pct,
+        "acciones": acciones,
+    }
+
+
+@router.get("/datatables/certificados/")
+@decorate_view(require_model_perm(Certificado))
+def datatable_certificados(
+    request,
+    draw: int = 1,
+    start: int = 0,
+    length: int = 50,
+    search: str = "",
+    order_by: str = "-id",
+    filters: str = "{}",
+):
+    qs = Certificado.objects.select_related(
+        "certificado_obra__obra_empresa", "certificado_rubro_db"
+    ).all()
+    records_total = qs.count()
+
+    try:
+        active_filters = json.loads(filters)
+    except (TypeError, ValueError):
+        active_filters = {}
+    for key, value in active_filters.items():
+        lookup = _CERTIFICADO_DATATABLE_FILTER_FIELDS.get(key)
+        if lookup and value not in (None, ""):
+            qs = qs.filter(**{lookup: value})
+
+    if search:
+        qs = qs.filter(
+            Q(certificado_obra__obra_nombre__icontains=search)
+            | Q(certificado_obra__obra_empresa__empresa_nombre__icontains=search)
+            | Q(certificado_expediente__icontains=search)
+            | Q(certificado_rubro_db__certificadorubro_nombre__icontains=search)
+        ).distinct()
+
+    records_filtered = qs.count()
+    qs = qs.order_by(*parse_order_by(order_by, _CERTIFICADO_DATATABLE_ORDER_FIELDS), "id")
+    page = qs[start:] if length == -1 else qs[start:start + length]
+
+    return {
+        "draw": draw,
+        "recordsTotal": records_total,
+        "recordsFiltered": records_filtered,
+        "data": [_certificado_datatable_row(c, request.user) for c in page],
+    }
+
+
+@router.get("/datatables/certificados/{id}/detalle/")
+@decorate_view(require_model_perm(Certificado))
+def datatable_certificados_detalle(request, id: int):
+    c = get_object_or_404(Certificado.objects.select_related("certificado_obra"), id=id)
+    html = render_to_string(
+        "ajax_datatable/carga/certificado/render_row_details.html",
+        {"model": Certificado, "object": c},
+        request=request,
+    )
+    return {"html": html}
+
+
+@router.get("/datatables/certificados/filtro-rubro/")
+@decorate_view(require_model_perm(Certificado))
+def datatable_certificados_filtro_rubro(request):
+    choices = (
+        Certificado.objects.values_list("certificado_rubro_db_id", "certificado_rubro_db__certificadorubro_nombre")
+        .distinct()
+        .order_by("certificado_rubro_db__certificadorubro_nombre")
+    )
+    return {"choices": list(choices)}
+
+
 # --- ConjuntoLicitado ---
 @router.get("/conjuntos/", response=List[ConjuntoLicitadoOut])
 @decorate_view(require_model_perm(ConjuntoLicitado))
@@ -755,6 +1454,45 @@ def update_conjunto(request, id: int, payload: ConjuntoLicitadoUpdate):
 def delete_conjunto(request, id: int):
     deleted, _ = ConjuntoLicitado.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
+
+
+def _conjunto_datatable_row(c: ConjuntoLicitado, user) -> dict:
+    id_ = str(c.id)
+    editarlink = f"<a href='/obra/crear/conjunto/{id_}'>{editlinkimg}</a>"
+    detallelink = f"<a href='#'>{detallelinkimg}</a>"
+    eliminarlink = f"<a href='/obra/eliminar/conjunto/{id_}'>{eliminarlinkimg}</a>"
+    if user.has_perm("carga.delete_conjunto"):
+        acciones = f"{editarlink}{detallelink}{eliminarlink}"
+    elif user.has_perm("carga.change_conjunto"):
+        acciones = f"{editarlink}{detallelink}"
+    else:
+        acciones = detallelink
+    return {
+        "id": c.id,
+        "conjunto_nombre": c.conjunto_nombre,
+        "conjunto_resolucion": c.conjunto_resolucion,
+        "conjunto_subconjunto": c.conjunto_subconjunto.conjunto_nombre if c.conjunto_subconjunto_id else "",
+        "acciones": acciones,
+    }
+
+
+register_simple_datatable(
+    router, ConjuntoLicitado, "conjuntos",
+    order_fields={
+        "id": "id", "conjunto_nombre": "conjunto_nombre", "conjunto_resolucion": "conjunto_resolucion",
+        "conjunto_subconjunto": "conjunto_subconjunto__conjunto_nombre",
+    },
+    filter_fields={
+        "conjunto_nombre": "conjunto_nombre__icontains", "conjunto_resolucion": "conjunto_resolucion__icontains",
+        "conjunto_subconjunto": "conjunto_subconjunto__conjunto_nombre__icontains",
+    },
+    search_lookups=[
+        "conjunto_nombre__icontains", "conjunto_resolucion__icontains",
+        "conjunto_subconjunto__conjunto_nombre__icontains",
+    ],
+    row_builder=_conjunto_datatable_row,
+    queryset=ConjuntoLicitado.objects.select_related("conjunto_subconjunto"),
+)
 
 
 # --- PlanDeTrabajos ---
@@ -1084,6 +1822,69 @@ def update_poliza(request, id: int, payload: PolizaUpdate):
 def delete_poliza(request, id: int):
     deleted, _ = Poliza.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
+
+
+def _poliza_datatable_row(p: Poliza, user) -> dict:
+    id_ = str(p.id)
+    editarlink = f"<a href='/obra/crear/poliza/{id_}'>{editlinkimg}</a>"
+    detallelink = f"<a href='/obra/crear/poliza/estado/{id_}'>{detallelinkimg}</a>"
+    eliminarlink = f"<a href='/obra/eliminar/poliza/{id_}'>{eliminarlinkimg}</a>"
+    if user.has_perm("carga.delete_poliza"):
+        acciones = f"{editarlink}{detallelink}{eliminarlink}"
+    elif user.has_perm("carga.change_poliza"):
+        acciones = f"{editarlink}{detallelink}"
+    else:
+        acciones = detallelink
+    return {
+        "id": p.id,
+        "poliza_fecha": p.poliza_fecha.isoformat() if p.poliza_fecha else "",
+        "poliza_expediente": p.poliza_expediente,
+        "poliza_numero": p.poliza_numero,
+        "poliza_concepto": p.get_poliza_concepto_display(),
+        "poliza_recibo": p.poliza_recibo,
+        "poliza_aseguradora": p.poliza_aseguradora.aseguradora_nombre,
+        "poliza_tomador": p.poliza_tomador.empresa_nombre,
+        "poliza_obra": p.poliza_obra.obra_nombre,
+        # Columna heredada de ajax_datatable que nunca se llegó a completar en
+        # customize_row (poliza_editor no es un campo del modelo); se preserva
+        # vacía para no alterar el comportamiento previo.
+        "poliza_editor": "",
+        "acciones": acciones,
+    }
+
+
+register_simple_datatable(
+    router, Poliza, "polizas",
+    order_fields={
+        "id": "id",
+        "poliza_fecha": "poliza_fecha",
+        "poliza_expediente": "poliza_expediente",
+        "poliza_numero": "poliza_numero",
+        "poliza_concepto": "poliza_concepto",
+        "poliza_recibo": "poliza_recibo",
+        "poliza_aseguradora": "poliza_aseguradora__aseguradora_nombre",
+        "poliza_tomador": "poliza_tomador__empresa_nombre",
+        "poliza_obra": "poliza_obra__obra_nombre",
+    },
+    filter_fields={
+        "poliza_fecha": "poliza_fecha",
+        "poliza_expediente": "poliza_expediente__icontains",
+        "poliza_numero": "poliza_numero__icontains",
+        "poliza_concepto": "poliza_concepto__icontains",
+        "poliza_recibo": "poliza_recibo__icontains",
+        "poliza_aseguradora": "poliza_aseguradora__aseguradora_nombre__icontains",
+        "poliza_tomador": "poliza_tomador__empresa_nombre__icontains",
+        "poliza_obra": "poliza_obra__obra_nombre__icontains",
+    },
+    search_lookups=[
+        "poliza_expediente__icontains", "poliza_numero__icontains", "poliza_recibo__icontains",
+        "poliza_aseguradora__aseguradora_nombre__icontains", "poliza_tomador__empresa_nombre__icontains",
+        "poliza_obra__obra_nombre__icontains",
+    ],
+    row_builder=_poliza_datatable_row,
+    default_order="-id",
+    queryset=Poliza.objects.select_related("poliza_aseguradora", "poliza_tomador", "poliza_obra"),
+)
 
 
 # --- Poliza_Movimiento ---

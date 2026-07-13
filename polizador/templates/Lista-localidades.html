@@ -19,22 +19,26 @@
 <script language="javascript">
 
   $(document).ready(function() {
-      AjaxDatatableViewUtils.initialize_table(
-          $('#tableLocalidades'),
-          "{% url 'carga:lista-localidades-datatables' %}",
+      var columns = [
+          { data: 'id', name: 'id', title: 'Id' },
+          { data: 'localidad_nombre', name: 'localidad_nombre', title: 'Localidad' },
+          { data: 'localidad_municipio', name: 'localidad_municipio', title: 'Municipio' },
+          { data: 'localidad_departamento', name: 'localidad_departamento', title: 'Departamento' },
           {
-              // extra_options (example)
-              processing: false,
-              autoWidth: false,
-              full_row_select: true,
-              scrollX: false,
-              dom: "<'row'<'col-sm-12 col-md-4'><'col-sm-12 col-md-4'f><'col-sm-12 col-md-4'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-              // language: {
-              // url: "/static/DataTables/DataTables-1.11.5/i18n/es-AR.json",
-              // },
-          }, {
-              // extra_data
-              // ...
+              data: 'localidad_funcion', name: 'localidad_funcion', title: 'Función',
+              filterType: 'select', filterChoicesUrl: '/v1/api/datatables/localidades/filtro-funcion/',
+          },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
+          $('#tableLocalidades'),
+          '/v1/api/datatables/localidades/',
+          columns,
+          {
+              order: [[1, 'asc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/localidades/{id}/detalle/',
           },
       );
   });

@@ -19,22 +19,23 @@
 <script language="javascript">
 
   $(document).ready(function() {
-      AjaxDatatableViewUtils.initialize_table(
+      var columns = [
+          { data: 'id', name: 'id', title: 'Id' },
+          { data: 'empresa_nombre', name: 'empresa_nombre', title: 'Nombre' },
+          { data: 'empresa_cuit', name: 'empresa_cuit', title: 'CUIT' },
+          { data: 'empresa_titular_nombre', name: 'empresa_titular_nombre', title: 'Titular' },
+          { data: 'empresa_direccion', name: 'empresa_direccion', title: 'Dirección' },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
           $('#tableEmpresas'),
-          "{% url 'carga:lista-empresas-datatables' %}",
+          '/v1/api/datatables/empresas/',
+          columns,
           {
-              // extra_options (example)
-              processing: false,
-              autoWidth: false,
-              full_row_select: true,
-              scrollX: false,
-              dom: "<'row'<'col-sm-12 col-md-4'><'col-sm-12 col-md-4'f><'col-sm-12 col-md-4'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-              // language: {
-              // url: "/static/DataTables/DataTables-1.11.5/i18n/es-AR.json",
-              // },
-          }, {
-              // extra_data
-              // ...
+              order: [[0, 'asc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/empresas/{id}/detalle/',
           },
       );
   });

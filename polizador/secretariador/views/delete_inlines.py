@@ -1,4 +1,3 @@
-from ajax_datatable.views import AjaxDatatableView
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator

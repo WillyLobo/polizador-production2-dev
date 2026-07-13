@@ -19,22 +19,25 @@
 <script language="javascript">
 
   $(document).ready(function() {
-      AjaxDatatableViewUtils.initialize_table(
+      var columns = [
+          { data: 'id', name: 'id', title: 'Id' },
+          { data: 'representantetecnico_nombre', name: 'representantetecnico_nombre', title: 'Nombre' },
+          { data: 'representantetecnico_apellido', name: 'representantetecnico_apellido', title: 'Apellido' },
+          { data: 'representantetecnico_dni', name: 'representantetecnico_dni', title: 'DNI' },
+          { data: 'representantetecnico_cuil', name: 'representantetecnico_cuil', title: 'CUIT' },
+          { data: 'representantetecnico_profesion', name: 'representantetecnico_profesion', title: 'Profesión' },
+          { data: 'representantetecnico_matricula', name: 'representantetecnico_matricula', title: 'Matrícula' },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
           $('#tableRepresentantesTecnicos'),
-          "{% url 'carga:lista-representantetecnicos-datatables' %}",
+          '/v1/api/datatables/representantes-tecnicos/',
+          columns,
           {
-              // extra_options (example)
-              processing: false,
-              autoWidth: false,
-              full_row_select: true,
-              scrollX: false,
-              dom: "<'row'<'col-sm-12 col-md-4'><'col-sm-12 col-md-4'f><'col-sm-12 col-md-4'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-              // language: {
-              // url: "/static/DataTables/DataTables-1.11.5/i18n/es-AR.json",
-              // },
-          }, {
-              // extra_data
-              // ...
+              order: [[0, 'asc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/representantes-tecnicos/{id}/detalle/',
           },
       );
   });

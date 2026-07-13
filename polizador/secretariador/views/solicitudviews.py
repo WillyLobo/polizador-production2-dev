@@ -1,15 +1,12 @@
-from ajax_datatable.views import AjaxDatatableView
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.shortcuts import render, redirect, HttpResponse
-from django.template import loader, TemplateDoesNotExist
 from django.urls import reverse_lazy
 from django.views import generic
 from secretariador.models import Solicitud, InstrumentosLegalesDecretos
 from carga.models import Provincia
 from secretariador.forms.solicitudform import *
-from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg, generarlinkimg, pdflinkimg
 from carga.views.generics import get_deleted_objects
 from pathlib import Path
 from django.conf import settings
@@ -259,119 +256,3 @@ def PaginaListaSolicitudes(request):
 	template_name = "Lista-solicitudes.html"
 
 	return render(request, template_name, {})
-@method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required("secretariador.view_solicitud", raise_exception=True), name="dispatch")
-class ListaSolicitudesView(AjaxDatatableView):
-	model = Solicitud
-	title = "Solicitudes"
-	initial_order = [["solicitud_actuacion_ano", "desc"], ["solicitud_actuacion_numero", "desc"]]
-	length_menu = [[50, 100, -1], [50, 100, "all"]]
-	search_values_separator = "+"
-
-	column_defs = [
-		AjaxDatatableView.render_row_tools_column_def(),
-		{'name': 'edit', 'title': '', 'placeholder': True, 'searchable': False, 'orderable': False, "width":81},
-		{"name": "id","title":"ID", "visible": False},
-		{"name":"solicitud_actuacion_ano"},
-		{"name":"solicitud_actuacion_numero"},
-		{"name":"solicitud_solicitante", "foreign_field":"solicitud_solicitante__agente_nombreyapellido"},
-		{"name":"Comisionados", "placeholder":True, "searchable": False, "orderable": False},
-		{"name":"solicitud_localidades", "m2m_foreign_field": "solicitud_localidades__localidad_nombre", "visible": True},
-		{"name":"solicitud_fecha_desde"},
-		{"name":"solicitud_fecha_hasta"},
-		{"name":"solicitud_tareas", "max_length":100},
-		{"name":"solicitud_vehiculo", "foreign_field":"solicitud_vehiculo__vehiculo_str", "choices":True, "autofilter":True},
-		{"name":"solicitud_dia_inhabil", "choices":True, "autofilter":True},
-		{"name": "solicitud_anulada", "visible": False},
-	]
-
-	def render_clip_value_as_html(self, long_text, short_text, is_clipped):
-		"""
-		Dada una versión larga y una corta de un texto, la siguiente representación HTML:
-		<span title="long_text">short_text[ellipsis]</span>
-
-		Para sobreescribir la función para mas customización.
-		"""
-		return '<span title="{long_text}">{short_text}{ellipsis}</span>'.format(
-		long_text=long_text,
-		short_text=short_text,
-		ellipsis="&hellip;" if is_clipped else ""
-		)
-
-	def customize_row(self, row, obj):
-		id = str(obj.id)
-
-		if obj.solicitud_provincia.provincia_nombre == "Chaco":				
-			editarlink = f'<a href="/viaticos/crearsolicitud/{id}">{editlinkimg}</a>'
-			if obj.solicitud_resolucion is not None:
-				detallelink = f'<a href="{str(obj.solicitud_resolucion.instrumentolegalresoluciones.url)}">{pdflinkimg}</a>'
-			else:
-				detallelink = ""
-			eliminarlink = f'<a href="/viaticos/eliminar/solicitud/{id}">{eliminarlinkimg}</a>'
-			generarlink = f'<a href="/viaticos/creardocumento/solicitud/{id}">{generarlinkimg}</a>'
-		else:
-			editarlink = f'<a href="/viaticos/crearsolicitudexterior/{id}">{editlinkimg}</a>'
-			if obj.solicitud_resolucion is not None:
-				detallelink = f'<a href="{str(obj.solicitud_resolucion.instrumentolegalresoluciones.url)}">{pdflinkimg}</a>'
-			else:
-				detallelink = ""
-			eliminarlink = f'<a href="/viaticos/eliminar/solicitudexterior/{id}">{eliminarlinkimg}</a>'
-			generarlink = f'<a href="/viaticos/creardocumento/solicitudexterior/{id}">{generarlinkimg}</a>'
-
-		if self.request.user.has_perm("secretariador.delete_solicitud"):
-			row["edit"] = f"{editarlink}{detallelink}{eliminarlink}{generarlink}"
-		elif self.request.user.has_perm("secretariador.change_solicitud"):
-			row["edit"] = f"{editarlink}{detallelink}{generarlink}"
-		else:
-			row["edit"] = f"{detallelink}"
-
-		# Get list of comisionados for this solicitud, joining them wih ";" for display
-		comisionados = obj.comisionadosolicitud_set.all()
-		row["Comisionados"] = "; ".join(c.comisionadosolicitud_nombre.agente_nombreyapellido for c in comisionados)
-	
-	def render_row_details(self, pk, request=None):
-
-        # we do some optimization on the request
-		relateds = []
-		if not self.disable_queryset_optimization_only and not self.disable_queryset_optimization_select_related:
-			relateds = [f.name for f in self.model._meta.get_fields() if f.many_to_one and f.concrete]
-
-		prefetchs = []
-		if not self.disable_queryset_optimization_only and not self.disable_queryset_optimization_prefetch_related:
-			prefetchs = [f.name for f in self.model._meta.get_fields() if f.many_to_many and f.concrete]
-
-		obj = self.model.objects.filter(pk=pk).select_related(*relateds).prefetch_related(*prefetchs).first()
-
-		# Extract "extra_data" from request
-		extra_data = {k: v for k, v in request.GET.items() if k not in ['action', 'pk', ]}
-
-		# Search a custom template for rendering, if available
-		try:
-			template = loader.get_template(
-                'ajax_datatable/%s/%s/%s' % (self.model._meta.app_label,
-                                             self.model._meta.model_name, self.render_row_details_template_name),
-            )
-
-			html = template.render({
-				'model': self.model,
-				'model_admin': self.get_model_admin(),
-				'object': obj,
-				'extra_data': extra_data,
-				}, request)
-
-		# Failing that, display a simple table with field values
-		except TemplateDoesNotExist:
-			fields = [f.name for f in self.model._meta.get_fields() if f.concrete]
-			html = '<table class="row-details">'
-			for field in fields:
-				
-				if field in prefetchs:
-					value = ', '.join([str(x) for x in eval(f'obj.{field}').all()])
-				else:
-					try:
-						value = getattr(obj, field)
-					except AttributeError:
-						continue
-				html += '<tr><td>%s</td><td>%s</td></tr>' % (field, value)
-			html += '</table>'
-		return html

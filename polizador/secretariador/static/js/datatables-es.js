@@ -1,4 +1,9 @@
-{
+'use strict';
+
+// Traducciones al español compartidas por todas las inicializaciones de DataTables
+// (tanto las basadas en ajax_datatable/js/utils.js como las nuevas basadas en
+// js/ninja-datatable.js), para no duplicar este bloque en cada una.
+window.DATATABLES_ES = {
     "processing": "Procesando...",
     "lengthMenu": "Mostrar _MENU_ registros",
     "zeroRecords": "No se encontraron resultados",
@@ -241,4 +246,4 @@
         "renameLabel": "Nuevo nombre para %s:"
     },
     "infoThousands": "."
-} 
+};

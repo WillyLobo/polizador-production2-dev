@@ -19,22 +19,37 @@
 <script language="javascript">
 
   $(document).ready(function() {
-      AjaxDatatableViewUtils.initialize_table(
-          $('#tableCertificados'),
-          "{% url 'carga:lista-certificados-datatables' %}",
+      var columns = [
+          { data: 'id', name: 'id', title: 'Id' },
+          { data: 'certificado_obra', name: 'certificado_obra', title: 'Obra' },
+          { data: 'certificado_empresa', name: 'certificado_empresa', title: 'Empresa' },
+          { data: 'certificado_expediente', name: 'certificado_expediente', title: 'Expediente' },
+          { data: 'certificado_fecha', name: 'certificado_fecha', title: 'Fecha', filterType: 'date' },
           {
-              // extra_options (example)
-              processing: false,
-              autoWidth: false,
-              full_row_select: true,
-              scrollX: false,
-              dom: "<'row'<'col-sm-12 col-md-4'><'col-sm-12 col-md-4'f><'col-sm-12 col-md-4'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-              // language: {
-              // url: "/static/DataTables/DataTables-1.11.5/i18n/es-AR.json",
-              // },
-          }, {
-              // extra_data
-              // ...
+              data: 'certificado_financiamiento', name: 'certificado_financiamiento', title: 'Financ.',
+              filterType: 'select', filterChoices: [['N', 'Nación'], ['P', 'Provincia'], ['T', 'Terceros']],
+          },
+          {
+              data: 'certificado_rubro_db', name: 'certificado_rubro_db', title: 'Rubro',
+              filterType: 'select', filterChoicesUrl: '/v1/api/datatables/certificados/filtro-rubro/',
+          },
+          { data: 'certificado_rubro_anticipo', title: 'Ant.', orderable: false, searchable: false },
+          { data: 'certificado_rubro_obra', title: 'Rubro Obra N°', orderable: false, searchable: false },
+          { data: 'certificado_rubro_devanticipo', title: 'D.Ant.', orderable: false, searchable: false },
+          { data: 'certificado_monto_cobrar', title: 'Monto $', orderable: false, searchable: false },
+          { data: 'certificado_monto_cobrar_uvi', title: 'Monto Uvi', orderable: false, searchable: false },
+          { data: 'certificado_mes_pct', title: 'Mes %', orderable: false, searchable: false },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
+          $('#tableCertificados'),
+          '/v1/api/datatables/certificados/',
+          columns,
+          {
+              order: [[0, 'desc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/certificados/{id}/detalle/',
           },
       );
   });

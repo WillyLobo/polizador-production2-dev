@@ -19,26 +19,26 @@
 <script language="javascript">
 
   $(document).ready(function() {
-      AjaxDatatableViewUtils.initialize_table(
+      var columns = [
+          { data: 'incorporacion_actuacion_ano', name: 'incorporacion_actuacion_ano', title: 'Año' },
+          { data: 'incorporacion_actuacion_numero', name: 'incorporacion_actuacion_numero', title: 'N° Actuación' },
+          { data: 'incorporacion_solicitud', name: 'incorporacion_solicitud', title: 'Actuación Relacionada' },
+          { data: 'incorporacion_solicitante', name: 'incorporacion_solicitante', title: 'Solicitante' },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
           $('#tableIncorporaciones'),
-          "{% url 'secretariador:lista-incorporaciones-datatables' %}",
+          '/v1/api/datatables/incorporaciones/',
+          columns,
           {
-              // extra_options (example)
-              processing: false,
-              autoWidth: false,
-              full_row_select: true,
-              scrollX: false,
-              dom: "<'row'<'col-sm-12 col-md-4'><'col-sm-12 col-md-4'f><'col-sm-12 col-md-4'l>>" + "<'row'<'col-sm-12'tr>>" + "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-              // language: {
-              // url: "/static/DataTables/DataTables-1.11.5/i18n/es-AR.json",
-              // },
-          }, {
-              // extra_data
-              // ...
+              order: [[0, 'desc'], [1, 'desc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/incorporaciones/{id}/detalle/',
           },
       );
   });
-  
+
 </script>
 
 {% endblock %}

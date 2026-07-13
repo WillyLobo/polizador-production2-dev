@@ -1,4 +1,3 @@
-from ajax_datatable.views import AjaxDatatableView
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
@@ -6,7 +5,6 @@ from django.shortcuts import render
 from django.views import generic
 from django.urls import reverse_lazy
 from carga.models import Aseguradora
-from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg
 from carga.forms.aseguradoraforms import *
 from carga.views.generics import get_deleted_objects
 
@@ -63,33 +61,3 @@ def PaginaListaAseguradoras(request):
 
 	return render(request, template_name, {})
 
-@method_decorator(login_required, name="dispatch")
-@method_decorator(permission_required('carga.view_aseguradora', raise_exception=True), name="dispatch")
-class ListaAseguradorasView(AjaxDatatableView):
-	model = Aseguradora
-	title = "Aseguradoras"
-	initial_order = [["aseguradora_nombre", "asc"], ]
-	length_menu = [[50, 100, -1], [50, 100, "all"]]
-	search_values_separator = "+"
-
-	column_defs = [
-		AjaxDatatableView.render_row_tools_column_def(),
-		{'name': 'edit', 'title': '', 'placeholder': True, 'searchable': False, 'orderable': False, "width":81},
-		{"name": "aseguradora_nombre", "className":"align-left", "title":"Aseguradora"},
-		{"name": "id","title":"ID", "visible": False},
-		]
-
-	def customize_row(self, row, obj):
-		id = str(obj.id)
-		editarlink = f'<a href="/obra/crear/aseguradora/{id}">{editlinkimg}</a>'
-		detallelink = f'<a href="#">{detallelinkimg}</a>'
-		eliminarlink = f'<a href="/obra/eliminar/aseguradora/{id}">{eliminarlinkimg}</a>'
-		if self.request.user.has_perm("carga.delete_aseguradora"):
-			row["edit"] = f"{editarlink}{detallelink}{eliminarlink}"
-		elif self.request.user.has_perm("carga.change_aseguradora"):
-			row["edit"] = f"{editarlink}{detallelink}"
-		else:
-			# Armar template EstadoAseguradora!!
-			row["edit"] = f"{detallelink}"
-		return
-	
