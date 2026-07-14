@@ -24,7 +24,10 @@
     [+] Convertir "dom:" a "layout:".
     [+] Agregar boton para exportar a pdf/excel.
 [ ] Eliminar codigo muerto JS.
-[ ] Corregir el filtrado previo de resoluciones, o agregar el filtro por tipo en datatable.
+[+] Corregir el filtrado previo de resoluciones, o agregar el filtro por tipo en datatable.
+[ ] Normalizar los numeros de resoluciones para que usen el mismo separador("-").
+[ ] Crear helper que convierta los numeros de resoluciones nuevos al formato de numero de resoluciones digitales(S.G.T.)
+[ ] Crear helper para agregar objetos FK directamente desde los formularios.
 
 # Certificados
 [+] Una foja deberia engendrar 1 certificado por cada financiamiento.
