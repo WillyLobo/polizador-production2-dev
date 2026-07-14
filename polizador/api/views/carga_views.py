@@ -42,7 +42,6 @@ from api.schemas.carga_schemas import (
     ContratoMontoOut, ContratoMontoCreate, ContratoMontoUpdate,
     ContratoRubroOut, ContratoRubroCreate, ContratoRubroUpdate,
     ContratosDigitalesOut, ContratosDigitalesCreate, ContratosDigitalesUpdate,
-    ResolucionesDigitalesOut, ResolucionesDigitalesCreate, ResolucionesDigitalesUpdate,
     UviOut, UviCreate, UviUpdate,
     INDECOut, INDECCreate, INDECUpdate,
     PolizaOut, PolizaCreate, PolizaUpdate,
@@ -74,7 +73,6 @@ from carga.models import (
     Provincia,
     Receptor,
     Region,
-    ResolucionesDigitales,
     Uvi,
 )
 
@@ -740,6 +738,7 @@ def _obra_out(o: Obra) -> dict:
         "obra_convenio": o.obra_convenio,
         "obra_expediente": o.obra_expediente,
         "obra_resolucion": o.obra_resolucion,
+        "obra_resolucion_fk_id": o.obra_resolucion_fk_id,
         "obra_licitacion_tipo": o.obra_licitacion_tipo,
         "obra_licitacion_numero": o.obra_licitacion_numero,
         "obra_licitacion_ano": o.obra_licitacion_ano,
@@ -1714,37 +1713,6 @@ def update_contrato_digital(request, id: int, payload: ContratosDigitalesUpdate)
 @decorate_view(require_model_perm(ContratosDigitales))
 def delete_contrato_digital(request, id: int):
     deleted, _ = ContratosDigitales.objects.filter(id=id).delete()
-    return {"deleted": bool(deleted)}
-
-
-# --- ResolucionesDigitales ---
-@router.get("/resoluciones-digitales/", response=List[ResolucionesDigitalesOut])
-@decorate_view(require_model_perm(ResolucionesDigitales))
-@paginate(PerPagePagination)
-def list_resoluciones_digitales(request):
-    return ResolucionesDigitales.objects.all().order_by("-id")
-
-
-@router.post("/resoluciones-digitales/", response=ResolucionesDigitalesOut)
-@decorate_view(require_model_perm(ResolucionesDigitales))
-def create_resolucion_digital(request, payload: ResolucionesDigitalesCreate):
-    return ResolucionesDigitales.objects.create(**payload.model_dump())
-
-
-@router.put("/resolucion-digital/{id}/", response=ResolucionesDigitalesOut)
-@decorate_view(require_model_perm(ResolucionesDigitales))
-def update_resolucion_digital(request, id: int, payload: ResolucionesDigitalesUpdate):
-    rd = get_object_or_404(ResolucionesDigitales, id=id)
-    for field, value in payload.model_dump(exclude_unset=True).items():
-        setattr(rd, field, value)
-    rd.save()
-    return rd
-
-
-@router.delete("/resolucion-digital/{id}/")
-@decorate_view(require_model_perm(ResolucionesDigitales))
-def delete_resolucion_digital(request, id: int):
-    deleted, _ = ResolucionesDigitales.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
 
 

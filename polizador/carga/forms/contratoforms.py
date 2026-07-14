@@ -3,6 +3,7 @@ from carga.models import Contrato, ContratoMonto
 from django.forms import inlineformset_factory
 from carga.forms.contratomontoforms import *
 from carga.views.ajaxviews import *
+from secretariador.views.ajaxviews import ResolucionWidget
 from polizador.custom_forms import DateHTMLWidget
 
 class ContratoForm(forms.ModelForm):
@@ -15,6 +16,7 @@ class ContratoForm(forms.ModelForm):
 			"contrato_fecha",
 			"contrato_descripcion",
 			"contrato_resolucion",
+			"contrato_resolucion_fk",
 			"contrato_decreto",
 			"contrato_certificacion_por_etapas",
 		)
@@ -23,6 +25,7 @@ class ContratoForm(forms.ModelForm):
 			"contrato_fecha":DateHTMLWidget(attrs={"type":"date", "class":"form-control"}),
 			"contrato_descripcion":forms.TextInput(attrs={"class":"form-control"}),
 			"contrato_resolucion":forms.TextInput(attrs={"class":"form-control"}),
+			"contrato_resolucion_fk":ResolucionWidget(attrs={"class":"form-control customSelect2"}),
 			"contrato_decreto":forms.TextInput(attrs={"class":"form-control"}),
 			"contrato_certificacion_por_etapas":forms.CheckboxInput(attrs={"class":"form-check-input"}),
 		}

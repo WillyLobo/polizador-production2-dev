@@ -179,10 +179,6 @@ class ContratoDigitalResource(resources.ModelResource):
 	class Meta:
 		model = models.ContratosDigitales
 
-class ResolucionDigitalResource(resources.ModelResource):
-	class Meta:
-		model = models.ResolucionesDigitales
-
 class UviResource(resources.ModelResource):
 	class Meta:
 		model = models.Uvi

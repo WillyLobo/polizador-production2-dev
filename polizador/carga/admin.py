@@ -245,12 +245,6 @@ class ContratoDigitalAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	list_filter = ["contratodigital_tipo"]
 	resource_class = resources.ContratoDigitalResource
 
-class ResolucionDigitalAdmin(ImportExportMixin, SimpleHistoryAdmin):
-	autocomplete_fields = ["resoluciondigital_contrato"]
-	search_fields = ["resoluciondigital_numero", "resoluciondigital_contrato__contrato_descripcion", "resoluciondigital_contrato__contrato_obra__obra_nombre"]
-	list_display = ["id", "resoluciondigital_numero", "resoluciondigital_contrato", "resoluciondigital_descripcion"]
-	resource_class = resources.ResolucionDigitalResource
-
 class UviAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	list_display = ("id", "uvi_fecha", "uvi_valor", "uvi_uuid")
 	ordering = ("-uvi_fecha",)
@@ -285,7 +279,6 @@ admin.site.register(models.ContratoMonto, ContratoMontoAdmin)
 admin.site.register(models.ContratoTramoPago, ContratoTramoPagoAdmin)
 admin.site.register(models.ContratoRubro, ContratoRubroAdmin)
 admin.site.register(models.ContratosDigitales, ContratoDigitalAdmin)
-admin.site.register(models.ResolucionesDigitales, ResolucionDigitalAdmin)
 admin.site.register(models.Uvi, UviAdmin)
 
 class IndecAdmin(ImportExportMixin, SimpleHistoryAdmin):

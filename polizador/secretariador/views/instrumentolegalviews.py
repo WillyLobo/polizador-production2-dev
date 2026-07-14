@@ -128,8 +128,8 @@ class UpdateInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, generi
 	model = InstrumentosLegalesResoluciones
 	template_name = "instrumentoslegales/update-instrumento-legal-resolucion-directorio.html"
 	form_class = InstrumentosLegalesResolucionesDirectorioForm
-	success_url = reverse_lazy("secretariador:lista-resoluciones-directorio")
-	
+	success_url = reverse_lazy("secretariador:lista-resoluciones")
+
 	def get_context_data(self,*args, **kwargs):
 		context = super(type(self), self).get_context_data(*args,**kwargs)
 		objetoanterior = self.model.objects.filter(pk=self.object.id - 1)
@@ -194,7 +194,7 @@ class EliminarInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, gene
 
 	model = InstrumentosLegalesResoluciones
 	template_name = "generic/confirm_delete.html"
-	success_url = reverse_lazy("secretariador:lista-resoluciones-directorio")
+	success_url = reverse_lazy("secretariador:lista-resoluciones")
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -224,11 +224,3 @@ def PaginaListaInstrumentosLegalesResoluciones(request):
 	template_name = "Lista-resoluciones.html"
 
 	return render(request, template_name, {})
-
-@login_required
-@permission_required("secretariador.view_instrumentoslegalesresolucionesdirectorio", raise_exception=True)
-def PaginaListaInstrumentosLegalesResolucionesDirectorio(request):
-	template_name = "Lista-resoluciones-directorio.html"
-
-	return render(request, template_name, {})
-

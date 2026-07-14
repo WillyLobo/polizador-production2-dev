@@ -6,7 +6,7 @@ from django.template import loader, TemplateDoesNotExist
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
-from carga.models import ContratosDigitales, ResolucionesDigitales
+from carga.models import ContratosDigitales
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg
 from carga.forms.documentosdigitalesforms import *
 from carga.views.generics import get_deleted_objects
@@ -53,59 +53,6 @@ class EliminarContratoDigital(PermissionRequiredMixin, generic.DeleteView):
     permission_required = "carga.delete_certificado"
 
     model = ContratosDigitales
-    template_name = "generic/confirm_delete.html"
-    success_url = reverse_lazy("carga:lista-obras")
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        deletable_objects, model_count, protected = get_deleted_objects([
-                                                                        self.object])
-        context["deletable_objects"] = deletable_objects
-        context["model_count"] = dict(model_count).items()
-        context["protected"] = protected
-        return context
-
-@method_decorator(login_required, name="dispatch")
-class CrearResolucionDigital(PermissionRequiredMixin, generic.CreateView):
-    permission_required = "carga.add_certificado"
-
-    model = ResolucionesDigitales
-    template_name = "digitales/crear-resoluciondigital.html"
-    form_class = ResolucionDigitalForm
-    success_url = reverse_lazy("carga:crear-resolucion-digital")
-
-    title = "Cargar Resolución Digital"
-
-    def get_title(self):
-        return self.title
-
-    def get_initial(self):
-        initial = super().get_initial()
-        contrato_id = self.request.GET.get("contrato")
-        if contrato_id:
-            initial["resoluciondigital_contrato"] = contrato_id
-        return initial
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context["title"] = self.get_title()
-        return context
-
-
-@method_decorator(login_required, name="dispatch")
-class UpdateResolucionDigital(PermissionRequiredMixin, generic.UpdateView):
-    permission_required = "carga.add_certificado"
-
-    model = ResolucionesDigitales
-    template_name = "digitales/update-resoluciondigital.html"
-    form_class = ResolucionDigitalForm
-    success_url = reverse_lazy("carga:crear-resolucion-digital")
-
-@method_decorator(login_required, name="dispatch")
-class EliminarResolucionDigital(PermissionRequiredMixin, generic.DeleteView):
-    permission_required = "carga.delete_certificado"
-
-    model = ResolucionesDigitales
     template_name = "generic/confirm_delete.html"
     success_url = reverse_lazy("carga:lista-obras")
 

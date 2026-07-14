@@ -52,6 +52,9 @@ def generate_name_contratos(instance, filename):
     return name
 
 def generate_name_resoluciones(instance, filename):
+    """Referenced by historical migrations (ResolucionesDigitales, removed) — keep so
+    old migration replays that resolve carga.models.generate_name_resoluciones by
+    dotted path don't break."""
     directorio = "resoluciones_obra/"
     extension = "pdf"
     filename = f"{instance.resoluciondigital_uuid}.{extension}"
@@ -329,6 +332,7 @@ class Obra(models.Model):
     obra_convenio = models.CharField("Convenio/ACU", max_length=60, blank=True, null=True)
     obra_expediente = models.CharField("Expediente", max_length=18)
     obra_resolucion = models.CharField("Resolución de Adjudicación", max_length=15, blank=True, null=True)
+    obra_resolucion_fk = models.ForeignKey("secretariador.InstrumentosLegalesResoluciones", on_delete=models.CASCADE, verbose_name="Resolución de Adjudicación", blank=True, null=True)
     obra_licitacion_tipo = models.CharField("Compulsa", max_length=1, choices=COMPULSA, blank=True, null=True)
     obra_licitacion_numero = models.DecimalField("Número de Licitación", max_digits=3, decimal_places=0, blank=True, null=True)
     obra_licitacion_ano = models.DecimalField("Año de Licitación", max_digits=4, decimal_places=0, blank=True, null=True)
@@ -421,10 +425,6 @@ class Obra(models.Model):
     def documentos_contrato(self):
         """Documentos digitales (PDF) de los Contratos de la obra."""
         return ContratosDigitales.objects.filter(contratodigital_contrato__contrato_obra=self)
-
-    def documentos_resolucion(self):
-        """Resoluciones digitales (PDF) de los Contratos de la obra."""
-        return ResolucionesDigitales.objects.filter(resoluciondigital_contrato__contrato_obra=self)
 
     def recalcular_montos_contrato(self):
         """Recalcula obra_contrato_{nacion,provincia,terceros}_{pesos,uvi,uvi_fecha} como
@@ -787,6 +787,7 @@ class ConjuntoLicitado(models.Model):
     conjunto_nombre = models.TextField("Nombre")
     conjunto_soluciones = models.DecimalField("Cantidad de Soluciones", max_digits=5, decimal_places=0, default=0, null=True, blank=True)
     conjunto_resolucion = models.CharField("Resolucion", max_length=15, null=True, blank=True)
+    conjunto_resolucion_fk = models.ForeignKey("secretariador.InstrumentosLegalesResoluciones", on_delete=models.CASCADE, verbose_name="Resolución de Adjudicación", blank=True, null=True)
     conjunto_subconjunto = models.ForeignKey("ConjuntoLicitado", verbose_name="Conjunto Licitado", on_delete=models.DO_NOTHING, null=True, blank=True)
     conjunto_history = HistoricalRecords()
 
@@ -1167,6 +1168,7 @@ class Contrato(models.Model):
     contrato_fecha = models.DateField("Fecha",default=timezone.now)
     contrato_descripcion = models.CharField("Descripción", max_length=600, default="")
     contrato_resolucion = models.CharField("Resolución Aprobatoria", max_length=15, blank=True, null=True)
+    contrato_resolucion_fk = models.ForeignKey("secretariador.InstrumentosLegalesResoluciones", on_delete=models.CASCADE, verbose_name="Resolución de Adjudicación", blank=True, null=True)
     contrato_autocarga = models.BooleanField("Contrato importado de formato anterior", editable=False, default=False)
     contrato_decreto = models.CharField("Decreto Aprobatorio(Si Tuviera)", max_length=15, blank=True, null=True)
     contrato_certificacion_por_etapas = models.BooleanField(
@@ -1256,21 +1258,6 @@ class ContratosDigitales(models.Model):
     contratodigital_tipo = models.ForeignKey("ContratoRubro", verbose_name="Rubro Contrato", on_delete=models.CASCADE)
     contratodigital_archivo = models.FileField(upload_to=generate_name_contratos, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], max_length=500, null=True, blank=True)
     contratodigital_history = HistoricalRecords()
-
-class ResolucionesDigitales(models.Model):
-    class Meta:
-        verbose_name_plural = "Resoluciones Digitales"
-        ordering = ["resoluciondigital_numero"]
-    
-    resoluciondigital_uuid = models.UUIDField(default=compat.uuid7, editable=False)
-    resoluciondigital_contrato = models.ForeignKey("Contrato", verbose_name="Contrato", on_delete=models.CASCADE, related_name="documentos_resolucion")
-    resoluciondigital_descripcion = models.TextField("Descripción")
-    resoluciondigital_numero = models.CharField("Número de Resolución:", max_length=15)
-    resoluciondigital_archivo = models.FileField(upload_to=generate_name_resoluciones, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], max_length=500, null=True, blank=True)
-    resoluciondigital_history = HistoricalRecords()
-    
-    def __str__(self):
-        return f"{self.resoluciondigital_numero}"
 
 class Uvi(models.Model):
     class Meta:

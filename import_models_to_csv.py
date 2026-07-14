@@ -62,7 +62,6 @@ IMPORT_ORDER = [
     ('carga_contratorubro.xlsx',           'carga',       'ContratoRubro'),
     ('carga_contratomonto.xlsx',           'carga',       'ContratoMonto'),
     ('carga_contratosdigitales.xlsx',      'carga',       'ContratosDigitales'),
-    ('carga_resolucionesdigitales.xlsx',   'carga',       'ResolucionesDigitales'),
     ('carga_plandetrabajos.xlsx',          'carga',       'PlanDeTrabajos'),
 
     # === FASE 6 — carga.app: tablas de referencia independientes ===

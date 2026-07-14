@@ -146,6 +146,16 @@ class InstrumentosLegalesResoluciones(models.Model):
         ("P", "Resolución de Presidencia"),
         ("D", "Resolución de Directorio")
     )
+    ESTADO_ESCANEO = (
+        ("N", "Normal"),
+        ("H", "Horrible"),
+    )
+    ACCION = (
+        ("ADJ", "Adjudicatoria"),
+        ("APR", "Aprobatoria"),
+        ("RAT", "Ratificatoria"),
+        ("AMP", "Ampliatoria"),
+    )
 
     instrumentolegalresoluciones_tipo = models.CharField("Tipo", max_length=1, choices=TIPO, default="P")
     instrumentolegalresoluciones_numero = models.CharField("Número", max_length=7)
@@ -153,9 +163,19 @@ class InstrumentosLegalesResoluciones(models.Model):
     instrumentolegalresoluciones_ano = models.CharField("Año", max_length=5)
     instrumentolegalresoluciones_fecha_aprobacion = models.DateField("Fecha de Aprobación", default=timezone.now)
     instrumentolegalresoluciones_descripcion = models.CharField("Descripción", max_length=600, default="")
+    instrumentolegalresoluciones_estado_escaneo = models.CharField("Estado del escaneo", max_length=1, choices=ESTADO_ESCANEO, default="N")
+    instrumentolegalresoluciones_ad_referendum = models.BooleanField("Ad referendum", default=False)
+    instrumentolegalresoluciones_accion = models.CharField("Acción", max_length=3, choices=ACCION, blank=True, null=True)
     instrumentolegalresoluciones = models.FileField(upload_to=generate_name_resoluciones, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], null=True, blank=True)
     instrumentolegalresoluciones_str = GeneratedField(
-        expression=ConcatOp('instrumentolegalresoluciones_numero', models.Value(" - "), 'instrumentolegalresoluciones_ano', models.Value(" - "), 'instrumentolegalresoluciones_tipo'),
+        expression=models.Case(
+            models.When(
+                instrumentolegalresoluciones_tipo="D",
+                then=ConcatOp('instrumentolegalresoluciones_numero', models.Value("-"), 'instrumentolegalresoluciones_acta', models.Value("-"), 'instrumentolegalresoluciones_ano'),
+            ),
+            default=ConcatOp('instrumentolegalresoluciones_numero', models.Value("-"), 'instrumentolegalresoluciones_ano'),
+            output_field=models.TextField(),
+        ),
         output_field=models.TextField(),
         db_persist=True,
     )
@@ -180,8 +200,10 @@ class InstrumentosLegalesResoluciones(models.Model):
     # factura/boleta de pago y numero de comprobante
 
     def __str__(self):
-        return f"{self.get_instrumentolegalresoluciones_tipo_display()} Nº{self.instrumentolegalresoluciones_numero}/{self.instrumentolegalresoluciones_ano}"
-    
+        if self.instrumentolegalresoluciones_tipo == "D":
+            return f"{self.instrumentolegalresoluciones_numero}-{self.instrumentolegalresoluciones_acta}-{self.instrumentolegalresoluciones_ano}"
+        return f"{self.instrumentolegalresoluciones_numero}-{self.instrumentolegalresoluciones_ano}"
+
     def get_absolute_url(self):
         if self.instrumentolegalresoluciones_tipo == "P":
             return reverse('secretariador:update-resolucion-presidencia', kwargs={"pk": str(self.id)})

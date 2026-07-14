@@ -13,6 +13,7 @@ from carga.views.ajaxviews import (
 from personalizador.views.ajaxviews import (
     representantetecnicoMultipleWidget,
 	)
+from secretariador.views.ajaxviews import ResolucionWidget
 from polizador.custom_forms import DateHTMLWidget
 
 class ObraForm(forms.ModelForm):
@@ -35,6 +36,7 @@ class ObraForm(forms.ModelForm):
 			"obra_convenio",
 			"obra_expediente",
 			"obra_resolucion",
+			"obra_resolucion_fk",
 			"obra_licitacion_tipo",
 			"obra_licitacion_numero",
 			"obra_licitacion_ano",
@@ -97,6 +99,9 @@ class ObraForm(forms.ModelForm):
 			"obra_resolucion": forms.TextInput(attrs={
 				"class": "form-control",
 				"placeholder": "Resolución"
+			}),
+			"obra_resolucion_fk": ResolucionWidget(attrs={
+				"class": "form-control customSelect2",
 			}),
 			"obra_licitacion_tipo": forms.Select(attrs={
 				"class": "form-control",

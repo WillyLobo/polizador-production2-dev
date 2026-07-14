@@ -457,13 +457,12 @@
 </div>
 
 {# ─── Sección 5: Documentación Digital ─── #}
-{% if object.documentos_contrato.all or object.documentos_resolucion.all %}
+{% if object.documentos_contrato.all %}
 <div class="card mb-3">
     <div class="card-header py-2 bg-light fw-semibold small">Documentación Digital</div>
     <div class="card-body p-2">
 
-        {% if object.documentos_contrato.all %}
-        <div class="{% if object.documentos_resolucion.all %}mb-3{% endif %}">
+        <div>
             <div class="small fw-semibold text-muted mb-1">Contratos</div>
             <table class="table table-sm table-bordered table-hover mb-0">
                 <thead class="table-light">
@@ -497,41 +496,6 @@
                 </tbody>
             </table>
         </div>
-        {% endif %}
-
-        {% if object.documentos_resolucion.all %}
-        <div>
-            <div class="small fw-semibold text-muted mb-1">Resoluciones</div>
-            <table class="table table-sm table-bordered table-hover mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th class="small">Número</th>
-                        <th class="small">Descripción</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for documento in object.documentos_resolucion.all %}
-                    <tr>
-                        <td class="small">{{documento.resoluciondigital_numero}}</td>
-                        <td class="small">{{documento.resoluciondigital_descripcion}}</td>
-                        <td class="small text-end">
-                            {% if documento.resoluciondigital_archivo %}
-                                <a href="{{documento.resoluciondigital_archivo.url}}">{{pdfimglink|safe}}</a>
-                            {% endif %}
-                            {% if perms.carga.change_certificado %}
-                                <a href="{% url "carga:update-resolucion-digital" documento.id %}">{{editimglink|safe}}</a>
-                            {% endif %}
-                            {% if perms.carga.delete_certificado %}
-                                <a href="{% url "carga:eliminar-resolucion-digital" documento.id %}">{{eliminarimglink|safe}}</a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% endif %}
 
     </div>
 </div>
