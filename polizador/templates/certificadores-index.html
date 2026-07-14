@@ -50,6 +50,17 @@
             </div>
         </div>
 
+        <div class="col-12">
+            <div class="card h-100">
+                <div class="card-header py-2 bg-light fw-semibold small">Certificados sin Certificado Digital</div>
+                <div class="card-body p-2">
+                    <div class="table-responsive">
+                        <table width="auto" class="table table-sm table-bordered table-hover align-middle mb-0" id="tablaCertificadosSinDigital"></table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
@@ -65,4 +76,22 @@
             "search": "Buscar:",
     },
 });
+
+    NinjaDatatableUtils.initialize_table(
+        $('#tablaCertificadosSinDigital'),
+        '/v1/api/datatables/certificados-sin-digital/',
+        [
+            { data: 'certificado_obra', name: 'certificado_obra', title: 'Obra' },
+            { data: 'certificado_rubro_db', name: 'certificado_rubro_db', title: 'Rubro' },
+            { data: 'certificado_expediente', name: 'certificado_expediente', title: 'Expediente' },
+            { data: 'certificado_periodo', name: 'certificado_periodo', title: 'Período' },
+            { data: 'certificado_fecha', name: 'certificado_fecha', title: 'Fecha', filterType: 'date' },
+            { data: 'certificado_mes_pct', name: 'certificado_mes_pct', title: 'Avance del Mes' },
+            { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+        ],
+        {
+            order: [[4, 'desc']],
+            lengthMenu: [[25, 50, 100], [25, 50, 100]],
+        },
+    );
 </script>

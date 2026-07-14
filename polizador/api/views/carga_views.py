@@ -1419,6 +1419,52 @@ def datatable_certificados_filtro_rubro(request):
     return {"choices": list(choices)}
 
 
+def _certificado_sin_digital_datatable_row(c: Certificado, user) -> dict:
+    acciones = ""
+    if user.has_perm("carga.change_certificado"):
+        acciones = f"<a href='/obra/crear/certificado/{c.id}'>{editlinkimg}</a>"
+    return {
+        "id": c.id,
+        "certificado_obra": c.certificado_obra.obra_nombre,
+        "certificado_rubro_db": c.certificado_rubro_db.certificadorubro_nombre,
+        "certificado_expediente": c.certificado_expediente,
+        "certificado_periodo": c.certificado_periodo,
+        "certificado_fecha": c.certificado_fecha.isoformat() if c.certificado_fecha else "",
+        "certificado_mes_pct": c.certificado_mes_pct,
+        "acciones": acciones,
+    }
+
+
+register_simple_datatable(
+    router, Certificado, "certificados-sin-digital",
+    queryset=Certificado.objects.filter(certificado_mes_pct__gt=0).filter(
+        Q(certificado_digital__isnull=True) | Q(certificado_digital="")
+    ).select_related("certificado_obra", "certificado_rubro_db"),
+    order_fields={
+        "id": "id",
+        "certificado_obra": "certificado_obra__obra_nombre",
+        "certificado_rubro_db": "certificado_rubro_db__certificadorubro_nombre",
+        "certificado_expediente": "certificado_expediente",
+        "certificado_periodo": "certificado_periodo",
+        "certificado_fecha": "certificado_fecha",
+        "certificado_mes_pct": "certificado_mes_pct",
+    },
+    filter_fields={
+        "certificado_obra": "certificado_obra__obra_nombre__icontains",
+        "certificado_expediente": "certificado_expediente__icontains",
+        "certificado_periodo": "certificado_periodo__icontains",
+    },
+    search_lookups=[
+        "certificado_obra__obra_nombre__icontains",
+        "certificado_expediente__icontains",
+        "certificado_rubro_db__certificadorubro_nombre__icontains",
+    ],
+    row_builder=_certificado_sin_digital_datatable_row,
+    default_order="-certificado_fecha",
+    with_detail=False,
+)
+
+
 # --- ConjuntoLicitado ---
 @router.get("/conjuntos/", response=List[ConjuntoLicitadoOut])
 @decorate_view(require_model_perm(ConjuntoLicitado))
