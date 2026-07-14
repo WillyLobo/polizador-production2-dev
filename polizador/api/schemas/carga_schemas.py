@@ -188,6 +188,7 @@ class ObraOut(Schema):
     obra_convenio: Optional[str] = None
     obra_expediente: str
     obra_resolucion: Optional[str] = None
+    obra_resolucion_fk_id: Optional[int] = None
     obra_licitacion_tipo: Optional[str] = None
     obra_licitacion_numero: Optional[float] = None
     obra_licitacion_ano: Optional[float] = None
@@ -219,6 +220,7 @@ class ObraCreate(Schema):
     obra_convenio: Optional[str] = None
     obra_expediente: str
     obra_resolucion: Optional[str] = None
+    obra_resolucion_fk_id: Optional[int] = None
     obra_licitacion_tipo: Optional[str] = None
     obra_licitacion_numero: Optional[float] = None
     obra_licitacion_ano: Optional[float] = None
@@ -245,6 +247,7 @@ class ObraUpdate(Schema):
     obra_convenio: Optional[str] = None
     obra_expediente: Optional[str] = None
     obra_resolucion: Optional[str] = None
+    obra_resolucion_fk_id: Optional[int] = None
     obra_licitacion_tipo: Optional[str] = None
     obra_licitacion_numero: Optional[float] = None
     obra_licitacion_ano: Optional[float] = None
@@ -354,16 +357,19 @@ class ConjuntoLicitadoOut(Schema):
     conjunto_nombre: str
     conjunto_soluciones: Optional[float] = None
     conjunto_resolucion: Optional[str] = None
+    conjunto_resolucion_fk_id: Optional[int] = None
 
 class ConjuntoLicitadoCreate(Schema):
     conjunto_nombre: str
     conjunto_soluciones: Optional[float] = None
     conjunto_resolucion: Optional[str] = None
+    conjunto_resolucion_fk_id: Optional[int] = None
 
 class ConjuntoLicitadoUpdate(Schema):
     conjunto_nombre: Optional[str] = None
     conjunto_soluciones: Optional[float] = None
     conjunto_resolucion: Optional[str] = None
+    conjunto_resolucion_fk_id: Optional[int] = None
 
 # === PlanDeTrabajos ===
 class PlanDeTrabajosOut(Schema):
@@ -385,6 +391,7 @@ class ContratoOut(Schema):
     contrato_fecha: date
     contrato_descripcion: str
     contrato_resolucion: Optional[str] = None
+    contrato_resolucion_fk_id: Optional[int] = None
     contrato_decreto: Optional[str] = None
 
 class ContratoCreate(Schema):
@@ -392,6 +399,7 @@ class ContratoCreate(Schema):
     contrato_fecha: date
     contrato_descripcion: str = ""
     contrato_resolucion: Optional[str] = None
+    contrato_resolucion_fk_id: Optional[int] = None
     contrato_decreto: Optional[str] = None
 
 class ContratoUpdate(Schema):
@@ -399,6 +407,7 @@ class ContratoUpdate(Schema):
     contrato_fecha: Optional[date] = None
     contrato_descripcion: Optional[str] = None
     contrato_resolucion: Optional[str] = None
+    contrato_resolucion_fk_id: Optional[int] = None
     contrato_decreto: Optional[str] = None
 
 # === ContratoMonto ===
@@ -460,24 +469,6 @@ class ContratosDigitalesUpdate(Schema):
     contratodigital_nombre_archivo: Optional[str] = None
     contratodigital_descripcion: Optional[str] = None
     contratodigital_tipo_id: Optional[int] = None
-
-# === ResolucionesDigitales ===
-class ResolucionesDigitalesOut(Schema):
-    id: int
-    resoluciondigital_uuid: UUID
-    resoluciondigital_contrato_id: int
-    resoluciondigital_descripcion: str
-    resoluciondigital_numero: str
-
-class ResolucionesDigitalesCreate(Schema):
-    resoluciondigital_contrato_id: int
-    resoluciondigital_descripcion: str
-    resoluciondigital_numero: str
-
-class ResolucionesDigitalesUpdate(Schema):
-    resoluciondigital_contrato_id: Optional[int] = None
-    resoluciondigital_descripcion: Optional[str] = None
-    resoluciondigital_numero: Optional[str] = None
 
 # === Uvi ===
 class UviOut(Schema):

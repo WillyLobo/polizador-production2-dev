@@ -109,8 +109,6 @@ ajax = [
     path("listas/decretos", PaginaListaInstrumentosLegalesDecretos, name="lista-decretos"),
     # Resoluciones
     path("listas/resoluciones", PaginaListaInstrumentosLegalesResoluciones, name="lista-resoluciones"),
-    # Resoluciones Directorio
-    path("listas/resoluciones-directorio", PaginaListaInstrumentosLegalesResolucionesDirectorio, name="lista-resoluciones-directorio"),
     # Vehiculos
     path("listas/vehiculos", PaginaListaVehiculos, name="lista-vehiculos"),
     # Incorporaciones

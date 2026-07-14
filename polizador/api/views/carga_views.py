@@ -42,7 +42,6 @@ from api.schemas.carga_schemas import (
     ContratoMontoOut, ContratoMontoCreate, ContratoMontoUpdate,
     ContratoRubroOut, ContratoRubroCreate, ContratoRubroUpdate,
     ContratosDigitalesOut, ContratosDigitalesCreate, ContratosDigitalesUpdate,
-    ResolucionesDigitalesOut, ResolucionesDigitalesCreate, ResolucionesDigitalesUpdate,
     UviOut, UviCreate, UviUpdate,
     INDECOut, INDECCreate, INDECUpdate,
     PolizaOut, PolizaCreate, PolizaUpdate,
@@ -74,7 +73,6 @@ from carga.models import (
     Provincia,
     Receptor,
     Region,
-    ResolucionesDigitales,
     Uvi,
 )
 
@@ -740,6 +738,7 @@ def _obra_out(o: Obra) -> dict:
         "obra_convenio": o.obra_convenio,
         "obra_expediente": o.obra_expediente,
         "obra_resolucion": o.obra_resolucion,
+        "obra_resolucion_fk_id": o.obra_resolucion_fk_id,
         "obra_licitacion_tipo": o.obra_licitacion_tipo,
         "obra_licitacion_numero": o.obra_licitacion_numero,
         "obra_licitacion_ano": o.obra_licitacion_ano,
@@ -1419,6 +1418,52 @@ def datatable_certificados_filtro_rubro(request):
     return {"choices": list(choices)}
 
 
+def _certificado_sin_digital_datatable_row(c: Certificado, user) -> dict:
+    acciones = ""
+    if user.has_perm("carga.change_certificado"):
+        acciones = f"<a href='/obra/crear/certificado/{c.id}'>{editlinkimg}</a>"
+    return {
+        "id": c.id,
+        "certificado_obra": c.certificado_obra.obra_nombre,
+        "certificado_rubro_db": c.certificado_rubro_db.certificadorubro_nombre,
+        "certificado_expediente": c.certificado_expediente,
+        "certificado_periodo": c.certificado_periodo,
+        "certificado_fecha": c.certificado_fecha.isoformat() if c.certificado_fecha else "",
+        "certificado_mes_pct": c.certificado_mes_pct,
+        "acciones": acciones,
+    }
+
+
+register_simple_datatable(
+    router, Certificado, "certificados-sin-digital",
+    queryset=Certificado.objects.filter(certificado_mes_pct__gt=0).filter(
+        Q(certificado_digital__isnull=True) | Q(certificado_digital="")
+    ).select_related("certificado_obra", "certificado_rubro_db"),
+    order_fields={
+        "id": "id",
+        "certificado_obra": "certificado_obra__obra_nombre",
+        "certificado_rubro_db": "certificado_rubro_db__certificadorubro_nombre",
+        "certificado_expediente": "certificado_expediente",
+        "certificado_periodo": "certificado_periodo",
+        "certificado_fecha": "certificado_fecha",
+        "certificado_mes_pct": "certificado_mes_pct",
+    },
+    filter_fields={
+        "certificado_obra": "certificado_obra__obra_nombre__icontains",
+        "certificado_expediente": "certificado_expediente__icontains",
+        "certificado_periodo": "certificado_periodo__icontains",
+    },
+    search_lookups=[
+        "certificado_obra__obra_nombre__icontains",
+        "certificado_expediente__icontains",
+        "certificado_rubro_db__certificadorubro_nombre__icontains",
+    ],
+    row_builder=_certificado_sin_digital_datatable_row,
+    default_order="-certificado_fecha",
+    with_detail=False,
+)
+
+
 # --- ConjuntoLicitado ---
 @router.get("/conjuntos/", response=List[ConjuntoLicitadoOut])
 @decorate_view(require_model_perm(ConjuntoLicitado))
@@ -1668,37 +1713,6 @@ def update_contrato_digital(request, id: int, payload: ContratosDigitalesUpdate)
 @decorate_view(require_model_perm(ContratosDigitales))
 def delete_contrato_digital(request, id: int):
     deleted, _ = ContratosDigitales.objects.filter(id=id).delete()
-    return {"deleted": bool(deleted)}
-
-
-# --- ResolucionesDigitales ---
-@router.get("/resoluciones-digitales/", response=List[ResolucionesDigitalesOut])
-@decorate_view(require_model_perm(ResolucionesDigitales))
-@paginate(PerPagePagination)
-def list_resoluciones_digitales(request):
-    return ResolucionesDigitales.objects.all().order_by("-id")
-
-
-@router.post("/resoluciones-digitales/", response=ResolucionesDigitalesOut)
-@decorate_view(require_model_perm(ResolucionesDigitales))
-def create_resolucion_digital(request, payload: ResolucionesDigitalesCreate):
-    return ResolucionesDigitales.objects.create(**payload.model_dump())
-
-
-@router.put("/resolucion-digital/{id}/", response=ResolucionesDigitalesOut)
-@decorate_view(require_model_perm(ResolucionesDigitales))
-def update_resolucion_digital(request, id: int, payload: ResolucionesDigitalesUpdate):
-    rd = get_object_or_404(ResolucionesDigitales, id=id)
-    for field, value in payload.model_dump(exclude_unset=True).items():
-        setattr(rd, field, value)
-    rd.save()
-    return rd
-
-
-@router.delete("/resolucion-digital/{id}/")
-@decorate_view(require_model_perm(ResolucionesDigitales))
-def delete_resolucion_digital(request, id: int):
-    deleted, _ = ResolucionesDigitales.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
 
 

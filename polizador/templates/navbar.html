@@ -113,8 +113,7 @@
             <li><a class="dropdown-item" href="{% url "secretariador:lista-vehiculos" %}"><i class="bi bi-list-ul me-1"></i>Vehículos</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:lista-memorandum" %}"><i class="bi bi-list-ul me-1"></i>Memorándum</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:lista-decretos" %}"><i class="bi bi-list-ul me-1"></i>Decretos</a></li>
-            <li><a class="dropdown-item" href="{% url "secretariador:lista-resoluciones" %}"><i class="bi bi-list-ul me-1"></i>Resoluciones Presidencia</a></li>
-            <li><a class="dropdown-item" href="{% url "secretariador:lista-resoluciones-directorio" %}"><i class="bi bi-list-ul me-1"></i>Resoluciones Directorio</a></li>
+            <li><a class="dropdown-item" href="{% url "secretariador:lista-resoluciones" %}"><i class="bi bi-list-ul me-1"></i>Resoluciones</a></li>
           </ul>
         </li>
         {% endif %}
@@ -138,6 +137,7 @@
           </a>
           <div class="dropdown-menu p-4 w-75">
             <div class="row g-3">
+              {% if "gciaoperativa_usuarios" in groups or request.user.is_superuser %}
               <div class="col-sm-6 col-md-4 col-lg-3">
                 <div class="card h-full card-hover">
                   <div class="card-body py-2">
@@ -156,6 +156,8 @@
                   </div>
                 </div>
               </div>
+              {% endif %}
+              {% if "dirgral_usuarios" in groups or request.user.is_superuser %}
               <div class="col-sm-6 col-md-4 col-lg-3">
                 <div class="card h-full card-hover">
                   <div class="card-body py-2">
@@ -201,6 +203,7 @@
                   </div>
                 </div>
               </div>
+              {% endif %}
             </div>
           </div>
         </li>

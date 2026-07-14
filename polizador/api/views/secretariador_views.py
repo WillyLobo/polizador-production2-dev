@@ -290,6 +290,14 @@ register_simple_datatable(
 
 
 # --- Resoluciones (Presidencia + Directorio mezcladas) datatable ---
+def _resolucion_numero_completo(r: InstrumentosLegalesResoluciones) -> str:
+    partes = [r.instrumentolegalresoluciones_numero]
+    if r.instrumentolegalresoluciones_tipo == "D" and r.instrumentolegalresoluciones_acta:
+        partes.append(r.instrumentolegalresoluciones_acta)
+    partes.append(r.instrumentolegalresoluciones_ano)
+    return "/".join(partes)
+
+
 def _resolucion_datatable_row(r: InstrumentosLegalesResoluciones, user) -> dict:
     id_ = str(r.id)
     if r.instrumentolegalresoluciones_tipo == "P":
@@ -307,7 +315,7 @@ def _resolucion_datatable_row(r: InstrumentosLegalesResoluciones, user) -> dict:
     return {
         "id": r.id,
         "instrumentolegalresoluciones_tipo": r.get_instrumentolegalresoluciones_tipo_display(),
-        "instrumentolegalresoluciones_numero": r.instrumentolegalresoluciones_numero,
+        "instrumentolegalresoluciones_numero": _resolucion_numero_completo(r),
         "instrumentolegalresoluciones_ano": r.instrumentolegalresoluciones_ano,
         "instrumentolegalresoluciones_fecha_aprobacion": r.instrumentolegalresoluciones_fecha_aprobacion.isoformat(),
         "instrumentolegalresoluciones_descripcion": clip_value_html(r.instrumentolegalresoluciones_descripcion, 200),
@@ -345,6 +353,18 @@ register_simple_datatable(
     row_builder=_resolucion_datatable_row,
     default_order="-instrumentolegalresoluciones_ano,-instrumentolegalresoluciones_numero",
 )
+
+
+@router.get("/datatables/resoluciones/filtro-ano/")
+@decorate_view(require_model_perm(InstrumentosLegalesResoluciones))
+def datatable_resoluciones_filtro_ano(request):
+    valores = (
+        InstrumentosLegalesResoluciones.objects.exclude(instrumentolegalresoluciones_ano="")
+        .values_list("instrumentolegalresoluciones_ano", flat=True)
+        .distinct()
+        .order_by("-instrumentolegalresoluciones_ano")
+    )
+    return {"choices": [[v, v] for v in valores]}
 
 
 # --- Resoluciones de Directorio (solo tipo="D", con columna "acta") datatable ---

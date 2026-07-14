@@ -20,9 +20,15 @@
 
   $(document).ready(function() {
       var columns = [
-          { data: 'instrumentolegalresoluciones_tipo', name: 'instrumentolegalresoluciones_tipo', title: 'Tipo' },
+          {
+              data: 'instrumentolegalresoluciones_tipo', name: 'instrumentolegalresoluciones_tipo', title: 'Tipo',
+              filterType: 'select', filterChoices: [['P', 'Resolución de Presidencia'], ['D', 'Resolución de Directorio']],
+          },
           { data: 'instrumentolegalresoluciones_numero', name: 'instrumentolegalresoluciones_numero', title: 'Número' },
-          { data: 'instrumentolegalresoluciones_ano', name: 'instrumentolegalresoluciones_ano', title: 'Año' },
+          {
+              data: 'instrumentolegalresoluciones_ano', name: 'instrumentolegalresoluciones_ano', title: 'Año',
+              filterType: 'select', filterChoicesUrl: '/v1/api/datatables/resoluciones/filtro-ano/',
+          },
           {
               data: 'instrumentolegalresoluciones_fecha_aprobacion', name: 'instrumentolegalresoluciones_fecha_aprobacion',
               title: 'Fecha de Aprobación', filterType: 'date',

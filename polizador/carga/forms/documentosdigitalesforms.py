@@ -19,21 +19,3 @@ class ContratoDigitalForm(forms.ModelForm):
             "contratodigital_tipo":forms.Select(attrs={"class":"form-control"}),
             "contratodigital_archivo":forms.ClearableFileInput(attrs={"class":"form-control"}),
         }
-
-class ResolucionDigitalForm(forms.ModelForm):
-    required_css_class = "required"
-
-    class Meta:
-        model = models.ResolucionesDigitales
-        fields = (
-            "resoluciondigital_contrato",
-            "resoluciondigital_descripcion",
-            "resoluciondigital_numero",
-            "resoluciondigital_archivo",
-        )
-        widgets = {
-            "resoluciondigital_contrato": contratowidget(attrs={"class":"form-control customSelect2"}),
-            "resoluciondigital_descripcion":forms.TextInput(attrs={"class":"form-control"}),
-            "resoluciondigital_numero":forms.TextInput(attrs={"class":"form-control"}),
-            "resoluciondigital_archivo":forms.ClearableFileInput(attrs= {"class":"form-control"})
-        }

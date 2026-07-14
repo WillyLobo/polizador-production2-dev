@@ -11,7 +11,6 @@ from django.conf import settings
 
 """
 ContratosDigitales, contratodigital_archivo
-ResolucionesDigitales, resoluciondigital_archivo
 Poliza, poliza_digital
 Certificado, certificado_digital
 """
