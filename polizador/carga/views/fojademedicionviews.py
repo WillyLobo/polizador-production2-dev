@@ -32,7 +32,7 @@ def _foja_detalle_context(foja):
     total_pct_mes = sum(fi.fojaitem_pct_avance_mes for fi in items)
     total_pct_acumulado = sum(fi.fojaitem_pct_acumulado for fi in items)
     fotos = list(foja.fotos.all())
-    foto_paginas = [fotos[i:i + 6] for i in range(0, len(fotos), 6)]
+    foto_paginas = [fotos[i:i + 3] for i in range(0, len(fotos), 3)]
     return {
         "obra": obra,
         "plan": plan,

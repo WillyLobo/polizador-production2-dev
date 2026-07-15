@@ -28,6 +28,7 @@
 [ ] Normalizar los numeros de resoluciones para que usen el mismo separador("-").
 [ ] Crear helper que convierta los numeros de resoluciones nuevos al formato de numero de resoluciones digitales(S.G.T.)
 [ ] Crear helper para agregar objetos FK directamente desde los formularios.
+[+] Agregar opcion de remover firmas de gerente/representante tecnico en la foja de medicion.
 
 # Certificados
 [+] Una foja deberia engendrar 1 certificado por cada financiamiento.
