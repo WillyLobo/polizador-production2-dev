@@ -13,6 +13,7 @@ from uuid_utils import compat
 import calendar
 import os
 from secretariador.functions import FileValidator, CuitValidator
+from polizador.custom_forms import decimal_to_dms
 
 
 # from .models import User
@@ -479,6 +480,14 @@ class Obra(models.Model):
     def lista_localidades(self):
         return ", ".join(str(localidad) for localidad in self.obra_localidad_m.all())
     
+    def dd_to_dms(self):
+        """Georeferencia en formato grados/minutos/segundos, para mostrar en templates."""
+        if not self.obra_georeferencia:
+            return ""
+        lat = decimal_to_dms(self.obra_georeferencia.y, ("N", "S"))
+        lng = decimal_to_dms(self.obra_georeferencia.x, ("E", "O"))
+        return f"{lat} {lng}"
+
     def get_absolute_url(self):
         return reverse('estado-obra', kwargs={'id': self.pk})
 
