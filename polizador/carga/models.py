@@ -3,6 +3,7 @@ from decimal import Decimal
 from django.utils import timezone
 from wsgiref.validate import validator
 from django.db import models
+from django.contrib.gis.db import models as gis_models
 from django.urls import reverse
 from simple_history.models import HistoricalRecords
 from django.db.models import Sum, F, FloatField, Max, Q, OuterRef, Subquery
@@ -364,6 +365,7 @@ class Obra(models.Model):
         db_persist=True,
     )
     obra_principal = models.ManyToManyField("Obra", related_name="obra_madre", verbose_name="Obra Madre", blank=True)
+    obra_georeferencia = gis_models.PointField("Georeferencia", geography=True, srid=4326, blank=True, null=True)
     obra_history = HistoricalRecords(excluded_fields=['obra_contrato_total_pesos', "obra_contrato_total_uvi"])
 
     def compulsa(self):

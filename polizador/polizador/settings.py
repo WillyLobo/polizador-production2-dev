@@ -66,6 +66,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     "django.contrib.sites",
+    "django.contrib.gis",
 
     "django_select2",
 	"import_export",
@@ -142,7 +143,7 @@ WSGI_APPLICATION = 'polizador.wsgi.application'
 
 DATABASES = {
     'default': {
-        "ENGINE": "django.db.backends.postgresql",
+        "ENGINE": "django.contrib.gis.db.backends.postgis",
         "HOST": DBHOST,
         "USER": DBUSER,
 	    "PASSWORD":DBSECRET,
