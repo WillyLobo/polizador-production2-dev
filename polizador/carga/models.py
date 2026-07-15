@@ -580,7 +580,7 @@ class Certificado(models.Model):
     certificado_contrato_origen = models.ForeignKey(
         "Contrato",
         verbose_name="Contrato/Resolución de Origen",
-        on_delete=models.DO_NOTHING,
+        on_delete=models.PROTECT,
         null=True,
         blank=True,
         help_text="Obligatorio para certificados de Hecho Consumado: el Contrato cuya "

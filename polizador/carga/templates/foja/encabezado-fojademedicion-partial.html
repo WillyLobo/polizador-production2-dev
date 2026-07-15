@@ -7,7 +7,7 @@
   <div class="datos">
     <div class="col-izq">
       <p class="datos-lbl"><span class="lbl">PROYECTO:</span> {{ obra.obra_nombre }}</p>
-      <p class="datos-lbl"><span class="lbl">CONVENIO:</span> {{ obra.obra_convenio }}</p>
+      <p class="datos-lbl"><span class="lbl">CONVENIO:</span> {{ obra.obra_convenio|default_if_none:"-" }}</p>
       <p class="datos-lbl"><span class="lbl">ENTE EJECUTOR:</span> INSTITUTO PROVINCIAL DE DESARROLLO URBANO Y VIVIENDA DEL CHACO</p>
       <p class="datos-lbl"><span class="lbl">PROGRAMA:</span> {{ obra.obra_programa }}</p>
       <div class="sep"></div>
@@ -54,7 +54,6 @@
       <p class="datos-lbl"><span class="lbl">COMPULSA:</span> {{ obra.compulsa|default:"—" }}</p>
       <p class="datos-lbl"><span class="lbl">NOMENCLATURA CATASTRAL:</span> {{ obra.obra_nomenclatura }}</p>
       <p class="datos-lbl"><span class="lbl">GEOREFERENCIA:</span> P/H </p>
-      <p class="datos-lbl"><span class="lbl">EMPRESA:</span> {{ obra.obra_empresa.empresa_nombre }}</p>
-      <p class="datos-lbl"><span class="lbl">CUIT:</span> {{ obra.obra_empresa.empresa_cuit }}</p>
+      <p class="datos-lbl"><span class="lbl">EMPRESA:</span> {{ obra.obra_empresa.empresa_nombre }} ({{ obra.obra_empresa.empresa_cuit}})</p>
     </div>
   </div>

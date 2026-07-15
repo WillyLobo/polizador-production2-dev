@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from carga.models import Poliza, Poliza_Movimiento
 from carga.forms.polizaforms import *
-from carga.views.generics import get_deleted_objects
+from carga.views.generics import get_deleted_objects, UserKwargsMixin, UserFormsetKwargsMixin
 from secretariador.forms.mixins import FormsetViewMixin
 
 @method_decorator(login_required, name="dispatch")
@@ -27,7 +27,7 @@ class EliminarPoliza(PermissionRequiredMixin, generic.DeleteView):
 
 
 @method_decorator(login_required, name="dispatch")
-class CrearPoliza(PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
+class CrearPoliza(PermissionRequiredMixin, UserKwargsMixin, UserFormsetKwargsMixin, FormsetViewMixin, generic.CreateView):
 	permission_required = "carga.add_poliza"
 	formset_name = PolizaMovimientoFormset
 	view_type = "create"
@@ -48,7 +48,7 @@ class CrearPoliza(PermissionRequiredMixin, FormsetViewMixin, generic.CreateView)
 		return context
 
 @method_decorator(login_required, name="dispatch")
-class UpdatePoliza(PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView):
+class UpdatePoliza(PermissionRequiredMixin, UserKwargsMixin, UserFormsetKwargsMixin, FormsetViewMixin, generic.UpdateView):
 	permission_required = "carga.change_poliza"
 	formset_name = PolizaMovimientoFormset
 	view_type = "update"

@@ -6,7 +6,7 @@ from django.views import generic
 from django.urls import reverse_lazy
 from carga.models import Aseguradora
 from carga.forms.aseguradoraforms import *
-from carga.views.generics import get_deleted_objects
+from carga.views.generics import get_deleted_objects, PopupCreateMixin
 
 @method_decorator(login_required, name="dispatch")
 class EliminarAseguradora(PermissionRequiredMixin, generic.DeleteView):
@@ -26,13 +26,14 @@ class EliminarAseguradora(PermissionRequiredMixin, generic.DeleteView):
 
 
 @method_decorator(login_required, name="dispatch")
-class CrearAseguradora(PermissionRequiredMixin, generic.CreateView):
+class CrearAseguradora(PopupCreateMixin, PermissionRequiredMixin, generic.CreateView):
 	permission_required = "carga.add_aseguradora"
 
 	model = Aseguradora
 	template_name = "aseguradora/crear-aseguradora.html"
 	form_class = AseguradoraForm
 	success_url = reverse_lazy("carga:crear-aseguradora")
+	popup_form_partial = "partials/aseguradora-form-partial.html"
 
 	title = "Crear Aseguradora"
 

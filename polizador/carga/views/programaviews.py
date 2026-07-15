@@ -6,7 +6,7 @@ from django.views import generic
 from django.urls import reverse_lazy
 from carga.models import Programa
 from carga.forms.programaforms import *
-from carga.views.generics import get_deleted_objects
+from carga.views.generics import get_deleted_objects, PopupCreateMixin
 
 @method_decorator(login_required, name="dispatch")
 class EliminarPrograma(PermissionRequiredMixin, generic.DeleteView):
@@ -26,13 +26,14 @@ class EliminarPrograma(PermissionRequiredMixin, generic.DeleteView):
 
 
 @method_decorator(login_required, name="dispatch")
-class CrearPrograma(PermissionRequiredMixin, generic.CreateView):
+class CrearPrograma(PopupCreateMixin, PermissionRequiredMixin, generic.CreateView):
 	permission_required = "carga.add_programa"
 
 	model = Programa
 	template_name = "programa/crear-programa.html"
 	form_class = ProgramaForm
 	success_url = reverse_lazy("carga:crear-programa")
+	popup_form_partial = "partials/programa-form-partial.html"
 
 	title = "Crear Programa"
 

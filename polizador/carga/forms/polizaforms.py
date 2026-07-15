@@ -1,6 +1,7 @@
 from django import forms
 from django.forms.models import inlineformset_factory
 from carga import models
+from carga.forms.mixins import AddRelatedPermissionMixin
 from carga.views.ajaxviews import obrawidget, empresawidget, aseguradorawidget
 from polizador.custom_forms import DateHTMLWidget
 from carga.models import Poliza, Poliza_Movimiento
@@ -12,7 +13,7 @@ from carga.views.ajaxviews import areawidget, polizawidget, receptorwidget
 # 		model = models.LegacyPoliza
 # 		fields = "__all__"
 
-class PolizaForm(forms.ModelForm):
+class PolizaForm(AddRelatedPermissionMixin, forms.ModelForm):
 	required_css_class = "required"
 
 	CONCEPTO = (
@@ -52,7 +53,7 @@ class PolizaForm(forms.ModelForm):
 			"poliza_digital":forms.FileInput(attrs={"class":"form-control"}),
 		}
 
-class PolizaMovimientoForm(forms.ModelForm):
+class PolizaMovimientoForm(AddRelatedPermissionMixin, forms.ModelForm):
 	required_css_class = "required"
 
 	class Meta:

@@ -22,6 +22,31 @@
       <i class="bi bi-file-earmark-plus"></i> Generar Certificado
     </a>
     {% endif %}
+    <div class="dropdown">
+      <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-pen"></i> Firmas
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end p-2" style="min-width: 220px;">
+        <li>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="chkFirmaGerente" data-firma-clase="firma-gerente" checked>
+            <label class="form-check-label" for="chkFirmaGerente">Gerente</label>
+          </div>
+        </li>
+        <li>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="chkFirmaRepresentante" data-firma-clase="firma-representante" checked>
+            <label class="form-check-label" for="chkFirmaRepresentante">Representante Técnico</label>
+          </div>
+        </li>
+        <li>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="chkFirmaInspector" data-firma-clase="firma-inspector" checked>
+            <label class="form-check-label" for="chkFirmaInspector">Inspector</label>
+          </div>
+        </li>
+      </ul>
+    </div>
     <button onclick="window.print()" class="btn btn-sm btn-outline-dark">
       <i class="bi bi-printer"></i> Imprimir / PDF
     </button>
@@ -70,26 +95,14 @@
         <td class="pct">{{ total_pct_mes|floatformat:3 }}</td>
         <td class="pct">{{ total_pct_acumulado|floatformat:3 }}</td>
       </tr>
-    </tbody>
-  </table>
-
-  {% comment %} ── Detalle avance físico ── {% endcomment %}
-  <div class="subtitulo">DETALLE AVANCE FISICO</div>
-  <table class="tabla-avance">
-    <thead>
-      <tr>
-        <th style="text-align:left; width:30%;">CONCEPTO</th>
-        <th>ACUMULADO ANTERIOR</th>
-        <th>PRESENTE CERTIFICADO</th>
-        <th>ACUMULADO TOTAL</th>
+      <tr class="totales">
+        <td class="item" colspan="6">DETALLE DEL AVANCE FISICO</td>
       </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="concepto">AVANCE FÍSICO OBRA</td>
-        <td class="dato">{{ total_pct_anterior|floatformat:3 }} %</td>
-        <td class="dato">{{ total_pct_mes|floatformat:3 }} %</td>
-        <td class="dato">{{ total_pct_acumulado|floatformat:3 }} %</td>
+      <tr class="totales">
+        <td class="item" colspan="3">AVANCE FÍSICO OBRA</td>
+        <td class="pct">{{ total_pct_anterior|floatformat:3 }}</td>
+        <td class="pct">{{ total_pct_mes|floatformat:3 }}</td>
+        <td class="pct">{{ total_pct_acumulado|floatformat:3 }}</td>
       </tr>
     </tbody>
   </table>
@@ -109,7 +122,7 @@
   <div class="fotos-grid">
     {% for foto in pagina %}
     <div class="foto">
-      {% comment %} <img src="{{ foto.fotofoja_archivo.url }}" alt="Foto {{ forloop.parentloop.counter }}-{{ forloop.counter }}"> {% endcomment %}
+      <img src="{{ foto.fotofoja_archivo.url }}" alt="Foto {{ forloop.parentloop.counter }}-{{ forloop.counter }}">
     </div>
     {% endfor %}
   </div>
@@ -118,6 +131,16 @@
 {% endfor %}
 
 </div>{# /hoja-doc #}
+
+<script>
+document.querySelectorAll('#chkFirmaGerente, #chkFirmaRepresentante, #chkFirmaInspector').forEach(function (chk) {
+  chk.addEventListener('change', function () {
+    document.querySelectorAll('.' + chk.dataset.firmaClase).forEach(function (el) {
+      el.classList.toggle('d-none', !chk.checked);
+    });
+  });
+});
+</script>
 
 {% if auto_print %}
 <script>window.addEventListener('load', function(){ window.print(); });</script>

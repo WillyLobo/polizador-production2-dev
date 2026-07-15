@@ -6,7 +6,7 @@ from django.views import generic
 from django.urls import reverse_lazy
 from carga.models import Empresa
 from carga.forms.empresaforms import *
-from carga.views.generics import get_deleted_objects
+from carga.views.generics import get_deleted_objects, PopupCreateMixin
 
 @method_decorator(login_required, name="dispatch")
 class EliminarEmpresa(PermissionRequiredMixin, generic.DeleteView):
@@ -26,13 +26,14 @@ class EliminarEmpresa(PermissionRequiredMixin, generic.DeleteView):
 
 
 @method_decorator(login_required, name="dispatch")
-class CrearEmpresa(PermissionRequiredMixin, generic.CreateView):
+class CrearEmpresa(PopupCreateMixin, PermissionRequiredMixin, generic.CreateView):
 	permission_required = "carga.add_empresa"
 
 	model = Empresa
 	template_name = "empresa/crear-empresa.html"
 	form_class = EmpresaForm
 	success_url = reverse_lazy("carga:crear-empresa")
+	popup_form_partial = "partials/empresa-form-partial.html"
 
 	title = "Crear Empresa"
 

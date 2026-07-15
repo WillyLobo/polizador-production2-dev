@@ -6,7 +6,7 @@ from django.views import generic
 from django.urls import reverse_lazy
 from carga.models import ConjuntoLicitado
 from carga.forms.conjuntoforms import *
-from carga.views.generics import get_deleted_objects
+from carga.views.generics import get_deleted_objects, PopupCreateMixin
 
 @method_decorator(login_required, name="dispatch")
 class EliminarConjunto(PermissionRequiredMixin, generic.DeleteView):
@@ -25,13 +25,14 @@ class EliminarConjunto(PermissionRequiredMixin, generic.DeleteView):
 		return context
 
 @method_decorator(login_required, name="dispatch")
-class CrearConjunto(PermissionRequiredMixin, generic.CreateView):
+class CrearConjunto(PopupCreateMixin, PermissionRequiredMixin, generic.CreateView):
 	permission_required = "carga.add_conjuntolicitado"
 
 	model = ConjuntoLicitado
 	template_name = "conjunto/crear-conjunto.html"
 	form_class = ConjuntoForm
 	success_url = reverse_lazy("carga:crear-conjunto")
+	popup_form_partial = "partials/conjunto-form-partial.html"
 
 	title = "Crear Conjunto"
 

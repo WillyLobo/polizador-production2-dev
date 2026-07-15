@@ -1,5 +1,6 @@
 from django import forms
 from carga import models
+from carga.forms.mixins import AddRelatedPermissionMixin
 from carga.views.ajaxviews import (
 	empresawidget,
 	conjuntowidget,
@@ -16,7 +17,7 @@ from personalizador.views.ajaxviews import (
 from secretariador.views.ajaxviews import ResolucionWidget
 from polizador.custom_forms import DateHTMLWidget
 
-class ObraForm(forms.ModelForm):
+class ObraForm(AddRelatedPermissionMixin, forms.ModelForm):
 	required_css_class = "required"
 
 	class Meta:

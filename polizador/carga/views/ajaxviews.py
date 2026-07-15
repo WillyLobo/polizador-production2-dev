@@ -2,6 +2,34 @@ from carga.models import *
 from carga.forms import *
 from django_select2 import forms as s2forms
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse
+from django.utils.html import format_html
+
+class AddRelatedWidgetMixin:
+    """Agrega un boton "+" al lado del select que abre (en un modal) el formulario de
+    alta del modelo relacionado y, al guardar, inserta el objeto creado como opcion
+    seleccionada. Requiere `add_related_url_name` (nombre de URL reversible del
+    CreateView correspondiente, que debe usar PopupCreateMixin).
+
+    `add_related_allowed` puede setearlo AddRelatedPermissionMixin (carga/forms/mixins.py)
+    para ocultar el boton segun el permiso add_<modelo> del usuario actual.
+    """
+    add_related_url_name = None
+    add_related_allowed = True
+
+    def render(self, name, value, attrs=None, renderer=None):
+        widget_html = super().render(name, value, attrs, renderer)
+        if not self.add_related_url_name or not self.add_related_allowed:
+            return widget_html
+        select_id = (attrs or {}).get("id") or f"id_{name}"
+        create_url = reverse(self.add_related_url_name)
+        button_html = format_html(
+            '<button type="button" class="btn btn-outline-secondary select2-add-related" '
+            'data-select-id="{}" data-create-url="{}" title="Agregar nuevo">'
+            '<i class="bi bi-plus-lg text-success"></i></button>',
+            select_id, create_url,
+        )
+        return format_html('<div class="input-group select2-with-add">{}{}</div>', widget_html, button_html)
 
 class SmallCatalogWidgetMixin:
     """Widgets over catalogs with few rows: show the first results on open, without typing."""
@@ -34,7 +62,8 @@ class obrawidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
         "obra_convenio__icontains",
     ]
 
-class conjuntowidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
+class conjuntowidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+    add_related_url_name = "carga:crear-conjunto"
     search_fields = [
         "conjunto_nombre__icontains",
     ]
@@ -67,7 +96,8 @@ class rubroanteriorwidget(PlanDependentWidgetMixin, LoginRequiredMixin, s2forms.
             ).exclude(rubro_plan_id=plan.pk)
         return super().filter_queryset(request, term, queryset)
 
-class programawidget(SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+class programawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+    add_related_url_name = "carga:crear-programa"
     search_fields = [
         "programa_nombre__icontains",
     ]
@@ -118,17 +148,20 @@ class agentewidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
         "agente_apellidos__icontains",
     ]
 
-class aseguradorawidget(SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+class aseguradorawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+    add_related_url_name = "carga:crear-aseguradora"
     search_fields = [
         "aseguradora_nombre__icontains",
     ]
 
-class areawidget(SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+class areawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+    add_related_url_name = "carga:crear-area"
     search_fields = [
         "area_nombre__icontains",
     ]
 
-class receptorwidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
+class receptorwidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+    add_related_url_name = "carga:crear-receptor"
     search_fields = [
         "receptor_nombre__icontains",
     ]
@@ -142,7 +175,8 @@ class polizawidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
         "poliza_obra__obra_nombre__icontains",
     ]
 
-class empresawidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
+class empresawidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+    add_related_url_name = "carga:crear-empresa"
     search_fields = [
         "empresa_nombre__icontains",
     ]

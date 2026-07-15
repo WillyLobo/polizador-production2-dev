@@ -15,9 +15,14 @@ class FormsetViewMixin(generic.View):
         context = super().get_context_data(**kwargs)
         formset = kwargs.get('formset')
         if formset is None:
-            formset = self.formset_name(instance=self.object)
+            formset = self.formset_name(instance=self.object, form_kwargs=self.get_formset_kwargs())
         context['group_formset'] = formset
         return context
+
+    def get_formset_kwargs(self):
+        """Hook for subclasses: extra `form_kwargs` forwarded to every form of the
+        formset (ej. `{"user": self.request.user}` para AddRelatedPermissionMixin)."""
+        return {}
 
     def prepare_formset(self, formset):
         """Hook for subclasses to set per-form `initial` values right after construction.
@@ -35,7 +40,7 @@ class FormsetViewMixin(generic.View):
 
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        formset = self.formset_name(instance=self.object)
+        formset = self.formset_name(instance=self.object, form_kwargs=self.get_formset_kwargs())
         self.prepare_formset(formset)
         return self.render_to_response(self.get_context_data(form=form, formset=formset))
 
@@ -44,7 +49,10 @@ class FormsetViewMixin(generic.View):
 
         form_class = self.get_form_class()
         form = self.get_form(form_class)
-        formset = self.formset_name(self.request.POST, self.request.FILES, instance=self.object)
+        formset = self.formset_name(
+            self.request.POST, self.request.FILES, instance=self.object,
+            form_kwargs=self.get_formset_kwargs(),
+        )
         self.prepare_formset(formset)
         # No usar "and": evaluarlos por separado para que formset.is_valid() corra siempre,
         # incluso si `form` ya es inválido. De lo contrario formset nunca llama a full_clean()
