@@ -1,0 +1,13 @@
+{{ form.media }}
+<form id="popupCreateForm" method="post" novalidate>
+  {% csrf_token %}
+  <input type="hidden" name="_popup" value="1">
+  {% if popup_form_partial %}
+    {% include popup_form_partial %}
+  {% else %}
+    {{ form.as_div }}
+  {% endif %}
+  <div class="text-end mt-3">
+    <button type="submit" class="btn btn-sm btn-primary">Guardar</button>
+  </div>
+</form>

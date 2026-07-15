@@ -1,6 +1,6 @@
 from django import forms
 from carga import models
-from carga.views.ajaxviews import departamentowidget, municipiowidget 
+from carga.views.ajaxviews import departamentowidget, municipiowidget
 
 class LocalidadForm(forms.ModelForm):
 	required_css_class = "required"

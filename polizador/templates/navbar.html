@@ -90,20 +90,20 @@
         {% if "dirgral_usuarios" in groups or request.user.is_superuser %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-            <i class="bi bi-briefcase me-1"></i>Viáticos
+            <i class="bi bi-car-front me-1"></i>Viáticos
           </a>
           <ul class="dropdown-menu dropdown-menu-lg-start">
             <li><a class="dropdown-item" href="{% url "secretariador:calendario-semanal" %}"><i class="bi bi-calendar-week text-success me-1"></i>Calendario Semanal</a></li>
-            <li><a class="dropdown-item" href="{% url "secretariador:calendario-anual" %}"><i class="bi bi-calendar-year text-warning me-1"></i>Calendario Anual</a></li>
+            <li><a class="dropdown-item" href="{% url "secretariador:calendario-anual" %}"><i class="bi bi-calendar-week text-success me-1"></i>Calendario Anual</a></li>
             <li><hr class="dropdown-divider"></li>
             <li class="dropdown-item fw-bold text-muted"><small>CREAR</small></li>
             <li><a class="dropdown-item" href="{% url "secretariador:redirect-solicitud" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Solicitud</a></li>
-            <li><a class="dropdown-item" href="{% url "secretariador:crear-incorporacion" %}"><i class="bi bi-person-plus me-1"></i>Incorporación</a></li>
+            <li><a class="dropdown-item" href="{% url "secretariador:crear-incorporacion" %}"><i class="bi bi-plus-circle me-1"></i>Incorporación</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:crear-comisionado" %}"><i class="bi bi-person-badge me-1"></i>Nuevo Agente</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:crear-vehiculo" %}"><i class="bi bi-car-front me-1"></i>Vehículo</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:crear-memorandum" %}"><i class="bi bi-file-text me-1"></i>Memorándum</a></li>
-            <li><a class="dropdown-item" href="{% url "secretariador:redirect-decreto" %}"><i class="bi bi-file-award me-1"></i>Decreto</a></li>
-            <li><a class="dropdown-item" href="{% url "secretariador:redirect-resoluciones" %}"><i class="bi bi-file-check me-1"></i>Resolución</a></li>
+            <li><a class="dropdown-item" href="{% url "secretariador:redirect-decreto" %}"><i class="bi bi-file-text me-1"></i>Decreto</a></li>
+            <li><a class="dropdown-item" href="{% url "secretariador:redirect-resoluciones" %}"><i class="bi bi-file-text me-1"></i>Resolución</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:crear-montoviaticodiario" %}"><i class="bi bi-currency-exchange me-1"></i>Monto Viáticos</a></li>
             <li><hr class="dropdown-divider"></li>
             <li class="dropdown-item fw-bold text-muted"><small>LISTADOS</small></li>

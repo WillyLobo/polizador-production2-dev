@@ -9,7 +9,7 @@ from django.urls import reverse_lazy
 from django.urls import reverse
 from carga.models import Obra, obras_con_acumulado_anotado
 from carga.forms.obraforms import *
-from carga.views.generics import get_deleted_objects
+from carga.views.generics import get_deleted_objects, UserKwargsMixin
 
 @method_decorator(login_required, name="dispatch")
 class EliminarObra(PermissionRequiredMixin, generic.DeleteView):
@@ -28,7 +28,7 @@ class EliminarObra(PermissionRequiredMixin, generic.DeleteView):
 		return context
 	
 @method_decorator(login_required, name="dispatch")
-class CrearObra(PermissionRequiredMixin, generic.CreateView):
+class CrearObra(PermissionRequiredMixin, UserKwargsMixin, generic.CreateView):
 	permission_required = "carga.add_obra"
 
 	model = Obra
@@ -54,7 +54,7 @@ class CrearObra(PermissionRequiredMixin, generic.CreateView):
 
 
 @method_decorator(login_required, name="dispatch")
-class UpdateObra(PermissionRequiredMixin, generic.UpdateView):
+class UpdateObra(PermissionRequiredMixin, UserKwargsMixin, generic.UpdateView):
 	permission_required = "carga.change_obra"
 
 	model = Obra

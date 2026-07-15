@@ -5,7 +5,7 @@ from django.views import generic
 from django.urls import reverse_lazy
 from carga import models
 from carga.forms.receptorforms import *
-from carga.views.generics import get_deleted_objects
+from carga.views.generics import get_deleted_objects, PopupCreateMixin
 
 @method_decorator(login_required, name="dispatch")
 class EliminarReceptor(PermissionRequiredMixin, generic.DeleteView):
@@ -25,13 +25,14 @@ class EliminarReceptor(PermissionRequiredMixin, generic.DeleteView):
 
 
 @method_decorator(login_required, name="dispatch")
-class CrearReceptor(PermissionRequiredMixin, generic.CreateView):
+class CrearReceptor(PopupCreateMixin, PermissionRequiredMixin, generic.CreateView):
 	permission_required = "carga.add_receptor"
 
 	model = models.Receptor
 	template_name = "receptor/crear-receptor.html"
 	form_class = ReceptorForm
 	success_url = reverse_lazy("carga:crear-receptor")
+	popup_form_partial = "partials/receptor-form-partial.html"
 
 	title = "Crear Receptor"
 

@@ -5,9 +5,10 @@ from django.views import generic
 from django.urls import reverse_lazy
 from carga import models
 from carga.forms.areaforms import *
+from carga.views.generics import PopupCreateMixin
 
 @method_decorator(login_required, name="dispatch")
-class CrearArea(PermissionRequiredMixin, generic.CreateView):
+class CrearArea(PopupCreateMixin, PermissionRequiredMixin, generic.CreateView):
 	permission_required = "carga.add_area"
 	title = "Crear Area"
 
@@ -15,6 +16,7 @@ class CrearArea(PermissionRequiredMixin, generic.CreateView):
 	template_name = "area/crear-area.html"
 	form_class = AreaForm
 	success_url = reverse_lazy("carga:crear-area")
+	popup_form_partial = "partials/area-form-partial.html"
 
 	def get_title(self):
 		return self.title
