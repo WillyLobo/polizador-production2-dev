@@ -95,26 +95,14 @@
         <td class="pct">{{ total_pct_mes|floatformat:3 }}</td>
         <td class="pct">{{ total_pct_acumulado|floatformat:3 }}</td>
       </tr>
-    </tbody>
-  </table>
-
-  {% comment %} ── Detalle avance físico ── {% endcomment %}
-  <div class="subtitulo">DETALLE AVANCE FISICO</div>
-  <table class="tabla-avance">
-    <thead>
-      <tr>
-        <th style="text-align:left; width:30%;">CONCEPTO</th>
-        <th>ACUMULADO ANTERIOR</th>
-        <th>PRESENTE CERTIFICADO</th>
-        <th>ACUMULADO TOTAL</th>
+      <tr class="totales">
+        <td class="item" colspan="6">DETALLE DEL AVANCE FISICO</td>
       </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td class="concepto">AVANCE FÍSICO OBRA</td>
-        <td class="dato">{{ total_pct_anterior|floatformat:3 }} %</td>
-        <td class="dato">{{ total_pct_mes|floatformat:3 }} %</td>
-        <td class="dato">{{ total_pct_acumulado|floatformat:3 }} %</td>
+      <tr class="totales">
+        <td class="item" colspan="3">AVANCE FÍSICO OBRA</td>
+        <td class="pct">{{ total_pct_anterior|floatformat:3 }}</td>
+        <td class="pct">{{ total_pct_mes|floatformat:3 }}</td>
+        <td class="pct">{{ total_pct_acumulado|floatformat:3 }}</td>
       </tr>
     </tbody>
   </table>
