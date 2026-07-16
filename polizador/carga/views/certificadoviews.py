@@ -19,7 +19,7 @@ from carga.certificacion import (
 	resumen_certificacion_mensual,
 	siguiente_numero,
 )
-from carga.ley27397 import _contratomonto_de_rubro
+from carga.ley27397 import Ley27397Error, _contratomonto_de_rubro
 from carga.models import Certificado, CertificadoFinanciamiento, ContratoMonto, FojaDeMedicion, PlanDeTrabajosEtapa, Uvi
 from personalizador.models import Departamento, Direccion, Directorio, Gerencia
 from carga.forms.certificadoforms import *
@@ -254,6 +254,9 @@ class GenerarCertificadosDesdeFoja(PermissionRequiredMixin, generic.View):
 			certificados = construir_certificados_desde_foja(foja, expediente, fecha)
 		except ValidationError as e:
 			form.add_error(None, e)
+			return render(request, self.template_name, context)
+		except Ley27397Error as e:
+			form.add_error(None, str(e))
 			return render(request, self.template_name, context)
 
 		filas = [
