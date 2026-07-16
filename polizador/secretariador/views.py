@@ -9,7 +9,7 @@ from django.views import generic
 from secretariador.models import Organigrama, Vehiculo, Solicitud
 from .forms.solicitudform import SolicitudForm
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg
-from carga.views.generics import get_deleted_objects
+from core.deletion import get_deleted_objects
 import locale
 from django.contrib.auth import logout
 

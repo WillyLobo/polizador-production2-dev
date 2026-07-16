@@ -4,7 +4,7 @@ from carga.views.ajaxviews import (
 	localidadmultiplewidget,
 	)
 from polizador.custom_forms import DateHTMLWidget
-from secretariador.forms.mixins import BaseFormMixin
+from core.mixins import BaseFormMixin
 from datetime import datetime
 
 class InstrumentosLegalesMemorandumForm(BaseFormMixin, forms.ModelForm):

@@ -5,7 +5,7 @@ import django.core.validators
 import django.db.models.deletion
 import django.db.models.expressions
 import django.utils.timezone
-import secretariador.functions
+import core.validators
 import secretariador.models
 import simple_history.models
 from django.conf import settings
@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
                 ('comisionado_abreviatura', models.CharField(help_text='(Sr., Sra., Dr., Dra., Etc.)', max_length=10, verbose_name='Abreviatura')),
                 ('comisionado_sexo', models.CharField(choices=[('M', 'Masculino'), ('F', 'Femenino')], max_length=1, verbose_name='Sexo')),
                 ('comisionado_dni', models.DecimalField(decimal_places=0, max_digits=9, unique=True, validators=[django.core.validators.MinValueValidator(0)], verbose_name='DNI:')),
-                ('comisionado_cuit', models.CharField(max_length=13, validators=[secretariador.functions.CuitValidator()], verbose_name='CUIT')),
+                ('comisionado_cuit', models.CharField(max_length=13, validators=[core.validators.CuitValidator()], verbose_name='CUIT')),
                 ('comisionado_nombreyapellido', models.GeneratedField(db_persist=True, expression=secretariador.models.ConcatOp('comisionado_apellidos', models.Value(', '), 'comisionado_nombres'), output_field=models.TextField())),
                 ('comisionado_verificado_contra_padron', models.BooleanField(default=False, verbose_name='Chequeado')),
                 ('comisionado_personal_transitorio', models.BooleanField(default=False, verbose_name='Personal Transitorio')),
@@ -66,7 +66,7 @@ class Migration(migrations.Migration):
                 ('instrumentolegaldecretos_ano', models.CharField(max_length=5, verbose_name='Año')),
                 ('instrumentolegaldecretos_fecha_aprobacion', models.DateField(default=django.utils.timezone.now, verbose_name='Fecha de Aprobación')),
                 ('instrumentolegaldecretos_descripcion', models.CharField(default='Escala de viáticos', max_length=600, verbose_name='Descripción')),
-                ('instrumentolegaldecretos', models.TextField(blank=True, max_length=500, null=True, validators=[secretariador.functions.FileValidator(content_types='application/pdf', max_size=14680064, min_size=None)])),
+                ('instrumentolegaldecretos', models.TextField(blank=True, max_length=500, null=True, validators=[core.validators.FileValidator(content_types='application/pdf', max_size=14680064, min_size=None)])),
                 ('instrumentolegaldecretos_str', models.GeneratedField(db_persist=True, expression=secretariador.models.ConcatOp('instrumentolegaldecretos_numero', models.Value(' - '), 'instrumentolegaldecretos_ano', models.Value(' - '), 'instrumentolegaldecretos_tipo'), output_field=models.TextField())),
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
                 ('history_date', models.DateTimeField(db_index=True)),
@@ -91,7 +91,7 @@ class Migration(migrations.Migration):
                 ('instrumentolegalmemorandum_ano', models.CharField(max_length=5, verbose_name='Año')),
                 ('instrumentolegalmemorandum_fecha_aprobacion', models.DateField(default=django.utils.timezone.now, verbose_name='Fecha de Aprobación')),
                 ('instrumentolegalmemorandum_descripcion', models.CharField(default='', max_length=600, verbose_name='Descripción')),
-                ('instrumentolegalmemorandum', models.TextField(blank=True, max_length=500, null=True, validators=[secretariador.functions.FileValidator(content_types='application/pdf', max_size=14680064, min_size=None)])),
+                ('instrumentolegalmemorandum', models.TextField(blank=True, max_length=500, null=True, validators=[core.validators.FileValidator(content_types='application/pdf', max_size=14680064, min_size=None)])),
                 ('instrumentolegalmemorandum_str', models.GeneratedField(db_persist=True, expression=secretariador.models.ConcatOp('instrumentolegalmemorandum_numero', models.Value(' - '), 'instrumentolegalmemorandum_ano', models.Value(' - '), 'instrumentolegalmemorandum_tipo'), output_field=models.TextField())),
                 ('instrumentolegalmemorandum_autocarga', models.BooleanField(default=False, verbose_name='Memorandum importado sin intervención humana.')),
                 ('instrumentolegalmemorandum_document', models.TextField(blank=True, null=True, verbose_name='Texto Extraído por OCR')),
@@ -119,7 +119,7 @@ class Migration(migrations.Migration):
                 ('instrumentolegalresoluciones_ano', models.CharField(max_length=5, verbose_name='Año')),
                 ('instrumentolegalresoluciones_fecha_aprobacion', models.DateField(default=django.utils.timezone.now, verbose_name='Fecha de Aprobación')),
                 ('instrumentolegalresoluciones_descripcion', models.CharField(default='', max_length=600, verbose_name='Descripción')),
-                ('instrumentolegalresoluciones', models.TextField(blank=True, max_length=500, null=True, validators=[secretariador.functions.FileValidator(content_types='application/pdf', max_size=14680064, min_size=None)])),
+                ('instrumentolegalresoluciones', models.TextField(blank=True, max_length=500, null=True, validators=[core.validators.FileValidator(content_types='application/pdf', max_size=14680064, min_size=None)])),
                 ('instrumentolegalresoluciones_str', models.GeneratedField(db_persist=True, expression=secretariador.models.ConcatOp('instrumentolegalresoluciones_numero', models.Value(' - '), 'instrumentolegalresoluciones_ano', models.Value(' - '), 'instrumentolegalresoluciones_tipo'), output_field=models.TextField())),
                 ('instrumentolegalresoluciones_autocarga', models.BooleanField(default=False, verbose_name='Resolución importada sin intervención.')),
                 ('instrumentolegalresoluciones_document', models.TextField(blank=True, null=True, verbose_name='Texto Extraído por OCR')),
@@ -148,7 +148,7 @@ class Migration(migrations.Migration):
                 ('instrumentolegalresolucionesdirectorio_ano', models.CharField(max_length=5, verbose_name='Año')),
                 ('instrumentolegalresolucionesdirectorio_fecha_aprobacion', models.DateField(default=django.utils.timezone.now, verbose_name='Fecha de Aprobación')),
                 ('instrumentolegalresolucionesdirectorio_descripcion', models.CharField(default='', max_length=600, verbose_name='Descripción')),
-                ('instrumentolegalresolucionesdirectorio', models.TextField(blank=True, max_length=500, null=True, validators=[secretariador.functions.FileValidator(content_types='application/pdf', max_size=14680064, min_size=None)])),
+                ('instrumentolegalresolucionesdirectorio', models.TextField(blank=True, max_length=500, null=True, validators=[core.validators.FileValidator(content_types='application/pdf', max_size=14680064, min_size=None)])),
                 ('instrumentolegalresolucionesdirectorio_str', models.GeneratedField(db_persist=True, expression=secretariador.models.ConcatOp('instrumentolegalresolucionesdirectorio_numero', models.Value(' - '), 'instrumentolegalresolucionesdirectorio_ano', models.Value(' - '), 'instrumentolegalresolucionesdirectorio_tipo'), output_field=models.TextField())),
                 ('instrumentolegalresolucionesdirectorio_autocarga', models.BooleanField(default=False, verbose_name='Resolución importada sin intervención.')),
                 ('instrumentolegalresolucionesdirectorio_document', models.TextField(blank=True, null=True, verbose_name='Texto Extraído por OCR')),
@@ -224,7 +224,7 @@ class Migration(migrations.Migration):
                 ('instrumentolegaldecretos_ano', models.CharField(max_length=5, verbose_name='Año')),
                 ('instrumentolegaldecretos_fecha_aprobacion', models.DateField(default=django.utils.timezone.now, verbose_name='Fecha de Aprobación')),
                 ('instrumentolegaldecretos_descripcion', models.CharField(default='Escala de viáticos', max_length=600, verbose_name='Descripción')),
-                ('instrumentolegaldecretos', models.FileField(blank=True, max_length=500, null=True, upload_to=secretariador.models.generate_name_decretos, validators=[secretariador.functions.FileValidator(content_types='application/pdf', max_size=14680064, min_size=None)])),
+                ('instrumentolegaldecretos', models.FileField(blank=True, max_length=500, null=True, upload_to=secretariador.models.generate_name_decretos, validators=[core.validators.FileValidator(content_types='application/pdf', max_size=14680064, min_size=None)])),
                 ('instrumentolegaldecretos_str', models.GeneratedField(db_persist=True, expression=secretariador.models.ConcatOp('instrumentolegaldecretos_numero', models.Value(' - '), 'instrumentolegaldecretos_ano', models.Value(' - '), 'instrumentolegaldecretos_tipo'), output_field=models.TextField())),
             ],
             options={
@@ -271,7 +271,7 @@ class Migration(migrations.Migration):
                 ('instrumentolegalmemorandum_ano', models.CharField(max_length=5, verbose_name='Año')),
                 ('instrumentolegalmemorandum_fecha_aprobacion', models.DateField(default=django.utils.timezone.now, verbose_name='Fecha de Aprobación')),
                 ('instrumentolegalmemorandum_descripcion', models.CharField(default='', max_length=600, verbose_name='Descripción')),
-                ('instrumentolegalmemorandum', models.FileField(blank=True, max_length=500, null=True, upload_to=secretariador.models.generate_name_memorandum, validators=[secretariador.functions.FileValidator(content_types='application/pdf', max_size=14680064, min_size=None)])),
+                ('instrumentolegalmemorandum', models.FileField(blank=True, max_length=500, null=True, upload_to=secretariador.models.generate_name_memorandum, validators=[core.validators.FileValidator(content_types='application/pdf', max_size=14680064, min_size=None)])),
                 ('instrumentolegalmemorandum_str', models.GeneratedField(db_persist=True, expression=secretariador.models.ConcatOp('instrumentolegalmemorandum_numero', models.Value(' - '), 'instrumentolegalmemorandum_ano', models.Value(' - '), 'instrumentolegalmemorandum_tipo'), output_field=models.TextField())),
                 ('instrumentolegalmemorandum_autocarga', models.BooleanField(default=False, verbose_name='Memorandum importado sin intervención humana.')),
                 ('instrumentolegalmemorandum_document', models.TextField(blank=True, null=True, verbose_name='Texto Extraído por OCR')),
@@ -293,7 +293,7 @@ class Migration(migrations.Migration):
                 ('instrumentolegalresoluciones_ano', models.CharField(max_length=5, verbose_name='Año')),
                 ('instrumentolegalresoluciones_fecha_aprobacion', models.DateField(default=django.utils.timezone.now, verbose_name='Fecha de Aprobación')),
                 ('instrumentolegalresoluciones_descripcion', models.CharField(default='', max_length=600, verbose_name='Descripción')),
-                ('instrumentolegalresoluciones', models.FileField(blank=True, max_length=500, null=True, upload_to=secretariador.models.generate_name_resoluciones, validators=[secretariador.functions.FileValidator(content_types='application/pdf', max_size=14680064, min_size=None)])),
+                ('instrumentolegalresoluciones', models.FileField(blank=True, max_length=500, null=True, upload_to=secretariador.models.generate_name_resoluciones, validators=[core.validators.FileValidator(content_types='application/pdf', max_size=14680064, min_size=None)])),
                 ('instrumentolegalresoluciones_str', models.GeneratedField(db_persist=True, expression=secretariador.models.ConcatOp('instrumentolegalresoluciones_numero', models.Value(' - '), 'instrumentolegalresoluciones_ano', models.Value(' - '), 'instrumentolegalresoluciones_tipo'), output_field=models.TextField())),
                 ('instrumentolegalresoluciones_autocarga', models.BooleanField(default=False, verbose_name='Resolución importada sin intervención.')),
                 ('instrumentolegalresoluciones_document', models.TextField(blank=True, null=True, verbose_name='Texto Extraído por OCR')),
@@ -321,7 +321,7 @@ class Migration(migrations.Migration):
                 ('instrumentolegalresolucionesdirectorio_ano', models.CharField(max_length=5, verbose_name='Año')),
                 ('instrumentolegalresolucionesdirectorio_fecha_aprobacion', models.DateField(default=django.utils.timezone.now, verbose_name='Fecha de Aprobación')),
                 ('instrumentolegalresolucionesdirectorio_descripcion', models.CharField(default='', max_length=600, verbose_name='Descripción')),
-                ('instrumentolegalresolucionesdirectorio', models.FileField(blank=True, max_length=500, null=True, upload_to=secretariador.models.generate_name_resoluciones, validators=[secretariador.functions.FileValidator(content_types='application/pdf', max_size=14680064, min_size=None)])),
+                ('instrumentolegalresolucionesdirectorio', models.FileField(blank=True, max_length=500, null=True, upload_to=secretariador.models.generate_name_resoluciones, validators=[core.validators.FileValidator(content_types='application/pdf', max_size=14680064, min_size=None)])),
                 ('instrumentolegalresolucionesdirectorio_str', models.GeneratedField(db_persist=True, expression=secretariador.models.ConcatOp('instrumentolegalresolucionesdirectorio_numero', models.Value(' - '), 'instrumentolegalresolucionesdirectorio_ano', models.Value(' - '), 'instrumentolegalresolucionesdirectorio_tipo'), output_field=models.TextField())),
                 ('instrumentolegalresolucionesdirectorio_autocarga', models.BooleanField(default=False, verbose_name='Resolución importada sin intervención.')),
                 ('instrumentolegalresolucionesdirectorio_document', models.TextField(blank=True, null=True, verbose_name='Texto Extraído por OCR')),
@@ -363,7 +363,7 @@ class Migration(migrations.Migration):
                 ('comisionado_abreviatura', models.CharField(help_text='(Sr., Sra., Dr., Dra., Etc.)', max_length=10, verbose_name='Abreviatura')),
                 ('comisionado_sexo', models.CharField(choices=[('M', 'Masculino'), ('F', 'Femenino')], max_length=1, verbose_name='Sexo')),
                 ('comisionado_dni', models.DecimalField(db_index=True, decimal_places=0, max_digits=9, validators=[django.core.validators.MinValueValidator(0)], verbose_name='DNI:')),
-                ('comisionado_cuit', models.CharField(max_length=13, validators=[secretariador.functions.CuitValidator()], verbose_name='CUIT')),
+                ('comisionado_cuit', models.CharField(max_length=13, validators=[core.validators.CuitValidator()], verbose_name='CUIT')),
                 ('comisionado_nombreyapellido', models.GeneratedField(db_persist=True, expression=secretariador.models.ConcatOp('comisionado_apellidos', models.Value(', '), 'comisionado_nombres'), output_field=models.TextField())),
                 ('comisionado_verificado_contra_padron', models.BooleanField(default=False, verbose_name='Chequeado')),
                 ('comisionado_personal_transitorio', models.BooleanField(default=False, verbose_name='Personal Transitorio')),

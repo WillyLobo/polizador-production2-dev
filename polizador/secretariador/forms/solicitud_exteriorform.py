@@ -11,7 +11,7 @@ from secretariador.views.ajaxviews import (
     DecretoWidget,
     )
 from django.forms.models import inlineformset_factory
-from secretariador.forms.mixins import BaseFormMixin
+from core.mixins import BaseFormMixin
 from polizador.custom_forms import DateHTMLWidget
 from polizador.custom_forms import CustomCheckboxInput
 

@@ -7,7 +7,7 @@ from django.views import generic
 from secretariador.models import InstrumentosLegalesDecretos, MontoViaticoDiario
 from secretariador.forms.montoviaticodiarioform import *
 from secretariador.forms.instrumentoslegalesform import InstrumentosLegalesDecretosForm
-from carga.views.generics import get_deleted_objects
+from core.mixins import DeleteRelatedObjectsMixin
 
 @method_decorator(login_required, name="dispatch")
 class CrearMontoViaticoDiario(PermissionRequiredMixin, generic.CreateView):
@@ -112,17 +112,9 @@ class UpdateMontoViaticoDiario(PermissionRequiredMixin, generic.UpdateView):
 
 
 @method_decorator(login_required, name="dispatch")
-class EliminarMontoViaticoDiario(PermissionRequiredMixin, generic.DeleteView):
+class EliminarMontoViaticoDiario(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
 	permission_required = "secretariador.delete_montoviaticodiario"
 
 	model = MontoViaticoDiario
 	template_name = "generic/confirm_delete.html"
 	success_url = reverse_lazy("secretariador:lista-decretos")
-
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		deletable_objects, model_count, protected = get_deleted_objects([self.object])
-		context["deletable_objects"] = deletable_objects
-		context["model_count"] = dict(model_count).items()
-		context["protected"] = protected
-		return context

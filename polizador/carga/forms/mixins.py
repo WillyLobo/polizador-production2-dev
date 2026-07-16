@@ -3,7 +3,7 @@ class AddRelatedPermissionMixin:
     "+" si el usuario no tiene el permiso add_<modelo> del modelo relacionado.
 
     Requiere que la vista pase `user=request.user` al instanciar el form
-    (ver carga.views.generics.UserKwargsMixin).
+    (ver core.mixins.UserKwargsMixin).
     """
 
     def __init__(self, *args, user=None, **kwargs):

@@ -96,6 +96,7 @@ class PrototipoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 
 class CertificadoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	autocomplete_fields = ["certificado_obra", "certificado_rubro_db", "certificado_foja", "certificado_contrato_origen", "certificado_contrato_tramo"]
+	list_select_related = ["certificado_obra"]
 	search_fields = ["certificado_expediente", "certificado_obra__obra_nombre", "certificado_periodo"]
 	list_display = [
 		"id",

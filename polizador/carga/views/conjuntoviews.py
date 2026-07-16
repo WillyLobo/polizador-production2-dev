@@ -6,23 +6,15 @@ from django.views import generic
 from django.urls import reverse_lazy
 from carga.models import ConjuntoLicitado
 from carga.forms.conjuntoforms import *
-from carga.views.generics import get_deleted_objects, PopupCreateMixin
+from core.mixins import DeleteRelatedObjectsMixin, PopupCreateMixin
 
 @method_decorator(login_required, name="dispatch")
-class EliminarConjunto(PermissionRequiredMixin, generic.DeleteView):
+class EliminarConjunto(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
 	permission_required = "carga.delete_conjuntolicitado"
 
 	model = ConjuntoLicitado
 	template_name = "generic/confirm_delete.html"
 	success_url = reverse_lazy("carga:lista-conjuntos")
-
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		deletable_objects, model_count, protected = get_deleted_objects([self.object])
-		context["deletable_objects"] = deletable_objects
-		context["model_count"] = dict(model_count).items()
-		context["protected"] = protected
-		return context
 
 @method_decorator(login_required, name="dispatch")
 class CrearConjunto(PopupCreateMixin, PermissionRequiredMixin, generic.CreateView):

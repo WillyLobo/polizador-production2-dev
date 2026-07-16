@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from secretariador.models import InstrumentosLegalesMemorandum, InstrumentosLegalesDecretos, InstrumentosLegalesResoluciones
 from secretariador.forms.instrumentoslegalesform import *
-from carga.views.generics import get_deleted_objects
+from core.mixins import DeleteRelatedObjectsMixin
 
 @method_decorator(login_required, name="dispatch")
 class CrearInstrumentoLegalMemorandum(PermissionRequiredMixin, generic.CreateView):
@@ -141,68 +141,36 @@ class UpdateInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, generi
 		return context
 
 @method_decorator(login_required, name="dispatch")
-class EliminarInstrumentoLegalMemorandum(PermissionRequiredMixin, generic.DeleteView):
+class EliminarInstrumentoLegalMemorandum(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
 	permission_required = "secretariador.delete_instrumentoslegalesmemorandum"
 
 	model = InstrumentosLegalesMemorandum
 	template_name = "generic/confirm_delete.html"
 	success_url = reverse_lazy("secretariador:lista-memorandum")
 
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		deletable_objects, model_count, protected = get_deleted_objects([self.object])
-		context["deletable_objects"] = deletable_objects
-		context["model_count"] = dict(model_count).items()
-		context["protected"] = protected
-		return context
-
 @method_decorator(login_required, name="dispatch")
-class EliminarInstrumentoLegalDecreto(PermissionRequiredMixin, generic.DeleteView):
+class EliminarInstrumentoLegalDecreto(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
 	permission_required = "secretariador.delete_instrumentoslegalesdecretos"
 
 	model = InstrumentosLegalesDecretos
 	template_name = "generic/confirm_delete.html"
 	success_url = reverse_lazy("secretariador:lista-decretos")
 
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		deletable_objects, model_count, protected = get_deleted_objects([self.object])
-		context["deletable_objects"] = deletable_objects
-		context["model_count"] = dict(model_count).items()
-		context["protected"] = protected
-		return context
-
 @method_decorator(login_required, name="dispatch")
-class EliminarInstrumentoLegalResolucionPresidencia(PermissionRequiredMixin, generic.DeleteView):
+class EliminarInstrumentoLegalResolucionPresidencia(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
 	permission_required = "secretariador.delete_instrumentoslegalesresoluciones"
 
 	model = InstrumentosLegalesResoluciones
 	template_name = "generic/confirm_delete.html"
 	success_url = reverse_lazy("secretariador:lista-resoluciones")
 
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		deletable_objects, model_count, protected = get_deleted_objects([self.object])
-		context["deletable_objects"] = deletable_objects
-		context["model_count"] = dict(model_count).items()
-		context["protected"] = protected
-		return context
-
 @method_decorator(login_required, name="dispatch")
-class EliminarInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, generic.DeleteView):
+class EliminarInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
 	permission_required = "secretariador.delete_instrumentoslegalesresoluciones"
 
 	model = InstrumentosLegalesResoluciones
 	template_name = "generic/confirm_delete.html"
 	success_url = reverse_lazy("secretariador:lista-resoluciones")
-
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		deletable_objects, model_count, protected = get_deleted_objects([self.object])
-		context["deletable_objects"] = deletable_objects
-		context["model_count"] = dict(model_count).items()
-		context["protected"] = protected
-		return context
 
 @login_required
 @permission_required("secretariador.view_instrumentoslegalesmemorandum", raise_exception=True)

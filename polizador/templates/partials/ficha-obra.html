@@ -179,7 +179,12 @@
                         <span class="badge bg-secondary ms-1" style="font-size:0.65rem;">Importado</span>
                     {% endif %}
                 </div>
-                <a href="{% url "carga:update-contrato" contrato.id %}" class="btn btn-sm btn-outline-secondary ms-2 flex-shrink-0">Editar</a>
+                <div class="d-flex flex-shrink-0 ms-2">
+                    <a href="{% url "carga:update-contrato" contrato.id %}" class="btn btn-sm btn-outline-secondary ms-2">Editar</a>
+                    {% if request.user.is_superuser %}
+                    <a href="{% url "carga:eliminar-contrato" contrato.id %}" class="btn btn-sm btn-outline-danger ms-2">Eliminar</a>
+                    {% endif %}
+                </div>
             </div>
             {% if contrato.contratomonto_set.all %}
             <table class="table table-sm table-bordered table-hover mb-0">
@@ -457,7 +462,8 @@
 </div>
 
 {# ─── Sección 5: Documentación Digital ─── #}
-{% if object.documentos_contrato.all %}
+{% with documentos_contrato=object.documentos_contrato.all %}
+{% if documentos_contrato %}
 <div class="card mb-3">
     <div class="card-header py-2 bg-light fw-semibold small">Documentación Digital</div>
     <div class="card-body p-2">
@@ -473,7 +479,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for documento in object.documentos_contrato.all %}
+                    {% for documento in documentos_contrato %}
                     <tr>
                         <td class="small">
                             {% if documento.contratodigital_archivo %}
@@ -500,6 +506,7 @@
     </div>
 </div>
 {% endif %}
+{% endwith %}
 
 {# ─── Sección 6: Certificados Emitidos ─── #}
 {% if object.certificado_set.all %}

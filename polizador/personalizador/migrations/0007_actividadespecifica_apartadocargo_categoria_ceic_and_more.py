@@ -3,7 +3,7 @@
 import django.core.validators
 import django.db.models.deletion
 import personalizador.models
-import secretariador.functions
+import core.validators
 import simple_history.models
 import uuid_utils.compat
 from django.conf import settings
@@ -421,7 +421,7 @@ class Migration(migrations.Migration):
                 ('email', models.EmailField(blank=True, max_length=254, null=True, verbose_name='Email')),
                 ('matricula', models.CharField(blank=True, max_length=10, null=True, verbose_name='Matricula Profesional')),
                 ('dni', models.DecimalField(decimal_places=0, max_digits=9, validators=[django.core.validators.MinValueValidator(0)], verbose_name='DNI:')),
-                ('cuil', models.CharField(max_length=13, validators=[secretariador.functions.CuitValidator()], verbose_name='CUIT')),
+                ('cuil', models.CharField(max_length=13, validators=[core.validators.CuitValidator()], verbose_name='CUIT')),
                 ('fecha_nacimiento', models.DateField(blank=True, null=True, verbose_name='Fecha de Nacimiento')),
                 ('fecha_ingreso', models.DateField(blank=True, null=True, verbose_name='Fecha de Ingreso')),
                 ('fecha_pase_a_planta', models.DateField(blank=True, null=True, verbose_name='Fecha de pase a planta permanente')),
@@ -475,7 +475,7 @@ class Migration(migrations.Migration):
                 ('email', models.EmailField(blank=True, max_length=254, null=True, verbose_name='Email')),
                 ('matricula', models.CharField(blank=True, max_length=10, null=True, verbose_name='Matricula Profesional')),
                 ('dni', models.DecimalField(decimal_places=0, max_digits=9, validators=[django.core.validators.MinValueValidator(0)], verbose_name='DNI:')),
-                ('cuil', models.CharField(max_length=13, validators=[secretariador.functions.CuitValidator()], verbose_name='CUIT')),
+                ('cuil', models.CharField(max_length=13, validators=[core.validators.CuitValidator()], verbose_name='CUIT')),
                 ('fecha_nacimiento', models.DateField(blank=True, null=True, verbose_name='Fecha de Nacimiento')),
                 ('fecha_ingreso', models.DateField(blank=True, null=True, verbose_name='Fecha de Ingreso')),
                 ('fecha_pase_a_planta', models.DateField(blank=True, null=True, verbose_name='Fecha de pase a planta permanente')),

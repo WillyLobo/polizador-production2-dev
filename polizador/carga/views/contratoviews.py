@@ -1,12 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
-from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.shortcuts import render
+from django.urls import reverse, reverse_lazy
 from django.views import generic
-from carga.models import Contrato
+from carga.models import Contrato, ContratoMonto
 from carga.forms.contratoforms import *
-from secretariador.forms.mixins import FormsetViewMixin
+from core.mixins import DeleteRelatedObjectsMixin, FormsetViewMixin
 
 @method_decorator(login_required, name="dispatch")
 class CrearContrato(PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
@@ -39,4 +39,16 @@ class UpdateContrato(PermissionRequiredMixin, FormsetViewMixin, generic.UpdateVi
 	model = Contrato
 	template_name = "contrato/update-contrato.html"
 	form_class = ContratoForm
-	success_url = reverse_lazy("carga:lista-obras")
+
+	def get_success_url(self):
+		return reverse("carga:estado-obra", kwargs={"pk": self.object.contrato_obra_id})
+
+@method_decorator(login_required, name="dispatch")
+class EliminarContrato(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
+	permission_required = "carga.delete_contrato"
+
+	model = Contrato
+	template_name = "generic/confirm_delete.html"
+
+	def get_success_url(self):
+		return reverse("carga:estado-obra", kwargs={"pk": self.object.contrato_obra_id})

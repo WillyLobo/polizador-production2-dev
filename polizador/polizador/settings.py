@@ -137,6 +137,7 @@ INSTALLED_APPS = [
     "simple_history",
     "anymail",
 
+    "core",
     "carga",
 	"secretariador",
     "personalizador",

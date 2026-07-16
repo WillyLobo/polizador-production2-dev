@@ -1,6 +1,6 @@
 from django import forms
 from secretariador.models import Vehiculo
-from secretariador.forms.mixins import BaseFormMixin
+from core.mixins import BaseFormMixin
 from secretariador.views.ajaxviews import (
     ResolucionWidget,
     ComisionadoWidget,

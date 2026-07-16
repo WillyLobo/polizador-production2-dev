@@ -7,7 +7,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from secretariador.models import ComisionadoSolicitud
 from secretariador.forms.solicitudform import *
-from carga.views.generics import get_deleted_objects
+from core.deletion import get_deleted_objects
 from django.contrib import messages
 
 @login_required

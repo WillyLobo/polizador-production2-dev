@@ -4,7 +4,7 @@ from django.utils.decorators import method_decorator
 from carga.models import Obra, FojaDeMedicion
 from personalizador.models import Agente
 from django.views import generic
-from carga.views.generics import get_deleted_objects
+from core.deletion import get_deleted_objects
 
 @method_decorator(login_required, name="dispatch")
 class InspeccionHomeView(generic.ListView):

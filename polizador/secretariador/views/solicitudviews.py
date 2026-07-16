@@ -7,12 +7,11 @@ from django.views import generic
 from secretariador.models import Solicitud, InstrumentosLegalesDecretos
 from carga.models import Provincia
 from secretariador.forms.solicitudform import *
-from carga.views.generics import get_deleted_objects
 from pathlib import Path
 from django.conf import settings
 import jinja2
 from docxtpl import DocxTemplate
-from secretariador.forms.mixins import FormsetViewMixin
+from core.mixins import DeleteRelatedObjectsMixin, FormsetViewMixin
 
 # Resolve relative to the project root:
 BASE = Path(settings.BASE_DIR)
@@ -228,21 +227,13 @@ class UpdateSolicitud(PermissionRequiredMixin, FormsetViewMixin, generic.UpdateV
 	success_url = reverse_lazy("secretariador:lista-solicitudes")
 	
 @method_decorator(login_required, name="dispatch")
-class EliminarSolicitud(PermissionRequiredMixin, generic.DeleteView):
+class EliminarSolicitud(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
 	permission_required = "secretariador.delete_solicitud"
 
 	model = Solicitud
 	template_name = "generic/confirm_delete.html"
 	success_url = reverse_lazy("secretariador:lista-solicitudes")
 
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		deletable_objects, model_count, protected = get_deleted_objects([self.object])
-		context["deletable_objects"] = deletable_objects
-		context["model_count"] = dict(model_count).items()
-		context["protected"] = protected
-		return context
-	
 @method_decorator(login_required, name="dispatch")
 class VerSolicitud(PermissionRequiredMixin, generic.DetailView):
 	permission_required = "secretariador.view_solicitud"

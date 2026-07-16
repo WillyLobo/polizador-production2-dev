@@ -27,8 +27,9 @@
 [+] Corregir el filtrado previo de resoluciones, o agregar el filtro por tipo en datatable.
 [ ] Normalizar los numeros de resoluciones para que usen el mismo separador("-").
 [ ] Crear helper que convierta los numeros de resoluciones nuevos al formato de numero de resoluciones digitales(S.G.T.)
-[ ] Crear helper para agregar objetos FK directamente desde los formularios.
+[+] Crear helper para agregar objetos FK directamente desde los formularios.
 [+] Agregar opcion de remover firmas de gerente/representante tecnico en la foja de medicion.
+[ ] Agregar helptext dinamico a los campos CUIL/CUIT de los formularios que sugieran el numero de CUIL/CUIT.
 
 # Certificados
 [+] Una foja deberia engendrar 1 certificado por cada financiamiento.

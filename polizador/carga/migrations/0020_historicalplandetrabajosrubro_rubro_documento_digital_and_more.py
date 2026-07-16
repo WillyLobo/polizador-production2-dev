@@ -2,7 +2,7 @@
 
 import carga.models
 import django.db.models.deletion
-import secretariador.functions
+import core.validators
 import simple_history.models
 import uuid_utils.compat
 from django.conf import settings
@@ -20,19 +20,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='historicalplandetrabajosrubro',
             name='rubro_documento_digital',
-            field=models.TextField(blank=True, max_length=500, null=True, validators=[secretariador.functions.FileValidator(content_types='application/pdf', max_size=14680064, min_size=None)], verbose_name='Documento Digital'),
+            field=models.TextField(blank=True, max_length=500, null=True, validators=[core.validators.FileValidator(content_types='application/pdf', max_size=14680064, min_size=None)], verbose_name='Documento Digital'),
         ),
         migrations.AddField(
             model_name='plandetrabajosrubro',
             name='rubro_documento_digital',
-            field=models.FileField(blank=True, max_length=500, null=True, upload_to=carga.models.generate_name_rubro_documento, validators=[secretariador.functions.FileValidator(content_types='application/pdf', max_size=14680064, min_size=None)], verbose_name='Documento Digital'),
+            field=models.FileField(blank=True, max_length=500, null=True, upload_to=carga.models.generate_name_rubro_documento, validators=[core.validators.FileValidator(content_types='application/pdf', max_size=14680064, min_size=None)], verbose_name='Documento Digital'),
         ),
         migrations.CreateModel(
             name='FojaDeMedicionFoto',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('fotofoja_uuid', models.UUIDField(default=uuid_utils.compat.uuid7, editable=False)),
-                ('fotofoja_archivo', models.FileField(max_length=500, upload_to=carga.models.generate_name_foja_foto, validators=[secretariador.functions.FileValidator(content_types=('image/jpeg', 'image/png'), max_size=14680064, min_size=None)], verbose_name='Foto')),
+                ('fotofoja_archivo', models.FileField(max_length=500, upload_to=carga.models.generate_name_foja_foto, validators=[core.validators.FileValidator(content_types=('image/jpeg', 'image/png'), max_size=14680064, min_size=None)], verbose_name='Foto')),
                 ('fotofoja_foja', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='fotos', to='carga.fojademedicion', verbose_name='Foja de Medición')),
             ],
             options={
@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
                 ('fotofoja_uuid', models.UUIDField(default=uuid_utils.compat.uuid7, editable=False)),
-                ('fotofoja_archivo', models.TextField(max_length=500, validators=[secretariador.functions.FileValidator(content_types=('image/jpeg', 'image/png'), max_size=14680064, min_size=None)], verbose_name='Foto')),
+                ('fotofoja_archivo', models.TextField(max_length=500, validators=[core.validators.FileValidator(content_types=('image/jpeg', 'image/png'), max_size=14680064, min_size=None)], verbose_name='Foto')),
                 ('history_id', models.AutoField(primary_key=True, serialize=False)),
                 ('history_date', models.DateTimeField(db_index=True)),
                 ('history_change_reason', models.CharField(max_length=100, null=True)),

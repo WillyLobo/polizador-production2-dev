@@ -7,7 +7,7 @@ from django.views import generic
 from carga.models import FojaDeMedicion, PlanDeTrabajosItem, PlanDeTrabajosRubro
 from personalizador.models import Gerencia
 from carga.forms.fojademedicionforms import *
-from secretariador.forms.mixins import FormsetViewMixin
+from core.mixins import FormsetViewMixin
 
 
 def _foja_detalle_context(foja):

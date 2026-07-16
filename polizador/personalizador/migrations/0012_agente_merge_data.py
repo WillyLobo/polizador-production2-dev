@@ -26,7 +26,7 @@ PROFESION_TITULOS = {
 
 
 def merge_agentes(apps, schema_editor):
-    from secretariador.functions import get_cuil
+    from core.validators import get_cuil
 
     CargaAgente = apps.get_model("carga", "Agente")
     Comisionado = apps.get_model("secretariador", "Comisionado")

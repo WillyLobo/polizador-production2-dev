@@ -1,6 +1,6 @@
 from django import forms
 from personalizador.models import Agente
-from secretariador.forms.mixins import BaseFormMixin
+from core.mixins import BaseFormMixin
 from polizador.custom_forms import CustomCheckboxInput
 
 class ComisionadoForm(BaseFormMixin, forms.ModelForm):

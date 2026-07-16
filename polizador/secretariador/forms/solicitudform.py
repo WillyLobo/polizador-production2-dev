@@ -14,7 +14,7 @@ from secretariador.views.ajaxviews import (
     )
 from polizador.custom_forms import CustomCheckboxInput
 from django.forms.models import inlineformset_factory
-from secretariador.forms.mixins import BaseFormMixin
+from core.mixins import BaseFormMixin
 from polizador.custom_forms import DateHTMLWidget
 
 class SolicitudForm(BaseFormMixin, forms.ModelForm):

@@ -3,6 +3,7 @@ from decimal import Decimal
 from django.utils import timezone
 from wsgiref.validate import validator
 from django.db import models
+from django.contrib.gis.db import models as gis_models
 from django.urls import reverse
 from simple_history.models import HistoricalRecords
 from django.db.models import Sum, F, FloatField, Max, Q, OuterRef, Subquery
@@ -11,7 +12,8 @@ from django.core.exceptions import ValidationError
 from uuid_utils import compat
 import calendar
 import os
-from secretariador.functions import FileValidator, CuitValidator
+from core.validators import FileValidator, CuitValidator
+from polizador.custom_forms import decimal_to_dms
 
 
 # from .models import User
@@ -294,7 +296,7 @@ class Municipio(models.Model):
     municipio_nombre        = models.CharField("Nombre",max_length=40)
     id                      = models.IntegerField("Id", unique=True, primary_key=True)
     municipio_departamento  = models.ForeignKey("Departamento", verbose_name="Departamento", on_delete=models.CASCADE)
-    municipio_region        = models.ForeignKey("Region", verbose_name="Región", on_delete=models.DO_NOTHING, null=True, blank=True)
+    municipio_region        = models.ForeignKey("Region", verbose_name="Región", on_delete=models.SET_NULL, null=True, blank=True)
     municipio_history = HistoricalRecords()
 
     def __str__(self):
@@ -321,11 +323,11 @@ class Obra(models.Model):
     obra_nombre = models.TextField("Nombre", help_text="Nombre de la Obra tal como figura en el contrato")
     obra_soluciones = models.DecimalField("Cantidad de soluciones", max_digits=4, decimal_places=0, null=True, blank=True)
     obra_empresa = models.ForeignKey("Empresa", on_delete=models.CASCADE, verbose_name="Empresa")
-    obra_region = models.ForeignKey("Region", on_delete=models.CASCADE, verbose_name="Región", null=True, blank=True)
+    obra_region = models.ForeignKey("Region", on_delete=models.SET_NULL, verbose_name="Región", null=True, blank=True)
     obra_departamento_m = models.ManyToManyField("Departamento", related_name="obra_departamento", verbose_name="Departamento", blank=True)
     obra_municipio_m = models.ManyToManyField("Municipio", related_name="obra_municipio", verbose_name="Municipio", blank=True)
     obra_localidad_m = models.ManyToManyField("Localidad", related_name="obra_localidad", verbose_name="Localidad", blank=True)
-    obra_conjunto = models.ForeignKey("ConjuntoLicitado", verbose_name="Conjunto Licitado", on_delete=models.DO_NOTHING, null=True, blank=True)
+    obra_conjunto = models.ForeignKey("ConjuntoLicitado", verbose_name="Conjunto Licitado", on_delete=models.SET_NULL, null=True, blank=True)
     obra_grupo = models.CharField("Grupo", max_length=4, blank=True, null=True)
     obra_plazo = models.CharField("Plazo de Ejecución", max_length=10, blank=True, null=True)
     obra_programa = models.ForeignKey("Programa", verbose_name="Programa", on_delete=models.CASCADE)
@@ -364,6 +366,7 @@ class Obra(models.Model):
         db_persist=True,
     )
     obra_principal = models.ManyToManyField("Obra", related_name="obra_madre", verbose_name="Obra Madre", blank=True)
+    obra_georeferencia = gis_models.PointField("Georeferencia", geography=True, srid=4326, blank=True, null=True)
     obra_history = HistoricalRecords(excluded_fields=['obra_contrato_total_pesos', "obra_contrato_total_uvi"])
 
     def compulsa(self):
@@ -415,11 +418,31 @@ class Obra(models.Model):
             return certificado.certificado_acum_pct
 
     def plan_vigente(self):
-        """Retorna el Plan de Trabajos más reciente (vigente) de la obra."""
+        """Retorna el Plan de Trabajos más reciente (vigente) de la obra.
+
+        Si plandetrabajos_set fue precargado con prefetch_related, reutiliza esa
+        colección (ya en memoria, con sus propios prefetches anidados) en vez de
+        disparar una query nueva que devolvería una instancia sin ese cache."""
+        if "plandetrabajos_set" in getattr(self, "_prefetched_objects_cache", {}):
+            planes = sorted(
+                self.plandetrabajos_set.all(),
+                key=lambda p: (p.trabajos_fecha, p.pk),
+                reverse=True,
+            )
+            return planes[0] if planes else None
         return self.plandetrabajos_set.order_by("-trabajos_fecha", "-pk").first()
 
     def contrato_vigente(self):
-        """Retorna el Contrato más reciente (vigente) de la obra."""
+        """Retorna el Contrato más reciente (vigente) de la obra.
+
+        Ver nota de plan_vigente sobre reutilizar contrato_set prefetcheado."""
+        if "contrato_set" in getattr(self, "_prefetched_objects_cache", {}):
+            contratos = sorted(
+                self.contrato_set.all(),
+                key=lambda c: (c.contrato_fecha, c.pk),
+                reverse=True,
+            )
+            return contratos[0] if contratos else None
         return self.contrato_set.order_by("-contrato_fecha", "-pk").first()
 
     def documentos_contrato(self):
@@ -477,6 +500,14 @@ class Obra(models.Model):
     def lista_localidades(self):
         return ", ".join(str(localidad) for localidad in self.obra_localidad_m.all())
     
+    def dd_to_dms(self):
+        """Georeferencia en formato grados/minutos/segundos, para mostrar en templates."""
+        if not self.obra_georeferencia:
+            return ""
+        lat = decimal_to_dms(self.obra_georeferencia.y, ("N", "S"))
+        lng = decimal_to_dms(self.obra_georeferencia.x, ("E", "O"))
+        return f"{lat} {lng}"
+
     def get_absolute_url(self):
         return reverse('estado-obra', kwargs={'id': self.pk})
 
@@ -510,7 +541,7 @@ class Prototipo(models.Model):
         verbose_name_plural = "Prototipos Habitacionales"
     
     prototipo_uuid = models.UUIDField(default=compat.uuid7, editable=False)
-    prototipo_obra = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.DO_NOTHING)
+    prototipo_obra = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.CASCADE)
     prototipo_tipo = models.CharField("Tipo de Prototipo", max_length=1, choices=TIPO)
     prototipo_cantidad = models.DecimalField("Cantidad del Prototipo", max_digits=3, decimal_places=0)
     prototipo_superficie = models.DecimalField("Superficie del Prototipo", max_digits=3, decimal_places=0)
@@ -588,7 +619,7 @@ class Certificado(models.Model):
     )
     certificado_financiamiento = models.CharField("Financiamiento", max_length=1, choices=FINANCIAMIENTO, default="N")
     certificado_rubro = models.CharField("Rubro", max_length=1, choices=RUBRO, default="V") # Obsoleto -> se migro a una tabla aparte(carga.models.CertificadoRubro)
-    certificado_rubro_db = models.ForeignKey("CertificadoRubro", verbose_name="Rubro", on_delete=models.DO_NOTHING, default=1)
+    certificado_rubro_db = models.ForeignKey("CertificadoRubro", verbose_name="Rubro", on_delete=models.PROTECT, default=1)
     certificado_rubro_anticipo = models.DecimalField("Anticipo N°", max_digits=3, decimal_places=0, blank=True, default=0, validators=[MinValueValidator(0)])
     certificado_rubro_obra = models.DecimalField("Obra N°", max_digits=3, decimal_places=0, blank=True, default=0, validators=[MinValueValidator(0)])
     certificado_rubro_devanticipo = models.DecimalField("Devolución de Anticipo N°", max_digits=3, decimal_places=0, blank=True, default=0, validators=[MinValueValidator(0)])
@@ -788,7 +819,7 @@ class ConjuntoLicitado(models.Model):
     conjunto_soluciones = models.DecimalField("Cantidad de Soluciones", max_digits=5, decimal_places=0, default=0, null=True, blank=True)
     conjunto_resolucion = models.CharField("Resolucion", max_length=15, null=True, blank=True)
     conjunto_resolucion_fk = models.ForeignKey("secretariador.InstrumentosLegalesResoluciones", on_delete=models.CASCADE, verbose_name="Resolución de Adjudicación", blank=True, null=True)
-    conjunto_subconjunto = models.ForeignKey("ConjuntoLicitado", verbose_name="Conjunto Licitado", on_delete=models.DO_NOTHING, null=True, blank=True)
+    conjunto_subconjunto = models.ForeignKey("ConjuntoLicitado", verbose_name="Conjunto Licitado", on_delete=models.SET_NULL, null=True, blank=True)
     conjunto_history = HistoricalRecords()
 
     def __str__(self):
@@ -802,7 +833,7 @@ class PlanDeTrabajos(models.Model):
         verbose_name_plural = "Plan de Trabajos"
 
     trabajos_uuid = models.UUIDField(default=compat.uuid7, editable=False)
-    trabajos_obra = models.ForeignKey("Obra", on_delete=models.DO_NOTHING)
+    trabajos_obra = models.ForeignKey("Obra", on_delete=models.CASCADE)
     trabajos_fecha = models.DateField("Fecha de Vigencia", default=timezone.now)
     trabajos_meses = models.PositiveIntegerField("Duración (meses)", default=1, validators=[MinValueValidator(1)])
     trabajos_fecha_inicio = models.DateField("Fecha de Inicio de Obra", null=True, blank=True)

@@ -19,11 +19,11 @@ from carga.certificacion import (
 	resumen_certificacion_mensual,
 	siguiente_numero,
 )
-from carga.ley27397 import _contratomonto_de_rubro
+from carga.ley27397 import Ley27397Error, _contratomonto_de_rubro
 from carga.models import Certificado, CertificadoFinanciamiento, ContratoMonto, FojaDeMedicion, PlanDeTrabajosEtapa, Uvi
 from personalizador.models import Departamento, Direccion, Directorio, Gerencia
 from carga.forms.certificadoforms import *
-from carga.views.generics import get_deleted_objects
+from core.mixins import DeleteRelatedObjectsMixin
 
 
 def _desglose_items_certificado(certificado, contratomonto_rubro):
@@ -180,20 +180,12 @@ def _certificado_detalle_context(certificado):
 	}
 
 @method_decorator(login_required, name="dispatch")
-class EliminarCertificado(PermissionRequiredMixin, generic.DeleteView):
+class EliminarCertificado(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
 	permission_required = "carga.delete_certificado"
 
 	model = Certificado
 	template_name = "generic/confirm_delete.html"
 	success_url = reverse_lazy("carga:lista-certificados")
-
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		deletable_objects, model_count, protected = get_deleted_objects([self.object])
-		context["deletable_objects"] = deletable_objects
-		context["model_count"] = dict(model_count).items()
-		context["protected"] = protected
-		return context
 
 
 @method_decorator(login_required, name="dispatch")
@@ -262,6 +254,9 @@ class GenerarCertificadosDesdeFoja(PermissionRequiredMixin, generic.View):
 			certificados = construir_certificados_desde_foja(foja, expediente, fecha)
 		except ValidationError as e:
 			form.add_error(None, e)
+			return render(request, self.template_name, context)
+		except Ley27397Error as e:
+			form.add_error(None, str(e))
 			return render(request, self.template_name, context)
 
 		filas = [

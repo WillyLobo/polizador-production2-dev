@@ -9,7 +9,7 @@ from django.views import generic
 from carga.models import ContratosDigitales
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg
 from carga.forms.documentosdigitalesforms import *
-from carga.views.generics import get_deleted_objects
+from core.mixins import DeleteRelatedObjectsMixin
 import locale
 
 
@@ -49,21 +49,12 @@ class UpdateContratoDigital(PermissionRequiredMixin, generic.UpdateView):
     success_url = reverse_lazy("carga:crear-contrato-digital")
 
 @method_decorator(login_required, name="dispatch")
-class EliminarContratoDigital(PermissionRequiredMixin, generic.DeleteView):
+class EliminarContratoDigital(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
     permission_required = "carga.delete_certificado"
 
     model = ContratosDigitales
     template_name = "generic/confirm_delete.html"
     success_url = reverse_lazy("carga:lista-obras")
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        deletable_objects, model_count, protected = get_deleted_objects([
-                                                                        self.object])
-        context["deletable_objects"] = deletable_objects
-        context["model_count"] = dict(model_count).items()
-        context["protected"] = protected
-        return context
 
 # @login_required
 # def PaginaListaCertificados(request):

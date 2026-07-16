@@ -1,6 +1,6 @@
 from django import forms
 from secretariador.models import ComisionadoSolicitud
-from secretariador.forms.mixins import BaseFormMixin
+from core.mixins import BaseFormMixin
 from secretariador.views.ajaxviews import ComisionadoWidget
 from datetime import datetime
 from polizador.custom_forms import CustomCheckboxInput

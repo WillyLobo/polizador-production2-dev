@@ -15,10 +15,16 @@ from personalizador.views.ajaxviews import (
     representantetecnicoMultipleWidget,
 	)
 from secretariador.views.ajaxviews import ResolucionWidget
-from polizador.custom_forms import DateHTMLWidget
+from polizador.custom_forms import DateHTMLWidget, LatLngField, LatLngWidget
 
 class ObraForm(AddRelatedPermissionMixin, forms.ModelForm):
 	required_css_class = "required"
+
+	obra_georeferencia = LatLngField(
+		required=False,
+		label="Georeferencia (Latitud / Longitud)",
+		widget=LatLngWidget(attrs={"class": "form-control"}),
+	)
 
 	class Meta:
 		model = models.Obra
@@ -48,6 +54,7 @@ class ObraForm(AddRelatedPermissionMixin, forms.ModelForm):
 			"obra_representantetecnico",
 			"obra_observaciones",
 			"obra_principal",
+			"obra_georeferencia",
 		)
 		
 		# localized_fields = "__all__"

@@ -6,7 +6,7 @@ from carga.views.ajaxviews import (
 	)
 from secretariador.views.ajaxviews import ResolucionWidget, SolicitudWidget, ComisionadoWidget
 from django.forms.models import inlineformset_factory
-from secretariador.forms.mixins import BaseFormMixin
+from core.mixins import BaseFormMixin
 
 class IncorporacionForm(BaseFormMixin, forms.ModelForm):
     class Meta:

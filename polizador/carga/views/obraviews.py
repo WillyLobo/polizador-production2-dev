@@ -7,25 +7,64 @@ from django.views import generic
 from django.urls import reverse_lazy
 
 from django.urls import reverse
-from carga.models import Obra, obras_con_acumulado_anotado
+from django.db.models import Prefetch
+from carga.models import (
+    Obra,
+    obras_con_acumulado_anotado,
+    Contrato,
+    ContratoMonto,
+    ContratosDigitales,
+    PlanDeTrabajos,
+    PlanDeTrabajosRubro,
+)
 from carga.forms.obraforms import *
-from carga.views.generics import get_deleted_objects, UserKwargsMixin
+from core.mixins import DeleteRelatedObjectsMixin, UserKwargsMixin
+
+
+def _obra_estado_prefetch():
+    """Prefetch de todas las relaciones que recorre ficha-obra.html para evitar
+    N+1 queries (contratos/montos, plan vigente con rubros/etapas/items/fojas, etc.)."""
+    return [
+        "obra_localidad_m",
+        "obra_inspector",
+        Prefetch(
+            "contrato_set",
+            queryset=Contrato.objects.prefetch_related(
+                Prefetch(
+                    "contratomonto_set",
+                    queryset=ContratoMonto.objects.select_related(
+                        "contratomonto_rubro", "contratomonto_financiamiento"
+                    ),
+                ),
+                Prefetch(
+                    "documentos_contrato",
+                    queryset=ContratosDigitales.objects.select_related("contratodigital_tipo"),
+                ),
+            ),
+        ),
+        "certificado_set__certificado_rubro_db",
+        Prefetch(
+            "plandetrabajos_set",
+            queryset=PlanDeTrabajos.objects.prefetch_related(
+                Prefetch(
+                    "rubros",
+                    queryset=PlanDeTrabajosRubro.objects.select_related("rubro_contratomonto"),
+                ),
+                "rubros__items",
+                "rubros__etapas__items",
+                "rubros__fojas__items",
+                "rubros__fojas__foja_inspector",
+            ),
+        ),
+    ]
 
 @method_decorator(login_required, name="dispatch")
-class EliminarObra(PermissionRequiredMixin, generic.DeleteView):
+class EliminarObra(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
 	permission_required = "carga.delete_obra"
 
 	model = Obra
 	template_name = "generic/confirm_delete.html"
 	success_url = reverse_lazy("carga:lista-obras")
-
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		deletable_objects, model_count, protected = get_deleted_objects([self.object])
-		context["deletable_objects"] = deletable_objects
-		context["model_count"] = dict(model_count).items()
-		context["protected"] = protected
-		return context
 	
 @method_decorator(login_required, name="dispatch")
 class CrearObra(PermissionRequiredMixin, UserKwargsMixin, generic.CreateView):
@@ -76,10 +115,18 @@ class UpdateObra(PermissionRequiredMixin, UserKwargsMixin, generic.UpdateView):
 @method_decorator(login_required, name="dispatch")
 class EstadoObra(PermissionRequiredMixin, generic.DetailView):
 	permission_required = "carga.view_obra"
-	queryset = Obra.objects.select_related("obra_empresa", "obra_programa", "obra_conjunto").prefetch_related("certificado_set__certificado_rubro_db")
 
 	model = Obra
 	template_name = "obra/estado-obra.html"
+
+	def get_queryset(self):
+		prefetch = _obra_estado_prefetch()
+		return Obra.objects.select_related(
+			"obra_empresa", "obra_programa", "obra_conjunto"
+		).prefetch_related(
+			*prefetch,
+			Prefetch("obra_madre", queryset=Obra.objects.prefetch_related(*_obra_estado_prefetch())),
+		)
 
 @method_decorator(login_required, name="dispatch")
 class PlanesAnterioresObra(PermissionRequiredMixin, generic.DetailView):

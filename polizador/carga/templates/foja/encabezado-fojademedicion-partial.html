@@ -53,7 +53,7 @@
       <p class="datos-lbl"><span class="lbl">PLAZO OBRA:</span> {{ obra.obra_plazo|default:"—" }}</p>
       <p class="datos-lbl"><span class="lbl">COMPULSA:</span> {{ obra.compulsa|default:"—" }}</p>
       <p class="datos-lbl"><span class="lbl">NOMENCLATURA CATASTRAL:</span> {{ obra.obra_nomenclatura }}</p>
-      <p class="datos-lbl"><span class="lbl">GEOREFERENCIA:</span> P/H </p>
+      <p class="datos-lbl"><span class="lbl">GEOREFERENCIA:</span> {{ obra.dd_to_dms}} </p>
       <p class="datos-lbl"><span class="lbl">EMPRESA:</span> {{ obra.obra_empresa.empresa_nombre }} ({{ obra.obra_empresa.empresa_cuit}})</p>
     </div>
   </div>
