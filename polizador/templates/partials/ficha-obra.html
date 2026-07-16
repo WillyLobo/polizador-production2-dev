@@ -462,7 +462,8 @@
 </div>
 
 {# ─── Sección 5: Documentación Digital ─── #}
-{% if object.documentos_contrato.all %}
+{% with documentos_contrato=object.documentos_contrato.all %}
+{% if documentos_contrato %}
 <div class="card mb-3">
     <div class="card-header py-2 bg-light fw-semibold small">Documentación Digital</div>
     <div class="card-body p-2">
@@ -478,7 +479,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for documento in object.documentos_contrato.all %}
+                    {% for documento in documentos_contrato %}
                     <tr>
                         <td class="small">
                             {% if documento.contratodigital_archivo %}
@@ -505,6 +506,7 @@
     </div>
 </div>
 {% endif %}
+{% endwith %}
 
 {# ─── Sección 6: Certificados Emitidos ─── #}
 {% if object.certificado_set.all %}

@@ -418,11 +418,31 @@ class Obra(models.Model):
             return certificado.certificado_acum_pct
 
     def plan_vigente(self):
-        """Retorna el Plan de Trabajos más reciente (vigente) de la obra."""
+        """Retorna el Plan de Trabajos más reciente (vigente) de la obra.
+
+        Si plandetrabajos_set fue precargado con prefetch_related, reutiliza esa
+        colección (ya en memoria, con sus propios prefetches anidados) en vez de
+        disparar una query nueva que devolvería una instancia sin ese cache."""
+        if "plandetrabajos_set" in getattr(self, "_prefetched_objects_cache", {}):
+            planes = sorted(
+                self.plandetrabajos_set.all(),
+                key=lambda p: (p.trabajos_fecha, p.pk),
+                reverse=True,
+            )
+            return planes[0] if planes else None
         return self.plandetrabajos_set.order_by("-trabajos_fecha", "-pk").first()
 
     def contrato_vigente(self):
-        """Retorna el Contrato más reciente (vigente) de la obra."""
+        """Retorna el Contrato más reciente (vigente) de la obra.
+
+        Ver nota de plan_vigente sobre reutilizar contrato_set prefetcheado."""
+        if "contrato_set" in getattr(self, "_prefetched_objects_cache", {}):
+            contratos = sorted(
+                self.contrato_set.all(),
+                key=lambda c: (c.contrato_fecha, c.pk),
+                reverse=True,
+            )
+            return contratos[0] if contratos else None
         return self.contrato_set.order_by("-contrato_fecha", "-pk").first()
 
     def documentos_contrato(self):
