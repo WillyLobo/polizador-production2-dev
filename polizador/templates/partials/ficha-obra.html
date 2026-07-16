@@ -179,7 +179,12 @@
                         <span class="badge bg-secondary ms-1" style="font-size:0.65rem;">Importado</span>
                     {% endif %}
                 </div>
-                <a href="{% url "carga:update-contrato" contrato.id %}" class="btn btn-sm btn-outline-secondary ms-2 flex-shrink-0">Editar</a>
+                <div class="d-flex flex-shrink-0 ms-2">
+                    <a href="{% url "carga:update-contrato" contrato.id %}" class="btn btn-sm btn-outline-secondary ms-2">Editar</a>
+                    {% if request.user.is_superuser %}
+                    <a href="{% url "carga:eliminar-contrato" contrato.id %}" class="btn btn-sm btn-outline-danger ms-2">Eliminar</a>
+                    {% endif %}
+                </div>
             </div>
             {% if contrato.contratomonto_set.all %}
             <table class="table table-sm table-bordered table-hover mb-0">

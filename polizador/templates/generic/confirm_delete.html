@@ -9,6 +9,17 @@
     <form id="mainForm" method="post">{% csrf_token %}
       <p>¿Confirma que desea eliminar <b>{{ object }}</b>?</p>
 
+      {% if protected %}
+      <div class="alert alert-danger" role="alert">
+        <p class="mb-1">No se puede eliminar: existen las siguientes relaciones protegidas.</p>
+        <ul class="mb-0 small">
+          {% for item in protected %}
+          <li>{{ item }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
       {% if model_count %}
       <p class="mb-1">Se eliminarán también las siguientes relaciones:</p>
       <table class="table table-sm table-bordered w-auto mb-3">
@@ -48,7 +59,7 @@
     <a href="{{ view.success_url }}" class="btn btn-sm btn-outline-secondary">
       <i class="bi bi-arrow-left me-1"></i>Cancelar
     </a>
-    <button type="submit" form="mainForm" class="btn btn-sm btn-danger">
+    <button type="submit" form="mainForm" class="btn btn-sm btn-danger"{% if protected %} disabled{% endif %}>
       <i class="bi bi-trash me-1"></i>Confirmar
     </button>
   </div>

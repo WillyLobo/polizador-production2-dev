@@ -123,6 +123,7 @@ contrato_patterns = [
     path("crear/contrato/", CrearContrato.as_view(), name="crear-contrato"),
     path("crear/contrato/<pk>", UpdateContrato.as_view(), name="update-contrato"),
     path("crear/contrato/<pk>/tramos/", GestionarTramosContrato.as_view(), name="gestionar-tramos-contrato"),
+    path("eliminar/contrato/<pk>", EliminarContrato.as_view(), name="eliminar-contrato"),
 ]
 plandetrabajos_patterns = [
     path("crear/plandetrabajos/", CrearPlanDeTrabajos.as_view(), name="crear-plandetrabajos"),
