@@ -2,7 +2,7 @@ from django.db import models
 from simple_history.models import HistoricalRecords
 from django.core.validators import MinValueValidator
 from django.contrib.auth.models import AbstractUser
-from secretariador.functions import FileValidator, CuitValidator
+from core.validators import FileValidator, CuitValidator
 from datetime import datetime
 from uuid_utils import compat
 

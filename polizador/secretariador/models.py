@@ -1,7 +1,7 @@
 from django.db import models
 from simple_history.models import HistoricalRecords
 from django.core.validators import MinValueValidator
-from secretariador.functions import FileValidator
+from core.validators import FileValidator
 from datetime import datetime, timedelta
 from django.utils import timezone
 from django.urls import reverse

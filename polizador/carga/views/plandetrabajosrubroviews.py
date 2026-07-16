@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.views import generic
 from carga.models import PlanDeTrabajos, PlanDeTrabajosRubro, ContratoMonto, Certificado
 from carga.forms.plandetrabajosrubroforms import *
-from secretariador.forms.mixins import FormsetViewMixin
+from core.mixins import FormsetViewMixin
 
 
 @method_decorator(login_required, name="dispatch")

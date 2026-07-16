@@ -117,7 +117,7 @@ class FileValidator(object):
     def __call__(self, data):
         if self.max_size is not None and data.size > self.max_size:
             params = {
-                'max_size': filesizeformat(self.max_size), 
+                'max_size': filesizeformat(self.max_size),
                 'size': filesizeformat(data.size),
             }
             raise ValidationError(self.error_messages['max_size'],
@@ -128,7 +128,7 @@ class FileValidator(object):
                 'min_size': filesizeformat(self.min_size),
                 'size': filesizeformat(data.size)
             }
-            raise ValidationError(self.error_messages['min_size'], 
+            raise ValidationError(self.error_messages['min_size'],
                                    'min_size', params)
 
         if self.content_types:

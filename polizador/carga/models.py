@@ -12,7 +12,7 @@ from django.core.exceptions import ValidationError
 from uuid_utils import compat
 import calendar
 import os
-from secretariador.functions import FileValidator, CuitValidator
+from core.validators import FileValidator, CuitValidator
 from polizador.custom_forms import decimal_to_dms
 
 

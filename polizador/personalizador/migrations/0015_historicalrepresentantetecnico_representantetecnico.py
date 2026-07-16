@@ -2,7 +2,7 @@
 
 import django.core.validators
 import django.db.models.deletion
-import secretariador.functions
+import core.validators
 import simple_history.models
 import uuid_utils.compat
 from django.conf import settings
@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('representantetecnico_nombre', models.CharField(max_length=200, verbose_name='Nombre')),
                 ('representantetecnico_apellido', models.CharField(max_length=200, verbose_name='Apellido')),
                 ('representantetecnico_dni', models.DecimalField(db_index=True, decimal_places=0, max_digits=9, validators=[django.core.validators.MinValueValidator(0)], verbose_name='DNI:')),
-                ('representantetecnico_cuil', models.CharField(max_length=13, validators=[secretariador.functions.CuitValidator()], verbose_name='CUIT')),
+                ('representantetecnico_cuil', models.CharField(max_length=13, validators=[core.validators.CuitValidator()], verbose_name='CUIT')),
                 ('representantetecnico_email', models.EmailField(blank=True, max_length=200, null=True, verbose_name='Email')),
                 ('representantetecnico_telefono', models.CharField(blank=True, max_length=200, null=True, verbose_name='Telefono')),
                 ('representantetecnico_matricula', models.CharField(max_length=10, verbose_name='Matricula')),
@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
                 ('representantetecnico_nombre', models.CharField(max_length=200, verbose_name='Nombre')),
                 ('representantetecnico_apellido', models.CharField(max_length=200, verbose_name='Apellido')),
                 ('representantetecnico_dni', models.DecimalField(decimal_places=0, max_digits=9, unique=True, validators=[django.core.validators.MinValueValidator(0)], verbose_name='DNI:')),
-                ('representantetecnico_cuil', models.CharField(max_length=13, validators=[secretariador.functions.CuitValidator()], verbose_name='CUIT')),
+                ('representantetecnico_cuil', models.CharField(max_length=13, validators=[core.validators.CuitValidator()], verbose_name='CUIT')),
                 ('representantetecnico_email', models.EmailField(blank=True, max_length=200, null=True, verbose_name='Email')),
                 ('representantetecnico_telefono', models.CharField(blank=True, max_length=200, null=True, verbose_name='Telefono')),
                 ('representantetecnico_matricula', models.CharField(max_length=10, verbose_name='Matricula')),

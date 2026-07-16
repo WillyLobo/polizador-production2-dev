@@ -1,11 +1,97 @@
+from django.contrib import messages
 from django.core.exceptions import ImproperlyConfigured
-from django.http import HttpResponseRedirect
+from django.db.models import ProtectedError
+from django.http import HttpResponseRedirect, JsonResponse
 from django.views import generic
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 
+from core.deletion import get_deleted_objects
+
+class UserKwargsMixin:
+    """Pasa el usuario actual al form principal (lo consume AddRelatedPermissionMixin en
+    carga/forms/mixins.py para decidir si mostrar el boton "+" de un select2 FK)."""
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["user"] = self.request.user
+        return kwargs
+
+class UserFormsetKwargsMixin:
+    """Como UserKwargsMixin, pero para el form de un formset (FormsetViewMixin en
+    core/mixins.py). Usar solo si ese form tambien tiene
+    AddRelatedPermissionMixin (o acepta `user=` de otra forma): si el form del formset
+    no acepta ese kwarg, agregarlo rompe con un TypeError."""
+
+    def get_formset_kwargs(self):
+        return {"user": self.request.user}
+
+class PopupCreateMixin:
+    """Permite usar un CreateView dentro del modal de "+ agregar" de un select2 FK
+    (ver AddRelatedWidgetMixin en carga/views/ajaxviews.py).
+
+    Cuando la request trae `_popup=1` (agregado por select2-add-related.js), sirve un
+    template minimo en vez de la pagina completa y, al guardar, devuelve JSON
+    {id, text} en lugar de redirigir.
+    """
+
+    popup_template_name = "generic/popup_create_form.html"
+    popup_form_partial = None
+    """Partial ya usado por la pagina completa de este modelo (ej.
+    "partials/aseguradora-form-partial.html"). Si no se define, el popup
+    renderiza el form con `form.as_div`."""
+
+    def is_popup(self):
+        return bool(self.request.GET.get("_popup") or self.request.POST.get("_popup"))
+
+    def get_template_names(self):
+        if self.is_popup():
+            return [self.popup_template_name]
+        return super().get_template_names()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.is_popup():
+            context["popup_form_partial"] = self.popup_form_partial
+        return context
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        if self.is_popup():
+            return JsonResponse({"id": self.object.pk, "text": str(self.object)})
+        return response
+
+    def form_invalid(self, form):
+        response = super().form_invalid(form)
+        if self.is_popup():
+            response.status_code = 400
+        return response
+
 class BaseFormMixin(object):
     required_css_class = "required"
+
+class DeleteRelatedObjectsMixin:
+    """Para DeleteView: muestra los objetos relacionados que se borrarian en
+    cascada (o que bloquean el borrado por ser PROTECT) y, si el usuario
+    confirma igual, atrapa el ProtectedError que lanza .delete() en ese caso
+    en lugar de dejarlo propagar como error 500."""
+
+    protected_error_message = "No se puede eliminar porque tiene relaciones protegidas asociadas."
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        deletable_objects, model_count, protected = get_deleted_objects([self.object])
+        context["deletable_objects"] = deletable_objects
+        context["model_count"] = dict(model_count).items()
+        context["protected"] = protected
+        return context
+
+    def form_valid(self, form):
+        try:
+            return super().form_valid(form)
+        except ProtectedError:
+            messages.error(self.request, self.protected_error_message)
+            return redirect(self.get_success_url())
 
 class FormsetViewMixin(generic.View):
     formset_name = None

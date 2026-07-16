@@ -1,6 +1,6 @@
 from django import forms
 from secretariador.models import Organigrama
-from secretariador.forms.mixins import BaseFormMixin
+from core.mixins import BaseFormMixin
 
 class OrganigramaForm(BaseFormMixin, forms.ModelForm):
     class Meta:

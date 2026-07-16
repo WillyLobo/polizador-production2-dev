@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.views import generic
 from secretariador.models import Vehiculo
 from secretariador.forms.vehiculoform import VehiculoForm
-from carga.views.generics import get_deleted_objects
+from core.mixins import DeleteRelatedObjectsMixin
 
 @method_decorator(login_required, name="dispatch")
 class CrearVehiculo(PermissionRequiredMixin, generic.CreateView):
@@ -38,20 +38,12 @@ class UpdateVehiculo(PermissionRequiredMixin, generic.UpdateView):
 	success_url = reverse_lazy("secretariador:crear-vehiculo")
 
 @method_decorator(login_required, name="dispatch")
-class EliminarVehiculo(PermissionRequiredMixin, generic.DeleteView):
+class EliminarVehiculo(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
 	permission_required = "secretariador.delete_vehiculo"
 
 	model = Vehiculo
 	template_name = "generic/confirm_delete.html"
 	success_url = reverse_lazy("secretariador:lista-vehiculos")
-
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		deletable_objects, model_count, protected = get_deleted_objects([self.object])
-		context["deletable_objects"] = deletable_objects
-		context["model_count"] = dict(model_count).items()
-		context["protected"] = protected
-		return context
 
 @login_required
 @permission_required("secretariador.view_vehiculo", raise_exception=True)

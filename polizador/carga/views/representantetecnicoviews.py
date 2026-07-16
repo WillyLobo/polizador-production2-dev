@@ -6,23 +6,15 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from personalizador.models import RepresentanteTecnico
 from carga.forms.representantetecnicoforms import *
-from carga.views.generics import get_deleted_objects
+from core.mixins import DeleteRelatedObjectsMixin
 
 @method_decorator(login_required, name="dispatch")
-class EliminarRepresentanteTecnico(PermissionRequiredMixin, generic.DeleteView):
+class EliminarRepresentanteTecnico(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
 	permission_required = "personalizador.delete_representantetecnico"
 
 	model = RepresentanteTecnico
 	template_name = "generic/confirm_delete.html"
 	success_url = reverse_lazy("carga:lista-representantetecnicos")
-
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		deletable_objects, model_count, protected = get_deleted_objects([self.object])
-		context["deletable_objects"] = deletable_objects
-		context["model_count"] = dict(model_count).items()
-		context["protected"] = protected
-		return context
 
 
 @method_decorator(login_required, name="dispatch")

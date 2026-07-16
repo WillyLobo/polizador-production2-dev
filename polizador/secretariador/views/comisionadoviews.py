@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.views import generic
 from personalizador.models import Agente
 from secretariador.forms.comisionadoform import ComisionadoForm
-from carga.views.generics import get_deleted_objects
+from core.mixins import DeleteRelatedObjectsMixin
 
 @method_decorator(login_required, name="dispatch")
 class CrearComisionado(PermissionRequiredMixin, generic.CreateView):
@@ -38,20 +38,12 @@ class UpdateComisionado(PermissionRequiredMixin, generic.UpdateView):
 	success_url = reverse_lazy("secretariador:crear-comisionado")
 
 @method_decorator(login_required, name="dispatch")
-class EliminarComisionado(PermissionRequiredMixin, generic.DeleteView):
+class EliminarComisionado(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
 	permission_required = "personalizador.delete_agente"
 
 	model = Agente
 	template_name = "generic/confirm_delete.html"
 	success_url = reverse_lazy("secretariador:lista-comisionados")
-
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		deletable_objects, model_count, protected = get_deleted_objects([self.object])
-		context["deletable_objects"] = deletable_objects
-		context["model_count"] = dict(model_count).items()
-		context["protected"] = protected
-		return context
 
 # @method_decorator(login_required, name="dispatch")
 # class CertificadoView(generic.DetailView):

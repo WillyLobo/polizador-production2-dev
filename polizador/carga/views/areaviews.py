@@ -5,7 +5,7 @@ from django.views import generic
 from django.urls import reverse_lazy
 from carga import models
 from carga.forms.areaforms import *
-from carga.views.generics import PopupCreateMixin
+from core.mixins import PopupCreateMixin
 
 @method_decorator(login_required, name="dispatch")
 class CrearArea(PopupCreateMixin, PermissionRequiredMixin, generic.CreateView):

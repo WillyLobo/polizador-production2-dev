@@ -6,24 +6,16 @@ from django.urls import reverse_lazy
 from django.views import generic
 from carga.models import Poliza, Poliza_Movimiento
 from carga.forms.polizaforms import *
-from carga.views.generics import get_deleted_objects, UserKwargsMixin, UserFormsetKwargsMixin
-from secretariador.forms.mixins import FormsetViewMixin
+from core.mixins import DeleteRelatedObjectsMixin, UserKwargsMixin, UserFormsetKwargsMixin
+from core.mixins import FormsetViewMixin
 
 @method_decorator(login_required, name="dispatch")
-class EliminarPoliza(PermissionRequiredMixin, generic.DeleteView):
+class EliminarPoliza(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
 	permission_required = "carga.delete_poliza"
 
 	model = Poliza
 	template_name = "generic/confirm_delete.html"
 	success_url = reverse_lazy("carga:lista-polizas")
-
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		deletable_objects, model_count, protected = get_deleted_objects([self.object])
-		context["deletable_objects"] = deletable_objects
-		context["model_count"] = dict(model_count).items()
-		context["protected"] = protected
-		return context
 
 
 @method_decorator(login_required, name="dispatch")
@@ -59,19 +51,11 @@ class UpdatePoliza(PermissionRequiredMixin, UserKwargsMixin, UserFormsetKwargsMi
 	success_url = reverse_lazy("carga:lista-polizas")
 
 @method_decorator(login_required, name="dispatch")
-class EliminarPolizaMovimiento(PermissionRequiredMixin, generic.DeleteView):
+class EliminarPolizaMovimiento(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
 	permission_required = "carga.delete_poliza_movimiento"
 
 	model = Poliza_Movimiento
 	template_name = "generic/confirm_delete.html"
-
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		deletable_objects, model_count, protected = get_deleted_objects([self.object])
-		context["deletable_objects"] = deletable_objects
-		context["model_count"] = dict(model_count).items()
-		context["protected"] = protected
-		return context
 
 @method_decorator(login_required, name="dispatch")
 class EstadoPoliza(PermissionRequiredMixin, generic.DetailView):

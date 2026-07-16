@@ -7,7 +7,7 @@ from google.api_core.exceptions import FailedPrecondition, NotFound
 from typing import Optional
 from django.core.management.base import BaseCommand, CommandError
 from django.core.files import File
-from secretariador.functions import FileValidator
+from core.validators import FileValidator
 from secretariador.models import Solicitud, InstrumentosLegalesResoluciones, generate_name_resoluciones
 import time
 

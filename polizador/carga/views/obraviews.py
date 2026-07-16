@@ -9,23 +9,15 @@ from django.urls import reverse_lazy
 from django.urls import reverse
 from carga.models import Obra, obras_con_acumulado_anotado
 from carga.forms.obraforms import *
-from carga.views.generics import get_deleted_objects, UserKwargsMixin
+from core.mixins import DeleteRelatedObjectsMixin, UserKwargsMixin
 
 @method_decorator(login_required, name="dispatch")
-class EliminarObra(PermissionRequiredMixin, generic.DeleteView):
+class EliminarObra(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
 	permission_required = "carga.delete_obra"
 
 	model = Obra
 	template_name = "generic/confirm_delete.html"
 	success_url = reverse_lazy("carga:lista-obras")
-
-	def get_context_data(self, **kwargs):
-		context = super().get_context_data(**kwargs)
-		deletable_objects, model_count, protected = get_deleted_objects([self.object])
-		context["deletable_objects"] = deletable_objects
-		context["model_count"] = dict(model_count).items()
-		context["protected"] = protected
-		return context
 	
 @method_decorator(login_required, name="dispatch")
 class CrearObra(PermissionRequiredMixin, UserKwargsMixin, generic.CreateView):
