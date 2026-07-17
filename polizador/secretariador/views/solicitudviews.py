@@ -11,6 +11,7 @@ from pathlib import Path
 from django.conf import settings
 import jinja2
 from docxtpl import DocxTemplate
+from secretariador.docx_header import con_encabezado_vigente
 from core.mixins import DeleteRelatedObjectsMixin, FormsetViewMixin
 
 # Resolve relative to the project root:
@@ -168,7 +169,7 @@ def solicitud_docx(request, pk):
 	articulo_dos            = lista_agentes_articulo
 
 	if actuacion.solicitud_provincia.provincia_nombre == "Chaco":
-		doc = DocxTemplate(template_path_chaco)
+		doc = DocxTemplate(con_encabezado_vigente(template_path_chaco))
 		context = {
 			"actuacion":actuacion,
 			"parrafo_uno":parrafo_uno,
@@ -180,7 +181,7 @@ def solicitud_docx(request, pk):
 			"articulo_dos":articulo_dos,
 		}
 	else:
-		doc = DocxTemplate(template_path_exterior)
+		doc = DocxTemplate(con_encabezado_vigente(template_path_exterior))
 		context = {
 			"actuacion":actuacion,
 			"parrafo_uno":parrafo_uno,

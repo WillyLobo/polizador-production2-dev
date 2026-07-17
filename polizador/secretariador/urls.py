@@ -12,6 +12,7 @@ from secretariador.views.incorporacionviews import *
 from secretariador.views.reportesviews import *
 from secretariador.views.delete_inlines import *
 from secretariador.views.redirects import *
+from secretariador.views.encabezadoviews import *
 
 app_name = "secretariador"
 
@@ -67,6 +68,9 @@ docx_patterns = [
     path("creardocumento/solicitud/<pk>", solicitud_docx, name="crear-documento-solicitud"),
     path("creardocumento/solicitudexterior/<pk>", exterior_docx, name="crear-documento-solicitud-exterior"),
     path("creardocumento/incorporacion/<pk>", incorporacion_docx, name="crear-documento-incorporacion"),
+]
+encabezado_patterns = [
+    path("actualizar-encabezado/", ActualizarEncabezado.as_view(), name="actualizar-encabezado"),
 ]
 comisionado_patterns = [
     path("crearcomisionado/", CrearComisionado.as_view(), name="crear-comisionado"),
@@ -134,3 +138,4 @@ urlpatterns += incorporacion_patterns
 urlpatterns += vehiculo_patterns
 urlpatterns += reportes_patterns
 urlpatterns += docx_patterns
+urlpatterns += encabezado_patterns

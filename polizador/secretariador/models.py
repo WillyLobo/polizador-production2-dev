@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 from django.urls import reverse
 from django.core.exceptions import ValidationError
+from django.conf import settings
 import os
 from django.db.models.functions import ExtractDay
 from django.db.models.fields.generated import GeneratedField
@@ -544,3 +545,31 @@ class Incorporacion(models.Model):
     
     def get_absolute_url(self):
         return reverse("secretariador:update-incorporacion", kwargs={"pk": str(self.id)})
+
+class EncabezadoDocumento(models.Model):
+    class Meta:
+        verbose_name = "Encabezado de Documento"
+        verbose_name_plural = "Encabezados de Documento"
+        ordering = ["-encabezadodocumento_creado"]
+        get_latest_by = ["encabezadodocumento_creado"]
+
+    encabezadodocumento_archivo = models.FileField(
+        "Archivo (.docx)",
+        upload_to="encabezados/",
+        max_length=500,
+        validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=(
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ))],
+    )
+    encabezadodocumento_creado = models.DateTimeField(auto_now_add=True)
+    encabezadodocumento_subido_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    encabezadodocumento_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    encabezadodocumento_history = HistoricalRecords()
+
+    def __str__(self):
+        return f"Encabezado del {self.encabezadodocumento_creado:%d/%m/%Y %H:%M}"
+
+    @classmethod
+    def vigente(cls):
+        """Devuelve el encabezado subido más recientemente, o None si nunca se subió uno."""
+        return cls.objects.order_by("-encabezadodocumento_creado").first()
