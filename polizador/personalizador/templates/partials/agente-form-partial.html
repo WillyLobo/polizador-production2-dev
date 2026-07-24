@@ -1,0 +1,166 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Datos Personales</div>
+    <div class="card-body p-2">
+    <div class="row">
+        <div class="col-md-6">
+            {{form.agente_nombres.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.agente_apellidos.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            {{form.dni.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.cuil.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.sexo.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.fecha_nacimiento.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.titulo_profesional.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            {{form.abreviatura.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.matricula.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.telefono.as_field_group}}
+        </div>
+    </div>
+    <div class="form-group">
+        {{form.email.as_field_group}}
+    </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Domicilio</div>
+    <div class="card-body p-2">
+    <div class="form-group">
+        {{form.domicilio_direccion.as_field_group}}
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.domicilio_barrio.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.domicilio_localidad.as_field_group}}
+        </div>
+    </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Datos de Dependencia</div>
+    <div class="card-body p-2">
+    <div class="row">
+        <div class="col-md-4">
+            {{form.n_legajo.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.fecha_ingreso.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.fecha_pase_a_planta.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.categoria.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.oficina.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.denominacion_cargo.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.cargo_interno.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            {{form.apartado.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.ceic.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.grupo.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.actividad_especifica.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.activdad_central.as_field_group}}
+        </div>
+    </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Decretos y Bonificaciones</div>
+    <div class="card-body p-2">
+    <div class="row">
+        <div class="col-md-4">
+            {{form.n_decreto.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.n_resolucion_bonificacion.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.porcentaje_bonificacion.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.n_resolucion_cargo_interno.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.n_decreto_transferencia_definitiva.as_field_group}}
+        </div>
+    </div>
+    <div class="form-group">
+        {{form.aportes_ley_resolucion.as_field_group}}
+    </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Otros</div>
+    <div class="card-body p-2">
+    <div class="row">
+        <div class="col-md-3">
+            {{form.agente_verificado_contra_padron.as_field_group}}
+        </div>
+        <div class="col-md-3">
+            {{form.agente_es_inpector_obra.as_field_group}}
+        </div>
+        <div class="col-md-3">
+            {{form.agente_personal_transitorio.as_field_group}}
+        </div>
+        <div class="col-md-3">
+            {{form.agente_personal_de_gabinete.as_field_group}}
+        </div>
+    </div>
+    </div>
+</div>

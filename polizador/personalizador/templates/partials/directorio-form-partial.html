@@ -1,0 +1,27 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Directorio</div>
+    <div class="card-body p-2">
+    <div class="form-group">
+        {{form.directorio_nombre.as_field_group}}
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.directorio_autoridad_a_cargo.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.directorio_autoridad_a_cargo_fk.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.directorio_cuof.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.directorio_ungi.as_field_group}}
+        </div>
+    </div>
+    </div>
+</div>

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% block title %}<title>Lista Gerencias</title>{% endblock title%}
+
+<div class="min-vh-100">
+  <div class="card">
+    <div class="card-header py-2 bg-light fw-semibold small">Gerencias</div>
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table id="tableGerencias" width="auto" class="table table-striped table-bordered align-middle mb-0">
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script language="javascript">
+
+  $(document).ready(function() {
+      var columns = [
+          { data: 'gerencia_nombre', name: 'gerencia_nombre', title: 'Gerencia' },
+          { data: 'gerencia_directorio', name: 'gerencia_directorio', title: 'Directorio' },
+          { data: 'gerencia_cuof', name: 'gerencia_cuof', title: 'CUOF' },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
+          $('#tableGerencias'),
+          '/v1/api/datatables/gerencias/',
+          columns,
+          {
+              order: [[0, 'asc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/gerencias/{id}/detalle/',
+          },
+      );
+  });
+
+</script>
+
+{% endblock %}

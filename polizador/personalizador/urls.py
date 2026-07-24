@@ -1,101 +1,133 @@
 from django.urls import path
 
-from personalizador.views import *
+from personalizador.views.generoagenteviews import *
+from personalizador.views.tituloprofesionalviews import *
+from personalizador.views.categoriaviews import *
+from personalizador.views.denominacioncargoviews import *
+from personalizador.views.apartadocargoviews import *
+from personalizador.views.ceicviews import *
+from personalizador.views.grupocargoviews import *
+from personalizador.views.actividadespecificaviews import *
+from personalizador.views.cargotipoviews import *
+from personalizador.views.directorioviews import *
+from personalizador.views.gerenciaviews import *
+from personalizador.views.direccionviews import *
+from personalizador.views.departamentoviews import *
+from personalizador.views.oficinaviews import *
+from personalizador.views.agenteviews import *
 
 app_name = "personalizador"
 
 urlpatterns = [
 ]
-# instrumento_legal_decreto_patterns = [
-# 	path("creardecreto/", CrearInstrumentoLegalDecreto.as_view(), name="crear-decreto"),
-#     path("creardecreto/<pk>", UpdateInstrumentoLegalDecreto.as_view(), name="update-decreto"),
-#     path("eliminar/decreto/<pk>", EliminarInstrumentoLegalDecreto.as_view(), name="eliminar-decreto"),
-# ]
-# monto_viatico_diario_patterns = [
-#     path("crearmontoviaticodiario/", CrearMontoViaticoDiario.as_view(), name="crear-montoviaticodiario"),
-#     path("crearmontoviaticodiario/<pk>", UpdateMontoViaticoDiario.as_view(), name="update-montoviaticodiario"),
-#     path("eliminar/montoviaticodiario/<pk>", EliminarMontoViaticoDiario.as_view(), name="eliminar-montoviaticodiario"),
-# ]
-# instrumento_legal_resolucion_patterns = [
-# 	path("crearresolucion/", CrearInstrumentoLegalResolucion.as_view(), name="crear-resolucion"),
-#     path("crearresolucion/<pk>", UpdateInstrumentoLegalResolucion.as_view(), name="update-resolucion"),
-#     path("eliminar/resolucion/<pk>", EliminarInstrumentoLegalResolucion.as_view(), name="eliminar-resolucion"),
-# ]
-# solicitud_patterns = [
-# 	path("crearsolicitud/", CrearSolicitud.as_view(), name="crear-solicitud"),
-# 	path("crearsolicitud/<pk>", UpdateSolicitud.as_view(), name="update-solicitud"),
-# 	path("crearsolicitud/ver/<pk>", VerSolicitud.as_view(), name="ver-solicitud"),
-#     path("eliminar/solicitud/<pk>", EliminarSolicitud.as_view(), name="eliminar-solicitud"),
-#     path('delete-comisionadosolicitud/<int:pk>/', delete_comisionadosolicitud, name='delete-comisionado-solicitud'),
-# ]
-# solicitud_exterior_patterns = [
-# 	path("crearsolicitudexterior/", CrearSolicitudExterior.as_view(), name="crear-solicitud-exterior"),
-# 	path("crearsolicitudexterior/<pk>", UpdateSolicitudExterior.as_view(), name="update-solicitud-exterior"),
-# 	# path("crearsolicitudexterior/ver/<pk>", VerSolicitud.as_view(), name="ver-solicitud"),
-#     path("eliminar/solicitudexterior/<pk>", EliminarSolicitudExterior.as_view(), name="eliminar-solicitud-exterior"),
-# ]
-# vehiculo_patterns = [
-#     path("crearvehiculo/", CrearVehiculo.as_view(), name="crear-vehiculo"),
-#     path("crearvehiculo/<pk>", UpdateVehiculo.as_view(), name="update-vehiculo"),
-#     path("eliminar/vehiculo/<pk>", EliminarVehiculo.as_view(), name="eliminar-vehiculo"),
-# ]
-# docx_patterns = [
-#     path("creardocumento/solicitud/<pk>", solicitud_docx, name="crear-documento-solicitud"),
-#     path("creardocumento/solicitudexterior/<pk>", exterior_docx, name="crear-documento-solicitud-exterior"),
-#     path("creardocumento/incorporacion/<pk>", incorporacion_docx, name="crear-documento-incorporacion"),
-# ]
-# comisionado_patterns = [
-#     path("crearcomisionado/", CrearComisionado.as_view(), name="crear-comisionado"),
-#     path("crearcomisionado/<pk>", UpdateComisionado.as_view(), name="update-comisionado"),
-#     path("eliminar/comisionado/<pk>", EliminarComisionado.as_view(), name="eliminar-comisionado"),
-# ]
-# incorporacion_patterns = [
-#     path("crearincorporacion/", CrearIncorporacion.as_view(), name="crear-incorporacion"),
-#     path("crearincorporacion/<pk>", UpdateIncorporacion.as_view(), name="update-incorporacion"),
-#     path("eliminar/incorporacion/<pk>", EliminarIncorporacion.as_view(), name="eliminar-incorporacion"),
-# ]
-# reportes_patterns = [
-#     path("reportes/viaticos-agente/", CrearReporteViaticosPorAgente.as_view(), name="crear-reporte-viaticos-por-agente"),
-#     path("reportes/viaticos-area/", CrearReporteViaticosporArea.as_view(), name="crear-reporte-viaticos-por-area"),
-# ]
-# # documentos_digitales = [
-# #     path("digitales/crear-contrato-digital/", CrearContratoDigital.as_view(), name="crear-contrato-digital"),
-# #     path("digitales/crear-contrato-digital/<pk>", UpdateContratoDigital.as_view(), name="update-contrato-digital"),
-# #     path("eliminar/digital/contrato/<pk>", EliminarContratoDigital.as_view(), name="eliminar-contrato-digital"),
-# #     path("digitales/crear-resolucion-digital/", CrearResolucionDigital.as_view(), name="crear-resolucion-digital"),
-# #     path("digitales/crear-resolucoin-digital/<pk>", UpdateResolucionDigital.as_view(), name="update-resolucion-digital"),
-# #     path("eliminar/digital/resolucion/<pk>", EliminarResolucionDigital.as_view(), name="eliminar-resolucion-digital")
-# # ]
 
-# ajax = [
-# 	# Solicitudes
-# 	path("listas/solicitudes", PaginaListaSolicitudes, name="lista-solicitudes"),
-# 	path("ajax_datatable/solicitudes/", ListaSolicitudesView.as_view(), name="lista-solicitudes-datatables"),
-#     # Comisionados
-# 	path("listas/comisionados", PaginaListaComisionados, name="lista-comisionados"),
-# 	path("ajax_datatable/comisionados/", ListaComisionadosView.as_view(), name="lista-comisionados-datatables"),
-#     # Decretos
-#     path("listas/decretos", PaginaListaInstrumentosLegalesDecretos, name="lista-decretos"),
-#     path("ajax_datatable/decretos/", ListaListaInstrumentosLegalesDecretosView.as_view(), name="lista-decretos-datatables"),
-#     # Resoluciones
-#     path("listas/resoluciones", PaginaListaInstrumentosLegalesResoluciones, name="lista-resoluciones"),
-#     path("ajax_datatable/resoluciones/", ListaListaInstrumentosLegalesResolucionesView.as_view(), name="lista-resoluciones-datatables"),
-#     # Vehiculos
-#     path("listas/vehiculos", PaginaListaVehiculos, name="lista-vehiculos"),
-#     path("ajax_datatable/vehiculos/", ListaVehiculosView.as_view(), name="lista-vehiculos-datatables"),
-#     # Incorporaciones
-#     path("listas/incorporaciones", PaginaListaIncorporaciones, name="lista-incorporaciones"),
-#     path("ajax_datatable/incorporaciones/", ListaIncorporacionesView.as_view(), name="lista-incorporaciones-datatables"),
-# ]
+generoagente_patterns = [
+	path("crear/generoagente/", CrearGeneroAgente.as_view(), name="crear-generoagente"),
+	path("crear/generoagente/<pk>", UpdateGeneroAgente.as_view(), name="update-generoagente"),
+	path("eliminar/generoagente/<pk>", EliminarGeneroAgente.as_view(), name="eliminar-generoagente"),
+]
+tituloprofesional_patterns = [
+	path("crear/tituloprofesional/", CrearTituloProfesional.as_view(), name="crear-tituloprofesional"),
+	path("crear/tituloprofesional/<pk>", UpdateTituloProfesional.as_view(), name="update-tituloprofesional"),
+	path("eliminar/tituloprofesional/<pk>", EliminarTituloProfesional.as_view(), name="eliminar-tituloprofesional"),
+]
+categoria_patterns = [
+	path("crear/categoria/", CrearCategoria.as_view(), name="crear-categoria"),
+	path("crear/categoria/<pk>", UpdateCategoria.as_view(), name="update-categoria"),
+	path("eliminar/categoria/<pk>", EliminarCategoria.as_view(), name="eliminar-categoria"),
+]
+denominacioncargo_patterns = [
+	path("crear/denominacioncargo/", CrearDenominacionCargo.as_view(), name="crear-denominacioncargo"),
+	path("crear/denominacioncargo/<pk>", UpdateDenominacionCargo.as_view(), name="update-denominacioncargo"),
+	path("eliminar/denominacioncargo/<pk>", EliminarDenominacionCargo.as_view(), name="eliminar-denominacioncargo"),
+]
+apartadocargo_patterns = [
+	path("crear/apartadocargo/", CrearApartadoCargo.as_view(), name="crear-apartadocargo"),
+	path("crear/apartadocargo/<pk>", UpdateApartadoCargo.as_view(), name="update-apartadocargo"),
+	path("eliminar/apartadocargo/<pk>", EliminarApartadoCargo.as_view(), name="eliminar-apartadocargo"),
+]
+ceic_patterns = [
+	path("crear/ceic/", CrearCEIC.as_view(), name="crear-ceic"),
+	path("crear/ceic/<pk>", UpdateCEIC.as_view(), name="update-ceic"),
+	path("eliminar/ceic/<pk>", EliminarCEIC.as_view(), name="eliminar-ceic"),
+]
+grupocargo_patterns = [
+	path("crear/grupocargo/", CrearGrupoCargo.as_view(), name="crear-grupocargo"),
+	path("crear/grupocargo/<pk>", UpdateGrupoCargo.as_view(), name="update-grupocargo"),
+	path("eliminar/grupocargo/<pk>", EliminarGrupoCargo.as_view(), name="eliminar-grupocargo"),
+]
+actividadespecifica_patterns = [
+	path("crear/actividadespecifica/", CrearActividadEspecifica.as_view(), name="crear-actividadespecifica"),
+	path("crear/actividadespecifica/<pk>", UpdateActividadEspecifica.as_view(), name="update-actividadespecifica"),
+	path("eliminar/actividadespecifica/<pk>", EliminarActividadEspecifica.as_view(), name="eliminar-actividadespecifica"),
+]
+cargotipo_patterns = [
+	path("crear/cargotipo/", CrearCargoTipo.as_view(), name="crear-cargotipo"),
+	path("crear/cargotipo/<pk>", UpdateCargoTipo.as_view(), name="update-cargotipo"),
+	path("eliminar/cargotipo/<pk>", EliminarCargoTipo.as_view(), name="eliminar-cargotipo"),
+]
+directorio_patterns = [
+	path("crear/directorio/", CrearDirectorio.as_view(), name="crear-directorio"),
+	path("crear/directorio/<pk>", UpdateDirectorio.as_view(), name="update-directorio"),
+	path("eliminar/directorio/<pk>", EliminarDirectorio.as_view(), name="eliminar-directorio"),
+]
+gerencia_patterns = [
+	path("crear/gerencia/", CrearGerencia.as_view(), name="crear-gerencia"),
+	path("crear/gerencia/<pk>", UpdateGerencia.as_view(), name="update-gerencia"),
+	path("eliminar/gerencia/<pk>", EliminarGerencia.as_view(), name="eliminar-gerencia"),
+]
+direccion_patterns = [
+	path("crear/direccion/", CrearDireccion.as_view(), name="crear-direccion"),
+	path("crear/direccion/<pk>", UpdateDireccion.as_view(), name="update-direccion"),
+	path("eliminar/direccion/<pk>", EliminarDireccion.as_view(), name="eliminar-direccion"),
+]
+departamento_patterns = [
+	path("crear/departamento/", CrearDepartamento.as_view(), name="crear-departamento"),
+	path("crear/departamento/<pk>", UpdateDepartamento.as_view(), name="update-departamento"),
+	path("eliminar/departamento/<pk>", EliminarDepartamento.as_view(), name="eliminar-departamento"),
+]
+oficina_patterns = [
+	path("crear/oficina/", CrearOficina.as_view(), name="crear-oficina"),
+	path("crear/oficina/<pk>", UpdateOficina.as_view(), name="update-oficina"),
+	path("eliminar/oficina/<pk>", EliminarOficina.as_view(), name="eliminar-oficina"),
+]
+agente_patterns = [
+	path("crear/agente/", CrearAgente.as_view(), name="crear-agente"),
+	path("crear/agente/<pk>", UpdateAgente.as_view(), name="update-agente"),
+	path("eliminar/agente/<pk>", EliminarAgente.as_view(), name="eliminar-agente"),
+]
 
-# urlpatterns += ajax
-# urlpatterns += instrumento_legal_decreto_patterns
-# urlpatterns += monto_viatico_diario_patterns
-# urlpatterns += instrumento_legal_resolucion_patterns
-# urlpatterns += solicitud_patterns
-# urlpatterns += solicitud_exterior_patterns
-# urlpatterns += comisionado_patterns
-# urlpatterns += incorporacion_patterns
-# urlpatterns += vehiculo_patterns
-# urlpatterns += reportes_patterns
-# urlpatterns += docx_patterns
+ajax = [
+	path("listas/generoagentes", PaginaListaGeneroAgentes, name="lista-generoagentes"),
+	path("listas/tituloprofesionales", PaginaListaTituloProfesionales, name="lista-tituloprofesionales"),
+	path("listas/categorias", PaginaListaCategorias, name="lista-categorias"),
+	path("listas/denominacioncargos", PaginaListaDenominacionCargos, name="lista-denominacioncargos"),
+	path("listas/apartadocargos", PaginaListaApartadoCargos, name="lista-apartadocargos"),
+	path("listas/ceics", PaginaListaCEICs, name="lista-ceics"),
+	path("listas/grupocargos", PaginaListaGrupoCargos, name="lista-grupocargos"),
+	path("listas/actividadespecificas", PaginaListaActividadEspecificas, name="lista-actividadespecificas"),
+	path("listas/cargotipos", PaginaListaCargoTipos, name="lista-cargotipos"),
+	path("listas/directorios", PaginaListaDirectorios, name="lista-directorios"),
+	path("listas/gerencias", PaginaListaGerencias, name="lista-gerencias"),
+	path("listas/direcciones", PaginaListaDirecciones, name="lista-direcciones"),
+	path("listas/departamentos", PaginaListaDepartamentos, name="lista-departamentos"),
+	path("listas/oficinas", PaginaListaOficinas, name="lista-oficinas"),
+	path("listas/agentes", PaginaListaAgentes, name="lista-agentes"),
+]
+
+urlpatterns += ajax
+urlpatterns += generoagente_patterns
+urlpatterns += tituloprofesional_patterns
+urlpatterns += categoria_patterns
+urlpatterns += denominacioncargo_patterns
+urlpatterns += apartadocargo_patterns
+urlpatterns += ceic_patterns
+urlpatterns += grupocargo_patterns
+urlpatterns += actividadespecifica_patterns
+urlpatterns += cargotipo_patterns
+urlpatterns += directorio_patterns
+urlpatterns += gerencia_patterns
+urlpatterns += direccion_patterns
+urlpatterns += departamento_patterns
+urlpatterns += oficina_patterns
+urlpatterns += agente_patterns

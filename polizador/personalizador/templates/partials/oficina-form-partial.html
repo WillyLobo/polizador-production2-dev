@@ -1,0 +1,49 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Oficina</div>
+    <div class="card-body p-2">
+    <div class="row">
+        <div class="col-md-4">
+            {{form.cargo_directorio.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.cargo_gerencia.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.cargo_direccion.as_field_group}}
+        </div>
+    </div>
+    <div class="form-group">
+        {{form.cargo_departamento.as_field_group}}
+    </div>
+    <div class="form-text">Elegí el nivel más específico donde se ubica la oficina (Departamento, Dirección o Gerencia): los niveles superiores se completan solos a partir de ese dato.</div>
+    </div>
+</div>
+
+<script language="javascript">
+(function () {
+    // La Oficina se ubica en el nivel mas especifico que se le asigne; los niveles
+    // superiores se derivan de ese nodo en el servidor (Oficina.clean()), asi que acá
+    // solo los deshabilitamos para que no se puedan elegir por separado y queden
+    // inconsistentes (un select deshabilitado no se envia, clean() lo vuelve a derivar).
+    function applyOficinaJerarquiaLocks() {
+        var $departamento = $("#id_cargo_departamento");
+        var $direccion = $("#id_cargo_direccion");
+        var $gerencia = $("#id_cargo_gerencia");
+        var $directorio = $("#id_cargo_directorio");
+
+        var hasDepartamento = !!$departamento.val();
+        var hasDireccion = !!$direccion.val();
+        var hasGerencia = !!$gerencia.val();
+
+        $direccion.prop("disabled", hasDepartamento);
+        $gerencia.prop("disabled", hasDepartamento || hasDireccion);
+        $directorio.prop("disabled", hasDepartamento || hasDireccion || hasGerencia);
+    }
+
+    $(document).on("change", "#id_cargo_departamento, #id_cargo_direccion, #id_cargo_gerencia", applyOficinaJerarquiaLocks);
+    $(applyOficinaJerarquiaLocks);
+})();
+</script>
