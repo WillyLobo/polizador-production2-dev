@@ -86,6 +86,52 @@
         </li>
         {% endif %}
 
+        <!-- Personal -->
+        {% if "rrhh_usuarios" in groups or request.user.is_superuser %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-people me-1"></i>RRHH
+          </a>
+          <ul class="dropdown-menu dropdown-menu-lg-start">
+            <li class="dropdown-item fw-bold text-muted"><small>CREAR</small></li>
+            {% if perms.personalizador.add_agente %}<li><a class="dropdown-item" href="{% url "personalizador:crear-agente" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Agente</a></li>{% endif %}
+            {% if perms.personalizador.add_oficina %}<li><a class="dropdown-item" href="{% url "personalizador:crear-oficina" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Oficina</a></li>{% endif %}
+            {% if perms.personalizador.add_directorio %}<li><a class="dropdown-item" href="{% url "personalizador:crear-directorio" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Directorio</a></li>{% endif %}
+            {% if perms.personalizador.add_gerencia %}<li><a class="dropdown-item" href="{% url "personalizador:crear-gerencia" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Gerencia</a></li>{% endif %}
+            {% if perms.personalizador.add_direccion %}<li><a class="dropdown-item" href="{% url "personalizador:crear-direccion" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Dirección</a></li>{% endif %}
+            {% if perms.personalizador.add_departamento %}<li><a class="dropdown-item" href="{% url "personalizador:crear-departamento" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Departamento</a></li>{% endif %}
+            {% if perms.personalizador.add_categoria %}<li><a class="dropdown-item" href="{% url "personalizador:crear-categoria" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Categoría</a></li>{% endif %}
+            {% if perms.personalizador.add_denominacioncargo %}<li><a class="dropdown-item" href="{% url "personalizador:crear-denominacioncargo" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Denominación de Cargo</a></li>{% endif %}
+            {% if perms.personalizador.add_apartadocargo %}<li><a class="dropdown-item" href="{% url "personalizador:crear-apartadocargo" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Apartado</a></li>{% endif %}
+            {% if perms.personalizador.add_ceic %}<li><a class="dropdown-item" href="{% url "personalizador:crear-ceic" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo CEIC</a></li>{% endif %}
+            {% if perms.personalizador.add_grupocargo %}<li><a class="dropdown-item" href="{% url "personalizador:crear-grupocargo" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Grupo de Cargo</a></li>{% endif %}
+            {% if perms.personalizador.add_actividadespecifica %}<li><a class="dropdown-item" href="{% url "personalizador:crear-actividadespecifica" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Actividad Específica</a></li>{% endif %}
+            {% if perms.personalizador.add_cargotipo %}<li><a class="dropdown-item" href="{% url "personalizador:crear-cargotipo" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Tipo de Cargo</a></li>{% endif %}
+            {% if perms.personalizador.add_generoagente %}<li><a class="dropdown-item" href="{% url "personalizador:crear-generoagente" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Género</a></li>{% endif %}
+            {% if perms.personalizador.add_tituloprofesional %}<li><a class="dropdown-item" href="{% url "personalizador:crear-tituloprofesional" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Título Profesional</a></li>{% endif %}
+            <li><hr class="dropdown-divider"></li>
+            <li class="dropdown-item fw-bold text-muted"><small>LISTADOS</small></li>
+            <li><a class="dropdown-item" href="{% url "personalizador:lista-agentes" %}"><i class="bi bi-list-ul me-1"></i>Agentes</a></li>
+            <li><a class="dropdown-item" href="{% url "personalizador:lista-oficinas" %}"><i class="bi bi-list-ul me-1"></i>Oficinas</a></li>
+            {% comment %}
+            <li><a class="dropdown-item" href="{% url "personalizador:lista-directorios" %}"><i class="bi bi-list-ul me-1"></i>Directorios</a></li>
+            <li><a class="dropdown-item" href="{% url "personalizador:lista-gerencias" %}"><i class="bi bi-list-ul me-1"></i>Gerencias</a></li>
+            <li><a class="dropdown-item" href="{% url "personalizador:lista-direcciones" %}"><i class="bi bi-list-ul me-1"></i>Direcciones</a></li>
+            <li><a class="dropdown-item" href="{% url "personalizador:lista-departamentos" %}"><i class="bi bi-list-ul me-1"></i>Departamentos</a></li>
+            <li><a class="dropdown-item" href="{% url "personalizador:lista-categorias" %}"><i class="bi bi-list-ul me-1"></i>Categorías</a></li>
+            <li><a class="dropdown-item" href="{% url "personalizador:lista-denominacioncargos" %}"><i class="bi bi-list-ul me-1"></i>Denominaciones de Cargos</a></li>
+            <li><a class="dropdown-item" href="{% url "personalizador:lista-apartadocargos" %}"><i class="bi bi-list-ul me-1"></i>Apartados</a></li>
+            <li><a class="dropdown-item" href="{% url "personalizador:lista-ceics" %}"><i class="bi bi-list-ul me-1"></i>CEIC</a></li>
+            <li><a class="dropdown-item" href="{% url "personalizador:lista-grupocargos" %}"><i class="bi bi-list-ul me-1"></i>Grupos de Cargos</a></li>
+            <li><a class="dropdown-item" href="{% url "personalizador:lista-actividadespecificas" %}"><i class="bi bi-list-ul me-1"></i>Actividades Específicas</a></li>
+            <li><a class="dropdown-item" href="{% url "personalizador:lista-cargotipos" %}"><i class="bi bi-list-ul me-1"></i>Tipos de Cargos</a></li>
+            <li><a class="dropdown-item" href="{% url "personalizador:lista-generoagentes" %}"><i class="bi bi-list-ul me-1"></i>Géneros</a></li>
+            {% endcomment %}
+            <li><a class="dropdown-item" href="{% url "personalizador:lista-tituloprofesionales" %}"><i class="bi bi-list-ul me-1"></i>Títulos Profesionales</a></li>
+          </ul>
+        </li>
+        {% endif %}
+
         <!-- Viáticos -->
         {% if "dirgral_usuarios" in groups or request.user.is_superuser %}
         <li class="nav-item dropdown">
@@ -105,6 +151,7 @@
             <li><a class="dropdown-item" href="{% url "secretariador:redirect-decreto" %}"><i class="bi bi-file-text me-1"></i>Decreto</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:redirect-resoluciones" %}"><i class="bi bi-file-text me-1"></i>Resolución</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:crear-montoviaticodiario" %}"><i class="bi bi-currency-exchange me-1"></i>Monto Viáticos</a></li>
+            <li><a class="dropdown-item" href="{% url "secretariador:actualizar-encabezado" %}"><i class="bi bi-file-earmark-word me-1"></i>Actualizar Encabezado</a></li>
             <li><hr class="dropdown-divider"></li>
             <li class="dropdown-item fw-bold text-muted"><small>LISTADOS</small></li>
             <li><a class="dropdown-item" href="{% url "secretariador:lista-solicitudes" %}"><i class="bi bi-list-ul me-1"></i>Solicitudes</a></li>

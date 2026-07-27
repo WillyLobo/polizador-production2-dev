@@ -16,6 +16,7 @@ BASE = Path(settings.BASE_DIR)
 template_path_incorporacion = BASE / "secretariador/media/solicitud_incorporacion.docx"
 
 from docxtpl import DocxTemplate
+from secretariador.docx_header import con_encabezado_vigente
 
 @login_required
 @permission_required("secretariador.view_incorporacion", raise_exception=True)
@@ -158,7 +159,7 @@ def incorporacion_docx(request, pk):
 	articulo_uno            = f"Incorporar a los agentes, detallados a continuación, a trasladarse a {lista_localidades}, {lista_fechas} a fin de {tareas} y anticipar los importes que se consignan, conforme con el Visto y Considerando de la presente, debiendo rendir cuentas documentadas de sus inversiones, de acuerdo con las reglamentaciones vigentes."
 	articulo_dos            = lista_agentes_incorporacion_articulo
 
-	doc = DocxTemplate(template_path_incorporacion)
+	doc = DocxTemplate(con_encabezado_vigente(template_path_incorporacion))
 	context = {
 		"actuacion":actuacion,
 		"numero_actuacion":numero_actuacion,

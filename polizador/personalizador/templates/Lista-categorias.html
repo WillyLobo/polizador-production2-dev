@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% block title %}<title>Lista Categorías</title>{% endblock title%}
+
+<div class="min-vh-100">
+  <div class="card">
+    <div class="card-header py-2 bg-light fw-semibold small">Categorías</div>
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table id="tableCategorias" width="auto" class="table table-striped table-bordered align-middle mb-0">
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script language="javascript">
+
+  $(document).ready(function() {
+      var columns = [
+          { data: 'categoria_codigo', name: 'categoria_codigo', title: 'Código' },
+          { data: 'categoria_nombre', name: 'categoria_nombre', title: 'Categoría' },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
+          $('#tableCategorias'),
+          '/v1/api/datatables/categorias/',
+          columns,
+          {
+              order: [[0, 'asc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/categorias/{id}/detalle/',
+          },
+      );
+  });
+
+</script>
+
+{% endblock %}

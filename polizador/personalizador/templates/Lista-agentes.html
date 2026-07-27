@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% block title %}<title>Lista Agentes</title>{% endblock title%}
+
+<div class="min-vh-100">
+  <div class="card">
+    <div class="card-header py-2 bg-light fw-semibold small">Agentes</div>
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table id="tableAgentes" width="auto" class="table table-striped table-bordered align-middle mb-0">
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script language="javascript">
+
+  $(document).ready(function() {
+      var columns = [
+          { data: 'agente_apellidos', name: 'agente_apellidos', title: 'Apellido' },
+          { data: 'agente_nombres', name: 'agente_nombres', title: 'Nombre' },
+          { data: 'dni', name: 'dni', title: 'DNI' },
+          { data: 'categoria', name: 'categoria', title: 'Categoría' },
+          { data: 'oficina', name: 'oficina', title: 'Oficina' },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
+          $('#tableAgentes'),
+          '/v1/api/datatables/agentes/',
+          columns,
+          {
+              order: [[0, 'asc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/agentes/{id}/detalle/',
+          },
+      );
+  });
+
+</script>
+
+{% endblock %}

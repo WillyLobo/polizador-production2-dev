@@ -390,6 +390,63 @@ class FojaDeMedicionNumeracionTests(TestCase):
         self.assertIn("foja_numero_manual", form.errors)
 
 
+class FojaDeMedicionAcumuladoCascadaTests(TestCase):
+    """Bug real (Obra 1242): al corregir el % de una Foja ya cargada, las Fojas
+    posteriores quedaban con `fojaitem_pct_acumulado` desactualizado (calculado una
+    sola vez al guardarse, no derivado), pudiendo terminar mostrando un % acumulado
+    menor al de la Foja anterior."""
+
+    def setUp(self):
+        empresa = Empresa.objects.create(empresa_nombre="Empresa Test")
+        programa = Programa.objects.create(programa_nombre="Programa Test")
+        self.obra = Obra.objects.create(
+            obra_nombre="Obra Test", obra_empresa=empresa, obra_programa=programa, obra_expediente="EXP-CASCADA"
+        )
+        self.plan = PlanDeTrabajos.objects.create(trabajos_obra=self.obra, trabajos_fecha=date(2026, 1, 1))
+        self.rubro = PlanDeTrabajosRubro.objects.create(
+            rubro_plan=self.plan, rubro_nombre="Vivienda", rubro_presupuesto=Decimal("1000")
+        )
+        self.item = PlanDeTrabajosItem.objects.create(
+            planitem_rubro=self.rubro, planitem_nombre="Item 1", planitem_incidencia_pct=Decimal("100")
+        )
+
+    def _crear_foja(self, periodo, pct_avance):
+        foja = FojaDeMedicion.objects.create(foja_rubro=self.rubro, foja_periodo=periodo)
+        item = FojaDeMedicionItem.objects.create(
+            fojaitem_foja=foja, fojaitem_planitem=self.item, fojaitem_pct_avance_mes=Decimal(pct_avance)
+        )
+        return foja, item
+
+    def test_editar_una_foja_anterior_recalcula_en_cascada_la_siguiente(self):
+        _, item10 = self._crear_foja(date(2026, 1, 1), "2.210")
+        _, item11 = self._crear_foja(date(2026, 2, 1), "0.200")
+
+        item11.refresh_from_db()
+        self.assertEqual(item11.fojaitem_pct_acumulado, Decimal("2.410"))
+
+        # Corrección posterior de Foja 10 (ej. se detectó que el avance real fue mayor).
+        item10.fojaitem_pct_avance_mes = Decimal("2.780")
+        item10.save()
+
+        item11.refresh_from_db()
+        self.assertEqual(item10.fojaitem_pct_acumulado, Decimal("2.780"))
+        self.assertEqual(item11.fojaitem_pct_acumulado, Decimal("2.980"))
+        self.assertGreaterEqual(item11.fojaitem_pct_acumulado, item10.fojaitem_pct_acumulado)
+
+    def test_la_cascada_se_propaga_a_traves_de_varias_fojas(self):
+        _, item1 = self._crear_foja(date(2026, 1, 1), "10")
+        _, item2 = self._crear_foja(date(2026, 2, 1), "10")
+        _, item3 = self._crear_foja(date(2026, 3, 1), "10")
+
+        item1.fojaitem_pct_avance_mes = Decimal("20")
+        item1.save()
+
+        item2.refresh_from_db()
+        item3.refresh_from_db()
+        self.assertEqual(item2.fojaitem_pct_acumulado, Decimal("30"))
+        self.assertEqual(item3.fojaitem_pct_acumulado, Decimal("40"))
+
+
 class GenerarCertificadosDesdeFojaTests(TestCase):
     def setUp(self):
         empresa = Empresa.objects.create(empresa_nombre="Empresa Test")

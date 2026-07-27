@@ -53,6 +53,13 @@ def generate_name_contratos(instance, filename):
     name = os.path.join(directorio, filename)
     return name
 
+def generate_name_obra_documento(instance, filename):
+    directorio = "documentos_obra/"
+    extension = "pdf"
+    filename = f"{instance.obradocumento_uuid}.{extension}"
+    name = os.path.join(directorio, filename)
+    return name
+
 def generate_name_resoluciones(instance, filename):
     """Referenced by historical migrations (ResolucionesDigitales, removed) — keep so
     old migration replays that resolve carga.models.generate_name_resoluciones by
@@ -305,6 +312,14 @@ class Municipio(models.Model):
     def get_absolute_url(self):
         return reverse('update-municipio', kwargs={'id': self.pk})
 
+# Compartido por los campos de resolución cargados a mano (Obra/ConjuntoLicitado/Contrato),
+# mismo criterio que InstrumentosLegalesResoluciones.TIPO en secretariador.
+RESOLUCION_TIPO = (
+    ("P", "Resolución de Presidencia"),
+    ("D", "Resolución de Directorio"),
+)
+
+
 class Obra(models.Model):
     COMPULSA = (
         ("L", "Licitación Pública"),
@@ -333,8 +348,13 @@ class Obra(models.Model):
     obra_programa = models.ForeignKey("Programa", verbose_name="Programa", on_delete=models.CASCADE)
     obra_convenio = models.CharField("Convenio/ACU", max_length=60, blank=True, null=True)
     obra_expediente = models.CharField("Expediente", max_length=18)
-    obra_resolucion = models.CharField("Resolución de Adjudicación", max_length=15, blank=True, null=True)
+    obra_resolucion = models.CharField("Resolución de Adjudicación (legado)", max_length=15, blank=True, null=True, editable=False)
     obra_resolucion_fk = models.ForeignKey("secretariador.InstrumentosLegalesResoluciones", on_delete=models.CASCADE, verbose_name="Resolución de Adjudicación", blank=True, null=True)
+    obra_resolucion_tipo = models.CharField("Tipo", max_length=1, choices=RESOLUCION_TIPO, blank=True, default="P")
+    obra_resolucion_ano = models.CharField("Año", max_length=4, blank=True, default="")
+    obra_resolucion_numero = models.CharField("Número", max_length=7, blank=True, default="")
+    obra_resolucion_jurisdiccion = models.CharField("Jurisdicción", max_length=3, blank=True, default="10")
+    obra_resolucion_acta = models.CharField("Acta", max_length=3, blank=True, default="1")
     obra_licitacion_tipo = models.CharField("Compulsa", max_length=1, choices=COMPULSA, blank=True, null=True)
     obra_licitacion_numero = models.DecimalField("Número de Licitación", max_digits=3, decimal_places=0, blank=True, null=True)
     obra_licitacion_ano = models.DecimalField("Año de Licitación", max_digits=4, decimal_places=0, blank=True, null=True)
@@ -496,7 +516,18 @@ class Obra(models.Model):
     
     def __str__(self):
         return f"({self.obra_convenio if self.obra_convenio else ''}) {self.obra_nombre} - {self.obra_empresa}"
-    
+
+    @property
+    def obra_resolucion_display(self):
+        if self.obra_resolucion_fk_id:
+            return str(self.obra_resolucion_fk)
+        if self.obra_resolucion_ano and self.obra_resolucion_numero:
+            return (
+                f"RES-{self.obra_resolucion_ano}-{self.obra_resolucion_numero}"
+                f"-{self.obra_resolucion_jurisdiccion}-{self.obra_resolucion_acta}"
+            )
+        return self.obra_resolucion or "—"
+
     def lista_localidades(self):
         return ", ".join(str(localidad) for localidad in self.obra_localidad_m.all())
     
@@ -525,6 +556,22 @@ def obras_con_acumulado_anotado(queryset):
         obra_acum_pct_anotado=Subquery(ultimo_acumulado),
         obra_anticipo_acumulado_anotado=Subquery(ultimo_anticipo_acumulado),
     )
+
+
+class ObraDocumento(models.Model):
+    class Meta:
+        verbose_name = "Documento de Obra"
+        verbose_name_plural = "Documentos de Obra"
+        ordering = ["id"]
+
+    obradocumento_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    obradocumento_obra = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.CASCADE, related_name="documentos_obra")
+    obradocumento_descripcion = models.CharField("Descripción", max_length=200)
+    obradocumento_archivo = models.FileField(verbose_name="Archivo", upload_to=generate_name_obra_documento, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], max_length=500)
+    obradocumento_history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.obradocumento_descripcion} - {self.obradocumento_obra}"
 
 
 class Prototipo(models.Model):
@@ -817,14 +864,30 @@ class ConjuntoLicitado(models.Model):
     conjunto_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     conjunto_nombre = models.TextField("Nombre")
     conjunto_soluciones = models.DecimalField("Cantidad de Soluciones", max_digits=5, decimal_places=0, default=0, null=True, blank=True)
-    conjunto_resolucion = models.CharField("Resolucion", max_length=15, null=True, blank=True)
+    conjunto_resolucion = models.CharField("Resolucion (legado)", max_length=15, null=True, blank=True, editable=False)
     conjunto_resolucion_fk = models.ForeignKey("secretariador.InstrumentosLegalesResoluciones", on_delete=models.CASCADE, verbose_name="Resolución de Adjudicación", blank=True, null=True)
+    conjunto_resolucion_tipo = models.CharField("Tipo", max_length=1, choices=RESOLUCION_TIPO, blank=True, default="P")
+    conjunto_resolucion_ano = models.CharField("Año", max_length=4, blank=True, default="")
+    conjunto_resolucion_numero = models.CharField("Número", max_length=7, blank=True, default="")
+    conjunto_resolucion_jurisdiccion = models.CharField("Jurisdicción", max_length=3, blank=True, default="10")
+    conjunto_resolucion_acta = models.CharField("Acta", max_length=3, blank=True, default="1")
     conjunto_subconjunto = models.ForeignKey("ConjuntoLicitado", verbose_name="Conjunto Licitado", on_delete=models.SET_NULL, null=True, blank=True)
     conjunto_history = HistoricalRecords()
 
     def __str__(self):
         return f"{self.conjunto_nombre}"
-    
+
+    @property
+    def conjunto_resolucion_display(self):
+        if self.conjunto_resolucion_fk_id:
+            return str(self.conjunto_resolucion_fk)
+        if self.conjunto_resolucion_ano and self.conjunto_resolucion_numero:
+            return (
+                f"RES-{self.conjunto_resolucion_ano}-{self.conjunto_resolucion_numero}"
+                f"-{self.conjunto_resolucion_jurisdiccion}-{self.conjunto_resolucion_acta}"
+            )
+        return self.conjunto_resolucion or "—"
+
     def get_absolute_url(self):
         return reverse('update-conjunto', kwargs={'id': self.pk})
 
@@ -897,6 +960,16 @@ class PlanDeTrabajosRubro(models.Model):
             ids.append(actual.pk)
         return ids
 
+    def rubro_cadena_siguiente_ids(self):
+        """IDs de este rubro y todos sus sucesores (reprogramaciones posteriores)."""
+        ids = [self.pk]
+        pendientes = list(self.rubro_siguiente.all())
+        while pendientes:
+            actual = pendientes.pop()
+            ids.append(actual.pk)
+            pendientes.extend(actual.rubro_siguiente.all())
+        return ids
+
     def monto_base_pesos(self):
         """Monto en pesos a distribuir entre las Etapas proyectadas: si hay un
         ContratoMonto vinculado se usa su valor (convirtiendo UVI->pesos según su
@@ -941,6 +1014,16 @@ class PlanDeTrabajosItem(models.Model):
         while actual.item_anterior_id:
             actual = actual.item_anterior
             ids.append(actual.pk)
+        return ids
+
+    def item_cadena_siguiente_ids(self):
+        """IDs de este item y todos sus sucesores (reprogramaciones posteriores)."""
+        ids = [self.pk]
+        pendientes = list(self.item_siguiente.all())
+        while pendientes:
+            actual = pendientes.pop()
+            ids.append(actual.pk)
+            pendientes.extend(actual.item_siguiente.all())
         return ids
 
     def __str__(self):
@@ -1107,6 +1190,13 @@ class FojaDeMedicion(models.Model):
             foja_rubro_id__in=chain_ids, foja_numero__lt=self.foja_numero
         ).order_by('-foja_numero').first()
 
+    def foja_siguiente(self):
+        """Retorna la foja siguiente, considerando también rubros de planes reprogramados."""
+        chain_ids = self.foja_rubro.rubro_cadena_siguiente_ids()
+        return FojaDeMedicion.objects.filter(
+            foja_rubro_id__in=chain_ids, foja_numero__gt=self.foja_numero
+        ).order_by('foja_numero').first()
+
     @staticmethod
     def anterior_items_map(rubro, items=None, exclude_foja_numero=None):
         """Acumulado %% de cada item en la foja anterior (misma lógica que FojaDeMedicionItem.save()).
@@ -1198,8 +1288,13 @@ class Contrato(models.Model):
     contrato_obra = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.CASCADE)
     contrato_fecha = models.DateField("Fecha",default=timezone.now)
     contrato_descripcion = models.CharField("Descripción", max_length=600, default="")
-    contrato_resolucion = models.CharField("Resolución Aprobatoria", max_length=15, blank=True, null=True)
+    contrato_resolucion = models.CharField("Resolución Aprobatoria (legado)", max_length=15, blank=True, null=True, editable=False)
     contrato_resolucion_fk = models.ForeignKey("secretariador.InstrumentosLegalesResoluciones", on_delete=models.CASCADE, verbose_name="Resolución de Adjudicación", blank=True, null=True)
+    contrato_resolucion_tipo = models.CharField("Tipo", max_length=1, choices=RESOLUCION_TIPO, blank=True, default="P")
+    contrato_resolucion_ano = models.CharField("Año", max_length=4, blank=True, default="")
+    contrato_resolucion_numero = models.CharField("Número", max_length=7, blank=True, default="")
+    contrato_resolucion_jurisdiccion = models.CharField("Jurisdicción", max_length=3, blank=True, default="10")
+    contrato_resolucion_acta = models.CharField("Acta", max_length=3, blank=True, default="1")
     contrato_autocarga = models.BooleanField("Contrato importado de formato anterior", editable=False, default=False)
     contrato_decreto = models.CharField("Decreto Aprobatorio(Si Tuviera)", max_length=15, blank=True, null=True)
     contrato_certificacion_por_etapas = models.BooleanField(
@@ -1214,6 +1309,17 @@ class Contrato(models.Model):
 
     def __str__(self):
         return f"{self.contrato_descripcion} - {self.contrato_obra}"
+
+    @property
+    def contrato_resolucion_display(self):
+        if self.contrato_resolucion_fk_id:
+            return str(self.contrato_resolucion_fk)
+        if self.contrato_resolucion_ano and self.contrato_resolucion_numero:
+            return (
+                f"RES-{self.contrato_resolucion_ano}-{self.contrato_resolucion_numero}"
+                f"-{self.contrato_resolucion_jurisdiccion}-{self.contrato_resolucion_acta}"
+            )
+        return self.contrato_resolucion or "—"
 
 class ContratoTramoPago(models.Model):
     class Meta:

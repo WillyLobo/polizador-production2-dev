@@ -573,7 +573,7 @@ class PersonalizadorSimpleDatatableTest(TestCase):
 
     def setUp(self):
         from personalizador.models import (
-            Agente, CargoTipo, GeneroAgente, Oficina, RepresentanteTecnico, TituloProfesional,
+            Agente, Directorio, Gerencia, GeneroAgente, Oficina, RepresentanteTecnico, TituloProfesional,
         )
         from secretariador.models import Vehiculo
 
@@ -587,8 +587,11 @@ class PersonalizadorSimpleDatatableTest(TestCase):
         )
 
         genero = GeneroAgente.objects.create(generoagente_nombre="Test")
-        cargo_tipo = CargoTipo.objects.create(cargotipo="Arquitecto Comisionado")
-        oficina = Oficina.objects.create(cargo_tipo=cargo_tipo)
+        directorio = Directorio.objects.create(directorio_nombre="Presidencia Test", directorio_cuof="D-100")
+        gerencia = Gerencia.objects.create(
+            gerencia_directorio=directorio, gerencia_nombre="Gerencia Test Comisionados", gerencia_cuof="G-100",
+        )
+        oficina = Oficina.objects.create(cargo_gerencia=gerencia)
         self.agente = Agente.objects.create(
             agente_nombres="Maria", agente_apellidos="Gomez", sexo=genero, dni=30333444,
             cuil="27303334445", oficina=oficina, agente_personal_transitorio=True,
@@ -622,7 +625,7 @@ class PersonalizadorSimpleDatatableTest(TestCase):
         assert data["recordsTotal"] == 1
         row = data["data"][0]
         assert row["agente_apellidos"] == "Gomez"
-        assert row["oficina"] == "Arquitecto Comisionado"
+        assert row["oficina"] == "Gerencia Test Comisionados"
         assert row["agente_personal_transitorio"] == "Sí"
 
         resp = self.client.get(

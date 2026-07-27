@@ -1,0 +1,19 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Título Profesional</div>
+    <div class="card-body p-2">
+    <div class="form-group">
+        {{form.tituloprofesional_nombre.as_field_group}}
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            {{form.tituloprofesional_abreviatura.as_field_group}}
+        </div>
+        <div class="col-md-8">
+            {{form.tituloprofesional_grado.as_field_group}}
+        </div>
+    </div>
+    </div>
+</div>

@@ -3,7 +3,12 @@
 
     <div class="col-md-6">
         <div class="card h-100">
-            <div class="card-header py-2 bg-light fw-semibold small">Datos Generales</div>
+            <div class="card-header py-2 bg-light fw-semibold small d-flex justify-content-between align-items-center">
+                Datos Generales
+                {% if perms.carga.change_obra %}
+                <a href="{% url "carga:update-obra" object.id %}" class="btn btn-sm btn-outline-secondary py-0">Editar</a>
+                {% endif %}
+            </div>
             <div class="card-body p-2">
                 <div class="row g-1 mb-1">
                     <div class="col-4 text-muted small fw-semibold">ID</div>
@@ -51,7 +56,13 @@
                 </div>
                 <div class="row g-1 mb-1">
                     <div class="col-5 text-muted small fw-semibold">Resolución</div>
-                    <div class="col-7 small">{{object.obra_resolucion}}</div>
+                    <div class="col-7 small">
+                        {% if object.obra_resolucion_fk.instrumentolegalresoluciones %}
+                            <a href="{{object.obra_resolucion_fk.instrumentolegalresoluciones.url}}" target="_blank">{{object.obra_resolucion_display}}</a>
+                        {% else %}
+                            {{object.obra_resolucion_display}}
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="row g-1 mb-1">
                     <div class="col-5 text-muted small fw-semibold">Fecha de Contrato</div>
@@ -169,8 +180,14 @@
                     {% if contrato.contrato_descripcion %}
                         <span class="small text-muted ms-2">{{contrato.contrato_descripcion}}</span>
                     {% endif %}
-                    {% if contrato.contrato_resolucion %}
-                        <span class="small ms-2">Res. {{contrato.contrato_resolucion}}</span>
+                    {% if contrato.contrato_resolucion or contrato.contrato_resolucion_fk %}
+                        <span class="small ms-2">Res.
+                            {% if contrato.contrato_resolucion_fk.instrumentolegalresoluciones %}
+                                <a href="{{contrato.contrato_resolucion_fk.instrumentolegalresoluciones.url}}" target="_blank">{{contrato.contrato_resolucion_display}}</a>
+                            {% else %}
+                                {{contrato.contrato_resolucion_display}}
+                            {% endif %}
+                        </span>
                     {% endif %}
                     {% if contrato.contrato_decreto %}
                         <span class="small text-muted ms-2">Dec. {{contrato.contrato_decreto}}</span>
@@ -373,6 +390,10 @@
                                         <span style="font-size:0.7rem;"> · </span>
                                         <a href="{% url "carga:generar-certificados-foja" foja.id %}" class="link-dark" style="font-size:0.7rem;">Cert.</a>
                                     {% endif %}
+                                    {% if perms.carga.delete_fojademedicion %}
+                                        <span style="font-size:0.7rem;"> · </span>
+                                        <a href="{% url "carga:eliminar-fojademedicion" foja.id %}" class="link-danger" style="font-size:0.7rem;">Eliminar</a>
+                                    {% endif %}
                                 </th>
                                 {% endfor %}
                             </tr>
@@ -462,13 +483,14 @@
 </div>
 
 {# ─── Sección 5: Documentación Digital ─── #}
-{% with documentos_contrato=object.documentos_contrato.all %}
-{% if documentos_contrato %}
+{% with documentos_contrato=object.documentos_contrato.all documentos_obra=object.documentos_obra.all %}
+{% if documentos_contrato or documentos_obra or perms.carga.add_obradocumento %}
 <div class="card mb-3">
     <div class="card-header py-2 bg-light fw-semibold small">Documentación Digital</div>
     <div class="card-body p-2">
 
-        <div>
+        {% if documentos_contrato %}
+        <div class="mb-3">
             <div class="small fw-semibold text-muted mb-1">Contratos</div>
             <table class="table table-sm table-bordered table-hover mb-0">
                 <thead class="table-light">
@@ -501,6 +523,47 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+        {% endif %}
+
+        <div>
+            <div class="small fw-semibold text-muted mb-1">Obra</div>
+            {% if documentos_obra %}
+            <table class="table table-sm table-bordered table-hover mb-2">
+                <thead class="table-light">
+                    <tr>
+                        <th class="small">Descripción</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for documento in documentos_obra %}
+                    <tr>
+                        <td class="small">
+                            {% if documento.obradocumento_archivo %}
+                                <a href="{{documento.obradocumento_archivo.url}}" target="_blank">{{documento.obradocumento_descripcion}}</a>
+                            {% else %}
+                                {{documento.obradocumento_descripcion}}
+                            {% endif %}
+                        </td>
+                        <td class="small text-end">
+                            {% if perms.carga.change_obradocumento %}
+                                <a href="{% url "carga:update-obra-documento" documento.id %}">{{editimglink|safe}}</a>
+                            {% endif %}
+                            {% if perms.carga.delete_obradocumento %}
+                                <a href="{% url "carga:eliminar-obra-documento" documento.id %}">{{eliminarimglink|safe}}</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="small text-muted fst-italic">Sin documentos cargados.</p>
+            {% endif %}
+            {% if perms.carga.add_obradocumento %}
+            <a href="{% url "carga:crear-obra-documento" %}?obra={{object.id|safe}}" class="btn btn-sm btn-outline-primary">+ Nuevo Documento</a>
+            {% endif %}
         </div>
 
     </div>

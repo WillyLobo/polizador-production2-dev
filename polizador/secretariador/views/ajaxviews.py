@@ -36,6 +36,7 @@ class LocalidadMultipleWidget(LoginRequiredMixin, s2forms.ModelSelect2MultipleWi
 class ResolucionWidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
     search_fields = [
         "instrumentolegalresoluciones_str__icontains",
+        "instrumentolegalresoluciones_numero_sgt__icontains",
         "instrumentolegalresoluciones_descripcion__icontains",
     ]
 

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+{% block title %}<title>{{object.id}}-{{object.grupo_numero}}</title>{% endblock title %}
+
+{{ form.media.css }}
+<form id="mainForm" action="{% url "personalizador:update-grupocargo" object.id %}" method="POST">
+  {% csrf_token %}
+  {% include "partials/grupocargo-form-partial.html" %}
+</form>
+{{ form.media.js }}
+{% endblock %}
+
+{% block actions %}
+  {% include "partials/form-actions.html" %}
+{% endblock %}

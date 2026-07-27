@@ -1,0 +1,35 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Gerencia</div>
+    <div class="card-body p-2">
+    <div class="row">
+        <div class="col-md-6">
+            {{form.gerencia_nombre.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.gerencia_directorio.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.gerencia_autoridad_a_cargo.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.gerencia_autoridad_a_cargo_fk.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.gerencia_cuof.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.gerencia_ungi.as_field_group}}
+        </div>
+    </div>
+    <div class="form-group">
+        {{form.gerencia_responsabilidadprimaria.as_field_group}}
+    </div>
+    </div>
+</div>

@@ -19,6 +19,7 @@ template_path_chaco = BASE / "secretariador/media/solicitud_template.docx"
 template_path_exterior = BASE / "secretariador/media/solicitud_exterior.docx"
 
 from docxtpl import DocxTemplate
+from secretariador.docx_header import con_encabezado_vigente
 
 @login_required
 @permission_required("secretariador.view_solicitud", raise_exception=True)
@@ -161,7 +162,7 @@ def exterior_docx(request, pk):
 	articulo_dos    = lista_agentes_articulo
 
 	if actuacion.solicitud_provincia.provincia_nombre == "Chaco":
-		doc = DocxTemplate(template_path_chaco)
+		doc = DocxTemplate(con_encabezado_vigente(template_path_chaco))
 		context = {
 			"actuacion":actuacion,
 			"parrafo_uno":parrafo_uno,
@@ -172,7 +173,7 @@ def exterior_docx(request, pk):
 			"articulo_dos":articulo_dos,
 		}
 	else:
-		doc = DocxTemplate(template_path_exterior)
+		doc = DocxTemplate(con_encabezado_vigente(template_path_exterior))
 		context = {
 			"actuacion":actuacion,
 			"parrafo_uno":parrafo_uno,

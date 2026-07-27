@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% block title %}<title>{{title}}</title>{% endblock title %}
+
+{{ form.media.css }}
+<form id="mainForm" action='{% url "secretariador:actualizar-encabezado" %}' method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  {% for hidden in form.hidden_fields %}
+    {{ hidden }}
+  {% endfor %}
+
+  <div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Encabezado vigente</div>
+    <div class="card-body p-2">
+      <p class="text-muted small">
+        Subí un .docx con el encabezado (logo, leyenda institucional) ya
+        actualizado en Word. El cuerpo de las Solicitudes/Incorporaciones
+        que se generan como .docx no se toca — solo se reemplaza el
+        encabezado de primera página.
+      </p>
+      <div class="form-group">
+        {{form.encabezadodocumento_archivo.as_field_group}}
+      </div>
+    </div>
+  </div>
+</form>
+{{ form.media.js }}
+
+<div class="card mb-3">
+  <div class="card-header py-2 bg-light fw-semibold small">Historial</div>
+  <div class="card-body p-2">
+    {% if historial %}
+    <table class="table table-sm mb-0">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Subido por</th>
+          <th>Archivo</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for encabezado in historial %}
+        <tr {% if forloop.first %}class="table-success"{% endif %}>
+          <td>{{ encabezado.encabezadodocumento_creado }}</td>
+          <td>{{ encabezado.encabezadodocumento_subido_por|default:"—" }}</td>
+          <td><a href="{{ encabezado.encabezadodocumento_archivo.url }}">{{ encabezado.encabezadodocumento_archivo.name }}</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p class="text-muted small mb-0">Todavía no se subió ningún encabezado. Se usa el que ya viene con cada plantilla .docx.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block actions %}
+  {% include "partials/form-actions.html" %}
+{% endblock %}

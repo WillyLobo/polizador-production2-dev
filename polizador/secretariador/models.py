@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 from django.urls import reverse
 from django.core.exceptions import ValidationError
+from django.conf import settings
 import os
 from django.db.models.functions import ExtractDay
 from django.db.models.fields.generated import GeneratedField
@@ -40,7 +41,10 @@ def generate_name_resoluciones(instance, filename):
         str: The generated name for the resolution file.
     """
     directorio = "instrumentoslegales/resoluciones/"
-    filename = f"{instance.instrumentolegalresoluciones_numero}-{instance.instrumentolegalresoluciones_ano}-{instance.instrumentolegalresoluciones_tipo}.pdf"
+    if instance.instrumentolegalresoluciones_tipo == "D":
+        filename = f"{instance.instrumentolegalresoluciones_numero}-{instance.instrumentolegalresoluciones_acta}-{instance.instrumentolegalresoluciones_ano}-{instance.instrumentolegalresoluciones_tipo}.pdf"
+    else:
+        filename = f"{instance.instrumentolegalresoluciones_numero}-{instance.instrumentolegalresoluciones_ano}-{instance.instrumentolegalresoluciones_tipo}.pdf"
     name = os.path.join(directorio, filename)
     return name
 def generate_name_memorandum(instance, filename):
@@ -182,10 +186,17 @@ class InstrumentosLegalesResoluciones(models.Model):
     # Fields related to the automatic extraction of text from the digitalized resolution.
     instrumentolegalresoluciones_autocarga = models.BooleanField("Resolución importada sin intervención.", default=False)
     instrumentolegalresoluciones_document = models.TextField("Texto Extraído por OCR", null=True, blank=True)
-    # Generate RES-yyyy-####-10-1
+    # Genera RES-yyyy-####-10-1 (Presidencia) o RES-yyyy-####-10-{acta} (Directorio)
     instrumentolegalresoluciones_numero_sgt = GeneratedField(
-        expression=ConcatOp(models.Value("RES-"), "instrumentolegalresoluciones_ano", models.Value("-"), "instrumentolegalresoluciones_numero", models.Value("-10-1")),
-        output_field=models.CharField(max_length=20),
+        expression=models.Case(
+            models.When(
+                instrumentolegalresoluciones_tipo="D",
+                then=ConcatOp(models.Value("RES-"), "instrumentolegalresoluciones_ano", models.Value("-"), "instrumentolegalresoluciones_numero", models.Value("-10-"), "instrumentolegalresoluciones_acta"),
+            ),
+            default=ConcatOp(models.Value("RES-"), "instrumentolegalresoluciones_ano", models.Value("-"), "instrumentolegalresoluciones_numero", models.Value("-10-1")),
+            output_field=models.CharField(max_length=25),
+        ),
+        output_field=models.CharField(max_length=25),
         db_persist=True,
     )
     instrumentolegalresoluciones_uuid = models.UUIDField(default=compat.uuid7, editable=False)
@@ -201,8 +212,8 @@ class InstrumentosLegalesResoluciones(models.Model):
 
     def __str__(self):
         if self.instrumentolegalresoluciones_tipo == "D":
-            return f"{self.instrumentolegalresoluciones_numero}-{self.instrumentolegalresoluciones_acta}-{self.instrumentolegalresoluciones_ano}"
-        return f"{self.instrumentolegalresoluciones_numero}-{self.instrumentolegalresoluciones_ano}"
+            return f"RES-{self.instrumentolegalresoluciones_ano}-{self.instrumentolegalresoluciones_numero}-10-{self.instrumentolegalresoluciones_acta}"
+        return f"RES-{self.instrumentolegalresoluciones_ano}-{self.instrumentolegalresoluciones_numero}-10-1"
 
     def get_absolute_url(self):
         if self.instrumentolegalresoluciones_tipo == "P":
@@ -544,3 +555,31 @@ class Incorporacion(models.Model):
     
     def get_absolute_url(self):
         return reverse("secretariador:update-incorporacion", kwargs={"pk": str(self.id)})
+
+class EncabezadoDocumento(models.Model):
+    class Meta:
+        verbose_name = "Encabezado de Documento"
+        verbose_name_plural = "Encabezados de Documento"
+        ordering = ["-encabezadodocumento_creado"]
+        get_latest_by = ["encabezadodocumento_creado"]
+
+    encabezadodocumento_archivo = models.FileField(
+        "Archivo (.docx)",
+        upload_to="encabezados/",
+        max_length=500,
+        validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=(
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        ))],
+    )
+    encabezadodocumento_creado = models.DateTimeField(auto_now_add=True)
+    encabezadodocumento_subido_por = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    encabezadodocumento_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    encabezadodocumento_history = HistoricalRecords()
+
+    def __str__(self):
+        return f"Encabezado del {self.encabezadodocumento_creado:%d/%m/%Y %H:%M}"
+
+    @classmethod
+    def vigente(cls):
+        """Devuelve el encabezado subido más recientemente, o None si nunca se subió uno."""
+        return cls.objects.order_by("-encabezadodocumento_creado").first()

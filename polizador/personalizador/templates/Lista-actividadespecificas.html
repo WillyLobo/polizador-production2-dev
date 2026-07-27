@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% block title %}<title>Lista Actividades Específicas</title>{% endblock title%}
+
+<div class="min-vh-100">
+  <div class="card">
+    <div class="card-header py-2 bg-light fw-semibold small">Actividades Específicas</div>
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table id="tableActividadEspecificas" width="auto" class="table table-striped table-bordered align-middle mb-0">
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script language="javascript">
+
+  $(document).ready(function() {
+      var columns = [
+          { data: 'actividad_especifica_codigo', name: 'actividad_especifica_codigo', title: 'Código' },
+          { data: 'actividad_especifica_nombre', name: 'actividad_especifica_nombre', title: 'Actividad' },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
+          $('#tableActividadEspecificas'),
+          '/v1/api/datatables/actividadespecificas/',
+          columns,
+          {
+              order: [[0, 'asc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/actividadespecificas/{id}/detalle/',
+          },
+      );
+  });
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+{% block title %}<title>{{object.obradocumento_descripcion}}</title>{% endblock title%}
+
+{{ form.media.css }}
+<form id="mainForm" action="{% url "carga:update-obra-documento" object.id %}" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  {% include "partials/obradocumento-form-partial.html" %}
+</form>
+{{ form.media.js }}
+{% endblock %}
+
+{% block actions %}
+  {% include "partials/form-actions.html" %}
+{% endblock %}

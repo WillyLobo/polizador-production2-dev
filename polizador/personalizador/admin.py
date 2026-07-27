@@ -82,10 +82,10 @@ class ActividadEspecificaAdmin(ImportExportMixin, SimpleHistoryAdmin):
 
 class OficinaAdmin(ImportExportMixin, SimpleHistoryAdmin):
     resource_class = OficinaResource
-    list_display = ["__str__", "cargo_tipo", "cargo_directorio", "cargo_gerencia", "cargo_direccion", "cargo_departamento"]
-    search_fields = ["cargo_tipo__cargotipo", "cargo_gerencia__gerencia_nombre", "cargo_direccion__direccion_nombre", "cargo_departamento__departamento_nombre"]
-    list_filter = ["cargo_tipo", "cargo_gerencia"]
-    autocomplete_fields = ["cargo_tipo", "cargo_directorio", "cargo_gerencia", "cargo_direccion", "cargo_departamento"]
+    list_display = ["__str__", "cargo_directorio", "cargo_gerencia", "cargo_direccion", "cargo_departamento"]
+    search_fields = ["cargo_gerencia__gerencia_nombre", "cargo_direccion__direccion_nombre", "cargo_departamento__departamento_nombre"]
+    list_filter = ["cargo_gerencia"]
+    autocomplete_fields = ["cargo_directorio", "cargo_gerencia", "cargo_direccion", "cargo_departamento"]
 
 class CargoTipoAdmin(ImportExportMixin, SimpleHistoryAdmin):
     resource_class = CargoTipoResource

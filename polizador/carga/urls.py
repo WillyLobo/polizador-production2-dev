@@ -138,6 +138,7 @@ fojademedicion_patterns = [
     path("crear/foja-medicion/<pk>", UpdateFojaDeMedicion.as_view(), name="update-fojademedicion"),
     path("foja-medicion/<pk>/detalle/", DetalleFojaDeMedicion.as_view(), name="detalle-fojademedicion"),
     path("foja-medicion/<pk>/imprimir/", ImprimirFojaDeMedicion.as_view(), name="imprimir-fojademedicion"),
+    path("eliminar/foja-medicion/<pk>", EliminarFojaDeMedicion.as_view(), name="eliminar-fojademedicion"),
 ]
 plandetrabajosetapa_patterns = [
     path("crear/plandetrabajosetapa/<int:pk>/", PlanDeTrabajosEtapaMatriz.as_view(), name="plandetrabajosetapa-matriz"),
@@ -156,6 +157,9 @@ documentos_digitales = [
     path("digitales/crear-contrato-digital/", CrearContratoDigital.as_view(), name="crear-contrato-digital"),
     path("digitales/crear-contrato-digital/<pk>", UpdateContratoDigital.as_view(), name="update-contrato-digital"),
     path("eliminar/digital/contrato/<pk>", EliminarContratoDigital.as_view(), name="eliminar-contrato-digital"),
+    path("digitales/crear-obra-documento/", CrearObraDocumento.as_view(), name="crear-obra-documento"),
+    path("digitales/crear-obra-documento/<pk>", UpdateObraDocumento.as_view(), name="update-obra-documento"),
+    path("eliminar/digital/obra-documento/<pk>", EliminarObraDocumento.as_view(), name="eliminar-obra-documento"),
 ]
 ajax = [
 	# Obras

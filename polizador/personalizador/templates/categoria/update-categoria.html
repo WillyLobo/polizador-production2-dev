@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+{% block title %}<title>{{object.id}}-{{object.categoria_nombre}}</title>{% endblock title %}
+
+{{ form.media.css }}
+<form id="mainForm" action="{% url "personalizador:update-categoria" object.id %}" method="POST">
+  {% csrf_token %}
+  {% include "partials/categoria-form-partial.html" %}
+</form>
+{{ form.media.js }}
+{% endblock %}
+
+{% block actions %}
+  {% include "partials/form-actions.html" %}
+{% endblock %}

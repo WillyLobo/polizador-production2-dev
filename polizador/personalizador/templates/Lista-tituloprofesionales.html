@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% block title %}<title>Lista Títulos Profesionales</title>{% endblock title%}
+
+<div class="min-vh-100">
+  <div class="card">
+    <div class="card-header py-2 bg-light fw-semibold small">Títulos Profesionales</div>
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table id="tableTituloProfesionales" width="auto" class="table table-striped table-bordered align-middle mb-0">
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script language="javascript">
+
+  $(document).ready(function() {
+      var columns = [
+          { data: 'tituloprofesional_nombre', name: 'tituloprofesional_nombre', title: 'Título' },
+          { data: 'tituloprofesional_abreviatura', name: 'tituloprofesional_abreviatura', title: 'Abreviatura' },
+          { data: 'tituloprofesional_grado', name: 'tituloprofesional_grado', title: 'Grado' },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
+          $('#tableTituloProfesionales'),
+          '/v1/api/datatables/tituloprofesionales/',
+          columns,
+          {
+              order: [[0, 'asc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/tituloprofesionales/{id}/detalle/',
+          },
+      );
+  });
+
+</script>
+
+{% endblock %}

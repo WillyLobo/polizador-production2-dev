@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from simple_history.models import HistoricalRecords
 from django.core.validators import MinValueValidator
 from django.contrib.auth.models import AbstractUser
@@ -62,7 +63,11 @@ class Agente(models.Model):
     porcentaje_bonificacion = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     categoria = models.ForeignKey("Categoria", on_delete=models.CASCADE, blank=True, null=True)
     denominacion_cargo = models.ForeignKey("DenominacionCargo", related_name="agente_denominacion_cargo", on_delete=models.CASCADE, blank=True, null=True)
-    cargo_interno = models.ForeignKey("DenominacionCargo", related_name="agente_cargo_interno", on_delete=models.CASCADE, blank=True, null=True)
+    cargo_interno = models.ForeignKey(
+        "Oficina", verbose_name="Designación Temporal", related_name="agente_designacion_temporal",
+        on_delete=models.CASCADE, blank=True, null=True,
+        help_text="Oficina a la que el agente esta designado transitoriamente, distinta de su oficina habitual.",
+    )
     n_resolucion_cargo_interno = models.CharField(max_length=13, blank=True, null=True)
     apartado = models.ForeignKey("ApartadoCargo", on_delete=models.CASCADE, blank=True, null=True)
     ceic = models.ForeignKey("CEIC", on_delete=models.CASCADE, blank=True, null=True)
@@ -134,7 +139,7 @@ class Categoria(models.Model):
     categoria_history = HistoricalRecords()
 
     def __str__(self):
-        return self.categoria_nombre
+        return f"{self.categoria_codigo} - {self.categoria_nombre}"
 
 class DenominacionCargo(models.Model):
     class Meta:
@@ -177,6 +182,8 @@ class GrupoCargo(models.Model):
     grupo_numero = models.DecimalField(max_digits=1, decimal_places=0, unique=True)
     grupocargo_history = HistoricalRecords()
 
+    def __str__(self):
+        return str(self.grupo_numero)
 class ActividadEspecifica(models.Model):
     class Meta:
         verbose_name = "Actividad Específica"
@@ -194,7 +201,6 @@ class Oficina(models.Model):
         verbose_name = "Oficina"
         verbose_name_plural = "Oficinas"
     
-    cargo_tipo = models.ForeignKey("CargoTipo", on_delete=models.CASCADE)
     cargo_directorio = models.ForeignKey("Directorio", on_delete=models.CASCADE, blank=True, null=True)
     cargo_gerencia = models.ForeignKey("Gerencia", on_delete=models.CASCADE, blank=True, null=True)
     cargo_direccion = models.ForeignKey("Direccion", on_delete=models.CASCADE, blank=True, null=True)
@@ -203,10 +209,54 @@ class Oficina(models.Model):
     cargos_history = HistoricalRecords()
 
     def __str__(self):
-        gerencia = " - "+self.cargo_gerencia.gerencia_nombre if self.cargo_gerencia else ""
-        direccion = " - "+self.cargo_direccion.direccion_nombre if self.cargo_direccion else ""
-        departamento = " - "+self.cargo_departamento.departamento_nombre if self.cargo_departamento else ""
-        return f"{self.cargo_tipo}{gerencia}{direccion}{departamento}"
+        parts = [
+            str(nivel) for nivel in
+            (self.cargo_directorio, self.cargo_gerencia, self.cargo_direccion, self.cargo_departamento)
+            if nivel
+        ]
+        return " - ".join(parts) if parts else f"Oficina {self.pk}"
+
+    def clean(self):
+        """Una Oficina es un nodo del arbol Directorio > Gerencia > Direccion > Departamento:
+        se ubica en el nivel mas profundo que se le asigne (cargo_departamento, si no
+        cargo_direccion, si no cargo_gerencia) y los niveles superiores se derivan de ese
+        nodo en vez de elegirse por separado, para que no puedan quedar inconsistentes
+        entre si (ej. una Direccion que en realidad depende de otra Gerencia)."""
+        super().clean()
+
+        if self.cargo_departamento_id:
+            departamento = self.cargo_departamento
+            direccion = departamento.departamento_direccion
+            gerencia = departamento.departamento_gerencia or (direccion.direccion_gerencia if direccion else None)
+            directorio = (
+                departamento.departamento_directorio
+                or (gerencia.gerencia_directorio if gerencia else None)
+                or (direccion.direccion_directorio if direccion else None)
+            )
+        elif self.cargo_direccion_id:
+            direccion = self.cargo_direccion
+            gerencia = direccion.direccion_gerencia
+            directorio = direccion.direccion_directorio or (gerencia.gerencia_directorio if gerencia else None)
+        elif self.cargo_gerencia_id:
+            direccion = None
+            gerencia = self.cargo_gerencia
+            directorio = gerencia.gerencia_directorio
+        else:
+            direccion = gerencia = directorio = None
+
+        for field_name, expected in (
+            ("cargo_direccion", direccion),
+            ("cargo_gerencia", gerencia),
+            ("cargo_directorio", directorio),
+        ):
+            if expected is None:
+                continue
+            current_id = getattr(self, f"{field_name}_id")
+            if current_id and current_id != expected.id:
+                raise ValidationError({
+                    field_name: f"No coincide con la jerarquia del nivel mas especifico elegido (deberia ser '{expected}')."
+                })
+            setattr(self, field_name, expected)
 
 class CargoTipo(models.Model):
     class Meta:
