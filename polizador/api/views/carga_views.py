@@ -1039,7 +1039,7 @@ def _obra_ext_datatable_row(o: Obra, user) -> dict:
         "obra_programa": clip_value_html(o.obra_programa.programa_nombre, 100),
         "obra_convenio": o.obra_convenio or "",
         "obra_expediente": o.obra_expediente,
-        "obra_resolucion": o.obra_resolucion or "",
+        "obra_resolucion": o.obra_resolucion_display,
         "obra_licitacion_tipo": o.get_obra_licitacion_tipo_display() if o.obra_licitacion_tipo else "",
         "obra_licitacion_numero": o.obra_licitacion_numero,
         "obra_licitacion_ano": o.obra_licitacion_ano,
@@ -1515,7 +1515,7 @@ def _conjunto_datatable_row(c: ConjuntoLicitado, user) -> dict:
     return {
         "id": c.id,
         "conjunto_nombre": c.conjunto_nombre,
-        "conjunto_resolucion": c.conjunto_resolucion,
+        "conjunto_resolucion": c.conjunto_resolucion_display,
         "conjunto_subconjunto": c.conjunto_subconjunto.conjunto_nombre if c.conjunto_subconjunto_id else "",
         "acciones": acciones,
     }

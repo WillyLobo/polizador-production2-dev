@@ -13,7 +13,7 @@
       <p class="datos-lbl"><span class="lbl">OBRA ADJUDICADA Y FINANCIADA:</span> {{ obra.obra_nombre }}</p>
       <p class="datos-lbl"><span class="lbl">LOCALIDAD:</span> {{ obra.lista_localidades }} <span class="lbl">GRUPO:</span> {{ obra.obra_grupo|default:"—" }}</p>
       <p class="datos-lbl"><span class="lbl">RUBRO DE LA OBRA A EJECUTAR:</span> {{ object.certificado_rubro_db }}</p>
-      <p class="datos-lbl"><span class="lbl">RESOLUCION DE ADJUDICACION Y FINANCIAMIENTO:</span> N° {{ obra.obra_resolucion|default:"—" }}</p>
+      <p class="datos-lbl"><span class="lbl">RESOLUCION DE ADJUDICACION Y FINANCIAMIENTO:</span> {{ obra.obra_resolucion_display }}</p>
       <p class="datos-lbl"><span class="lbl">TITULAR DEL CREDITO:</span> {{ obra.obra_empresa.empresa_nombre }}</p>
     </div>
     <div class="col-der">

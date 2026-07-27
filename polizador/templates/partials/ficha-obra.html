@@ -51,7 +51,7 @@
                 </div>
                 <div class="row g-1 mb-1">
                     <div class="col-5 text-muted small fw-semibold">Resolución</div>
-                    <div class="col-7 small">{{object.obra_resolucion}}</div>
+                    <div class="col-7 small">{{object.obra_resolucion_display}}</div>
                 </div>
                 <div class="row g-1 mb-1">
                     <div class="col-5 text-muted small fw-semibold">Fecha de Contrato</div>
@@ -169,8 +169,8 @@
                     {% if contrato.contrato_descripcion %}
                         <span class="small text-muted ms-2">{{contrato.contrato_descripcion}}</span>
                     {% endif %}
-                    {% if contrato.contrato_resolucion %}
-                        <span class="small ms-2">Res. {{contrato.contrato_resolucion}}</span>
+                    {% if contrato.contrato_resolucion or contrato.contrato_resolucion_fk %}
+                        <span class="small ms-2">Res. {{contrato.contrato_resolucion_display}}</span>
                     {% endif %}
                     {% if contrato.contrato_decreto %}
                         <span class="small text-muted ms-2">Dec. {{contrato.contrato_decreto}}</span>

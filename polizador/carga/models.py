@@ -503,7 +503,11 @@ class Obra(models.Model):
     
     def __str__(self):
         return f"({self.obra_convenio if self.obra_convenio else ''}) {self.obra_nombre} - {self.obra_empresa}"
-    
+
+    @property
+    def obra_resolucion_display(self):
+        return str(self.obra_resolucion_fk) if self.obra_resolucion_fk_id else (self.obra_resolucion or "—")
+
     def lista_localidades(self):
         return ", ".join(str(localidad) for localidad in self.obra_localidad_m.all())
     
@@ -847,7 +851,11 @@ class ConjuntoLicitado(models.Model):
 
     def __str__(self):
         return f"{self.conjunto_nombre}"
-    
+
+    @property
+    def conjunto_resolucion_display(self):
+        return str(self.conjunto_resolucion_fk) if self.conjunto_resolucion_fk_id else (self.conjunto_resolucion or "—")
+
     def get_absolute_url(self):
         return reverse('update-conjunto', kwargs={'id': self.pk})
 
@@ -1264,6 +1272,10 @@ class Contrato(models.Model):
 
     def __str__(self):
         return f"{self.contrato_descripcion} - {self.contrato_obra}"
+
+    @property
+    def contrato_resolucion_display(self):
+        return str(self.contrato_resolucion_fk) if self.contrato_resolucion_fk_id else (self.contrato_resolucion or "—")
 
 class ContratoTramoPago(models.Model):
     class Meta:

@@ -1,3 +1,4 @@
+import csv
 import os
 import re
 from datetime import datetime
@@ -24,8 +25,8 @@ MODELOS_A_VINCULAR = [
     (Contrato, "contrato_resolucion", "contrato_resolucion_fk"),
 ]
 
-PATRON_DIRECTORIO = re.compile(r"^\s*(\d+)\s*/\s*(\d+)\s*/\s*(\d+)\s*$")  # numero/acta/año
-PATRON_PRESIDENCIA = re.compile(r"^\s*(\d+)\s*/\s*(\d+)\s*$")  # numero/año
+PATRON_DIRECTORIO = re.compile(r"^\s*(\d+)\s*[/-]\s*(\d+)\s*[/-]\s*(\d+)\s*$")  # numero/acta/año (separador '/' o '-')
+PATRON_PRESIDENCIA = re.compile(r"^\s*(\d+)\s*[/-]\s*(\d+)\s*$")  # numero/año (separador '/' o '-')
 
 
 class Command(BaseCommand):
@@ -64,10 +65,19 @@ class Command(BaseCommand):
 
     Corre en modo dry-run por default (no escribe nada); pasar --commit para persistir.
 
+    Pasar --solo-vincular para saltear el escaneo/importación de PDFs e ir
+    directo a vincular_fks() (útil si no existe la carpeta de PDFs en el
+    entorno actual, ej. para correr sólo el backfill de FKs).
+
+    Pasar --reporte-csv <path> para volcar a un CSV los registros que no se
+    pudieron vincular (sin match o ambiguos), para revisión manual.
+
     Uso:
         python manage.py resolucionesobras
         python manage.py resolucionesobras --commit
         python manage.py resolucionesobras --dir /ruta/a/otra/carpeta --commit
+        python manage.py resolucionesobras --solo-vincular --reporte-csv pendientes.csv
+        python manage.py resolucionesobras --solo-vincular --commit --reporte-csv pendientes.csv
     """
 
     help = "Importa PDFs de resoluciones desde una carpeta parseando sus nombres de archivo (dry-run por default, pasar --commit para persistir)."
@@ -80,10 +90,23 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument("--dir", default=self.DEFAULT_DIR, help="Carpeta a escanear en busca de PDFs.")
         parser.add_argument("--commit", action="store_true", help="Persiste los cambios (sin esto, sólo reporta).")
+        parser.add_argument(
+            "--solo-vincular", action="store_true",
+            help="Salta el escaneo/importación de PDFs y va directo a vincular los FKs existentes.",
+        )
+        parser.add_argument(
+            "--reporte-csv", default=None,
+            help="Ruta de archivo CSV donde volcar los registros sin vincular (sin match o ambiguos) para revisión manual.",
+        )
 
     def handle(self, *args, **options):
-        directorio = os.path.abspath(options["dir"])
         commit = options["commit"]
+
+        if options["solo_vincular"]:
+            self.vincular_fks(commit, reporte_csv=options["reporte_csv"])
+            return
+
+        directorio = os.path.abspath(options["dir"])
 
         self.stdout.write(f"Escaneando: {directorio}")
         if not os.path.isdir(directorio):
@@ -179,10 +202,12 @@ class Command(BaseCommand):
             f"{omitidos} omitido(s), {errores} error(es)"
         ))
 
-        self.vincular_fks(commit)
+        self.vincular_fks(commit, reporte_csv=options["reporte_csv"])
 
-    def vincular_fks(self, commit):
+    def vincular_fks(self, commit, reporte_csv=None):
         self.stdout.write("\nBuscando vínculos por patrón numero/acta/año o numero/año...")
+
+        pendientes = []
 
         for modelo, campo_texto, campo_fk in MODELOS_A_VINCULAR:
             queryset = modelo.objects.filter(
@@ -200,10 +225,12 @@ class Command(BaseCommand):
                         f"{modelo.__name__}#{obj.pk}: '{texto}' es ambiguo (varias resoluciones coinciden), se omite."
                     ))
                     ambiguos += 1
+                    pendientes.append((modelo.__name__, obj.pk, campo_texto, texto, "ambiguo"))
                     continue
 
                 if resolucion is None:
                     sin_match += 1
+                    pendientes.append((modelo.__name__, obj.pk, campo_texto, texto, "sin_match"))
                     continue
 
                 accion = "Vinculado" if commit else "[dry-run] A vincular"
@@ -216,6 +243,15 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS(
                 f"{modelo.__name__}: {vinculados} {'vinculado(s) (dry-run)' if not commit else 'vinculado(s)'}, "
                 f"{sin_match} sin match, {ambiguos} ambiguo(s)"
+            ))
+
+        if reporte_csv:
+            with open(reporte_csv, "w", newline="", encoding="utf-8") as f:
+                writer = csv.writer(f)
+                writer.writerow(["modelo", "pk", "campo", "texto_original", "motivo"])
+                writer.writerows(pendientes)
+            self.stdout.write(self.style.SUCCESS(
+                f"\nReporte de {len(pendientes)} registro(s) pendiente(s) de revisión manual escrito en: {reporte_csv}"
             ))
 
     def buscar_resolucion(self, texto):
