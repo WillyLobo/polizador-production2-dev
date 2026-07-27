@@ -3,7 +3,12 @@
 
     <div class="col-md-6">
         <div class="card h-100">
-            <div class="card-header py-2 bg-light fw-semibold small">Datos Generales</div>
+            <div class="card-header py-2 bg-light fw-semibold small d-flex justify-content-between align-items-center">
+                Datos Generales
+                {% if perms.carga.change_obra %}
+                <a href="{% url "carga:update-obra" object.id %}" class="btn btn-sm btn-outline-secondary py-0">Editar</a>
+                {% endif %}
+            </div>
             <div class="card-body p-2">
                 <div class="row g-1 mb-1">
                     <div class="col-4 text-muted small fw-semibold">ID</div>
@@ -51,7 +56,13 @@
                 </div>
                 <div class="row g-1 mb-1">
                     <div class="col-5 text-muted small fw-semibold">Resolución</div>
-                    <div class="col-7 small">{{object.obra_resolucion_display}}</div>
+                    <div class="col-7 small">
+                        {% if object.obra_resolucion_fk.instrumentolegalresoluciones %}
+                            <a href="{{object.obra_resolucion_fk.instrumentolegalresoluciones.url}}" target="_blank">{{object.obra_resolucion_display}}</a>
+                        {% else %}
+                            {{object.obra_resolucion_display}}
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="row g-1 mb-1">
                     <div class="col-5 text-muted small fw-semibold">Fecha de Contrato</div>
@@ -170,7 +181,13 @@
                         <span class="small text-muted ms-2">{{contrato.contrato_descripcion}}</span>
                     {% endif %}
                     {% if contrato.contrato_resolucion or contrato.contrato_resolucion_fk %}
-                        <span class="small ms-2">Res. {{contrato.contrato_resolucion_display}}</span>
+                        <span class="small ms-2">Res.
+                            {% if contrato.contrato_resolucion_fk.instrumentolegalresoluciones %}
+                                <a href="{{contrato.contrato_resolucion_fk.instrumentolegalresoluciones.url}}" target="_blank">{{contrato.contrato_resolucion_display}}</a>
+                            {% else %}
+                                {{contrato.contrato_resolucion_display}}
+                            {% endif %}
+                        </span>
                     {% endif %}
                     {% if contrato.contrato_decreto %}
                         <span class="small text-muted ms-2">Dec. {{contrato.contrato_decreto}}</span>
