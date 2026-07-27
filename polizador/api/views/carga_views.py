@@ -716,6 +716,8 @@ def list_obras(request, empresa: str = "", programa: str = "", region: str = "",
             Q(obra_nombre__icontains=q)
             | Q(obra_expediente__icontains=q)
             | Q(obra_resolucion__icontains=q)
+            | Q(obra_resolucion_numero__icontains=q)
+            | Q(obra_resolucion_ano__icontains=q)
         )
     return qs
 
@@ -943,7 +945,7 @@ _OBRA_EXT_ORDER_FIELDS = {
     "obra_programa": "obra_programa__programa_nombre",
     "obra_convenio": "obra_convenio",
     "obra_expediente": "obra_expediente",
-    "obra_resolucion": "obra_resolucion",
+    "obra_resolucion": "obra_resolucion_ano",
     "obra_licitacion_tipo": "obra_licitacion_tipo",
     "obra_licitacion_numero": "obra_licitacion_numero",
     "obra_licitacion_ano": "obra_licitacion_ano",
@@ -978,7 +980,7 @@ _OBRA_EXT_FILTER_FIELDS = {
     "obra_programa": "obra_programa_id",
     "obra_convenio": "obra_convenio__icontains",
     "obra_expediente": "obra_expediente__icontains",
-    "obra_resolucion": "obra_resolucion__icontains",
+    "obra_resolucion": "obra_resolucion_numero__icontains",
     "obra_licitacion_tipo": "obra_licitacion_tipo",
     "obra_licitacion_numero": "obra_licitacion_numero__icontains",
     "obra_licitacion_ano": "obra_licitacion_ano",
@@ -1007,7 +1009,8 @@ _OBRA_EXT_SEARCH_LOOKUPS = [
     "obra_municipio_m__municipio_nombre__icontains", "obra_localidad_m__localidad_nombre__icontains",
     "obra_conjunto__conjunto_nombre__icontains", "obra_grupo__icontains", "obra_plazo__icontains",
     "obra_programa__programa_nombre__icontains", "obra_convenio__icontains", "obra_expediente__icontains",
-    "obra_resolucion__icontains", "obra_nomenclatura__icontains", "obra_nomenclatura_plano__icontains",
+    "obra_resolucion__icontains", "obra_resolucion_numero__icontains", "obra_resolucion_ano__icontains",
+    "obra_nomenclatura__icontains", "obra_nomenclatura_plano__icontains",
     "obra_observaciones__icontains", "obra_principal__obra_nombre__icontains",
 ]
 
@@ -1524,15 +1527,16 @@ def _conjunto_datatable_row(c: ConjuntoLicitado, user) -> dict:
 register_simple_datatable(
     router, ConjuntoLicitado, "conjuntos",
     order_fields={
-        "id": "id", "conjunto_nombre": "conjunto_nombre", "conjunto_resolucion": "conjunto_resolucion",
+        "id": "id", "conjunto_nombre": "conjunto_nombre", "conjunto_resolucion": "conjunto_resolucion_ano",
         "conjunto_subconjunto": "conjunto_subconjunto__conjunto_nombre",
     },
     filter_fields={
-        "conjunto_nombre": "conjunto_nombre__icontains", "conjunto_resolucion": "conjunto_resolucion__icontains",
+        "conjunto_nombre": "conjunto_nombre__icontains", "conjunto_resolucion": "conjunto_resolucion_numero__icontains",
         "conjunto_subconjunto": "conjunto_subconjunto__conjunto_nombre__icontains",
     },
     search_lookups=[
         "conjunto_nombre__icontains", "conjunto_resolucion__icontains",
+        "conjunto_resolucion_numero__icontains", "conjunto_resolucion_ano__icontains",
         "conjunto_subconjunto__conjunto_nombre__icontains",
     ],
     row_builder=_conjunto_datatable_row,

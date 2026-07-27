@@ -18,14 +18,34 @@
             {{form.contrato_descripcion.as_field_group}}
         </div>
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-6">
                 {{form.contrato_fecha.as_field_group}}
             </div>
-            <div class="col-md-4">
-                {{form.contrato_resolucion.as_field_group}}
-            </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
                 {{form.contrato_decreto.as_field_group}}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header py-2 bg-light fw-semibold small">Resolución Aprobatoria</div>
+    <div class="card-body p-2">
+        <div class="row">
+            <div class="col-md-2">
+                {{form.contrato_resolucion_tipo.as_field_group}}
+            </div>
+            <div class="col-md-2">
+                {{form.contrato_resolucion_ano.as_field_group}}
+            </div>
+            <div class="col-md-2">
+                {{form.contrato_resolucion_numero.as_field_group}}
+            </div>
+            <div class="col-md-2">
+                {{form.contrato_resolucion_jurisdiccion.as_field_group}}
+            </div>
+            <div class="col-md-2">
+                {{form.contrato_resolucion_acta.as_field_group}}
             </div>
         </div>
         <div class="row">
@@ -35,6 +55,27 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    var tipo = document.getElementById("{{ form.contrato_resolucion_tipo.id_for_label }}");
+    var acta = document.getElementById("{{ form.contrato_resolucion_acta.id_for_label }}");
+    if (!tipo || !acta) {
+        return;
+    }
+
+    function syncActaReadOnly() {
+        var esPresidencia = tipo.value === "P";
+        acta.readOnly = esPresidencia;
+        if (esPresidencia) {
+            acta.value = "1";
+        }
+    }
+
+    tipo.addEventListener("change", syncActaReadOnly);
+    syncActaReadOnly();
+});
+</script>
 
 <div class="card mb-3">
     <div class="card-header py-2 bg-light fw-semibold small">Certificación</div>

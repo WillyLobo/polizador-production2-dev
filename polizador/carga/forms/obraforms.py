@@ -42,7 +42,11 @@ class ObraForm(AddRelatedPermissionMixin, forms.ModelForm):
 			"obra_programa",
 			"obra_convenio",
 			"obra_expediente",
-			"obra_resolucion",
+			"obra_resolucion_tipo",
+			"obra_resolucion_ano",
+			"obra_resolucion_numero",
+			"obra_resolucion_jurisdiccion",
+			"obra_resolucion_acta",
 			"obra_resolucion_fk",
 			"obra_licitacion_tipo",
 			"obra_licitacion_numero",
@@ -104,9 +108,24 @@ class ObraForm(AddRelatedPermissionMixin, forms.ModelForm):
 				"class": "form-control",
 				"placeholder": "Expediente"
 			}),
-			"obra_resolucion": forms.TextInput(attrs={
+			"obra_resolucion_tipo": forms.Select(attrs={
 				"class": "form-control",
-				"placeholder": "Resolución"
+			}),
+			"obra_resolucion_ano": forms.TextInput(attrs={
+				"class": "form-control",
+				"placeholder": "Año"
+			}),
+			"obra_resolucion_numero": forms.TextInput(attrs={
+				"class": "form-control",
+				"placeholder": "Número"
+			}),
+			"obra_resolucion_jurisdiccion": forms.TextInput(attrs={
+				"class": "form-control",
+				"placeholder": "Jurisdicción"
+			}),
+			"obra_resolucion_acta": forms.TextInput(attrs={
+				"class": "form-control",
+				"placeholder": "Acta"
 			}),
 			"obra_resolucion_fk": ResolucionWidget(attrs={
 				"class": "form-control customSelect2",

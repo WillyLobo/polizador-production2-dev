@@ -33,8 +33,18 @@ class Command(BaseCommand):
             default=None,
             help="Ruta del CSV de salida (default: fix_obra_resolucion_numbers_<timestamp>.csv)",
         )
+        parser.add_argument(
+            "--check",
+            action="store_true",
+            help="No modifica nada: muestra por stdout las resoluciones cuyo valor, separado por "
+            "'-', tiene más de 3 campos.",
+        )
 
     def handle(self, *args, **options):
+        if options["check"]:
+            self.check_field_counts()
+            return
+
         dry_run = options["dry_run"]
         output_path = options["output"] or f"fix_obra_resolucion_numbers_{datetime.now():%Y%m%d_%H%M%S}.csv"
         total_updated = 0
@@ -70,3 +80,20 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS(f"Total: {total_updated} registro(s) actualizado(s)"))
         self.stdout.write(self.style.SUCCESS(f"Detalle guardado en: {output_path}"))
+
+    def check_field_counts(self):
+        total_flagged = 0
+
+        for model, field_name, label in FIELDS_TO_FIX:
+            flagged = 0
+            queryset = model.objects.exclude(**{field_name: ""}).exclude(**{f"{field_name}__isnull": True})
+            for instance in queryset:
+                value = getattr(instance, field_name)
+                if len(value.split("-")) > 3:
+                    self.stdout.write(f"{label} [pk={instance.pk}]: {value!r}")
+                    flagged += 1
+
+            self.stdout.write(self.style.SUCCESS(f"{label}: {flagged} registro(s) con más de 3 campos"))
+            total_flagged += flagged
+
+        self.stdout.write(self.style.SUCCESS(f"Total: {total_flagged} registro(s) con más de 3 campos"))
