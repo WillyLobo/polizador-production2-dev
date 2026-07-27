@@ -466,13 +466,14 @@
 </div>
 
 {# ─── Sección 5: Documentación Digital ─── #}
-{% with documentos_contrato=object.documentos_contrato.all %}
-{% if documentos_contrato %}
+{% with documentos_contrato=object.documentos_contrato.all documentos_obra=object.documentos_obra.all %}
+{% if documentos_contrato or documentos_obra or perms.carga.add_obradocumento %}
 <div class="card mb-3">
     <div class="card-header py-2 bg-light fw-semibold small">Documentación Digital</div>
     <div class="card-body p-2">
 
-        <div>
+        {% if documentos_contrato %}
+        <div class="mb-3">
             <div class="small fw-semibold text-muted mb-1">Contratos</div>
             <table class="table table-sm table-bordered table-hover mb-0">
                 <thead class="table-light">
@@ -505,6 +506,47 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+        {% endif %}
+
+        <div>
+            <div class="small fw-semibold text-muted mb-1">Obra</div>
+            {% if documentos_obra %}
+            <table class="table table-sm table-bordered table-hover mb-2">
+                <thead class="table-light">
+                    <tr>
+                        <th class="small">Descripción</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for documento in documentos_obra %}
+                    <tr>
+                        <td class="small">
+                            {% if documento.obradocumento_archivo %}
+                                <a href="{{documento.obradocumento_archivo.url}}" target="_blank">{{documento.obradocumento_descripcion}}</a>
+                            {% else %}
+                                {{documento.obradocumento_descripcion}}
+                            {% endif %}
+                        </td>
+                        <td class="small text-end">
+                            {% if perms.carga.change_obradocumento %}
+                                <a href="{% url "carga:update-obra-documento" documento.id %}">{{editimglink|safe}}</a>
+                            {% endif %}
+                            {% if perms.carga.delete_obradocumento %}
+                                <a href="{% url "carga:eliminar-obra-documento" documento.id %}">{{eliminarimglink|safe}}</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="small text-muted fst-italic">Sin documentos cargados.</p>
+            {% endif %}
+            {% if perms.carga.add_obradocumento %}
+            <a href="{% url "carga:crear-obra-documento" %}?obra={{object.id|safe}}" class="btn btn-sm btn-outline-primary">+ Nuevo Documento</a>
+            {% endif %}
         </div>
 
     </div>

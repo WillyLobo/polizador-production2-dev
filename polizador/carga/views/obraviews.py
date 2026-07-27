@@ -27,6 +27,7 @@ def _obra_estado_prefetch():
     return [
         "obra_localidad_m",
         "obra_inspector",
+        "documentos_obra",
         Prefetch(
             "contrato_set",
             queryset=Contrato.objects.prefetch_related(

@@ -6,7 +6,7 @@ from django.template import loader, TemplateDoesNotExist
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
-from carga.models import ContratosDigitales
+from carga.models import ContratosDigitales, ObraDocumento
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg
 from carga.forms.documentosdigitalesforms import *
 from core.mixins import DeleteRelatedObjectsMixin
@@ -53,6 +53,49 @@ class EliminarContratoDigital(PermissionRequiredMixin, DeleteRelatedObjectsMixin
     permission_required = "carga.delete_certificado"
 
     model = ContratosDigitales
+    template_name = "generic/confirm_delete.html"
+    success_url = reverse_lazy("carga:lista-obras")
+
+@method_decorator(login_required, name="dispatch")
+class CrearObraDocumento(PermissionRequiredMixin, generic.CreateView):
+    permission_required = "carga.add_obradocumento"
+
+    model = ObraDocumento
+    template_name = "digitales/crear-obradocumento.html"
+    form_class = ObraDocumentoForm
+    success_url = reverse_lazy("carga:crear-obra-documento")
+
+    title = "Cargar Documento de Obra"
+
+    def get_title(self):
+        return self.title
+
+    def get_initial(self):
+        initial = super().get_initial()
+        obra_id = self.request.GET.get("obra")
+        if obra_id:
+            initial["obradocumento_obra"] = obra_id
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = self.get_title()
+        return context
+
+@method_decorator(login_required, name="dispatch")
+class UpdateObraDocumento(PermissionRequiredMixin, generic.UpdateView):
+    permission_required = "carga.change_obradocumento"
+
+    model = ObraDocumento
+    template_name = "digitales/update-obradocumento.html"
+    form_class = ObraDocumentoForm
+    success_url = reverse_lazy("carga:crear-obra-documento")
+
+@method_decorator(login_required, name="dispatch")
+class EliminarObraDocumento(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
+    permission_required = "carga.delete_obradocumento"
+
+    model = ObraDocumento
     template_name = "generic/confirm_delete.html"
     success_url = reverse_lazy("carga:lista-obras")
 

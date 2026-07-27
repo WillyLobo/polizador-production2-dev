@@ -53,6 +53,13 @@ def generate_name_contratos(instance, filename):
     name = os.path.join(directorio, filename)
     return name
 
+def generate_name_obra_documento(instance, filename):
+    directorio = "documentos_obra/"
+    extension = "pdf"
+    filename = f"{instance.obradocumento_uuid}.{extension}"
+    name = os.path.join(directorio, filename)
+    return name
+
 def generate_name_resoluciones(instance, filename):
     """Referenced by historical migrations (ResolucionesDigitales, removed) — keep so
     old migration replays that resolve carga.models.generate_name_resoluciones by
@@ -525,6 +532,22 @@ def obras_con_acumulado_anotado(queryset):
         obra_acum_pct_anotado=Subquery(ultimo_acumulado),
         obra_anticipo_acumulado_anotado=Subquery(ultimo_anticipo_acumulado),
     )
+
+
+class ObraDocumento(models.Model):
+    class Meta:
+        verbose_name = "Documento de Obra"
+        verbose_name_plural = "Documentos de Obra"
+        ordering = ["id"]
+
+    obradocumento_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    obradocumento_obra = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.CASCADE, related_name="documentos_obra")
+    obradocumento_descripcion = models.CharField("Descripción", max_length=200)
+    obradocumento_archivo = models.FileField(verbose_name="Archivo", upload_to=generate_name_obra_documento, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], max_length=500)
+    obradocumento_history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.obradocumento_descripcion} - {self.obradocumento_obra}"
 
 
 class Prototipo(models.Model):
