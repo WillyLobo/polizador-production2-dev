@@ -897,6 +897,16 @@ class PlanDeTrabajosRubro(models.Model):
             ids.append(actual.pk)
         return ids
 
+    def rubro_cadena_siguiente_ids(self):
+        """IDs de este rubro y todos sus sucesores (reprogramaciones posteriores)."""
+        ids = [self.pk]
+        pendientes = list(self.rubro_siguiente.all())
+        while pendientes:
+            actual = pendientes.pop()
+            ids.append(actual.pk)
+            pendientes.extend(actual.rubro_siguiente.all())
+        return ids
+
     def monto_base_pesos(self):
         """Monto en pesos a distribuir entre las Etapas proyectadas: si hay un
         ContratoMonto vinculado se usa su valor (convirtiendo UVI->pesos según su
@@ -941,6 +951,16 @@ class PlanDeTrabajosItem(models.Model):
         while actual.item_anterior_id:
             actual = actual.item_anterior
             ids.append(actual.pk)
+        return ids
+
+    def item_cadena_siguiente_ids(self):
+        """IDs de este item y todos sus sucesores (reprogramaciones posteriores)."""
+        ids = [self.pk]
+        pendientes = list(self.item_siguiente.all())
+        while pendientes:
+            actual = pendientes.pop()
+            ids.append(actual.pk)
+            pendientes.extend(actual.item_siguiente.all())
         return ids
 
     def __str__(self):
@@ -1106,6 +1126,13 @@ class FojaDeMedicion(models.Model):
         return FojaDeMedicion.objects.filter(
             foja_rubro_id__in=chain_ids, foja_numero__lt=self.foja_numero
         ).order_by('-foja_numero').first()
+
+    def foja_siguiente(self):
+        """Retorna la foja siguiente, considerando también rubros de planes reprogramados."""
+        chain_ids = self.foja_rubro.rubro_cadena_siguiente_ids()
+        return FojaDeMedicion.objects.filter(
+            foja_rubro_id__in=chain_ids, foja_numero__gt=self.foja_numero
+        ).order_by('foja_numero').first()
 
     @staticmethod
     def anterior_items_map(rubro, items=None, exclude_foja_numero=None):

@@ -1,6 +1,6 @@
 from django.db.models.signals import pre_save, post_save, post_delete
 from django.dispatch import receiver
-from .models import FojaDeMedicion, PlanDeTrabajosEtapa, ContratoMonto, ContratoTramoPago
+from .models import FojaDeMedicion, FojaDeMedicionItem, PlanDeTrabajosEtapa, ContratoMonto, ContratoTramoPago
 
 
 @receiver(pre_save, sender=FojaDeMedicion)
@@ -36,6 +36,25 @@ def auto_increment_etapa_numero(sender, instance, **kwargs):
         ).order_by('-etapa_numero').first()
 
         instance.etapa_numero = (last_etapa.etapa_numero + 1) if last_etapa else 1
+
+
+@receiver(post_save, sender=FojaDeMedicionItem)
+def recalcular_acumulado_fojas_siguientes(sender, instance, **kwargs):
+    """FojaDeMedicionItem.save() calcula fojaitem_pct_acumulado como una copia
+    (anterior + avance_mes) al momento de guardarse, no como un valor derivado. Si
+    después se edita una Foja anterior, las Fojas posteriores quedan con un
+    acumulado desactualizado (puede terminar siendo menor al de la Foja que
+    corrigieron). Acá se propaga el recálculo en cascada hacia adelante."""
+    foja_siguiente = instance.fojaitem_foja.foja_siguiente()
+    if not foja_siguiente:
+        return
+
+    item_chain_ids = instance.fojaitem_planitem.item_cadena_siguiente_ids()
+    item_siguiente = FojaDeMedicionItem.objects.filter(
+        fojaitem_foja=foja_siguiente, fojaitem_planitem_id__in=item_chain_ids
+    ).first()
+    if item_siguiente:
+        item_siguiente.save()
 
 
 @receiver(post_save, sender=ContratoMonto)

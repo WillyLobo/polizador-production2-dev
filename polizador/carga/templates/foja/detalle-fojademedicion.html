@@ -17,6 +17,11 @@
     <a href="{% url 'carga:update-fojademedicion' object.pk %}" class="btn btn-sm btn-outline-secondary">
       <i class="bi bi-pencil"></i> Editar
     </a>
+    {% if perms.carga.delete_fojademedicion %}
+    <a href="{% url 'carga:eliminar-fojademedicion' object.pk %}" class="btn btn-sm btn-outline-danger">
+      <i class="bi bi-trash"></i> Eliminar
+    </a>
+    {% endif %}
     {% if perms.carga.add_certificado %}
     <a href="{% url 'carga:generar-certificados-foja' object.pk %}" class="btn btn-sm btn-outline-success">
       <i class="bi bi-file-earmark-plus"></i> Generar Certificado

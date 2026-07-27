@@ -138,6 +138,7 @@ fojademedicion_patterns = [
     path("crear/foja-medicion/<pk>", UpdateFojaDeMedicion.as_view(), name="update-fojademedicion"),
     path("foja-medicion/<pk>/detalle/", DetalleFojaDeMedicion.as_view(), name="detalle-fojademedicion"),
     path("foja-medicion/<pk>/imprimir/", ImprimirFojaDeMedicion.as_view(), name="imprimir-fojademedicion"),
+    path("eliminar/foja-medicion/<pk>", EliminarFojaDeMedicion.as_view(), name="eliminar-fojademedicion"),
 ]
 plandetrabajosetapa_patterns = [
     path("crear/plandetrabajosetapa/<int:pk>/", PlanDeTrabajosEtapaMatriz.as_view(), name="plandetrabajosetapa-matriz"),

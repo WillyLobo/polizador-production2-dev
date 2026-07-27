@@ -7,7 +7,7 @@ from django.views import generic
 from carga.models import FojaDeMedicion, PlanDeTrabajosItem, PlanDeTrabajosRubro
 from personalizador.models import Gerencia
 from carga.forms.fojademedicionforms import *
-from core.mixins import FormsetViewMixin
+from core.mixins import DeleteRelatedObjectsMixin, FormsetViewMixin
 
 
 def _foja_detalle_context(foja):
@@ -246,6 +246,17 @@ class UpdateFojaDeMedicion(PermissionRequiredMixin, FormsetViewMixin, generic.Up
 			planitem_id = sub_form.instance.fojaitem_planitem_id
 			if planitem_id in anterior_map:
 				sub_form.initial["fojaitem_pct_anterior"] = anterior_map[planitem_id]
+
+
+@method_decorator(login_required, name="dispatch")
+class EliminarFojaDeMedicion(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
+	permission_required = "carga.delete_fojademedicion"
+
+	model = FojaDeMedicion
+	template_name = "generic/confirm_delete.html"
+
+	def get_success_url(self):
+		return reverse("carga:estado-obra", kwargs={"pk": self.object.foja_rubro.rubro_plan.trabajos_obra_id})
 
 
 @method_decorator(login_required, name="dispatch")

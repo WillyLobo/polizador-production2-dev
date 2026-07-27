@@ -373,6 +373,10 @@
                                         <span style="font-size:0.7rem;"> · </span>
                                         <a href="{% url "carga:generar-certificados-foja" foja.id %}" class="link-dark" style="font-size:0.7rem;">Cert.</a>
                                     {% endif %}
+                                    {% if perms.carga.delete_fojademedicion %}
+                                        <span style="font-size:0.7rem;"> · </span>
+                                        <a href="{% url "carga:eliminar-fojademedicion" foja.id %}" class="link-danger" style="font-size:0.7rem;">Eliminar</a>
+                                    {% endif %}
                                 </th>
                                 {% endfor %}
                             </tr>
