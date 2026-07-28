@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}<title>GDU - Parcelas</title>{% endblock %}
+{% block content %}
+<div class="min-vh-100">
+  <div class="card">
+    <div class="card-header py-2 bg-light fw-semibold small">Parcelas</div>
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table id="tableParcelas" width="auto" class="table table-striped table-bordered align-middle mb-0"></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script language="javascript">
+  $(document).ready(function() {
+      var columns = [
+          { data: 'nomenclatura', name: 'nomenclatura', title: 'Nomenclatura' },
+          { data: 'intervencion', name: 'intervencion', title: 'Intervención' },
+          { data: 'destino', name: 'destino', title: 'Destino' },
+          { data: 'es_ph', name: 'es_ph', title: 'Es PH' },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
+          $('#tableParcelas'),
+          '/v1/api/datatables/gdu-parcelas/',
+          columns,
+          {
+              order: [[0, 'asc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/gdu-parcelas/{id}/detalle/',
+          },
+      );
+  });
+</script>
+{% endblock %}

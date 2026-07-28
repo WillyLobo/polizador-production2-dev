@@ -256,7 +256,7 @@
         </li>
         {% endif %}
         <!-- GDU (catastro / relevamientos) -->
-        {% if request.user.is_superuser or perms.gdu.ver_viviendas or perms.gdu.ver_barrios or perms.gdu.view_relevamiento %}
+        {% if request.user.is_superuser or perms.gdu.ver_viviendas or perms.gdu.ver_barrios or perms.gdu.view_relevamiento or perms.gdu.view_actuacion or perms.gdu.view_uf %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-pin-map me-1"></i>GDU
@@ -268,6 +268,27 @@
             {% if request.user.is_superuser or perms.gdu.view_relevamiento %}
             <li><a class="dropdown-item" href="{% url "gdu:relevamientos_list" %}"><i class="bi bi-list-ul me-1"></i>Relevamientos</a></li>
             {% endif %}
+            <li><hr class="dropdown-divider"></li>
+            <li class="dropdown-item fw-bold text-muted"><small>LISTADOS - CATASTRO</small></li>
+            {% if request.user.is_superuser or perms.gdu.view_actuacion %}<li><a class="dropdown-item" href="{% url "gdu:lista_actuaciones" %}"><i class="bi bi-list-ul me-1"></i>Actuaciones</a></li>{% endif %}
+            {% if request.user.is_superuser or perms.gdu.view_contratacion %}<li><a class="dropdown-item" href="{% url "gdu:lista_contrataciones" %}"><i class="bi bi-list-ul me-1"></i>Contrataciones</a></li>{% endif %}
+            {% if request.user.is_superuser or perms.gdu.view_intervencion %}<li><a class="dropdown-item" href="{% url "gdu:lista_intervenciones" %}"><i class="bi bi-list-ul me-1"></i>Intervenciones</a></li>{% endif %}
+            {% if request.user.is_superuser or perms.gdu.view_programa %}<li><a class="dropdown-item" href="{% url "gdu:lista_programas" %}"><i class="bi bi-list-ul me-1"></i>Programas</a></li>{% endif %}
+            {% if request.user.is_superuser or perms.gdu.view_barrio %}<li><a class="dropdown-item" href="{% url "gdu:lista_barrios" %}"><i class="bi bi-list-ul me-1"></i>Barrios</a></li>{% endif %}
+            {% if request.user.is_superuser or perms.gdu.view_parcela %}<li><a class="dropdown-item" href="{% url "gdu:lista_parcelas" %}"><i class="bi bi-list-ul me-1"></i>Parcelas</a></li>{% endif %}
+            {% if request.user.is_superuser or perms.gdu.view_uf %}<li><a class="dropdown-item" href="{% url "gdu:lista_ufs" %}"><i class="bi bi-list-ul me-1"></i>Unidades Funcionales</a></li>{% endif %}
+            {% if request.user.is_superuser or perms.gdu.view_localidad %}<li><a class="dropdown-item" href="{% url "gdu:lista_localidades" %}"><i class="bi bi-list-ul me-1"></i>Localidades</a></li>{% endif %}
+            {% if request.user.is_superuser or perms.gdu.view_expropiacion %}<li><a class="dropdown-item" href="{% url "gdu:lista_expropiaciones" %}"><i class="bi bi-list-ul me-1"></i>Expropiaciones</a></li>{% endif %}
+            {% if request.user.is_superuser or perms.gdu.view_planomensura %}<li><a class="dropdown-item" href="{% url "gdu:lista_planos_mensura" %}"><i class="bi bi-list-ul me-1"></i>Planos de Mensura</a></li>{% endif %}
+            {% if request.user.is_superuser or perms.gdu.view_adjudicacionbeneficiario %}<li><a class="dropdown-item" href="{% url "gdu:lista_adjudicaciones_beneficiario" %}"><i class="bi bi-list-ul me-1"></i>Adjudicaciones a Beneficiario</a></li>{% endif %}
+            {% if request.user.is_superuser or perms.gdu.view_resolucioncostos %}<li><a class="dropdown-item" href="{% url "gdu:lista_resoluciones_costos" %}"><i class="bi bi-list-ul me-1"></i>Resoluciones de Costos</a></li>{% endif %}
+            {% if request.user.is_superuser or perms.gdu.view_adjudicatario3450 %}<li><a class="dropdown-item" href="{% url "gdu:lista_adjudicatarios_3450" %}"><i class="bi bi-list-ul me-1"></i>Adjudicatarios 3450</a></li>{% endif %}
+            {% if request.user.is_superuser or perms.gdu.view_tipocontratacion %}<li><a class="dropdown-item" href="{% url "gdu:lista_tipos_contratacion" %}"><i class="bi bi-list-ul me-1"></i>Tipos de Contratación</a></li>{% endif %}
+            {% if request.user.is_superuser or perms.gdu.view_tipoestado %}<li><a class="dropdown-item" href="{% url "gdu:lista_tipos_estado" %}"><i class="bi bi-list-ul me-1"></i>Tipos de Estado</a></li>{% endif %}
+            {% if request.user.is_superuser or perms.gdu.view_tipointervencion %}<li><a class="dropdown-item" href="{% url "gdu:lista_tipos_intervencion" %}"><i class="bi bi-list-ul me-1"></i>Tipos de Intervención</a></li>{% endif %}
+            {% if request.user.is_superuser or perms.gdu.view_tipouf %}<li><a class="dropdown-item" href="{% url "gdu:lista_tipos_uf" %}"><i class="bi bi-list-ul me-1"></i>Tipos de UF</a></li>{% endif %}
+            {% if request.user.is_superuser or perms.gdu.view_destinoparcela %}<li><a class="dropdown-item" href="{% url "gdu:lista_destinos_parcela" %}"><i class="bi bi-list-ul me-1"></i>Destinos de Parcela</a></li>{% endif %}
+            {% if request.user.is_superuser or perms.gdu.view_estadogestionexpropiacion %}<li><a class="dropdown-item" href="{% url "gdu:lista_estados_gestion_expropiacion" %}"><i class="bi bi-list-ul me-1"></i>Estados de Gestión de Expropiación</a></li>{% endif %}
           </ul>
         </li>
         {% endif %}
@@ -282,8 +303,8 @@
             <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="bi bi-person-gear me-1"></i>Panel de administración</a></li>
             <li><a class="dropdown-item" href="/v1/api/docs"><i class="bi bi-person-gear me-1"></i>API Docs</a></li>
             <li><hr class="dropdown-divider"></li>
-            <li class="dropdown-item fw-bold text-muted"><small>P/H</small></li>
-            <li><a class="dropdown-item" href="#"><i class="bi bi-list-ul me-1"></i>P/H</a></li>
+            <li class="dropdown-item fw-bold text-muted"><small>Externos</small></li>
+            <li><a class="dropdown-item" href="{% url 'schema_docs' %}"><i class="bi bi-diagram-3 me-1"></i>Schema de la base de datos</a></li>
           </ul>
         </li>
         {% endif %}

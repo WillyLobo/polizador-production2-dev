@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}<title>GDU - Adjudicatarios 3450</title>{% endblock %}
+{% block content %}
+<div class="min-vh-100">
+  <div class="card">
+    <div class="card-header py-2 bg-light fw-semibold small">Adjudicatarios 3450</div>
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table id="tableAdjudicatarios3450" width="auto" class="table table-striped table-bordered align-middle mb-0"></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script language="javascript">
+  $(document).ready(function() {
+      var columns = [
+          { data: 'adjugisnroadju', name: 'adjugisnroadju', title: 'Nro. Adjudicatario' },
+          { data: 'adjugisapeynom', name: 'adjugisapeynom', title: 'Apellido y Nombre' },
+          { data: 'adjugisdireccion', name: 'adjugisdireccion', title: 'Dirección' },
+          { data: 'adjugisdni', name: 'adjugisdni', title: 'DNI' },
+          { data: 'adjugissituacion', name: 'adjugissituacion', title: 'Situación' },
+          { data: 'adjugisestadoreg', name: 'adjugisestadoreg', title: 'Estado Reg.' },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
+          $('#tableAdjudicatarios3450'),
+          '/v1/api/datatables/gdu-adjudicatarios-3450/',
+          columns,
+          {
+              order: [[1, 'asc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+          },
+      );
+  });
+</script>
+{% endblock %}

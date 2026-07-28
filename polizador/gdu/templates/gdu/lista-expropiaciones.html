@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}<title>GDU - Expropiaciones</title>{% endblock %}
+{% block content %}
+<div class="min-vh-100">
+  <div class="card">
+    <div class="card-header py-2 bg-light fw-semibold small">Expropiaciones</div>
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table id="tableExpropiaciones" width="auto" class="table table-striped table-bordered align-middle mb-0"></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script language="javascript">
+  $(document).ready(function() {
+      var columns = [
+          { data: 'nro_ley', name: 'nro_ley', title: 'Nro. Ley' },
+          { data: 'ano_ley', name: 'ano_ley', title: 'Año' },
+          { data: 'localidad', name: 'localidad', title: 'Localidad' },
+          { data: 'asentamiento_nombre', name: 'asentamiento_nombre', title: 'Asentamiento' },
+          { data: 'asentamiento', name: 'asentamiento', title: 'Tiene Asentamiento' },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
+          $('#tableExpropiaciones'),
+          '/v1/api/datatables/gdu-expropiaciones/',
+          columns,
+          {
+              order: [[0, 'desc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/gdu-expropiaciones/{id}/detalle/',
+          },
+      );
+  });
+</script>
+{% endblock %}

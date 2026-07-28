@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}<title>GDU - Barrios</title>{% endblock %}
+{% block content %}
+<div class="min-vh-100">
+  <div class="card">
+    <div class="card-header py-2 bg-light fw-semibold small">Barrios</div>
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table id="tableBarrios" width="auto" class="table table-striped table-bordered align-middle mb-0"></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script language="javascript">
+  $(document).ready(function() {
+      var columns = [
+          { data: 'nombre', name: 'nombre', title: 'Nombre' },
+          { data: 'intervencion', name: 'intervencion', title: 'Intervención' },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
+          $('#tableBarrios'),
+          '/v1/api/datatables/gdu-barrios/',
+          columns,
+          {
+              order: [[0, 'asc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/gdu-barrios/{id}/detalle/',
+          },
+      );
+  });
+</script>
+{% endblock %}

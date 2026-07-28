@@ -1,6 +1,6 @@
 from django.urls import path
 
-from gdu.views import api3450, audit, csv_export, encuesta, print_pdf, smb, uf, visor
+from gdu.views import api3450, audit, csv_export, encuesta, listados, print_pdf, smb, uf, visor
 
 app_name = "gdu"
 
@@ -19,4 +19,24 @@ urlpatterns = [
     path("mapa/", visor.mapa, name="mapa"),
     path("mapa/viviendas.geojson", visor.geojson_viviendas, name="geojson_viviendas"),
     path("mapa/barrios.geojson", visor.geojson_barrios, name="geojson_barrios"),
+
+    path("listas/actuaciones/", listados.lista_actuaciones, name="lista_actuaciones"),
+    path("listas/contrataciones/", listados.lista_contrataciones, name="lista_contrataciones"),
+    path("listas/intervenciones/", listados.lista_intervenciones, name="lista_intervenciones"),
+    path("listas/programas/", listados.lista_programas, name="lista_programas"),
+    path("listas/barrios/", listados.lista_barrios, name="lista_barrios"),
+    path("listas/parcelas/", listados.lista_parcelas, name="lista_parcelas"),
+    path("listas/ufs/", listados.lista_ufs, name="lista_ufs"),
+    path("listas/localidades/", listados.lista_localidades, name="lista_localidades"),
+    path("listas/expropiaciones/", listados.lista_expropiaciones, name="lista_expropiaciones"),
+    path("listas/planos-mensura/", listados.lista_planos_mensura, name="lista_planos_mensura"),
+    path("listas/adjudicaciones-beneficiario/", listados.lista_adjudicaciones_beneficiario, name="lista_adjudicaciones_beneficiario"),
+    path("listas/resoluciones-costos/", listados.lista_resoluciones_costos, name="lista_resoluciones_costos"),
+    path("listas/tipos-contratacion/", listados.lista_tipos_contratacion, name="lista_tipos_contratacion"),
+    path("listas/tipos-estado/", listados.lista_tipos_estado, name="lista_tipos_estado"),
+    path("listas/tipos-intervencion/", listados.lista_tipos_intervencion, name="lista_tipos_intervencion"),
+    path("listas/tipos-uf/", listados.lista_tipos_uf, name="lista_tipos_uf"),
+    path("listas/destinos-parcela/", listados.lista_destinos_parcela, name="lista_destinos_parcela"),
+    path("listas/estados-gestion-expropiacion/", listados.lista_estados_gestion_expropiacion, name="lista_estados_gestion_expropiacion"),
+    path("listas/adjudicatarios-3450/", listados.lista_adjudicatarios_3450, name="lista_adjudicatarios_3450"),
 ]
