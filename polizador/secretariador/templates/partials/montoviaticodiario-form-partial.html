@@ -3,7 +3,7 @@
 {% endfor %}
 
 <div class="card mb-3">
-    <div class="card-header py-2 bg-light fw-semibold small">Identificador</div>
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Identificador</div>
     <div class="card-body p-2">
         <div class="form-group">
             {{form.instrumentolegaldecretos_tipo.as_field_group}}
@@ -23,7 +23,7 @@
 </div>
 
 <div class="card mb-3">
-    <div class="card-header py-2 bg-light fw-semibold small">Sumario</div>
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Sumario</div>
     <div class="card-body p-2">
         <div class="form-group">
             {{form.instrumentolegaldecretos_descripcion.as_field_group}}
@@ -32,7 +32,7 @@
 </div>
 
 <div class="card mb-3">
-    <div class="card-header py-2 bg-light fw-semibold small">Instrumentos legales</div>
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Instrumentos legales</div>
     <div class="card-body p-2">
         <div class="form-group">
             {{form.instrumentolegaldecretos.as_field_group}}
@@ -41,7 +41,7 @@
 </div>
 
 <div class="card mb-3">
-    <div class="card-header py-2 bg-light fw-semibold small">Montos según escalafón</div>
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Montos según escalafón</div>
     <div class="card-body p-2">
     {% for form in montoviaticodiarioformset %}
         <div class="row">

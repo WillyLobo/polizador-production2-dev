@@ -4,7 +4,7 @@
 {% endfor %}
 
 <div class="card mb-3">
-    <div class="card-header py-2 bg-light fw-semibold small">Etapas Proyectadas - {{rubro.rubro_nombre}}</div>
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Etapas Proyectadas - {{rubro.rubro_nombre}}</div>
     <div class="card-body p-2">
     <div class="row mb-2">
         <div class="col-md-6"><b>Rubro:</b> {{rubro.rubro_nombre}}</div>
@@ -50,7 +50,7 @@
                     </tr>
                 {% endfor %}
             </tbody>
-            <tfoot class="table-light fw-bold">
+            <tfoot class="bg-body-tertiary fw-bold">
                 <tr>
                     <td colspan="2">Avance Físico - Por Período</td>
                     {% for columna in columnas %}

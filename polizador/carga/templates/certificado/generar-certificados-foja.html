@@ -11,7 +11,7 @@
 {% endif %}
 
 <div class="card mb-3">
-  <div class="card-header py-2 bg-light fw-semibold small">Generar Certificado{{ filas|length|pluralize }} - Foja N°{{foja.foja_numero}} ({{foja.foja_rubro}})</div>
+  <div class="card-header py-2 bg-body-tertiary fw-semibold small">Generar Certificado{{ filas|length|pluralize }} - Foja N°{{foja.foja_numero}} ({{foja.foja_rubro}})</div>
   <div class="card-body p-3">
     <form method="POST">
       {% csrf_token %}

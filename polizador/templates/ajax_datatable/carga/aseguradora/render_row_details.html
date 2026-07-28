@@ -1,10 +1,10 @@
 {% if object.poliza_set.all %}
 <div class="card">
-    <div class="card-header py-2 bg-light fw-semibold small">Pólizas</div>
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Pólizas</div>
     <div class="card-body p-2">
     <div class="table-responsive">
     <table id="tablaObraPolizas{{object.id}}" class="table table-sm table-bordered table-hover align-middle mb-0 data dataTables_wrapper">
-        <thead class="table-light">
+        <thead class="bg-body-tertiary">
             <tr>
                 <th class="small" scope="col">Poliza</th>
                 <th class="small" scope="col">Expediente Poliza</th>
@@ -24,7 +24,7 @@
                 {% include "partials/polizas-body-partial.html"%}
             {% endfor %}
         </tbody>
-        <tfoot class="table-light fw-semibold">
+        <tfoot class="bg-body-tertiary fw-semibold">
             <tr>
                 <th class="small" scope="col"></th>
                 <th class="small" scope="col"></th>
