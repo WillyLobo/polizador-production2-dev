@@ -1,6 +1,7 @@
 # secretariador app API views
 import json
-from typing import List
+from datetime import datetime, timedelta
+from typing import List, Optional
 
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
@@ -28,6 +29,7 @@ from api.schemas.secretariador_schemas import (
     SolicitudOut, SolicitudCreate,
     ComisionadoSolicitudOut, ComisionadoSolicitudCreate,
     IncorporacionOut, IncorporacionCreate,
+    CalendarEventOut,
 )
 from secretariador.models import (
     ComisionadoSolicitud,
@@ -851,3 +853,89 @@ register_simple_datatable(
     default_order="-incorporacion_actuacion_ano,-incorporacion_actuacion_numero",
     queryset=Incorporacion.objects.select_related("incorporacion_solicitud", "incorporacion_solicitante"),
 )
+
+
+# --- Calendario (eventos para FullCalendar) ---
+_COMISIONADO_SELECT_RELATED = (
+    "comisionadosolicitud_foreign",
+    "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud",
+    "comisionadosolicitud_nombre",
+    "comisionadosolicitud_foreign__solicitud_provincia",
+    "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_provincia",
+)
+
+
+def _comisionado_solicitud_origin(comisionado):
+    if comisionado.comisionadosolicitud_foreign is not None:
+        return comisionado.comisionadosolicitud_foreign
+    return comisionado.comisionadosolicitud_incorporacion_foreign.incorporacion_solicitud
+
+
+def _calendar_event(foreign, title, color=""):
+    return {
+        "title": title,
+        "start": foreign.solicitud_fecha_desde,
+        "end": foreign.solicitud_fecha_hasta,
+        "url": foreign.get_absolute_url(),
+        "backgroundColor": color,
+        "borderColor": color,
+    }
+
+
+def _calendar_events_by_agente(comisionados):
+    # Flags an agente's second (and later) comisión on the same start date as "red".
+    events = []
+    seen = set()
+    for comisionado in comisionados:
+        foreign = _comisionado_solicitud_origin(comisionado)
+        nombre = comisionado.comisionadosolicitud_nombre.agente_nombreyapellido
+        key = (nombre, foreign.solicitud_fecha_desde)
+        color = "red" if key in seen else ""
+        seen.add(key)
+        events.append(_calendar_event(foreign, nombre, color))
+    return events
+
+
+@router.get("/calendario/agente-individual/", response=List[CalendarEventOut])
+@decorate_view(require_model_perm(Solicitud))
+def calendario_eventos_agente_individual(request, agente: int, ano: int):
+    agente_obj = get_object_or_404(Agente, id=agente)
+    comisiones = agente_obj.comisionadosolicitud_set.select_related(
+        *_COMISIONADO_SELECT_RELATED
+    ).filter(
+        Q(comisionadosolicitud_foreign__solicitud_fecha_desde__year=ano)
+        | Q(comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__year=ano)
+    ).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
+
+    events = []
+    for comision in comisiones:
+        foreign = _comisionado_solicitud_origin(comision)
+        events.append(_calendar_event(foreign, foreign.solicitud_actuacion))
+    return events
+
+
+@router.get("/calendario/anual/", response=List[CalendarEventOut])
+@decorate_view(require_model_perm(Solicitud))
+def calendario_eventos_anual(request, ano: int):
+    comisionados = ComisionadoSolicitud.objects.filter(
+        Q(comisionadosolicitud_foreign__solicitud_fecha_desde__year=ano)
+        | Q(comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__year=ano)
+    ).exclude(comisionadosolicitud_foreign__solicitud_anulada=True).select_related(*_COMISIONADO_SELECT_RELATED)
+
+    return _calendar_events_by_agente(comisionados)
+
+
+@router.get("/calendario/semanal/", response=List[CalendarEventOut])
+@decorate_view(require_model_perm(Solicitud))
+def calendario_eventos_semanal(request, agente: Optional[int] = None):
+    today = datetime.today()
+    start_of_week = (today - timedelta(days=today.weekday())).date()
+    end_of_next_week = start_of_week + timedelta(days=13)
+    comisionados = ComisionadoSolicitud.objects.filter(
+        Q(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[start_of_week, end_of_next_week])
+        | Q(comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__range=[start_of_week, end_of_next_week])
+    ).exclude(comisionadosolicitud_foreign__solicitud_anulada=True).select_related(*_COMISIONADO_SELECT_RELATED)
+    if agente:
+        comisionados = comisionados.filter(comisionadosolicitud_nombre_id=agente)
+
+    return _calendar_events_by_agente(comisionados)

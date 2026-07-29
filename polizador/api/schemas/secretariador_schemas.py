@@ -307,3 +307,14 @@ class IncorporacionUpdate(Schema):
     incorporacion_solicitud_id: Optional[int] = None
     incorporacion_solicitante_id: Optional[int] = None
     incorporacion_resolucion_id: Optional[int] = None
+
+
+# === Calendario (FullCalendar events) ===
+class CalendarEventOut(Schema):
+    title: str
+    start: date
+    end: date
+    url: str
+    backgroundColor: str = ""
+    borderColor: str = ""
+    allDay: bool = True

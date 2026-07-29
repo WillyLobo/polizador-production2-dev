@@ -836,3 +836,150 @@ class InstrumentosLegalesDatatableTest(TestCase):
         data = resp.json()
         assert data["recordsTotal"] == 1
         assert data["data"][0]["instrumentolegalresoluciones_acta"] == "10"
+
+
+class CalendarioAPITest(TestCase):
+    """/v1/api/calendario/{agente-individual,anual,semanal}/ — event sources FullCalendar
+    fetches directly from the reportes/*.html templates (see secretariador/views/reportesviews.py)."""
+
+    def setUp(self):
+        from datetime import datetime, timedelta
+
+        from carga.models import Provincia
+        from personalizador.models import Agente, GeneroAgente
+        from secretariador.models import ComisionadoSolicitud, InstrumentosLegalesDecretos, MontoViaticoDiario, Solicitud
+
+        genero = GeneroAgente.objects.create(generoagente_nombre="Test")
+        self.provincia = Provincia.objects.create(id=1, provincia_nombre="Chaco")
+        decreto = InstrumentosLegalesDecretos.objects.create(
+            instrumentolegaldecretos_numero="100", instrumentolegaldecretos_ano="2026",
+        )
+        self.monto_viatico = MontoViaticoDiario.objects.create(montoviaticodiario_decreto_reglamentario=decreto)
+        self.solicitante = Agente.objects.create(
+            agente_nombres="Ana", agente_apellidos="Solicitante",
+            sexo=genero, dni=30111000, cuil="20301110001",
+        )
+        self.juan = Agente.objects.create(
+            agente_nombres="Juan", agente_apellidos="Perez",
+            sexo=genero, dni=30111222, cuil="20301112223",
+        )
+        self.maria = Agente.objects.create(
+            agente_nombres="Maria", agente_apellidos="Gomez",
+            sexo=genero, dni=30222333, cuil="27302223334",
+        )
+
+        def _solicitud(fecha_desde, fecha_hasta, numero, anulada=False):
+            s = Solicitud.objects.create(
+                solicitud_actuacion_ano=int(fecha_desde[:4]), solicitud_actuacion_numero=numero,
+                solicitud_solicitante=self.solicitante, solicitud_provincia=self.provincia,
+                solicitud_decreto_viaticos=self.monto_viatico,
+                solicitud_fecha_desde=fecha_desde, solicitud_fecha_hasta=fecha_hasta,
+                solicitud_tareas="Tarea de prueba", solicitud_dia_inhabil=False, solicitud_anulada=anulada,
+            )
+            s.refresh_from_db()  # solicitud_actuacion es un GeneratedField calculado en DB
+            return s
+
+        def _comisionado(solicitud, agente):
+            return ComisionadoSolicitud.objects.create(
+                comisionadosolicitud_foreign=solicitud, comisionadosolicitud_nombre=agente,
+                comisionadosolicitud_colaborador=False, comisionadosolicitud_chofer=False,
+            )
+
+        # Juan tiene dos comisiones que arrancan el mismo día (2026-01-10): la segunda
+        # debe marcarse en rojo por el helper _calendar_events_by_agente.
+        self.solicitud_juan_1 = _solicitud("2026-01-10", "2026-01-12", 1)
+        self.solicitud_juan_2 = _solicitud("2026-01-10", "2026-01-11", 2)
+        # Comisión anulada: debe quedar excluida de ambos endpoints.
+        self.solicitud_juan_anulada = _solicitud("2026-01-10", "2026-01-10", 3, anulada=True)
+        # Comisión de Juan en 2025: solo debe aparecer al filtrar ano=2025.
+        self.solicitud_juan_2025 = _solicitud("2025-06-01", "2025-06-02", 4)
+        # Comisión de Maria, sin duplicado.
+        self.solicitud_maria = _solicitud("2026-01-15", "2026-01-16", 5)
+
+        _comisionado(self.solicitud_juan_1, self.juan)
+        _comisionado(self.solicitud_juan_2, self.juan)
+        _comisionado(self.solicitud_juan_anulada, self.juan)
+        _comisionado(self.solicitud_juan_2025, self.juan)
+        _comisionado(self.solicitud_maria, self.maria)
+
+        # Comisión "de esta semana" para probar /calendario/semanal/, calculada igual
+        # que la vista (lunes de esta semana .. +13 días) para no depender de la fecha real.
+        today = datetime.today()
+        start_of_week = (today - timedelta(days=today.weekday())).date()
+        self.semana_en_2026 = start_of_week.year == 2026
+        self.solicitud_semana_juan = _solicitud(
+            start_of_week.isoformat(), (start_of_week + timedelta(days=1)).isoformat(), 6,
+        )
+        _comisionado(self.solicitud_semana_juan, self.juan)
+
+        self.anon_client = TestClient(api)
+        self.client = Client()
+        self.user = UserModel.objects.create_user(username="calendario_user", password="pass1234!")
+        self.client.login(username="calendario_user", password="pass1234!")
+        perm = Permission.objects.get(codename="view_solicitud", content_type__app_label="secretariador")
+        self.user.user_permissions.add(perm)
+
+    def test_requires_auth(self):
+        resp = self.anon_client.get("calendario/anual/", params={"ano": 2026})
+        assert resp.status_code == 401
+
+    def test_forbidden_without_permission(self):
+        self.user.user_permissions.clear()
+        resp = self.client.get("/v1/api/calendario/anual/", {"ano": 2026})
+        assert resp.status_code == 403
+
+    def test_anual_excludes_anuladas_and_other_years(self):
+        resp = self.client.get("/v1/api/calendario/anual/", {"ano": 2026})
+        assert resp.status_code == 200
+        data = resp.json()
+        titles_and_starts = {(e["title"], e["start"]) for e in data}
+        assert ("Juan Perez", "2026-01-10") in titles_and_starts
+        assert ("Maria Gomez", "2026-01-15") in titles_and_starts
+        # la anulada y la de 2025 nunca deben colarse; la de "esta semana" solo cuenta si cae en 2026
+        assert not any(e["start"] == "2025-06-01" for e in data)
+        expected_count = 3 + (1 if self.semana_en_2026 else 0)
+        assert len(data) == expected_count
+
+    def test_anual_flags_second_same_day_comision_as_red(self):
+        resp = self.client.get("/v1/api/calendario/anual/", {"ano": 2026})
+        data = resp.json()
+        juan_events = sorted(
+            (e for e in data if e["title"] == "Juan Perez"), key=lambda e: e["url"],
+        )
+        colors = {e["backgroundColor"] for e in juan_events}
+        assert colors == {"", "red"}
+
+    def test_anual_filters_by_ano(self):
+        resp = self.client.get("/v1/api/calendario/anual/", {"ano": 2025})
+        data = resp.json()
+        assert [e["start"] for e in data] == ["2025-06-01"]
+
+    def test_agente_individual_uses_solicitud_actuacion_as_title(self):
+        resp = self.client.get(
+            "/v1/api/calendario/agente-individual/", {"agente": self.juan.id, "ano": 2026},
+        )
+        assert resp.status_code == 200
+        data = resp.json()
+        expected_count = 2 + (1 if self.semana_en_2026 else 0)  # +1 si "esta semana" cae en 2026
+        assert len(data) == expected_count
+        titles = {e["title"] for e in data}
+        assert self.solicitud_juan_1.solicitud_actuacion in titles
+        assert self.solicitud_juan_2.solicitud_actuacion in titles
+
+    def test_agente_individual_404_for_unknown_agente(self):
+        resp = self.client.get(
+            "/v1/api/calendario/agente-individual/", {"agente": 999999, "ano": 2026},
+        )
+        assert resp.status_code == 404
+
+    def test_semanal_returns_current_week_comision(self):
+        resp = self.client.get("/v1/api/calendario/semanal/")
+        assert resp.status_code == 200
+        data = resp.json()
+        assert any(e["url"] == self.solicitud_semana_juan.get_absolute_url() for e in data)
+
+    def test_semanal_filters_by_agente(self):
+        resp = self.client.get("/v1/api/calendario/semanal/", {"agente": self.maria.id})
+        data = resp.json()
+        assert all(e["title"] == "Maria Gomez" for e in data)
+        assert not any(e["url"] == self.solicitud_semana_juan.get_absolute_url() for e in data)
