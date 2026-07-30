@@ -6,7 +6,7 @@ from django.contrib.auth import views as auth_views
 from django.views.generic.base import TemplateView
 from carga.views.inspeccionviews import InspeccionHomeView
 from django.contrib.auth.decorators import login_required
-from core.views import SchemaDocsView, schema_docs_asset
+from core.views import DashboardView, SchemaDocsView, schema_docs_asset
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="index.html")),
@@ -19,6 +19,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("select2/", include("django_select2.urls")),
     path("home/", InspeccionHomeView.as_view(), name="home"),
+    path("administracion/dashboard/", DashboardView.as_view(), name="dashboard"),
     path("administracion/schema/", SchemaDocsView.as_view(), name="schema_docs"),
     path("administracion/schema/<path:path>", schema_docs_asset, name="schema_docs_asset"),
 ]

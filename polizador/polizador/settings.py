@@ -36,6 +36,12 @@ DBUSER=env("DBUSER")
 DBNAME=env("DBNAME")
 DBSECRET=env("DBPASSWORD")
 SENTRY_DSN=env("SENTRY_DSN")
+# Optional: only needed for the dashboard's "system health" tile, which reads
+# recent issues back from the Sentry Web API (separate from the DSN above,
+# which only lets the SDK *send* events). Left unset locally.
+SENTRY_AUTH_TOKEN=env("SENTRY_AUTH_TOKEN", default=None)
+SENTRY_ORG=env("SENTRY_ORG", default=None)
+SENTRY_PROJECT=env("SENTRY_PROJECT", default=None)
 MAILGUN_API_KEY=env("MAILGUN_API_KEY")
 MAILGUN_SENDER_DOMAIN=env("MAILGUN_SENDER_DOMAIN")
 

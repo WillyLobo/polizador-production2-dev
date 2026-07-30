@@ -60,6 +60,20 @@ def get_optional_perms(*perms):
     return decorator
 
 
+def require_superuser(func):
+    """Gate an endpoint to superusers only, e.g. the dashboard's aggregate endpoints."""
+
+    @wraps(func)
+    def wrapper(request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            return JsonResponse({"detail": "Authentication required"}, status=401)
+        if not request.user.is_superuser:
+            return JsonResponse({"detail": "Superuser access required"}, status=403)
+        return func(request, *args, **kwargs)
+
+    return wrapper
+
+
 def get_group_perms(*groups):
     def decorator(func):
         @wraps(func)
