@@ -1,5 +1,9 @@
 from carga import models
+from django.conf import settings
 from django.db.models import Sum, F
+
+def debug_mode(request):
+    return {"DEBUG": settings.DEBUG}
 
 def user_groups_processor(request):
     """ Crea un contexto con los grupos del usuario para ser usado en los templates permitiendo verificar permisos por grupo."""
