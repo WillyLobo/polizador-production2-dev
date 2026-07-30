@@ -11,11 +11,11 @@ def user_groups_processor(request):
 
 def imglinks(request):
     return {
-        "detalleimglink" : "<img class='img-small' src='/static/images/search.svg' title='Ver Detalle'/>",
-        "editimglink" : "<img class='img-small' src='/static/images/pencil-square.svg' title='Editar' />",
-        "pdfimglink" : "<img class='img-small' src='/static/images/filetype-pdf.svg' title='Descargar PDF' />",
-        "eliminarimglink" : "<img class='img-small' src='/static/images/trash3.svg' title='Eliminar' />",
-        "nofileimglink" : "<img class='img-small' src='/static/images/file-x.svg' title='' />",
-        "imprimirimglink" : "<img class='img-small' src='/static/images/printer.svg' title='Imprimir' />",
-        "agregarimglink" : "<img src='/static/images/clipboard-plus.svg' title='Agregar' width='30' heigth='30' />",
+        "detalleimglink" : "<i class='bi bi-search' title='Ver Detalle'></i>",
+        "editimglink" : "<i class='bi bi-pencil-square' title='Editar'></i>",
+        "pdfimglink" : "<i class='bi bi-filetype-pdf' title='Descargar PDF'></i>",
+        "eliminarimglink" : "<i class='bi bi-trash3' title='Eliminar'></i>",
+        "nofileimglink" : "<i class='bi bi-file-x' title=''></i>",
+        "imprimirimglink" : "<i class='bi bi-printer' title='Imprimir'></i>",
+        "agregarimglink" : "<i class='bi bi-clipboard-plus' title='Agregar'></i>",
         }

@@ -38,7 +38,7 @@
                         {% if form.instance.pk %}
                             <div class="col-1 pb-1">
                                 <label for="id-eliminar-{{form.instance.pk|stringformat:'s'}}">Eliminar</label><br>
-                                <img src='/static/images/trash3.svg' id="id-eliminar-{{form.instance.pk|stringformat:'s'}}" title='Eliminar' style='width: 3em;height: 3em;' data-bs-toggle="modal" data-bs-target="#eliminarModal-{{form.instance.pk|stringformat:'s'}}" />
+                                <i class="bi bi-trash3" id="id-eliminar-{{form.instance.pk|stringformat:'s'}}" title="Eliminar" style="font-size: 3em; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#eliminarModal-{{form.instance.pk|stringformat:'s'}}"></i>
                                 <!-- Modal -->
                                 <div class="modal fade" id="eliminarModal-{{form.instance.pk|stringformat:'s'}}" tabindex="-1" role="dialog" aria-labelledby="eliminarModalLabel-{{form.instance.pk|stringformat:'s'}}" aria-hidden="true">
                                     <div class="modal-dialog" role="document">
@@ -57,7 +57,7 @@
                             {% else %}
                             <div class="col-1 pb-1">
                                 <label for="id-eliminar-{{form.prefix}}">Eliminar</label><br>
-                                <img src='/static/images/trash3.svg' id="id-eliminar-{{form.prefix}}" title='Eliminar' style='width: 3em;height: 3em;' onclick="eliminarComisionado('{{form.prefix}}')"/>
+                                <i class="bi bi-trash3" id="id-eliminar-{{form.prefix}}" title="Eliminar" style="font-size: 3em; cursor: pointer;" onclick="eliminarComisionado('{{form.prefix}}')"></i>
                             </div>
                         {% endif %}
                     {% endif %}
@@ -103,7 +103,7 @@
         <!-- Eliminar fila -->
         <div class="col-1 pb-1">
             <label for="id-eliminar-comisionadosolicitud_set-__prefix__">Eliminar</label><br>
-            <img src='/static/images/trash3.svg' id="id-eliminar-comisionadosolicitud_set-__prefix__" title='Eliminar' style='width: 3em;height: 3em;' onclick="eliminarComisionado('comisionadosolicitud_set-__prefix__')"/>
+            <i class="bi bi-trash3" id="id-eliminar-comisionadosolicitud_set-__prefix__" title="Eliminar" style="font-size: 3em; cursor: pointer;" onclick="eliminarComisionado('comisionadosolicitud_set-__prefix__')"></i>
         </div>
     </div>
 </div>
