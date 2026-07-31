@@ -60,6 +60,7 @@ class obrawidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
         "obra_nombre__icontains",
         "obra_empresa__empresa_nombre__icontains",
         "obra_convenio__icontains",
+        "obra_expediente__icontains",
     ]
 
 class conjuntowidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):

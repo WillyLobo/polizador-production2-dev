@@ -1,4 +1,5 @@
 import json
+from collections import defaultdict
 
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.gis.db.models.functions import Transform
@@ -7,11 +8,32 @@ from django.core.exceptions import PermissionDenied
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render
 
-from gdu.models import Barrios, Viviendas
+from gdu.matching import normalizar_expediente
+from gdu.models import Barrios, ObraContratacion, Viviendas
 
 MAP_SRID = 3857  # como la manda ol/loadingstrategy/bbox, para el filtro espacial
 GEOJSON_SRID = 4326  # GeoJSON (RFC 7946) siempre es WGS84; ol.format.GeoJSON asume esto al reproyectar
 MAX_FEATURES_POR_CAPA = 3000
+
+
+def _obras_por_expediente():
+    """
+    {expediente normalizado de la contratación: [(obra_id, obra_nombre), ...]} para poder
+    resolver, a partir del campo `expediente` que ya traen las vistas del mapa
+    (Viviendas/Barrios), a qué carga.Obra corresponde — sin repetir el matching por
+    capa (ver gdu/management/commands/vincular_obras_contrataciones.py). Una misma
+    contratación puede estar vinculada a varias obras (ej. un proyecto grande dividido
+    en "Grupo 1"/"Grupo 2" como obras separadas en carga que comparten expediente), así
+    que la clave mapea a una lista, no a una sola obra.
+    """
+    resultado = defaultdict(list)
+    for obra_id, obra_nombre, expediente in ObraContratacion.objects.select_related(
+        "obra", "contratacion"
+    ).values_list("obra_id", "obra__obra_nombre", "contratacion__expediente"):
+        clave = normalizar_expediente(expediente)
+        if clave is not None:
+            resultado[clave].append({"id": obra_id, "nombre": obra_nombre})
+    return resultado
 
 
 def _bbox_polygon(request):
@@ -63,16 +85,22 @@ def geojson_viviendas(request):
         .filter(geom_web__intersects=bbox)
         [:MAX_FEATURES_POR_CAPA]
     )
-    data = _feature_collection(qs, lambda v: {
-        "id": v.id,
-        "uf": v.uf,
-        "obra": v.obra,
-        "localidad": v.localidad,
-        "adjudicacion": v.adjudicacion,
-        "nro_adjudicatario": v.nro_adjudicatario,
-        "estado_dominial": v.estado_dominial,
-        "planos": v.planos,
-    })
+    obras_por_expediente = _obras_por_expediente()
+
+    def propiedades(v):
+        return {
+            "id": v.id,
+            "uf": v.uf,
+            "obra": v.obra,
+            "localidad": v.localidad,
+            "adjudicacion": v.adjudicacion,
+            "nro_adjudicatario": v.nro_adjudicatario,
+            "estado_dominial": v.estado_dominial,
+            "planos": v.planos,
+            "obras": obras_por_expediente.get(normalizar_expediente(v.expediente), []),
+        }
+
+    data = _feature_collection(qs, propiedades)
     return JsonResponse(data)
 
 
@@ -88,10 +116,16 @@ def geojson_barrios(request):
         .filter(geom_web__intersects=bbox)
         [:MAX_FEATURES_POR_CAPA]
     )
-    data = _feature_collection(qs, lambda b: {
-        "id": b.id,
-        "barrio": b.barrio,
-        "localidad": b.localidad,
-        "programa": b.programa,
-    })
+    obras_por_expediente = _obras_por_expediente()
+
+    def propiedades(b):
+        return {
+            "id": b.id,
+            "barrio": b.barrio,
+            "localidad": b.localidad,
+            "programa": b.programa,
+            "obras": obras_por_expediente.get(normalizar_expediente(b.expediente), []),
+        }
+
+    data = _feature_collection(qs, propiedades)
     return JsonResponse(data)

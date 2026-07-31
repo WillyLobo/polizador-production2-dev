@@ -50,6 +50,20 @@
                     <div class="col-5 text-muted small fw-semibold">Expediente</div>
                     <div class="col-7 small">{{object.obra_expediente}}</div>
                 </div>
+                {% if perms.gdu.view_contratacion %}
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Contratación (Catastro)</div>
+                    <div class="col-7 small">
+                        {% with contratacion=object.gdu_contratacion.contratacion %}
+                        {% if contratacion %}
+                            {{contratacion.expediente}} — {{contratacion.nombre|default_if_none:"—"}} ({{contratacion.ano|stringformat:"d"}})
+                        {% else %}
+                            <span class="text-muted fst-italic">Sin vincular</span>
+                        {% endif %}
+                        {% endwith %}
+                    </div>
+                </div>
+                {% endif %}
                 <div class="row g-1 mb-1">
                     <div class="col-5 text-muted small fw-semibold">Compulsa</div>
                     <div class="col-7 small">{{object.get_obra_licitacion_tipo_display}} N°{{object.obra_licitacion_numero}}/{{object.obra_licitacion_ano}}</div>

@@ -15,6 +15,12 @@ def lista_contrataciones(request):
 
 
 @login_required
+@permission_required("gdu.view_contratacion", raise_exception=True)
+def lista_contrataciones_sin_obra(request):
+    return render(request, "gdu/lista-contrataciones-sin-obra.html", {})
+
+
+@login_required
 @permission_required("gdu.view_intervencion", raise_exception=True)
 def lista_intervenciones(request):
     return render(request, "gdu/lista-intervenciones.html", {})

@@ -31,6 +31,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const barriosUrl = "{% url 'gdu:geojson_barrios' %}";
   const viviendasUrl = "{% url 'gdu:geojson_viviendas' %}";
   const planoUrl = "{% url 'gdu:plano' %}";
+  const estadoObraBaseUrl = "{% url 'carga:estado-obra' pk=0 %}";
   const printUrl = "{% url 'gdu:imprimir' %}";
   const consultar3450Url = "{% url 'gdu:consultar_3450' %}";
   const actualizarNroAdjBaseUrl = "{% url 'gdu:actualizar_nro_adjudicatario' uf_id=0 %}";
@@ -151,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const esVivienda = viviendasLayer.getSource().getFeatures().indexOf(feature) !== -1;
       html += `<div class="border rounded p-2 mb-2" data-idx="${idx}"><dl class="mb-0">`;
       for (const key in props) {
-        if (key === "geometry" || key === "planos") continue;
+        if (key === "geometry" || key === "planos" || key === "obras") continue;
         html += `<dt>${key}</dt><dd>${props[key] !== null && props[key] !== undefined ? props[key] : "-"}</dd>`;
       }
       html += "</dl>";
@@ -160,6 +161,14 @@ document.addEventListener("DOMContentLoaded", function () {
         props.planos.split(",").map(function (p) { return p.trim(); }).filter(Boolean).forEach(function (ref) {
           const url = planoUrl + "?plano=" + encodeURIComponent(ref);
           html += `<a href="${url}" target="_blank" class="badge text-bg-secondary text-decoration-none me-1 mb-1">${ref}</a>`;
+        });
+        html += "</div>";
+      }
+      if (props.obras && props.obras.length) {
+        html += '<div class="mt-1 d-flex flex-column gap-1">';
+        props.obras.forEach(function (obra) {
+          const url = estadoObraBaseUrl.replace(/\/0$/, "/" + obra.id);
+          html += `<a href="${url}" target="_blank" class="btn btn-sm btn-outline-primary">Ver obra${obra.nombre ? ": " + obra.nombre : ""}</a>`;
         });
         html += "</div>";
       }

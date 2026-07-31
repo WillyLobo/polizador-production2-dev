@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}<title>GDU - Contrataciones sin obra</title>{% endblock %}
+{% block content %}
+<div class="min-vh-100">
+  <div class="card">
+    <div class="card-header py-2 bg-light fw-semibold small">Contrataciones sin obra vinculada</div>
+    <div class="card-body p-2">
+      <p class="small text-muted mb-2">Hacé click en una fila para buscar y vincular la obra correspondiente.</p>
+      <div class="table-responsive">
+        <table id="tableContratacionesSinObra" width="auto" class="table table-striped table-bordered align-middle mb-0"></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script language="javascript">
+  $(document).ready(function() {
+      var columns = [
+          { data: 'nombre', name: 'nombre', title: 'Nombre' },
+          { data: 'expediente', name: 'expediente', title: 'Expediente' },
+          { data: 'resolucion', name: 'resolucion', title: 'Resolución' },
+          { data: 'ano', name: 'ano', title: 'Año' },
+          { data: 'tipo', name: 'tipo', title: 'Tipo' },
+          { data: 'actuacion', name: 'actuacion', title: 'Actuación' },
+          {
+              data: 'programa', name: 'programa', title: 'Programa',
+              filterType: 'select', filterChoicesUrl: '/v1/api/datatables/gdu-contrataciones-sin-obra/filtro-programa/',
+          },
+      ];
+
+      var table = NinjaDatatableUtils.initialize_table(
+          $('#tableContratacionesSinObra'),
+          '/v1/api/datatables/gdu-contrataciones-sin-obra/',
+          columns,
+          {
+              order: [[0, 'asc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/gdu-contrataciones-sin-obra/{id}/detalle/',
+          },
+      );
+
+      // Click en "Vincular esta obra" dentro de la fila expandida (gdu/_contratacion_sin_obra_detail.html).
+      $(document).on('click', '.vincular-esta-obra-btn', function () {
+          var $wrapper = $(this).closest('.contratacion-sin-obra-detail');
+          var url = $wrapper.data('vincular-url');
+          var token = $wrapper.find('[name=csrfmiddlewaretoken]').val();
+          var obraId = $(this).data('obra-id');
+
+          $.ajax({
+              url: url,
+              method: 'POST',
+              data: { obra: obraId, csrfmiddlewaretoken: token },
+              dataType: 'json',
+          }).done(function (resp) {
+              if (resp.ok) {
+                  table.ajax.reload(null, false);
+              } else {
+                  alert(resp.error || 'No se pudo vincular.');
+              }
+          }).fail(function () {
+              alert('No se pudo vincular.');
+          });
+      });
+  });
+</script>
+{% endblock %}

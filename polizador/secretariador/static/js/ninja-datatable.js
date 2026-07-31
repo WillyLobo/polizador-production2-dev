@@ -24,6 +24,13 @@ window.NinjaDatatableUtils = (function() {
     // (equivalente a "full_row_select" + _load_row_details() en ajax_datatable/js/utils.js).
     function _bind_row_expand(table, detailUrl) {
         table.on('click', 'td', function(event) {
+            // Si el detalle de una fila expandida contiene su propia tabla anidada
+            // (ver gdu/_contratacion_sin_obra_detail.html), el click ahí también
+            // bubblea hasta acá por delegación: se ignora, porque la celda clickeada
+            // no pertenece a esta tabla sino a la anidada.
+            if ($(event.target).closest('table')[0] !== table.table().node()) {
+                return;
+            }
             var tr = $(this).closest('tr');
             if (tr.hasClass('details') && !$(event.target).hasClass('btn-close')) {
                 return;

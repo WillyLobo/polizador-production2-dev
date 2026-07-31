@@ -2,11 +2,14 @@
 import json
 
 from django.db.models import Q
+from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from ninja import Router
 from ninja.decorators import decorate_view
 
 from api.permissions import require_model_perm
 from api.views.generics import parse_order_by, register_simple_datatable
+from carga.models import Obra
 from gdu.models import (
     AdjudicacionBeneficiario,
     Adjudicatario3450,
@@ -88,6 +91,100 @@ register_simple_datatable(
     search_lookups=["nombre__icontains", "expediente__icontains", "resolucion__icontains"],
     row_builder=_contratacion_row,
     default_order="nombre",
+)
+
+
+# --- Contratacion sin obra vinculada (gdu.ObraContratacion) ---
+def _contratacion_sin_obra_row(c: Contratacion, user) -> dict:
+    row = _contratacion_row(c, user)
+    row["programa"] = c.id_actuacion.id_programa.nombre if c.id_actuacion and c.id_actuacion.id_programa else ""
+    return row
+
+
+register_simple_datatable(
+    router, Contratacion, "gdu-contrataciones-sin-obra",
+    queryset=Contratacion.objects.filter(obras_vinculadas__isnull=True).select_related(
+        "id_actuacion__id_programa", "tipo",
+    ),
+    order_fields={
+        "id": "id", "nombre": "nombre", "expediente": "expediente", "resolucion": "resolucion",
+        "ano": "ano", "tipo": "tipo__nombre", "actuacion": "id_actuacion__nombre",
+        "programa": "id_actuacion__id_programa__nombre",
+    },
+    filter_fields={
+        "nombre": "nombre__icontains", "expediente": "expediente__icontains",
+        "resolucion": "resolucion__icontains", "tipo": "tipo__nombre__icontains",
+        "actuacion": "id_actuacion__nombre__icontains",
+        "programa": "id_actuacion__id_programa_id",
+    },
+    search_lookups=["nombre__icontains", "expediente__icontains", "resolucion__icontains"],
+    row_builder=_contratacion_sin_obra_row,
+    default_order="nombre",
+    with_detail=False,
+)
+
+
+@router.get("/datatables/gdu-contrataciones-sin-obra/filtro-programa/")
+@decorate_view(require_model_perm(Contratacion))
+def datatable_gdu_contrataciones_sin_obra_filtro_programa(request):
+    choices = (
+        Contratacion.objects.filter(obras_vinculadas__isnull=True)
+        .exclude(id_actuacion__id_programa=None)
+        .values_list("id_actuacion__id_programa_id", "id_actuacion__id_programa__nombre")
+        .distinct()
+        .order_by("id_actuacion__id_programa__nombre")
+    )
+    return {"choices": list(choices)}
+
+
+@router.get("/datatables/gdu-contrataciones-sin-obra/{id}/detalle/")
+@decorate_view(require_model_perm(Contratacion))
+def datatable_gdu_contrataciones_sin_obra_detalle(request, id: int):
+    """Fila expandida de gdu-contrataciones-sin-obra: en vez del dump genérico de
+    render_datatable_row_details, muestra la tabla anidada de gdu-obras-para-vincular
+    (gdu/_contratacion_sin_obra_detail.html) para elegir y vincular la obra ahí mismo."""
+    contratacion = get_object_or_404(Contratacion, id=id)
+    html = render_to_string(
+        "gdu/_contratacion_sin_obra_detail.html", {"contratacion": contratacion}, request=request,
+    )
+    return {"html": html}
+
+
+# --- Obra (carga) sin contratación vinculada, para elegir desde gdu-contrataciones-sin-obra ---
+def _obra_para_vincular_row(o: Obra, user) -> dict:
+    row = {
+        "id": o.id,
+        "nombre": o.obra_nombre,
+        "expediente": o.obra_expediente,
+        "empresa": o.obra_empresa.empresa_nombre if o.obra_empresa else "",
+        "programa": o.obra_programa.programa_nombre if o.obra_programa else "",
+        "acciones": "",
+    }
+    if user.has_perm("gdu.add_obracontratacion"):
+        row["acciones"] = (
+            f'<button type="button" class="btn btn-sm btn-outline-primary vincular-esta-obra-btn" '
+            f'data-obra-id="{o.id}">Vincular esta obra</button>'
+        )
+    return row
+
+
+register_simple_datatable(
+    router, Obra, "gdu-obras-para-vincular",
+    queryset=Obra.objects.filter(gdu_contratacion__isnull=True).select_related("obra_empresa", "obra_programa"),
+    order_fields={
+        "id": "id", "nombre": "obra_nombre", "expediente": "obra_expediente",
+        "empresa": "obra_empresa__empresa_nombre", "programa": "obra_programa__programa_nombre",
+    },
+    filter_fields={
+        "nombre": "obra_nombre__icontains", "expediente": "obra_expediente__icontains",
+        "empresa": "obra_empresa__empresa_nombre__icontains", "programa": "obra_programa_id",
+    },
+    search_lookups=[
+        "obra_nombre__icontains", "obra_expediente__icontains", "obra_empresa__empresa_nombre__icontains",
+    ],
+    row_builder=_obra_para_vincular_row,
+    default_order="nombre",
+    with_detail=False,
 )
 
 

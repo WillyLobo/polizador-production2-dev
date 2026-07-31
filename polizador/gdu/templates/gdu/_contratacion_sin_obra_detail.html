@@ -1,0 +1,29 @@
+<div class="contratacion-sin-obra-detail p-2" data-vincular-url="{% url 'gdu:vincular_obra' contratacion_id=contratacion.id %}">
+    {% csrf_token %}
+    <p class="small text-muted mb-2">Buscá la obra correspondiente al expediente <strong>{{contratacion.expediente|default_if_none:"—"}}</strong> y hacé click en "Vincular esta obra".</p>
+    <div class="table-responsive">
+        <table id="tableObrasParaVincular-{{contratacion.id|stringformat:"d"}}" width="auto" class="table table-sm table-striped table-bordered align-middle mb-0"></table>
+    </div>
+</div>
+
+<script>
+(function () {
+    var columns = [
+        { data: 'nombre', name: 'nombre', title: 'Nombre' },
+        { data: 'expediente', name: 'expediente', title: 'Expediente' },
+        { data: 'empresa', name: 'empresa', title: 'Empresa' },
+        {
+            data: 'programa', name: 'programa', title: 'Programa',
+            filterType: 'select', filterChoicesUrl: '/v1/api/datatables/obras-extendida/filtro-programa/',
+        },
+        { data: 'acciones', name: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+    ];
+
+    NinjaDatatableUtils.initialize_table(
+        $('#tableObrasParaVincular-{{contratacion.id|stringformat:"d"}}'),
+        '/v1/api/datatables/gdu-obras-para-vincular/',
+        columns,
+        { order: [[0, 'asc']], lengthMenu: [[10, 25, 50], [10, 25, 50]] },
+    );
+})();
+</script>
