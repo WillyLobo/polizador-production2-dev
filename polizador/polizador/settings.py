@@ -44,6 +44,12 @@ SENTRY_ORG=env("SENTRY_ORG", default=None)
 SENTRY_PROJECT=env("SENTRY_PROJECT", default=None)
 MAILGUN_API_KEY=env("MAILGUN_API_KEY")
 MAILGUN_SENDER_DOMAIN=env("MAILGUN_SENDER_DOMAIN")
+# Credenciales del usuario institucional en gobiernodigital.chaco.gob.ar, usadas por
+# secretariador/management/commands/sync_resoluciones_sgt.py para descargar
+# Instrumentos Legales desde el SGT. Sin valor por defecto: el comando falla explícitamente
+# si no están configuradas.
+SGT_USERNAME = env("SGT_USERNAME", default=None)
+SGT_PASSWORD = env("SGT_PASSWORD", default=None)
 
 if DEBUG == False:
     sentry_sdk.init(
