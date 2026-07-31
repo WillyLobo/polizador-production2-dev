@@ -9,7 +9,7 @@
 
     {# ─── Índice ─── #}
     <div class="card mb-4">
-        <div class="card-header py-2 bg-light fw-semibold small">Índice</div>
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">Índice</div>
         <div class="card-body p-2">
             <ol class="small mb-0">
                 <li><a href="#conceptos">Antes de empezar: los 4 tipos de Certificado</a></li>
@@ -25,7 +25,7 @@
 
     {# ─── Conceptos ─── #}
     <div class="card mb-4" id="conceptos">
-        <div class="card-header py-2 bg-light fw-semibold small">Antes de empezar: los 4 tipos de Certificado</div>
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">Antes de empezar: los 4 tipos de Certificado</div>
         <div class="card-body p-3">
             <p>Un Certificado es el documento de pago de una obra. El sistema soporta cuatro caminos para generarlo, según de dónde salga el % que se está certificando. Se accede a los cuatro desde <strong>Obras → Nuevo Certificado</strong> en la barra superior:</p>
             <img src="{% static 'carga/img/ayuda/certificados/01-navbar-nuevo-certificado.png' %}" class="img-fluid border rounded mb-3" alt="Menú Obras de la barra de navegación, con la opción Nuevo Certificado">
@@ -41,7 +41,7 @@
 
     {# ─── Parcial de Obra ─── #}
     <div class="card mb-4" id="parcial">
-        <div class="card-header py-2 bg-light fw-semibold small">Certificado Parcial de Obra (desde una Foja de Medición)</div>
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">Certificado Parcial de Obra (desde una Foja de Medición)</div>
         <div class="card-body p-3">
             <p>Es el flujo principal: se usa cada vez que ya se cargó la Foja de Medición del mes (ver el <a href="{% url 'carga:ayuda-plan-fojas' %}">Manual de Obras, Plan de Trabajos y Fojas</a>). En la ficha de la obra, hacé clic en el enlace <strong>"Cert."</strong> que aparece junto a la Foja:</p>
             <img src="{% static 'carga/img/ayuda/certificados/00-obra-ficha-foja-cert-link.png' %}" class="img-fluid border rounded mb-3" alt="Tabla de Fojas de Medición en la ficha de la obra, con el enlace Cert. junto a la Foja">
@@ -69,7 +69,7 @@
 
     {# ─── Anticipo ─── #}
     <div class="card mb-4" id="anticipo">
-        <div class="card-header py-2 bg-light fw-semibold small">Certificado de Anticipo</div>
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">Certificado de Anticipo</div>
         <div class="card-body p-3">
             <p>Desde <strong>Nuevo Certificado → Certificado de Anticipo</strong>. Elegí la <strong>Obra</strong> y el <strong>Financiamiento</strong>, y cargá el <strong>% de Anticipo</strong> sobre el monto de contrato de ese financiamiento (todos los rubros/contratos de la obra para ese financiamiento, no un rubro puntual):</p>
             <img src="{% static 'carga/img/ayuda/certificados/09-certificado-anticipo-form-completo.png' %}" class="img-fluid border rounded mb-3" alt="Formulario de Certificado de Anticipo completo">
@@ -86,7 +86,7 @@
 
     {# ─── Hecho Consumado ─── #}
     <div class="card mb-4" id="hechoconsumado">
-        <div class="card-header py-2 bg-light fw-semibold small">Certificado por Hecho Consumado</div>
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">Certificado por Hecho Consumado</div>
         <div class="card-body p-3">
             <p>Desde <strong>Nuevo Certificado → Certificado por Hecho Consumado</strong>. A diferencia del Parcial, este certifica directo contra un <strong>Contrato/Resolución de Origen</strong> puntual (por ejemplo, una redeterminación o un reconocimiento de trabajos), no contra el contrato vigente de la obra ni contra una Foja. Elegí la Obra, el Contrato/Resolución de Origen, el Financiamiento, el Rubro presupuestario y el <strong>% Certificado</strong>:</p>
             <img src="{% static 'carga/img/ayuda/certificados/11-certificado-hechoconsumado-form-completo.png' %}" class="img-fluid border rounded mb-3" alt="Formulario de Certificado por Hecho Consumado completo">
@@ -103,7 +103,7 @@
 
     {# ─── Manual / Legacy ─── #}
     <div class="card mb-4" id="manual">
-        <div class="card-header py-2 bg-light fw-semibold small">Certificado manual / legacy</div>
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">Certificado manual / legacy</div>
         <div class="card-body p-3">
             <p>Desde <strong>Nuevo Certificado → Certificado manual / legacy</strong> (requiere el permiso <code>carga.add_certificado</code>). No hay ningún cálculo automático: se cargan a mano la Obra, el Rubro y Financiamiento, los números de Anticipo/Obra/Devolución de Anticipo, la Actuación y Período, los Porcentajes y los Montos:</p>
             <img src="{% static 'carga/img/ayuda/certificados/13-certificado-manual-form-obra-rubro.png' %}" class="img-fluid border rounded mb-3" alt="Formulario de Certificado manual: secciones Obra, Rubro y Actuación y Período">
@@ -123,7 +123,7 @@
 
     {# ─── Resultado ─── #}
     <div class="card mb-4" id="resultado">
-        <div class="card-header py-2 bg-light fw-semibold small">Resultado final</div>
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">Resultado final</div>
         <div class="card-body p-3">
             <p>Todos los certificados de una obra, sin importar por cuál de los cuatro caminos se generaron, terminan en la misma tabla <strong>"Certificados Emitidos"</strong> de su ficha, con sus totales acumulados:</p>
             <img src="{% static 'carga/img/ayuda/certificados/15-obra-ficha-certificados-emitidos-completo.png' %}" class="img-fluid border rounded" alt="Tabla Certificados Emitidos con los cuatro tipos de certificado y sus totales">
@@ -132,7 +132,7 @@
 
     {# ─── FAQ ─── #}
     <div class="card mb-4" id="faq">
-        <div class="card-header py-2 bg-light fw-semibold small">Preguntas frecuentes y errores comunes</div>
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">Preguntas frecuentes y errores comunes</div>
         <div class="card-body p-3">
             <dl class="mb-0">
                 <dt>La previsualización desde la Foja dice "No hay certificados nuevos para generar con esta Foja".</dt>

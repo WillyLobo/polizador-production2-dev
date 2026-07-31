@@ -12,25 +12,11 @@ from django.views.decorators.cache import cache_page
 from datetime import datetime, timedelta
 
 
-def _comisiones_list_from_queryset(comisionados):
-    # Flags an agente's second (and later) comisión on the same start date as "red".
-    comisiones_list = []
-    seen = set()
-    for comisionado in comisionados:
-        foreign = comisionado.comisionadosolicitud_foreign if comisionado.comisionadosolicitud_foreign is not None else comisionado.comisionadosolicitud_incorporacion_foreign.incorporacion_solicitud
-        nombre = comisionado.comisionadosolicitud_nombre.agente_nombreyapellido
-        key = (nombre, foreign.solicitud_fecha_desde)
-        color = "red" if key in seen else ""
-        seen.add(key)
-        comisiones_list.append([
-            nombre,
-            foreign.solicitud_fecha_desde,
-            foreign.solicitud_fecha_hasta,
-            foreign.get_absolute_url(),
-            color,
-            color,
-        ])
-    return comisiones_list
+def _anos_disponibles():
+    # Años con al menos una solicitud, para poblar los <select name="ano"> de los
+    # reportes de calendario en vez de hardcodear un rango fijo de años.
+    return [d.year for d in Solicitud.objects.dates("solicitud_fecha_desde", "year", order="DESC")]
+
 
 @method_decorator(login_required, name="dispatch")
 class PDFMergeTemplateView(PermissionRequiredMixin, generic.TemplateView):
@@ -304,115 +290,65 @@ class CrearReporteComisionesDuplicadas(PermissionRequiredMixin, generic.ListView
         return final_queryset
 
 @method_decorator(login_required, name="dispatch")
-class CrearReporteViaticosPorAgenteIndividual(PermissionRequiredMixin, generic.ListView):
+class CrearReporteViaticosPorAgenteIndividual(PermissionRequiredMixin, generic.TemplateView):
+    # Los eventos del calendario los trae el propio FullCalendar desde
+    # /v1/api/calendario/agente-individual/ (ver api/views/secretariador_views.py);
+    # esta vista solo arma el shell de filtros con los valores ya elegidos.
     permission_required = "secretariador.view_solicitud"
 
-    model = Agente
-    context_object_name = "solicitud"
     template_name = "reportes/crear-reporteviaticosporagenteindividual.html"
-	
-    def get_queryset(self):
-        if self.request.GET:
-            agente = get_object_or_404(Agente, id=self.request.GET.get("agente"))
-            #agente = Agente.objects.get(id=self.request.GET.get("agente"))
-            ano = self.request.GET.get("ano")
-            comisiones = agente.comisionadosolicitud_set.select_related(
-                "comisionadosolicitud_foreign",
-                "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud",
-                "comisionadosolicitud_foreign__solicitud_provincia",
-                "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_provincia"
-                ).filter(
-                    Q(comisionadosolicitud_foreign__solicitud_fecha_desde__year=ano) |
-                    Q(comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__year=ano)
-                ).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
-        else:
-            agente, comisiones, ano = None, None, None
 
-        # title: "{{solicitud.comisionadosolicitud_foreign.solicitud_actuacion}}",
-        # start: "{{solicitud.comisionadosolicitud_foreign.solicitud_fecha_desde|date:'Y-m-d'}}",
-        # end: "{{solicitud.comisionadosolicitud_foreign.solicitud_fecha_hasta|date:'Y-m-d'}}",
-        # url: "{% url 'secretariador:update-solicitud' solicitud.comisionadosolicitud_foreign.id %}",
-        
-        comisiones_list = []
-        if comisiones is not None:
-            for comision in comisiones:
-                foreign = comision.comisionadosolicitud_foreign if comision.comisionadosolicitud_foreign is not None else comision.comisionadosolicitud_incorporacion_foreign.incorporacion_solicitud
-                comisiones_list.append([
-                        foreign.solicitud_actuacion,
-                        foreign.solicitud_fecha_desde,
-                        foreign.solicitud_fecha_hasta,
-                        foreign.get_absolute_url(),
-                ])
-
-        initial_date = str(ano)+"-01-01" if ano is not None else str(datetime.today().year)+"-01-01"
-        final_queryset = {}
-        final_queryset.update({
-            "initial_date": initial_date,
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        agente_id = self.request.GET.get("agente")
+        ano = self.request.GET.get("ano") or datetime.today().year
+        agente = get_object_or_404(Agente, id=agente_id) if agente_id else None
+        context.update({
+            "initial_date": f"{ano}-01-01",
+            "ano": str(ano),
             "agente": agente,
-            "comisiones": comisiones_list,
+            "anos_disponibles": _anos_disponibles(),
         })
-
-        return final_queryset
+        return context
 
 @method_decorator(login_required, name="dispatch")
-class CalendarioSemanal(PermissionRequiredMixin, generic.ListView):
+class CalendarioSemanal(PermissionRequiredMixin, generic.TemplateView):
+    # Los eventos del calendario los trae el propio FullCalendar desde
+    # /v1/api/calendario/semanal/ (ver api/views/secretariador_views.py);
+    # esta vista solo arma el shell de filtros con los valores ya elegidos.
     permission_required = "secretariador.view_solicitud"
 
-    model = Agente
-    context_object_name = "solicitud"
     template_name = "reportes/calendario-semanal.html"
-	
-    def get_queryset(self):
-        today = datetime.today()
-        start_of_week = (today - timedelta(days=today.weekday())).date()
-        end_of_next_week = start_of_week + timedelta(days=13)
-        comisionados = ComisionadoSolicitud.objects.filter(
-                Q(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[start_of_week, end_of_next_week]) |
-                Q(comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__range=[start_of_week, end_of_next_week])
-            ).exclude(comisionadosolicitud_foreign__solicitud_anulada=True).select_related(
-                "comisionadosolicitud_foreign",
-                "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud",
-                "comisionadosolicitud_nombre",
-                "comisionadosolicitud_foreign__solicitud_provincia",
-                "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_provincia",
-            )
 
-        comisiones_list = _comisiones_list_from_queryset(comisionados)
-
-        initial_date = today.strftime("%Y-%m-%d")
-        return {
-            "initial_date": initial_date,
-            "comisiones": comisiones_list,
-        }
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        agente_id = self.request.GET.get("agente")
+        agente = get_object_or_404(Agente, id=agente_id) if agente_id else None
+        context.update({
+            "initial_date": datetime.today().strftime("%Y-%m-%d"),
+            "agente": agente,
+        })
+        return context
 
 @method_decorator(login_required, name="dispatch")
-class CalendarioAnual(PermissionRequiredMixin, generic.ListView):
+class CalendarioAnual(PermissionRequiredMixin, generic.TemplateView):
+    # Los eventos del calendario los trae el propio FullCalendar desde
+    # /v1/api/calendario/anual/ (ver api/views/secretariador_views.py);
+    # esta vista solo arma el shell de filtros con los valores ya elegidos.
     permission_required = "secretariador.view_solicitud"
 
-    model = Agente
-    context_object_name = "solicitud"
     template_name = "reportes/calendario-anual.html"
-	
-    def get_queryset(self):
-        ano = self.request.GET.get("ano") if self.request.GET.get("ano") is not None else datetime.today().year
-        comisionados = ComisionadoSolicitud.objects.filter(
-                Q(comisionadosolicitud_foreign__solicitud_fecha_desde__year=ano) |
-                Q(comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__year=ano)
-            ).exclude(comisionadosolicitud_foreign__solicitud_anulada=True).select_related(
-            "comisionadosolicitud_foreign",
-            "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud",
-            "comisionadosolicitud_nombre",
-            "comisionadosolicitud_foreign__solicitud_provincia",
-            "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_provincia"
-            )
 
-        comisiones_list = _comisiones_list_from_queryset(comisionados)
-
-        final_queryset = {}
-
-        initial_date = datetime.today().strftime("%Y-%m-%d")
-        final_queryset.update({
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        ano_param = self.request.GET.get("ano")
+        ano = ano_param or datetime.today().year
+        # Sin filtro explícito de año, arranca en la semana actual; si se eligió
+        # un año puntual, arranca desde el 1° de enero de ese año.
+        initial_date = f"{ano}-01-01" if ano_param else datetime.today().strftime("%Y-%m-%d")
+        context.update({
             "initial_date": initial_date,
-            "comisiones": comisiones_list,
+            "ano": str(ano),
+            "anos_disponibles": _anos_disponibles(),
         })
-        return final_queryset
+        return context

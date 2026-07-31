@@ -3,7 +3,7 @@
 
     <div class="col-md-6">
         <div class="card h-100">
-            <div class="card-header py-2 bg-light fw-semibold small d-flex justify-content-between align-items-center">
+            <div class="card-header py-2 bg-body-tertiary fw-semibold small d-flex justify-content-between align-items-center">
                 Datos Generales
                 {% if perms.carga.change_obra %}
                 <a href="{% url "carga:update-obra" object.id %}" class="btn btn-sm btn-outline-secondary py-0">Editar</a>
@@ -44,7 +44,7 @@
 
     <div class="col-md-6">
         <div class="card h-100">
-            <div class="card-header py-2 bg-light fw-semibold small">Administrativo</div>
+            <div class="card-header py-2 bg-body-tertiary fw-semibold small">Administrativo</div>
             <div class="card-body p-2">
                 <div class="row g-1 mb-1">
                     <div class="col-5 text-muted small fw-semibold">Expediente</div>
@@ -92,11 +92,11 @@
 
 {# ─── Sección 2: Montos ─── #}
 <div class="card mb-3">
-    <div class="card-header py-2 bg-light fw-semibold small">Montos</div>
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Montos</div>
     <div class="card-body p-2">
         <div class="row g-2 mb-3">
             <div class="col-md-4">
-                <div class="border rounded p-2 bg-light h-100">
+                <div class="border rounded p-2 bg-body-tertiary h-100">
                     <div class="small fw-semibold text-center border-bottom mb-2 pb-1">Total Contrato</div>
                     <div class="row g-1 mb-1">
                         <div class="col-5 text-muted small">Pesos</div>
@@ -109,7 +109,7 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="border rounded p-2 bg-light h-100">
+                <div class="border rounded p-2 bg-body-tertiary h-100">
                     <div class="small fw-semibold text-center border-bottom mb-2 pb-1">Nación</div>
                     <div class="row g-1 mb-1">
                         <div class="col-5 text-muted small">Pesos</div>
@@ -126,7 +126,7 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="border rounded p-2 bg-light h-100">
+                <div class="border rounded p-2 bg-body-tertiary h-100">
                     <div class="small fw-semibold text-center border-bottom mb-2 pb-1">Provincia</div>
                     <div class="row g-1 mb-1">
                         <div class="col-5 text-muted small">Pesos</div>
@@ -170,7 +170,7 @@
 
 {# ─── Sección 3: Montos de Contrato ─── #}
 <div class="card mb-3">
-    <div class="card-header py-2 bg-light fw-semibold small">Montos de Contrato</div>
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Montos de Contrato</div>
     <div class="card-body p-2">
         {% for contrato in object.contrato_set.all %}
         <div class="border rounded p-2 {% if not forloop.last %}mb-2{% endif %}">
@@ -205,7 +205,7 @@
             </div>
             {% if contrato.contratomonto_set.all %}
             <table class="table table-sm table-bordered table-hover mb-0">
-                <thead class="table-light">
+                <thead class="bg-body-tertiary">
                     <tr>
                         <th class="small">Rubro</th>
                         <th class="small">Financiamiento</th>
@@ -236,7 +236,7 @@
 
 {# ─── Sección 4: Plan de Trabajos y Fojas de Medición ─── #}
 <div class="card mb-3">
-    <div class="card-header py-2 bg-light fw-semibold small">Plan de Trabajos y Fojas de Medición</div>
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Plan de Trabajos y Fojas de Medición</div>
     <div class="card-body p-2">
         {% with vigente=object.plan_vigente %}
 
@@ -280,7 +280,7 @@
                         <thead class="table-dark">
                             <tr>
                                 {% if rubro.items.all %}
-                                <th class="small" style="position:sticky;left:0;z-index:3;background-color:#212529;">Ítem</th>
+                                <th class="small" style="position:sticky;left:0;z-index:3;background-color:var(--bs-table-bg);">Ítem</th>
                                 <th class="small text-center" style="white-space:nowrap;">Inc.%</th>
                                 {% endif %}
                                 {% for etapa in rubro.etapas.all %}
@@ -295,7 +295,7 @@
                         <tbody>
                             {% for item in rubro.items.all %}
                             <tr>
-                                <td class="small" style="position:sticky;left:0;z-index:1;background-color:white;white-space:nowrap;">{{item.planitem_nombre}}</td>
+                                <td class="small" style="position:sticky;left:0;z-index:1;background-color:var(--bs-card-bg);white-space:nowrap;">{{item.planitem_nombre}}</td>
                                 <td class="small text-center">{{item.planitem_incidencia_pct}}%</td>
                                 {% for etapa in rubro.etapas.all %}
                                 <td class="small text-center">
@@ -306,10 +306,10 @@
                             {% endfor %}
                         </tbody>
                         {% endif %}
-                        <tfoot class="table-light fw-semibold">
+                        <tfoot class="bg-body-tertiary fw-semibold">
                             <tr>
                                 {% if rubro.items.all %}
-                                <td class="small" colspan="2" style="position:sticky;left:0;z-index:1;background-color:#f8f9fa;white-space:nowrap;">% del Mes</td>
+                                <td class="small" colspan="2" style="position:sticky;left:0;z-index:1;background-color:var(--bs-table-bg);white-space:nowrap;">% del Mes</td>
                                 {% else %}
                                 <td class="small" style="white-space:nowrap;">% del Mes</td>
                                 {% endif %}
@@ -319,7 +319,7 @@
                             </tr>
                             <tr>
                                 {% if rubro.items.all %}
-                                <td class="small" colspan="2" style="position:sticky;left:0;z-index:1;background-color:#f8f9fa;white-space:nowrap;">% Acumulado</td>
+                                <td class="small" colspan="2" style="position:sticky;left:0;z-index:1;background-color:var(--bs-table-bg);white-space:nowrap;">% Acumulado</td>
                                 {% else %}
                                 <td class="small" style="white-space:nowrap;">% Acumulado</td>
                                 {% endif %}
@@ -330,7 +330,7 @@
                             {% if rubro.monto_base_pesos %}
                             <tr>
                                 {% if rubro.items.all %}
-                                <td class="small" colspan="2" style="position:sticky;left:0;z-index:1;background-color:#f8f9fa;white-space:nowrap;">Inversión $</td>
+                                <td class="small" colspan="2" style="position:sticky;left:0;z-index:1;background-color:var(--bs-table-bg);white-space:nowrap;">Inversión $</td>
                                 {% else %}
                                 <td class="small" style="white-space:nowrap;">Inversión $</td>
                                 {% endif %}
@@ -344,7 +344,7 @@
                             {% if rubro.monto_base_uvi %}
                             <tr>
                                 {% if rubro.items.all %}
-                                <td class="small" colspan="2" style="position:sticky;left:0;z-index:1;background-color:#f8f9fa;white-space:nowrap;">Inversión UVI</td>
+                                <td class="small" colspan="2" style="position:sticky;left:0;z-index:1;background-color:var(--bs-table-bg);white-space:nowrap;">Inversión UVI</td>
                                 {% else %}
                                 <td class="small" style="white-space:nowrap;">Inversión UVI</td>
                                 {% endif %}
@@ -377,7 +377,7 @@
                         <thead class="table-primary">
                             <tr>
                                 {% if rubro.items.all %}
-                                <th class="small" style="position:sticky;left:0;z-index:3;background-color:#9ec5fe;">Ítem</th>
+                                <th class="small" style="position:sticky;left:0;z-index:3;background-color:var(--bs-table-bg);">Ítem</th>
                                 <th class="small text-center" style="white-space:nowrap;">Inc.%</th>
                                 {% endif %}
                                 {% for foja in rubro.fojas.all %}
@@ -402,7 +402,7 @@
                         <tbody>
                             {% for item in rubro.items.all %}
                             <tr>
-                                <td class="small" style="position:sticky;left:0;z-index:1;background-color:white;white-space:nowrap;">{{item.planitem_nombre}}</td>
+                                <td class="small" style="position:sticky;left:0;z-index:1;background-color:var(--bs-card-bg);white-space:nowrap;">{{item.planitem_nombre}}</td>
                                 <td class="small text-center">{{item.planitem_incidencia_pct}}%</td>
                                 {% for foja in rubro.fojas.all %}
                                 <td class="small text-center">
@@ -413,10 +413,10 @@
                             {% endfor %}
                         </tbody>
                         {% endif %}
-                        <tfoot class="table-light fw-semibold">
+                        <tfoot class="bg-body-tertiary fw-semibold">
                             <tr>
                                 {% if rubro.items.all %}
-                                <td class="small" colspan="2" style="position:sticky;left:0;z-index:1;background-color:#f8f9fa;white-space:nowrap;">% Avance Mes</td>
+                                <td class="small" colspan="2" style="position:sticky;left:0;z-index:1;background-color:var(--bs-table-bg);white-space:nowrap;">% Avance Mes</td>
                                 {% else %}
                                 <td class="small" style="white-space:nowrap;">% Avance Mes</td>
                                 {% endif %}
@@ -426,7 +426,7 @@
                             </tr>
                             <tr>
                                 {% if rubro.items.all %}
-                                <td class="small" colspan="2" style="position:sticky;left:0;z-index:1;background-color:#f8f9fa;white-space:nowrap;">% Acumulado</td>
+                                <td class="small" colspan="2" style="position:sticky;left:0;z-index:1;background-color:var(--bs-table-bg);white-space:nowrap;">% Acumulado</td>
                                 {% else %}
                                 <td class="small" style="white-space:nowrap;">% Acumulado</td>
                                 {% endif %}
@@ -436,7 +436,7 @@
                             </tr>
                             <tr>
                                 {% if rubro.items.all %}
-                                <td class="small" colspan="2" style="position:sticky;left:0;z-index:1;background-color:#f8f9fa;white-space:nowrap;">Inspector</td>
+                                <td class="small" colspan="2" style="position:sticky;left:0;z-index:1;background-color:var(--bs-table-bg);white-space:nowrap;">Inspector</td>
                                 {% else %}
                                 <td class="small" style="white-space:nowrap;">Inspector</td>
                                 {% endif %}
@@ -486,14 +486,14 @@
 {% with documentos_contrato=object.documentos_contrato.all documentos_obra=object.documentos_obra.all %}
 {% if documentos_contrato or documentos_obra or perms.carga.add_obradocumento %}
 <div class="card mb-3">
-    <div class="card-header py-2 bg-light fw-semibold small">Documentación Digital</div>
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Documentación Digital</div>
     <div class="card-body p-2">
 
         {% if documentos_contrato %}
         <div class="mb-3">
             <div class="small fw-semibold text-muted mb-1">Contratos</div>
             <table class="table table-sm table-bordered table-hover mb-0">
-                <thead class="table-light">
+                <thead class="bg-body-tertiary">
                     <tr>
                         <th class="small">Rubro</th>
                         <th class="small">Descripción</th>
@@ -530,7 +530,7 @@
             <div class="small fw-semibold text-muted mb-1">Obra</div>
             {% if documentos_obra %}
             <table class="table table-sm table-bordered table-hover mb-2">
-                <thead class="table-light">
+                <thead class="bg-body-tertiary">
                     <tr>
                         <th class="small">Descripción</th>
                         <th></th>
@@ -574,7 +574,7 @@
 {# ─── Sección 6: Certificados Emitidos ─── #}
 {% if object.certificado_set.all %}
 <div class="card mb-3">
-    <div class="card-header py-2 bg-light fw-semibold small">Certificados Emitidos</div>
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Certificados Emitidos</div>
     <div class="card-body p-2">
         {% include "partials/lista-certificado-partial.html" %}
     </div>

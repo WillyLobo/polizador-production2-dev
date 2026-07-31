@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}<title>Dashboard | Polizador</title>{% endblock title %}
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="container-fluid">
+  <h3 class="mb-3"><i class="bi bi-speedometer2 me-2"></i>Dashboard</h3>
+
+  <!-- KPIs -->
+  <div class="row g-3 mb-4">
+    <div class="col-sm-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h6 class="card-subtitle text-muted mb-1">Inicios de sesión hoy</h6>
+          <p class="card-text fs-3 mb-0">{{ login_summary.today }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h6 class="card-subtitle text-muted mb-1">Inicios de sesión (7 días)</h6>
+          <p class="card-text fs-3 mb-0">{{ login_summary.week }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-sm-4">
+      <div class="card h-100">
+        <div class="card-body">
+          <h6 class="card-subtitle text-muted mb-1"><i class="bi bi-bug me-1"></i>Errores sin resolver (Sentry, 14 días)</h6>
+          {% if sentry_health %}
+          <p class="card-text fs-3 mb-0">{{ sentry_health.unresolved_count }}</p>
+          {% else %}
+          <p class="card-text text-muted mb-0">No configurado</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% if sentry_health.top_issues %}
+  <div class="card mb-4">
+    <div class="card-body">
+      <h6 class="card-title">Principales issues (Sentry)</h6>
+      <ul class="list-unstyled mb-0">
+        {% for issue in sentry_health.top_issues %}
+        <li><a href="{{ issue.url }}" target="_blank" rel="noopener">{{ issue.title }}</a> <span class="text-muted">({{ issue.count }})</span></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- Database status -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h6 class="card-title mb-3"><i class="bi bi-hdd-stack me-1"></i>Estado de la base de datos</h6>
+      <div class="row g-3 mb-3">
+        <div class="col-6 col-md-2">
+          <div class="text-muted small">Tamaño</div>
+          <div class="fs-5">{{ db_health.size }}</div>
+        </div>
+        <div class="col-6 col-md-2">
+          <div class="text-muted small">Conexiones activas</div>
+          <div class="fs-5">{{ db_health.active_connections }}</div>
+        </div>
+        <div class="col-6 col-md-2">
+          <div class="text-muted small">Cache hit ratio</div>
+          <div class="fs-5">{{ db_health.cache_hit_ratio }}%</div>
+        </div>
+        <div class="col-6 col-md-2">
+          <div class="text-muted small">Commits (acum.)</div>
+          <div class="fs-5">{{ db_health.commits }}</div>
+        </div>
+        <div class="col-6 col-md-2">
+          <div class="text-muted small">Rollbacks (acum.)</div>
+          <div class="fs-5">{{ db_health.rollbacks }}</div>
+        </div>
+        <div class="col-6 col-md-2">
+          <div class="text-muted small">Deadlocks</div>
+          <div class="fs-5">{{ db_health.deadlocks }}</div>
+        </div>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-sm mb-0">
+          <thead>
+            <tr>
+              <th>Tabla más grande</th>
+              <th>Tamaño</th>
+              <th>Filas vivas</th>
+              <th>Filas muertas</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for t in db_health.top_tables %}
+            <tr>
+              <td>{{ t.name }}</td>
+              <td>{{ t.size }}</td>
+              <td>{{ t.live_rows }}</td>
+              <td>{{ t.dead_rows }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Login activity -->
+  <div class="card mb-4">
+    <div class="card-body">
+      <h6 class="card-title">Actividad de inicios de sesión (30 días)</h6>
+      <canvas id="loginChart" height="80"></canvas>
+    </div>
+  </div>
+
+  <!-- Per-app tabs -->
+  <ul class="nav nav-tabs mb-3" id="dashboardTabs" role="tablist">
+    {% for app in apps %}
+    <li class="nav-item" role="presentation">
+      <button class="nav-link {% if forloop.first %}active{% endif %}" id="tab-{{ app.app_label }}-btn"
+              data-bs-toggle="tab" data-bs-target="#tab-{{ app.app_label }}" type="button" role="tab">
+        {{ app.display }}
+      </button>
+    </li>
+    {% endfor %}
+  </ul>
+
+  <div class="tab-content">
+    {% for app in apps %}
+    <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="tab-{{ app.app_label }}" role="tabpanel">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h6 class="card-title">Registros creados por mes</h6>
+          <canvas id="throughput-{{ app.app_label }}" height="80"></canvas>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <h6 class="card-title">Últimos cambios</h6>
+          <div class="table-responsive">
+            <table class="table table-sm table-hover mb-0">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Usuario</th>
+                  <th>Acción</th>
+                  <th>Modelo</th>
+                  <th>Objeto</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for entry in app.changes %}
+                <tr>
+                  <td>{{ entry.fecha }}</td>
+                  <td>{{ entry.usuario|default:"—" }}</td>
+                  <td>{{ entry.tipo }}</td>
+                  <td>{{ entry.modelo }}</td>
+                  <td>{{ entry.objeto }}</td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-muted">Sin cambios recientes.</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const palette = ["#0d6efd", "#198754", "#fd7e14", "#6f42c1", "#dc3545"];
+
+  fetch("/v1/api/dashboard/logins/", {credentials: "same-origin"})
+    .then(r => r.json())
+    .then(data => {
+      new Chart(document.getElementById("loginChart"), {
+        type: "line",
+        data: {
+          labels: data.series.map(p => p.period),
+          datasets: [{
+            label: "Inicios de sesión",
+            data: data.series.map(p => p.total),
+            borderColor: palette[0],
+            tension: 0.2,
+          }],
+        },
+        options: {responsive: true, plugins: {legend: {display: false}}},
+      });
+    });
+
+  {% for app in apps %}
+  fetch("/v1/api/dashboard/throughput/{{ app.app_label }}/", {credentials: "same-origin"})
+    .then(r => r.json())
+    .then(data => {
+      const labels = new Set();
+      Object.values(data.series).forEach(points => points.forEach(p => labels.add(p.period)));
+      const sortedLabels = Array.from(labels).sort();
+
+      const datasets = Object.entries(data.series).map(([modelLabel, points], i) => {
+        const byPeriod = Object.fromEntries(points.map(p => [p.period, p.total]));
+        return {
+          label: modelLabel,
+          data: sortedLabels.map(period => byPeriod[period] || 0),
+          backgroundColor: palette[i % palette.length],
+        };
+      });
+
+      new Chart(document.getElementById("throughput-{{ app.app_label }}"), {
+        type: "bar",
+        data: {labels: sortedLabels, datasets: datasets},
+        options: {responsive: true, scales: {x: {stacked: true}, y: {stacked: true}}},
+      });
+    });
+  {% endfor %}
+});
+</script>
+{% endblock content %}

@@ -6,6 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     {% load static %}
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+    <!-- Set color theme before CSS loads, to avoid a flash of the wrong theme -->
+    <script>
+      (function () {
+        var stored = localStorage.getItem("theme");
+        var theme = stored || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        document.documentElement.setAttribute("data-bs-theme", theme);
+      })();
+    </script>
     <!-- JQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/ui/1.13.3/jquery-ui.min.js" integrity="sha256-sw0iNNXmOJbQhYFuC9OF2kOlD5KQKe1y5lfBn4C9Sjg=" crossorigin="anonymous"></script>
@@ -66,7 +74,7 @@
   </div>
   {% endif %}
 
-  <div class="min-vh-100 flex-grow-1 bg-white d-flex flex-column justify-content-center align-items-stretch content py-2">
+  <div class="min-vh-100 flex-grow-1 bg-body d-flex flex-column justify-content-center align-items-stretch content py-2">
     {% block style %}   {%endblock%}
     {% block content %} {% endblock %}
   </div>
