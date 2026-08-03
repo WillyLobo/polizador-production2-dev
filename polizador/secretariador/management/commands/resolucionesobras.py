@@ -266,7 +266,7 @@ class Command(BaseCommand):
             numero, _acta, ano = match.groups()
             queryset = InstrumentosLegalesResoluciones.objects.filter(
                 instrumentolegalresoluciones_tipo="D",
-                instrumentolegalresoluciones_numero=numero.zfill(5),
+                instrumentolegalresoluciones_numero=int(numero),
                 instrumentolegalresoluciones_ano=ano,
             )
         else:
@@ -276,7 +276,7 @@ class Command(BaseCommand):
             numero, ano = match.groups()
             queryset = InstrumentosLegalesResoluciones.objects.filter(
                 instrumentolegalresoluciones_tipo="P",
-                instrumentolegalresoluciones_numero=numero.zfill(5),
+                instrumentolegalresoluciones_numero=int(numero),
                 instrumentolegalresoluciones_ano=ano,
             )
 
@@ -342,7 +342,7 @@ class Command(BaseCommand):
 
         return {
             "tipo": tipo,
-            "numero": numero.zfill(5),
+            "numero": int(numero),
             "acta": acta,
             "ano": ano,
             "fecha_aprobacion": fecha_aprobacion or timezone.now().date(),

@@ -200,7 +200,7 @@ class Command(BaseCommand):
             start_time = time.perf_counter()
             filename = os.path.basename(file)
             filename = filename.replace(".pdf", "")
-            res_number = str(int(filename.split(".")[0].split(" ")[1])).zfill(4) # Convert to int so we can be sure is the correct number, and then to string, then fill with zero to 4 digits.
+            res_number = int(filename.split(".")[0].split(" ")[1])
             res_year = "2022"
 
             file_object = File(open(file, "rb"))

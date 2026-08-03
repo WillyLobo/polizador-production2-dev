@@ -92,13 +92,6 @@ class InstrumentosLegalesDecretosForm(BaseFormMixin, forms.ModelForm):
         self.fields['instrumentolegaldecretos_tipo'].initial = "P"
         self.fields['instrumentolegaldecretos_ano'].initial = datetime.now().year
 
-    def clean(self):
-        cleaned_data = super().clean()
-        numero = cleaned_data.get("instrumentolegaldecretos_numero")
-        if numero:
-            cleaned_data["instrumentolegaldecretos_numero"] = numero.zfill(5)
-        return cleaned_data
-
 class InstrumentosLegalesResolucionesPresidenciaForm(BaseFormMixin, forms.ModelForm):
     class Meta:
         model = InstrumentosLegalesResoluciones
@@ -140,18 +133,11 @@ class InstrumentosLegalesResolucionesPresidenciaForm(BaseFormMixin, forms.ModelF
             }),
         }
 
-    def clean(self):
-        cleaned_data = super().clean()
-        numero = cleaned_data.get("instrumentolegalresoluciones_numero")
-        if numero:
-            cleaned_data["instrumentolegalresoluciones_numero"] = numero.zfill(5)
-        return cleaned_data
-
     def __init__(self, *args, **kwargs):
         super(type(self), self).__init__(*args, **kwargs)
         self.fields['instrumentolegalresoluciones_tipo'].initial = "P"
         self.fields['instrumentolegalresoluciones_ano'].initial = datetime.now().year
-    
+
 class InstrumentosLegalesResolucionesDirectorioForm(BaseFormMixin, forms.ModelForm):
     class Meta:
         model = InstrumentosLegalesResoluciones
@@ -196,13 +182,6 @@ class InstrumentosLegalesResolucionesDirectorioForm(BaseFormMixin, forms.ModelFo
                 "readonly":"readonly"
             }),
         }
-
-    def clean(self):
-        cleaned_data = super().clean()
-        numero = cleaned_data.get("instrumentolegalresoluciones_numero")
-        if numero:
-            cleaned_data["instrumentolegalresoluciones_numero"] = numero.zfill(5)
-        return cleaned_data
 
     def __init__(self, *args, **kwargs):
         super(type(self), self).__init__(*args, **kwargs)

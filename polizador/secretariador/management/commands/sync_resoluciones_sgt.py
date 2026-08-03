@@ -137,22 +137,14 @@ class Command(BaseCommand):
             filas = self._listar_resoluciones(page)
             self.stdout.write(f"    {len(filas)} resoluciones aprobadas encontradas en el SGT.")
 
-            # Comparar por substring (equivalente a __icontains) en vez de por igualdad exacta:
-            # los registros locales cargados a mano suelen tener el número con zfill (p.ej.
-            # "0004"), mientras que el SGT siempre lo reporta sin relleno ("4"). zfill solo
-            # agrega ceros a la IZQUIERDA, así que el número del SGT queda como sufijo del
-            # número local acolchado.
             existentes_por_ano = {}
             for numero, ano in InstrumentosLegalesResoluciones.objects.values_list(
                 "instrumentolegalresoluciones_numero", "instrumentolegalresoluciones_ano"
             ):
-                existentes_por_ano.setdefault(str(ano), []).append(str(numero))
+                existentes_por_ano.setdefault(str(ano), set()).add(numero)
 
             def _ya_existe(fila):
-                return any(
-                    fila["numero"] in numero_local
-                    for numero_local in existentes_por_ano.get(fila["ano"], [])
-                )
+                return int(fila["numero"]) in existentes_por_ano.get(fila["ano"], set())
 
             faltantes = [fila for fila in filas if not _ya_existe(fila)]
             self.stdout.write(
@@ -371,7 +363,7 @@ class Command(BaseCommand):
             defaults["instrumentolegalresoluciones_fecha_aprobacion"] = fecha
 
         instrumento, created = InstrumentosLegalesResoluciones.objects.get_or_create(
-            instrumentolegalresoluciones_numero=fila["numero"],
+            instrumentolegalresoluciones_numero=int(fila["numero"]),
             instrumentolegalresoluciones_ano=fila["ano"],
             instrumentolegalresoluciones_acta="",
             defaults=defaults,

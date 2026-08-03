@@ -293,7 +293,7 @@ register_simple_datatable(
 
 # --- Resoluciones (Presidencia + Directorio mezcladas) datatable ---
 def _resolucion_numero_completo(r: InstrumentosLegalesResoluciones) -> str:
-    partes = [r.instrumentolegalresoluciones_numero]
+    partes = [str(r.instrumentolegalresoluciones_numero)]
     if r.instrumentolegalresoluciones_tipo == "D" and r.instrumentolegalresoluciones_acta:
         partes.append(r.instrumentolegalresoluciones_acta)
     partes.append(r.instrumentolegalresoluciones_ano)

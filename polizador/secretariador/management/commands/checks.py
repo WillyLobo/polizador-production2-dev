@@ -14,6 +14,6 @@ class Command(BaseCommand):
             numero_de_objeto = 1
 
             for _ in range(0, int(InstrumentosLegalesResoluciones.objects.filter(instrumentolegalresoluciones_ano=ano).first().instrumentolegalresoluciones_numero)):
-                if not InstrumentosLegalesResoluciones.objects.filter(instrumentolegalresoluciones_ano=ano, instrumentolegalresoluciones_numero=str(numero_de_objeto).zfill(5)).exists():
+                if not InstrumentosLegalesResoluciones.objects.filter(instrumentolegalresoluciones_ano=ano, instrumentolegalresoluciones_numero=numero_de_objeto).exists():
                     print(f"La Resolución Nº{numero_de_objeto}/{ano} no existe")
                 numero_de_objeto += 1
