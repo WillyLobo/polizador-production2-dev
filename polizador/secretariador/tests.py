@@ -1,12 +1,15 @@
 import io
+import tempfile
 import zipfile
-from datetime import datetime
+import zlib
+from datetime import date, datetime
 from pathlib import Path
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
-from django.test import TestCase
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import TestCase, override_settings
 from django.urls import reverse
 
 from secretariador.docx_header import inject_header, tiene_encabezado_valido
@@ -158,3 +161,213 @@ class ReportesCalendarioViewsTest(TestCase):
         self.assertIn('value="2023"', content)
         self.assertIn('value="2026"', content)
         self.assertNotIn('value="2099"', content)
+
+
+# --- Empaquetado vía GCS compose (gcs_zip.py) ---------------------------------
+#
+# compose() no está disponible sin credenciales/red reales (ya se probó en vivo
+# contra el bucket de producción bajo un prefijo scratch, ver la conversación),
+# así que estos tests usan un bucket/blob falsos que simulan compose() como una
+# concatenación de bytes en memoria — exactamente lo que hace GCS — para poder
+# validar de forma hermética y rápida que el ZIP resultante es válido.
+
+class _BlobFalso:
+    def __init__(self, store, name):
+        self._store = store
+        self.name = name
+        self.content_type = None
+
+    @property
+    def size(self):
+        return len(self._store[self.name])
+
+    def reload(self):
+        pass
+
+    def upload_from_string(self, data, content_type=None):
+        self._store[self.name] = data
+        self.content_type = content_type
+
+    def compose(self, sources):
+        self._store[self.name] = b"".join(self._store[s.name] for s in sources)
+
+    def delete(self):
+        self._store.pop(self.name, None)
+
+
+class _BucketFalso:
+    def __init__(self):
+        self.store = {}
+
+    def blob(self, name):
+        return _BlobFalso(self.store, name)
+
+    def set_content(self, name, content):
+        self.store[name] = content
+
+
+class GCSZipComposerTest(TestCase):
+    """Prueba secretariador/gcs_zip.py sin tocar GCS de verdad: el bucket falso
+    implementa compose() como concatenación de bytes en memoria, que es
+    exactamente lo que hace la API real, así que ejercita el mismo código
+    (incluido el árbol de reducción cuando hay más de 32 fuentes)."""
+
+    def setUp(self):
+        self.bucket = _BucketFalso()
+
+    def _crear_entrada(self, nombre, contenido):
+        from secretariador.gcs_zip import EntradaZip
+
+        blob = self.bucket.blob(f"instrumentoslegales/resoluciones/{nombre}")
+        self.bucket.set_content(blob.name, contenido)
+        return EntradaZip(
+            nombre_archivo=nombre, tamano=len(contenido), crc32=zlib.crc32(contenido), blob_origen=blob,
+            date_time=(2026, 3, 5, 0, 0, 0),
+        )
+
+    def test_componer_zip_simple(self):
+        from secretariador.gcs_zip import componer_zip, limpiar_temporales
+
+        entradas = [
+            self._crear_entrada("1-2026-P.pdf", b"contenido de la primera resolucion"),
+            self._crear_entrada("2-2026-P.pdf", b"contenido de la segunda resolucion, mas largo"),
+        ]
+
+        destino, temporales = componer_zip(self.bucket, entradas, "paquetes/destino.zip", "scratch")
+
+        with zipfile.ZipFile(io.BytesIO(self.bucket.store[destino.name])) as zf:
+            self.assertIsNone(zf.testzip())
+            self.assertEqual(zf.namelist(), ["1-2026-P.pdf", "2-2026-P.pdf"])
+            self.assertEqual(zf.read("1-2026-P.pdf"), b"contenido de la primera resolucion")
+            self.assertEqual(zf.read("2-2026-P.pdf"), b"contenido de la segunda resolucion, mas largo")
+
+        limpiar_temporales(temporales)
+        # Los headers, el directorio central y los intermedios de compose se
+        # borraron; el destino y los blobs originales de las resoluciones
+        # (nunca están en `temporales`) siguen ahí.
+        self.assertEqual(
+            set(self.bucket.store.keys()),
+            {destino.name, *(e.blob_origen.name for e in entradas)},
+        )
+
+    def test_componer_zip_con_mas_de_32_fuentes_usa_arbol_de_compose(self):
+        from secretariador.gcs_zip import MAX_FUENTES_POR_COMPOSE, componer_zip
+
+        # 40 entradas -> 2*40 + 1 (directorio central) = 81 piezas, fuerza más
+        # de una ronda del árbol de reducción (límite de 32 fuentes/compose).
+        cantidad = 40
+        self.assertGreater(2 * cantidad + 1, MAX_FUENTES_POR_COMPOSE)
+        entradas = [
+            self._crear_entrada(f"{i:02d}-2026-P.pdf", f"contenido resolucion {i}".encode())
+            for i in range(cantidad)
+        ]
+
+        destino, _temporales = componer_zip(self.bucket, entradas, "paquetes/destino.zip", "scratch")
+
+        with zipfile.ZipFile(io.BytesIO(self.bucket.store[destino.name])) as zf:
+            self.assertIsNone(zf.testzip())
+            # El orden de las entradas en el zip tiene que sobrevivir al árbol
+            # de reducción, no solo el conjunto.
+            self.assertEqual(zf.namelist(), [f"{i:02d}-2026-P.pdf" for i in range(cantidad)])
+            for i, entrada in enumerate(entradas):
+                self.assertEqual(zf.read(entrada.nombre_archivo), f"contenido resolucion {i}".encode())
+
+    def test_nombre_no_ascii_lanza_error_antes_de_componer(self):
+        from secretariador.gcs_zip import componer_zip
+
+        entrada = self._crear_entrada("año-2026-P.pdf", b"contenido")
+        with self.assertRaises(ValueError):
+            componer_zip(self.bucket, [entrada], "paquetes/destino.zip", "scratch")
+
+
+class EmpaquetarResolucionesMensualCommandTest(TestCase):
+    """Pruebas de la lógica pura del comando de cron (sin tocar GCS)."""
+
+    def test_mes_anterior_dentro_del_mismo_ano(self):
+        from secretariador.management.commands.empaquetar_resoluciones_mensual import _mes_anterior
+
+        self.assertEqual(_mes_anterior(date(2026, 8, 3)), (2026, 7))
+
+    def test_mes_anterior_cruzando_ano(self):
+        from secretariador.management.commands.empaquetar_resoluciones_mensual import _mes_anterior
+
+        self.assertEqual(_mes_anterior(date(2026, 1, 15)), (2025, 12))
+
+    def test_armar_paquetes_agrupa_respetando_tamano_maximo(self):
+        from secretariador.gcs_zip import EntradaZip
+        from secretariador.management.commands.empaquetar_resoluciones_mensual import _armar_paquetes
+
+        entradas = [
+            EntradaZip(nombre_archivo=f"{i}.pdf", tamano=10, crc32=0, blob_origen=None)
+            for i in range(5)
+        ]
+
+        paquetes = _armar_paquetes(entradas, tamano_maximo=25)
+
+        self.assertEqual([len(p) for p in paquetes], [2, 2, 1])
+
+    def test_armar_paquetes_entrada_mas_grande_que_el_maximo_queda_sola(self):
+        from secretariador.gcs_zip import EntradaZip
+        from secretariador.management.commands.empaquetar_resoluciones_mensual import _armar_paquetes
+
+        # El algoritmo es secuencial (no reordena por tamaño para optimizar el
+        # packing): "gigante" fuerza su propio paquete y corta la racha, así
+        # que "otra_chica" no se puede agrupar con "chica" aunque ambas entren
+        # holgadas en el límite.
+        entradas = [
+            EntradaZip(nombre_archivo="chica.pdf", tamano=5, crc32=0, blob_origen=None),
+            EntradaZip(nombre_archivo="gigante.pdf", tamano=100, crc32=0, blob_origen=None),
+            EntradaZip(nombre_archivo="otra_chica.pdf", tamano=5, crc32=0, blob_origen=None),
+        ]
+
+        paquetes = _armar_paquetes(entradas, tamano_maximo=10)
+
+        self.assertEqual([[e.nombre_archivo for e in p] for p in paquetes], [
+            ["chica.pdf"], ["gigante.pdf"], ["otra_chica.pdf"],
+        ])
+
+
+@override_settings(
+    STORAGES={
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
+    },
+)
+class ResolucionCrc32SignalTest(TestCase):
+    """El signal en secretariador/signals.py tiene que cachear el CRC-32 (el
+    mismo algoritmo que usa el formato ZIP, no el CRC32C que calcula GCS solo)
+    apenas se sube un archivo nuevo — es lo que le permite a
+    empaquetar_resoluciones_mensual armar los ZIPs sin releer los PDFs."""
+
+    def setUp(self):
+        media_root_override = override_settings(MEDIA_ROOT=tempfile.mkdtemp())
+        media_root_override.enable()
+        self.addCleanup(media_root_override.disable)
+
+    def test_crc32_se_calcula_al_subir_un_archivo_nuevo(self):
+        from secretariador.models import InstrumentosLegalesResoluciones
+
+        contenido = b"%PDF-1.4 contenido de prueba para el signal"
+        resolucion = InstrumentosLegalesResoluciones.objects.create(
+            instrumentolegalresoluciones_tipo="P", instrumentolegalresoluciones_numero="1",
+            instrumentolegalresoluciones_ano="2026",
+            instrumentolegalresoluciones=SimpleUploadedFile("r1.pdf", contenido, content_type="application/pdf"),
+        )
+
+        self.assertEqual(resolucion.instrumentolegalresoluciones_crc32, zlib.crc32(contenido))
+
+    def test_no_recalcula_si_se_guarda_sin_tocar_el_archivo(self):
+        from secretariador.models import InstrumentosLegalesResoluciones
+
+        resolucion = InstrumentosLegalesResoluciones.objects.create(
+            instrumentolegalresoluciones_tipo="P", instrumentolegalresoluciones_numero="2",
+            instrumentolegalresoluciones_ano="2026",
+            instrumentolegalresoluciones=SimpleUploadedFile("r2.pdf", b"contenido original", content_type="application/pdf"),
+        )
+        crc_original = resolucion.instrumentolegalresoluciones_crc32
+
+        resolucion.instrumentolegalresoluciones_descripcion = "actualizado"
+        resolucion.save(update_fields=["instrumentolegalresoluciones_descripcion"])
+
+        resolucion.refresh_from_db()
+        self.assertEqual(resolucion.instrumentolegalresoluciones_crc32, crc_original)
