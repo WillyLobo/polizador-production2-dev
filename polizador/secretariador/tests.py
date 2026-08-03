@@ -184,6 +184,9 @@ class _BlobFalso:
     def reload(self):
         pass
 
+    def exists(self):
+        return self.name in self._store
+
     def upload_from_string(self, data, content_type=None):
         self._store[self.name] = data
         self.content_type = content_type
@@ -195,6 +198,16 @@ class _BlobFalso:
         self._store.pop(self.name, None)
 
 
+class _ListaBlobsFalsa(list):
+    """Imita el HTTPIterator que devuelve bucket.list_blobs(): iterable de
+    blobs, con .prefixes poblado cuando se pide delimiter (simulando un
+    listado "por carpetas", como hace la API real de GCS)."""
+
+    def __init__(self, blobs, prefixes=()):
+        super().__init__(blobs)
+        self.prefixes = set(prefixes)
+
+
 class _BucketFalso:
     def __init__(self):
         self.store = {}
@@ -204,6 +217,22 @@ class _BucketFalso:
 
     def set_content(self, name, content):
         self.store[name] = content
+
+    def list_blobs(self, prefix="", delimiter=None):
+        nombres = sorted(n for n in self.store if n.startswith(prefix))
+        if delimiter is None:
+            return _ListaBlobsFalsa(self.blob(n) for n in nombres)
+
+        prefijos = set()
+        blobs_directos = []
+        for nombre in nombres:
+            resto = nombre[len(prefix):]
+            if delimiter in resto:
+                subcarpeta = resto.split(delimiter, 1)[0]
+                prefijos.add(f"{prefix}{subcarpeta}{delimiter}")
+            else:
+                blobs_directos.append(self.blob(nombre))
+        return _ListaBlobsFalsa(blobs_directos, prefixes=prefijos)
 
 
 class GCSZipComposerTest(TestCase):
@@ -325,6 +354,53 @@ class EmpaquetarResolucionesMensualCommandTest(TestCase):
         self.assertEqual([[e.nombre_archivo for e in p] for p in paquetes], [
             ["chica.pdf"], ["gigante.pdf"], ["otra_chica.pdf"],
         ])
+
+
+class ListarPaquetesResolucionesTest(TestCase):
+    """Prueba secretariador/views/paqueteresolucionesviews.py::_listar_meses
+    (lectura pura de la estructura de carpetas, sin tocar GCS de verdad)."""
+
+    def setUp(self):
+        self.bucket = _BucketFalso()
+
+    def _agregar_paquete(self, ano, mes, indice, tamano):
+        from secretariador.views.paqueteresolucionesviews import DESTINO_PREFIJO
+
+        nombre = f"{DESTINO_PREFIJO}/{ano}-{mes:02d}/paquete-{indice:02d}.zip"
+        self.bucket.set_content(nombre, b"x" * tamano)
+
+    def test_agrupa_por_ano_mes_y_ordena_los_mas_recientes_primero(self):
+        from secretariador.views.paqueteresolucionesviews import _listar_meses
+
+        self._agregar_paquete(2026, 6, 1, tamano=10)
+        self._agregar_paquete(2026, 8, 1, tamano=20)
+        self._agregar_paquete(2026, 8, 2, tamano=30)
+
+        meses = _listar_meses(self.bucket)
+
+        self.assertEqual([(m["ano"], m["mes"]) for m in meses], [(2026, 8), (2026, 6)])
+        agosto = meses[0]
+        self.assertEqual(agosto["nombre_mes"], "Agosto")
+        self.assertEqual(
+            [(p["indice"], p["tamano"]) for p in agosto["paquetes"]],
+            [(1, 20), (2, 30)],
+        )
+
+    def test_ignora_blobs_de_scratch_que_no_terminan_en_zip(self):
+        from secretariador.views.paqueteresolucionesviews import DESTINO_PREFIJO, _listar_meses
+
+        self._agregar_paquete(2026, 8, 1, tamano=20)
+        self.bucket.set_content(f"{DESTINO_PREFIJO}/2026-08/_scratch/header-0", b"basura")
+
+        meses = _listar_meses(self.bucket)
+
+        self.assertEqual(len(meses), 1)
+        self.assertEqual(len(meses[0]["paquetes"]), 1)
+
+    def test_no_hay_paquetes(self):
+        from secretariador.views.paqueteresolucionesviews import _listar_meses
+
+        self.assertEqual(_listar_meses(self.bucket), [])
 
 
 @override_settings(

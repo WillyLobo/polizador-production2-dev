@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% block title %}<title>Paquetes de Resoluciones</title>{% endblock title%}
+
+<div class="min-vh-100">
+  <div class="card">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Paquetes Mensuales de Resoluciones</div>
+    <div class="card-body p-2">
+      {% if not meses %}
+        <p class="text-muted mb-0">Todavía no hay paquetes generados.</p>
+      {% else %}
+        <div class="accordion" id="accordionPaquetes">
+          {% for mes in meses %}
+          <div class="accordion-item">
+            <h2 class="accordion-header">
+              <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button"
+                      data-bs-toggle="collapse" data-bs-target="#mes-{{ mes.ano }}-{{ mes.mes }}">
+                {{ mes.nombre_mes }} {{ mes.ano }}
+                <span class="badge text-bg-secondary ms-2">{{ mes.paquetes|length }} paquete{{ mes.paquetes|length|pluralize }}</span>
+              </button>
+            </h2>
+            <div id="mes-{{ mes.ano }}-{{ mes.mes }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+                 data-bs-parent="#accordionPaquetes">
+              <div class="accordion-body">
+                <ul class="list-group">
+                  {% for paquete in mes.paquetes %}
+                  <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-file-earmark-zip me-1"></i>paquete-{{ paquete.indice|stringformat:"02d" }}.zip</span>
+                    <span class="text-muted small me-3">{{ paquete.tamano|filesizeformat }}</span>
+                    <a class="btn btn-sm btn-outline-primary"
+                       href="{% url "secretariador:descargar-paquete-resoluciones" ano=mes.ano mes=mes.mes indice=paquete.indice %}">
+                      <i class="bi bi-download me-1"></i>Descargar
+                    </a>
+                  </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

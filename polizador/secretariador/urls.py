@@ -13,6 +13,7 @@ from secretariador.views.reportesviews import *
 from secretariador.views.delete_inlines import *
 from secretariador.views.redirects import *
 from secretariador.views.encabezadoviews import *
+from secretariador.views.paqueteresolucionesviews import *
 
 app_name = "secretariador"
 
@@ -64,6 +65,13 @@ vehiculo_patterns = [
     path("crearvehiculo/<pk>", UpdateVehiculo.as_view(), name="update-vehiculo"),
     path("eliminar/vehiculo/<pk>", EliminarVehiculo.as_view(), name="eliminar-vehiculo"),
 ]
+paquetes_resoluciones_patterns = [
+    path(
+        "instrumentoslegales/resoluciones/paquetes/descargar/<int:ano>/<int:mes>/<int:indice>/",
+        descargar_paquete_resoluciones,
+        name="descargar-paquete-resoluciones",
+    ),
+]
 docx_patterns = [
     path("creardocumento/solicitud/<pk>", solicitud_docx, name="crear-documento-solicitud"),
     path("creardocumento/solicitudexterior/<pk>", exterior_docx, name="crear-documento-solicitud-exterior"),
@@ -113,6 +121,8 @@ ajax = [
     path("listas/decretos", PaginaListaInstrumentosLegalesDecretos, name="lista-decretos"),
     # Resoluciones
     path("listas/resoluciones", PaginaListaInstrumentosLegalesResoluciones, name="lista-resoluciones"),
+    # Paquetes mensuales de Resoluciones
+    path("listas/resoluciones/paquetes", PaginaListaPaquetesResoluciones, name="lista-paquetes-resoluciones"),
     # Vehiculos
     path("listas/vehiculos", PaginaListaVehiculos, name="lista-vehiculos"),
     # Incorporaciones
@@ -138,4 +148,5 @@ urlpatterns += incorporacion_patterns
 urlpatterns += vehiculo_patterns
 urlpatterns += reportes_patterns
 urlpatterns += docx_patterns
+urlpatterns += paquetes_resoluciones_patterns
 urlpatterns += encabezado_patterns
