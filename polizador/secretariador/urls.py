@@ -67,7 +67,7 @@ vehiculo_patterns = [
 ]
 paquetes_resoluciones_patterns = [
     path(
-        "instrumentoslegales/resoluciones/paquetes/descargar/<int:ano>/<int:mes>/<int:indice>/",
+        "instrumentoslegales/resoluciones/paquetes/descargar/<int:ano>/<int:mes>/<str:formato>/<int:indice>/",
         descargar_paquete_resoluciones,
         name="descargar-paquete-resoluciones",
     ),

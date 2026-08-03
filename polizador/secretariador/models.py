@@ -171,12 +171,6 @@ class InstrumentosLegalesResoluciones(models.Model):
     instrumentolegalresoluciones_ad_referendum = models.BooleanField("Ad referendum", default=False)
     instrumentolegalresoluciones_accion = models.CharField("Acción", max_length=3, choices=ACCION, blank=True, null=True)
     instrumentolegalresoluciones = models.FileField(upload_to=generate_name_resoluciones, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], null=True, blank=True)
-    # CRC-32 (IEEE, el mismo algoritmo que usa el formato ZIP) del archivo. Se calcula
-    # en secretariador/signals.py al subir un archivo nuevo; permite armar los paquetes
-    # mensuales de resoluciones vía GCS compose (ver gcs_zip.py y el management command
-    # empaquetar_resoluciones_mensual) sin tener que descargar cada PDF para recalcular
-    # su checksum.
-    instrumentolegalresoluciones_crc32 = models.PositiveBigIntegerField("CRC-32", null=True, blank=True, editable=False)
     instrumentolegalresoluciones_str = GeneratedField(
         expression=models.Case(
             models.When(

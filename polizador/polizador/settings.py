@@ -50,6 +50,7 @@ MAILGUN_SENDER_DOMAIN=env("MAILGUN_SENDER_DOMAIN")
 # si no están configuradas.
 SGT_USERNAME = env("SGT_USERNAME", default=None)
 SGT_PASSWORD = env("SGT_PASSWORD", default=None)
+GS_BUCKET_NAME = env("GS_BUCKET_NAME", default="polizador-production-pdf")
 
 if DEBUG == False:
     sentry_sdk.init(
@@ -241,7 +242,7 @@ STORAGES = {
         "BACKEND": "polizador.storages.GCloudAndLocalStorage",
         "OPTIONS": {
         #  https://storage.cloud.google.com/polizador-production-pdf/instrumentoslegales/resoluciones/1400-2024-P.pdf
-            "bucket_name": "polizador-production-pdf",
+            "bucket_name": GS_BUCKET_NAME,
             "credentials": GS_CREDENTIALS,
         },
     },

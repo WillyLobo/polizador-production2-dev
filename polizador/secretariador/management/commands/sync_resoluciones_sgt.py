@@ -300,16 +300,26 @@ class Command(BaseCommand):
         return filas
 
     def _filtrar_numero_ano(self, page, numero, ano):
-        # El filtro de texto dispara su AJAX con un pequeño debounce del lado del cliente:
-        # wait_for_load_state("networkidle") puede resolver ANTES de que el request arranque,
-        # dejando la grilla sin filtrar. Una espera fija después de cada blur es lo que
-        # funciona de forma confiable (validado en vivo contra el SGT real).
-        page.fill("#vINSTRUMENTOLEGALNUMERO", numero)
-        page.keyboard.press("Tab")
-        page.wait_for_timeout(1200)
-        page.fill("#vINSTRUMENTOLEGALANIO", ano)
-        page.keyboard.press("Tab")
-        page.wait_for_timeout(1200)
+        # Cada blur dispara un POST a com.ecom.panelprotocolo que devuelve la grilla ya
+        # filtrada (confirmado inspeccionando la red en vivo). Antes se usaba una espera fija
+        # (wait_for_timeout) tras el blur, pero cuando el SGT responde lento esa espera
+        # quedaba corta: el código seguía de largo con la grilla todavía sin filtrar, y
+        # get_by_title("Ver Proyecto").count() terminaba contando la página default de 10
+        # filas en vez de la fila filtrada ("el filtro devolvió 10 filas (esperaba 1)").
+        # Esperar la respuesta real del POST, en vez de un tiempo fijo, es inmune a eso.
+        self._fill_y_esperar_filtro(page, "#vINSTRUMENTOLEGALNUMERO", numero)
+        self._fill_y_esperar_filtro(page, "#vINSTRUMENTOLEGALANIO", ano)
+
+    def _fill_y_esperar_filtro(self, page, selector, value):
+        with page.expect_response(
+            lambda r: "com.ecom.panelprotocolo" in r.url and r.request.method == "POST",
+            timeout=15000,
+        ):
+            page.fill(selector, value)
+            page.keyboard.press("Tab")
+        # Pequeño margen para que el JS de GeneXus termine de pintar la grilla una vez
+        # que ya tiene la respuesta (el fetch en sí ya se esperó arriba).
+        page.wait_for_timeout(200)
 
     def _descargar_y_guardar(self, page, fila):
         # Filtra el panel a esta resolución puntual usando los inputs de búsqueda exacta
