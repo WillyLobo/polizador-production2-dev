@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}<title>{{ run.label }} | Polizador</title>{% endblock title %}
+{% block content %}
+<div class="container-fluid">
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <h3 class="mb-0">{{ run.label }}</h3>
+    <span class="badge text-bg-{{ run.status_badge }}" id="run-status-badge">{{ run.get_status_display }}</span>
+  </div>
+  <p class="text-muted">
+    Iniciado por {{ run.started_by }} el {{ run.started_at }}
+    {% if run.finished_at %} — finalizó el {{ run.finished_at }}{% endif %}
+    — duración: <span id="run-duration">{{ run.duration_display }}</span>
+  </p>
+
+  {% if run.status == "running" %}
+  <form method="post" action="{% url 'management_command_run_kill' run.pk %}"
+        onsubmit="return confirm('¿Matar el proceso en ejecución?');">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-outline-danger btn-sm mb-2">
+      <i class="bi bi-stop-fill me-1"></i>Matar proceso
+    </button>
+  </form>
+  {% endif %}
+
+  <a href="{% url 'management_commands' %}" class="btn btn-sm btn-outline-secondary mb-2">
+    <i class="bi bi-arrow-left me-1"></i>Volver
+  </a>
+
+  <pre id="run-log" class="bg-dark text-light p-3 rounded" style="max-height: 65vh; overflow-y: auto; white-space: pre-wrap;">{{ run.log }}</pre>
+</div>
+
+{% if run.status == "running" %}
+<script>
+(function () {
+  var logEl = document.getElementById("run-log");
+  var badgeEl = document.getElementById("run-status-badge");
+  var durationEl = document.getElementById("run-duration");
+  var offset = logEl.textContent.length;
+  var logUrl = "{% url 'management_command_run_log' run.pk %}";
+
+  var interval = setInterval(function () {
+    fetch(logUrl + "?offset=" + offset)
+      .then(function (response) { return response.json(); })
+      .then(function (data) {
+        if (data.chunk) {
+          logEl.textContent += data.chunk;
+          offset = data.offset;
+          logEl.scrollTop = logEl.scrollHeight;
+        }
+        durationEl.textContent = data.duration_display;
+        if (data.status !== "running") {
+          badgeEl.textContent = data.status_label;
+          clearInterval(interval);
+          location.reload();
+        }
+      });
+  }, 1500);
+})();
+</script>
+{% endif %}
+{% endblock content %}
