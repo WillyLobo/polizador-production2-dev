@@ -5,7 +5,16 @@ from django.contrib.auth import get_user_model
 from django.test import Client, TestCase, TransactionTestCase
 
 from core import management_runner
-from core.forms import CheckResolucionesForm
+from core.forms import (
+    BcraUviForm,
+    CheckResolucionesForm,
+    CopiarBucketDevForm,
+    EmpaquetarResolucionesMensualForm,
+    FixObraResolucionNumbersForm,
+    NumerosCertificadosAuditForm,
+    ResaveComisionadoForm,
+    SyncResolucionesSgtForm,
+)
 from core.models import ManagementCommandRun
 
 UserModel = get_user_model()
@@ -91,6 +100,114 @@ class CheckResolucionesFormTest(TestCase):
         form = CheckResolucionesForm(data={})
         assert form.is_valid()
         assert form.to_argv() == []
+
+
+class BcraUviFormTest(TestCase):
+    def test_unchecked_full_sync_omits_flag(self):
+        form = BcraUviForm(data={})
+        assert form.is_valid()
+        assert form.to_argv() == []
+
+    def test_checked_full_sync_adds_flag(self):
+        form = BcraUviForm(data={"full_sync": "on"})
+        assert form.is_valid()
+        assert form.to_argv() == ["--full-sync"]
+
+
+class DryRunCheckApplyFormTest(TestCase):
+    def test_defaults_to_the_safest_mode(self):
+        form = FixObraResolucionNumbersForm()
+        assert form.fields["mode"].initial == FixObraResolucionNumbersForm.MODE_CHECK
+
+    def test_check_mode_maps_to_check_flag(self):
+        form = NumerosCertificadosAuditForm(data={"mode": "check"})
+        assert form.is_valid()
+        assert form.to_argv() == ["--check"]
+
+    def test_dry_run_mode_maps_to_dry_run_flag(self):
+        form = NumerosCertificadosAuditForm(data={"mode": "dry_run"})
+        assert form.is_valid()
+        assert form.to_argv() == ["--dry-run"]
+
+    def test_apply_mode_passes_no_flags(self):
+        form = NumerosCertificadosAuditForm(data={"mode": "apply"})
+        assert form.is_valid()
+        assert form.to_argv() == []
+
+
+class CopiarBucketDevFormTest(TestCase):
+    def test_defaults_to_dry_run_with_coldline(self):
+        form = CopiarBucketDevForm()
+        assert form.fields["dry_run"].initial is True
+        assert form.fields["storage_class"].initial == "COLDLINE"
+
+    def test_dry_run_checked_by_default_maps_to_flag(self):
+        form = CopiarBucketDevForm(data={"dry_run": "on", "storage_class": "COLDLINE"})
+        assert form.is_valid()
+        assert form.to_argv() == ["--dry-run", "--storage-class", "COLDLINE"]
+
+    def test_unchecking_dry_run_and_checking_overwrite(self):
+        form = CopiarBucketDevForm(data={"overwrite": "on", "storage_class": "NEARLINE"})
+        assert form.is_valid()
+        assert form.to_argv() == ["--overwrite", "--storage-class", "NEARLINE"]
+
+    def test_rejects_unknown_storage_class(self):
+        form = CopiarBucketDevForm(data={"storage_class": "FREEZER"})
+        assert not form.is_valid()
+
+    def test_does_not_expose_bucket_names(self):
+        assert "source" not in CopiarBucketDevForm.base_fields
+        assert "destination" not in CopiarBucketDevForm.base_fields
+
+
+class ResaveComisionadoFormTest(TestCase):
+    def test_takes_no_arguments(self):
+        form = ResaveComisionadoForm(data={})
+        assert form.is_valid()
+        assert form.to_argv() == []
+
+
+class EmpaquetarResolucionesMensualFormTest(TestCase):
+    def test_blank_ano_and_mes_is_valid(self):
+        form = EmpaquetarResolucionesMensualForm(data={"formato": "ambos"})
+        assert form.is_valid(), form.errors
+        assert form.to_argv() == ["--formato", "ambos"]
+
+    def test_ano_without_mes_is_invalid(self):
+        form = EmpaquetarResolucionesMensualForm(data={"ano": "2026", "formato": "ambos"})
+        assert not form.is_valid()
+
+    def test_ano_and_mes_together_build_full_argv(self):
+        form = EmpaquetarResolucionesMensualForm(
+            data={"ano": "2026", "mes": "3", "tamano_maximo_mb": "20", "formato": "pdf"}
+        )
+        assert form.is_valid(), form.errors
+        assert form.to_argv() == [
+            "--ano", "2026", "--mes", "3", "--tamano-maximo-mb", "20", "--formato", "pdf",
+        ]
+
+    def test_mes_out_of_range_is_invalid(self):
+        form = EmpaquetarResolucionesMensualForm(data={"ano": "2026", "mes": "13", "formato": "ambos"})
+        assert not form.is_valid()
+
+
+class SyncResolucionesSgtFormTest(TestCase):
+    def test_does_not_expose_headed(self):
+        assert "headed" not in SyncResolucionesSgtForm.base_fields
+
+    def test_defaults_to_dry_run(self):
+        form = SyncResolucionesSgtForm()
+        assert form.fields["dry_run"].initial is True
+
+    def test_dry_run_without_limit(self):
+        form = SyncResolucionesSgtForm(data={"dry_run": "on"})
+        assert form.is_valid()
+        assert form.to_argv() == ["--dry-run"]
+
+    def test_unchecked_dry_run_with_limit(self):
+        form = SyncResolucionesSgtForm(data={"limit": "5"})
+        assert form.is_valid()
+        assert form.to_argv() == ["--limit", "5"]
 
 
 class ManagementCommandRunDurationTest(TestCase):

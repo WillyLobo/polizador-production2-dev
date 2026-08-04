@@ -20,6 +20,13 @@
   <div class="card mb-4">
     <div class="card-body">
       <h5 class="card-title">{{ selected_meta.label }}</h5>
+      {% if selected_meta.mutates_data %}
+      <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle me-1"></i>
+        Este comando puede modificar datos. Si tiene un modo "Solo verificar" o
+        "Simular", usalo primero.
+      </div>
+      {% endif %}
       {% if selected_meta.help_text %}
       <p class="text-muted">{{ selected_meta.help_text }}</p>
       {% endif %}

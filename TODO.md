@@ -30,6 +30,8 @@
 [+] Crear helper para agregar objetos FK directamente desde los formularios.
 [+] Agregar opcion de remover firmas de gerente/representante tecnico en la foja de medicion.
 [ ] Agregar helptext dinamico a los campos CUIL/CUIT de los formularios que sugieran el numero de CUIL/CUIT.
+[ ] Agregar a la interfaz web la posibilidad de ver estado de escaneo de los instrumentos legales.
+[ ] Analizar viabilidad de hacer OCR a los instrumentos legales.
 
 # Certificados
 [+] Una foja deberia engendrar 1 certificado por cada financiamiento.
