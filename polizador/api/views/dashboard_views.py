@@ -5,7 +5,6 @@ from ninja.errors import HttpError
 
 from api.permissions import require_superuser
 from api.schemas.dashboard_schemas import (
-    LoginActivityResponseSchema,
     SentryHealthResponseSchema,
     ThroughputResponseSchema,
 )
@@ -24,18 +23,6 @@ def throughput(request, app_label: str):
         for label, points in dashboard_data.record_throughput(app_label).items()
     }
     return {"series": series}
-
-
-@router.get("/dashboard/logins/", response=LoginActivityResponseSchema)
-@decorate_view(require_superuser)
-def logins(request):
-    points = dashboard_data.login_activity()
-    summary = dashboard_data.login_summary()
-    return {
-        "series": [{"period": period, "total": total} for period, total in points],
-        "today": summary["today"],
-        "week": summary["week"],
-    }
 
 
 @router.get("/dashboard/sentry/", response=SentryHealthResponseSchema)

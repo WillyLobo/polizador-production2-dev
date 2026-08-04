@@ -36,17 +36,17 @@ class DashboardApiTest(TestCase):
         self.superuser = UserModel.objects.create_superuser(username="admin_user", password="pass1234!")
 
     def test_requires_auth(self):
-        resp = self.anon_client.get("dashboard/logins/")
+        resp = self.anon_client.get("dashboard/sentry/")
         assert resp.status_code == 401
 
     def test_regular_user_forbidden(self):
         self.client.login(username="plain_user", password="pass1234!")
-        resp = self.client.get("/v1/api/dashboard/logins/")
+        resp = self.client.get("/v1/api/dashboard/sentry/")
         assert resp.status_code == 403
 
     def test_superuser_allowed(self):
         self.client.login(username="admin_user", password="pass1234!")
-        resp = self.client.get("/v1/api/dashboard/logins/")
+        resp = self.client.get("/v1/api/dashboard/sentry/")
         assert resp.status_code == 200
 
     def test_throughput_unknown_app_label(self):

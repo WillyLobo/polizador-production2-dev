@@ -34,8 +34,10 @@ class DashboardView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             for app_label in dashboard_data.TRACKED_MODELS
         ]
         context["login_summary"] = dashboard_data.login_summary()
+        context["recent_logins"] = dashboard_data.recent_logins()
         context["sentry_health"] = dashboard_data.sentry_health()
         context["db_health"] = dashboard_data.db_health()
+        context["db_performance"] = dashboard_data.db_performance()
         return context
 
 
