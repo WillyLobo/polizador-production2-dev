@@ -176,7 +176,7 @@
 [ ] Manejo de los cortes de licencia Anual.
 [+] Correjir vista de datos en ChangeView
 [+] Ver que la cantidad de dias no muestre decimales(debe ser un entero)
-[ ] Ver el cableado del instrumento legal a la solicitud segun el tipo de solicitud.
+[+] Ver el cableado del instrumento legal a la solicitud segun el tipo de solicitud.
 
 # ------------------------------------------- #
 # Legend:                                     #

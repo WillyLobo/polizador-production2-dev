@@ -14,6 +14,7 @@ from core.forms import (
     CheckResolucionesForm,
     CopiarBucketDevForm,
     EmpaquetarResolucionesMensualForm,
+    FixBucketContentTypeForm,
     FixObraResolucionNumbersForm,
     NumerosCertificadosAuditForm,
     ResaveComisionadoForm,
@@ -71,6 +72,18 @@ COMMAND_REGISTRY = {
             "Requiere credenciales de GCS cargadas en el servidor."
         ),
         "form": CopiarBucketDevForm,
+        "mutates_data": True,
+    },
+    "fix_bucket_content_type": {
+        "label": "Corregir Content-Type faltante en bucket GCS",
+        "help_text": (
+            "Parchea el Content-Type de objetos GCS que quedaron sin setear "
+            "(application/octet-stream), lo que hace que el navegador los descargue en vez "
+            "de previsualizarlos inline (ej. PDFs). Efecto de un bug ya corregido en "
+            "'Copiar bucket GCS producción -> dev'. Solo toca metadata, no vuelve a subir "
+            "contenido. Empezá con 'Simular' para ver cuántos objetos corregiría."
+        ),
+        "form": FixBucketContentTypeForm,
         "mutates_data": True,
     },
     "empaquetar_resoluciones_mensual": {

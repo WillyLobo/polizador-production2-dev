@@ -106,6 +106,31 @@ class CopiarBucketDevForm(BaseCommandRunForm):
         return argv
 
 
+class FixBucketContentTypeForm(BaseCommandRunForm):
+    """No exponemos --bucket (mismo motivo que CopiarBucketDevForm): el comando ya
+    usa como default el único bucket pensado para esto, GS_BUCKET_NAME."""
+
+    dry_run = forms.BooleanField(
+        required=False,
+        initial=True,
+        label="Simular (dry-run)",
+        help_text="Tildado: no parchea nada, solo informa cuántos objetos corregiría. Destildalo para corregir de verdad.",
+    )
+    prefix = forms.CharField(
+        required=False,
+        label="Prefijo (opcional)",
+        help_text="Limita la corrección a objetos bajo este prefijo, ej. instrumentoslegales/. Vacío: todo el bucket.",
+    )
+
+    def to_argv(self):
+        argv = []
+        if self.cleaned_data["dry_run"]:
+            argv.append("--dry-run")
+        if self.cleaned_data["prefix"]:
+            argv += ["--prefix", self.cleaned_data["prefix"]]
+        return argv
+
+
 class ResaveComisionadoForm(BaseCommandRunForm):
     """El comando `resave_comisionado` no toma argumentos."""
 
