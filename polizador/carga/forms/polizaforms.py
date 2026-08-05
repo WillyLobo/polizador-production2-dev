@@ -3,7 +3,7 @@ from django.forms.models import inlineformset_factory
 from carga import models
 from carga.forms.mixins import AddRelatedPermissionMixin
 from carga.views.ajaxviews import obrawidget, empresawidget, aseguradorawidget
-from polizador.custom_forms import DateHTMLWidget
+from core.widgets import DateHTMLWidget
 from carga.models import Poliza, Poliza_Movimiento
 from carga.views.ajaxviews import areawidget, polizawidget, receptorwidget
 

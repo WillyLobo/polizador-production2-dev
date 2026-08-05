@@ -100,19 +100,21 @@
             {% if perms.personalizador.add_gerencia %}<li><a class="dropdown-item" href="{% url "personalizador:crear-gerencia" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Gerencia</a></li>{% endif %}
             {% if perms.personalizador.add_direccion %}<li><a class="dropdown-item" href="{% url "personalizador:crear-direccion" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Dirección</a></li>{% endif %}
             {% if perms.personalizador.add_departamento %}<li><a class="dropdown-item" href="{% url "personalizador:crear-departamento" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Departamento</a></li>{% endif %}
-            {% if perms.personalizador.add_categoria %}<li><a class="dropdown-item" href="{% url "personalizador:crear-categoria" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Categoría</a></li>{% endif %}
-            {% if perms.personalizador.add_denominacioncargo %}<li><a class="dropdown-item" href="{% url "personalizador:crear-denominacioncargo" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Denominación de Cargo</a></li>{% endif %}
-            {% if perms.personalizador.add_apartadocargo %}<li><a class="dropdown-item" href="{% url "personalizador:crear-apartadocargo" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Apartado</a></li>{% endif %}
-            {% if perms.personalizador.add_ceic %}<li><a class="dropdown-item" href="{% url "personalizador:crear-ceic" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo CEIC</a></li>{% endif %}
-            {% if perms.personalizador.add_grupocargo %}<li><a class="dropdown-item" href="{% url "personalizador:crear-grupocargo" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Grupo de Cargo</a></li>{% endif %}
-            {% if perms.personalizador.add_actividadespecifica %}<li><a class="dropdown-item" href="{% url "personalizador:crear-actividadespecifica" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Actividad Específica</a></li>{% endif %}
-            {% if perms.personalizador.add_cargotipo %}<li><a class="dropdown-item" href="{% url "personalizador:crear-cargotipo" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Tipo de Cargo</a></li>{% endif %}
-            {% if perms.personalizador.add_generoagente %}<li><a class="dropdown-item" href="{% url "personalizador:crear-generoagente" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Género</a></li>{% endif %}
-            {% if perms.personalizador.add_tituloprofesional %}<li><a class="dropdown-item" href="{% url "personalizador:crear-tituloprofesional" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Título Profesional</a></li>{% endif %}
+            {% comment %} {% if perms.personalizador.add_categoria %}<li><a class="dropdown-item" href="{% url "personalizador:crear-categoria" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Categoría</a></li>{% endif %} {% endcomment %}
+            {% comment %} {% if perms.personalizador.add_denominacioncargo %}<li><a class="dropdown-item" href="{% url "personalizador:crear-denominacioncargo" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Denominación de Cargo</a></li>{% endif %} {% endcomment %}
+            {% comment %} {% if perms.personalizador.add_apartadocargo %}<li><a class="dropdown-item" href="{% url "personalizador:crear-apartadocargo" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Apartado</a></li>{% endif %} {% endcomment %}
+            {% comment %} {% if perms.personalizador.add_ceic %}<li><a class="dropdown-item" href="{% url "personalizador:crear-ceic" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo CEIC</a></li>{% endif %} {% endcomment %}
+            {% comment %} {% if perms.personalizador.add_grupocargo %}<li><a class="dropdown-item" href="{% url "personalizador:crear-grupocargo" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Grupo de Cargo</a></li>{% endif %} {% endcomment %}
+            {% comment %} {% if perms.personalizador.add_actividadespecifica %}<li><a class="dropdown-item" href="{% url "personalizador:crear-actividadespecifica" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Actividad Específica</a></li>{% endif %} {% endcomment %}
+            {% comment %} {% if perms.personalizador.add_cargotipo %}<li><a class="dropdown-item" href="{% url "personalizador:crear-cargotipo" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Tipo de Cargo</a></li>{% endif %} {% endcomment %}
+            {% comment %} {% if perms.personalizador.add_generoagente %}<li><a class="dropdown-item" href="{% url "personalizador:crear-generoagente" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Género</a></li>{% endif %} {% endcomment %}
+            {% comment %} {% if perms.personalizador.add_tituloprofesional %}<li><a class="dropdown-item" href="{% url "personalizador:crear-tituloprofesional" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Título Profesional</a></li>{% endif %} {% endcomment %}
+            {% if perms.personalizador.add_licenciapermiso %}<li><a class="dropdown-item" href="{% url "personalizador:crear-licenciapermiso" %}"><i class="bi bi-plus-circle me-1"></i>Registrar Licencia/Permiso</a></li>{% endif %}
             <li><hr class="dropdown-divider"></li>
             <li class="dropdown-item fw-bold text-muted"><small>LISTADOS</small></li>
             <li><a class="dropdown-item" href="{% url "personalizador:lista-agentes" %}"><i class="bi bi-list-ul me-1"></i>Agentes</a></li>
             <li><a class="dropdown-item" href="{% url "personalizador:lista-oficinas" %}"><i class="bi bi-list-ul me-1"></i>Oficinas</a></li>
+            {% if perms.personalizador.view_licenciapermiso %}<li><a class="dropdown-item" href="{% url "personalizador:lista-licenciapermisos" %}"><i class="bi bi-calendar2-week me-1"></i>Licencias y Permisos</a></li>{% endif %}
             {% comment %}
             <li><a class="dropdown-item" href="{% url "personalizador:lista-directorios" %}"><i class="bi bi-list-ul me-1"></i>Directorios</a></li>
             <li><a class="dropdown-item" href="{% url "personalizador:lista-gerencias" %}"><i class="bi bi-list-ul me-1"></i>Gerencias</a></li>

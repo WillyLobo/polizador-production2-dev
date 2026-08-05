@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% block title %}<title>Editar Licencia/Permiso</title>{% endblock title %}
+
+{{ form.media.css }}
+<form id="mainForm" action='{% url "personalizador:update-licenciapermiso" object.id %}' method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  {% include "partials/licenciapermiso-form-partial.html" %}
+  {% include "partials/devolucionhoras-formset-partial.html" %}
+</form>
+{{ form.media.js }}
+
+<script>
+$(document).on('click', '#addForm', function() {
+  $(".customSelect2").select2("destroy");
+  var form_idx = $('#id_devolucionhoras_set-TOTAL_FORMS').val();
+  $('#devolucionhoras-form').append($('#empty_devolucionhoras_form').html().replace(/__prefix__/g, form_idx));
+  $('#id_devolucionhoras_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+  $(".customSelect2").select2({
+    theme: 'bootstrap-5',
+  });
+  $(".customSelect2").djangoSelect2();
+});
+</script>
+{% endblock %}
+
+{% block actions %}
+  {% url 'personalizador:lista-licenciapermisos' as volver_target %}
+  {% include "partials/form-actions.html" with volver_url=volver_target show_add=True add_label="Agregar Devolución de Horas" %}
+{% endblock %}

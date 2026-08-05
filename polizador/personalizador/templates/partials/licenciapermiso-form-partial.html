@@ -1,0 +1,59 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+<div class="card mb-3">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Licencia/Permiso</div>
+    <div class="card-body p-2">
+        <div class="row">
+            <div class="col-md-6">
+                {{form.licenciapermiso_agente.as_field_group}}
+            </div>
+            <div class="col-md-6">
+                {{form.licenciapermiso_tipo.as_field_group}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                {{form.licenciapermiso_fecha_otorgamiento.as_field_group}}
+            </div>
+            <div class="col-md-4">
+                {{form.licenciapermiso_fecha_desde.as_field_group}}
+            </div>
+            <div class="col-md-4">
+                {{form.licenciapermiso_fecha_hasta.as_field_group}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                {{form.licenciapermiso_cantidad.as_field_group}}
+            </div>
+            <div class="col-md-8">
+                {{form.licenciapermiso_adjunto.as_field_group}}
+            </div>
+        </div>
+        <div class="form-group">
+            {{form.licenciapermiso_motivo.as_field_group}}
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Instrumento Legal (opcional)</div>
+    <div class="card-body p-2">
+        <div class="row">
+            <div class="col-md-4">
+                {{form.licenciapermiso_instrumento_resolucion.as_field_group}}
+            </div>
+            <div class="col-md-4">
+                {{form.licenciapermiso_instrumento_decreto.as_field_group}}
+            </div>
+            <div class="col-md-4">
+                {{form.licenciapermiso_instrumento_memorandum.as_field_group}}
+            </div>
+        </div>
+        <div class="form-group form-check">
+            {{form.licenciapermiso_anulada}}
+            <label class="form-check-label" for="{{form.licenciapermiso_anulada.id_for_label}}">Anulada</label>
+        </div>
+    </div>
+</div>

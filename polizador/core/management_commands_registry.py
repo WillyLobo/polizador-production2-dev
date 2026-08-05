@@ -17,6 +17,7 @@ from core.forms import (
     FixObraResolucionNumbersForm,
     NumerosCertificadosAuditForm,
     ResaveComisionadoForm,
+    SyncDecretosSgtForm,
     SyncResolucionesSgtForm,
 )
 
@@ -98,10 +99,26 @@ COMMAND_REGISTRY = {
         "help_text": (
             "Maneja un navegador real (Playwright/Firefox) para iniciar sesión en el SGT "
             "(app.chaco.gob.ar) con las credenciales institucionales del .env y descargar "
-            "las Resoluciones aprobadas que todavía no están cargadas en Polizador. Puede "
-            "tardar varios minutos. Empezá con 'Simular' para ver qué importaría."
+            "las Resoluciones aprobadas que todavía no están cargadas en Polizador. Por "
+            "defecto reusa el último listado exportado en MEDIA_ROOT/sgt_exports/ si hay "
+            "uno, para no generar carga innecesaria contra el SGT. Puede tardar varios "
+            "minutos. Empezá con 'Simular' para ver qué importaría."
         ),
         "form": SyncResolucionesSgtForm,
+        "mutates_data": True,
+    },
+    "sync_decretos_sgt": {
+        "label": "Importar decretos de licencia desde el SGT",
+        "help_text": (
+            "Maneja un navegador real (Playwright/Firefox) para iniciar sesión en el SGT "
+            "(app.chaco.gob.ar) con las credenciales institucionales del .env y descargar "
+            "los Decretos que establecen período de licencia anual ordinaria o de invierno "
+            "y todavía no están cargados en Polizador. Por defecto reusa el último listado "
+            "exportado en MEDIA_ROOT/sgt_exports/ si hay uno, para no generar carga "
+            "innecesaria contra el SGT. Puede tardar varios minutos. Empezá con 'Simular' "
+            "para ver qué importaría."
+        ),
+        "form": SyncDecretosSgtForm,
         "mutates_data": True,
     },
 }

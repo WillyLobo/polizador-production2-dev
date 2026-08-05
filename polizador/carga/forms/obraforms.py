@@ -15,7 +15,7 @@ from personalizador.views.ajaxviews import (
     representantetecnicoMultipleWidget,
 	)
 from secretariador.views.ajaxviews import ResolucionWidget
-from polizador.custom_forms import DateHTMLWidget, LatLngField, LatLngWidget
+from core.widgets import DateHTMLWidget, LatLngField, LatLngWidget
 
 class ObraForm(AddRelatedPermissionMixin, forms.ModelForm):
 	required_css_class = "required"

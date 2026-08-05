@@ -2,7 +2,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 from carga import certificacion, models
 from carga.views.ajaxviews import contratowidget, obrawidget
-from polizador.custom_forms import DateHTMLWidget
+from core.widgets import DateHTMLWidget
 
 class CustomClearableFileInput(forms.widgets.ClearableFileInput):
 	# template_name = "clearable_file_input.html"

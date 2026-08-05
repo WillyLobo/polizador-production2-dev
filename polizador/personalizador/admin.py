@@ -126,6 +126,17 @@ class RepresentanteTecnicoAdmin(ImportExportMixin, SimpleHistoryAdmin):
     list_filter = ["representantetecnico_profesion"]
     autocomplete_fields = ["representantetecnico_profesion"]
 
+class TipoLicenciaPermisoAdmin(SimpleHistoryAdmin):
+    list_display = ["tipolicenciapermiso_nombre", "tipolicenciapermiso_categoria", "tipolicenciapermiso_unidad", "tipolicenciapermiso_tope_cantidad", "tipolicenciapermiso_activo"]
+    search_fields = ["tipolicenciapermiso_nombre"]
+    list_filter = ["tipolicenciapermiso_categoria", "tipolicenciapermiso_activo"]
+
+class LicenciaPermisoAdmin(SimpleHistoryAdmin):
+    list_display = ["licenciapermiso_agente", "licenciapermiso_tipo", "licenciapermiso_fecha_desde", "licenciapermiso_anulada"]
+    search_fields = ["licenciapermiso_agente__agente_nombreyapellido"]
+    list_filter = ["licenciapermiso_anulada", "licenciapermiso_tipo__tipolicenciapermiso_categoria"]
+    autocomplete_fields = ["licenciapermiso_agente", "licenciapermiso_tipo"]
+
 admin.site.register(Agente, AgenteAdmin)
 admin.site.register(GeneroAgente, GeneroAgenteAdmin)
 admin.site.register(TituloProfesional, TituloProfesionalAdmin)
@@ -142,3 +153,5 @@ admin.site.register(Gerencia, GerenciaAdmin)
 admin.site.register(Direccion, DireccionAdmin)
 admin.site.register(Departamento, DepartamentoAdmin)
 admin.site.register(RepresentanteTecnico, RepresentanteTecnicoAdmin)
+admin.site.register(TipoLicenciaPermiso, TipoLicenciaPermisoAdmin)
+admin.site.register(LicenciaPermiso, LicenciaPermisoAdmin)

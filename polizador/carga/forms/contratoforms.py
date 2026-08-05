@@ -4,7 +4,7 @@ from django.forms import inlineformset_factory
 from carga.forms.contratomontoforms import *
 from carga.views.ajaxviews import *
 from secretariador.views.ajaxviews import ResolucionWidget
-from polizador.custom_forms import DateHTMLWidget
+from core.widgets import DateHTMLWidget
 
 class ContratoForm(forms.ModelForm):
 	required_css_class = "required"

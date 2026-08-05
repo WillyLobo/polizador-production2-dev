@@ -1,4 +1,3 @@
-# widgets.py or forms.py
 import re
 from django import forms
 from django.contrib.gis.geos import Point

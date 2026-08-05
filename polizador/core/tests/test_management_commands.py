@@ -13,6 +13,7 @@ from core.forms import (
     FixObraResolucionNumbersForm,
     NumerosCertificadosAuditForm,
     ResaveComisionadoForm,
+    SyncDecretosSgtForm,
     SyncResolucionesSgtForm,
 )
 from core.models import ManagementCommandRun
@@ -192,8 +193,9 @@ class EmpaquetarResolucionesMensualFormTest(TestCase):
 
 
 class SyncResolucionesSgtFormTest(TestCase):
-    def test_does_not_expose_headed(self):
+    def test_does_not_expose_headed_or_solo_excel(self):
         assert "headed" not in SyncResolucionesSgtForm.base_fields
+        assert "solo_excel" not in SyncResolucionesSgtForm.base_fields
 
     def test_defaults_to_dry_run(self):
         form = SyncResolucionesSgtForm()
@@ -208,6 +210,36 @@ class SyncResolucionesSgtFormTest(TestCase):
         form = SyncResolucionesSgtForm(data={"limit": "5"})
         assert form.is_valid()
         assert form.to_argv() == ["--limit", "5"]
+
+    def test_forzar_descarga(self):
+        form = SyncResolucionesSgtForm(data={"limit": "5", "forzar_descarga": "on"})
+        assert form.is_valid()
+        assert form.to_argv() == ["--limit", "5", "--forzar-descarga"]
+
+
+class SyncDecretosSgtFormTest(TestCase):
+    def test_does_not_expose_headed_or_solo_excel(self):
+        assert "headed" not in SyncDecretosSgtForm.base_fields
+        assert "solo_excel" not in SyncDecretosSgtForm.base_fields
+
+    def test_defaults_to_dry_run(self):
+        form = SyncDecretosSgtForm()
+        assert form.fields["dry_run"].initial is True
+
+    def test_dry_run_without_limit(self):
+        form = SyncDecretosSgtForm(data={"dry_run": "on"})
+        assert form.is_valid()
+        assert form.to_argv() == ["--dry-run"]
+
+    def test_unchecked_dry_run_with_limit(self):
+        form = SyncDecretosSgtForm(data={"limit": "5"})
+        assert form.is_valid()
+        assert form.to_argv() == ["--limit", "5"]
+
+    def test_forzar_descarga(self):
+        form = SyncDecretosSgtForm(data={"limit": "5", "forzar_descarga": "on"})
+        assert form.is_valid()
+        assert form.to_argv() == ["--limit", "5", "--forzar-descarga"]
 
 
 class ManagementCommandRunDurationTest(TestCase):

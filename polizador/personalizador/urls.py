@@ -15,6 +15,7 @@ from personalizador.views.direccionviews import *
 from personalizador.views.departamentoviews import *
 from personalizador.views.oficinaviews import *
 from personalizador.views.agenteviews import *
+from personalizador.views.licenciapermisoviews import *
 
 app_name = "personalizador"
 
@@ -96,6 +97,13 @@ agente_patterns = [
 	path("crear/agente/<pk>", UpdateAgente.as_view(), name="update-agente"),
 	path("eliminar/agente/<pk>", EliminarAgente.as_view(), name="eliminar-agente"),
 ]
+licenciapermiso_patterns = [
+	path("licencias/crear/", CrearLicenciaPermiso.as_view(), name="crear-licenciapermiso"),
+	path("licencias/crear/<pk>", UpdateLicenciaPermiso.as_view(), name="update-licenciapermiso"),
+	path("licencias/eliminar/<pk>", EliminarLicenciaPermiso.as_view(), name="eliminar-licenciapermiso"),
+	path("licencias/ver/<pk>", VerLicenciaPermiso.as_view(), name="ver-licenciapermiso"),
+	path("licencias/control/agente/<pk>", ControlLicenciasAgente, name="control-licencias-agente"),
+]
 
 ajax = [
 	path("listas/generoagentes", PaginaListaGeneroAgentes, name="lista-generoagentes"),
@@ -113,6 +121,7 @@ ajax = [
 	path("listas/departamentos", PaginaListaDepartamentos, name="lista-departamentos"),
 	path("listas/oficinas", PaginaListaOficinas, name="lista-oficinas"),
 	path("listas/agentes", PaginaListaAgentes, name="lista-agentes"),
+	path("listas/licenciapermisos", PaginaListaLicenciaPermisos, name="lista-licenciapermisos"),
 ]
 
 urlpatterns += ajax
@@ -131,3 +140,4 @@ urlpatterns += direccion_patterns
 urlpatterns += departamento_patterns
 urlpatterns += oficina_patterns
 urlpatterns += agente_patterns
+urlpatterns += licenciapermiso_patterns

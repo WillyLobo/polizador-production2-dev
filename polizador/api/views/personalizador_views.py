@@ -20,6 +20,7 @@ from personalizador.models import (
     Agente, ApartadoCargo, ActividadEspecifica, CargoTipo, Categoria, CEIC,
     Departamento, DenominacionCargo, Direccion, Directorio, Gerencia,
     GeneroAgente, GrupoCargo, Oficina, RepresentanteTecnico, TituloProfesional,
+    LicenciaPermiso,
 )
 
 User = get_user_model()
@@ -671,4 +672,52 @@ register_simple_datatable(
         "categoria", "oficina__cargo_directorio", "oficina__cargo_gerencia",
         "oficina__cargo_direccion", "oficina__cargo_departamento",
     ),
+)
+
+
+# --- LicenciaPermiso datatable ---
+def _licenciapermiso_datatable_row(s: LicenciaPermiso, user) -> dict:
+    id_ = s.id
+    verlink = f"<a href='/personal/licencias/ver/{id_}'>{detallelinkimg}</a>"
+    acciones = verlink
+    if user.has_perm("personalizador.change_licenciapermiso"):
+        acciones += f"<a href='/personal/licencias/crear/{id_}'>{editlinkimg}</a>"
+    if user.has_perm("personalizador.delete_licenciapermiso"):
+        acciones += f"<a href='/personal/licencias/eliminar/{id_}'>{eliminarlinkimg}</a>"
+    return {
+        "id": s.id,
+        "licenciapermiso_agente": str(s.licenciapermiso_agente),
+        "licenciapermiso_tipo": s.licenciapermiso_tipo.tipolicenciapermiso_nombre,
+        "licenciapermiso_fecha_desde": s.licenciapermiso_fecha_desde,
+        "licenciapermiso_fecha_hasta": s.licenciapermiso_fecha_hasta,
+        "licenciapermiso_cantidad": s.licenciapermiso_cantidad,
+        "licenciapermiso_anulada": "Sí" if s.licenciapermiso_anulada else "No",
+        "acciones": acciones,
+    }
+
+
+register_simple_datatable(
+    router, LicenciaPermiso, "licenciapermisos",
+    order_fields={
+        "id": "id",
+        "licenciapermiso_agente": "licenciapermiso_agente__agente_apellidos",
+        "licenciapermiso_tipo": "licenciapermiso_tipo__tipolicenciapermiso_nombre",
+        "licenciapermiso_fecha_desde": "licenciapermiso_fecha_desde",
+        "licenciapermiso_fecha_hasta": "licenciapermiso_fecha_hasta",
+        "licenciapermiso_anulada": "licenciapermiso_anulada",
+    },
+    filter_fields={
+        "licenciapermiso_agente": "licenciapermiso_agente__agente_apellidos__icontains",
+        "licenciapermiso_tipo": "licenciapermiso_tipo__tipolicenciapermiso_nombre__icontains",
+        "licenciapermiso_anulada": "licenciapermiso_anulada",
+    },
+    search_lookups=[
+        "licenciapermiso_agente__agente_apellidos__icontains",
+        "licenciapermiso_agente__agente_nombres__icontains",
+        "licenciapermiso_tipo__tipolicenciapermiso_nombre__icontains",
+    ],
+    row_builder=_licenciapermiso_datatable_row,
+    default_order="-licenciapermiso_fecha_desde",
+    queryset=LicenciaPermiso.objects.select_related("licenciapermiso_agente", "licenciapermiso_tipo"),
+    boolean_filter_keys=frozenset({"licenciapermiso_anulada"}),
 )

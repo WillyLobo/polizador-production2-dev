@@ -250,6 +250,20 @@ class InstrumentosLegalesDecretos(models.Model):
         output_field=models.TextField(),
         db_persist=True,
     )
+    instrumentolegaldecretos_establece_licencia_anual = models.BooleanField(
+        "Establece Licencia Anual",
+        default=False,
+        help_text="Tildado automáticamente si el decreto establece un período de Licencia Anual "
+                   "Ordinaria. Se usa para acotar el desplegable de decretos al cargar una "
+                   "Licencia/Permiso de tipo 'Anual'.",
+    )
+    instrumentolegaldecretos_establece_licencia_invierno = models.BooleanField(
+        "Establece Licencia de Invierno",
+        default=False,
+        help_text="Tildado automáticamente si el decreto establece un período de Licencia Anual "
+                   "de Invierno. Se usa para acotar el desplegable de decretos al cargar una "
+                   "Licencia/Permiso de tipo 'Anual de Invierno'.",
+    )
     instrumentolegaldecretos_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     instrumentolegaldecretos_history = HistoricalRecords()
 
