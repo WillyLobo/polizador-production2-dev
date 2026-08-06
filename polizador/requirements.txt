@@ -119,7 +119,7 @@ requests-oauthlib==2.0.0
 rich==15.0.0
 rsa==4.9.1
 sentry-sdk==2.61.1
-setuptools==82.0.1
+setuptools==83.0.0
 shellingham==1.5.4
 six==1.17.0
 sortedcontainers==2.4.0
