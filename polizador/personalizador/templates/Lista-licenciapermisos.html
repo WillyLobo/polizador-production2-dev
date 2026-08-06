@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% block title %}<title>Licencias y Permisos</title>{% endblock title%}
+
+<div class="min-vh-100">
+  <div class="card">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small d-flex justify-content-between align-items-center">
+      <span>Licencias y Permisos</span>
+      {% if perms.personalizador.add_licenciapermiso %}
+      <a href="{% url 'personalizador:crear-licenciapermiso' %}" class="btn btn-sm btn-outline-success">
+        <i class="bi bi-plus-circle me-1"></i>Registrar
+      </a>
+      {% endif %}
+    </div>
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table id="tableLicenciaPermisos" width="auto" class="table table-striped table-bordered align-middle mb-0">
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script language="javascript">
+
+  $(document).ready(function() {
+      var columns = [
+          { data: 'licenciapermiso_agente', name: 'licenciapermiso_agente', title: 'Agente' },
+          { data: 'licenciapermiso_tipo', name: 'licenciapermiso_tipo', title: 'Tipo' },
+          { data: 'licenciapermiso_fecha_desde', name: 'licenciapermiso_fecha_desde', title: 'Desde' },
+          { data: 'licenciapermiso_fecha_hasta', name: 'licenciapermiso_fecha_hasta', title: 'Hasta' },
+          { data: 'licenciapermiso_cantidad', name: 'licenciapermiso_cantidad', title: 'Cantidad' },
+          { data: 'licenciapermiso_anulada', name: 'licenciapermiso_anulada', title: 'Anulada' },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
+          $('#tableLicenciaPermisos'),
+          '/v1/api/datatables/licenciapermisos/',
+          columns,
+          {
+              order: [[2, 'desc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+          },
+      );
+  });
+
+</script>
+
+{% endblock %}

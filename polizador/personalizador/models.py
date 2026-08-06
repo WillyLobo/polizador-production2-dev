@@ -1,8 +1,10 @@
+import os
 from django.db import models
 from django.core.exceptions import ValidationError
 from simple_history.models import HistoricalRecords
 from django.core.validators import MinValueValidator
 from django.contrib.auth.models import AbstractUser
+from django.utils import timezone
 from core.validators import FileValidator, CuitValidator
 from datetime import datetime
 from uuid_utils import compat
@@ -364,3 +366,122 @@ class RepresentanteTecnico(models.Model):
 
     def __str__(self):
         return f"{self.representantetecnico_profesion.tituloprofesional_abreviatura} {self.representantetecnico_nombre} {self.representantetecnico_apellido}"
+
+def generate_name_licenciapermiso(instance, filename):
+    """Genera el nombre de archivo para el adjunto (certificado/comunicación) de una
+    LicenciaPermiso."""
+    directorio = "licencias/adjuntos/"
+    extension = os.path.splitext(filename)[1]
+    name = os.path.join(directorio, f"{instance.licenciapermiso_uuid}{extension}")
+    return name
+
+class TipoLicenciaPermiso(models.Model):
+    class Meta:
+        verbose_name = "Tipo de Licencia/Permiso"
+        verbose_name_plural = "Tipos de Licencias/Permisos"
+        ordering = ("tipolicenciapermiso_categoria", "tipolicenciapermiso_nombre")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["tipolicenciapermiso_categoria", "tipolicenciapermiso_nombre"],
+                name="unique_tipolicenciapermiso_1"
+            ),
+        ]
+
+    CATEGORIA = (
+        ("LOR", "Licencia Ordinaria"),
+        ("LEX", "Licencia Extraordinaria"),
+        ("PER", "Permiso"),
+    )
+    UNIDAD = (
+        ("DC", "Días corridos"),
+        ("DH", "Días hábiles"),
+        ("HS", "Horas"),
+    )
+    TOPE_PERIODO = (
+        ("ANI", "Por año calendario"),
+        ("VEZ", "Por vez/evento"),
+        ("TOT", "Total del beneficio"),
+        ("VAR", "Variable"),
+    )
+    REMUNERADA = (
+        ("SI", "Con goce de haberes"),
+        ("NO", "Sin goce de haberes"),
+        ("PA", "Parcial"),
+    )
+
+    tipolicenciapermiso_categoria = models.CharField("Categoría", max_length=3, choices=CATEGORIA)
+    tipolicenciapermiso_nombre = models.CharField("Nombre", max_length=150)
+    tipolicenciapermiso_articulo = models.CharField("Artículo (Ley 645-A)", max_length=20, blank=True, null=True)
+    tipolicenciapermiso_unidad = models.CharField("Unidad", max_length=2, choices=UNIDAD, default="DC")
+    tipolicenciapermiso_tope_cantidad = models.PositiveIntegerField("Tope", blank=True, null=True, help_text="Vacío cuando el tope no es un número fijo (ej. depende de la antigüedad o de junta médica).")
+    tipolicenciapermiso_tope_periodo = models.CharField("Período del tope", max_length=3, choices=TOPE_PERIODO, default="ANI")
+    tipolicenciapermiso_remunerada = models.CharField("Remunerada", max_length=2, choices=REMUNERADA, default="SI")
+    tipolicenciapermiso_antiguedad_meses = models.PositiveIntegerField("Antigüedad mínima (meses)", default=0)
+    tipolicenciapermiso_requiere_certificado = models.BooleanField("Requiere certificado", default=False)
+    tipolicenciapermiso_compensacion_horaria = models.BooleanField("Requiere compensación de horario", default=False, help_text="Permisos que la ley obliga a devolver con horas de trabajo (ej. razones particulares, lactancia).")
+    tipolicenciapermiso_observaciones = models.TextField("Observaciones", blank=True, null=True)
+    tipolicenciapermiso_activo = models.BooleanField("Activo", default=True)
+    tipolicenciapermiso_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    tipolicenciapermiso_history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.tipolicenciapermiso_nombre} ({self.get_tipolicenciapermiso_categoria_display()})"
+
+class LicenciaPermiso(models.Model):
+    """Registro administrativo de una licencia/permiso ya otorgado a un agente (no hay
+    flujo de solicitud/aprobación: se carga el hecho consumado, respaldado o no por un
+    instrumento legal formal)."""
+    class Meta:
+        verbose_name = "Licencia/Permiso"
+        verbose_name_plural = "Licencias/Permisos"
+        ordering = ("-licenciapermiso_fecha_desde",)
+
+    licenciapermiso_agente = models.ForeignKey("Agente", verbose_name="Agente", on_delete=models.CASCADE)
+    licenciapermiso_tipo = models.ForeignKey("TipoLicenciaPermiso", verbose_name="Tipo", on_delete=models.CASCADE)
+    licenciapermiso_fecha_otorgamiento = models.DateField("Fecha de Otorgamiento", default=timezone.now)
+    licenciapermiso_fecha_desde = models.DateField("Fecha Desde")
+    licenciapermiso_fecha_hasta = models.DateField("Fecha Hasta", blank=True, null=True)
+    licenciapermiso_cantidad = models.PositiveIntegerField("Cantidad", help_text="En la unidad indicada por el tipo (días u horas).")
+    licenciapermiso_motivo = models.TextField("Motivo", blank=True, null=True)
+    licenciapermiso_anulada = models.BooleanField("Anulada", default=False, help_text="Si el registro se encuentra anulado, no se computa en los balances ni reportes.")
+    licenciapermiso_instrumento_resolucion = models.ForeignKey("secretariador.InstrumentosLegalesResoluciones", verbose_name="Resolución", on_delete=models.CASCADE, blank=True, null=True)
+    licenciapermiso_instrumento_decreto = models.ForeignKey("secretariador.InstrumentosLegalesDecretos", verbose_name="Decreto", on_delete=models.CASCADE, blank=True, null=True)
+    licenciapermiso_instrumento_memorandum = models.ForeignKey("secretariador.InstrumentosLegalesMemorandum", verbose_name="Memorandum", on_delete=models.CASCADE, blank=True, null=True)
+    licenciapermiso_adjunto = models.FileField(
+        "Adjunto (certificado/comunicación)", upload_to=generate_name_licenciapermiso, max_length=500,
+        validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))],
+        blank=True, null=True,
+    )
+    licenciapermiso_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    licenciapermiso_history = HistoricalRecords()
+
+    def clean(self):
+        super().clean()
+        instrumentos = [
+            self.licenciapermiso_instrumento_resolucion_id,
+            self.licenciapermiso_instrumento_decreto_id,
+            self.licenciapermiso_instrumento_memorandum_id,
+        ]
+        if sum(1 for i in instrumentos if i) > 1:
+            raise ValidationError("Solo se puede vincular un instrumento legal (Resolución, Decreto o Memorandum).")
+        if self.licenciapermiso_fecha_hasta and self.licenciapermiso_fecha_hasta < self.licenciapermiso_fecha_desde:
+            raise ValidationError({"licenciapermiso_fecha_hasta": "No puede ser anterior a la fecha desde."})
+
+    def __str__(self):
+        return f"{self.licenciapermiso_tipo} - {self.licenciapermiso_agente} ({self.licenciapermiso_fecha_desde})"
+
+class DevolucionHorasPermiso(models.Model):
+    class Meta:
+        verbose_name = "Devolución de Horas"
+        verbose_name_plural = "Devoluciones de Horas"
+        ordering = ("devolucionhoras_fecha",)
+
+    devolucionhoras_licencia = models.ForeignKey("LicenciaPermiso", verbose_name="Licencia/Permiso", on_delete=models.CASCADE, related_name="devolucionhoras_set")
+    devolucionhoras_fecha = models.DateField("Fecha")
+    devolucionhoras_cantidad = models.PositiveIntegerField("Horas Devueltas")
+    devolucionhoras_observaciones = models.CharField("Observaciones", max_length=300, blank=True, null=True)
+    devolucionhoras_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    devolucionhoras_history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.devolucionhoras_cantidad}hs - {self.devolucionhoras_fecha}"

@@ -5,7 +5,7 @@ from carga import models
 from carga.models import Certificado
 from carga.views.ajaxviews import rubrowidget, agentemultiplewidget, certificadolegacywidget
 from personalizador.models import Agente
-from polizador.custom_forms import DateHTMLWidget
+from core.widgets import DateHTMLWidget
 
 class FojaDeMedicionForm(forms.ModelForm):
 	required_css_class = "required"

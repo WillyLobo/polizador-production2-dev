@@ -106,6 +106,31 @@ class CopiarBucketDevForm(BaseCommandRunForm):
         return argv
 
 
+class FixBucketContentTypeForm(BaseCommandRunForm):
+    """No exponemos --bucket (mismo motivo que CopiarBucketDevForm): el comando ya
+    usa como default el único bucket pensado para esto, GS_BUCKET_NAME."""
+
+    dry_run = forms.BooleanField(
+        required=False,
+        initial=True,
+        label="Simular (dry-run)",
+        help_text="Tildado: no parchea nada, solo informa cuántos objetos corregiría. Destildalo para corregir de verdad.",
+    )
+    prefix = forms.CharField(
+        required=False,
+        label="Prefijo (opcional)",
+        help_text="Limita la corrección a objetos bajo este prefijo, ej. instrumentoslegales/. Vacío: todo el bucket.",
+    )
+
+    def to_argv(self):
+        argv = []
+        if self.cleaned_data["dry_run"]:
+            argv.append("--dry-run")
+        if self.cleaned_data["prefix"]:
+            argv += ["--prefix", self.cleaned_data["prefix"]]
+        return argv
+
+
 class ResaveComisionadoForm(BaseCommandRunForm):
     """El comando `resave_comisionado` no toma argumentos."""
 
@@ -154,9 +179,10 @@ class EmpaquetarResolucionesMensualForm(BaseCommandRunForm):
 
 
 class SyncResolucionesSgtForm(BaseCommandRunForm):
-    """No exponemos --headed: abre una ventana de navegador visible para depurar
-    selectores a mano, algo que no tiene sentido (ni funciona) corriendo como
-    subprocess sin display en el servidor."""
+    """No exponemos --headed (abre una ventana de navegador visible para depurar
+    selectores a mano, algo que no tiene sentido ni funciona corriendo como subprocess
+    sin display en el servidor) ni --solo-excel (es un modo de mantenimiento/depuración,
+    no una corrida normal)."""
 
     dry_run = forms.BooleanField(
         required=False,
@@ -173,6 +199,15 @@ class SyncResolucionesSgtForm(BaseCommandRunForm):
         label="Límite de resoluciones a descargar",
         help_text="Vacío: sin límite. Útil para probar con pocas antes de correr sin límite.",
     )
+    forzar_descarga = forms.BooleanField(
+        required=False,
+        label="Forzar descarga nueva",
+        help_text=(
+            "Por defecto se reusa el último Excel exportado en MEDIA_ROOT/sgt_exports/ si "
+            "hay uno, para no generar carga innecesaria contra el SGT. Tildá esto para "
+            "ignorarlo y pedirle al SGT un listado nuevo."
+        ),
+    )
 
     def to_argv(self):
         argv = []
@@ -181,4 +216,47 @@ class SyncResolucionesSgtForm(BaseCommandRunForm):
         limit = self.cleaned_data.get("limit")
         if limit:
             argv += ["--limit", str(limit)]
+        if self.cleaned_data["forzar_descarga"]:
+            argv.append("--forzar-descarga")
+        return argv
+
+
+class SyncDecretosSgtForm(BaseCommandRunForm):
+    """No exponemos --headed (no tiene sentido en un subprocess sin display) ni
+    --solo-excel (es un modo de mantenimiento/depuración, no una corrida normal)."""
+
+    dry_run = forms.BooleanField(
+        required=False,
+        initial=True,
+        label="Simular (dry-run)",
+        help_text=(
+            "Tildado: solo informa qué decretos de licencia (anual/invierno) faltan, sin "
+            "descargar ni guardar nada. Destildalo para importar de verdad."
+        ),
+    )
+    limit = forms.IntegerField(
+        required=False,
+        min_value=1,
+        label="Límite de decretos a descargar",
+        help_text="Vacío: sin límite. Útil para probar con pocos antes de correr sin límite.",
+    )
+    forzar_descarga = forms.BooleanField(
+        required=False,
+        label="Forzar descarga nueva",
+        help_text=(
+            "Por defecto se reusa el último Excel exportado en MEDIA_ROOT/sgt_exports/ si "
+            "hay uno, para no generar carga innecesaria contra el SGT. Tildá esto para "
+            "ignorarlo y pedirle al SGT un listado nuevo."
+        ),
+    )
+
+    def to_argv(self):
+        argv = []
+        if self.cleaned_data["dry_run"]:
+            argv.append("--dry-run")
+        limit = self.cleaned_data.get("limit")
+        if limit:
+            argv += ["--limit", str(limit)]
+        if self.cleaned_data["forzar_descarga"]:
+            argv.append("--forzar-descarga")
         return argv

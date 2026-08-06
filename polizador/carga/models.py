@@ -13,7 +13,7 @@ from uuid_utils import compat
 import calendar
 import os
 from core.validators import FileValidator, CuitValidator
-from polizador.custom_forms import decimal_to_dms
+from core.widgets import decimal_to_dms
 
 
 # from .models import User

@@ -3,7 +3,7 @@ from secretariador.models import ComisionadoSolicitud
 from core.mixins import BaseFormMixin
 from secretariador.views.ajaxviews import ComisionadoWidget
 from datetime import datetime
-from polizador.custom_forms import CustomCheckboxInput
+from core.widgets import CustomCheckboxInput
 
 class DivErrorList(forms.utils.ErrorList):
     template_name = "generic/error_as_div.html"

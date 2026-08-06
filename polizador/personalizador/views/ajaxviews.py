@@ -2,6 +2,8 @@ from django_select2 import forms as s2forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from carga.views.ajaxviews import AddRelatedWidgetMixin, SmallCatalogWidgetMixin
+from personalizador.models import TipoLicenciaPermiso
+from personalizador.licencias import LICENCIA_ANUAL_ORDINARIA_NOMBRE, LICENCIA_ANUAL_INVIERNO_NOMBRE
 
 class representantetecnicoMultipleWidget(LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget):
     search_fields = [
@@ -143,3 +145,48 @@ class OficinaDepartamentoDependentWidgetMixin(SmallCatalogWidgetMixin):
 class oficina_departamentowidget(OficinaDepartamentoDependentWidgetMixin, AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
     add_related_url_name = "personalizador:crear-departamento"
     search_fields = ["departamento_nombre__icontains"]
+
+# --- Widgets para Licencias y Permisos (Ley 645-A) ---
+
+class tipolicenciapermisowidget(SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+    """Catálogo chico (~31 filas), sin CRUD propio (se carga por management command):
+    no lleva AddRelatedWidgetMixin."""
+    search_fields = ["tipolicenciapermiso_nombre__icontains"]
+
+class instrumentoresolucionwidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
+    search_fields = [
+        "instrumentolegalresoluciones_str__icontains",
+        "instrumentolegalresoluciones_descripcion__icontains",
+    ]
+
+class InstrumentoDecretoLicenciaDependentWidgetMixin:
+    """Acota las opciones de decreto según el tipo de licencia elegido en el campo hermano
+    'licenciapermiso_tipo': solo aplica a los dos tipos que un decreto puede establecer
+    (Anual / Anual de Invierno); para cualquier otro tipo no se filtra."""
+    dependent_fields = {"licenciapermiso_tipo": "licenciapermiso_tipo_actual"}
+
+    def filter_queryset(self, request, term, queryset=None, **dependent_fields):
+        if queryset is None:
+            queryset = self.get_queryset()
+        tipo_id = dependent_fields.pop("licenciapermiso_tipo_actual", None)
+        if tipo_id:
+            tipo_nombre = TipoLicenciaPermiso.objects.filter(pk=tipo_id).values_list(
+                "tipolicenciapermiso_nombre", flat=True
+            ).first()
+            if tipo_nombre == LICENCIA_ANUAL_ORDINARIA_NOMBRE:
+                queryset = queryset.filter(instrumentolegaldecretos_establece_licencia_anual=True)
+            elif tipo_nombre == LICENCIA_ANUAL_INVIERNO_NOMBRE:
+                queryset = queryset.filter(instrumentolegaldecretos_establece_licencia_invierno=True)
+        return super().filter_queryset(request, term, queryset)
+
+class instrumentodecretowidget(InstrumentoDecretoLicenciaDependentWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+    search_fields = [
+        "instrumentolegaldecretos_str__icontains",
+        "instrumentolegaldecretos_descripcion__icontains",
+    ]
+
+class instrumentomemorandumwidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
+    search_fields = [
+        "instrumentolegalmemorandum_str__icontains",
+        "instrumentolegalmemorandum_descripcion__icontains",
+    ]

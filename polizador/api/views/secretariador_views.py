@@ -3,7 +3,7 @@ import json
 from datetime import datetime, timedelta
 from typing import List, Optional
 
-from django.db.models import Q
+from django.db.models import BooleanField, Case, Q, Value, When
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from ninja import Router
@@ -261,9 +261,25 @@ def _decreto_datatable_row(d: InstrumentosLegalesDecretos, user) -> dict:
         "instrumentolegaldecretos_ano": d.instrumentolegaldecretos_ano,
         "instrumentolegaldecretos_fecha_aprobacion": d.instrumentolegaldecretos_fecha_aprobacion.isoformat(),
         "instrumentolegaldecretos_descripcion": d.instrumentolegaldecretos_descripcion,
+        "instrumentolegaldecretos_es_licencia": "Sí" if d.instrumentolegaldecretos_es_licencia else "No",
         "acciones": acciones,
     }
 
+
+# Anotación que unifica los dos flags de licencia (anual/invierno) en un solo booleano, para
+# poder filtrar "decretos que son de licencia" con un único <select> en vez de dos filtros
+# separados por flag.
+_DECRETOS_QUERYSET = InstrumentosLegalesDecretos.objects.annotate(
+    instrumentolegaldecretos_es_licencia=Case(
+        When(
+            Q(instrumentolegaldecretos_establece_licencia_anual=True)
+            | Q(instrumentolegaldecretos_establece_licencia_invierno=True),
+            then=Value(True),
+        ),
+        default=Value(False),
+        output_field=BooleanField(),
+    )
+)
 
 register_simple_datatable(
     router, InstrumentosLegalesDecretos, "decretos",
@@ -274,6 +290,7 @@ register_simple_datatable(
         "instrumentolegaldecretos_ano": "instrumentolegaldecretos_ano",
         "instrumentolegaldecretos_fecha_aprobacion": "instrumentolegaldecretos_fecha_aprobacion",
         "instrumentolegaldecretos_descripcion": "instrumentolegaldecretos_descripcion",
+        "instrumentolegaldecretos_es_licencia": "instrumentolegaldecretos_es_licencia",
     },
     filter_fields={
         "instrumentolegaldecretos_tipo": "instrumentolegaldecretos_tipo__icontains",
@@ -281,6 +298,7 @@ register_simple_datatable(
         "instrumentolegaldecretos_ano": "instrumentolegaldecretos_ano__icontains",
         "instrumentolegaldecretos_fecha_aprobacion": "instrumentolegaldecretos_fecha_aprobacion",
         "instrumentolegaldecretos_descripcion": "instrumentolegaldecretos_descripcion__icontains",
+        "instrumentolegaldecretos_es_licencia": "instrumentolegaldecretos_es_licencia",
     },
     search_lookups=[
         "instrumentolegaldecretos_numero__icontains", "instrumentolegaldecretos_ano__icontains",
@@ -288,6 +306,8 @@ register_simple_datatable(
     ],
     row_builder=_decreto_datatable_row,
     default_order="-instrumentolegaldecretos_ano,-instrumentolegaldecretos_numero",
+    queryset=_DECRETOS_QUERYSET,
+    boolean_filter_keys=frozenset({"instrumentolegaldecretos_es_licencia"}),
 )
 
 

@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block content %}
+{% block title %}<title>Licencia/Permiso</title>{% endblock title %}
+
+<div class="card mb-3">
+  <div class="card-header py-2 bg-body-tertiary fw-semibold small">
+    {{ object.licenciapermiso_tipo }} - {{ object.licenciapermiso_agente }}
+    {% if object.licenciapermiso_anulada %}<span class="badge text-bg-danger ms-2">Anulada</span>{% endif %}
+  </div>
+  <div class="card-body p-2">
+    <dl class="row mb-0">
+      <dt class="col-sm-3">Agente</dt>
+      <dd class="col-sm-9">{{ object.licenciapermiso_agente }}</dd>
+
+      <dt class="col-sm-3">Tipo</dt>
+      <dd class="col-sm-9">{{ object.licenciapermiso_tipo }} ({{ object.licenciapermiso_tipo.get_tipolicenciapermiso_categoria_display }})</dd>
+
+      <dt class="col-sm-3">Fecha de Otorgamiento</dt>
+      <dd class="col-sm-9">{{ object.licenciapermiso_fecha_otorgamiento }}</dd>
+
+      <dt class="col-sm-3">Desde / Hasta</dt>
+      <dd class="col-sm-9">{{ object.licenciapermiso_fecha_desde }}{% if object.licenciapermiso_fecha_hasta %} - {{ object.licenciapermiso_fecha_hasta }}{% endif %}</dd>
+
+      <dt class="col-sm-3">Cantidad</dt>
+      <dd class="col-sm-9">{{ object.licenciapermiso_cantidad }} ({{ object.licenciapermiso_tipo.get_tipolicenciapermiso_unidad_display }})</dd>
+
+      <dt class="col-sm-3">Motivo</dt>
+      <dd class="col-sm-9">{{ object.licenciapermiso_motivo|default:"-" }}</dd>
+
+      {% if object.licenciapermiso_instrumento_resolucion %}
+      <dt class="col-sm-3">Resolución</dt>
+      <dd class="col-sm-9">{{ object.licenciapermiso_instrumento_resolucion }}</dd>
+      {% endif %}
+      {% if object.licenciapermiso_instrumento_decreto %}
+      <dt class="col-sm-3">Decreto</dt>
+      <dd class="col-sm-9">{{ object.licenciapermiso_instrumento_decreto }}</dd>
+      {% endif %}
+      {% if object.licenciapermiso_instrumento_memorandum %}
+      <dt class="col-sm-3">Memorandum</dt>
+      <dd class="col-sm-9">{{ object.licenciapermiso_instrumento_memorandum }}</dd>
+      {% endif %}
+
+      {% if object.licenciapermiso_adjunto %}
+      <dt class="col-sm-3">Adjunto</dt>
+      <dd class="col-sm-9"><a href="{{ object.licenciapermiso_adjunto.url }}" target="_blank">Ver archivo</a></dd>
+      {% endif %}
+    </dl>
+  </div>
+</div>
+
+{% if object.devolucionhoras_set.all %}
+<div class="card mb-3">
+  <div class="card-header py-2 bg-body-tertiary fw-semibold small">Horas Devueltas</div>
+  <div class="card-body p-2">
+    <table class="table table-sm mb-0">
+      <thead><tr><th>Fecha</th><th>Horas</th><th>Observaciones</th></tr></thead>
+      <tbody>
+        {% for devolucion in object.devolucionhoras_set.all %}
+        <tr>
+          <td>{{ devolucion.devolucionhoras_fecha }}</td>
+          <td>{{ devolucion.devolucionhoras_cantidad }}</td>
+          <td>{{ devolucion.devolucionhoras_observaciones|default:"-" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endif %}
+
+<a href="{% url 'personalizador:lista-licenciapermisos' %}" class="btn btn-sm btn-outline-secondary">
+  <i class="bi bi-arrow-left me-1"></i>Volver
+</a>
+{% endblock %}

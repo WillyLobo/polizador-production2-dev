@@ -95,6 +95,19 @@ class Command(BaseCommand):
             help="Descarga como máximo N resoluciones nuevas (útil para probar o para "
                  "catch-up incremental en corridas periódicas).",
         )
+        parser.add_argument(
+            "--solo-excel",
+            action="store_true",
+            help="Solo exporta el listado a un Excel en MEDIA_ROOT/sgt_exports/ y termina, "
+                 "sin parsear ni descargar ninguna resolución individual.",
+        )
+        parser.add_argument(
+            "--forzar-descarga",
+            action="store_true",
+            help="Ignora cualquier Excel cacheado en MEDIA_ROOT/sgt_exports/ y fuerza una "
+                 "exportación nueva desde el SGT (por defecto se reusa el más reciente para "
+                 "no generar carga innecesaria contra el sitio).",
+        )
 
     def handle(self, *args, **options):
         if not settings.SGT_USERNAME or not settings.SGT_PASSWORD:
@@ -111,30 +124,60 @@ class Command(BaseCommand):
                 "`playwright install firefox`."
             )
 
-        with sync_playwright() as p:
-            try:
-                browser = p.firefox.launch(headless=not options["headed"])
-            except Exception as e:
-                raise CommandError(
-                    f"No pude lanzar Firefox: {e}\n"
-                    "¿Está instalado? Corré `playwright install firefox`."
+        data = None
+        if not options["forzar_descarga"] and not options["solo_excel"]:
+            cache_path = self._buscar_excel_cacheado("resoluciones")
+            if cache_path:
+                self.stdout.write(
+                    f"{self.style.MIGRATE_LABEL('Usando Excel cacheado:')} {cache_path} "
+                    "(pasá --forzar-descarga para bajar un listado nuevo del SGT)"
                 )
-            context = browser.new_context(
-                accept_downloads=True,
-                locale="es-AR",
-                timezone_id="America/Argentina/Buenos_Aires",
-                viewport={"width": 1920, "height": 1080},
-            )
-            page = context.new_page()
+                data = cache_path.read_bytes()
 
-            self.stdout.write(self.style.MIGRATE_LABEL("Iniciando sesión en gobiernodigital..."))
-            self._login(page)
+        with sync_playwright() as p:
+            browser = None
+            page = None
 
-            self.stdout.write(self.style.MIGRATE_LABEL("Abriendo SGT..."))
-            self._abrir_panel_resoluciones(page)
+            def _asegurar_sesion():
+                nonlocal browser, page
+                if browser is not None:
+                    return page
+                try:
+                    browser = p.firefox.launch(headless=not options["headed"])
+                except Exception as e:
+                    raise CommandError(
+                        f"No pude lanzar Firefox: {e}\n"
+                        "¿Está instalado? Corré `playwright install firefox`."
+                    )
+                context = browser.new_context(
+                    accept_downloads=True,
+                    locale="es-AR",
+                    timezone_id="America/Argentina/Buenos_Aires",
+                    viewport={"width": 1920, "height": 1080},
+                )
+                page = context.new_page()
+                self.stdout.write(self.style.MIGRATE_LABEL("Iniciando sesión en gobiernodigital..."))
+                self._login(page)
+                self.stdout.write(self.style.MIGRATE_LABEL("Abriendo SGT..."))
+                self._abrir_panel_resoluciones(page)
+                return page
 
-            self.stdout.write(self.style.MIGRATE_LABEL("Exportando listado de Resoluciones..."))
-            filas = self._listar_resoluciones(page)
+            if options["solo_excel"]:
+                page = _asegurar_sesion()
+                self.stdout.write(self.style.MIGRATE_LABEL("Exportando listado de Resoluciones..."))
+                data = self._exportar_excel(page)
+                destino = self._guardar_excel_media(data, "resoluciones")
+                self.stdout.write(self.style.SUCCESS(f"Excel guardado en {destino}"))
+                browser.close()
+                return
+
+            if data is None:
+                page = _asegurar_sesion()
+                self.stdout.write(self.style.MIGRATE_LABEL("Exportando listado de Resoluciones..."))
+                data = self._exportar_excel(page)
+                self._guardar_excel_media(data, "resoluciones")
+
+            filas = self._listar_resoluciones(data)
             self.stdout.write(f"    {len(filas)} resoluciones aprobadas encontradas en el SGT.")
 
             existentes_por_ano = {}
@@ -156,22 +199,26 @@ class Command(BaseCommand):
                     self.stdout.write(
                         f"    {fila['identificacion']} - {fila['descripcion'][:80]}"
                     )
-                browser.close()
+                if browser:
+                    browser.close()
                 return
 
             if options["limit"]:
                 faltantes = faltantes[: options["limit"]]
 
-            for fila in faltantes:
-                try:
-                    self._descargar_y_guardar(page, fila)
-                except Exception as e:
-                    self.stdout.write(
-                        f"{self.style.ERROR('Error procesando')} {fila['identificacion']}: {e}"
-                    )
-                    self._debug_dump(page, f"error_{fila['numero']}_{fila['ano']}")
+            if faltantes:
+                page = _asegurar_sesion()
+                for fila in faltantes:
+                    try:
+                        self._descargar_y_guardar(page, fila)
+                    except Exception as e:
+                        self.stdout.write(
+                            f"{self.style.ERROR('Error procesando')} {fila['identificacion']}: {e}"
+                        )
+                        self._debug_dump(page, f"error_{fila['numero']}_{fila['ano']}")
 
-            browser.close()
+            if browser:
+                browser.close()
 
     # -- Diagnóstico -----------------------------------------------------------
 
@@ -227,17 +274,40 @@ class Command(BaseCommand):
             raise
         page.wait_for_load_state("networkidle")
 
-    def _listar_resoluciones(self, page):
-        import openpyxl
-
+    def _exportar_excel(self, page):
+        """Dispara la exportación nativa del panel (botón "BTNEXPORT") y devuelve los bytes
+        crudos del Excel descargado, sin parsear nada."""
         try:
             with page.expect_download(timeout=20000) as download_info:
                 page.click("#BTNEXPORT")
             download = download_info.value
-            data = Path(download.path()).read_bytes()
+            return Path(download.path()).read_bytes()
         except Exception:
             self._debug_dump(page, "05_export_failed")
             raise
+
+    def _guardar_excel_media(self, data, prefix):
+        """Guarda el Excel exportado en MEDIA_ROOT/sgt_exports/, para reuso en corridas futuras
+        (ver _buscar_excel_cacheado) y para --solo-excel."""
+        directorio = Path(settings.MEDIA_ROOT) / "sgt_exports"
+        directorio.mkdir(parents=True, exist_ok=True)
+        nombre = f"{prefix}_{datetime.datetime.now():%Y%m%d_%H%M%S}.xlsx"
+        destino = directorio / nombre
+        destino.write_bytes(data)
+        return destino
+
+    def _buscar_excel_cacheado(self, prefix):
+        """Devuelve el Excel más reciente ya exportado en MEDIA_ROOT/sgt_exports/ para este
+        prefijo (resoluciones/decretos), o None si no hay ninguno. El nombre de archivo incluye
+        un timestamp ordenable (YYYYMMDD_HHMMSS), así que ordenar por nombre alcanza."""
+        directorio = Path(settings.MEDIA_ROOT) / "sgt_exports"
+        if not directorio.is_dir():
+            return None
+        candidatos = sorted(directorio.glob(f"{prefix}_*.xlsx"))
+        return candidatos[-1] if candidatos else None
+
+    def _listar_resoluciones(self, data):
+        import openpyxl
 
         # openpyxl decide el formato por la extensión del nombre de archivo; el path temporal
         # que da Playwright no tiene extensión, así que se le pasan los bytes directamente.

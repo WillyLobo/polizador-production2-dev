@@ -1,7 +1,7 @@
 from django import forms
 from carga import models
 from carga.views.ajaxviews import obrawidget, contratowidget
-from polizador.custom_forms import DateHTMLWidget
+from core.widgets import DateHTMLWidget
 
 class PlandeTrabajoForm(forms.ModelForm):
 	required_css_class = "required"

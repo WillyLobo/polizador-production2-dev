@@ -76,6 +76,12 @@ class Command(BaseCommand):
             try:
                 destination_blob = destination_bucket.blob(source_blob.name)
                 destination_blob.storage_class = storage_class
+                # rewrite() manda como body el resource completo de destination_blob: si solo
+                # storage_class quedó seteado, GCS no hereda el resto de los metadatos del
+                # origen (content_type termina None/octet-stream en destino, rompiendo la
+                # previsualización inline de PDFs). Confirmado empíricamente, no es lo que dice
+                # la documentación de la API. Hay que copiar a mano lo que sí nos importa.
+                destination_blob.content_type = source_blob.content_type
                 token = None
                 while True:
                     token, _, _ = destination_blob.rewrite(source_blob, token=token)

@@ -1,6 +1,6 @@
 from django import forms
 from carga import models
-from polizador.custom_forms import DateHTMLWidget
+from core.widgets import DateHTMLWidget
 
 class ContratoMontoForm(forms.ModelForm):
 	required_css_class = "required"

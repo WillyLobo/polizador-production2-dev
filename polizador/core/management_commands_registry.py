@@ -14,9 +14,11 @@ from core.forms import (
     CheckResolucionesForm,
     CopiarBucketDevForm,
     EmpaquetarResolucionesMensualForm,
+    FixBucketContentTypeForm,
     FixObraResolucionNumbersForm,
     NumerosCertificadosAuditForm,
     ResaveComisionadoForm,
+    SyncDecretosSgtForm,
     SyncResolucionesSgtForm,
 )
 
@@ -72,6 +74,18 @@ COMMAND_REGISTRY = {
         "form": CopiarBucketDevForm,
         "mutates_data": True,
     },
+    "fix_bucket_content_type": {
+        "label": "Corregir Content-Type faltante en bucket GCS",
+        "help_text": (
+            "Parchea el Content-Type de objetos GCS que quedaron sin setear "
+            "(application/octet-stream), lo que hace que el navegador los descargue en vez "
+            "de previsualizarlos inline (ej. PDFs). Efecto de un bug ya corregido en "
+            "'Copiar bucket GCS producción -> dev'. Solo toca metadata, no vuelve a subir "
+            "contenido. Empezá con 'Simular' para ver cuántos objetos corregiría."
+        ),
+        "form": FixBucketContentTypeForm,
+        "mutates_data": True,
+    },
     "empaquetar_resoluciones_mensual": {
         "label": "Empaquetar resoluciones del mes (ZIP/PDF)",
         "help_text": (
@@ -98,10 +112,26 @@ COMMAND_REGISTRY = {
         "help_text": (
             "Maneja un navegador real (Playwright/Firefox) para iniciar sesión en el SGT "
             "(app.chaco.gob.ar) con las credenciales institucionales del .env y descargar "
-            "las Resoluciones aprobadas que todavía no están cargadas en Polizador. Puede "
-            "tardar varios minutos. Empezá con 'Simular' para ver qué importaría."
+            "las Resoluciones aprobadas que todavía no están cargadas en Polizador. Por "
+            "defecto reusa el último listado exportado en MEDIA_ROOT/sgt_exports/ si hay "
+            "uno, para no generar carga innecesaria contra el SGT. Puede tardar varios "
+            "minutos. Empezá con 'Simular' para ver qué importaría."
         ),
         "form": SyncResolucionesSgtForm,
+        "mutates_data": True,
+    },
+    "sync_decretos_sgt": {
+        "label": "Importar decretos de licencia desde el SGT",
+        "help_text": (
+            "Maneja un navegador real (Playwright/Firefox) para iniciar sesión en el SGT "
+            "(app.chaco.gob.ar) con las credenciales institucionales del .env y descargar "
+            "los Decretos que establecen período de licencia anual ordinaria o de invierno "
+            "y todavía no están cargados en Polizador. Por defecto reusa el último listado "
+            "exportado en MEDIA_ROOT/sgt_exports/ si hay uno, para no generar carga "
+            "innecesaria contra el SGT. Puede tardar varios minutos. Empezá con 'Simular' "
+            "para ver qué importaría."
+        ),
+        "form": SyncDecretosSgtForm,
         "mutates_data": True,
     },
 }

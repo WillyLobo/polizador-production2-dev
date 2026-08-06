@@ -28,6 +28,10 @@
               title: 'Fecha de Aprobación', filterType: 'date',
           },
           { data: 'instrumentolegaldecretos_descripcion', name: 'instrumentolegaldecretos_descripcion', title: 'Descripción' },
+          {
+              data: 'instrumentolegaldecretos_es_licencia', name: 'instrumentolegaldecretos_es_licencia',
+              title: 'Licencia', filterType: 'select', filterChoices: [['true', 'Sí'], ['false', 'No']],
+          },
           { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
       ];
 

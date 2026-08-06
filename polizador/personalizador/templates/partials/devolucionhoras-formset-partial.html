@@ -1,0 +1,58 @@
+{{formset.management_form}}
+<div class="card mb-3">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">
+        Horas Devueltas
+        <small class="text-body-secondary fw-normal">(solo aplica a permisos con compensación de horario, ej. razones particulares, lactancia)</small>
+    </div>
+    <div class="card-body p-2">
+        <div id="devolucionhoras-form" class="devolucionhoras-form">
+            {% for form in formset %}
+                <div class="row m-1 border rounded p-2 align-items-end" id="devolucionhoras-form-{{form.prefix}}">
+                    {% for hidden in form.hidden_fields %}
+                        {{ hidden }}
+                    {% endfor %}
+                    <div class="col-md-4">
+                        {{form.devolucionhoras_fecha.as_field_group}}
+                    </div>
+                    <div class="col-md-3">
+                        {{form.devolucionhoras_cantidad.as_field_group}}
+                    </div>
+                    <div class="col-md-4">
+                        {{form.devolucionhoras_observaciones.as_field_group}}
+                    </div>
+                    {% if form.DELETE %}
+                    <div class="col-md-1 d-flex flex-column align-items-center">
+                        <label>Eliminar</label>
+                        {{form.DELETE}}
+                    </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+            {% for dict in formset.errors %}
+                {% for error in dict.values %}
+                    {{ error }}
+                {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<div id="empty_devolucionhoras_form" style="display:none">
+    <div class="row m-1 border rounded p-2 align-items-end" id="devolucionhoras-form-__prefix__">
+        {% for hidden in formset.empty_form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+        <div class="col-md-4">
+            {{formset.empty_form.devolucionhoras_fecha.as_field_group}}
+        </div>
+        <div class="col-md-3">
+            {{formset.empty_form.devolucionhoras_cantidad.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{formset.empty_form.devolucionhoras_observaciones.as_field_group}}
+        </div>
+        <div class="col-md-1 d-flex flex-column align-items-center">
+            <label>Eliminar</label>
+            {{formset.empty_form.DELETE}}
+        </div>
+    </div>
+</div>
