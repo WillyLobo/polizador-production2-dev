@@ -151,7 +151,10 @@ class oficina_departamentowidget(OficinaDepartamentoDependentWidgetMixin, AddRel
 class tipolicenciapermisowidget(SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
     """Catálogo chico (~31 filas), sin CRUD propio (se carga por management command):
     no lleva AddRelatedWidgetMixin."""
-    search_fields = ["tipolicenciapermiso_nombre__icontains"]
+    search_fields = [
+        "tipolicenciapermiso_articulo__icontains",
+        "tipolicenciapermiso_nombre__icontains"
+        ]
 
 class instrumentoresolucionwidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
     search_fields = [

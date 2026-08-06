@@ -127,7 +127,7 @@ class RepresentanteTecnicoAdmin(ImportExportMixin, SimpleHistoryAdmin):
     autocomplete_fields = ["representantetecnico_profesion"]
 
 class TipoLicenciaPermisoAdmin(SimpleHistoryAdmin):
-    list_display = ["tipolicenciapermiso_nombre", "tipolicenciapermiso_categoria", "tipolicenciapermiso_unidad", "tipolicenciapermiso_tope_cantidad", "tipolicenciapermiso_activo"]
+    list_display = ["tipolicenciapermiso_articulo","tipolicenciapermiso_nombre", "tipolicenciapermiso_categoria", "tipolicenciapermiso_unidad", "tipolicenciapermiso_tope_cantidad", "tipolicenciapermiso_activo"]
     search_fields = ["tipolicenciapermiso_nombre"]
     list_filter = ["tipolicenciapermiso_categoria", "tipolicenciapermiso_activo"]
 

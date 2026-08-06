@@ -86,8 +86,8 @@ class Agente(models.Model):
     aportes_ley_resolucion = models.CharField(max_length=13, blank=True, null=True)
     # aportes_ley = generatedfield(delta de fecha_desde a fecha_hasta)
     # aportes_anses = generatedfield(delta de anses_fecha_desde a anses_fecha_hasta)
-    # años_totales = generatedfield(delta de fecha_de_igreso a hoy)
     # fecha_carga_interna = models.DateField("Fecha de inicio de aportes", blank=True, null=True)
+    # anitguedad_total = generatedfield(delta de fecha_de_igreso + años por resolucion + años funcion privada a hoy)
     # FLAGS
     agente_verificado_contra_padron = models.BooleanField("Chequeado",default=False)
     agente_es_inpector_obra = models.BooleanField("Inspector de Obra",default=False)
@@ -425,7 +425,7 @@ class TipoLicenciaPermiso(models.Model):
     tipolicenciapermiso_history = HistoricalRecords()
 
     def __str__(self):
-        return f"{self.tipolicenciapermiso_nombre} ({self.get_tipolicenciapermiso_categoria_display()})"
+        return f"{self.tipolicenciapermiso_articulo} - {self.tipolicenciapermiso_nombre} ({self.get_tipolicenciapermiso_categoria_display()})"
 
 class LicenciaPermiso(models.Model):
     """Registro administrativo de una licencia/permiso ya otorgado a un agente (no hay
