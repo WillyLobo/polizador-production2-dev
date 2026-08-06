@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% block title %}<title>{{ title }}</title>{% endblock title %}
+
+{{ form.media.css }}
+<form id="mainForm" action='{% url "personalizador:crear-cortelicencia" licencia.id %}' method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  {% include "partials/cortelicencia-form-partial.html" %}
+</form>
+{{ form.media.js }}
+{% endblock %}
+
+{% block actions %}
+  {% url 'personalizador:ver-licenciapermiso' licencia.id as volver_target %}
+  {% include "partials/form-actions.html" with volver_url=volver_target %}
+{% endblock %}

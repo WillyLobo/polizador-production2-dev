@@ -6,9 +6,12 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views import generic
 
-from personalizador.models import LicenciaPermiso, Agente
+from personalizador.models import LicenciaPermiso, Agente, CorteLicencia
 from personalizador.forms.licenciapermisoforms import LicenciaPermisoForm, DevolucionHorasPermisoFormset
-from personalizador.licencias import resumen_agente
+from personalizador.licencias import (
+	resumen_agente, saldos_pendientes_agente,
+	LICENCIA_ANUAL_ORDINARIA_NOMBRE, LICENCIA_ANUAL_INVIERNO_NOMBRE,
+)
 from core.mixins import DeleteRelatedObjectsMixin, FormsetViewMixin
 
 @method_decorator(login_required, name="dispatch")
@@ -36,6 +39,17 @@ class CrearLicenciaPermiso(PermissionRequiredMixin, FormsetViewMixin, generic.Cr
 	def get_title(self):
 		return self.title
 
+	def get_initial(self):
+		initial = super().get_initial()
+		corte_id = self.request.GET.get("saldo_de_corte")
+		if corte_id:
+			corte = get_object_or_404(CorteLicencia, pk=corte_id)
+			licencia_original = corte.cortelicencia_licencia
+			initial["licenciapermiso_saldo_de_corte"] = corte
+			initial["licenciapermiso_agente"] = licencia_original.licenciapermiso_agente
+			initial["licenciapermiso_tipo"] = licencia_original.licenciapermiso_tipo
+		return initial
+
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		context["title"] = self.get_title()
@@ -61,6 +75,13 @@ class VerLicenciaPermiso(PermissionRequiredMixin, generic.DetailView):
 	model = LicenciaPermiso
 	template_name = "licenciapermiso/ver-licenciapermiso.html"
 
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context["es_licencia_anual"] = self.object.licenciapermiso_tipo.tipolicenciapermiso_nombre in (
+			LICENCIA_ANUAL_ORDINARIA_NOMBRE, LICENCIA_ANUAL_INVIERNO_NOMBRE,
+		)
+		return context
+
 
 @login_required
 @permission_required('personalizador.view_licenciapermiso', raise_exception=True)
@@ -84,5 +105,6 @@ def ControlLicenciasAgente(request, pk):
 		"anio": anio,
 		"anios": range(timezone.now().year - 5, timezone.now().year + 1),
 		"resumen": resumen_agente(agente, anio),
+		"saldos_pendientes": saldos_pendientes_agente(agente),
 	}
 	return render(request, "licenciapermiso/control-licencias.html", context)

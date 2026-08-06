@@ -6,9 +6,7 @@ licencia/permiso en un año calendario dado.
 """
 from datetime import date
 
-from django.db.models import Sum
-
-from personalizador.models import LicenciaPermiso, TipoLicenciaPermiso
+from personalizador.models import CorteLicencia, LicenciaPermiso, TipoLicenciaPermiso
 
 LICENCIA_ANUAL_ORDINARIA_NOMBRE = "Anual"
 LICENCIA_ANUAL_INVIERNO_NOMBRE = "Anual de Invierno"
@@ -44,14 +42,33 @@ def dias_licencia_ordinaria_correspondientes(agente, anio):
 
 def dias_usados(agente, tipo, anio):
     """Suma la cantidad de los registros (no anulados) del tipo dado para el agente,
-    cuya fecha_desde cae dentro del año calendario."""
-    total = LicenciaPermiso.objects.filter(
+    cuya fecha_desde cae dentro del año calendario.
+
+    Las fracciones que consumen el saldo de un CorteLicencia (`licenciapermiso_saldo_de_corte`)
+    quedan afuera: no consumen el cupo del año en que se usan, sino el saldo ya
+    descontado del cupo del año de la licencia original. El registro que fue cortado
+    cuenta, a su vez, solo los días efectivamente gozados (`corte.cortelicencia_dias_gozados`)
+    en vez de su `licenciapermiso_cantidad` completa."""
+    registros = LicenciaPermiso.objects.filter(
         licenciapermiso_agente=agente,
         licenciapermiso_tipo=tipo,
         licenciapermiso_anulada=False,
+        licenciapermiso_saldo_de_corte__isnull=True,
         licenciapermiso_fecha_desde__year=anio,
-    ).aggregate(total=Sum("licenciapermiso_cantidad"))["total"]
-    return total or 0
+    ).select_related("corte")
+    return sum(
+        registro.corte.cortelicencia_dias_gozados if hasattr(registro, "corte") else registro.licenciapermiso_cantidad
+        for registro in registros
+    )
+
+
+def saldos_pendientes_agente(agente):
+    """Cortes de licencia del agente con saldo > 0 aún sin usar, para alertar sobre
+    vencimientos próximos en el control de licencias."""
+    cortes = CorteLicencia.objects.filter(
+        cortelicencia_licencia__licenciapermiso_agente=agente,
+    ).select_related("cortelicencia_licencia", "cortelicencia_licencia__licenciapermiso_tipo")
+    return [corte for corte in cortes if corte.dias_restantes > 0]
 
 
 def balance_tipo(agente, tipo, anio):

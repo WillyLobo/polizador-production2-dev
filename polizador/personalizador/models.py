@@ -444,6 +444,11 @@ class LicenciaPermiso(models.Model):
     licenciapermiso_cantidad = models.PositiveIntegerField("Cantidad", help_text="En la unidad indicada por el tipo (días u horas).")
     licenciapermiso_motivo = models.TextField("Motivo", blank=True, null=True)
     licenciapermiso_anulada = models.BooleanField("Anulada", default=False, help_text="Si el registro se encuentra anulado, no se computa en los balances ni reportes.")
+    licenciapermiso_saldo_de_corte = models.ForeignKey(
+        "CorteLicencia", verbose_name="Usa saldo de corte", related_name="usos_saldo",
+        on_delete=models.PROTECT, blank=True, null=True,
+        help_text="Completar si esta licencia consume el saldo pendiente de un corte anterior, en vez de ser un otorgamiento nuevo.",
+    )
     licenciapermiso_instrumento_resolucion = models.ForeignKey("secretariador.InstrumentosLegalesResoluciones", verbose_name="Resolución", on_delete=models.CASCADE, blank=True, null=True)
     licenciapermiso_instrumento_decreto = models.ForeignKey("secretariador.InstrumentosLegalesDecretos", verbose_name="Decreto", on_delete=models.CASCADE, blank=True, null=True)
     licenciapermiso_instrumento_memorandum = models.ForeignKey("secretariador.InstrumentosLegalesMemorandum", verbose_name="Memorandum", on_delete=models.CASCADE, blank=True, null=True)
@@ -467,8 +472,112 @@ class LicenciaPermiso(models.Model):
         if self.licenciapermiso_fecha_hasta and self.licenciapermiso_fecha_hasta < self.licenciapermiso_fecha_desde:
             raise ValidationError({"licenciapermiso_fecha_hasta": "No puede ser anterior a la fecha desde."})
 
+        if self.licenciapermiso_saldo_de_corte_id:
+            corte = self.licenciapermiso_saldo_de_corte
+            licencia_original = corte.cortelicencia_licencia
+            if self.licenciapermiso_agente_id and self.licenciapermiso_agente_id != licencia_original.licenciapermiso_agente_id:
+                raise ValidationError({"licenciapermiso_saldo_de_corte": "El corte pertenece a otro agente."})
+            if self.licenciapermiso_tipo_id and self.licenciapermiso_tipo_id != licencia_original.licenciapermiso_tipo_id:
+                raise ValidationError({"licenciapermiso_saldo_de_corte": "El corte corresponde a otro tipo de licencia."})
+            if self.licenciapermiso_fecha_desde and self.licenciapermiso_fecha_desde > corte.cortelicencia_fecha_vencimiento:
+                raise ValidationError({"licenciapermiso_fecha_desde": f"El saldo del corte vence el {corte.cortelicencia_fecha_vencimiento}."})
+            if self.licenciapermiso_cantidad is not None and not self.licenciapermiso_anulada:
+                restante = corte.dias_restantes
+                if self.pk:
+                    anterior = LicenciaPermiso.objects.filter(pk=self.pk).values_list(
+                        "licenciapermiso_cantidad", "licenciapermiso_anulada").first()
+                    if anterior and not anterior[1]:
+                        restante += anterior[0]
+                if self.licenciapermiso_cantidad > restante:
+                    raise ValidationError({"licenciapermiso_cantidad": f"Supera el saldo pendiente del corte ({restante})."})
+
     def __str__(self):
         return f"{self.licenciapermiso_tipo} - {self.licenciapermiso_agente} ({self.licenciapermiso_fecha_desde})"
+
+def generate_name_cortelicencia(instance, filename):
+    """Genera el nombre de archivo para el adjunto (nota) de un CorteLicencia."""
+    directorio = "licencias/cortes/"
+    extension = os.path.splitext(filename)[1]
+    name = os.path.join(directorio, f"{instance.cortelicencia_uuid}{extension}")
+    return name
+
+class CorteLicencia(models.Model):
+    """Interrupción de una Licencia Anual (Ordinaria o de Invierno) ya otorgada:
+    el agente se reintegra a sus tareas por necesidades del organismo antes de agotar
+    los días, y el saldo pendiente queda disponible para usarse después (total o
+    fraccionado, ver `LicenciaPermiso.licenciapermiso_saldo_de_corte`) hasta la fecha
+    de vencimiento."""
+    class Meta:
+        verbose_name = "Corte de Licencia"
+        verbose_name_plural = "Cortes de Licencia"
+
+    cortelicencia_licencia = models.OneToOneField(
+        "LicenciaPermiso", verbose_name="Licencia interrumpida",
+        on_delete=models.CASCADE, related_name="corte",
+    )
+    cortelicencia_fecha_reintegro = models.DateField("Fecha de Reintegro")
+    cortelicencia_dias_gozados = models.PositiveIntegerField("Días Gozados", help_text="Días efectivamente usados antes del reintegro.")
+    cortelicencia_dias_pendientes = models.PositiveIntegerField("Días Pendientes", help_text="Saldo a utilizar más adelante (total o fraccionado).")
+    cortelicencia_fecha_vencimiento = models.DateField("Vence el", help_text="Fecha límite para usar el saldo pendiente.")
+    cortelicencia_motivo = models.TextField("Motivo", blank=True, null=True, help_text='Ej. "Necesidades del organismo".')
+    # Nota/actuación administrativa (no es un instrumento legal formal): mismo patrón
+    # de campos que secretariador.Solicitud.solicitud_actuacion.
+    cortelicencia_nota_jurisdiccion = models.CharField("Jurisdicción", max_length=3, default="E10")
+    cortelicencia_nota_numero = models.DecimalField("N° Actuación", max_digits=6, decimal_places=0, validators=[MinValueValidator(0)], default=0)
+    cortelicencia_nota_ano = models.DecimalField("Año Actuación", max_digits=4, decimal_places=0, validators=[MinValueValidator(0)], default=int(timezone.now().year))
+    cortelicencia_nota_actuacion = models.GeneratedField(
+        expression=ConcatOp('cortelicencia_nota_jurisdiccion', models.Value("-"), 'cortelicencia_nota_numero', models.Value("-"), 'cortelicencia_nota_ano'),
+        output_field=models.CharField("N° Actuación", max_length=20, editable=False),
+        db_persist=True,
+    )
+    cortelicencia_adjunto = models.FileField(
+        "Adjunto (nota)", upload_to=generate_name_cortelicencia, max_length=500,
+        validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))],
+        blank=True, null=True,
+    )
+    cortelicencia_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    cortelicencia_history = HistoricalRecords()
+
+    def clean(self):
+        super().clean()
+        from personalizador.licencias import LICENCIA_ANUAL_ORDINARIA_NOMBRE, LICENCIA_ANUAL_INVIERNO_NOMBRE
+
+        licencia = self.cortelicencia_licencia
+        if self.cortelicencia_licencia_id:
+            if licencia.licenciapermiso_tipo.tipolicenciapermiso_nombre not in (
+                LICENCIA_ANUAL_ORDINARIA_NOMBRE, LICENCIA_ANUAL_INVIERNO_NOMBRE,
+            ):
+                raise ValidationError({"cortelicencia_licencia": "Solo se puede registrar un corte sobre una Licencia Anual (Ordinaria o de Invierno)."})
+
+            if self.cortelicencia_fecha_reintegro:
+                if self.cortelicencia_fecha_reintegro < licencia.licenciapermiso_fecha_desde:
+                    raise ValidationError({"cortelicencia_fecha_reintegro": "No puede ser anterior a la fecha desde de la licencia."})
+                if licencia.licenciapermiso_fecha_hasta and self.cortelicencia_fecha_reintegro > licencia.licenciapermiso_fecha_hasta:
+                    raise ValidationError({"cortelicencia_fecha_reintegro": "No puede ser posterior a la fecha hasta de la licencia."})
+
+            if self.cortelicencia_dias_gozados is not None and self.cortelicencia_dias_pendientes is not None:
+                if self.cortelicencia_dias_gozados + self.cortelicencia_dias_pendientes > licencia.licenciapermiso_cantidad:
+                    raise ValidationError("Días gozados + días pendientes no puede superar la cantidad total de la licencia.")
+
+        if (self.cortelicencia_fecha_reintegro and self.cortelicencia_fecha_vencimiento
+                and self.cortelicencia_fecha_vencimiento <= self.cortelicencia_fecha_reintegro):
+            raise ValidationError({"cortelicencia_fecha_vencimiento": "Debe ser posterior a la fecha de reintegro."})
+
+    @property
+    def dias_usados_saldo(self):
+        return self.usos_saldo.filter(licenciapermiso_anulada=False).aggregate(
+            total=models.Sum("licenciapermiso_cantidad"))["total"] or 0
+
+    @property
+    def dias_restantes(self):
+        return self.cortelicencia_dias_pendientes - self.dias_usados_saldo
+
+    @property
+    def vencido(self):
+        return self.dias_restantes > 0 and self.cortelicencia_fecha_vencimiento < timezone.localdate()
+
+    def __str__(self):
+        return f"Corte - {self.cortelicencia_licencia} ({self.cortelicencia_fecha_reintegro})"
 
 class DevolucionHorasPermiso(models.Model):
     class Meta:

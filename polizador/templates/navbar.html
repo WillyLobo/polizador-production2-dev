@@ -108,7 +108,7 @@
             {% comment %} {% if perms.personalizador.add_actividadespecifica %}<li><a class="dropdown-item" href="{% url "personalizador:crear-actividadespecifica" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Actividad Específica</a></li>{% endif %} {% endcomment %}
             {% comment %} {% if perms.personalizador.add_cargotipo %}<li><a class="dropdown-item" href="{% url "personalizador:crear-cargotipo" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Tipo de Cargo</a></li>{% endif %} {% endcomment %}
             {% comment %} {% if perms.personalizador.add_generoagente %}<li><a class="dropdown-item" href="{% url "personalizador:crear-generoagente" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Género</a></li>{% endif %} {% endcomment %}
-            {% comment %} {% if perms.personalizador.add_tituloprofesional %}<li><a class="dropdown-item" href="{% url "personalizador:crear-tituloprofesional" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Título Profesional</a></li>{% endif %} {% endcomment %}
+            {% if perms.personalizador.add_tituloprofesional %}<li><a class="dropdown-item" href="{% url "personalizador:crear-tituloprofesional" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Título Profesional</a></li>{% endif %}
             {% if perms.personalizador.add_licenciapermiso %}<li><a class="dropdown-item" href="{% url "personalizador:crear-licenciapermiso" %}"><i class="bi bi-plus-circle me-1"></i>Registrar Licencia/Permiso</a></li>{% endif %}
             <li><hr class="dropdown-divider"></li>
             <li class="dropdown-item fw-bold text-muted"><small>LISTADOS</small></li>

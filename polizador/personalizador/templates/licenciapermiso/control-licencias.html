@@ -44,6 +44,41 @@
   </div>
 </div>
 
+{% if saldos_pendientes %}
+<div class="card mb-3">
+  <div class="card-header py-2 bg-body-tertiary fw-semibold small">Saldos Pendientes por Corte</div>
+  <div class="card-body p-2">
+    <div class="table-responsive">
+      <table class="table table-sm table-striped align-middle mb-0">
+        <thead>
+          <tr>
+            <th>Licencia</th>
+            <th>Fecha de Reintegro</th>
+            <th class="text-end">Días Restantes</th>
+            <th>Vence el</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for corte in saldos_pendientes %}
+          <tr>
+            <td>{{ corte.cortelicencia_licencia.licenciapermiso_tipo }}</td>
+            <td>{{ corte.cortelicencia_fecha_reintegro }}</td>
+            <td class="text-end fw-bold">{{ corte.dias_restantes }}</td>
+            <td>
+              {{ corte.cortelicencia_fecha_vencimiento }}
+              {% if corte.vencido %}<span class="badge text-bg-danger ms-1">Vencido</span>{% endif %}
+            </td>
+            <td><a href="{% url 'personalizador:ver-licenciapermiso' corte.cortelicencia_licencia_id %}" class="btn btn-sm btn-outline-secondary">Ver</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endif %}
+
 <a href="{% url 'personalizador:lista-licenciapermisos' %}" class="btn btn-sm btn-outline-secondary">
   <i class="bi bi-arrow-left me-1"></i>Volver
 </a>

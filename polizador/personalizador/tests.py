@@ -5,10 +5,12 @@ from django.contrib.auth.models import Permission
 from django.test import TestCase
 from django.urls import reverse
 
+from django.core.exceptions import ValidationError
+
 from personalizador.licencias import (
-    antiguedad_meses, balance_tipo, dias_licencia_ordinaria_correspondientes,
+    antiguedad_meses, balance_tipo, dias_licencia_ordinaria_correspondientes, dias_usados,
 )
-from personalizador.models import Agente, GeneroAgente, LicenciaPermiso, TipoLicenciaPermiso
+from personalizador.models import Agente, CorteLicencia, GeneroAgente, LicenciaPermiso, TipoLicenciaPermiso
 
 UserModel = get_user_model()
 
@@ -106,6 +108,110 @@ class BalanceTipoTest(TestCase):
         self.assertEqual(balance["usados"], 1)
 
 
+class CorteLicenciaTest(TestCase):
+    """Corte de una Licencia Anual: los días gozados antes del reintegro cuentan para
+    el balance del año de la licencia; el saldo pendiente no se descuenta hasta que se
+    use, y las fracciones que lo consumen no vuelven a descontar del cupo anual."""
+
+    def setUp(self):
+        genero = GeneroAgente.objects.create(generoagente_nombre="Test")
+        self.agente = Agente.objects.create(
+            agente_nombres="Ana", agente_apellidos="Gomez",
+            sexo=genero, dni=30222333, cuil="27302223334",
+            fecha_ingreso=date(2000, 1, 1),
+        )
+        self.tipo_anual = TipoLicenciaPermiso.objects.create(
+            tipolicenciapermiso_categoria="LOR", tipolicenciapermiso_nombre="Anual",
+            tipolicenciapermiso_unidad="DC", tipolicenciapermiso_tope_periodo="VAR",
+        )
+        self.licencia = LicenciaPermiso.objects.create(
+            licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_anual,
+            licenciapermiso_fecha_desde=date(2024, 1, 5), licenciapermiso_cantidad=21,
+        )
+
+    def _corte(self, dias_gozados=10, dias_pendientes=11, fecha_reintegro=date(2024, 1, 15)):
+        return CorteLicencia.objects.create(
+            cortelicencia_licencia=self.licencia,
+            cortelicencia_fecha_reintegro=fecha_reintegro,
+            cortelicencia_dias_gozados=dias_gozados,
+            cortelicencia_dias_pendientes=dias_pendientes,
+            cortelicencia_fecha_vencimiento=date(2025, 4, 30),
+        )
+
+    def test_dias_usados_cuenta_solo_los_gozados_antes_del_corte(self):
+        self._corte()
+        self.assertEqual(dias_usados(self.agente, self.tipo_anual, 2024), 10)
+
+    def test_dias_restantes_baja_al_cargar_una_fraccion(self):
+        corte = self._corte()
+        LicenciaPermiso.objects.create(
+            licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_anual,
+            licenciapermiso_fecha_desde=date(2024, 6, 1), licenciapermiso_cantidad=3,
+            licenciapermiso_saldo_de_corte=corte,
+        )
+        self.assertEqual(corte.dias_restantes, 8)
+
+    def test_fraccion_no_descuenta_del_cupo_anual_del_ano_en_que_se_usa(self):
+        corte = self._corte()
+        LicenciaPermiso.objects.create(
+            licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_anual,
+            licenciapermiso_fecha_desde=date(2024, 6, 1), licenciapermiso_cantidad=3,
+            licenciapermiso_saldo_de_corte=corte,
+        )
+        self.assertEqual(dias_usados(self.agente, self.tipo_anual, 2024), 10)
+
+    def test_fraccion_puede_cruzar_al_ano_calendario_siguiente(self):
+        corte = self._corte()
+        fraccion = LicenciaPermiso(
+            licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_anual,
+            licenciapermiso_fecha_desde=date(2025, 2, 1), licenciapermiso_cantidad=5,
+            licenciapermiso_saldo_de_corte=corte,
+        )
+        fraccion.full_clean()
+        fraccion.save()
+        self.assertEqual(corte.dias_restantes, 6)
+        self.assertEqual(dias_usados(self.agente, self.tipo_anual, 2025), 0)
+
+    def test_fraccion_no_puede_superar_el_saldo_pendiente(self):
+        corte = self._corte()
+        fraccion = LicenciaPermiso(
+            licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_anual,
+            licenciapermiso_fecha_desde=date(2024, 6, 1), licenciapermiso_cantidad=12,
+            licenciapermiso_saldo_de_corte=corte,
+        )
+        with self.assertRaises(ValidationError):
+            fraccion.full_clean()
+
+    def test_fraccion_no_puede_superar_fecha_de_vencimiento(self):
+        corte = self._corte()
+        fraccion = LicenciaPermiso(
+            licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_anual,
+            licenciapermiso_fecha_desde=date(2025, 5, 1), licenciapermiso_cantidad=3,
+            licenciapermiso_saldo_de_corte=corte,
+        )
+        with self.assertRaises(ValidationError):
+            fraccion.full_clean()
+
+    def test_corte_no_permitido_sobre_licencia_no_anual(self):
+        tipo_otro = TipoLicenciaPermiso.objects.create(
+            tipolicenciapermiso_categoria="PER", tipolicenciapermiso_nombre="Donación de Sangre",
+            tipolicenciapermiso_unidad="DH", tipolicenciapermiso_tope_cantidad=1,
+            tipolicenciapermiso_tope_periodo="VEZ",
+        )
+        licencia_otro = LicenciaPermiso.objects.create(
+            licenciapermiso_agente=self.agente, licenciapermiso_tipo=tipo_otro,
+            licenciapermiso_fecha_desde=date(2024, 1, 5), licenciapermiso_cantidad=1,
+        )
+        corte = CorteLicencia(
+            cortelicencia_licencia=licencia_otro,
+            cortelicencia_fecha_reintegro=date(2024, 1, 5),
+            cortelicencia_dias_gozados=0, cortelicencia_dias_pendientes=1,
+            cortelicencia_fecha_vencimiento=date(2025, 4, 30),
+        )
+        with self.assertRaises(ValidationError):
+            corte.full_clean()
+
+
 class LicenciaPermisoViewsPermissionTest(TestCase):
     """Las vistas de licencias exigen los permisos correspondientes: sin login
     redirigen, y las funciones basadas en @permission_required(raise_exception=True)
@@ -129,3 +235,13 @@ class LicenciaPermisoViewsPermissionTest(TestCase):
         self.client.login(username="licencias_user", password="pass1234!")
         resp = self.client.get(reverse("personalizador:lista-licenciapermisos"))
         self.assertEqual(resp.status_code, 200)
+
+    def test_crear_licenciapermiso_ok_con_permiso(self):
+        """El formulario (con el cálculo automático de días vía la API de balance)
+        debe renderizar sin errores de template."""
+        perm = Permission.objects.get(codename="add_licenciapermiso", content_type__app_label="personalizador")
+        self.user.user_permissions.add(perm)
+        self.client.login(username="licencias_user", password="pass1234!")
+        resp = self.client.get(reverse("personalizador:crear-licenciapermiso"))
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "licenciapermiso-balance/")

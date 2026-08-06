@@ -190,3 +190,20 @@ class instrumentomemorandumwidget(LoginRequiredMixin, s2forms.ModelSelect2Widget
         "instrumentolegalmemorandum_str__icontains",
         "instrumentolegalmemorandum_descripcion__icontains",
     ]
+
+class CorteLicenciaSaldoDependentWidgetMixin:
+    """Acota las opciones de corte según el agente elegido en el campo hermano
+    'licenciapermiso_agente': solo cortes de ese agente que todavía tengan saldo
+    pendiente por usar."""
+    dependent_fields = {"licenciapermiso_agente": "licenciapermiso_agente_actual"}
+
+    def filter_queryset(self, request, term, queryset=None, **dependent_fields):
+        if queryset is None:
+            queryset = self.get_queryset()
+        agente_id = dependent_fields.pop("licenciapermiso_agente_actual", None)
+        queryset = queryset.filter(cortelicencia_licencia__licenciapermiso_agente_id=agente_id) if agente_id else queryset.none()
+        pendientes_ids = [corte.pk for corte in queryset if corte.dias_restantes > 0]
+        return super().filter_queryset(request, term, queryset.filter(pk__in=pendientes_ids))
+
+class cortelicenciawidget(CorteLicenciaSaldoDependentWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+    search_fields = ["cortelicencia_nota_actuacion__icontains"]

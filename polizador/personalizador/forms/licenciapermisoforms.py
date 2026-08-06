@@ -5,6 +5,7 @@ from personalizador import models
 from personalizador.views.ajaxviews import (
 	agentewidget, tipolicenciapermisowidget,
 	instrumentoresolucionwidget, instrumentodecretowidget, instrumentomemorandumwidget,
+	cortelicenciawidget,
 )
 from core.widgets import DateHTMLWidget
 
@@ -21,6 +22,7 @@ class LicenciaPermisoForm(forms.ModelForm):
 			"licenciapermiso_fecha_hasta",
 			"licenciapermiso_cantidad",
 			"licenciapermiso_motivo",
+			"licenciapermiso_saldo_de_corte",
 			"licenciapermiso_instrumento_resolucion",
 			"licenciapermiso_instrumento_decreto",
 			"licenciapermiso_instrumento_memorandum",
@@ -35,6 +37,7 @@ class LicenciaPermisoForm(forms.ModelForm):
 			"licenciapermiso_fecha_hasta": DateHTMLWidget(attrs={"class": "form-control", "type": "date"}),
 			"licenciapermiso_cantidad": forms.NumberInput(attrs={"class": "form-control"}),
 			"licenciapermiso_motivo": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
+			"licenciapermiso_saldo_de_corte": cortelicenciawidget(attrs={"class": "form-control customSelect2"}),
 			"licenciapermiso_instrumento_resolucion": instrumentoresolucionwidget(attrs={"class": "form-control customSelect2"}),
 			"licenciapermiso_instrumento_decreto": instrumentodecretowidget(attrs={"class": "form-control customSelect2"}),
 			"licenciapermiso_instrumento_memorandum": instrumentomemorandumwidget(attrs={"class": "form-control customSelect2"}),

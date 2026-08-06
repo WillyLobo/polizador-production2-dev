@@ -135,7 +135,16 @@ class LicenciaPermisoAdmin(SimpleHistoryAdmin):
     list_display = ["licenciapermiso_agente", "licenciapermiso_tipo", "licenciapermiso_fecha_desde", "licenciapermiso_anulada"]
     search_fields = ["licenciapermiso_agente__agente_nombreyapellido"]
     list_filter = ["licenciapermiso_anulada", "licenciapermiso_tipo__tipolicenciapermiso_categoria"]
-    autocomplete_fields = ["licenciapermiso_agente", "licenciapermiso_tipo"]
+    autocomplete_fields = ["licenciapermiso_agente", "licenciapermiso_tipo", "licenciapermiso_saldo_de_corte"]
+
+class CorteLicenciaAdmin(SimpleHistoryAdmin):
+    list_display = ["cortelicencia_licencia", "cortelicencia_fecha_reintegro", "cortelicencia_dias_pendientes", "dias_restantes", "cortelicencia_fecha_vencimiento"]
+    search_fields = ["cortelicencia_licencia__licenciapermiso_agente__agente_nombreyapellido", "cortelicencia_nota_actuacion"]
+    autocomplete_fields = ["cortelicencia_licencia"]
+
+    def dias_restantes(self, obj):
+        return obj.dias_restantes
+    dias_restantes.short_description = "Días Restantes"
 
 admin.site.register(Agente, AgenteAdmin)
 admin.site.register(GeneroAgente, GeneroAgenteAdmin)
@@ -155,3 +164,4 @@ admin.site.register(Departamento, DepartamentoAdmin)
 admin.site.register(RepresentanteTecnico, RepresentanteTecnicoAdmin)
 admin.site.register(TipoLicenciaPermiso, TipoLicenciaPermisoAdmin)
 admin.site.register(LicenciaPermiso, LicenciaPermisoAdmin)
+admin.site.register(CorteLicencia, CorteLicenciaAdmin)

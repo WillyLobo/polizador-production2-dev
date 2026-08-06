@@ -18,6 +18,13 @@ class CheckResolucionesForm(BaseCommandRunForm):
         return []
 
 
+class CargarTiposLicenciaForm(BaseCommandRunForm):
+    """El comando `cargar_tipos_licencia` no toma argumentos."""
+
+    def to_argv(self):
+        return []
+
+
 class BcraUviForm(BaseCommandRunForm):
     full_sync = forms.BooleanField(
         required=False,

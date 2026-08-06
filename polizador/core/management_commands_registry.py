@@ -11,6 +11,7 @@ cambia el comportamiento del comando en si.
 
 from core.forms import (
     BcraUviForm,
+    CargarTiposLicenciaForm,
     CheckResolucionesForm,
     CopiarBucketDevForm,
     EmpaquetarResolucionesMensualForm,
@@ -40,6 +41,16 @@ COMMAND_REGISTRY = {
             "existen, nunca modifica ni borra un valor ya guardado."
         ),
         "form": BcraUviForm,
+        "mutates_data": True,
+    },
+    "cargar_tipos_licencia": {
+        "label": "Cargar catálogo de Tipos de Licencia/Permiso (Ley 645-A)",
+        "help_text": (
+            "Carga (o actualiza) el catálogo de Tipos de Licencia/Permiso según la Ley "
+            "645-A. Es un update_or_create por categoría+nombre: crea los que faltan y "
+            "actualiza los ya existentes, sin borrar nada. Sin parámetros."
+        ),
+        "form": CargarTiposLicenciaForm,
         "mutates_data": True,
     },
     "fix_obra_resolucion_numbers": {

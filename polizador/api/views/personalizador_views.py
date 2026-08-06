@@ -3,6 +3,7 @@ from typing import List
 
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from ninja import Router
 from ninja.decorators import decorate_view
 from ninja.pagination import paginate
@@ -14,14 +15,16 @@ from api.schemas.personalizador_schemas import (
     GerenciaOut, GerenciaCreate,
     DireccionOut, DireccionCreate,
     DepartamentoPerOut, DepartamentoPerCreate,
+    LicenciaPermisoBalanceOut,
 )
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg
 from personalizador.models import (
     Agente, ApartadoCargo, ActividadEspecifica, CargoTipo, Categoria, CEIC,
     Departamento, DenominacionCargo, Direccion, Directorio, Gerencia,
     GeneroAgente, GrupoCargo, Oficina, RepresentanteTecnico, TituloProfesional,
-    LicenciaPermiso,
+    LicenciaPermiso, TipoLicenciaPermiso,
 )
+from personalizador.licencias import balance_tipo
 
 User = get_user_model()
 router = Router(tags=["personalizador"])
@@ -721,3 +724,21 @@ register_simple_datatable(
     queryset=LicenciaPermiso.objects.select_related("licenciapermiso_agente", "licenciapermiso_tipo"),
     boolean_filter_keys=frozenset({"licenciapermiso_anulada"}),
 )
+
+
+@router.get("/licenciapermiso-balance/", response=LicenciaPermisoBalanceOut)
+@decorate_view(require_model_perm(LicenciaPermiso))
+def licenciapermiso_balance(request, agente: int, tipo: int, anio: int = None):
+    """Días/horas correspondientes, usados y disponibles de `tipo` para `agente` en
+    `anio` (año actual por defecto). Para la Licencia Anual Ordinaria, `correspondientes`
+    ya viene calculado según la antigüedad del agente (ver `licencias.balance_tipo`)."""
+    agente_obj = get_object_or_404(Agente, pk=agente)
+    tipo_obj = get_object_or_404(TipoLicenciaPermiso, pk=tipo)
+    balance = balance_tipo(agente_obj, tipo_obj, anio or timezone.now().year)
+    return {
+        "unidad": tipo_obj.tipolicenciapermiso_unidad,
+        "unidad_display": tipo_obj.get_tipolicenciapermiso_unidad_display(),
+        "correspondientes": balance["correspondientes"],
+        "usados": balance["usados"],
+        "disponibles": balance["disponibles"],
+    }

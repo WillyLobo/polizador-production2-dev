@@ -6,6 +6,7 @@ from personalizador.views.ajaxviews import (
 	actividadespecificawidget, oficinawidget,
 )
 from carga.views.ajaxviews import localidadwidget
+from core.widgets import DateHTMLWidget
 
 class AgenteForm(forms.ModelForm):
 	required_css_class = "required"
@@ -62,9 +63,9 @@ class AgenteForm(forms.ModelForm):
 			"matricula": forms.TextInput(attrs={"class": "form-control"}),
 			"dni": forms.NumberInput(attrs={"class": "form-control"}),
 			"cuil": forms.TextInput(attrs={"class": "form-control"}),
-			"fecha_nacimiento": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
-			"fecha_ingreso": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
-			"fecha_pase_a_planta": forms.DateInput(attrs={"class": "form-control", "type": "date"}),
+			"fecha_nacimiento": DateHTMLWidget(attrs={"class": "form-control", "type": "date"}),
+			"fecha_ingreso": DateHTMLWidget(attrs={"class": "form-control", "type": "date"}),
+			"fecha_pase_a_planta": DateHTMLWidget(attrs={"class": "form-control", "type": "date"}),
 			"n_decreto": forms.TextInput(attrs={"class": "form-control"}),
 			"n_resolucion_bonificacion": forms.TextInput(attrs={"class": "form-control"}),
 			"porcentaje_bonificacion": forms.NumberInput(attrs={"class": "form-control"}),

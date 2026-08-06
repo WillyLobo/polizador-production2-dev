@@ -983,3 +983,97 @@ class CalendarioAPITest(TestCase):
         data = resp.json()
         assert all(e["title"] == "Maria Gomez" for e in data)
         assert not any(e["url"] == self.solicitud_semana_juan.get_absolute_url() for e in data)
+
+
+class LicenciaPermisoBalanceAPITest(TestCase):
+    """Días correspondientes/usados/disponibles de un tipo de licencia para un agente,
+    usado por el formulario de carga para calcular el tope según antigüedad (Ley 645-A)."""
+
+    def setUp(self):
+        from datetime import date
+        from personalizador.models import (
+            Agente, Directorio, Gerencia, GeneroAgente, Oficina, TipoLicenciaPermiso,
+        )
+
+        genero = GeneroAgente.objects.create(generoagente_nombre="Test")
+        directorio = Directorio.objects.create(directorio_nombre="Presidencia Test", directorio_cuof="D-200")
+        gerencia = Gerencia.objects.create(
+            gerencia_directorio=directorio, gerencia_nombre="Gerencia Test Licencias", gerencia_cuof="G-200",
+        )
+        oficina = Oficina.objects.create(cargo_gerencia=gerencia)
+        # 8 años de antigüedad al 31/12/2026 -> tope de 28 días (Art. 8, Ley 645-A).
+        self.agente = Agente.objects.create(
+            agente_nombres="Carlos", agente_apellidos="Diaz", sexo=genero, dni=30555666,
+            cuil="20305556667", oficina=oficina, fecha_ingreso=date(2018, 1, 1),
+        )
+        self.tipo_anual = TipoLicenciaPermiso.objects.create(
+            tipolicenciapermiso_categoria="LOR", tipolicenciapermiso_nombre="Anual",
+            tipolicenciapermiso_unidad="DC",
+        )
+        self.tipo_fijo = TipoLicenciaPermiso.objects.create(
+            tipolicenciapermiso_categoria="PER", tipolicenciapermiso_nombre="Estudio",
+            tipolicenciapermiso_unidad="DC", tipolicenciapermiso_tope_cantidad=10,
+            tipolicenciapermiso_tope_periodo="ANI",
+        )
+
+        self.user = UserModel.objects.create_user(username="licencias_user", password="pass1234!")
+        perm = Permission.objects.get(codename="view_licenciapermiso", content_type__app_label="personalizador")
+        self.user.user_permissions.add(perm)
+        self.client = Client()
+        self.client.login(username="licencias_user", password="pass1234!")
+
+    def test_requires_auth(self):
+        client = TestClient(api)
+        resp = client.get(
+            f"licenciapermiso-balance/?agente={self.agente.id}&tipo={self.tipo_anual.id}&anio=2026",
+        )
+        assert resp.status_code == 401
+
+    def test_forbidden_without_permission(self):
+        UserModel.objects.create_user(username="no_perm", password="pass1234!")
+        client = Client()
+        client.login(username="no_perm", password="pass1234!")
+        resp = client.get(
+            "/v1/api/licenciapermiso-balance/", {"agente": self.agente.id, "tipo": self.tipo_anual.id, "anio": 2026},
+        )
+        assert resp.status_code == 403
+
+    def test_licencia_anual_correspondientes_segun_antiguedad(self):
+        resp = self.client.get(
+            "/v1/api/licenciapermiso-balance/", {"agente": self.agente.id, "tipo": self.tipo_anual.id, "anio": 2026},
+        )
+        assert resp.status_code == 200
+        data = resp.json()
+        assert data["correspondientes"] == 28
+        assert data["usados"] == 0
+        assert data["disponibles"] == 28
+
+    def test_descuenta_dias_ya_usados(self):
+        from datetime import date
+        from personalizador.models import LicenciaPermiso
+
+        LicenciaPermiso.objects.create(
+            licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_anual,
+            licenciapermiso_fecha_desde=date(2026, 1, 5), licenciapermiso_fecha_hasta=date(2026, 1, 14),
+            licenciapermiso_cantidad=10,
+        )
+        resp = self.client.get(
+            "/v1/api/licenciapermiso-balance/", {"agente": self.agente.id, "tipo": self.tipo_anual.id, "anio": 2026},
+        )
+        data = resp.json()
+        assert data["usados"] == 10
+        assert data["disponibles"] == 18
+
+    def test_tipo_con_tope_fijo(self):
+        resp = self.client.get(
+            "/v1/api/licenciapermiso-balance/", {"agente": self.agente.id, "tipo": self.tipo_fijo.id, "anio": 2026},
+        )
+        data = resp.json()
+        assert data["correspondientes"] == 10
+        assert data["disponibles"] == 10
+
+    def test_defaults_to_current_year_when_anio_omitted(self):
+        resp = self.client.get(
+            "/v1/api/licenciapermiso-balance/", {"agente": self.agente.id, "tipo": self.tipo_anual.id},
+        )
+        assert resp.status_code == 200
