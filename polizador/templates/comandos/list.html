@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}<title>Ejecutar comandos | Polizador</title>{% endblock title %}
+{% block content %}
+<div class="container-fluid">
+  <h3 class="mb-3"><i class="bi bi-terminal me-2"></i>Ejecutar management commands</h3>
+
+  <form method="get" class="row g-2 align-items-end mb-4">
+    <div class="col-auto">
+      <label for="id_command" class="form-label">Comando</label>
+      <select id="id_command" name="command" class="form-select" onchange="this.form.submit()">
+        <option value="">-- Seleccionar --</option>
+        {% for key, meta in registry.items %}
+        <option value="{{ key }}" {% if key == selected_command %}selected{% endif %}>{{ meta.label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </form>
+
+  {% if selected_meta %}
+  <div class="card mb-4">
+    <div class="card-body">
+      <h5 class="card-title">{{ selected_meta.label }}</h5>
+      {% if selected_meta.mutates_data %}
+      <div class="alert alert-warning">
+        <i class="bi bi-exclamation-triangle me-1"></i>
+        Este comando puede modificar datos. Si tiene un modo "Solo verificar" o
+        "Simular", usalo primero.
+      </div>
+      {% endif %}
+      {% if selected_meta.help_text %}
+      <p class="text-muted">{{ selected_meta.help_text }}</p>
+      {% endif %}
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="command" value="{{ selected_command }}">
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-play-fill me-1"></i>Ejecutar
+        </button>
+      </form>
+    </div>
+  </div>
+  {% endif %}
+
+  <h5 class="mb-2">Ejecuciones recientes</h5>
+  <table class="table table-sm table-hover align-middle">
+    <thead>
+      <tr>
+        <th>Comando</th>
+        <th>Estado</th>
+        <th>Iniciado por</th>
+        <th>Inicio</th>
+        <th>Duración</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for run in recent_runs %}
+      <tr>
+        <td>{{ run.label }}</td>
+        <td><span class="badge text-bg-{{ run.status_badge }}">{{ run.get_status_display }}</span></td>
+        <td>{{ run.started_by }}</td>
+        <td>{{ run.started_at }}</td>
+        <td>{{ run.duration_display }}</td>
+        <td>
+          <a href="{% url 'management_command_run_detail' run.pk %}" class="btn btn-sm btn-outline-secondary">
+            Ver log
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" class="text-muted">Todavía no se ejecutó ningún comando.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock content %}

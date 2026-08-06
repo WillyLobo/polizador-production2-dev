@@ -12,12 +12,6 @@ class ThroughputResponseSchema(Schema):
     series: dict[str, List[SeriesPointSchema]]
 
 
-class LoginActivityResponseSchema(Schema):
-    series: List[SeriesPointSchema]
-    today: int
-    week: int
-
-
 class SentryIssueSchema(Schema):
     title: str
     count: str

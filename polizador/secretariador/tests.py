@@ -1,6 +1,7 @@
 import io
+import tempfile
 import zipfile
-from datetime import datetime
+from datetime import date, datetime
 from pathlib import Path
 
 from django.conf import settings
@@ -158,3 +159,272 @@ class ReportesCalendarioViewsTest(TestCase):
         self.assertIn('value="2023"', content)
         self.assertIn('value="2026"', content)
         self.assertNotIn('value="2099"', content)
+
+
+# --- Empaquetado de resoluciones (paquetes_resoluciones.py) -------------------
+#
+# armar_zip/armar_pdf son lógica pura (reciben bytes ya leídos, en memoria) así
+# que se prueban directo, sin bucket ni disco falsos. Los tests de _listar_meses
+# sí necesitan un bucket falso, porque esa función lista blobs de verdad.
+
+class _BlobFalso:
+    def __init__(self, store, name):
+        self._store = store
+        self.name = name
+        self.content_type = None
+
+    @property
+    def size(self):
+        return len(self._store[self.name])
+
+    def reload(self):
+        pass
+
+    def exists(self):
+        return self.name in self._store
+
+    def upload_from_string(self, data, content_type=None):
+        self._store[self.name] = data
+        self.content_type = content_type
+
+    def delete(self):
+        self._store.pop(self.name, None)
+
+
+class _ListaBlobsFalsa(list):
+    """Imita el HTTPIterator que devuelve bucket.list_blobs(): iterable de
+    blobs, con .prefixes poblado cuando se pide delimiter (simulando un
+    listado "por carpetas", como hace la API real de GCS)."""
+
+    def __init__(self, blobs, prefixes=()):
+        super().__init__(blobs)
+        self.prefixes = set(prefixes)
+
+
+class _BucketFalso:
+    def __init__(self):
+        self.store = {}
+
+    def blob(self, name):
+        return _BlobFalso(self.store, name)
+
+    def set_content(self, name, content):
+        self.store[name] = content
+
+    def list_blobs(self, prefix="", delimiter=None):
+        nombres = sorted(n for n in self.store if n.startswith(prefix))
+        if delimiter is None:
+            return _ListaBlobsFalsa(self.blob(n) for n in nombres)
+
+        prefijos = set()
+        blobs_directos = []
+        for nombre in nombres:
+            resto = nombre[len(prefix):]
+            if delimiter in resto:
+                subcarpeta = resto.split(delimiter, 1)[0]
+                prefijos.add(f"{prefix}{subcarpeta}{delimiter}")
+            else:
+                blobs_directos.append(self.blob(nombre))
+        return _ListaBlobsFalsa(blobs_directos, prefixes=prefijos)
+
+
+class ArmarPaquetesResolucionesTest(TestCase):
+    """Prueba secretariador/paquetes_resoluciones.py: armar_zip/armar_pdf son
+    lógica pura (reciben bytes ya leídos), y leer_contenido prioriza el disco
+    local sobre bajar de GCS."""
+
+    def _entrada_local(self, tmp_path, nombre, contenido, date_time=(2026, 3, 5, 0, 0, 0)):
+        from secretariador.paquetes_resoluciones import EntradaResolucion
+
+        ruta = tmp_path / nombre
+        ruta.write_bytes(contenido)
+        return EntradaResolucion(
+            nombre_archivo=nombre, tamano=len(contenido), date_time=date_time, ruta_local=ruta,
+        )
+
+    def test_armar_zip_incluye_las_entradas_en_orden_y_es_valido(self):
+        from secretariador.paquetes_resoluciones import armar_zip
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            entradas = [
+                self._entrada_local(tmp_path, "1-2026-P.pdf", b"contenido de la primera resolucion"),
+                self._entrada_local(tmp_path, "2-2026-P.pdf", b"contenido de la segunda resolucion, mas largo"),
+            ]
+
+            with zipfile.ZipFile(io.BytesIO(armar_zip(entradas))) as zf:
+                self.assertIsNone(zf.testzip())
+                self.assertEqual(zf.namelist(), ["1-2026-P.pdf", "2-2026-P.pdf"])
+                self.assertEqual(zf.read("1-2026-P.pdf"), b"contenido de la primera resolucion")
+                self.assertEqual(zf.read("2-2026-P.pdf"), b"contenido de la segunda resolucion, mas largo")
+
+    def test_armar_zip_soporta_nombres_no_ascii(self):
+        # A diferencia del viejo armado vía compose() de bytes (que exigía
+        # nombres ASCII porque no seteaba el flag UTF-8), zipfile lo maneja solo.
+        from secretariador.paquetes_resoluciones import armar_zip
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            entradas = [self._entrada_local(tmp_path, "año-2026-P.pdf", b"contenido")]
+
+            with zipfile.ZipFile(io.BytesIO(armar_zip(entradas))) as zf:
+                self.assertIsNone(zf.testzip())
+                self.assertEqual(zf.namelist(), ["año-2026-P.pdf"])
+
+    def test_armar_pdf_fusiona_las_paginas_de_todas_las_entradas(self):
+        import pikepdf
+        from secretariador.paquetes_resoluciones import armar_pdf
+
+        def _pdf_de_n_paginas(n):
+            pdf = pikepdf.new()
+            for _ in range(n):
+                pdf.add_blank_page(page_size=(72, 72))
+            buffer = io.BytesIO()
+            pdf.save(buffer)
+            return buffer.getvalue()
+
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp_path = Path(tmp)
+            entradas = [
+                self._entrada_local(tmp_path, "1-2026-P.pdf", _pdf_de_n_paginas(2)),
+                self._entrada_local(tmp_path, "2-2026-P.pdf", _pdf_de_n_paginas(3)),
+            ]
+
+            resultado = armar_pdf(entradas)
+
+        with pikepdf.open(io.BytesIO(resultado)) as pdf:
+            self.assertEqual(len(pdf.pages), 5)
+
+    def test_leer_contenido_prioriza_disco_local_sobre_gcs(self):
+        from secretariador.paquetes_resoluciones import EntradaResolucion, leer_contenido
+
+        class _BlobQueExplotaSiSeLee:
+            def download_as_bytes(self):
+                raise AssertionError("no debería bajar de GCS si el archivo está en disco local")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            ruta = Path(tmp) / "resolucion.pdf"
+            ruta.write_bytes(b"contenido local")
+            entrada = EntradaResolucion(
+                nombre_archivo="resolucion.pdf", tamano=len(b"contenido local"),
+                date_time=(2026, 3, 5, 0, 0, 0), ruta_local=ruta, blob_origen=_BlobQueExplotaSiSeLee(),
+            )
+            self.assertEqual(leer_contenido(entrada), b"contenido local")
+
+    def test_leer_contenido_baja_de_gcs_si_no_esta_en_disco_local(self):
+        from secretariador.paquetes_resoluciones import EntradaResolucion, leer_contenido
+
+        class _BlobFalsoConContenido:
+            def download_as_bytes(self):
+                return b"contenido de gcs"
+
+        entrada = EntradaResolucion(
+            nombre_archivo="resolucion.pdf", tamano=16, date_time=(2026, 3, 5, 0, 0, 0),
+            ruta_local=None, blob_origen=_BlobFalsoConContenido(),
+        )
+        self.assertEqual(leer_contenido(entrada), b"contenido de gcs")
+
+
+class EmpaquetarResolucionesMensualCommandTest(TestCase):
+    """Pruebas de la lógica pura del comando de cron (sin tocar GCS)."""
+
+    def test_mes_anterior_dentro_del_mismo_ano(self):
+        from secretariador.paquetes_resoluciones import mes_anterior
+
+        self.assertEqual(mes_anterior(date(2026, 8, 3)), (2026, 7))
+
+    def test_mes_anterior_cruzando_ano(self):
+        from secretariador.paquetes_resoluciones import mes_anterior
+
+        self.assertEqual(mes_anterior(date(2026, 1, 15)), (2025, 12))
+
+    def test_armar_paquetes_agrupa_respetando_tamano_maximo(self):
+        from secretariador.paquetes_resoluciones import EntradaResolucion, armar_paquetes
+
+        entradas = [
+            EntradaResolucion(nombre_archivo=f"{i}.pdf", tamano=10, date_time=(2026, 3, 5, 0, 0, 0))
+            for i in range(5)
+        ]
+
+        paquetes = armar_paquetes(entradas, tamano_maximo=25)
+
+        self.assertEqual([len(p) for p in paquetes], [2, 2, 1])
+
+    def test_armar_paquetes_entrada_mas_grande_que_el_maximo_queda_sola(self):
+        from secretariador.paquetes_resoluciones import EntradaResolucion, armar_paquetes
+
+        # El algoritmo es secuencial (no reordena por tamaño para optimizar el
+        # packing): "gigante" fuerza su propio paquete y corta la racha, así
+        # que "otra_chica" no se puede agrupar con "chica" aunque ambas entren
+        # holgadas en el límite.
+        entradas = [
+            EntradaResolucion(nombre_archivo="chica.pdf", tamano=5, date_time=(2026, 3, 5, 0, 0, 0)),
+            EntradaResolucion(nombre_archivo="gigante.pdf", tamano=100, date_time=(2026, 3, 5, 0, 0, 0)),
+            EntradaResolucion(nombre_archivo="otra_chica.pdf", tamano=5, date_time=(2026, 3, 5, 0, 0, 0)),
+        ]
+
+        paquetes = armar_paquetes(entradas, tamano_maximo=10)
+
+        self.assertEqual([[e.nombre_archivo for e in p] for p in paquetes], [
+            ["chica.pdf"], ["gigante.pdf"], ["otra_chica.pdf"],
+        ])
+
+
+class ListarPaquetesResolucionesTest(TestCase):
+    """Prueba secretariador/views/paqueteresolucionesviews.py::_listar_meses
+    (lectura pura de la estructura de carpetas, sin tocar GCS de verdad)."""
+
+    def setUp(self):
+        self.bucket = _BucketFalso()
+
+    def _agregar_paquete(self, ano, mes, indice, tamano, extension=".zip"):
+        from secretariador.views.paqueteresolucionesviews import DESTINO_PREFIJO
+
+        nombre = f"{DESTINO_PREFIJO}/{ano}-{mes:02d}/paquete-{indice:02d}{extension}"
+        self.bucket.set_content(nombre, b"x" * tamano)
+
+    def test_agrupa_por_ano_mes_y_ordena_los_mas_recientes_primero(self):
+        from secretariador.views.paqueteresolucionesviews import _listar_meses
+
+        self._agregar_paquete(2026, 6, 1, tamano=10)
+        self._agregar_paquete(2026, 8, 1, tamano=20)
+        self._agregar_paquete(2026, 8, 2, tamano=30)
+
+        meses = _listar_meses(self.bucket)
+
+        self.assertEqual([(m["ano"], m["mes"]) for m in meses], [(2026, 8), (2026, 6)])
+        agosto = meses[0]
+        self.assertEqual(agosto["nombre_mes"], "Agosto")
+        self.assertEqual(
+            [(p["indice"], p["tamano"]) for p in agosto["formatos"]["zip"]],
+            [(1, 20), (2, 30)],
+        )
+
+    def test_lista_zip_y_pdf_por_separado_cuando_ambos_existen(self):
+        from secretariador.views.paqueteresolucionesviews import _listar_meses
+
+        self._agregar_paquete(2026, 8, 1, tamano=20, extension=".zip")
+        self._agregar_paquete(2026, 8, 1, tamano=15, extension=".pdf")
+
+        meses = _listar_meses(self.bucket)
+
+        self.assertEqual(len(meses), 1)
+        self.assertEqual([(p["indice"], p["tamano"]) for p in meses[0]["formatos"]["zip"]], [(1, 20)])
+        self.assertEqual([(p["indice"], p["tamano"]) for p in meses[0]["formatos"]["pdf"]], [(1, 15)])
+
+    def test_ignora_blobs_de_scratch_que_no_terminan_en_zip_o_pdf(self):
+        from secretariador.views.paqueteresolucionesviews import DESTINO_PREFIJO, _listar_meses
+
+        self._agregar_paquete(2026, 8, 1, tamano=20)
+        self.bucket.set_content(f"{DESTINO_PREFIJO}/2026-08/_scratch/header-0", b"basura")
+
+        meses = _listar_meses(self.bucket)
+
+        self.assertEqual(len(meses), 1)
+        self.assertEqual(len(meses[0]["formatos"]["zip"]), 1)
+        self.assertNotIn("pdf", meses[0]["formatos"])
+
+    def test_no_hay_paquetes(self):
+        from secretariador.views.paqueteresolucionesviews import _listar_meses
+
+        self.assertEqual(_listar_meses(self.bucket), [])

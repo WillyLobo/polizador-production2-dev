@@ -19,17 +19,19 @@
 [+] Crear API view que devuelva los meses/años disponibles en los certificados para su utilizacion en select2
 [?] Hacer un favicon mas decente
 [+] Añadir campo Representante Tecnico a las obras.
-[ ] Implementar campo georeferencia(con PostGIS) para las obras.
+[+] Implementar campo georeferencia(con PostGIS) para las obras.
 [+] Actualizar a la ultima version de dataTables. 
     [+] Convertir "dom:" a "layout:".
     [+] Agregar boton para exportar a pdf/excel.
 [ ] Eliminar codigo muerto JS.
 [+] Corregir el filtrado previo de resoluciones, o agregar el filtro por tipo en datatable.
-[ ] Normalizar los numeros de resoluciones para que usen el mismo separador("-").
-[ ] Crear helper que convierta los numeros de resoluciones nuevos al formato de numero de resoluciones digitales(S.G.T.)
+[+] Normalizar los numeros de resoluciones para que usen el mismo separador("-").
+[+] Crear helper que convierta los numeros de resoluciones nuevos al formato de numero de resoluciones digitales(S.G.T.)
 [+] Crear helper para agregar objetos FK directamente desde los formularios.
 [+] Agregar opcion de remover firmas de gerente/representante tecnico en la foja de medicion.
 [ ] Agregar helptext dinamico a los campos CUIL/CUIT de los formularios que sugieran el numero de CUIL/CUIT.
+[ ] Agregar a la interfaz web la posibilidad de ver estado de escaneo de los instrumentos legales.
+[ ] Analizar viabilidad de hacer OCR a los instrumentos legales.
 
 # Certificados
 [+] Una foja deberia engendrar 1 certificado por cada financiamiento.

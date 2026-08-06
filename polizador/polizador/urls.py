@@ -6,7 +6,15 @@ from django.contrib.auth import views as auth_views
 from django.views.generic.base import TemplateView
 from carga.views.inspeccionviews import InspeccionHomeView
 from django.contrib.auth.decorators import login_required
-from core.views import DashboardView, SchemaDocsView, schema_docs_asset
+from core.views import (
+    DashboardView,
+    ManagementCommandRunDetailView,
+    ManagementCommandRunKillView,
+    ManagementCommandRunLogView,
+    ManagementCommandsView,
+    SchemaDocsView,
+    schema_docs_asset,
+)
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="index.html")),
@@ -23,6 +31,22 @@ urlpatterns = [
     path("administracion/dashboard/", DashboardView.as_view(), name="dashboard"),
     path("administracion/schema/", SchemaDocsView.as_view(), name="schema_docs"),
     path("administracion/schema/<path:path>", schema_docs_asset, name="schema_docs_asset"),
+    path("administracion/comandos/", ManagementCommandsView.as_view(), name="management_commands"),
+    path(
+        "administracion/comandos/<int:pk>/",
+        ManagementCommandRunDetailView.as_view(),
+        name="management_command_run_detail",
+    ),
+    path(
+        "administracion/comandos/<int:pk>/log/",
+        ManagementCommandRunLogView.as_view(),
+        name="management_command_run_log",
+    ),
+    path(
+        "administracion/comandos/<int:pk>/kill/",
+        ManagementCommandRunKillView.as_view(),
+        name="management_command_run_kill",
+    ),
 ]
 debugpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),

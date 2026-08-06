@@ -4,7 +4,7 @@ import requests
 from django.conf import settings
 from django.db import connection
 from django.db.models import Count
-from django.db.models.functions import TruncDay, TruncMonth
+from django.db.models.functions import TruncMonth
 from django.utils import timezone
 
 from carga.models import Certificado, FojaDeMedicion, Obra
@@ -70,16 +70,12 @@ def record_throughput(app_label, months=12):
     return series
 
 
-def login_activity(days=30):
-    since = timezone.now() - timedelta(days=days)
-    rows = (
-        LoginEvent.objects.filter(timestamp__gte=since)
-        .annotate(day=TruncDay("timestamp"))
-        .values("day")
-        .annotate(total=Count("pk"))
-        .order_by("day")
+def recent_logins(limit=15):
+    return list(
+        LoginEvent.objects.select_related("user")
+        .order_by("-timestamp")[:limit]
+        .values("user__username", "timestamp", "ip_address")
     )
-    return [(row["day"].strftime("%Y-%m-%d"), row["total"]) for row in rows]
 
 
 def login_summary():
@@ -168,3 +164,37 @@ def db_health():
         "cache_hit_ratio": cache_hit_ratio,
         "top_tables": top_tables,
     }
+
+
+def db_performance(limit=10):
+    """Consultas más costosas vía pg_stat_statements.
+
+    Devuelve None si la extensión no está instalada (por ejemplo en un entorno
+    donde todavía no se corrió `CREATE EXTENSION pg_stat_statements`).
+    """
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT 1 FROM pg_extension WHERE extname = 'pg_stat_statements'")
+        if cursor.fetchone() is None:
+            return None
+
+        cursor.execute(
+            """
+            SELECT query, calls, round(total_exec_time::numeric, 1), round(mean_exec_time::numeric, 2)
+            FROM pg_stat_statements
+            WHERE query != '<insufficient privilege>'
+            ORDER BY total_exec_time DESC
+            LIMIT %s
+            """,
+            [limit],
+        )
+        top_queries = [
+            {
+                "query": " ".join(query.split())[:200],
+                "calls": calls,
+                "total_ms": total_ms,
+                "mean_ms": mean_ms,
+            }
+            for query, calls, total_ms, mean_ms in cursor.fetchall()
+        ]
+
+    return {"top_queries": top_queries}

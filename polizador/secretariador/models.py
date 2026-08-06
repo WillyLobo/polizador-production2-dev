@@ -8,7 +8,7 @@ from django.urls import reverse
 from django.core.exceptions import ValidationError
 from django.conf import settings
 import os
-from django.db.models.functions import ExtractDay
+from django.db.models.functions import ExtractDay, Cast
 from django.db.models.fields.generated import GeneratedField
 from uuid_utils import compat
 
@@ -109,13 +109,13 @@ class InstrumentosLegalesMemorandum(models.Model):
     )
 
     instrumentolegalmemorandum_tipo = models.CharField("Tipo", max_length=1, choices=TIPO, default="P")
-    instrumentolegalmemorandum_numero = models.CharField("Número", max_length=7)
+    instrumentolegalmemorandum_numero = models.PositiveIntegerField("Número")
     instrumentolegalmemorandum_ano = models.CharField("Año", max_length=5)
     instrumentolegalmemorandum_fecha_aprobacion = models.DateField("Fecha de Aprobación", default=timezone.now)
     instrumentolegalmemorandum_descripcion = models.CharField("Descripción", max_length=600, default="")
     instrumentolegalmemorandum = models.FileField(upload_to=generate_name_memorandum, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], null=True, blank=True)
     instrumentolegalmemorandum_str = GeneratedField(
-        expression=ConcatOp('instrumentolegalmemorandum_numero', models.Value(" - "), 'instrumentolegalmemorandum_ano', models.Value(" - "), 'instrumentolegalmemorandum_tipo'),
+        expression=ConcatOp(Cast('instrumentolegalmemorandum_numero', output_field=models.TextField()), models.Value(" - "), 'instrumentolegalmemorandum_ano', models.Value(" - "), 'instrumentolegalmemorandum_tipo'),
         output_field=models.TextField(),
         db_persist=True,
     )
@@ -162,7 +162,7 @@ class InstrumentosLegalesResoluciones(models.Model):
     )
 
     instrumentolegalresoluciones_tipo = models.CharField("Tipo", max_length=1, choices=TIPO, default="P")
-    instrumentolegalresoluciones_numero = models.CharField("Número", max_length=7)
+    instrumentolegalresoluciones_numero = models.PositiveIntegerField("Número")
     instrumentolegalresoluciones_acta = models.CharField("Acta", max_length=3, default="")
     instrumentolegalresoluciones_ano = models.CharField("Año", max_length=5)
     instrumentolegalresoluciones_fecha_aprobacion = models.DateField("Fecha de Aprobación", default=timezone.now)
@@ -175,9 +175,9 @@ class InstrumentosLegalesResoluciones(models.Model):
         expression=models.Case(
             models.When(
                 instrumentolegalresoluciones_tipo="D",
-                then=ConcatOp('instrumentolegalresoluciones_numero', models.Value("-"), 'instrumentolegalresoluciones_acta', models.Value("-"), 'instrumentolegalresoluciones_ano'),
+                then=ConcatOp(Cast('instrumentolegalresoluciones_numero', output_field=models.TextField()), models.Value("-"), 'instrumentolegalresoluciones_acta', models.Value("-"), 'instrumentolegalresoluciones_ano'),
             ),
-            default=ConcatOp('instrumentolegalresoluciones_numero', models.Value("-"), 'instrumentolegalresoluciones_ano'),
+            default=ConcatOp(Cast('instrumentolegalresoluciones_numero', output_field=models.TextField()), models.Value("-"), 'instrumentolegalresoluciones_ano'),
             output_field=models.TextField(),
         ),
         output_field=models.TextField(),
@@ -191,9 +191,9 @@ class InstrumentosLegalesResoluciones(models.Model):
         expression=models.Case(
             models.When(
                 instrumentolegalresoluciones_tipo="D",
-                then=ConcatOp(models.Value("RES-"), "instrumentolegalresoluciones_ano", models.Value("-"), "instrumentolegalresoluciones_numero", models.Value("-10-"), "instrumentolegalresoluciones_acta"),
+                then=ConcatOp(models.Value("RES-"), "instrumentolegalresoluciones_ano", models.Value("-"), Cast("instrumentolegalresoluciones_numero", output_field=models.TextField()), models.Value("-10-"), "instrumentolegalresoluciones_acta"),
             ),
-            default=ConcatOp(models.Value("RES-"), "instrumentolegalresoluciones_ano", models.Value("-"), "instrumentolegalresoluciones_numero", models.Value("-10-1")),
+            default=ConcatOp(models.Value("RES-"), "instrumentolegalresoluciones_ano", models.Value("-"), Cast("instrumentolegalresoluciones_numero", output_field=models.TextField()), models.Value("-10-1")),
             output_field=models.CharField(max_length=25),
         ),
         output_field=models.CharField(max_length=25),
@@ -240,13 +240,13 @@ class InstrumentosLegalesDecretos(models.Model):
     )
 
     instrumentolegaldecretos_tipo = models.CharField("Tipo", max_length=1, choices=TIPO, default="P")
-    instrumentolegaldecretos_numero = models.CharField("Número", max_length=7)
+    instrumentolegaldecretos_numero = models.PositiveIntegerField("Número")
     instrumentolegaldecretos_ano = models.CharField("Año", max_length=5)
     instrumentolegaldecretos_fecha_aprobacion = models.DateField("Fecha de Aprobación", default=timezone.now)
     instrumentolegaldecretos_descripcion = models.CharField("Descripción", max_length=600, default="Escala de viáticos")
     instrumentolegaldecretos = models.FileField(upload_to=generate_name_decretos, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], null=True, blank=True)
     instrumentolegaldecretos_str = GeneratedField(
-        expression=ConcatOp('instrumentolegaldecretos_numero', models.Value(" - "), 'instrumentolegaldecretos_ano', models.Value(" - "), 'instrumentolegaldecretos_tipo'),
+        expression=ConcatOp(Cast('instrumentolegaldecretos_numero', output_field=models.TextField()), models.Value(" - "), 'instrumentolegaldecretos_ano', models.Value(" - "), 'instrumentolegaldecretos_tipo'),
         output_field=models.TextField(),
         db_persist=True,
     )

@@ -18,9 +18,12 @@ def get_agentes(request):
 @permission_required("secretariador.add_solicitud", login_url="/")
 def check_resolucion(request):
     # Usage: $HOST/viaticos/ajax/check_resolucion/?instrumentolegalresoluciones_numero=1000&instrumentolegalresoluciones_ano=2025
-    numero = request.POST.get("instrumentolegalresoluciones_numero")
     ano = request.POST.get("instrumentolegalresoluciones_ano")
-    resolucion = InstrumentosLegalesResoluciones.objects.filter(instrumentolegalresoluciones_numero__icontains=numero, instrumentolegalresoluciones_ano=ano).exists()
+    try:
+        numero = int(request.POST.get("instrumentolegalresoluciones_numero"))
+    except (TypeError, ValueError):
+        return JsonResponse({'results': False})
+    resolucion = InstrumentosLegalesResoluciones.objects.filter(instrumentolegalresoluciones_numero=numero, instrumentolegalresoluciones_ano=ano).exists()
     if resolucion:
         return JsonResponse({'results':True})
     else:

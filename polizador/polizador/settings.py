@@ -46,6 +46,13 @@ SENTRY_ORG=env("SENTRY_ORG", default=None)
 SENTRY_PROJECT=env("SENTRY_PROJECT", default=None)
 MAILGUN_API_KEY=env("MAILGUN_API_KEY")
 MAILGUN_SENDER_DOMAIN=env("MAILGUN_SENDER_DOMAIN")
+# Credenciales del usuario institucional en gobiernodigital.chaco.gob.ar, usadas por
+# secretariador/management/commands/sync_resoluciones_sgt.py para descargar
+# Instrumentos Legales desde el SGT. Sin valor por defecto: el comando falla explícitamente
+# si no están configuradas.
+SGT_USERNAME = env("SGT_USERNAME", default=None)
+SGT_PASSWORD = env("SGT_PASSWORD", default=None)
+GS_BUCKET_NAME = env("GS_BUCKET_NAME", default="polizador-production-pdf")
 
 GDU_LDAP_SERVER_URL = env("GDU_LDAP_SERVER_URL")
 GDU_LDAP_BIND_DN = env("GDU_LDAP_BIND_DN")
@@ -301,7 +308,7 @@ STORAGES = {
         "BACKEND": "polizador.storages.GCloudAndLocalStorage",
         "OPTIONS": {
         #  https://storage.cloud.google.com/polizador-production-pdf/instrumentoslegales/resoluciones/1400-2024-P.pdf
-            "bucket_name": "polizador-production-pdf",
+            "bucket_name": GS_BUCKET_NAME,
             "credentials": GS_CREDENTIALS,
         },
     },

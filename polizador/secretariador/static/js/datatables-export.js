@@ -13,6 +13,15 @@
 // igual que ya se ocultan al imprimir.
 window.DatatablesExportButtons = (function() {
 
+    // DataTables Buttons aplica "btn btn-secondary" a todo botón por defecto y el
+    // className de cada botón (más abajo) se agrega a esas clases, no las reemplaza.
+    // Como .btn-outline-* nunca redefine la variable --bs-btn-bg, queda el fondo gris
+    // fijo de .btn-secondary aunque el texto/borde se vean del color correcto. Se quita
+    // "btn-secondary" del default para que cada botón dependa solo de su className.
+    if ($.fn.dataTable && $.fn.dataTable.Buttons) {
+        $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn';
+    }
+
     function build(title, options) {
         options = options || {};
         var exportOptions = $.extend({ columns: ':not(.d-print-none)' }, options.exportOptions || {});
@@ -21,14 +30,14 @@ window.DatatablesExportButtons = (function() {
             {
                 extend: 'excelHtml5',
                 text: '<i class="bi bi-file-earmark-excel"></i> Excel',
-                className: 'btn-outline-success btn-sm',
+                className: 'btn-outline-primary btn-sm',
                 title: title,
                 exportOptions: exportOptions
             },
             {
                 extend: 'pdfHtml5',
                 text: '<i class="bi bi-file-earmark-pdf"></i> PDF',
-                className: 'btn-outline-danger btn-sm',
+                className: 'btn-outline-primary btn-sm',
                 title: title,
                 orientation: 'landscape',
                 pageSize: 'A4',
