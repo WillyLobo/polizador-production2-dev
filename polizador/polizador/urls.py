@@ -13,6 +13,11 @@ from core.views import (
     ManagementCommandRunLogView,
     ManagementCommandsView,
     SchemaDocsView,
+    TodoCreateView,
+    TodoDeleteView,
+    TodoListView,
+    TodoStatusUpdateView,
+    TodoUpdateView,
     schema_docs_asset,
 )
 
@@ -46,6 +51,11 @@ urlpatterns = [
         ManagementCommandRunKillView.as_view(),
         name="management_command_run_kill",
     ),
+    path("administracion/tareas/", TodoListView.as_view(), name="todo_list"),
+    path("administracion/tareas/nueva/", TodoCreateView.as_view(), name="todo_create"),
+    path("administracion/tareas/<int:pk>/editar/", TodoUpdateView.as_view(), name="todo_update"),
+    path("administracion/tareas/<int:pk>/eliminar/", TodoDeleteView.as_view(), name="todo_delete"),
+    path("administracion/tareas/<int:pk>/estado/", TodoStatusUpdateView.as_view(), name="todo_status_update"),
 ]
 debugpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),

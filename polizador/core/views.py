@@ -3,16 +3,17 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, redirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views.decorators.clickjacking import xframe_options_sameorigin
-from django.views.generic import DetailView, TemplateView, View
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView, View
 from django.views.static import serve
 
 from django.conf import settings
 
 from core import dashboard_data, management_runner
+from core.forms import TodoForm
 from core.management_commands_registry import COMMAND_REGISTRY
-from core.models import ManagementCommandRun
+from core.models import ManagementCommandRun, Todo
 
 
 class SuperuserRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -115,3 +116,51 @@ class ManagementCommandRunKillView(SuperuserRequiredMixin, View):
         run = get_object_or_404(ManagementCommandRun, pk=pk)
         management_runner.kill_run(run)
         return redirect("management_command_run_detail", pk=run.pk)
+
+
+class TodoListView(SuperuserRequiredMixin, ListView):
+    model = Todo
+    template_name = "todo/list.html"
+    context_object_name = "todos"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["form"] = TodoForm()
+        context["status_choices"] = Todo.Status.choices
+        return context
+
+
+class TodoCreateView(SuperuserRequiredMixin, CreateView):
+    model = Todo
+    form_class = TodoForm
+    template_name = "todo/form.html"
+    success_url = reverse_lazy("todo_list")
+
+    def form_valid(self, form):
+        form.instance.created_by = self.request.user
+        return super().form_valid(form)
+
+
+class TodoUpdateView(SuperuserRequiredMixin, UpdateView):
+    model = Todo
+    form_class = TodoForm
+    template_name = "todo/form.html"
+    success_url = reverse_lazy("todo_list")
+
+
+class TodoDeleteView(SuperuserRequiredMixin, DeleteView):
+    model = Todo
+    template_name = "todo/confirm_delete.html"
+    success_url = reverse_lazy("todo_list")
+
+
+class TodoStatusUpdateView(SuperuserRequiredMixin, View):
+    def post(self, request, pk):
+        todo = get_object_or_404(Todo, pk=pk)
+        status = request.POST.get("status")
+        if status not in Todo.Status.values:
+            messages.error(request, "Estado inválido.")
+            return redirect("todo_list")
+        todo.status = status
+        todo.save(update_fields=["status", "updated_at"])
+        return redirect("todo_list")
