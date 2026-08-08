@@ -30,7 +30,12 @@
           { data: 'dni', name: 'dni', title: 'DNI' },
           { data: 'categoria', name: 'categoria', title: 'Categoría' },
           { data: 'oficina', name: 'oficina', title: 'Oficina' },
-          { data: 'activo', name: 'activo', title: 'Activo', filterable: false },
+          { data: 'edad', title: 'Edad', orderable: false, filterable: false },
+          { data: 'antiguedad', title: 'Antigüedad', orderable: false, filterable: false },
+          {
+              data: 'activo', name: 'activo', title: 'Activo',
+              filterType: 'select', filterChoices: [['true', 'Sí'], ['false', 'No']],
+          },
           {
               data: 'con_errores', name: 'con_errores', title: 'Con errores de carga',
               filterType: 'select', filterChoices: [['true', 'Sí'], ['false', 'No']],
@@ -50,6 +55,13 @@
               detailUrl: '/v1/api/datatables/agentes/{id}/detalle/',
               extraFilters: function() {
                   return { activo: mostrarTodos ? undefined : 'true' };
+              },
+              dataTableOptions: {
+                  createdRow: function(row, data) {
+                      if (data.con_errores === 'No') {
+                          $(row).addClass('table-success');
+                      }
+                  },
               },
           },
       );

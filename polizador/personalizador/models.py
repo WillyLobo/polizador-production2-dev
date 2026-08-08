@@ -87,7 +87,7 @@ class Agente(models.Model):
         ("DEC", "Decreto"),
     )
     instrumento_cargo_interno_tipo = models.CharField("Tipo de instrumento", max_length=3, choices=INSTRUMENTO_CARGO_INTERNO_TIPO, blank=True, null=True)
-    instrumento_cargo_interno = models.CharField(max_length=13, blank=True, null=True)
+    instrumento_cargo_interno = models.CharField("Instrumento de designación temporal", max_length=13, blank=True, null=True, help_text="Número de instrumento de designación temporal - Solo Numero/Año")
     apartado = models.ForeignKey("ApartadoCargo", on_delete=models.CASCADE, blank=True, null=True)
     ceic = models.ForeignKey("CEIC", on_delete=models.CASCADE, blank=True, null=True)
     grupo = models.ForeignKey("GrupoCargo", on_delete=models.CASCADE, blank=True, null=True)
@@ -95,8 +95,8 @@ class Agente(models.Model):
     actividad_especifica = models.ForeignKey("ActividadEspecifica", on_delete=models.CASCADE, blank=True, null=True)
     oficina = models.ForeignKey("Oficina", on_delete=models.CASCADE, blank=True, null=True)
     n_decreto_transferencia_definitiva = models.CharField(max_length=10, blank=True, null=True, help_text="Decreto de transferencia definitiva - Solo Numero/Año")
-    domicilio_direccion = models.CharField(max_length=500, blank=True, null=True)
-    domicilio_barrio = models.CharField(max_length=300, blank=True, null=True)
+    domicilio_direccion = models.CharField("Dirección", max_length=500, blank=True, null=True)
+    domicilio_barrio = models.CharField("Barrio", max_length=300, blank=True, null=True)
     domicilio_localidad = models.ForeignKey("carga.Localidad", on_delete=models.CASCADE, blank=True, null=True)
     domicilio_provincia = models.ForeignKey("carga.Provincia", on_delete=models.CASCADE, blank=True, null=True)
     # Antigüedad reconocida por instrumentos legales, adicional a la que surge de fecha_ingreso.
@@ -120,10 +120,10 @@ class Agente(models.Model):
         "Con errores de carga", default=False,
         help_text="Se marca automaticamente al importar personal_gral.xlsx si la fila tuvo algun aviso.",
     )
-    agente_verificado_contra_padron = models.BooleanField("Chequeado",default=False)
-    agente_es_inpector_obra = models.BooleanField("Inspector de Obra",default=False)
-    agente_personal_transitorio = models.BooleanField("Personal Transitorio",default=False)
-    agente_personal_de_gabinete = models.BooleanField("Personal de Gabinete",default=False)
+    agente_verificado_contra_padron = models.BooleanField("Chequeado",default=False, help_text="Los datos fueron verificados contra el padrón electoral")
+    agente_es_inpector_obra = models.BooleanField("Inspector de Obra",default=False, help_text="El agente es inspector de obra")
+    agente_personal_transitorio = models.BooleanField("Personal Transitorio",default=False, help_text="Tildar si el agente es personal transitorio")
+    agente_personal_de_gabinete = models.BooleanField("Personal de Gabinete",default=False, help_text="Tildar si el agente es personal de gabinete")
     # Otros
     agente_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     agente_history = HistoricalRecords()

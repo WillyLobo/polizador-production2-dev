@@ -635,6 +635,12 @@ register_simple_datatable(
 
 
 # --- Agente (management list) datatable ---
+def _formatear_antiguedad(antiguedad: dict | None) -> str:
+    if not antiguedad:
+        return ""
+    return f"{antiguedad['anios']}a {antiguedad['meses']}m {antiguedad['dias']}d"
+
+
 def _agente_datatable_row(a: Agente, user) -> dict:
     id_ = a.id
     acciones = _simple_acciones(
@@ -649,6 +655,8 @@ def _agente_datatable_row(a: Agente, user) -> dict:
         "dni": a.dni,
         "categoria": a.categoria.categoria_nombre if a.categoria_id else "",
         "oficina": str(a.oficina) if a.oficina_id else "",
+        "edad": a.edad if a.fecha_nacimiento else "",
+        "antiguedad": _formatear_antiguedad(a.antiguedad),
         "activo": "Sí" if a.activo else "No",
         "con_errores": "Sí" if a.con_errores else "No",
         "acciones": acciones,
