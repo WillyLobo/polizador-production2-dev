@@ -52,6 +52,10 @@ def _listar_meses(bucket):
             "mes": mes,
             "nombre_mes": MESES[mes] if 1 <= mes <= 12 else mes,
             "formatos": formatos,
+            # zip y pdf se arman con el mismo agrupamiento (armar_paquetes),
+            # así que comparten los mismos índices; tomamos el más largo por
+            # si un mes solo tiene uno de los dos formatos generado.
+            "cantidad_paquetes": max(len(paquetes) for paquetes in formatos.values()),
         })
 
     return meses
