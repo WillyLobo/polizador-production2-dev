@@ -150,15 +150,15 @@ window.NinjaDatatableUtils = (function() {
                 url: url,
                 type: 'GET',
                 data: function(d) {
-                    var extra = options.extraData ? options.extraData() : {};
-                    return $.extend({
+                    var extraFilters = options.extraFilters ? options.extraFilters() : {};
+                    return {
                         draw: d.draw,
                         start: d.start,
                         length: d.length,
                         search: d.search.value,
                         order_by: _order_by_param(d.order, columns),
-                        filters: JSON.stringify(columnFilters)
-                    }, extra);
+                        filters: JSON.stringify($.extend({}, columnFilters, extraFilters))
+                    };
                 }
             }
         }, options.dataTableOptions || {});

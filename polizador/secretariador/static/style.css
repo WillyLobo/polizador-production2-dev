@@ -154,6 +154,31 @@ table.dataTable:not(.table-sm) {
     font-size: 0.875em;
 }
 
+/* CheckboxInput fields rendered via templates/django/forms/field.html
+   (form-partials como agente-form-partial.html) usaban el layout generico de
+   los demas campos (label arriba + <br> + el input suelto abajo), lo que
+   dejaba el checkbox chico y sin relacion visual con su label. Ahora ese
+   template los envuelve en .form-check (ver field-group-check) y esto los
+   agranda un poco y los alinea con Bootstrap. Con clase propia (no
+   .form-check-input a secas) para no afectar otros checkboxes armados a mano
+   en la app (ej. el switch "Mostrar todos" de Lista-agentes.html). */
+.field-group-check {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 1.5rem;
+}
+.field-group-check .form-check-input {
+    width: 1.35em;
+    height: 1.35em;
+    margin-top: 0;
+    flex-shrink: 0;
+}
+.field-group-check .form-check-label {
+    display: inline-block;
+    margin-bottom: 0;
+}
+
 /* Sticky bottom action bar for form pages (block "actions" in base.html) */
 .form-actions-bar {
     position: fixed;

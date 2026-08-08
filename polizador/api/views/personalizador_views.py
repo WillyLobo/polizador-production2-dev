@@ -649,6 +649,8 @@ def _agente_datatable_row(a: Agente, user) -> dict:
         "dni": a.dni,
         "categoria": a.categoria.categoria_nombre if a.categoria_id else "",
         "oficina": str(a.oficina) if a.oficina_id else "",
+        "activo": "Sí" if a.activo else "No",
+        "con_errores": "Sí" if a.con_errores else "No",
         "acciones": acciones,
     }
 
@@ -661,12 +663,16 @@ register_simple_datatable(
         "agente_nombres": "agente_nombres",
         "dni": "dni",
         "categoria": "categoria__categoria_nombre",
+        "activo": "activo",
+        "con_errores": "con_errores",
     },
     filter_fields={
         "agente_apellidos": "agente_apellidos__icontains",
         "agente_nombres": "agente_nombres__icontains",
         "dni": "dni__icontains",
         "categoria": "categoria__categoria_nombre__icontains",
+        "activo": "activo",
+        "con_errores": "con_errores",
     },
     search_lookups=["agente_apellidos__icontains", "agente_nombres__icontains", "dni__icontains"],
     row_builder=_agente_datatable_row,
@@ -675,6 +681,7 @@ register_simple_datatable(
         "categoria", "oficina__cargo_directorio", "oficina__cargo_gerencia",
         "oficina__cargo_direccion", "oficina__cargo_departamento",
     ),
+    boolean_filter_keys=frozenset({"activo", "con_errores"}),
 )
 
 

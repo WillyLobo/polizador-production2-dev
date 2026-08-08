@@ -7,6 +7,7 @@ from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from core.validators import FileValidator, CuitValidator
 from datetime import datetime
+from dateutil.relativedelta import relativedelta
 from uuid_utils import compat
 
 class ConcatOp(models.Func):
@@ -49,7 +50,7 @@ class Agente(models.Model):
     n_legajo = models.IntegerField("Numero de legajo", blank=True, null=True)
     # Datos Personales
     sexo = models.ForeignKey("GeneroAgente", on_delete=models.CASCADE)
-    abreviatura = models.CharField("Abreviatura", max_length=10, blank=True, null=True)
+    abreviatura = models.CharField("Abreviatura", max_length=10, blank=True, null=True, help_text="Sr./Sra.")
     telefono = models.CharField("Telefono", max_length=20, blank=True, null=True)
     email = models.EmailField("Email", blank=True,null=True)
     titulo_profesional = models.ManyToManyField("TituloProfesional", blank=True)
@@ -60,9 +61,20 @@ class Agente(models.Model):
     # Datos Dependencia
     fecha_ingreso = models.DateField("Fecha de Ingreso", blank=True, null=True)
     fecha_pase_a_planta = models.DateField("Fecha de pase a planta permanente", blank=True, null=True) # fecha utilizada para el computo de antiguedad.
-    n_decreto = models.CharField(max_length=10, blank=True, null=True)
-    n_resolucion_bonificacion = models.CharField(max_length=13, blank=True, null=True)
+    n_decreto = models.CharField(max_length=10, blank=True, null=True, help_text="N° de instrumento de pase a planta permanente - Solo Numero/Año")
+    INSTRUMENTO_BONIFICACION_TIPO = (
+        ("RES", "Resolución"),
+        ("DEC", "Decreto"),
+    )
+    instrumento_bonificacion_tipo = models.CharField("Tipo de instrumento", max_length=3, choices=INSTRUMENTO_BONIFICACION_TIPO, blank=True, null=True)
+    instrumento_bonificacion = models.CharField(max_length=13, blank=True, null=True, help_text="Instrumento que aprueba la bonificacion por titulo - Solo Numero/Año")
     porcentaje_bonificacion = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    INSTRUMENTO_CONTRATO_DE_SERVICIO_TIPO = (
+        ("RES", "Resolución"),
+        ("DEC", "Decreto"),
+    )
+    instrumento_contrato_de_servicio_tipo = models.CharField("Tipo de instrumento", max_length=3, choices=INSTRUMENTO_CONTRATO_DE_SERVICIO_TIPO, blank=True, null=True)
+    instrumento_contrato_de_servicio = models.CharField(max_length=13, blank=True, null=True, help_text="Instrumento que aprueba el contrato de servicio - Solo Numero/Año")
     categoria = models.ForeignKey("Categoria", on_delete=models.CASCADE, blank=True, null=True)
     denominacion_cargo = models.ForeignKey("DenominacionCargo", related_name="agente_denominacion_cargo", on_delete=models.CASCADE, blank=True, null=True)
     cargo_interno = models.ForeignKey(
@@ -70,25 +82,44 @@ class Agente(models.Model):
         on_delete=models.CASCADE, blank=True, null=True,
         help_text="Oficina a la que el agente esta designado transitoriamente, distinta de su oficina habitual.",
     )
-    n_resolucion_cargo_interno = models.CharField(max_length=13, blank=True, null=True)
+    INSTRUMENTO_CARGO_INTERNO_TIPO = (
+        ("RES", "Resolución"),
+        ("DEC", "Decreto"),
+    )
+    instrumento_cargo_interno_tipo = models.CharField("Tipo de instrumento", max_length=3, choices=INSTRUMENTO_CARGO_INTERNO_TIPO, blank=True, null=True)
+    instrumento_cargo_interno = models.CharField(max_length=13, blank=True, null=True)
     apartado = models.ForeignKey("ApartadoCargo", on_delete=models.CASCADE, blank=True, null=True)
     ceic = models.ForeignKey("CEIC", on_delete=models.CASCADE, blank=True, null=True)
     grupo = models.ForeignKey("GrupoCargo", on_delete=models.CASCADE, blank=True, null=True)
     activdad_central = models.CharField(max_length=1, default="1")
     actividad_especifica = models.ForeignKey("ActividadEspecifica", on_delete=models.CASCADE, blank=True, null=True)
     oficina = models.ForeignKey("Oficina", on_delete=models.CASCADE, blank=True, null=True)
-    n_decreto_transferencia_definitiva = models.CharField(max_length=10, blank=True, null=True)
+    n_decreto_transferencia_definitiva = models.CharField(max_length=10, blank=True, null=True, help_text="Decreto de transferencia definitiva - Solo Numero/Año")
     domicilio_direccion = models.CharField(max_length=500, blank=True, null=True)
     domicilio_barrio = models.CharField(max_length=300, blank=True, null=True)
     domicilio_localidad = models.ForeignKey("carga.Localidad", on_delete=models.CASCADE, blank=True, null=True)
-    # Campos calculados en base a lo que diga la fecha de la resolucion de aportes.
-    # Extraer años, meses, dias para computar.
-    aportes_ley_resolucion = models.CharField(max_length=13, blank=True, null=True)
-    # aportes_ley = generatedfield(delta de fecha_desde a fecha_hasta)
-    # aportes_anses = generatedfield(delta de anses_fecha_desde a anses_fecha_hasta)
-    # fecha_carga_interna = models.DateField("Fecha de inicio de aportes", blank=True, null=True)
-    # anitguedad_total = generatedfield(delta de fecha_de_igreso + años por resolucion + años funcion privada a hoy)
+    domicilio_provincia = models.ForeignKey("carga.Provincia", on_delete=models.CASCADE, blank=True, null=True)
+    # Antigüedad reconocida por instrumentos legales, adicional a la que surge de fecha_ingreso.
+    APORTES_LEY_RESOLUCION_TIPO = (
+        ("DEC", "Decreto"),
+        ("RES", "Resolución"),
+        ("DIS", "Disposición"),
+    )
+    aportes_ley_resolucion_tipo = models.CharField("Tipo de instrumento", max_length=3, choices=APORTES_LEY_RESOLUCION_TIPO, blank=True, null=True)
+    aportes_ley_resolucion = models.CharField(max_length=13, blank=True, null=True, help_text="Instrumento que establece los aportes - Solo Numero/Año")
+    aportes_ley_resolucion_anios = models.PositiveIntegerField("Años reconocidos (Resolución)", default=0, blank=True)
+    aportes_ley_resolucion_meses = models.PositiveIntegerField("Meses reconocidos (Resolución)", default=0, blank=True)
+    aportes_ley_resolucion_dias = models.PositiveIntegerField("Días reconocidos (Resolución)", default=0, blank=True)
+    aportes_anses = models.CharField(max_length=13, blank=True, null=True, help_text="Instrumento que establece los aportes")
+    aportes_anses_anios = models.PositiveIntegerField("Años reconocidos (ANSES)", default=0, blank=True)
+    aportes_anses_meses = models.PositiveIntegerField("Meses reconocidos (ANSES)", default=0, blank=True)
+    aportes_anses_dias = models.PositiveIntegerField("Días reconocidos (ANSES)", default=0, blank=True)
     # FLAGS
+    activo = models.BooleanField("Activo", default=True)
+    con_errores = models.BooleanField(
+        "Con errores de carga", default=False,
+        help_text="Se marca automaticamente al importar personal_gral.xlsx si la fila tuvo algun aviso.",
+    )
     agente_verificado_contra_padron = models.BooleanField("Chequeado",default=False)
     agente_es_inpector_obra = models.BooleanField("Inspector de Obra",default=False)
     agente_personal_transitorio = models.BooleanField("Personal Transitorio",default=False)
@@ -100,6 +131,26 @@ class Agente(models.Model):
     @property
     def edad(self):
         return int((datetime.now().year - self.fecha_nacimiento.year))
+
+    @property
+    def antiguedad(self):
+        """Antigüedad total: años/meses/días desde fecha_ingreso hasta hoy, más los
+        reconocidos por aportes_ley_resolucion y aportes_anses. Convención de cómputo
+        de aportes: 30 días = 1 mes, 12 meses = 1 año."""
+        if not self.fecha_ingreso:
+            return None
+
+        delta = relativedelta(timezone.localdate(), self.fecha_ingreso)
+        anios = delta.years + self.aportes_ley_resolucion_anios + self.aportes_anses_anios
+        meses = delta.months + self.aportes_ley_resolucion_meses + self.aportes_anses_meses
+        dias = delta.days + self.aportes_ley_resolucion_dias + self.aportes_anses_dias
+
+        meses += dias // 30
+        dias %= 30
+        anios += meses // 12
+        meses %= 12
+
+        return {"anios": anios, "meses": meses, "dias": dias}
 
     def __str__(self):
         if self.agente_personal_transitorio:
@@ -123,7 +174,7 @@ class TituloProfesional(models.Model):
         verbose_name = "Título Profesional"
         verbose_name_plural = "Títulos Profesionales"
    
-    tituloprofesional_nombre = models.CharField(max_length=200)
+    tituloprofesional_nombre = models.CharField(max_length=200, help_text="Nombre del título profesional sin abreviaturas. Ej. Técnico Superior en Administración, NO Tec. Sup. en Adm.")
     tituloprofesional_abreviatura = models.CharField(max_length=10, null=True, blank=True)
     tituloprofesional_grado = models.CharField(max_length=50, help_text="Grado académico del título, ej: Universitario, Terciario, etc.")
     tituloprofesional_history = HistoricalRecords()
