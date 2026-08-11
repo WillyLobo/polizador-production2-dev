@@ -212,6 +212,71 @@ class CorteLicenciaTest(TestCase):
             corte.full_clean()
 
 
+class LicenciaAnualAdelantadaTest(TestCase):
+    """Art. 10, Ley 645-A: la Licencia Anual Ordinaria puede adelantarse, total o
+    parcialmente, contra el cupo del año calendario siguiente."""
+
+    def setUp(self):
+        genero = GeneroAgente.objects.create(generoagente_nombre="Test")
+        self.agente = Agente.objects.create(
+            agente_nombres="Ana", agente_apellidos="Gomez",
+            sexo=genero, dni=30222333, cuil="27302223334",
+            fecha_ingreso=date(2000, 1, 1),  # +18 años -> 49 días/año
+        )
+        self.tipo_anual = TipoLicenciaPermiso.objects.create(
+            tipolicenciapermiso_categoria="LOR", tipolicenciapermiso_nombre="Anual",
+            tipolicenciapermiso_unidad="DC", tipolicenciapermiso_tope_periodo="VAR",
+        )
+        self.tipo_adelantada = TipoLicenciaPermiso.objects.create(
+            tipolicenciapermiso_categoria="LOR", tipolicenciapermiso_nombre="Anual Adelantada",
+            tipolicenciapermiso_unidad="DC", tipolicenciapermiso_tope_periodo="VAR",
+        )
+
+    def test_balance_adelantada_sin_uso_muestra_cupo_del_ano_siguiente(self):
+        balance = balance_tipo(self.agente, self.tipo_adelantada, 2024)
+        self.assertEqual(balance["correspondientes"], 49)
+        self.assertEqual(balance["usados"], 0)
+        self.assertEqual(balance["disponibles"], 49)
+
+    def test_adelanto_consume_cupo_del_ano_siguiente_no_el_propio(self):
+        LicenciaPermiso.objects.create(
+            licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_adelantada,
+            licenciapermiso_fecha_desde=date(2024, 12, 20), licenciapermiso_cantidad=10,
+        )
+        self.assertEqual(dias_usados(self.agente, self.tipo_anual, 2024), 0)
+        self.assertEqual(dias_usados(self.agente, self.tipo_anual, 2025), 10)
+
+        balance_2025 = balance_tipo(self.agente, self.tipo_anual, 2025)
+        self.assertEqual(balance_2025["correspondientes"], 49)
+        self.assertEqual(balance_2025["disponibles"], 39)
+
+    def test_adelanto_no_puede_superar_cupo_disponible_del_ano_siguiente(self):
+        licencia = LicenciaPermiso(
+            licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_adelantada,
+            licenciapermiso_fecha_desde=date(2024, 12, 20), licenciapermiso_cantidad=50,
+        )
+        with self.assertRaises(ValidationError):
+            licencia.full_clean()
+
+    def test_adelanto_descuenta_cupo_ya_comprometido_por_licencia_anual_normal(self):
+        LicenciaPermiso.objects.create(
+            licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_anual,
+            licenciapermiso_fecha_desde=date(2025, 1, 10), licenciapermiso_cantidad=40,
+        )
+        balance = balance_tipo(self.agente, self.tipo_adelantada, 2024)
+        self.assertEqual(balance["correspondientes"], 9)
+
+    def test_editar_adelanto_no_se_descuenta_dos_veces_contra_si_mismo(self):
+        licencia = LicenciaPermiso.objects.create(
+            licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_adelantada,
+            licenciapermiso_fecha_desde=date(2024, 12, 20), licenciapermiso_cantidad=20,
+        )
+        licencia.licenciapermiso_cantidad = 25
+        licencia.full_clean()
+        licencia.save()
+        self.assertEqual(dias_usados(self.agente, self.tipo_anual, 2025), 25)
+
+
 class LicenciaPermisoViewsPermissionTest(TestCase):
     """Las vistas de licencias exigen los permisos correspondientes: sin login
     redirigen, y las funciones basadas en @permission_required(raise_exception=True)

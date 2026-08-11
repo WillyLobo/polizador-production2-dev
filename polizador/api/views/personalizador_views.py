@@ -741,6 +741,57 @@ register_simple_datatable(
 )
 
 
+# --- TipoLicenciaPermiso datatable ---
+def _tipolicenciapermiso_datatable_row(t: TipoLicenciaPermiso, user) -> dict:
+    id_ = t.id
+    acciones = _simple_acciones(
+        user, "personalizador.delete_tipolicenciapermiso", "personalizador.change_tipolicenciapermiso",
+        f"<a href='/personal/crear/tipolicenciapermiso/{id_}'>{editlinkimg}</a>",
+        f"<a href='/personal/eliminar/tipolicenciapermiso/{id_}'>{eliminarlinkimg}</a>",
+    )
+    if t.tipolicenciapermiso_tope_cantidad is not None:
+        tope = f"{t.tipolicenciapermiso_tope_cantidad} ({t.get_tipolicenciapermiso_tope_periodo_display()})"
+    else:
+        tope = "Variable"
+    return {
+        "id": t.id,
+        "tipolicenciapermiso_articulo": t.tipolicenciapermiso_articulo,
+        "tipolicenciapermiso_nombre": t.tipolicenciapermiso_nombre,
+        "tipolicenciapermiso_categoria": t.get_tipolicenciapermiso_categoria_display(),
+        "tipolicenciapermiso_unidad": t.get_tipolicenciapermiso_unidad_display(),
+        "tipolicenciapermiso_tope": tope,
+        "tipolicenciapermiso_remunerada": t.get_tipolicenciapermiso_remunerada_display(),
+        "tipolicenciapermiso_activo": "Sí" if t.tipolicenciapermiso_activo else "No",
+        "acciones": acciones,
+    }
+
+
+register_simple_datatable(
+    router, TipoLicenciaPermiso, "tipolicenciapermisos",
+    order_fields={
+        "id": "id",
+        "tipolicenciapermiso_articulo": "tipolicenciapermiso_articulo",
+        "tipolicenciapermiso_nombre": "tipolicenciapermiso_nombre",
+        "tipolicenciapermiso_categoria": "tipolicenciapermiso_categoria",
+        "tipolicenciapermiso_unidad": "tipolicenciapermiso_unidad",
+        "tipolicenciapermiso_remunerada": "tipolicenciapermiso_remunerada",
+        "tipolicenciapermiso_activo": "tipolicenciapermiso_activo",
+    },
+    filter_fields={
+        "tipolicenciapermiso_nombre": "tipolicenciapermiso_nombre__icontains",
+        "tipolicenciapermiso_categoria": "tipolicenciapermiso_categoria",
+        "tipolicenciapermiso_activo": "tipolicenciapermiso_activo",
+    },
+    search_lookups=[
+        "tipolicenciapermiso_nombre__icontains",
+        "tipolicenciapermiso_articulo__icontains",
+    ],
+    row_builder=_tipolicenciapermiso_datatable_row,
+    default_order="tipolicenciapermiso_categoria",
+    boolean_filter_keys=frozenset({"tipolicenciapermiso_activo"}),
+)
+
+
 @router.get("/licenciapermiso-balance/", response=LicenciaPermisoBalanceOut)
 @decorate_view(require_model_perm(LicenciaPermiso))
 def licenciapermiso_balance(request, agente: int, tipo: int, anio: int = None):

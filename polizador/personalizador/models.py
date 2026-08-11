@@ -542,6 +542,23 @@ class LicenciaPermiso(models.Model):
                 if self.licenciapermiso_cantidad > restante:
                     raise ValidationError({"licenciapermiso_cantidad": f"Supera el saldo pendiente del corte ({restante})."})
 
+        if (self.licenciapermiso_tipo_id and self.licenciapermiso_agente_id and self.licenciapermiso_fecha_desde
+                and self.licenciapermiso_cantidad is not None and not self.licenciapermiso_anulada):
+            from personalizador.licencias import LICENCIA_ANUAL_ADELANTADA_NOMBRE, balance_tipo
+
+            tipo = self.licenciapermiso_tipo
+            if tipo.tipolicenciapermiso_categoria == "LOR" and tipo.tipolicenciapermiso_nombre == LICENCIA_ANUAL_ADELANTADA_NOMBRE:
+                anio = self.licenciapermiso_fecha_desde.year
+                disponible = balance_tipo(self.licenciapermiso_agente, tipo, anio)["disponibles"]
+                if disponible is not None:
+                    if self.pk:
+                        anterior = LicenciaPermiso.objects.filter(pk=self.pk).values_list(
+                            "licenciapermiso_cantidad", "licenciapermiso_anulada").first()
+                        if anterior and not anterior[1]:
+                            disponible += anterior[0]
+                    if self.licenciapermiso_cantidad > disponible:
+                        raise ValidationError({"licenciapermiso_cantidad": f"Supera el cupo disponible del año siguiente para adelantar ({disponible})."})
+
     def __str__(self):
         return f"{self.licenciapermiso_tipo} - {self.licenciapermiso_agente} ({self.licenciapermiso_fecha_desde})"
 

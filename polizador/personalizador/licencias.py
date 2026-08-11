@@ -10,6 +10,19 @@ from personalizador.models import CorteLicencia, LicenciaPermiso, TipoLicenciaPe
 
 LICENCIA_ANUAL_ORDINARIA_NOMBRE = "Anual"
 LICENCIA_ANUAL_INVIERNO_NOMBRE = "Anual de Invierno"
+LICENCIA_ANUAL_ADELANTADA_NOMBRE = "Anual Adelantada"
+
+
+def _tipo_anual_adelantada():
+    return TipoLicenciaPermiso.objects.filter(
+        tipolicenciapermiso_categoria="LOR", tipolicenciapermiso_nombre=LICENCIA_ANUAL_ADELANTADA_NOMBRE,
+    ).first()
+
+
+def _tipo_anual_ordinaria():
+    return TipoLicenciaPermiso.objects.filter(
+        tipolicenciapermiso_categoria="LOR", tipolicenciapermiso_nombre=LICENCIA_ANUAL_ORDINARIA_NOMBRE,
+    ).first()
 
 
 def antiguedad_meses(agente, hasta):
@@ -40,9 +53,10 @@ def dias_licencia_ordinaria_correspondientes(agente, anio):
     return 49
 
 
-def dias_usados(agente, tipo, anio):
-    """Suma la cantidad de los registros (no anulados) del tipo dado para el agente,
-    cuya fecha_desde cae dentro del año calendario.
+def _cantidad_registrada(agente, tipo, anio):
+    """Suma cruda de LicenciaPermiso no anuladas de `tipo` cuya fecha_desde cae en
+    `anio`, sin aplicar ninguna regla de re-imputación entre años calendario (eso vive
+    en `dias_usados`, que es lo que hay que llamar en general).
 
     Las fracciones que consumen el saldo de un CorteLicencia (`licenciapermiso_saldo_de_corte`)
     quedan afuera: no consumen el cupo del año en que se usan, sino el saldo ya
@@ -62,6 +76,21 @@ def dias_usados(agente, tipo, anio):
     )
 
 
+def dias_usados(agente, tipo, anio):
+    """`_cantidad_registrada` más, para la Licencia Anual Ordinaria, los adelantos
+    (Art. 10, tipo "Anual Adelantada") tomados el año calendario ANTERIOR con destino
+    a este año: esos registros físicamente ocurren en `anio - 1` pero consumen el cupo
+    de `anio`, no el de su propio año."""
+    total = _cantidad_registrada(agente, tipo, anio)
+
+    if tipo.tipolicenciapermiso_categoria == "LOR" and tipo.tipolicenciapermiso_nombre == LICENCIA_ANUAL_ORDINARIA_NOMBRE:
+        adelantada = _tipo_anual_adelantada()
+        if adelantada:
+            total += _cantidad_registrada(agente, adelantada, anio - 1)
+
+    return total
+
+
 def saldos_pendientes_agente(agente):
     """Cortes de licencia del agente con saldo > 0 aún sin usar, para alertar sobre
     vencimientos próximos en el control de licencias."""
@@ -73,11 +102,22 @@ def saldos_pendientes_agente(agente):
 
 def balance_tipo(agente, tipo, anio):
     """{correspondientes, usados, disponibles} para `tipo` en `anio`.
-    `correspondientes`/`disponibles` quedan en `None` cuando el tope no es fijo."""
+    `correspondientes`/`disponibles` quedan en `None` cuando el tope no es fijo.
+
+    Para "Anual Adelantada" (Art. 10), `correspondientes` es el cupo de la Licencia
+    Anual Ordinaria del año SIGUIENTE (`anio + 1`) que todavía no esté comprometido por
+    licencias "Anual" ya registradas en ese año (los adelantos de este mismo `anio` se
+    restan después, vía `usados`, con la fórmula genérica de `disponibles`)."""
     usados = dias_usados(agente, tipo, anio)
 
     if tipo.tipolicenciapermiso_categoria == "LOR" and tipo.tipolicenciapermiso_nombre == LICENCIA_ANUAL_ORDINARIA_NOMBRE:
         correspondientes = dias_licencia_ordinaria_correspondientes(agente, anio)
+    elif tipo.tipolicenciapermiso_categoria == "LOR" and tipo.tipolicenciapermiso_nombre == LICENCIA_ANUAL_ADELANTADA_NOMBRE:
+        anio_siguiente = anio + 1
+        cupo_siguiente = dias_licencia_ordinaria_correspondientes(agente, anio_siguiente)
+        tipo_anual = _tipo_anual_ordinaria()
+        usado_siguiente = _cantidad_registrada(agente, tipo_anual, anio_siguiente) if tipo_anual else 0
+        correspondientes = max(cupo_siguiente - usado_siguiente, 0)
     elif tipo.tipolicenciapermiso_tope_cantidad is not None and tipo.tipolicenciapermiso_tope_periodo == "ANI":
         correspondientes = tipo.tipolicenciapermiso_tope_cantidad
     else:

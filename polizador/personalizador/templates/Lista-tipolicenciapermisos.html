@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% block title %}<title>Tipos de Licencias/Permisos</title>{% endblock title%}
+
+<div class="min-vh-100">
+  <div class="card">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small d-flex justify-content-between align-items-center">
+      <span>Tipos de Licencias/Permisos</span>
+      {% if perms.personalizador.add_tipolicenciapermiso %}
+      <a href="{% url 'personalizador:crear-tipolicenciapermiso' %}" class="btn btn-sm btn-outline-success">
+        <i class="bi bi-plus-circle me-1"></i>Nuevo Tipo
+      </a>
+      {% endif %}
+    </div>
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table id="tableTipoLicenciaPermisos" width="auto" class="table table-striped table-bordered align-middle mb-0">
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script language="javascript">
+
+  $(document).ready(function() {
+      var columns = [
+          { data: 'tipolicenciapermiso_articulo', name: 'tipolicenciapermiso_articulo', title: 'Artículo' },
+          { data: 'tipolicenciapermiso_nombre', name: 'tipolicenciapermiso_nombre', title: 'Nombre' },
+          { data: 'tipolicenciapermiso_categoria', name: 'tipolicenciapermiso_categoria', title: 'Categoría' },
+          { data: 'tipolicenciapermiso_unidad', name: 'tipolicenciapermiso_unidad', title: 'Unidad' },
+          { data: 'tipolicenciapermiso_tope', title: 'Tope', orderable: false, searchable: false },
+          { data: 'tipolicenciapermiso_remunerada', name: 'tipolicenciapermiso_remunerada', title: 'Remunerada' },
+          {
+              data: 'tipolicenciapermiso_activo', name: 'tipolicenciapermiso_activo', title: 'Activo',
+              filterType: 'select', filterChoices: [['true', 'Sí'], ['false', 'No']],
+          },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
+          $('#tableTipoLicenciaPermisos'),
+          '/v1/api/datatables/tipolicenciapermisos/',
+          columns,
+          {
+              order: [[2, 'asc'], [1, 'asc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+          },
+      );
+  });
+
+</script>
+
+{% endblock %}
