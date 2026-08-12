@@ -8,7 +8,13 @@ from django.db.models.functions import TruncMonth
 from django.utils import timezone
 
 from carga.models import Certificado, FojaDeMedicion, Obra
-from personalizador.models import Agente
+from personalizador.models import (
+    Agente,
+    CorteLicencia,
+    DevolucionHorasPermiso,
+    LicenciaPermiso,
+    TipoLicenciaPermiso,
+)
 from secretariador.models import Incorporacion, Solicitud
 
 from .models import LoginEvent
@@ -25,6 +31,10 @@ TRACKED_MODELS = {
     ],
     "personalizador": [
         (Agente, "agente_history", "Agentes"),
+        (TipoLicenciaPermiso, "tipolicenciapermiso_history", "Tipos de Licencia"),
+        (LicenciaPermiso, "licenciapermiso_history", "Licencias/Permisos"),
+        (CorteLicencia, "cortelicencia_history", "Cortes de Licencia"),
+        (DevolucionHorasPermiso, "devolucionhoras_history", "Devoluciones de Horas"),
     ],
 }
 
