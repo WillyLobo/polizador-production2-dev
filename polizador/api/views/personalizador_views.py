@@ -2,7 +2,9 @@
 from typing import List
 
 from django.contrib.auth import get_user_model
+from django.db.models import F, Func, IntegerField
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.utils import timezone
 from ninja import Router
 from ninja.decorators import decorate_view
@@ -24,7 +26,7 @@ from personalizador.models import (
     GeneroAgente, GrupoCargo, Oficina, RepresentanteTecnico, TituloProfesional,
     LicenciaPermiso, TipoLicenciaPermiso,
 )
-from personalizador.licencias import balance_tipo
+from personalizador.licencias import balance_tipo, resumen_agente, saldos_pendientes_agente
 
 User = get_user_model()
 router = Router(tags=["personalizador"])
@@ -635,6 +637,13 @@ register_simple_datatable(
 
 
 # --- Agente (management list) datatable ---
+class _EdadCalculada(Func):
+    """Años completos entre hoy y `fecha_nacimiento`, calculado en Postgres:
+    EXTRACT(YEAR FROM AGE(fecha_nacimiento))."""
+    template = "EXTRACT(YEAR FROM AGE(%(expressions)s))"
+    output_field = IntegerField()
+
+
 def _formatear_antiguedad(antiguedad: dict | None) -> str:
     if not antiguedad:
         return ""
@@ -643,19 +652,23 @@ def _formatear_antiguedad(antiguedad: dict | None) -> str:
 
 def _agente_datatable_row(a: Agente, user) -> dict:
     id_ = a.id
-    acciones = _simple_acciones(
-        user, "personalizador.delete_agente", "personalizador.change_agente",
-        f"<a href='/personal/crear/agente/{id_}'>{editlinkimg}</a>",
-        f"<a href='/personal/eliminar/agente/{id_}'>{eliminarlinkimg}</a>",
-    )
+    editarlink = f"<a href='/personal/crear/agente/{id_}'>{editlinkimg}</a>"
+    detallelink = f"<a href='/personal/agente/ficha/{id_}'>{detallelinkimg}</a>"
+    eliminarlink = f"<a href='/personal/eliminar/agente/{id_}'>{eliminarlinkimg}</a>"
+    if user.has_perm("personalizador.delete_agente"):
+        acciones = f"{editarlink}{detallelink}{eliminarlink}"
+    elif user.has_perm("personalizador.change_agente"):
+        acciones = f"{editarlink}{detallelink}"
+    else:
+        acciones = detallelink
     return {
         "id": a.id,
         "agente_apellidos": a.agente_apellidos,
         "agente_nombres": a.agente_nombres,
         "dni": a.dni,
-        "categoria": a.categoria.categoria_nombre if a.categoria_id else "",
+        "denominacion": a.denominacion_cargo.denominacion if a.denominacion_cargo_id else "",
         "oficina": str(a.oficina) if a.oficina_id else "",
-        "edad": a.edad if a.fecha_nacimiento else "",
+        "edad": int(a.edad_calculada) if a.edad_calculada is not None else "",
         "antiguedad": _formatear_antiguedad(a.antiguedad),
         "activo": "Sí" if a.activo else "No",
         "con_errores": "Sí" if a.con_errores else "No",
@@ -670,7 +683,8 @@ register_simple_datatable(
         "agente_apellidos": "agente_apellidos",
         "agente_nombres": "agente_nombres",
         "dni": "dni",
-        "categoria": "categoria__categoria_nombre",
+        "denominacion": "denominacion_cargo__denominacion",
+        "edad": "edad_calculada",
         "activo": "activo",
         "con_errores": "con_errores",
     },
@@ -678,7 +692,8 @@ register_simple_datatable(
         "agente_apellidos": "agente_apellidos__icontains",
         "agente_nombres": "agente_nombres__icontains",
         "dni": "dni__icontains",
-        "categoria": "categoria__categoria_nombre__icontains",
+        "denominacion": "denominacion_cargo_id",
+        "edad": "edad_calculada",
         "activo": "activo",
         "con_errores": "con_errores",
     },
@@ -686,11 +701,53 @@ register_simple_datatable(
     row_builder=_agente_datatable_row,
     default_order="agente_apellidos",
     queryset=Agente.objects.select_related(
-        "categoria", "oficina__cargo_directorio", "oficina__cargo_gerencia",
+        "denominacion_cargo", "oficina__cargo_directorio", "oficina__cargo_gerencia",
         "oficina__cargo_direccion", "oficina__cargo_departamento",
-    ),
+    ).annotate(edad_calculada=_EdadCalculada(F("fecha_nacimiento"))),
     boolean_filter_keys=frozenset({"activo", "con_errores"}),
+    with_detail=False,
 )
+
+
+@router.get("/datatables/agentes/{id}/detalle/")
+@decorate_view(require_model_perm(Agente))
+def datatable_agentes_detalle(request, id: int):
+    agente = get_object_or_404(
+        Agente.objects.select_related(
+            "sexo", "categoria", "denominacion_cargo", "apartado", "ceic", "grupo",
+            "actividad_especifica", "domicilio_localidad", "domicilio_provincia",
+            "oficina__cargo_directorio", "oficina__cargo_gerencia",
+            "oficina__cargo_direccion", "oficina__cargo_departamento",
+            "cargo_interno__cargo_directorio", "cargo_interno__cargo_gerencia",
+            "cargo_interno__cargo_direccion", "cargo_interno__cargo_departamento",
+        ).prefetch_related("titulo_profesional", "licenciapermiso_set__licenciapermiso_tipo"),
+        id=id,
+    )
+    anio = timezone.now().year
+    html = render_to_string(
+        "ajax_datatable/personalizador/agente/render_row_details.html",
+        {
+            "object": agente,
+            "anio": anio,
+            "resumen": resumen_agente(agente, anio),
+            "saldos_pendientes": saldos_pendientes_agente(agente),
+            "licencias_recientes": agente.licenciapermiso_set.all()[:10],
+        },
+        request=request,
+    )
+    return {"html": html}
+
+
+@router.get("/datatables/agentes/filtro-denominacion/")
+@decorate_view(require_model_perm(Agente))
+def datatable_agentes_filtro_denominacion(request):
+    choices = (
+        Agente.objects.exclude(denominacion_cargo=None)
+        .values_list("denominacion_cargo_id", "denominacion_cargo__denominacion")
+        .distinct()
+        .order_by("denominacion_cargo__denominacion")
+    )
+    return {"choices": list(choices)}
 
 
 # --- LicenciaPermiso datatable ---

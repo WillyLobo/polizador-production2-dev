@@ -42,12 +42,15 @@ class CrearLicenciaPermiso(PermissionRequiredMixin, FormsetViewMixin, generic.Cr
 	def get_initial(self):
 		initial = super().get_initial()
 		corte_id = self.request.GET.get("saldo_de_corte")
+		agente_id = self.request.GET.get("agente")
 		if corte_id:
 			corte = get_object_or_404(CorteLicencia, pk=corte_id)
 			licencia_original = corte.cortelicencia_licencia
 			initial["licenciapermiso_saldo_de_corte"] = corte
 			initial["licenciapermiso_agente"] = licencia_original.licenciapermiso_agente
 			initial["licenciapermiso_tipo"] = licencia_original.licenciapermiso_tipo
+		elif agente_id:
+			initial["licenciapermiso_agente"] = get_object_or_404(Agente, pk=agente_id)
 		return initial
 
 	def get_context_data(self, **kwargs):

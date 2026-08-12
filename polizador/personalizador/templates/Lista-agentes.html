@@ -28,9 +28,12 @@
           { data: 'agente_apellidos', name: 'agente_apellidos', title: 'Apellido' },
           { data: 'agente_nombres', name: 'agente_nombres', title: 'Nombre' },
           { data: 'dni', name: 'dni', title: 'DNI' },
-          { data: 'categoria', name: 'categoria', title: 'Categoría' },
+          {
+              data: 'denominacion', name: 'denominacion', title: 'Denominación',
+              filterType: 'select', filterChoicesUrl: '/v1/api/datatables/agentes/filtro-denominacion/',
+          },
           { data: 'oficina', name: 'oficina', title: 'Oficina' },
-          { data: 'edad', title: 'Edad', orderable: false, filterable: false },
+          { data: 'edad', name: 'edad', title: 'Edad' },
           { data: 'antiguedad', title: 'Antigüedad', orderable: false, filterable: false },
           {
               data: 'activo', name: 'activo', title: 'Activo',

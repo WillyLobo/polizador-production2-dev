@@ -6,7 +6,6 @@ from django.core.validators import MinValueValidator
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
 from core.validators import FileValidator, CuitValidator
-from datetime import datetime
 from dateutil.relativedelta import relativedelta
 from uuid_utils import compat
 
@@ -130,7 +129,9 @@ class Agente(models.Model):
 
     @property
     def edad(self):
-        return int((datetime.now().year - self.fecha_nacimiento.year))
+        if not self.fecha_nacimiento:
+            return None
+        return relativedelta(timezone.localdate(), self.fecha_nacimiento).years
 
     @property
     def antiguedad(self):

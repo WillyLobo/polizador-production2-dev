@@ -98,6 +98,7 @@ agente_patterns = [
 	path("crear/agente/", CrearAgente.as_view(), name="crear-agente"),
 	path("crear/agente/<pk>", UpdateAgente.as_view(), name="update-agente"),
 	path("eliminar/agente/<pk>", EliminarAgente.as_view(), name="eliminar-agente"),
+	path("agente/ficha/<pk>", FichaAgente.as_view(), name="ficha-agente"),
 ]
 licenciapermiso_patterns = [
 	path("licencias/crear/", CrearLicenciaPermiso.as_view(), name="crear-licenciapermiso"),
