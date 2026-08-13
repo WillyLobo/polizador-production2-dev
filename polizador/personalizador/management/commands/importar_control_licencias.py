@@ -10,17 +10,20 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 from personalizador.management.commands.importar_informe_ipduv import _blank, _normalize_text
+from personalizador.licencias import LICENCIA_IMPORTADA_MOTIVO_PREFIJO as TAG
 from personalizador.models import Agente, LicenciaPermiso, TipoLicenciaPermiso
 
 logger = logging.getLogger(__name__)
 
 DEFAULT_PATH = settings.BASE_DIR.parent / "env" / ".snipets" / "control_licencias.xlsx"
 
-# Prefijo fijo de licenciapermiso_motivo para los registros generados por este
-# comando: permite reconocerlos en una re-ejecucion (buscar por agente+tipo+
+# TAG (importado de personalizador.licencias) es el prefijo fijo de
+# licenciapermiso_motivo para los registros generados por este comando:
+# permite reconocerlos en una re-ejecucion (buscar por agente+tipo+
 # fecha_desde+motivo__startswith=TAG) y actualizarlos en vez de duplicarlos,
-# sin tocar licencias cargadas a mano para la misma fecha.
-TAG = "[Importado control_licencias.xlsx]"
+# sin tocar licencias cargadas a mano para la misma fecha. El mismo prefijo
+# se usa en api/views/personalizador_views.py para la columna/filtro
+# "Importada" del datatable.
 
 # "ART 50 Inc 4" (Razones Particulares con compensacion horaria) esta cargado
 # en el excel en dias equivalentes, pero el tipo en la base esta en horas

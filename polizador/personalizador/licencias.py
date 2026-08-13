@@ -12,6 +12,14 @@ LICENCIA_ANUAL_ORDINARIA_NOMBRE = "Anual"
 LICENCIA_ANUAL_INVIERNO_NOMBRE = "Anual de Invierno"
 LICENCIA_ANUAL_ADELANTADA_NOMBRE = "Anual Proporcional"
 
+# Prefijo de licenciapermiso_motivo que marca un registro generado por
+# personalizador.management.commands.importar_control_licencias (en vez de
+# cargado a mano): permite reconocerlos para el datatable y para reejecutar
+# el import sin duplicar. Vive aca (no en el comando) para poder importarlo
+# tanto desde el comando como desde las vistas sin depender de un modulo de
+# management command.
+LICENCIA_IMPORTADA_MOTIVO_PREFIJO = "[Importado control_licencias.xlsx]"
+
 
 def _tipo_anual_adelantada():
     return TipoLicenciaPermiso.objects.filter(

@@ -2,7 +2,7 @@
 from typing import List
 
 from django.contrib.auth import get_user_model
-from django.db.models import F, Func, IntegerField
+from django.db.models import BooleanField, Case, F, Func, IntegerField, Value, When
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -26,7 +26,10 @@ from personalizador.models import (
     GeneroAgente, GrupoCargo, Oficina, RepresentanteTecnico, TituloProfesional,
     LicenciaPermiso, TipoLicenciaPermiso,
 )
-from personalizador.licencias import balance_tipo, resumen_agente, saldos_pendientes_agente
+from personalizador.licencias import (
+    balance_tipo, resumen_agente, saldos_pendientes_agente,
+    LICENCIA_IMPORTADA_MOTIVO_PREFIJO,
+)
 
 User = get_user_model()
 router = Router(tags=["personalizador"])
@@ -767,6 +770,7 @@ def _licenciapermiso_datatable_row(s: LicenciaPermiso, user) -> dict:
         "licenciapermiso_fecha_hasta": s.licenciapermiso_fecha_hasta,
         "licenciapermiso_cantidad": s.licenciapermiso_cantidad,
         "licenciapermiso_anulada": "Sí" if s.licenciapermiso_anulada else "No",
+        "licenciapermiso_importada": "Sí" if s.licenciapermiso_importada else "No",
         "acciones": acciones,
     }
 
@@ -780,11 +784,13 @@ register_simple_datatable(
         "licenciapermiso_fecha_desde": "licenciapermiso_fecha_desde",
         "licenciapermiso_fecha_hasta": "licenciapermiso_fecha_hasta",
         "licenciapermiso_anulada": "licenciapermiso_anulada",
+        "licenciapermiso_importada": "licenciapermiso_importada",
     },
     filter_fields={
         "licenciapermiso_agente": "licenciapermiso_agente__agente_apellidos__icontains",
         "licenciapermiso_tipo": "licenciapermiso_tipo__tipolicenciapermiso_nombre__icontains",
         "licenciapermiso_anulada": "licenciapermiso_anulada",
+        "licenciapermiso_importada": "licenciapermiso_importada",
     },
     search_lookups=[
         "licenciapermiso_agente__agente_apellidos__icontains",
@@ -793,8 +799,13 @@ register_simple_datatable(
     ],
     row_builder=_licenciapermiso_datatable_row,
     default_order="-licenciapermiso_fecha_desde",
-    queryset=LicenciaPermiso.objects.select_related("licenciapermiso_agente", "licenciapermiso_tipo"),
-    boolean_filter_keys=frozenset({"licenciapermiso_anulada"}),
+    queryset=LicenciaPermiso.objects.select_related("licenciapermiso_agente", "licenciapermiso_tipo").annotate(
+        licenciapermiso_importada=Case(
+            When(licenciapermiso_motivo__startswith=LICENCIA_IMPORTADA_MOTIVO_PREFIJO, then=Value(True)),
+            default=Value(False), output_field=BooleanField(),
+        ),
+    ),
+    boolean_filter_keys=frozenset({"licenciapermiso_anulada", "licenciapermiso_importada"}),
 )
 
 
