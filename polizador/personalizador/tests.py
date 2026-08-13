@@ -228,7 +228,7 @@ class LicenciaAnualAdelantadaTest(TestCase):
             tipolicenciapermiso_unidad="DC", tipolicenciapermiso_tope_periodo="VAR",
         )
         self.tipo_adelantada = TipoLicenciaPermiso.objects.create(
-            tipolicenciapermiso_categoria="LOR", tipolicenciapermiso_nombre="Anual Adelantada",
+            tipolicenciapermiso_categoria="LOR", tipolicenciapermiso_nombre="Anual Proporcional",
             tipolicenciapermiso_unidad="DC", tipolicenciapermiso_tope_periodo="VAR",
         )
 

@@ -15,7 +15,7 @@ TIPOS_DATA = [
     # --- A) a) Licencias Ordinarias ---
     {"categoria": "LOR", "nombre": "Anual", "articulo": "Art. 7/11", "unidad": "DC", "tope": None, "tope_periodo": "VAR", "remunerada": "SI", "antiguedad_meses": 6, "certificado": False, "compensacion": False,
      "observaciones": "Tope según antigüedad al 31/12 (Art. 8): 6m-5a=23 días, +5-10a=28, +10-18a=42, +18a=49 días corridos."},
-    {"categoria": "LOR", "nombre": "Anual Adelantada", "articulo": "Art. 10", "unidad": "DC", "tope": None, "tope_periodo": "VAR", "remunerada": "SI", "antiguedad_meses": 6, "certificado": False, "compensacion": False,
+    {"categoria": "LOR", "nombre": "Anual Proporcional", "articulo": "Art. 10", "unidad": "DC", "tope": None, "tope_periodo": "VAR", "remunerada": "SI", "antiguedad_meses": 6, "certificado": False, "compensacion": False,
      "observaciones": "Uso adelantado, total o parcial, de la Licencia Anual Ordinaria correspondiente al período calendario siguiente al de fecha_desde; consume ese cupo futuro en vez del cupo del año en que se toma. Debe efectivizarse dentro del plazo del último párrafo del Art. 7°."},
     {"categoria": "LOR", "nombre": "Motivos de Salud (Enfermedad o lesión común)", "articulo": "Art. 15/16", "unidad": "DC", "tope": 45, "tope_periodo": "ANI", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False},
     {"categoria": "LOR", "nombre": "Motivos de Salud (Enfermedad prolongada o lesión grave)", "articulo": "Art. 17/20", "unidad": "DC", "tope": 730, "tope_periodo": "TOT", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False,

@@ -10,7 +10,7 @@ from personalizador.models import CorteLicencia, LicenciaPermiso, TipoLicenciaPe
 
 LICENCIA_ANUAL_ORDINARIA_NOMBRE = "Anual"
 LICENCIA_ANUAL_INVIERNO_NOMBRE = "Anual de Invierno"
-LICENCIA_ANUAL_ADELANTADA_NOMBRE = "Anual Adelantada"
+LICENCIA_ANUAL_ADELANTADA_NOMBRE = "Anual Proporcional"
 
 
 def _tipo_anual_adelantada():
@@ -78,7 +78,7 @@ def _cantidad_registrada(agente, tipo, anio):
 
 def dias_usados(agente, tipo, anio):
     """`_cantidad_registrada` más, para la Licencia Anual Ordinaria, los adelantos
-    (Art. 10, tipo "Anual Adelantada") tomados el año calendario ANTERIOR con destino
+    (Art. 10, tipo "Anual Proporcional") tomados el año calendario ANTERIOR con destino
     a este año: esos registros físicamente ocurren en `anio - 1` pero consumen el cupo
     de `anio`, no el de su propio año."""
     total = _cantidad_registrada(agente, tipo, anio)
@@ -104,7 +104,7 @@ def balance_tipo(agente, tipo, anio):
     """{correspondientes, usados, disponibles} para `tipo` en `anio`.
     `correspondientes`/`disponibles` quedan en `None` cuando el tope no es fijo.
 
-    Para "Anual Adelantada" (Art. 10), `correspondientes` es el cupo de la Licencia
+    Para "Anual Proporcional" (Art. 10), `correspondientes` es el cupo de la Licencia
     Anual Ordinaria del año SIGUIENTE (`anio + 1`) que todavía no esté comprometido por
     licencias "Anual" ya registradas en ese año (los adelantos de este mismo `anio` se
     restan después, vía `usados`, con la fórmula genérica de `disponibles`)."""
