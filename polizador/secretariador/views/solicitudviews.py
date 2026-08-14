@@ -1,32 +1,26 @@
+import io
+
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.shortcuts import render, redirect, HttpResponse
 from django.urls import reverse_lazy
 from django.views import generic
-from secretariador.models import Solicitud, InstrumentosLegalesDecretos
+from secretariador.models import EncabezadoDocumento, Solicitud, InstrumentosLegalesDecretos
 from carga.models import Provincia
 from secretariador.forms.solicitudform import *
-from pathlib import Path
-from django.conf import settings
-import jinja2
-from docxtpl import DocxTemplate
-from secretariador.docx_header import con_encabezado_vigente
 from core.mixins import DeleteRelatedObjectsMixin, FormsetViewMixin
+from secretariador import docx_texto
+from secretariador.docx_texto import separate_items
+from secretariador.docx_builder import build_resolucion_docx
+from secretariador.views.textoactuacionviews import revisar_texto_actuacion
 
-# Resolve relative to the project root:
-BASE = Path(settings.BASE_DIR)
-template_path_chaco = BASE / "secretariador/media/solicitud_template.docx"
-template_path_exterior = BASE / "secretariador/media/solicitud_exterior.docx"
 
-@login_required
-@permission_required("secretariador.view_solicitud", raise_exception=True)
-def solicitud_docx(request, pk):
-	jinja_env = jinja2.Environment()
-	jinja_env.trim_blocks = True
-	jinja_env.lstrip_blocks = True
-
-	actuacion = Solicitud.objects.get(pk=pk)
+def _calcular_texto_solicitud(actuacion):
+	"""Arma, a partir de los datos actuales de la Solicitud, el texto por
+	default (VISTO/considerandos/artículos) que se ofrece como punto de
+	partida en el formulario de edición y como fallback si la actuación
+	todavía no tiene texto guardado en `solicitud_texto_actuacion`."""
 	agentes = actuacion.comisionadosolicitud_set.all().order_by("comisionadosolicitud_chofer")
 	localidades = actuacion.solicitud_localidades.all()
 	tareas = actuacion.solicitud_tareas
@@ -43,17 +37,6 @@ def solicitud_docx(request, pk):
 		vehiculo_poliza_aseguradora = "FALTA DESIGNAR VEHICULO!!"
 
 	decreto_viaticos = actuacion.solicitud_decreto_viaticos.montoviaticodiario_decreto_reglamentario
-	
-	def separate_items(items):
-	    # Concatenate the items in the list into a string
-		concatenated_items = ", ".join(items)
-		
-		# Replace the last comma with "y"
-		last_comma_index = concatenated_items.rfind(",")
-		if last_comma_index != -1:
-			concatenated_items = concatenated_items[:last_comma_index] + " y" + concatenated_items[last_comma_index + 1:]
-		
-		return concatenated_items
 
 	def generate_agente_list(agentes):
 		lista_agentes = []
@@ -93,67 +76,10 @@ def solicitud_docx(request, pk):
 		})
 		return final_text
 
-	def generate_localidad_list(localidades):
-		lista_localidades = []
-		final_text = ""
-		if len(localidades) > 1:
-			text_localidad = "las localidades de"
-		else:
-			text_localidad = "la localidad de"
-		for localidad in localidades:
-			lista_localidades.append(str(localidad.localidad_nombre))
-		lista_localidades = separate_items(lista_localidades)
-		
-		final_text = f"{text_localidad} {lista_localidades}"
-		return final_text
-
-	def generate_fechas_list(fechas):
-		lista_fechas = []
-		final_text = ""
-		if len(fechas) > 1:
-			text_fechas = "los días"
-		else:
-			text_fechas = "el día"
-		for fecha in fechas:
-			lista_fechas.append(f"{fecha}")
-		lista_fechas = separate_items(lista_fechas)
-
-		final_text = f"{text_fechas} {lista_fechas}"
-		return final_text
-
-	def generate_agente_list_articulo(agentes):
-		colaborador = ""
-		
-		final_text = []
-		for agente in agentes:
-			lista_agentes = []
-			agente_cuit = f"{agente.comisionadosolicitud_nombre.abreviatura} {agente.comisionadosolicitud_nombre.agente_nombreyapellido} – CUIL Nº{agente.comisionadosolicitud_nombre.cuil}"
-			cantidad_de_dias = f"{actuacion.solicitud_cantidad_de_dias.days} {' dias' if actuacion.solicitud_cantidad_de_dias.days > 1 else ' dia'}"
-			comisionadosolicitud_combustible = "{:,.2f}".format(agente.comisionadosolicitud_combustible).replace(",", "@").replace(".", ",").replace("@", ".")
-			comisionadosolicitud_pasaje = "{:,.2f}".format(agente.comisionadosolicitud_pasaje).replace(",", "@").replace(".", ",").replace("@", ".")
-			comisionadosolicitud_gastos = "{:,.2f}".format(agente.comisionadosolicitud_gastos).replace(",", "@").replace(".", ",").replace("@", ".")
-			valor_viatico_dia = "{:,.2f}".format(agente.valor_viatico_dia()).replace(",", "@").replace(".", ",").replace("@", ".")
-			valor_viatico_total = "{:,.2f}".format(agente.viaticos_total()).replace(",", "@").replace(".", ",").replace("@", ".")
-
-			subparrafo = f"(Viáticos: {cantidad_de_dias} a razón de ${valor_viatico_dia} diarios"
-			if comisionadosolicitud_pasaje != "0,00":
-				subparrafo += f" + Pasaje: ${comisionadosolicitud_pasaje}"
-			if comisionadosolicitud_gastos != "0,00":
-				subparrafo += f" + Gastos: ${comisionadosolicitud_gastos}"
-			if comisionadosolicitud_combustible != "0,00":
-				subparrafo += f" + Combustible: ${comisionadosolicitud_combustible}"
-			subparrafo += f")."
-
-			lista_agentes.append(agente_cuit)
-			lista_agentes.append(valor_viatico_total)	
-			lista_agentes.append(subparrafo)
-			final_text.append(lista_agentes)
-		return final_text
-
 	lista_agentes       = generate_agente_list(agentes)
-	lista_localidades   = generate_localidad_list(localidades)
-	lista_fechas        = generate_fechas_list(fechas)
-	lista_agentes_articulo = generate_agente_list_articulo(agentes)
+	lista_localidades   = docx_texto.generate_localidad_list(localidades)
+	lista_fechas        = docx_texto.generate_fechas_list(fechas)
+	articulo_dos        = docx_texto.generate_agente_list_articulo(agentes, actuacion.solicitud_cantidad_de_dias.days)
 
 	parrafo_uno     = f"Que por la misma se tramita autorización y anticipo de viáticos para {lista_agentes['lista_agentes']} de este Organismo, para trasladarse a {lista_localidades} {lista_fechas};"
 	parrafo_dos     = f"Que dicha comisión, en el marco de las actividades del Organismo, tendrá como objetivo, {lista_agentes['traslado']}, a fin de {tareas} en {lista_localidades};"
@@ -164,39 +90,66 @@ def solicitud_docx(request, pk):
 	parrafo_cuatro  = f"Que, en consecuencia, deben anticiparse los fondos necesarios para hacer frente a los gastos a realizar, de acuerdo a lo dispuesto en los Decretos Nº1324/1978 y Nº{decreto_viaticos.instrumentolegaldecretos_numero}/{decreto_viaticos.instrumentolegaldecretos_ano};"
 	parrafo_cinco   = f'Que el trámite se encuadra dentro de lo establecido en el Decreto Nº 1324/78 – "Régimen de Viáticos"; y que debido a la fecha a realizarse, incluye días inhábiles deben encuadrarse dentro de las excepciones en el Inciso A; IV Decreto Nº211/20;'
 
-	articulo_uno            = f"Autorizar a los agentes, detallados a continuación, a trasladarse a {lista_localidades}, {lista_fechas} a fin de {tareas} y anticipar los importes que se consignan, conforme con el Visto y Considerando de la presente, debiendo rendir cuentas documentadas de sus inversiones, de acuerdo con las reglamentaciones vigentes."
-	articulo_dos            = lista_agentes_articulo
+	articulo_uno = f"Autorizar a los agentes, detallados a continuación, a trasladarse a {lista_localidades}, {lista_fechas} a fin de {tareas} y anticipar los importes que se consignan, conforme con el Visto y Considerando de la presente, debiendo rendir cuentas documentadas de sus inversiones, de acuerdo con las reglamentaciones vigentes."
 
-	if actuacion.solicitud_provincia.provincia_nombre == "Chaco":
-		doc = DocxTemplate(con_encabezado_vigente(template_path_chaco))
-		context = {
-			"actuacion":actuacion,
-			"parrafo_uno":parrafo_uno,
-			"parrafo_dos":parrafo_dos,
-			"parrafo_tres":parrafo_tres,
-			"parrafo_cuatro":parrafo_cuatro,
-			"parrafo_cinco":parrafo_cinco,
-			"articulo_uno":articulo_uno,
-			"articulo_dos":articulo_dos,
-		}
+	visto_texto = f"La Actuación Electrónica Nº{actuacion.solicitud_actuacion}; y "
+	parrafos = [parrafo_uno, parrafo_dos, parrafo_tres, parrafo_cuatro, parrafo_cinco]
+	return visto_texto, parrafos, articulo_uno, articulo_dos
+
+
+def _generar_solicitud_docx(actuacion):
+	texto = actuacion.solicitud_texto_actuacion
+	if texto:
+		visto_texto, _parrafos_default, _articulo_uno_default, _articulo_dos_default = _calcular_texto_solicitud(actuacion)
+		parrafos = texto["parrafos"]
+		articulo_uno = texto["articulo_uno"]
+		articulo_dos_filas = texto["articulo_dos"]
 	else:
-		doc = DocxTemplate(con_encabezado_vigente(template_path_exterior))
-		context = {
-			"actuacion":actuacion,
-			"parrafo_uno":parrafo_uno,
-			"parrafo_dos":parrafo_dos,
-			"parrafo_tres":parrafo_tres,
-			"parrafo_cuatro":parrafo_cuatro,
-			"parrafo_cinco":parrafo_cinco,
-			"articulo_uno":articulo_uno,
-			"articulo_dos":articulo_dos,
-		}
+		visto_texto, parrafos, articulo_uno, articulo_dos_filas = _calcular_texto_solicitud(actuacion)
+
+	encabezado = EncabezadoDocumento.vigente()
+	with encabezado.encabezadodocumento_archivo.open("rb") as f:
+		base_docx = io.BytesIO(f.read())
+
+	return build_resolucion_docx(
+		base_docx,
+		visto_texto=visto_texto,
+		parrafos=parrafos,
+		incluir_ultimo_parrafo=actuacion.solicitud_dia_inhabil,
+		articulo_uno=articulo_uno,
+		articulo_dos_filas=articulo_dos_filas,
+		articulo_tres=docx_texto.ARTICULO_TRES,
+		articulo_cuatro=docx_texto.ARTICULO_CUATRO,
+		articulo_cinco=docx_texto.ARTICULO_CINCO,
+		considerandos_fijos_finales=docx_texto.CONSIDERANDOS_FIJOS_FINALES,
+	)
+
+
+@login_required
+@permission_required("secretariador.change_solicitud", raise_exception=True)
+def editar_texto_solicitud(request, pk):
+	actuacion = Solicitud.objects.get(pk=pk)
+	_visto_texto, parrafos_default, articulo_uno_default, articulo_dos_default = _calcular_texto_solicitud(actuacion)
+	return revisar_texto_actuacion(
+		request,
+		actuacion=actuacion,
+		texto_field_name="solicitud_texto_actuacion",
+		generar_docx_url_name="secretariador:crear-documento-solicitud",
+		parrafos_default=parrafos_default,
+		articulo_uno_default=articulo_uno_default,
+		articulo_dos_default=articulo_dos_default,
+	)
+
+
+@login_required
+@permission_required("secretariador.view_solicitud", raise_exception=True)
+def solicitud_docx(request, pk):
+	actuacion = Solicitud.objects.get(pk=pk)
+	out = _generar_solicitud_docx(actuacion)
 
 	filename = actuacion.solicitud_actuacion+".docx"
-	response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+	response = HttpResponse(out.read(), content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 	response["Content-Disposition"] = f'filename="{filename}"'
-	doc.render(context)
-	doc.save(response)
 	return response
 
 @method_decorator(login_required, name="dispatch")

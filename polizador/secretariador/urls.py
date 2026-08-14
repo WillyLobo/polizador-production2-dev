@@ -76,6 +76,9 @@ docx_patterns = [
     path("creardocumento/solicitud/<pk>", solicitud_docx, name="crear-documento-solicitud"),
     path("creardocumento/solicitudexterior/<pk>", exterior_docx, name="crear-documento-solicitud-exterior"),
     path("creardocumento/incorporacion/<pk>", incorporacion_docx, name="crear-documento-incorporacion"),
+    path("creardocumento/solicitud/<pk>/editar-texto", editar_texto_solicitud, name="editar-texto-solicitud"),
+    path("creardocumento/solicitudexterior/<pk>/editar-texto", editar_texto_solicitud_exterior, name="editar-texto-solicitud-exterior"),
+    path("creardocumento/incorporacion/<pk>/editar-texto", editar_texto_incorporacion, name="editar-texto-incorporacion"),
 ]
 encabezado_patterns = [
     path("actualizar-encabezado/", ActualizarEncabezado.as_view(), name="actualizar-encabezado"),

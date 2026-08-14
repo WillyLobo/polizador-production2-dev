@@ -650,11 +650,11 @@ def _solicitud_datatable_row(s: Solicitud, user) -> dict:
     if s.solicitud_provincia.provincia_nombre == "Chaco":
         editarlink = f"<a href='/viaticos/crearsolicitud/{id_}'>{editlinkimg}</a>"
         eliminarlink = f"<a href='/viaticos/eliminar/solicitud/{id_}'>{eliminarlinkimg}</a>"
-        generarlink = f"<a href='/viaticos/creardocumento/solicitud/{id_}'>{generarlinkimg}</a>"
+        generarlink = f"<a href='/viaticos/creardocumento/solicitud/{id_}/editar-texto'>{generarlinkimg}</a>"
     else:
         editarlink = f"<a href='/viaticos/crearsolicitudexterior/{id_}'>{editlinkimg}</a>"
         eliminarlink = f"<a href='/viaticos/eliminar/solicitudexterior/{id_}'>{eliminarlinkimg}</a>"
-        generarlink = f"<a href='/viaticos/creardocumento/solicitudexterior/{id_}'>{generarlinkimg}</a>"
+        generarlink = f"<a href='/viaticos/creardocumento/solicitudexterior/{id_}/editar-texto'>{generarlinkimg}</a>"
 
     if s.solicitud_resolucion is not None:
         detallelink = f"<a href='{s.solicitud_resolucion.instrumentolegalresoluciones.url}'>{pdflinkimg}</a>"
@@ -832,7 +832,7 @@ def _incorporacion_datatable_row(i: Incorporacion, user) -> dict:
     editarlink = f"<a href='/viaticos/crearincorporacion/{id_}'>{editlinkimg}</a>"
     detallelink = f"<a href='/viaticos/crearincorporacion/ver/{id_}'>{detallelinkimg}</a>"
     eliminarlink = f"<a href='/viaticos/eliminar/incorporacion/{id_}'>{eliminarlinkimg}</a>"
-    generarlink = f"<a href='/viaticos/creardocumento/incorporacion/{id_}'>{generarlinkimg}</a>"
+    generarlink = f"<a href='/viaticos/creardocumento/incorporacion/{id_}/editar-texto'>{generarlinkimg}</a>"
     if user.has_perm("secretariador.delete_incorporacion"):
         acciones = f"{editarlink}{detallelink}{eliminarlink}{generarlink}"
     elif user.has_perm("secretariador.change_incorporacion"):

@@ -1,31 +1,24 @@
+import io
+
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.shortcuts import render, redirect, HttpResponse
 from django.urls import reverse_lazy
 from django.views import generic
-from secretariador.models import Incorporacion, InstrumentosLegalesDecretos
+from secretariador.models import EncabezadoDocumento, Incorporacion, InstrumentosLegalesDecretos
 from carga.models import Provincia
 from secretariador.forms.incorporacionform import *
 from core.mixins import DeleteRelatedObjectsMixin
-from pathlib import Path
-from django.conf import settings
-import jinja2
+from secretariador import docx_texto
+from secretariador.docx_texto import separate_items
+from secretariador.docx_builder import build_resolucion_docx
+from secretariador.views.textoactuacionviews import revisar_texto_actuacion
 
-BASE = Path(settings.BASE_DIR)
-template_path_incorporacion = BASE / "secretariador/media/solicitud_incorporacion.docx"
 
-from docxtpl import DocxTemplate
-from secretariador.docx_header import con_encabezado_vigente
-
-@login_required
-@permission_required("secretariador.view_incorporacion", raise_exception=True)
-def incorporacion_docx(request, pk):
-	jinja_env = jinja2.Environment()
-	jinja_env.trim_blocks = True
-	jinja_env.lstrip_blocks = True
-
-	actuacion = Incorporacion.objects.get(pk=pk)
+def _calcular_texto_incorporacion(actuacion):
+	"""Igual que en `solicitudviews`/`solicitud_exteriorviews` pero para la
+	incorporación de agentes a una Solicitud ya resuelta."""
 	numero_actuacion = actuacion.incorporacion_actuacion
 	resolucion_solicitud = actuacion.incorporacion_solicitud.solicitud_resolucion
 	agentes_incorporacion = actuacion.comisionadosolicitud_set.all().order_by("comisionadosolicitud_chofer")
@@ -33,20 +26,7 @@ def incorporacion_docx(request, pk):
 	localidades = actuacion.incorporacion_solicitud.solicitud_localidades.all()
 	tareas = actuacion.incorporacion_solicitud.solicitud_tareas
 	fechas = actuacion.incorporacion_solicitud.solicitud_fechas()
-	dia_inhabil = actuacion.incorporacion_solicitud.solicitud_dia_inhabil
-	vehiculo = actuacion.incorporacion_solicitud.solicitud_vehiculo
 	decreto_viaticos = actuacion.incorporacion_solicitud.solicitud_decreto_viaticos.montoviaticodiario_decreto_reglamentario
-	
-	def separate_items(items):
-	    # Concatenate the items in the list into a string
-		concatenated_items = ", ".join(items)
-		
-		# Replace the last comma with "y"
-		last_comma_index = concatenated_items.rfind(",")
-		if last_comma_index != -1:
-			concatenated_items = concatenated_items[:last_comma_index] + " y" + concatenated_items[last_comma_index + 1:]
-		
-		return concatenated_items
 
 	def generate_agente_list(agentes):
 		lista_agentes = []
@@ -87,97 +67,78 @@ def incorporacion_docx(request, pk):
 		})
 		return final_text
 
-	def generate_localidad_list(localidades):
-		lista_localidades = []
-		final_text = ""
-		if len(localidades) > 1:
-			text_localidad = "las localidades de"
-		else:
-			text_localidad = "la localidad de"
-		for localidad in localidades:
-			lista_localidades.append(str(localidad.localidad_nombre))
-		lista_localidades = separate_items(lista_localidades)
-		
-		final_text = f"{text_localidad} {lista_localidades}"
-		return final_text
-
-	def generate_fechas_list(fechas):
-		lista_fechas = []
-		final_text = ""
-		if len(fechas) > 1:
-			text_fechas = "los días"
-		else:
-			text_fechas = "el día"
-		for fecha in fechas:
-			lista_fechas.append(f"{fecha}")
-		lista_fechas = separate_items(lista_fechas)
-
-		final_text = f"{text_fechas} {lista_fechas}"
-		return final_text
-
-	def generate_agente_list_articulo(agentes):
-		colaborador = ""
-		
-		final_text = []
-		for agente in agentes:
-			lista_agentes = []
-			agente_cuit = f"{agente.comisionadosolicitud_nombre.abreviatura} {agente.comisionadosolicitud_nombre.agente_nombreyapellido} – CUIL Nº{agente.comisionadosolicitud_nombre.cuil}"
-			cantidad_de_dias = f"{actuacion.incorporacion_solicitud.solicitud_cantidad_de_dias.days} {' dias' if actuacion.incorporacion_solicitud.solicitud_cantidad_de_dias.days > 1 else ' dia'}"
-			comisionadosolicitud_combustible = "{:,.2f}".format(agente.comisionadosolicitud_combustible).replace(",", "@").replace(".", ",").replace("@", ".")
-			comisionadosolicitud_pasaje = "{:,.2f}".format(agente.comisionadosolicitud_pasaje).replace(",", "@").replace(".", ",").replace("@", ".")
-			comisionadosolicitud_gastos = "{:,.2f}".format(agente.comisionadosolicitud_gastos).replace(",", "@").replace(".", ",").replace("@", ".")
-			valor_viatico_dia = "{:,.2f}".format(agente.valor_viatico_dia()).replace(",", "@").replace(".", ",").replace("@", ".")
-			valor_viatico_total = "{:,.2f}".format(agente.viaticos_total()).replace(",", "@").replace(".", ",").replace("@", ".")
-
-			subparrafo = f"(Viáticos: {cantidad_de_dias} a razón de ${valor_viatico_dia} diarios"
-			if comisionadosolicitud_pasaje != "0,00":
-				subparrafo += f" + Pasaje: ${comisionadosolicitud_pasaje}"
-			if comisionadosolicitud_gastos != "0,00":
-				subparrafo += f" + Gastos: ${comisionadosolicitud_gastos}"
-			if comisionadosolicitud_combustible != "0,00":
-				subparrafo += f" + Combustible: ${comisionadosolicitud_combustible}"
-			subparrafo += f")."
-
-			lista_agentes.append(agente_cuit)
-			lista_agentes.append(valor_viatico_total)	
-			lista_agentes.append(subparrafo)
-			final_text.append(lista_agentes)
-		return final_text
-
 	lista_agentes       = generate_agente_list(agentes_solicitud)
 	lista_agentes_incorporacion = generate_agente_list(agentes_incorporacion)
-	lista_localidades   = generate_localidad_list(localidades)
-	lista_fechas        = generate_fechas_list(fechas)
-	lista_agentes_articulo = generate_agente_list_articulo(agentes_solicitud)
-	lista_agentes_incorporacion_articulo = generate_agente_list_articulo(agentes_incorporacion)
+	lista_localidades   = docx_texto.generate_localidad_list(localidades)
+	lista_fechas        = docx_texto.generate_fechas_list(fechas)
+	dias = actuacion.incorporacion_solicitud.solicitud_cantidad_de_dias.days
+	articulo_dos        = docx_texto.generate_agente_list_articulo(agentes_incorporacion, dias)
 
 	parrafo_uno		= f"Que por la {resolucion_solicitud}, se tramitó autorización y anticipo de viáticos para {lista_agentes['lista_agentes']} de este Organismo, a fin de {tareas}, en {lista_localidades} {lista_fechas};"
 	parrafo_dos     = f"Que resulta necesario incorporar a la misma, a {lista_agentes_incorporacion['lista_agentes']} de este Organismo;"
 	parrafo_tres  = f"Que, en consecuencia, deben anticiparse los fondos necesarios para hacer frente a los gastos a realizar, de acuerdo a lo dispuesto en los Decretos Nº1324/1978 y Nº{decreto_viaticos.instrumentolegaldecretos_numero}/{decreto_viaticos.instrumentolegaldecretos_ano};"
 	parrafo_cuatro   = f"Que el trámite se encuadra dentro de lo establecido en el Decreto Nº 1324/78 – “Régimen de Viáticos”; y que debido a la fecha a realizarse, incluye días inhábiles deben encuadrarse dentro de las excepciones en el Inciso A; IV Decreto Nº211/20;"
 
-	articulo_uno            = f"Incorporar a los agentes, detallados a continuación, a trasladarse a {lista_localidades}, {lista_fechas} a fin de {tareas} y anticipar los importes que se consignan, conforme con el Visto y Considerando de la presente, debiendo rendir cuentas documentadas de sus inversiones, de acuerdo con las reglamentaciones vigentes."
-	articulo_dos            = lista_agentes_incorporacion_articulo
+	articulo_uno = f"Incorporar a los agentes, detallados a continuación, a trasladarse a {lista_localidades}, {lista_fechas} a fin de {tareas} y anticipar los importes que se consignan, conforme con el Visto y Considerando de la presente, debiendo rendir cuentas documentadas de sus inversiones, de acuerdo con las reglamentaciones vigentes."
 
-	doc = DocxTemplate(con_encabezado_vigente(template_path_incorporacion))
-	context = {
-		"actuacion":actuacion,
-		"numero_actuacion":numero_actuacion,
-		"dia_inhabil":dia_inhabil,
-		"resolucion_solicitud":resolucion_solicitud,
-		"parrafo_uno":parrafo_uno,
-		"parrafo_dos":parrafo_dos,
-		"parrafo_tres":parrafo_tres,
-		"parrafo_cuatro":parrafo_cuatro,
-		"articulo_uno":articulo_uno,
-		"articulo_dos":articulo_dos,
-	}
+	visto_texto = f"La {resolucion_solicitud} y la Actuación Electrónica Nº{numero_actuacion}; y "
+	parrafos = [parrafo_uno, parrafo_dos, parrafo_tres, parrafo_cuatro]
+	return visto_texto, parrafos, articulo_uno, articulo_dos
+
+
+def _generar_incorporacion_docx(actuacion):
+	texto = actuacion.incorporacion_texto_actuacion
+	if texto:
+		visto_texto, _parrafos_default, _articulo_uno_default, _articulo_dos_default = _calcular_texto_incorporacion(actuacion)
+		parrafos = texto["parrafos"]
+		articulo_uno = texto["articulo_uno"]
+		articulo_dos_filas = texto["articulo_dos"]
+	else:
+		visto_texto, parrafos, articulo_uno, articulo_dos_filas = _calcular_texto_incorporacion(actuacion)
+
+	encabezado = EncabezadoDocumento.vigente()
+	with encabezado.encabezadodocumento_archivo.open("rb") as f:
+		base_docx = io.BytesIO(f.read())
+
+	return build_resolucion_docx(
+		base_docx,
+		visto_texto=visto_texto,
+		parrafos=parrafos,
+		incluir_ultimo_parrafo=actuacion.incorporacion_solicitud.solicitud_dia_inhabil,
+		articulo_uno=articulo_uno,
+		articulo_dos_filas=articulo_dos_filas,
+		articulo_tres=docx_texto.ARTICULO_TRES,
+		articulo_cuatro=docx_texto.ARTICULO_CUATRO,
+		articulo_cinco=docx_texto.ARTICULO_CINCO,
+		considerandos_fijos_finales=docx_texto.CONSIDERANDOS_FIJOS_FINALES,
+	)
+
+
+@login_required
+@permission_required("secretariador.change_incorporacion", raise_exception=True)
+def editar_texto_incorporacion(request, pk):
+	actuacion = Incorporacion.objects.get(pk=pk)
+	_visto_texto, parrafos_default, articulo_uno_default, articulo_dos_default = _calcular_texto_incorporacion(actuacion)
+	return revisar_texto_actuacion(
+		request,
+		actuacion=actuacion,
+		texto_field_name="incorporacion_texto_actuacion",
+		generar_docx_url_name="secretariador:crear-documento-incorporacion",
+		parrafos_default=parrafos_default,
+		articulo_uno_default=articulo_uno_default,
+		articulo_dos_default=articulo_dos_default,
+	)
+
+
+@login_required
+@permission_required("secretariador.view_incorporacion", raise_exception=True)
+def incorporacion_docx(request, pk):
+	actuacion = Incorporacion.objects.get(pk=pk)
+	out = _generar_incorporacion_docx(actuacion)
 
 	filename = actuacion.incorporacion_actuacion+".docx"
-	response = HttpResponse(content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
+	response = HttpResponse(out.read(), content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 	response["Content-Disposition"] = f'filename="{filename}"'
-	doc.render(context)
-	doc.save(response)
 	return response
 
 @method_decorator(login_required, name="dispatch")

@@ -398,6 +398,7 @@ class Solicitud(models.Model):
     )
     solicitud_anulada = models.BooleanField("Anulada", default=False, help_text="Si la solicitud se encuentra anulada, no se registra en los reportes.")
     solicitud_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    solicitud_texto_actuacion = models.JSONField("Texto de la Resolución", null=True, blank=True, help_text="Texto de los considerandos y artículos editado desde la web para la generación del documento. Si está vacío, se genera automáticamente.")
     solicitud_history = HistoricalRecords()
     
     def solicitud_fechas(self):
@@ -559,6 +560,7 @@ class Incorporacion(models.Model):
     incorporacion_solicitante = models.ForeignKey("personalizador.Agente", on_delete=models.CASCADE) # Encargado del area solicitante
     incorporacion_resolucion = models.ForeignKey("InstrumentosLegalesResoluciones", verbose_name="Resolución Aprobada", help_text="Resolución que aprueba la incorporación de los agentes.", on_delete=models.CASCADE, blank=True, null=True)
     incorporacion_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    incorporacion_texto_actuacion = models.JSONField("Texto de la Resolución", null=True, blank=True, help_text="Texto de los considerandos y artículos editado desde la web para la generación del documento. Si está vacío, se genera automáticamente.")
     incorporacion_history = HistoricalRecords()
 
     def __str__(self):
