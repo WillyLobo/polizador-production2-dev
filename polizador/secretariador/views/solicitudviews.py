@@ -58,8 +58,12 @@ def solicitud_docx(request, pk):
 	def generate_agente_list(agentes):
 		lista_agentes = []
 		final_text = {}
+		chofer = ""
+		if len(agentes) > 1:
+			traslado = "trasladar a los mencionados agentes"
+		else:
+			traslado = "trasladar al mencionado agente"
 		for agente in agentes:
-			chofer = ""
 			colaborador = ""
 			agente_denominacion = f"{agente.comisionadosolicitud_nombre.abreviatura} {agente.comisionadosolicitud_nombre.agente_nombres} {agente.comisionadosolicitud_nombre.agente_apellidos}"
 			if agente.comisionadosolicitud_nombre.sexo.generoagente_nombre == "Masculino":
@@ -78,11 +82,6 @@ def solicitud_docx(request, pk):
 				else:
 					chofer = f"la {agente_denominacion}"
 
-			if len(agentes) > 1:
-				traslado = "trasladar a los mencionados agentes"
-			else:
-				traslado = "trasladar al mencionado agente"
-			
 			dni = "{:,}".format(agente.comisionadosolicitud_nombre.dni).replace(",", "@").replace(".", ",").replace("@", ".")
 			lista_agentes.append(f"{text} {agente_denominacion} - D.N.I.Nº{dni}{colaborador}")
 		lista_agentes = separate_items(lista_agentes)
