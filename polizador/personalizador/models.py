@@ -15,6 +15,12 @@ class ConcatOp(models.Func):
     output_field = models.TextField()
     template = "%(expressions)s"
 
+def abreviatura_default_por_sexo(sexo):
+    """Sr./Sra. según GeneroAgente, usado como default cuando no se carga
+    una abreviatura explícita (mismo criterio Masculino/Femenino que ya se
+    usa en el resto del código para "el"/"la")."""
+    return "Sr." if sexo.generoagente_nombre == "Masculino" else "Sra."
+
 class CustomUser(AbstractUser):
     first_name = models.CharField("Nombre", max_length=128)
     last_name = models.CharField("Apellido", max_length=128)
@@ -158,6 +164,11 @@ class Agente(models.Model):
             return f"(C){self.agente_nombreyapellido} - DNI Nº{self.dni}"
         else:
             return f"{self.agente_nombreyapellido} - DNI Nº{self.dni}"
+
+    def save(self, *args, **kwargs):
+        if not self.abreviatura:
+            self.abreviatura = abreviatura_default_por_sexo(self.sexo)
+        super().save(*args, **kwargs)
 
 class GeneroAgente(models.Model):
     class Meta:
@@ -418,6 +429,41 @@ class RepresentanteTecnico(models.Model):
 
     def __str__(self):
         return f"{self.representantetecnico_profesion.tituloprofesional_abreviatura} {self.representantetecnico_nombre} {self.representantetecnico_apellido}"
+
+class ComisionadoExterno(models.Model):
+    """Persona externa al Instituto (de otro organismo, contratada puntualmente,
+    etc.) que puede ser comisionada a viajar en una Solicitud de viáticos, sin
+    ser un empleado (personalizador.Agente) — no debe aparecer en reportes de
+    RRHH/organigrama/nómina. Expone los mismos nombres de atributo que Agente
+    para el subconjunto de datos que necesita el circuito de viáticos
+    (secretariador.ComisionadoSolicitud.persona)."""
+    class Meta:
+        verbose_name = "Comisionado Externo"
+        verbose_name_plural = "Comisionados Externos"
+        ordering = ("agente_apellidos", "agente_nombres")
+
+    agente_nombres = models.CharField("Nombres", max_length=120)
+    agente_apellidos = models.CharField("Apellidos", max_length=120)
+    agente_nombreyapellido = models.GeneratedField(
+        expression=ConcatOp(models.F("agente_nombres"), models.Value(" "), models.F("agente_apellidos")),
+        output_field=models.CharField("Nombre y Apellido", max_length=256, editable=False),
+        db_persist=True
+    )
+    abreviatura = models.CharField("Abreviatura", max_length=10, blank=True, null=True, help_text="Sr./Sra.")
+    sexo = models.ForeignKey("GeneroAgente", on_delete=models.CASCADE)
+    dni = models.DecimalField("DNI:", max_digits=9, decimal_places=0, unique=True, validators=[MinValueValidator(0)])
+    cuil = models.CharField("CUIT", max_length=13, validators=[CuitValidator()])
+    institucion_origen = models.CharField("Institución de origen", max_length=200, blank=True, null=True, help_text="Organismo/empresa al que pertenece.")
+    comisionadoexterno_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    comisionadoexterno_history = HistoricalRecords()
+
+    def __str__(self):
+        return f"(Externo) {self.agente_nombreyapellido} - DNI Nº{self.dni}"
+
+    def save(self, *args, **kwargs):
+        if not self.abreviatura:
+            self.abreviatura = abreviatura_default_por_sexo(self.sexo)
+        super().save(*args, **kwargs)
 
 def generate_name_licenciapermiso(instance, filename):
     """Genera el nombre de archivo para el adjunto (certificado/comunicación) de una

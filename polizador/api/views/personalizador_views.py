@@ -22,8 +22,8 @@ from api.schemas.personalizador_schemas import (
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg
 from personalizador.models import (
     Agente, ApartadoCargo, ActividadEspecifica, CargoTipo, Categoria, CEIC,
-    Departamento, DenominacionCargo, Direccion, Directorio, Gerencia,
-    GeneroAgente, GrupoCargo, Oficina, RepresentanteTecnico, TituloProfesional,
+    ComisionadoExterno, Departamento, DenominacionCargo, Direccion, Directorio,
+    Gerencia, GeneroAgente, GrupoCargo, Oficina, RepresentanteTecnico, TituloProfesional,
     LicenciaPermiso, TipoLicenciaPermiso,
 )
 from personalizador.licencias import (
@@ -220,6 +220,53 @@ register_simple_datatable(
         "oficina__cargo_direccion", "oficina__cargo_departamento",
     ),
     boolean_filter_keys=frozenset({"agente_personal_transitorio", "agente_personal_de_gabinete"}),
+)
+
+
+# --- ComisionadoExterno datatable ---
+def _comisionadoexterno_datatable_row(c: ComisionadoExterno, user) -> dict:
+    id_ = str(c.id)
+    editarlink = f"<a href='/viaticos/crearcomisionadoexterno/{id_}'>{editlinkimg}</a>"
+    detallelink = f"<a href=''>{detallelinkimg}</a>"
+    eliminarlink = f"<a href='/viaticos/eliminar/comisionadoexterno/{id_}'>{eliminarlinkimg}</a>"
+    if user.has_perm("personalizador.delete_comisionadoexterno"):
+        acciones = f"{editarlink}{detallelink}{eliminarlink}"
+    elif user.has_perm("personalizador.change_comisionadoexterno"):
+        acciones = f"{editarlink}{detallelink}"
+    else:
+        acciones = detallelink
+    return {
+        "id": c.id,
+        "agente_apellidos": c.agente_apellidos,
+        "agente_nombres": c.agente_nombres,
+        "institucion_origen": c.institucion_origen or "",
+        "cuil": c.cuil,
+        "acciones": acciones,
+    }
+
+
+register_simple_datatable(
+    router, ComisionadoExterno, "comisionados-externos",
+    order_fields={
+        "id": "id",
+        "agente_apellidos": "agente_apellidos",
+        "agente_nombres": "agente_nombres",
+        "institucion_origen": "institucion_origen",
+        "cuil": "cuil",
+    },
+    filter_fields={
+        "agente_apellidos": "agente_apellidos__icontains",
+        "agente_nombres": "agente_nombres__icontains",
+        "institucion_origen": "institucion_origen__icontains",
+        "cuil": "cuil__icontains",
+    },
+    search_lookups=[
+        "agente_apellidos__icontains", "agente_nombres__icontains",
+        "institucion_origen__icontains", "cuil__icontains",
+    ],
+    row_builder=_comisionadoexterno_datatable_row,
+    default_order="agente_apellidos",
+    queryset=ComisionadoExterno.objects.select_related("sexo"),
 )
 
 

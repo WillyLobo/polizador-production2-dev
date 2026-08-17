@@ -21,7 +21,7 @@
   </p>
   <p style="text-align: justify;">
     Que por la misma se tramita autorización y anticipo de viáticos para
-    {%for agente in solicitud.comisionadosolicitud_set.all %}{%if forloop.first%} {%elif not forloop.last%}, {%else%} y {%endif%}{%if agente.comisionadosolicitud_chofer%}{%if agente.comisionadosolicitud_nombre.sexo.generoagente_nombre == "Masculino"%}el chofer {%else%}la chofer {%endif%}{%else%}{%if agente.comisionadosolicitud_nombre.sexo.generoagente_nombre == "Masculino"%}el {%else%}la {%endif%}{%endif%}{{agente.comisionadosolicitud_nombre.abreviatura}} {{agente.comisionadosolicitud_nombre.agente_apellidos}}, {{agente.comisionadosolicitud_nombre.agente_nombres}} - D.N.I.Nº{{agente.comisionadosolicitud_nombre.dni}}{%endfor%}
+    {%for agente in solicitud.comisionadosolicitud_set.all %}{%if forloop.first%} {%elif not forloop.last%}, {%else%} y {%endif%}{%if agente.comisionadosolicitud_chofer%}{%if agente.persona.sexo.generoagente_nombre == "Masculino"%}el chofer {%else%}la chofer {%endif%}{%else%}{%if agente.persona.sexo.generoagente_nombre == "Masculino"%}el {%else%}la {%endif%}{%endif%}{{agente.persona.abreviatura}} {{agente.persona.agente_apellidos}}, {{agente.persona.agente_nombres}} - D.N.I.Nº{{agente.persona.dni}}{%endfor%}
     dependientes de este Organismo, para trasladarse a {%if solicitud.solicitud_localidades.all|length > 1 %}las localidades de{%else%}la localidad de{%endif%}{%for localidad in solicitud.solicitud_localidades.all%}{%if forloop.first%} {%elif not forloop.last%}, {%else%} y {%endif%}{{localidad}}{%endfor%}
     {%if solicitud.solicitud_fechas|length > 1%}los días {%else%}el día {%endif%}{%for fecha in solicitud.solicitud_fechas%}{%if forloop.first%}{%elif not forloop.last%}, {%else%} y {%endif%}{{fecha}}{%if forloop.last%}{%endif%}{%endfor%}.
   </p>
@@ -29,7 +29,7 @@
     Que dicha comisión, en el marco de las actividades del Organismo, tendrá como objetivo, trasladar a los mencionados agentes, a fin de realizar tareas de {{solicitud.solicitud_tareas}} en {%if solicitud.solicitud_localidades.all|length > 1 %}las localidades de {%else%}la localidad de{%endif%}{%for localidad in solicitud.solicitud_localidades.all%}{%if forloop.first%} {%elif not forloop.last%}, {%else%} y {%endif%}{{localidad}}{%if forloop.last%}.{%endif%}{%endfor%}
   </p>
   <p style="text-align: justify;">
-    Que el vehículo afectado será {{solicitud.solicitud_vehiculo.vehiculo_modelo}} – Dominio {{solicitud.solicitud_vehiculo.vehiculo_patente}} conducido por {%for agente in solicitud.comisionadosolicitud_set.all%}{%if agente.comisionadosolicitud_chofer%}{%if agente.comisionadosolicitud_nombre == solicitud.solicitud_solicitante%}{%if agente.comisionadosolicitud_nombre.sexo.generoagente_nombre == "Masculino"%}el {%else%}la {%endif%}{{agente.comisionadosolicitud_nombre.abreviatura}} {{agente.comisionadosolicitud_nombre.agente_apellidos}}, {{agente.comisionadosolicitud_nombre.agente_nombres}}{%else%}{%if agente.comisionadosolicitud_nombre.sexo.generoagente_nombre == "Masculino"%}el chofer {%else%}la chofer {%endif%}{{agente.comisionadosolicitud_nombre.abreviatura}} {{agente.comisionadosolicitud_nombre.agente_apellidos}}, {{agente.comisionadosolicitud_nombre.agente_nombres}}{%endif%}{%endif%}{%endfor%}.
+    Que el vehículo afectado será {{solicitud.solicitud_vehiculo.vehiculo_modelo}} – Dominio {{solicitud.solicitud_vehiculo.vehiculo_patente}} conducido por {%for agente in solicitud.comisionadosolicitud_set.all%}{%if agente.comisionadosolicitud_chofer%}{%if agente.persona == solicitud.solicitud_solicitante%}{%if agente.persona.sexo.generoagente_nombre == "Masculino"%}el {%else%}la {%endif%}{{agente.persona.abreviatura}} {{agente.persona.agente_apellidos}}, {{agente.persona.agente_nombres}}{%else%}{%if agente.persona.sexo.generoagente_nombre == "Masculino"%}el chofer {%else%}la chofer {%endif%}{{agente.persona.abreviatura}} {{agente.persona.agente_apellidos}}, {{agente.persona.agente_nombres}}{%endif%}{%endif%}{%endfor%}.
   </p>
   <p style="text-align: justify;">
     Que, en consecuencia, debe anticiparse el importe correspondiente a viáticos (de acuerdo a lo dispuesto en los Decretos Nº1324/1978, Nº080/2024{%if solicitud.solicitud_dia_inhabil%} y Nº0806/2008 previa autorización del suscripto{%endif%}), y combustible.
@@ -58,7 +58,7 @@
         {%for agente in solicitud.comisionadosolicitud_set.all %}
           <div class="row">
               <div class="col-10 border-bottom border-dark" style="text-align:justify">
-                <p class="m-0" style="text-align: justify;">{{agente.comisionadosolicitud_nombre.abreviatura}} {{agente.comisionadosolicitud_nombre.agente_apellidos}}, {{agente.comisionadosolicitud_nombre.agente_nombres}} - D.N.I.Nº{{agente.comisionadosolicitud_nombre.dni}}</p>
+                <p class="m-0" style="text-align: justify;">{{agente.persona.abreviatura}} {{agente.persona.agente_apellidos}}, {{agente.persona.agente_nombres}} - D.N.I.Nº{{agente.persona.dni}}</p>
                 {%if agente.comisionadosolicitud_chofer %}
                   <p class="m-0" style="text-align: justify;">(<u>Viáticos:</u> {{solicitud.cantidad_de_dias}}{%if solicitud.cantidad_de_dias > 1 %} días {%else%} día {%endif%}a razón de ${{agente.valor_viatico_dia|intcomma}} diarios + <u>Combustible:</u> ${{agente.comisionadosolicitud_combustible|intcomma}} + <u>Gastos:</u> ${{agente.comisionadosolicitud_gastos|intcomma}}).</p>
                 {% else %}
@@ -81,7 +81,7 @@ Chofer Perez Ramón Antonio D.N.I.Nº.23.273.715......................………�
 
 {%for agente in solicitud.comisionadosolicitud_set.all %}
   <p>
-    {{agente.comisionadosolicitud_nombre.abreviatura}} {{agente.comisionadosolicitud_nombre.agente_apellidos}}, {{agente.comisionadosolicitud_nombre.agente_nombres}} - D.N.I.Nº{{agente.comisionadosolicitud_nombre.dni}} - 
+    {{agente.persona.abreviatura}} {{agente.persona.agente_apellidos}}, {{agente.persona.agente_nombres}} - D.N.I.Nº{{agente.persona.dni}} - 
     ${{agente.comisionadosolicitud_viaticos}}{{agente.comisionadosolicitud_viaticos|add:agente.comisionadosolicitud_combustible}}
     {%if agente.comisionadosolicitud_chofer%}
     

@@ -54,6 +54,12 @@ class ComisionadoWidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
         "agente_apellidos__icontains",
     ]
 
+class ComisionadoExternoWidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
+    search_fields = [
+        "agente_nombres__icontains",
+        "agente_apellidos__icontains",
+    ]
+
 class VehiculoWidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
     search_fields = [
         "vehiculo_modelo__icontains",

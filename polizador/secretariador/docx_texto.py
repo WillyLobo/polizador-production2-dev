@@ -48,7 +48,7 @@ def generate_agente_list_articulo(agentes, cantidad_de_dias):
 
 	filas = []
 	for agente in agentes:
-		nombre_cuil = f"{agente.comisionadosolicitud_nombre.abreviatura} {agente.comisionadosolicitud_nombre.agente_nombreyapellido} – CUIL Nº{agente.comisionadosolicitud_nombre.cuil}"
+		nombre_cuil = f"{agente.persona.abreviatura} {agente.persona.agente_nombreyapellido} – CUIL Nº{agente.persona.cuil}"
 		combustible = "{:,.2f}".format(agente.comisionadosolicitud_combustible).replace(",", "@").replace(".", ",").replace("@", ".")
 		pasaje = "{:,.2f}".format(agente.comisionadosolicitud_pasaje).replace(",", "@").replace(".", ",").replace("@", ".")
 		gastos = "{:,.2f}".format(agente.comisionadosolicitud_gastos).replace(",", "@").replace(".", ",").replace("@", ".")

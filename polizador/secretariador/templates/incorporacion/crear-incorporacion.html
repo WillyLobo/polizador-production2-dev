@@ -12,28 +12,34 @@
 {{ form.media.js }}
 
 <script>
+function agregarComisionado(templateId) {
+  $(".customSelect2").select2("destroy");
+  var form_idx = $('#id_comisionadosolicitud_set-TOTAL_FORMS').val();
+  $('#comisionadosolicitud-form').append($('#' + templateId).html().replace(/__prefix__/g, form_idx));
+  $('#id_comisionadosolicitud_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
+  $(".customSelect2").select2({
+      theme: 'bootstrap-5',
+    });
+  $('html, body').animate({
+              scrollTop: $('html, body').height()
+          }, 'slow');
+  $(".customSelect2").djangoSelect2()
+}
 $(document).on('click', '#addForm', function() {
-$(".customSelect2").select2("destroy");
-	var form_idx = $('#id_comisionadosolicitud_set-TOTAL_FORMS').val();
-$('#comisionadosolicitud-form').append($('#empty_form').html().replace(/__prefix__/g, form_idx));
-$('#id_comisionadosolicitud_set-TOTAL_FORMS').val(parseInt(form_idx) + 1);
-$(".customSelect2").select2({
-    theme: 'bootstrap-5',
-  });
-$('html, body').animate({
-            scrollTop: $('html, body').height()
-        }, 'slow');
-$(".customSelect2").djangoSelect2()
+  agregarComisionado('empty_form_agente');
+});
+$(document).on('click', '#addFormExterno', function() {
+  agregarComisionado('empty_form_externo');
 });
 
 function eliminarComisionado(prefix) {
-  var namex = document.getElementsByName(`${prefix}-comisionadosolicitud_nombre`)
-  $(namex).val("").trigger("change")
+  $(document.getElementsByName(`${prefix}-comisionadosolicitud_nombre`)).val("").trigger("change")
+  $(document.getElementsByName(`${prefix}-comisionadosolicitud_externo`)).val("").trigger("change")
 }
 </script>
 {% endblock %}
 
 {% block actions %}
   {% url 'secretariador:lista-incorporaciones' as volver_target %}
-  {% include "partials/form-actions.html" with volver_url=volver_target show_add=True add_label="Nuevo Comisionado" %}
+  {% include "partials/form-actions.html" with volver_url=volver_target show_add=True add_label="Nuevo Comisionado" show_add_2=True add_label_2="Nuevo Comisionado Externo" %}
 {% endblock %}

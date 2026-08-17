@@ -428,10 +428,20 @@ class ComisionadoSolicitud(models.Model):
     class Meta:
         verbose_name = "Comisionado Solicitud"
         verbose_name_plural = "Comisionado Solicitudes"
+        constraints = [
+            models.CheckConstraint(
+                condition=(
+                    models.Q(comisionadosolicitud_nombre__isnull=False, comisionadosolicitud_externo__isnull=True)
+                    | models.Q(comisionadosolicitud_nombre__isnull=True, comisionadosolicitud_externo__isnull=False)
+                ),
+                name="comisionadosolicitud_agente_xor_externo",
+            ),
+        ]
 
     comisionadosolicitud_foreign = models.ForeignKey("Solicitud", on_delete=models.CASCADE, null=True, blank=True)
     comisionadosolicitud_incorporacion_foreign = models.ForeignKey("Incorporacion", on_delete=models.CASCADE, null=True, blank=True)
-    comisionadosolicitud_nombre = models.ForeignKey("personalizador.Agente", on_delete=models.CASCADE)
+    comisionadosolicitud_nombre = models.ForeignKey("personalizador.Agente", on_delete=models.CASCADE, null=True, blank=True, help_text="Agente del organismo. Exactamente uno de Agente/Externo debe estar cargado.")
+    comisionadosolicitud_externo = models.ForeignKey("personalizador.ComisionadoExterno", on_delete=models.CASCADE, null=True, blank=True, help_text="Persona externa al organismo. Exactamente uno de Agente/Externo debe estar cargado.")
     comisionadosolicitud_colaborador = models.BooleanField("Colab.?")
     comisionadosolicitud_chofer = models.BooleanField("Chofer?")
     comisionadosolicitud_combustible = models.DecimalField("Combustible", max_digits=12, decimal_places=2, default=0, null=True, blank=True)
@@ -447,19 +457,30 @@ class ComisionadoSolicitud(models.Model):
 
     def get_origin(self):
         return self.comisionadosolicitud_foreign if self.comisionadosolicitud_foreign is not None else self.comisionadosolicitud_incorporacion_foreign.incorporacion_solicitud
-    
+
+    @property
+    def persona(self):
+        """Devuelve el Agente o el ComisionadoExterno cargado, sea cual sea
+        (son mutuamente excluyentes, ver constraint `comisionadosolicitud_agente_xor_externo`).
+        Ambos exponen los mismos atributos (`agente_nombres`, `agente_apellidos`,
+        `agente_nombreyapellido`, `abreviatura`, `dni`, `cuil`, `sexo`), así que
+        el resto del código puede leer `comisionado.persona.<attr>` sin
+        importar de qué tipo es."""
+        return self.comisionadosolicitud_nombre or self.comisionadosolicitud_externo
+
     def __str__(self):
         """
         Returns a string representation of the object.
         The string representation consists of the foreign key value, which is either the value of `comisionadosolicitud_foreign` or `comisionadosolicitud_incorporacion_foreign`,
-        followed by the last name and first name of the `comisionadosolicitud_nombre` object.
+        followed by the last name and first name of the commissioned person (Agente or ComisionadoExterno).
 
         Returns:
             str: A string representation of the object.
         """
         foreign = self.get_origin()
-        return f"{foreign} - {self.comisionadosolicitud_nombre.agente_apellidos}, {self.comisionadosolicitud_nombre.agente_nombres}"
-    
+        persona = self.persona
+        return f"{foreign} - {persona.agente_apellidos}, {persona.agente_nombres}"
+
     def clean(self):
         """
         Sets the `comisionadosolicitud_combustible`, `comisionadosolicitud_pasaje` and `comisionadosolicitud_gastos` fields to 0 if they are None, otherwise keeps their current values.
@@ -470,6 +491,10 @@ class ComisionadoSolicitud(models.Model):
         self.comisionadosolicitud_gastos = 0 if self.comisionadosolicitud_gastos is None else self.comisionadosolicitud_gastos
         self.comisionadosolicitud_pasaje = 0 if self.comisionadosolicitud_pasaje is None else self.comisionadosolicitud_pasaje
         self.comisionadosolicitud_combustible = 0 if self.comisionadosolicitud_combustible is None else self.comisionadosolicitud_combustible
+        if not self.comisionadosolicitud_nombre and not self.comisionadosolicitud_externo:
+            raise ValidationError("Debe cargarse un agente del organismo o una persona externa.")
+        if self.comisionadosolicitud_nombre and self.comisionadosolicitud_externo:
+            raise ValidationError("No se puede cargar un agente del organismo y una persona externa al mismo tiempo.")
 
     def valor_viatico_dia(self):
         """
@@ -479,7 +504,7 @@ class ComisionadoSolicitud(models.Model):
             float: The daily viatic value. Returns 0 if the position is "Vocal" or "Presidente".
         """
         foreign = self.get_origin()
-        
+
         estrato = 2
 
         # TODO: comisionado_cargo (Organigrama) was dropped when Comisionado merged into
@@ -489,10 +514,13 @@ class ComisionadoSolicitud(models.Model):
         decreto = foreign.solicitud_decreto_viaticos
         es_chaco = foreign.solicitud_provincia.provincia_nombre == "Chaco"
 
-        if self.comisionadosolicitud_nombre.directorio_set.all() and es_chaco:
-            return 0
-        if self.comisionadosolicitud_nombre.agente_personal_de_gabinete:
-            return 0
+        # Los chequeos de directorio/gabinete solo aplican a agentes del
+        # organismo: un comisionado externo nunca cae en esos casos.
+        if self.comisionadosolicitud_nombre is not None:
+            if self.comisionadosolicitud_nombre.directorio_set.all() and es_chaco:
+                return 0
+            if self.comisionadosolicitud_nombre.agente_personal_de_gabinete:
+                return 0
         if self.comisionadosolicitud_colaborador:
             return 0
         if self.comisionadosolicitud_sin_viatico:

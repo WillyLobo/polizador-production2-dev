@@ -48,24 +48,24 @@ def _calcular_texto_solicitud(actuacion):
 			traslado = "trasladar al mencionado agente"
 		for agente in agentes:
 			colaborador = ""
-			agente_denominacion = f"{agente.comisionadosolicitud_nombre.abreviatura} {agente.comisionadosolicitud_nombre.agente_nombres} {agente.comisionadosolicitud_nombre.agente_apellidos}"
-			if agente.comisionadosolicitud_nombre.sexo.generoagente_nombre == "Masculino":
+			agente_denominacion = f"{agente.persona.abreviatura} {agente.persona.agente_nombres} {agente.persona.agente_apellidos}"
+			if agente.persona.sexo.generoagente_nombre == "Masculino":
 				text = "el"
 			else:
 				text = "la"
-				
+
 			if agente.comisionadosolicitud_colaborador:
 				colaborador = " en carácter de colaborador"
 			else:
 				colaborador = ""
-		
+
 			if agente.comisionadosolicitud_chofer:
-				if agente.comisionadosolicitud_nombre.sexo.generoagente_nombre == "Masculino":
+				if agente.persona.sexo.generoagente_nombre == "Masculino":
 					chofer = f"el {agente_denominacion}"
 				else:
 					chofer = f"la {agente_denominacion}"
 
-			dni = "{:,}".format(agente.comisionadosolicitud_nombre.dni).replace(",", "@").replace(".", ",").replace("@", ".")
+			dni = "{:,}".format(agente.persona.dni).replace(",", "@").replace(".", ",").replace("@", ".")
 			lista_agentes.append(f"{text} {agente_denominacion} - D.N.I.Nº{dni}{colaborador}")
 		lista_agentes = separate_items(lista_agentes)
 
@@ -138,6 +138,7 @@ def editar_texto_solicitud(request, pk):
 		parrafos_default=parrafos_default,
 		articulo_uno_default=articulo_uno_default,
 		articulo_dos_default=articulo_dos_default,
+		extra_context={"dia_inhabil": actuacion.solicitud_dia_inhabil},
 	)
 
 

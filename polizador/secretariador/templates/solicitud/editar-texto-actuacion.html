@@ -16,11 +16,14 @@
       </p>
       {{ parrafo_formset.management_form }}
       {% for form in parrafo_formset %}
-        <div class="form-group mb-2">
+        <div class="form-group mb-2"{% if forloop.last and not dia_inhabil %} style="display:none"{% endif %}>
           <label class="form-label small text-muted">Considerando {{ forloop.counter }}</label>
           {{ form.texto.as_field_group }}
         </div>
       {% endfor %}
+      {% if not dia_inhabil %}
+        <p class="text-muted small mb-0">El considerando sobre días inhábiles no se incluye porque la solicitud no está marcada como "Día Inhábil".</p>
+      {% endif %}
     </div>
   </div>
 

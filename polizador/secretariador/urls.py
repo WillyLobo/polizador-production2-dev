@@ -87,6 +87,9 @@ comisionado_patterns = [
     path("crearcomisionado/", CrearComisionado.as_view(), name="crear-comisionado"),
     path("crearcomisionado/<pk>", UpdateComisionado.as_view(), name="update-comisionado"),
     path("eliminar/comisionado/<pk>", EliminarComisionado.as_view(), name="eliminar-comisionado"),
+    path("crearcomisionadoexterno/", CrearComisionadoExterno.as_view(), name="crear-comisionado-externo"),
+    path("crearcomisionadoexterno/<pk>", UpdateComisionadoExterno.as_view(), name="update-comisionado-externo"),
+    path("eliminar/comisionadoexterno/<pk>", EliminarComisionadoExterno.as_view(), name="eliminar-comisionado-externo"),
 ]
 incorporacion_patterns = [
     path("crearincorporacion/", CrearIncorporacion.as_view(), name="crear-incorporacion"),
@@ -118,6 +121,7 @@ ajax = [
 	path("listas/solicitudes", PaginaListaSolicitudes, name="lista-solicitudes"),
     # Comisionados
 	path("listas/comisionados", PaginaListaComisionados, name="lista-comisionados"),
+	path("listas/comisionados-externos", PaginaListaComisionadosExternos, name="lista-comisionados-externos"),
     # Memorandum
     path("listas/memorandum", PaginaListaInstrumentosLegalesMemorandum, name="lista-memorandum"),
     # Decretos

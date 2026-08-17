@@ -36,16 +36,17 @@ class OrganigramaAdmin(ImportExportMixin, SimpleHistoryAdmin):
 
 class ComisionadoSolicitudAdminInline(admin.TabularInline):
     model = ComisionadoSolicitud
-    search_fields = ["comisionadosolicitud_nombre__agente_nombreyapellido"]
+    search_fields = ["comisionadosolicitud_nombre__agente_nombreyapellido", "comisionadosolicitud_externo__agente_nombreyapellido"]
     fields = [
         "comisionadosolicitud_nombre",
+        "comisionadosolicitud_externo",
         "comisionadosolicitud_colaborador",
         "comisionadosolicitud_chofer",
         "comisionadosolicitud_combustible",
         "comisionadosolicitud_pasaje",
         "comisionadosolicitud_gastos",
     ]
-    autocomplete_fields = ["comisionadosolicitud_foreign", "comisionadosolicitud_incorporacion_foreign", "comisionadosolicitud_nombre"]
+    autocomplete_fields = ["comisionadosolicitud_foreign", "comisionadosolicitud_incorporacion_foreign", "comisionadosolicitud_nombre", "comisionadosolicitud_externo"]
 
 class SolicitudAdmin(SimpleHistoryAdmin):
     inlines = [ComisionadoSolicitudAdminInline]
@@ -72,14 +73,15 @@ class IncorporacionAdmin(ImportExportMixin, SimpleHistoryAdmin):
 
 class ComisionadoSolicitudAdmin(SimpleHistoryAdmin):
     model = ComisionadoSolicitud
-    search_fields = ["comisionadosolicitud_foreign__solicitud_actuacion", "comisionadosolicitud_incorporacion_foreign__incorporacion_actuacion", "comisionadosolicitud_nombre__agente_nombreyapellido"]
-    autocomplete_fields = ["comisionadosolicitud_foreign", "comisionadosolicitud_incorporacion_foreign", "comisionadosolicitud_nombre"]
-    list_display = ["id", "comisionadosolicitud_nombre", "comisionadosolicitud_foreign", "comisionadosolicitud_incorporacion_foreign", "comisionadosolicitud_viatico_total"]
+    search_fields = ["comisionadosolicitud_foreign__solicitud_actuacion", "comisionadosolicitud_incorporacion_foreign__incorporacion_actuacion", "comisionadosolicitud_nombre__agente_nombreyapellido", "comisionadosolicitud_externo__agente_nombreyapellido"]
+    autocomplete_fields = ["comisionadosolicitud_foreign", "comisionadosolicitud_incorporacion_foreign", "comisionadosolicitud_nombre", "comisionadosolicitud_externo"]
+    list_display = ["id", "comisionadosolicitud_nombre", "comisionadosolicitud_externo", "comisionadosolicitud_foreign", "comisionadosolicitud_incorporacion_foreign", "comisionadosolicitud_viatico_total"]
     list_filter = ["comisionadosolicitud_colaborador", "comisionadosolicitud_chofer", "comisionadosolicitud_sin_viatico"]
     fields = [
         "comisionadosolicitud_foreign",
         "comisionadosolicitud_incorporacion_foreign",
         "comisionadosolicitud_nombre",
+        "comisionadosolicitud_externo",
         "comisionadosolicitud_colaborador",
         "comisionadosolicitud_chofer",
         "comisionadosolicitud_combustible",

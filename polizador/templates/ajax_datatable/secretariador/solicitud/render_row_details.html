@@ -83,7 +83,7 @@
         <tbody>
             {% for agente in object.comisionadosolicitud_set.all %}
             <tr>
-                <th class="small" scope="row">{{agente.comisionadosolicitud_nombre.abreviatura}} {{agente.comisionadosolicitud_nombre.agente_apellidos}}, {{agente.comisionadosolicitud_nombre.agente_nombres}}</th>
+                <th class="small" scope="row">{{agente.persona.abreviatura}} {{agente.persona.agente_apellidos}}, {{agente.persona.agente_nombres}}</th>
                 <td class="small">{{object.solicitud_cantidad_de_dias.days}}</td>
                 <td class="small">{{agente.viaticos_computado}}</td>
                 <td class="small">{{agente.comisionadosolicitud_gastos}}</td>

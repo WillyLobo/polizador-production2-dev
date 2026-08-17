@@ -126,6 +126,13 @@ class RepresentanteTecnicoAdmin(ImportExportMixin, SimpleHistoryAdmin):
     list_filter = ["representantetecnico_profesion"]
     autocomplete_fields = ["representantetecnico_profesion"]
 
+class ComisionadoExternoAdmin(ImportExportMixin, SimpleHistoryAdmin):
+    resource_class = ComisionadoExternoResource
+    list_display = ["agente_nombreyapellido", "dni", "cuil", "institucion_origen"]
+    search_fields = ["agente_nombres", "agente_apellidos", "dni", "cuil"]
+    list_filter = ["sexo"]
+    autocomplete_fields = ["sexo"]
+
 class TipoLicenciaPermisoAdmin(SimpleHistoryAdmin):
     list_display = ["tipolicenciapermiso_articulo","tipolicenciapermiso_nombre", "tipolicenciapermiso_categoria", "tipolicenciapermiso_unidad", "tipolicenciapermiso_tope_cantidad", "tipolicenciapermiso_activo"]
     search_fields = ["tipolicenciapermiso_nombre"]
@@ -162,6 +169,7 @@ admin.site.register(Gerencia, GerenciaAdmin)
 admin.site.register(Direccion, DireccionAdmin)
 admin.site.register(Departamento, DepartamentoAdmin)
 admin.site.register(RepresentanteTecnico, RepresentanteTecnicoAdmin)
+admin.site.register(ComisionadoExterno, ComisionadoExternoAdmin)
 admin.site.register(TipoLicenciaPermiso, TipoLicenciaPermisoAdmin)
 admin.site.register(LicenciaPermiso, LicenciaPermisoAdmin)
 admin.site.register(CorteLicencia, CorteLicenciaAdmin)
