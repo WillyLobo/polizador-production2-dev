@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.views import generic
 from personalizador.models import Agente, ComisionadoExterno
 from secretariador.forms.comisionadoform import ComisionadoForm, ComisionadoExternoForm
-from core.mixins import DeleteRelatedObjectsMixin
+from core.mixins import DeleteRelatedObjectsMixin, PopupCreateMixin
 
 @method_decorator(login_required, name="dispatch")
 class CrearComisionado(PermissionRequiredMixin, generic.CreateView):
@@ -60,13 +60,14 @@ def PaginaListaComisionados(request):
 	return render(request, template_name, {})
 
 @method_decorator(login_required, name="dispatch")
-class CrearComisionadoExterno(PermissionRequiredMixin, generic.CreateView):
+class CrearComisionadoExterno(PopupCreateMixin, PermissionRequiredMixin, generic.CreateView):
 	permission_required = "personalizador.add_comisionadoexterno"
 
 	model = ComisionadoExterno
 	template_name = "comisionado/crear-comisionado-externo.html"
 	form_class = ComisionadoExternoForm
 	success_url = reverse_lazy("secretariador:crear-comisionado-externo")
+	popup_form_partial = "partials/comisionados-externo-form-partial.html"
 
 	title = "Crear Comisionado Externo"
 

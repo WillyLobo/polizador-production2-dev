@@ -6,6 +6,7 @@ from django_select2 import forms as s2forms
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import JsonResponse
+from carga.views.ajaxviews import AddRelatedWidgetMixin
 
 @login_required
 @permission_required("secretariador.add_solicitud", login_url="/")
@@ -54,7 +55,8 @@ class ComisionadoWidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
         "agente_apellidos__icontains",
     ]
 
-class ComisionadoExternoWidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
+class ComisionadoExternoWidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+    add_related_url_name = "secretariador:crear-comisionado-externo"
     search_fields = [
         "agente_nombres__icontains",
         "agente_apellidos__icontains",

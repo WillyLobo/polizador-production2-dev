@@ -9,7 +9,7 @@ from django.views import generic
 from secretariador.models import EncabezadoDocumento, Solicitud, InstrumentosLegalesDecretos
 from carga.models import Provincia
 from secretariador.forms.solicitudform import *
-from core.mixins import DeleteRelatedObjectsMixin, FormsetViewMixin
+from core.mixins import DeleteRelatedObjectsMixin, FormsetViewMixin, UserFormsetKwargsMixin
 from secretariador import docx_texto
 from secretariador.docx_texto import separate_items
 from secretariador.docx_builder import build_resolucion_docx
@@ -154,7 +154,7 @@ def solicitud_docx(request, pk):
 	return response
 
 @method_decorator(login_required, name="dispatch")
-class CrearSolicitud(PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
+class CrearSolicitud(PermissionRequiredMixin, UserFormsetKwargsMixin, FormsetViewMixin, generic.CreateView):
 	permission_required = "secretariador.add_solicitud"
 	formset_name = ComisionadoSolicitudFormset
 	view_type = "create"
@@ -170,7 +170,7 @@ class CrearSolicitud(PermissionRequiredMixin, FormsetViewMixin, generic.CreateVi
 		return self.title
 	
 @method_decorator(login_required, name="dispatch")
-class UpdateSolicitud(PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView):
+class UpdateSolicitud(PermissionRequiredMixin, UserFormsetKwargsMixin, FormsetViewMixin, generic.UpdateView):
 	permission_required = "secretariador.change_solicitud"
 	formset_name = ComisionadoSolicitudFormset
 	view_type = "update"

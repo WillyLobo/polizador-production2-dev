@@ -34,3 +34,22 @@
     </div>
     </div>
 </div>
+<script>
+(function() {
+  var dniInput = document.getElementById('id_dni');
+  dniInput.addEventListener('change', function() {
+    var input = dniInput.value;
+    if (!input || input.length !== 8) {
+      input = "00000000";
+    }
+    else {
+      input = dniInput.value;
+    }
+    var sexoSelect = document.getElementById('id_sexo');
+    var generoTexto = sexoSelect.options[sexoSelect.selectedIndex].text.trim().toUpperCase();
+    var gender = generoTexto.startsWith('MASCULINO') ? 'M' : 'F';
+    var cuit = getCUIT(input, gender);
+    $('#cuit-calculado').text("CUIT: " + cuit);
+  });
+})();
+</script>

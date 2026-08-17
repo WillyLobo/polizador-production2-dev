@@ -2,13 +2,14 @@ from django import forms
 from secretariador.models import ComisionadoSolicitud
 from core.mixins import BaseFormMixin
 from secretariador.views.ajaxviews import ComisionadoWidget, ComisionadoExternoWidget
+from carga.forms.mixins import AddRelatedPermissionMixin
 from datetime import datetime
 from core.widgets import CustomCheckboxInput
 
 class DivErrorList(forms.utils.ErrorList):
     template_name = "generic/error_as_div.html"
 
-class ComisionadoSolicitudForm(BaseFormMixin, forms.ModelForm):
+class ComisionadoSolicitudForm(AddRelatedPermissionMixin, BaseFormMixin, forms.ModelForm):
     class Meta:
         model = ComisionadoSolicitud
         fields = (
