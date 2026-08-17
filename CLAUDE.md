@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## What this is
 
 Polizador is a Django web app for the Instituto Provincial de Desarrollo Urbano y Vivienda (IPDUV). It manages:
-- **carga**: public works (obras) — contracts, monthly certificados (progress certificates), planes de trabajo, fojas de medición (measurement sheets), technical representatives, insurance policies. Note: README calls this app "Obsoleto" but it has been under active development in recent commits — treat that label with skepticism and check git history rather than assuming the app is dead.
+- **carga**: public works (obras) — contracts, monthly certificados (progress certificates), planes de trabajo, fojas de medición (measurement sheets), technical representatives, insurance policies. It has been under active development in recent commits — don't assume it's dead just because of its age.
 - **secretariador**: per-diem/travel-allowance management (viáticos) — solicitudes de comisión de servicio, instrumentos legales (decretos/resoluciones), vehículos, generation of .docx resolutions.
 - **personalizador**: HR (RRHH) — `CustomUser` (`AUTH_USER_MODEL`), `Agente`, org structure (Gerencia, Dirección, Departamento, Oficina, Categoria, etc.).
 - **api**: a `django-ninja` API (mounted at `/v1/api/`) exposing selected data (mostly for select2 widgets and cross-app lookups) on top of the three apps above.
