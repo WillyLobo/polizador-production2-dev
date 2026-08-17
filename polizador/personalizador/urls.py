@@ -16,6 +16,8 @@ from personalizador.views.departamentoviews import *
 from personalizador.views.oficinaviews import *
 from personalizador.views.agenteviews import *
 from personalizador.views.licenciapermisoviews import *
+from personalizador.views.cortelicenciaviews import *
+from personalizador.views.tipolicenciapermisoviews import *
 
 app_name = "personalizador"
 
@@ -96,6 +98,7 @@ agente_patterns = [
 	path("crear/agente/", CrearAgente.as_view(), name="crear-agente"),
 	path("crear/agente/<pk>", UpdateAgente.as_view(), name="update-agente"),
 	path("eliminar/agente/<pk>", EliminarAgente.as_view(), name="eliminar-agente"),
+	path("agente/ficha/<pk>", FichaAgente.as_view(), name="ficha-agente"),
 ]
 licenciapermiso_patterns = [
 	path("licencias/crear/", CrearLicenciaPermiso.as_view(), name="crear-licenciapermiso"),
@@ -103,6 +106,16 @@ licenciapermiso_patterns = [
 	path("licencias/eliminar/<pk>", EliminarLicenciaPermiso.as_view(), name="eliminar-licenciapermiso"),
 	path("licencias/ver/<pk>", VerLicenciaPermiso.as_view(), name="ver-licenciapermiso"),
 	path("licencias/control/agente/<pk>", ControlLicenciasAgente, name="control-licencias-agente"),
+]
+cortelicencia_patterns = [
+	path("licencias/<licenciapermiso_pk>/corte/crear/", CrearCorteLicencia.as_view(), name="crear-cortelicencia"),
+	path("licencias/corte/<pk>", UpdateCorteLicencia.as_view(), name="update-cortelicencia"),
+	path("licencias/corte/eliminar/<pk>", EliminarCorteLicencia.as_view(), name="eliminar-cortelicencia"),
+]
+tipolicenciapermiso_patterns = [
+	path("crear/tipolicenciapermiso/", CrearTipoLicenciaPermiso.as_view(), name="crear-tipolicenciapermiso"),
+	path("crear/tipolicenciapermiso/<pk>", UpdateTipoLicenciaPermiso.as_view(), name="update-tipolicenciapermiso"),
+	path("eliminar/tipolicenciapermiso/<pk>", EliminarTipoLicenciaPermiso.as_view(), name="eliminar-tipolicenciapermiso"),
 ]
 
 ajax = [
@@ -122,6 +135,7 @@ ajax = [
 	path("listas/oficinas", PaginaListaOficinas, name="lista-oficinas"),
 	path("listas/agentes", PaginaListaAgentes, name="lista-agentes"),
 	path("listas/licenciapermisos", PaginaListaLicenciaPermisos, name="lista-licenciapermisos"),
+	path("listas/tipolicenciapermisos", PaginaListaTipoLicenciaPermisos, name="lista-tipolicenciapermisos"),
 ]
 
 urlpatterns += ajax
@@ -141,3 +155,5 @@ urlpatterns += departamento_patterns
 urlpatterns += oficina_patterns
 urlpatterns += agente_patterns
 urlpatterns += licenciapermiso_patterns
+urlpatterns += cortelicencia_patterns
+urlpatterns += tipolicenciapermiso_patterns

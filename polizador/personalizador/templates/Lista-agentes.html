@@ -5,7 +5,13 @@
 
 <div class="min-vh-100">
   <div class="card">
-    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Agentes</div>
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small d-flex justify-content-between align-items-center">
+      <span>Agentes</span>
+      <div class="form-check form-switch mb-0">
+        <input class="form-check-input" type="checkbox" id="switchMostrarTodos">
+        <label class="form-check-label" for="switchMostrarTodos">Mostrar todos</label>
+      </div>
+    </div>
     <div class="card-body p-2">
       <div class="table-responsive">
         <table id="tableAgentes" width="auto" class="table table-striped table-bordered align-middle mb-0">
@@ -22,12 +28,27 @@
           { data: 'agente_apellidos', name: 'agente_apellidos', title: 'Apellido' },
           { data: 'agente_nombres', name: 'agente_nombres', title: 'Nombre' },
           { data: 'dni', name: 'dni', title: 'DNI' },
-          { data: 'categoria', name: 'categoria', title: 'Categoría' },
+          {
+              data: 'denominacion', name: 'denominacion', title: 'Denominación',
+              filterType: 'select', filterChoicesUrl: '/v1/api/datatables/agentes/filtro-denominacion/',
+          },
           { data: 'oficina', name: 'oficina', title: 'Oficina' },
+          { data: 'edad', name: 'edad', title: 'Edad' },
+          { data: 'antiguedad', title: 'Antigüedad', orderable: false, filterable: false },
+          {
+              data: 'activo', name: 'activo', title: 'Activo',
+              filterType: 'select', filterChoices: [['true', 'Sí'], ['false', 'No']],
+          },
+          {
+              data: 'con_errores', name: 'con_errores', title: 'Con errores de carga',
+              filterType: 'select', filterChoices: [['true', 'Sí'], ['false', 'No']],
+          },
           { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
       ];
 
-      NinjaDatatableUtils.initialize_table(
+      var mostrarTodos = false;
+
+      var table = NinjaDatatableUtils.initialize_table(
           $('#tableAgentes'),
           '/v1/api/datatables/agentes/',
           columns,
@@ -35,8 +56,23 @@
               order: [[0, 'asc']],
               lengthMenu: [[50, 100, -1], [50, 100, 'all']],
               detailUrl: '/v1/api/datatables/agentes/{id}/detalle/',
+              extraFilters: function() {
+                  return { activo: mostrarTodos ? undefined : 'true' };
+              },
+              dataTableOptions: {
+                  createdRow: function(row, data) {
+                      if (data.con_errores === 'No') {
+                          $(row).addClass('table-success');
+                      }
+                  },
+              },
           },
       );
+
+      $('#switchMostrarTodos').on('change', function() {
+          mostrarTodos = $(this).is(':checked');
+          table.draw();
+      });
   });
 
 </script>

@@ -2,7 +2,10 @@
 from typing import List
 
 from django.contrib.auth import get_user_model
+from django.db.models import BooleanField, Case, F, Func, IntegerField, Value, When
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
+from django.utils import timezone
 from ninja import Router
 from ninja.decorators import decorate_view
 from ninja.pagination import paginate
@@ -14,13 +17,18 @@ from api.schemas.personalizador_schemas import (
     GerenciaOut, GerenciaCreate,
     DireccionOut, DireccionCreate,
     DepartamentoPerOut, DepartamentoPerCreate,
+    LicenciaPermisoBalanceOut,
 )
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg
 from personalizador.models import (
     Agente, ApartadoCargo, ActividadEspecifica, CargoTipo, Categoria, CEIC,
-    Departamento, DenominacionCargo, Direccion, Directorio, Gerencia,
-    GeneroAgente, GrupoCargo, Oficina, RepresentanteTecnico, TituloProfesional,
-    LicenciaPermiso,
+    ComisionadoExterno, Departamento, DenominacionCargo, Direccion, Directorio,
+    Gerencia, GeneroAgente, GrupoCargo, Oficina, RepresentanteTecnico, TituloProfesional,
+    LicenciaPermiso, TipoLicenciaPermiso,
+)
+from personalizador.licencias import (
+    balance_tipo, resumen_agente, saldos_pendientes_agente,
+    LICENCIA_IMPORTADA_MOTIVO_PREFIJO,
 )
 
 User = get_user_model()
@@ -212,6 +220,53 @@ register_simple_datatable(
         "oficina__cargo_direccion", "oficina__cargo_departamento",
     ),
     boolean_filter_keys=frozenset({"agente_personal_transitorio", "agente_personal_de_gabinete"}),
+)
+
+
+# --- ComisionadoExterno datatable ---
+def _comisionadoexterno_datatable_row(c: ComisionadoExterno, user) -> dict:
+    id_ = str(c.id)
+    editarlink = f"<a href='/viaticos/crearcomisionadoexterno/{id_}'>{editlinkimg}</a>"
+    detallelink = f"<a href=''>{detallelinkimg}</a>"
+    eliminarlink = f"<a href='/viaticos/eliminar/comisionadoexterno/{id_}'>{eliminarlinkimg}</a>"
+    if user.has_perm("personalizador.delete_comisionadoexterno"):
+        acciones = f"{editarlink}{detallelink}{eliminarlink}"
+    elif user.has_perm("personalizador.change_comisionadoexterno"):
+        acciones = f"{editarlink}{detallelink}"
+    else:
+        acciones = detallelink
+    return {
+        "id": c.id,
+        "agente_apellidos": c.agente_apellidos,
+        "agente_nombres": c.agente_nombres,
+        "institucion_origen": c.institucion_origen or "",
+        "cuil": c.cuil,
+        "acciones": acciones,
+    }
+
+
+register_simple_datatable(
+    router, ComisionadoExterno, "comisionados-externos",
+    order_fields={
+        "id": "id",
+        "agente_apellidos": "agente_apellidos",
+        "agente_nombres": "agente_nombres",
+        "institucion_origen": "institucion_origen",
+        "cuil": "cuil",
+    },
+    filter_fields={
+        "agente_apellidos": "agente_apellidos__icontains",
+        "agente_nombres": "agente_nombres__icontains",
+        "institucion_origen": "institucion_origen__icontains",
+        "cuil": "cuil__icontains",
+    },
+    search_lookups=[
+        "agente_apellidos__icontains", "agente_nombres__icontains",
+        "institucion_origen__icontains", "cuil__icontains",
+    ],
+    row_builder=_comisionadoexterno_datatable_row,
+    default_order="agente_apellidos",
+    queryset=ComisionadoExterno.objects.select_related("sexo"),
 )
 
 
@@ -632,20 +687,41 @@ register_simple_datatable(
 
 
 # --- Agente (management list) datatable ---
+class _EdadCalculada(Func):
+    """Años completos entre hoy y `fecha_nacimiento`, calculado en Postgres:
+    EXTRACT(YEAR FROM AGE(fecha_nacimiento))."""
+    template = "EXTRACT(YEAR FROM AGE(%(expressions)s))"
+    output_field = IntegerField()
+
+
+def _formatear_antiguedad(antiguedad: dict | None) -> str:
+    if not antiguedad:
+        return ""
+    return f"{antiguedad['anios']}a {antiguedad['meses']}m {antiguedad['dias']}d"
+
+
 def _agente_datatable_row(a: Agente, user) -> dict:
     id_ = a.id
-    acciones = _simple_acciones(
-        user, "personalizador.delete_agente", "personalizador.change_agente",
-        f"<a href='/personal/crear/agente/{id_}'>{editlinkimg}</a>",
-        f"<a href='/personal/eliminar/agente/{id_}'>{eliminarlinkimg}</a>",
-    )
+    editarlink = f"<a href='/personal/crear/agente/{id_}'>{editlinkimg}</a>"
+    detallelink = f"<a href='/personal/agente/ficha/{id_}'>{detallelinkimg}</a>"
+    eliminarlink = f"<a href='/personal/eliminar/agente/{id_}'>{eliminarlinkimg}</a>"
+    if user.has_perm("personalizador.delete_agente"):
+        acciones = f"{editarlink}{detallelink}{eliminarlink}"
+    elif user.has_perm("personalizador.change_agente"):
+        acciones = f"{editarlink}{detallelink}"
+    else:
+        acciones = detallelink
     return {
         "id": a.id,
         "agente_apellidos": a.agente_apellidos,
         "agente_nombres": a.agente_nombres,
         "dni": a.dni,
-        "categoria": a.categoria.categoria_nombre if a.categoria_id else "",
+        "denominacion": a.denominacion_cargo.denominacion if a.denominacion_cargo_id else "",
         "oficina": str(a.oficina) if a.oficina_id else "",
+        "edad": int(a.edad_calculada) if a.edad_calculada is not None else "",
+        "antiguedad": _formatear_antiguedad(a.antiguedad),
+        "activo": "Sí" if a.activo else "No",
+        "con_errores": "Sí" if a.con_errores else "No",
         "acciones": acciones,
     }
 
@@ -657,22 +733,71 @@ register_simple_datatable(
         "agente_apellidos": "agente_apellidos",
         "agente_nombres": "agente_nombres",
         "dni": "dni",
-        "categoria": "categoria__categoria_nombre",
+        "denominacion": "denominacion_cargo__denominacion",
+        "edad": "edad_calculada",
+        "activo": "activo",
+        "con_errores": "con_errores",
     },
     filter_fields={
         "agente_apellidos": "agente_apellidos__icontains",
         "agente_nombres": "agente_nombres__icontains",
         "dni": "dni__icontains",
-        "categoria": "categoria__categoria_nombre__icontains",
+        "denominacion": "denominacion_cargo_id",
+        "edad": "edad_calculada",
+        "activo": "activo",
+        "con_errores": "con_errores",
     },
     search_lookups=["agente_apellidos__icontains", "agente_nombres__icontains", "dni__icontains"],
     row_builder=_agente_datatable_row,
     default_order="agente_apellidos",
     queryset=Agente.objects.select_related(
-        "categoria", "oficina__cargo_directorio", "oficina__cargo_gerencia",
+        "denominacion_cargo", "oficina__cargo_directorio", "oficina__cargo_gerencia",
         "oficina__cargo_direccion", "oficina__cargo_departamento",
-    ),
+    ).annotate(edad_calculada=_EdadCalculada(F("fecha_nacimiento"))),
+    boolean_filter_keys=frozenset({"activo", "con_errores"}),
+    with_detail=False,
 )
+
+
+@router.get("/datatables/agentes/{id}/detalle/")
+@decorate_view(require_model_perm(Agente))
+def datatable_agentes_detalle(request, id: int):
+    agente = get_object_or_404(
+        Agente.objects.select_related(
+            "sexo", "categoria", "denominacion_cargo", "apartado", "ceic", "grupo",
+            "actividad_especifica", "domicilio_localidad", "domicilio_provincia",
+            "oficina__cargo_directorio", "oficina__cargo_gerencia",
+            "oficina__cargo_direccion", "oficina__cargo_departamento",
+            "cargo_interno__cargo_directorio", "cargo_interno__cargo_gerencia",
+            "cargo_interno__cargo_direccion", "cargo_interno__cargo_departamento",
+        ).prefetch_related("titulo_profesional", "licenciapermiso_set__licenciapermiso_tipo"),
+        id=id,
+    )
+    anio = timezone.now().year
+    html = render_to_string(
+        "ajax_datatable/personalizador/agente/render_row_details.html",
+        {
+            "object": agente,
+            "anio": anio,
+            "resumen": resumen_agente(agente, anio),
+            "saldos_pendientes": saldos_pendientes_agente(agente),
+            "licencias_recientes": agente.licenciapermiso_set.all()[:10],
+        },
+        request=request,
+    )
+    return {"html": html}
+
+
+@router.get("/datatables/agentes/filtro-denominacion/")
+@decorate_view(require_model_perm(Agente))
+def datatable_agentes_filtro_denominacion(request):
+    choices = (
+        Agente.objects.exclude(denominacion_cargo=None)
+        .values_list("denominacion_cargo_id", "denominacion_cargo__denominacion")
+        .distinct()
+        .order_by("denominacion_cargo__denominacion")
+    )
+    return {"choices": list(choices)}
 
 
 # --- LicenciaPermiso datatable ---
@@ -692,6 +817,7 @@ def _licenciapermiso_datatable_row(s: LicenciaPermiso, user) -> dict:
         "licenciapermiso_fecha_hasta": s.licenciapermiso_fecha_hasta,
         "licenciapermiso_cantidad": s.licenciapermiso_cantidad,
         "licenciapermiso_anulada": "Sí" if s.licenciapermiso_anulada else "No",
+        "licenciapermiso_importada": "Sí" if s.licenciapermiso_importada else "No",
         "acciones": acciones,
     }
 
@@ -705,11 +831,13 @@ register_simple_datatable(
         "licenciapermiso_fecha_desde": "licenciapermiso_fecha_desde",
         "licenciapermiso_fecha_hasta": "licenciapermiso_fecha_hasta",
         "licenciapermiso_anulada": "licenciapermiso_anulada",
+        "licenciapermiso_importada": "licenciapermiso_importada",
     },
     filter_fields={
         "licenciapermiso_agente": "licenciapermiso_agente__agente_apellidos__icontains",
         "licenciapermiso_tipo": "licenciapermiso_tipo__tipolicenciapermiso_nombre__icontains",
         "licenciapermiso_anulada": "licenciapermiso_anulada",
+        "licenciapermiso_importada": "licenciapermiso_importada",
     },
     search_lookups=[
         "licenciapermiso_agente__agente_apellidos__icontains",
@@ -718,6 +846,80 @@ register_simple_datatable(
     ],
     row_builder=_licenciapermiso_datatable_row,
     default_order="-licenciapermiso_fecha_desde",
-    queryset=LicenciaPermiso.objects.select_related("licenciapermiso_agente", "licenciapermiso_tipo"),
-    boolean_filter_keys=frozenset({"licenciapermiso_anulada"}),
+    queryset=LicenciaPermiso.objects.select_related("licenciapermiso_agente", "licenciapermiso_tipo").annotate(
+        licenciapermiso_importada=Case(
+            When(licenciapermiso_motivo__startswith=LICENCIA_IMPORTADA_MOTIVO_PREFIJO, then=Value(True)),
+            default=Value(False), output_field=BooleanField(),
+        ),
+    ),
+    boolean_filter_keys=frozenset({"licenciapermiso_anulada", "licenciapermiso_importada"}),
 )
+
+
+# --- TipoLicenciaPermiso datatable ---
+def _tipolicenciapermiso_datatable_row(t: TipoLicenciaPermiso, user) -> dict:
+    id_ = t.id
+    acciones = _simple_acciones(
+        user, "personalizador.delete_tipolicenciapermiso", "personalizador.change_tipolicenciapermiso",
+        f"<a href='/personal/crear/tipolicenciapermiso/{id_}'>{editlinkimg}</a>",
+        f"<a href='/personal/eliminar/tipolicenciapermiso/{id_}'>{eliminarlinkimg}</a>",
+    )
+    if t.tipolicenciapermiso_tope_cantidad is not None:
+        tope = f"{t.tipolicenciapermiso_tope_cantidad} ({t.get_tipolicenciapermiso_tope_periodo_display()})"
+    else:
+        tope = "Variable"
+    return {
+        "id": t.id,
+        "tipolicenciapermiso_articulo": t.tipolicenciapermiso_articulo,
+        "tipolicenciapermiso_nombre": t.tipolicenciapermiso_nombre,
+        "tipolicenciapermiso_categoria": t.get_tipolicenciapermiso_categoria_display(),
+        "tipolicenciapermiso_unidad": t.get_tipolicenciapermiso_unidad_display(),
+        "tipolicenciapermiso_tope": tope,
+        "tipolicenciapermiso_remunerada": t.get_tipolicenciapermiso_remunerada_display(),
+        "tipolicenciapermiso_activo": "Sí" if t.tipolicenciapermiso_activo else "No",
+        "acciones": acciones,
+    }
+
+
+register_simple_datatable(
+    router, TipoLicenciaPermiso, "tipolicenciapermisos",
+    order_fields={
+        "id": "id",
+        "tipolicenciapermiso_articulo": "tipolicenciapermiso_articulo",
+        "tipolicenciapermiso_nombre": "tipolicenciapermiso_nombre",
+        "tipolicenciapermiso_categoria": "tipolicenciapermiso_categoria",
+        "tipolicenciapermiso_unidad": "tipolicenciapermiso_unidad",
+        "tipolicenciapermiso_remunerada": "tipolicenciapermiso_remunerada",
+        "tipolicenciapermiso_activo": "tipolicenciapermiso_activo",
+    },
+    filter_fields={
+        "tipolicenciapermiso_nombre": "tipolicenciapermiso_nombre__icontains",
+        "tipolicenciapermiso_categoria": "tipolicenciapermiso_categoria",
+        "tipolicenciapermiso_activo": "tipolicenciapermiso_activo",
+    },
+    search_lookups=[
+        "tipolicenciapermiso_nombre__icontains",
+        "tipolicenciapermiso_articulo__icontains",
+    ],
+    row_builder=_tipolicenciapermiso_datatable_row,
+    default_order="tipolicenciapermiso_categoria",
+    boolean_filter_keys=frozenset({"tipolicenciapermiso_activo"}),
+)
+
+
+@router.get("/licenciapermiso-balance/", response=LicenciaPermisoBalanceOut)
+@decorate_view(require_model_perm(LicenciaPermiso))
+def licenciapermiso_balance(request, agente: int, tipo: int, anio: int = None):
+    """Días/horas correspondientes, usados y disponibles de `tipo` para `agente` en
+    `anio` (año actual por defecto). Para la Licencia Anual Ordinaria, `correspondientes`
+    ya viene calculado según la antigüedad del agente (ver `licencias.balance_tipo`)."""
+    agente_obj = get_object_or_404(Agente, pk=agente)
+    tipo_obj = get_object_or_404(TipoLicenciaPermiso, pk=tipo)
+    balance = balance_tipo(agente_obj, tipo_obj, anio or timezone.now().year)
+    return {
+        "unidad": tipo_obj.tipolicenciapermiso_unidad,
+        "unidad_display": tipo_obj.get_tipolicenciapermiso_unidad_display(),
+        "correspondientes": balance["correspondientes"],
+        "usados": balance["usados"],
+        "disponibles": balance["disponibles"],
+    }

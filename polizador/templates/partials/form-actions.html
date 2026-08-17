@@ -11,12 +11,20 @@ Variables:
   show_add    (opcional) — si es True, muestra un botón "Agregar" con id="addForm"
                             (el JS de formsets de cada template ya escucha ese id).
   add_label   (opcional) — texto del botón Agregar. Default: "Agregar".
+  show_add_2  (opcional) — igual que show_add pero para un segundo botón con
+                            id="addFormExterno" (p. ej. "Nuevo Comisionado Externo").
+  add_label_2 (opcional) — texto del segundo botón Agregar. Default: "Agregar".
 {% endcomment %}
 <nav class="form-actions-bar py-2 d-print-none">
   <div class="container-fluid d-flex flex-wrap gap-2 justify-content-end">
     {% if show_add %}
     <button type="button" id="addForm" class="btn btn-sm btn-outline-success">
       <i class="bi bi-plus-circle me-1"></i>{{ add_label|default:"Agregar" }}
+    </button>
+    {% endif %}
+    {% if show_add_2 %}
+    <button type="button" id="addFormExterno" class="btn btn-sm btn-outline-success">
+      <i class="bi bi-plus-circle me-1"></i>{{ add_label_2|default:"Agregar" }}
     </button>
     {% endif %}
     {% if volver_url %}

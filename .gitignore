@@ -11,6 +11,9 @@ polizador/templates/schema_docs/
 polizador-production.json
 *.sock
 csv_exports/
+.repowise/
+.vscode/
+.mcp.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -75,6 +75,44 @@ class ManagementCommandRun(models.Model):
         return f"{seconds}s"
 
 
+class Todo(models.Model):
+    class Status(models.TextChoices):
+        PENDIENTE = "pendiente", "Pendiente"
+        PARCIAL = "parcial", "Parcialmente implementado"
+        RESUELTO = "resuelto", "Resuelto"
+
+    STATUS_BADGE = {
+        Status.PENDIENTE: "secondary",
+        Status.PARCIAL: "warning",
+        Status.RESUELTO: "success",
+    }
+
+    class Meta:
+        verbose_name = "Tarea pendiente"
+        verbose_name_plural = "Tareas pendientes"
+        ordering = ("status", "-updated_at")
+
+    title = models.CharField("Título", max_length=200)
+    description = models.TextField("Descripción", blank=True)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDIENTE)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="todos_created",
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.title
+
+    @property
+    def status_badge(self):
+        return self.STATUS_BADGE.get(self.status, "secondary")
+
+
 class LoginEvent(models.Model):
     class Meta:
         verbose_name = "Inicio de sesión"

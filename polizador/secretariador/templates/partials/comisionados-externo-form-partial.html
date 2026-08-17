@@ -1,0 +1,55 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+<div class="card mb-3">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Datos de la Persona Externa</div>
+    <div class="card-body p-2">
+    <div class="row">
+        <div class="col-md-6">
+            {{form.agente_nombres.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.agente_apellidos.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.sexo.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.abreviatura.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            {{form.dni.as_field_group}}
+        </div>
+        <div class="col-md-6">
+            {{form.cuil.as_field_group}}
+        </div>
+    </div>
+    <p class="cuit-calculado small text-muted mb-0" id="cuit-calculado"></p>
+    <div class="form-group">
+        {{form.institucion_origen.as_field_group}}
+    </div>
+    </div>
+</div>
+<script>
+(function() {
+  var dniInput = document.getElementById('id_dni');
+  dniInput.addEventListener('change', function() {
+    var input = dniInput.value;
+    if (!input || input.length !== 8) {
+      input = "00000000";
+    }
+    else {
+      input = dniInput.value;
+    }
+    var sexoSelect = document.getElementById('id_sexo');
+    var generoTexto = sexoSelect.options[sexoSelect.selectedIndex].text.trim().toUpperCase();
+    var gender = generoTexto.startsWith('MASCULINO') ? 'M' : 'F';
+    var cuit = getCUIT(input, gender);
+    $('#cuit-calculado').text("CUIT: " + cuit);
+  });
+})();
+</script>

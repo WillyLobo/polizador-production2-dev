@@ -50,8 +50,18 @@ def _listar_meses(bucket):
         meses.append({
             "ano": ano,
             "mes": mes,
+            # id de DOM para el acordeón del template: {{ mes.ano }} solo,
+            # sin esto, pasa por el filtro de localización de números
+            # (USE_THOUSAND_SEPARATOR con LANGUAGE_CODE es-AR) y sale "2.026"
+            # en vez de "2026", rompiendo el selector CSS que usa Bootstrap
+            # para togglear el panel.
+            "clave": f"{ano}-{mes:02d}",
             "nombre_mes": MESES[mes] if 1 <= mes <= 12 else mes,
             "formatos": formatos,
+            # zip y pdf se arman con el mismo agrupamiento (armar_paquetes),
+            # así que comparten los mismos índices; tomamos el más largo por
+            # si un mes solo tiene uno de los dos formatos generado.
+            "cantidad_paquetes": max(len(paquetes) for paquetes in formatos.values()),
         })
 
     return meses

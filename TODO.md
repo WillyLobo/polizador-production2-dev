@@ -168,15 +168,16 @@
 
 
 # ------------------------------------------- #
-#           Systemonchi APP                #
+#           Personalizador APP                #
 # ------------------------------------------- #
 
 # Models:
 [+] Create database models based on RRHH requests.
-[ ] Manejo de los cortes de licencia Anual.
+[+] Manejo de los cortes de licencia Anual.
 [+] Correjir vista de datos en ChangeView
 [+] Ver que la cantidad de dias no muestre decimales(debe ser un entero)
 [+] Ver el cableado del instrumento legal a la solicitud segun el tipo de solicitud.
+[ ] Modelar el calculo de antiguedad del agente, segun fecha de pase a plante, resolucion que reconozca años de servicio, aportes privados, etc.
 
 # ------------------------------------------- #
 # Legend:                                     #

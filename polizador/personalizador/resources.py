@@ -66,3 +66,8 @@ class RepresentanteTecnicoResource(resources.ModelResource):
 
     class Meta:
         model = models.RepresentanteTecnico
+
+class ComisionadoExternoResource(resources.ModelResource):
+
+    class Meta:
+        model = models.ComisionadoExterno

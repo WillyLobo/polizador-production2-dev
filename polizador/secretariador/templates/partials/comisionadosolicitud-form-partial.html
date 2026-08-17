@@ -12,8 +12,11 @@
                 {% endfor %}
 
                 <div class="row">
-                    <div class="col pb-1">
+                    <div class="col pb-1"{% if form.instance.comisionadosolicitud_externo_id %} style="display:none"{% endif %}>
                         {{form.comisionadosolicitud_nombre.as_field_group}}
+                    </div>
+                    <div class="col pb-1"{% if not form.instance.comisionadosolicitud_externo_id %} style="display:none"{% endif %}>
+                        {{form.comisionadosolicitud_externo.as_field_group}}
                     </div>
                     <div class="col pb-1">
                         {{form.comisionadosolicitud_gastos.as_field_group}}
@@ -40,7 +43,7 @@
                                     <div class="modal-dialog" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h5 class="modal-title" id="eliminarModalLabel-{{form.instance.pk|stringformat:'s'}}">Está seguro que desea eliminar el comisionado <strong>{{form.instance.comisionadosolicitud_nombre}}</strong>?</h5>
+                                                <h5 class="modal-title" id="eliminarModalLabel-{{form.instance.pk|stringformat:'s'}}">Está seguro que desea eliminar el comisionado <strong>{{form.instance.persona}}</strong>?</h5>
                                             </div>
                                             <div class="modal-footer">
                                                 <a href="{% url 'secretariador:delete-comisionado-solicitud' form.instance.pk|stringformat:'s' %}" type="button" class="btn btn-primary">Si, Eliminar</a>
@@ -68,7 +71,7 @@
     </div>
     </div>
 </div>
-<div id="empty_form" style="display:none">
+<div id="empty_form_agente" style="display:none">
     <div class="row m-1 border rounded p-2" id="comisionadosolicitud-form-{{form.prefix}}">
         {% csrf_token %}
         {% for hidden in form.hidden_fields %}
@@ -77,6 +80,45 @@
         <div class="row">
             <div class="col pb-1">
                 {{formset.empty_form.comisionadosolicitud_nombre.as_field_group}}
+            </div>
+            <div class="col pb-1" style="display:none">
+                {{formset.empty_form.comisionadosolicitud_externo.as_field_group}}
+            </div>
+            <div class="col pb-1">
+                {{formset.empty_form.comisionadosolicitud_gastos.as_field_group}}
+            </div>
+            <div class="col pb-1">
+                {{formset.empty_form.comisionadosolicitud_combustible.as_field_group}}
+            </div>
+            <div class="col-1 pb-1 d-flex flex-column align-items-center justify-content-center">
+                {{formset.empty_form.comisionadosolicitud_chofer.as_field_group}}
+            </div>
+            <div class="col-1 pb-1 d-flex flex-column align-items-center justify-content-center">
+                {{formset.empty_form.comisionadosolicitud_colaborador.as_field_group}}
+            </div>
+            <div class="col-1 pb-1 d-flex flex-column align-items-center justify-content-center">
+                {{formset.empty_form.comisionadosolicitud_sin_viatico.as_field_group}}
+            </div>
+            <!-- Eliminar fila -->
+            <div class="col-1 pb-1 d-flex flex-column align-items-center justify-content-center">
+                <label for="id-eliminar-comisionadosolicitud_set-__prefix__">Eliminar</label><br>
+                <i class="bi bi-trash3" id="id-eliminar-comisionadosolicitud_set-__prefix__" title="Eliminar" style="font-size: 1.5em; cursor: pointer;" onclick="eliminarComisionado('comisionadosolicitud_set-__prefix__')"></i>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="empty_form_externo" style="display:none">
+    <div class="row m-1 border rounded p-2" id="comisionadosolicitud-form-{{form.prefix}}">
+        {% csrf_token %}
+        {% for hidden in form.hidden_fields %}
+            {{ hidden }}
+        {% endfor %}
+        <div class="row">
+            <div class="col pb-1" style="display:none">
+                {{formset.empty_form.comisionadosolicitud_nombre.as_field_group}}
+            </div>
+            <div class="col pb-1">
+                {{formset.empty_form.comisionadosolicitud_externo.as_field_group}}
             </div>
             <div class="col pb-1">
                 {{formset.empty_form.comisionadosolicitud_gastos.as_field_group}}

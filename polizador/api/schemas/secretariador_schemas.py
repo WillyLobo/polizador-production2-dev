@@ -255,7 +255,8 @@ class ComisionadoSolicitudOut(Schema):
     id: int
     comisionadosolicitud_foreign_id: Optional[int] = None
     comisionadosolicitud_incorporacion_foreign_id: Optional[int] = None
-    comisionadosolicitud_nombre_id: int
+    comisionadosolicitud_nombre_id: Optional[int] = None
+    comisionadosolicitud_externo_id: Optional[int] = None
     comisionadosolicitud_colaborador: bool
     comisionadosolicitud_chofer: bool
     comisionadosolicitud_combustible: Optional[Decimal] = None
@@ -266,7 +267,8 @@ class ComisionadoSolicitudOut(Schema):
 class ComisionadoSolicitudCreate(Schema):
     comisionadosolicitud_foreign_id: Optional[int] = None
     comisionadosolicitud_incorporacion_foreign_id: Optional[int] = None
-    comisionadosolicitud_nombre_id: int
+    comisionadosolicitud_nombre_id: Optional[int] = None
+    comisionadosolicitud_externo_id: Optional[int] = None
     comisionadosolicitud_colaborador: bool = False
     comisionadosolicitud_chofer: bool = False
     comisionadosolicitud_combustible: Decimal = Decimal("0.0")
@@ -278,6 +280,7 @@ class ComisionadoSolicitudUpdate(Schema):
     comisionadosolicitud_foreign_id: Optional[int] = None
     comisionadosolicitud_incorporacion_foreign_id: Optional[int] = None
     comisionadosolicitud_nombre_id: Optional[int] = None
+    comisionadosolicitud_externo_id: Optional[int] = None
     comisionadosolicitud_colaborador: Optional[bool] = None
     comisionadosolicitud_chofer: Optional[bool] = None
     comisionadosolicitud_combustible: Optional[Decimal] = None

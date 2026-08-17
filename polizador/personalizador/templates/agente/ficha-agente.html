@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+{% block title %}<title>Ficha - {{object}}</title>{% endblock title %}
+
+<div class="d-flex justify-content-end mb-2">
+    <a href="{% url "personalizador:lista-agentes" %}" class="btn btn-sm btn-outline-secondary">Volver</a>
+</div>
+
+{% include "partials/ficha-agente-partial.html" %}
+
+{% endblock %}

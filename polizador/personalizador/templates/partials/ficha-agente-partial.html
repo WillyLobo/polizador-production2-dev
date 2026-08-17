@@ -1,0 +1,302 @@
+{% load static %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">
+        {{object.agente_apellidoynombre_coma}}
+        {% if object.agente_personal_transitorio %}<span class="badge text-bg-secondary ms-1">Comisionado</span>{% endif %}
+        {% if not object.activo %}<span class="badge text-bg-danger ms-1">Inactivo</span>{% endif %}
+    </h5>
+    {% if perms.personalizador.change_agente %}
+    <a href="{% url "personalizador:update-agente" object.id %}" class="btn btn-sm btn-outline-secondary">Editar</a>
+    {% endif %}
+</div>
+
+{# ─── Fila 1: Datos Personales + Domicilio ─── #}
+<div class="row g-3 mb-3">
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-body-tertiary fw-semibold small">Datos Personales</div>
+            <div class="card-body p-2">
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Nombres</div>
+                    <div class="col-8 small">{{object.agente_nombres}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Apellidos</div>
+                    <div class="col-8 small">{{object.agente_apellidos}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">DNI</div>
+                    <div class="col-8 small">{{object.dni}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">CUIL</div>
+                    <div class="col-8 small">{{object.cuil}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Sexo</div>
+                    <div class="col-8 small">{{object.sexo|default_if_none:"—"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Fecha de Nacimiento</div>
+                    <div class="col-8 small">{{object.fecha_nacimiento|default_if_none:"—"}}{% if object.edad is not None %} ({{object.edad}} años){% endif %}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Teléfono</div>
+                    <div class="col-8 small">{{object.telefono|default_if_none:"—"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Email</div>
+                    <div class="col-8 small">{{object.email|default_if_none:"—"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Títulos Profesionales</div>
+                    <div class="col-8 small">
+                        {% for titulo in object.titulo_profesional.all %}{{titulo}}{% if not forloop.last %}, {% endif %}{% empty %}—{% endfor %}
+                    </div>
+                </div>
+                <div class="row g-1">
+                    <div class="col-4 text-muted small fw-semibold">Matrícula</div>
+                    <div class="col-8 small">{{object.matricula|default_if_none:"—"}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-body-tertiary fw-semibold small">Domicilio</div>
+            <div class="card-body p-2">
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Dirección</div>
+                    <div class="col-8 small">{{object.domicilio_direccion|default_if_none:"—"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Barrio</div>
+                    <div class="col-8 small">{{object.domicilio_barrio|default_if_none:"—"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-4 text-muted small fw-semibold">Localidad</div>
+                    <div class="col-8 small">{{object.domicilio_localidad|default_if_none:"—"}}</div>
+                </div>
+                <div class="row g-1">
+                    <div class="col-4 text-muted small fw-semibold">Provincia</div>
+                    <div class="col-8 small">{{object.domicilio_provincia|default_if_none:"—"}}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card h-100 mt-3">
+            <div class="card-header py-2 bg-body-tertiary fw-semibold small">Estado</div>
+            <div class="card-body p-2 d-flex flex-wrap gap-2">
+                <span class="badge {% if object.activo %}text-bg-success{% else %}text-bg-danger{% endif %}">{% if object.activo %}Activo{% else %}Inactivo{% endif %}</span>
+                <span class="badge {% if object.agente_verificado_contra_padron %}text-bg-success{% else %}text-bg-secondary{% endif %}">{% if object.agente_verificado_contra_padron %}Chequeado contra padrón{% else %}Sin chequear{% endif %}</span>
+                {% if object.agente_es_inpector_obra %}<span class="badge text-bg-info">Inspector de Obra</span>{% endif %}
+                {% if object.agente_personal_transitorio %}<span class="badge text-bg-secondary">Personal Transitorio</span>{% endif %}
+                {% if object.agente_personal_de_gabinete %}<span class="badge text-bg-secondary">Personal de Gabinete</span>{% endif %}
+                {% if object.con_errores %}<span class="badge text-bg-warning">Con errores de carga</span>{% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{# ─── Fila 2: Dependencia + Instrumentos/Aportes ─── #}
+<div class="row g-3 mb-3">
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-body-tertiary fw-semibold small">Dependencia y Cargo</div>
+            <div class="card-body p-2">
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">N° de Legajo</div>
+                    <div class="col-7 small">{{object.n_legajo|default_if_none:"—"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Fecha de Ingreso</div>
+                    <div class="col-7 small">{{object.fecha_ingreso|default_if_none:"—"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Antigüedad</div>
+                    <div class="col-7 small">
+                        {% if object.antiguedad %}{{object.antiguedad.anios}}a {{object.antiguedad.meses}}m {{object.antiguedad.dias}}d{% else %}—{% endif %}
+                    </div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Fecha de Pase a Planta</div>
+                    <div class="col-7 small">{{object.fecha_pase_a_planta|default_if_none:"—"}}{% if object.n_decreto %} (Dec. {{object.n_decreto}}){% endif %}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Categoría</div>
+                    <div class="col-7 small">{{object.categoria|default_if_none:"—"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Denominación de Cargo</div>
+                    <div class="col-7 small">{{object.denominacion_cargo|default_if_none:"—"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Oficina</div>
+                    <div class="col-7 small">{{object.oficina|default_if_none:"—"}}</div>
+                </div>
+                {% if object.cargo_interno %}
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Designación Temporal</div>
+                    <div class="col-7 small">{{object.cargo_interno}}{% if object.instrumento_cargo_interno %} ({{object.get_instrumento_cargo_interno_tipo_display}} {{object.instrumento_cargo_interno}}){% endif %}</div>
+                </div>
+                {% endif %}
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Apartado</div>
+                    <div class="col-7 small">{{object.apartado|default_if_none:"—"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">CEIC</div>
+                    <div class="col-7 small">{{object.ceic|default_if_none:"—"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Grupo</div>
+                    <div class="col-7 small">{{object.grupo|default_if_none:"—"}}</div>
+                </div>
+                <div class="row g-1">
+                    <div class="col-5 text-muted small fw-semibold">Actividad Específica</div>
+                    <div class="col-7 small">{{object.actividad_especifica|default_if_none:"—"}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-body-tertiary fw-semibold small">Instrumentos y Aportes</div>
+            <div class="card-body p-2">
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Bonificación por Título</div>
+                    <div class="col-7 small">
+                        {% if object.instrumento_bonificacion %}{{object.get_instrumento_bonificacion_tipo_display}} {{object.instrumento_bonificacion}} ({{object.porcentaje_bonificacion|default_if_none:0}}%){% else %}—{% endif %}
+                    </div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Contrato de Servicio</div>
+                    <div class="col-7 small">
+                        {% if object.instrumento_contrato_de_servicio %}{{object.get_instrumento_contrato_de_servicio_tipo_display}} {{object.instrumento_contrato_de_servicio}}{% else %}—{% endif %}
+                    </div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Transferencia Definitiva</div>
+                    <div class="col-7 small">{{object.n_decreto_transferencia_definitiva|default_if_none:"—"}}</div>
+                </div>
+                <div class="row g-1 mb-1 pt-1 border-top">
+                    <div class="col-5 text-muted small fw-semibold">Aportes (Ley/Resolución)</div>
+                    <div class="col-7 small">
+                        {% if object.aportes_ley_resolucion %}{{object.get_aportes_ley_resolucion_tipo_display}} {{object.aportes_ley_resolucion}} — {% endif %}
+                        {{object.aportes_ley_resolucion_anios}}a {{object.aportes_ley_resolucion_meses}}m {{object.aportes_ley_resolucion_dias}}d
+                    </div>
+                </div>
+                <div class="row g-1">
+                    <div class="col-5 text-muted small fw-semibold">Aportes (ANSES)</div>
+                    <div class="col-7 small">
+                        {% if object.aportes_anses %}{{object.aportes_anses}} — {% endif %}
+                        {{object.aportes_anses_anios}}a {{object.aportes_anses_meses}}m {{object.aportes_anses_dias}}d
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{# ─── Sección 3: Licencias y Permisos ─── #}
+<div class="card mb-3">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small d-flex justify-content-between align-items-center">
+        <span>Licencias y Permisos — Balance {{anio}}</span>
+        <div class="d-flex gap-2">
+            {% if perms.personalizador.add_licenciapermiso %}
+            <a href="{% url "personalizador:crear-licenciapermiso" %}?agente={{object.id}}" class="btn btn-sm btn-outline-primary">+ Registrar Licencia</a>
+            {% endif %}
+            <a href="{% url "personalizador:control-licencias-agente" object.id %}" class="btn btn-sm btn-outline-secondary">Ver control completo</a>
+        </div>
+    </div>
+    <div class="card-body p-2">
+        <div class="table-responsive mb-3">
+            <table class="table table-sm table-striped align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th class="small">Tipo</th>
+                        <th class="small">Categoría</th>
+                        <th class="small text-end">Correspondientes</th>
+                        <th class="small text-end">Usados</th>
+                        <th class="small text-end">Disponibles</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for fila in resumen %}
+                    <tr>
+                        <td class="small">{{fila.tipo.tipolicenciapermiso_nombre}}</td>
+                        <td class="small">{{fila.tipo.get_tipolicenciapermiso_categoria_display}}</td>
+                        <td class="small text-end">{{fila.correspondientes|default:"—"}}</td>
+                        <td class="small text-end">{{fila.usados}}</td>
+                        <td class="small text-end {% if fila.disponibles is not None and fila.disponibles < 0 %}text-danger fw-bold{% endif %}">{{fila.disponibles|default:"—"}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% if saldos_pendientes %}
+        <div class="mb-3">
+            <div class="small fw-semibold text-muted mb-1">Saldos Pendientes por Corte</div>
+            <div class="table-responsive">
+                <table class="table table-sm table-bordered mb-0">
+                    <thead class="bg-body-tertiary">
+                        <tr>
+                            <th class="small">Licencia</th>
+                            <th class="small">Fecha de Reintegro</th>
+                            <th class="small text-end">Días Restantes</th>
+                            <th class="small">Vence el</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for corte in saldos_pendientes %}
+                        <tr>
+                            <td class="small"><a href="{% url "personalizador:ver-licenciapermiso" corte.cortelicencia_licencia_id %}">{{corte.cortelicencia_licencia.licenciapermiso_tipo}}</a></td>
+                            <td class="small">{{corte.cortelicencia_fecha_reintegro}}</td>
+                            <td class="small text-end fw-bold">{{corte.dias_restantes}}</td>
+                            <td class="small">{{corte.cortelicencia_fecha_vencimiento}}{% if corte.vencido %} <span class="badge text-bg-danger">Vencido</span>{% endif %}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="small fw-semibold text-muted mb-1">Últimos Registros</div>
+        {% if licencias_recientes %}
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered table-hover mb-0">
+                <thead class="bg-body-tertiary">
+                    <tr>
+                        <th class="small">Tipo</th>
+                        <th class="small">Desde</th>
+                        <th class="small">Hasta</th>
+                        <th class="small text-end">Cantidad</th>
+                        <th class="small"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for licencia in licencias_recientes %}
+                    <tr {% if licencia.licenciapermiso_anulada %}class="table-secondary text-decoration-line-through"{% endif %}>
+                        <td class="small">{{licencia.licenciapermiso_tipo}}</td>
+                        <td class="small">{{licencia.licenciapermiso_fecha_desde}}</td>
+                        <td class="small">{{licencia.licenciapermiso_fecha_hasta|default_if_none:"—"}}</td>
+                        <td class="small text-end">{{licencia.licenciapermiso_cantidad}}</td>
+                        <td class="small text-end"><a href="{% url "personalizador:ver-licenciapermiso" licencia.id %}">{{detalleimglink|safe}}</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="small text-muted fst-italic mb-0">Sin licencias o permisos registrados.</p>
+        {% endif %}
+    </div>
+</div>

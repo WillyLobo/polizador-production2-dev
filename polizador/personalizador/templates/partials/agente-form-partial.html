@@ -55,11 +55,14 @@
         {{form.domicilio_direccion.as_field_group}}
     </div>
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-4">
             {{form.domicilio_barrio.as_field_group}}
         </div>
-        <div class="col-md-6">
+        <div class="col-md-4">
             {{form.domicilio_localidad.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.domicilio_provincia.as_field_group}}
         </div>
     </div>
     </div>
@@ -121,26 +124,72 @@
     <div class="card-header py-2 bg-body-tertiary fw-semibold small">Decretos y Bonificaciones</div>
     <div class="card-body p-2">
     <div class="row">
-        <div class="col-md-4">
+        <div class="col-md-3">
             {{form.n_decreto.as_field_group}}
         </div>
-        <div class="col-md-4">
-            {{form.n_resolucion_bonificacion.as_field_group}}
+        <div class="col-md-3">
+            {{form.instrumento_bonificacion_tipo.as_field_group}}
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
+            {{form.instrumento_bonificacion.as_field_group}}
+        </div>
+        <div class="col-md-3">
             {{form.porcentaje_bonificacion.as_field_group}}
         </div>
     </div>
     <div class="row">
-        <div class="col-md-6">
-            {{form.n_resolucion_cargo_interno.as_field_group}}
+        <div class="col-md-4">
+            {{form.instrumento_contrato_de_servicio_tipo.as_field_group}}
         </div>
+        <div class="col-md-8">
+            {{form.instrumento_contrato_de_servicio.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            {{form.instrumento_cargo_interno_tipo.as_field_group}}
+        </div>
+        <div class="col-md-8">
+            {{form.instrumento_cargo_interno.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
         <div class="col-md-6">
             {{form.n_decreto_transferencia_definitiva.as_field_group}}
         </div>
     </div>
+    <div class="row">
+        <div class="col-md-4">
+            {{form.aportes_ley_resolucion_tipo.as_field_group}}
+        </div>
+        <div class="col-md-8">
+            {{form.aportes_ley_resolucion.as_field_group}}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            {{form.aportes_ley_resolucion_anios.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.aportes_ley_resolucion_meses.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.aportes_ley_resolucion_dias.as_field_group}}
+        </div>
+    </div>
     <div class="form-group">
-        {{form.aportes_ley_resolucion.as_field_group}}
+        {{form.aportes_anses.as_field_group}}
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            {{form.aportes_anses_anios.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.aportes_anses_meses.as_field_group}}
+        </div>
+        <div class="col-md-4">
+            {{form.aportes_anses_dias.as_field_group}}
+        </div>
     </div>
     </div>
 </div>
@@ -149,6 +198,9 @@
     <div class="card-header py-2 bg-body-tertiary fw-semibold small">Otros</div>
     <div class="card-body p-2">
     <div class="row">
+        <div class="col-md-3">
+            {{form.activo.as_field_group}}
+        </div>
         <div class="col-md-3">
             {{form.agente_verificado_contra_padron.as_field_group}}
         </div>
@@ -160,6 +212,9 @@
         </div>
         <div class="col-md-3">
             {{form.agente_personal_de_gabinete.as_field_group}}
+        </div>
+        <div class="col-md-3">
+            {{form.con_errores.as_field_group}}
         </div>
     </div>
     </div>

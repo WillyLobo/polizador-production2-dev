@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% block title %}<title>Editar texto — {{ actuacion }}</title>{% endblock title %}
+
+<form id="mainForm" method="POST">
+  {% csrf_token %}
+
+  <div class="card mb-3">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Considerandos</div>
+    <div class="card-body p-2">
+      <p class="text-muted small">
+        Ajustá el texto de cada considerando. El formato final (tabulados,
+        negritas, etc.) lo pone el documento base — acá solo se edita el
+        contenido.
+      </p>
+      {{ parrafo_formset.management_form }}
+      {% for form in parrafo_formset %}
+        <div class="form-group mb-2"{% if forloop.last and not dia_inhabil %} style="display:none"{% endif %}>
+          <label class="form-label small text-muted">Considerando {{ forloop.counter }}</label>
+          {{ form.texto.as_field_group }}
+        </div>
+      {% endfor %}
+      {% if not dia_inhabil %}
+        <p class="text-muted small mb-0">El considerando sobre días inhábiles no se incluye porque la solicitud no está marcada como "Día Inhábil".</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Artículo 1º</div>
+    <div class="card-body p-2">
+      {{ articulo_uno_form.articulo_uno.as_field_group }}
+    </div>
+  </div>
+
+  <div class="card mb-3">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Artículo 2º — Agentes</div>
+    <div class="card-body p-2">
+      {{ articulo_dos_formset.management_form }}
+      {% for form in articulo_dos_formset %}
+        <div class="row m-1 border rounded p-2">
+          {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+          <div class="col-md-5 pb-1">
+            {{ form.nombre_cuil.as_field_group }}
+          </div>
+          <div class="col-md-2 pb-1">
+            {{ form.monto.as_field_group }}
+          </div>
+          <div class="col-md-5 pb-1">
+            {{ form.subparrafo.as_field_group }}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</form>
+{% endblock %}
+
+{% block actions %}
+<nav class="form-actions-bar py-2 d-print-none">
+  <div class="container-fluid d-flex flex-wrap gap-2 justify-content-end">
+    <a href="{{ actuacion.get_absolute_url }}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>Volver
+    </a>
+    <button type="submit" form="mainForm" name="accion" value="guardar" class="btn btn-sm btn-outline-primary">
+      <i class="bi bi-check2 me-1"></i>Guardar y volver
+    </button>
+    <button type="submit" form="mainForm" name="accion" value="generar" class="btn btn-sm btn-primary">
+      <i class="bi bi-file-earmark-word me-1"></i>Generar documento (.docx)
+    </button>
+  </div>
+</nav>
+{% endblock %}

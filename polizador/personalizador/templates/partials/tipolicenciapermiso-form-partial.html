@@ -1,0 +1,53 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+<div class="card mb-3">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Tipo de Licencia/Permiso</div>
+    <div class="card-body p-2">
+        <div class="row">
+            <div class="col-md-4">
+                {{form.tipolicenciapermiso_categoria.as_field_group}}
+            </div>
+            <div class="col-md-6">
+                {{form.tipolicenciapermiso_nombre.as_field_group}}
+            </div>
+            <div class="col-md-2">
+                {{form.tipolicenciapermiso_articulo.as_field_group}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                {{form.tipolicenciapermiso_unidad.as_field_group}}
+            </div>
+            <div class="col-md-3">
+                {{form.tipolicenciapermiso_tope_cantidad.as_field_group}}
+            </div>
+            <div class="col-md-3">
+                {{form.tipolicenciapermiso_tope_periodo.as_field_group}}
+            </div>
+            <div class="col-md-3">
+                {{form.tipolicenciapermiso_remunerada.as_field_group}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                {{form.tipolicenciapermiso_antiguedad_meses.as_field_group}}
+            </div>
+            <div class="col-md-4 d-flex align-items-center form-check mt-4">
+                {{form.tipolicenciapermiso_requiere_certificado}}
+                <label class="form-check-label ms-2" for="{{form.tipolicenciapermiso_requiere_certificado.id_for_label}}">Requiere certificado</label>
+            </div>
+            <div class="col-md-4 d-flex align-items-center form-check mt-4">
+                {{form.tipolicenciapermiso_compensacion_horaria}}
+                <label class="form-check-label ms-2" for="{{form.tipolicenciapermiso_compensacion_horaria.id_for_label}}">Requiere compensación de horario</label>
+            </div>
+        </div>
+        <div class="form-group">
+            {{form.tipolicenciapermiso_observaciones.as_field_group}}
+        </div>
+        <div class="form-group form-check">
+            {{form.tipolicenciapermiso_activo}}
+            <label class="form-check-label" for="{{form.tipolicenciapermiso_activo.id_for_label}}">Activo</label>
+        </div>
+    </div>
+</div>

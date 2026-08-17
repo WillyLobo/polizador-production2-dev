@@ -86,7 +86,12 @@ def armar_pdf(paquete):
             with pikepdf.open(io.BytesIO(leer_contenido(entrada))) as origen:
                 fusionado.pages.extend(origen.pages)
         buffer = io.BytesIO()
-        fusionado.save(buffer)
+        # deterministic_id: por default pikepdf pone un /ID al azar en cada
+        # save(), así que el mismo contenido da bytes distintos en cada corrida
+        # y rompe la comparación por md5 contra lo que ya hay en GCS
+        # (empaquetar_resoluciones_mensual.py). Con deterministic_id el /ID
+        # sale del contenido, así que mismo contenido = mismos bytes.
+        fusionado.save(buffer, deterministic_id=True)
     finally:
         fusionado.close()
     return buffer.getvalue()

@@ -48,6 +48,75 @@
   </div>
 </div>
 
+{% if object.corte %}
+<div class="card mb-3">
+  <div class="card-header py-2 bg-body-tertiary fw-semibold small d-flex justify-content-between align-items-center">
+    <span>Corte de Licencia</span>
+    <div>
+      {% if object.corte.vencido %}<span class="badge text-bg-danger me-2">Saldo vencido</span>{% endif %}
+      <a href="{% url 'personalizador:update-cortelicencia' object.corte.id %}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-pencil"></i>
+      </a>
+    </div>
+  </div>
+  <div class="card-body p-2">
+    <dl class="row mb-0">
+      <dt class="col-sm-3">Fecha de Reintegro</dt>
+      <dd class="col-sm-9">{{ object.corte.cortelicencia_fecha_reintegro }}</dd>
+
+      <dt class="col-sm-3">Días Gozados</dt>
+      <dd class="col-sm-9">{{ object.corte.cortelicencia_dias_gozados }}</dd>
+
+      <dt class="col-sm-3">Días Pendientes</dt>
+      <dd class="col-sm-9">{{ object.corte.cortelicencia_dias_pendientes }}</dd>
+
+      <dt class="col-sm-3">Días Restantes</dt>
+      <dd class="col-sm-9 {% if object.corte.dias_restantes > 0 %}fw-bold{% endif %}">{{ object.corte.dias_restantes }}</dd>
+
+      <dt class="col-sm-3">Vence el</dt>
+      <dd class="col-sm-9">{{ object.corte.cortelicencia_fecha_vencimiento }}</dd>
+
+      <dt class="col-sm-3">Nota / Actuación</dt>
+      <dd class="col-sm-9">{{ object.corte.cortelicencia_nota_actuacion }}</dd>
+
+      <dt class="col-sm-3">Motivo</dt>
+      <dd class="col-sm-9">{{ object.corte.cortelicencia_motivo|default:"-" }}</dd>
+
+      {% if object.corte.cortelicencia_adjunto %}
+      <dt class="col-sm-3">Adjunto</dt>
+      <dd class="col-sm-9"><a href="{{ object.corte.cortelicencia_adjunto.url }}" target="_blank">Ver archivo</a></dd>
+      {% endif %}
+    </dl>
+
+    {% if object.corte.usos_saldo.all %}
+    <table class="table table-sm mb-0 mt-2">
+      <thead><tr><th>Fecha Desde</th><th>Fecha Hasta</th><th>Cantidad</th><th></th></tr></thead>
+      <tbody>
+        {% for uso in object.corte.usos_saldo.all %}
+        <tr>
+          <td>{{ uso.licenciapermiso_fecha_desde }}</td>
+          <td>{{ uso.licenciapermiso_fecha_hasta|default:"-" }}</td>
+          <td>{{ uso.licenciapermiso_cantidad }}</td>
+          <td><a href="{% url 'personalizador:ver-licenciapermiso' uso.id %}" class="btn btn-sm btn-outline-secondary">Ver</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+
+    {% if object.corte.dias_restantes > 0 %}
+    <a href="{% url 'personalizador:crear-licenciapermiso' %}?saldo_de_corte={{ object.corte.id }}" class="btn btn-sm btn-outline-primary mt-2">
+      <i class="bi bi-plus-circle me-1"></i>Usar Saldo
+    </a>
+    {% endif %}
+  </div>
+</div>
+{% elif es_licencia_anual %}
+<a href="{% url 'personalizador:crear-cortelicencia' object.id %}" class="btn btn-sm btn-outline-warning mb-3">
+  <i class="bi bi-scissors me-1"></i>Registrar Corte
+</a>
+{% endif %}
+
 {% if object.devolucionhoras_set.all %}
 <div class="card mb-3">
   <div class="card-header py-2 bg-body-tertiary fw-semibold small">Horas Devueltas</div>

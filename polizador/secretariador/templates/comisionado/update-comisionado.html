@@ -19,7 +19,9 @@
     else {
       input = dniInput.value;
     }
-    const gender = document.getElementById('id_sexo').value;
+    const sexoSelect = document.getElementById('id_sexo');
+    const generoTexto = sexoSelect.options[sexoSelect.selectedIndex].text.trim().toUpperCase();
+    const gender = generoTexto.startsWith('MASCULINO') ? 'M' : 'F';
     const cuit = getCUIT(input, gender);
     $('#cuit-calculado').text("CUIT: " + cuit);
   });

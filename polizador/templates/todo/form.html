@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}<title>{% if object %}Editar{% else %}Nueva{% endif %} tarea | Polizador</title>{% endblock title %}
+{% block content %}
+<div class="container-fluid">
+  <h3 class="mb-3"><i class="bi bi-list-check me-2"></i>{% if object %}Editar tarea{% else %}Nueva tarea{% endif %}</h3>
+  <div class="card" style="max-width: 640px;">
+    <div class="card-body">
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a href="{% url 'todo_list' %}" class="btn btn-outline-secondary">Cancelar</a>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock content %}

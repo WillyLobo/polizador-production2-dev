@@ -15,12 +15,12 @@
           <div class="accordion-item">
             <h2 class="accordion-header">
               <button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button"
-                      data-bs-toggle="collapse" data-bs-target="#mes-{{ mes.ano }}-{{ mes.mes }}">
+                      data-bs-toggle="collapse" data-bs-target="#mes-{{ mes.clave }}">
                 {{ mes.nombre_mes }} {{ mes.ano }}
-                <span class="badge text-bg-secondary ms-2">{{ mes.paquetes|length }} paquete{{ mes.paquetes|length|pluralize }}</span>
+                <span class="badge text-bg-secondary ms-2">{{ mes.cantidad_paquetes }} paquete{{ mes.cantidad_paquetes|pluralize }}</span>
               </button>
             </h2>
-            <div id="mes-{{ mes.ano }}-{{ mes.mes }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+            <div id="mes-{{ mes.clave }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
                  data-bs-parent="#accordionPaquetes">
               <div class="accordion-body">
                 {% if mes.formatos.zip %}

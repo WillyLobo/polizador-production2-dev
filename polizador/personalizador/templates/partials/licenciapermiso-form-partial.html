@@ -26,6 +26,7 @@
         <div class="row">
             <div class="col-md-4">
                 {{form.licenciapermiso_cantidad.as_field_group}}
+                <div id="licenciapermiso-balance-hint" class="form-text"></div>
             </div>
             <div class="col-md-8">
                 {{form.licenciapermiso_adjunto.as_field_group}}
@@ -34,8 +35,86 @@
         <div class="form-group">
             {{form.licenciapermiso_motivo.as_field_group}}
         </div>
+        <div class="form-group">
+            {{form.licenciapermiso_saldo_de_corte.as_field_group}}
+        </div>
     </div>
 </div>
+
+<script>
+(function() {
+  var URL_BALANCE = "{% url 'api-1.0:licenciapermiso_balance' %}";
+
+  function parseISODate(str) {
+    if (!str) return null;
+    var partes = str.split("-");
+    if (partes.length !== 3) return null;
+    var d = new Date(parseInt(partes[0], 10), parseInt(partes[1], 10) - 1, parseInt(partes[2], 10));
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  function contarDias(desde, hasta, soloHabiles) {
+    var dias = 0;
+    var actual = new Date(desde.getTime());
+    while (actual <= hasta) {
+      if (!soloHabiles || (actual.getDay() !== 0 && actual.getDay() !== 6)) {
+        dias++;
+      }
+      actual.setDate(actual.getDate() + 1);
+    }
+    return dias;
+  }
+
+  function autocompletarCantidad(unidad) {
+    if (unidad === "HS") return;
+    var desde = parseISODate($("#id_licenciapermiso_fecha_desde").val());
+    if (!desde) return;
+    var hasta = parseISODate($("#id_licenciapermiso_fecha_hasta").val()) || desde;
+    if (hasta < desde) return;
+    $("#id_licenciapermiso_cantidad").val(contarDias(desde, hasta, unidad === "DH"));
+  }
+
+  function actualizarBalance(recalcularCantidad) {
+    var $hint = $("#licenciapermiso-balance-hint");
+    var agenteId = $("#id_licenciapermiso_agente").val();
+    var tipoId = $("#id_licenciapermiso_tipo").val();
+
+    if (recalcularCantidad) autocompletarCantidad(null);
+
+    if (!agenteId || !tipoId) {
+      $hint.text("");
+      return;
+    }
+
+    var desde = parseISODate($("#id_licenciapermiso_fecha_desde").val());
+    var anio = (desde || new Date()).getFullYear();
+
+    $.getJSON(URL_BALANCE, {agente: agenteId, tipo: tipoId, anio: anio})
+      .done(function(data) {
+        if (recalcularCantidad) autocompletarCantidad(data.unidad);
+        if (data.correspondientes === null) {
+          $hint.removeClass("text-danger").text("");
+          return;
+        }
+        var texto = "Disponibles: " + data.disponibles + " de " + data.correspondientes +
+          " " + data.unidad_display.toLowerCase() + " (" + anio + ")";
+        $hint.toggleClass("text-danger", data.disponibles < 0).text(texto);
+      })
+      .fail(function() {
+        $hint.text("");
+      });
+  }
+
+  // En cambios del usuario recalculamos la cantidad; al cargar la página (edición)
+  // solo mostramos el saldo informativo, sin pisar una cantidad ya cargada.
+  $(document).on("change", "#id_licenciapermiso_agente, #id_licenciapermiso_tipo, #id_licenciapermiso_fecha_desde, #id_licenciapermiso_fecha_hasta", function() {
+    actualizarBalance(true);
+  });
+  $(document).ready(function() {
+    actualizarBalance(false);
+  });
+})();
+</script>
 
 <div class="card mb-3">
     <div class="card-header py-2 bg-body-tertiary fw-semibold small">Instrumento Legal (opcional)</div>

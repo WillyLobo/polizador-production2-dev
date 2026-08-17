@@ -108,13 +108,15 @@
             {% comment %} {% if perms.personalizador.add_actividadespecifica %}<li><a class="dropdown-item" href="{% url "personalizador:crear-actividadespecifica" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Actividad Específica</a></li>{% endif %} {% endcomment %}
             {% comment %} {% if perms.personalizador.add_cargotipo %}<li><a class="dropdown-item" href="{% url "personalizador:crear-cargotipo" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Tipo de Cargo</a></li>{% endif %} {% endcomment %}
             {% comment %} {% if perms.personalizador.add_generoagente %}<li><a class="dropdown-item" href="{% url "personalizador:crear-generoagente" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Género</a></li>{% endif %} {% endcomment %}
-            {% comment %} {% if perms.personalizador.add_tituloprofesional %}<li><a class="dropdown-item" href="{% url "personalizador:crear-tituloprofesional" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Título Profesional</a></li>{% endif %} {% endcomment %}
+            {% if perms.personalizador.add_tituloprofesional %}<li><a class="dropdown-item" href="{% url "personalizador:crear-tituloprofesional" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Título Profesional</a></li>{% endif %}
             {% if perms.personalizador.add_licenciapermiso %}<li><a class="dropdown-item" href="{% url "personalizador:crear-licenciapermiso" %}"><i class="bi bi-plus-circle me-1"></i>Registrar Licencia/Permiso</a></li>{% endif %}
+            {% if perms.personalizador.add_tipolicenciapermiso %}<li><a class="dropdown-item" href="{% url "personalizador:crear-tipolicenciapermiso" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Tipo de Licencia/Permiso</a></li>{% endif %}
             <li><hr class="dropdown-divider"></li>
             <li class="dropdown-item fw-bold text-muted"><small>LISTADOS</small></li>
             <li><a class="dropdown-item" href="{% url "personalizador:lista-agentes" %}"><i class="bi bi-list-ul me-1"></i>Agentes</a></li>
             <li><a class="dropdown-item" href="{% url "personalizador:lista-oficinas" %}"><i class="bi bi-list-ul me-1"></i>Oficinas</a></li>
             {% if perms.personalizador.view_licenciapermiso %}<li><a class="dropdown-item" href="{% url "personalizador:lista-licenciapermisos" %}"><i class="bi bi-calendar2-week me-1"></i>Licencias y Permisos</a></li>{% endif %}
+            {% if perms.personalizador.view_tipolicenciapermiso %}<li><a class="dropdown-item" href="{% url "personalizador:lista-tipolicenciapermisos" %}"><i class="bi bi-list-ul me-1"></i>Tipos de Licencias/Permisos</a></li>{% endif %}
             {% comment %}
             <li><a class="dropdown-item" href="{% url "personalizador:lista-directorios" %}"><i class="bi bi-list-ul me-1"></i>Directorios</a></li>
             <li><a class="dropdown-item" href="{% url "personalizador:lista-gerencias" %}"><i class="bi bi-list-ul me-1"></i>Gerencias</a></li>
@@ -148,22 +150,22 @@
             <li><a class="dropdown-item" href="{% url "secretariador:redirect-solicitud" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Solicitud</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:crear-incorporacion" %}"><i class="bi bi-plus-circle me-1"></i>Incorporación</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:crear-comisionado" %}"><i class="bi bi-person-badge me-1"></i>Nuevo Agente</a></li>
+            <li><a class="dropdown-item" href="{% url "secretariador:crear-comisionado-externo" %}"><i class="bi bi-person-badge me-1"></i>Nuevo Comisionado Externo</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:crear-vehiculo" %}"><i class="bi bi-car-front me-1"></i>Vehículo</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:crear-memorandum" %}"><i class="bi bi-file-text me-1"></i>Memorándum</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:redirect-decreto" %}"><i class="bi bi-file-text me-1"></i>Decreto</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:redirect-resoluciones" %}"><i class="bi bi-file-text me-1"></i>Resolución</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:crear-montoviaticodiario" %}"><i class="bi bi-currency-exchange me-1"></i>Monto Viáticos</a></li>
-            <li><a class="dropdown-item" href="{% url "secretariador:actualizar-encabezado" %}"><i class="bi bi-file-earmark-word me-1"></i>Actualizar Encabezado</a></li>
             <li><hr class="dropdown-divider"></li>
             <li class="dropdown-item fw-bold text-muted"><small>LISTADOS</small></li>
             <li><a class="dropdown-item" href="{% url "secretariador:lista-solicitudes" %}"><i class="bi bi-list-ul me-1"></i>Solicitudes</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:lista-incorporaciones" %}"><i class="bi bi-list-ul me-1"></i>Incorporaciones</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:lista-comisionados" %}"><i class="bi bi-list-ul me-1"></i>Agentes</a></li>
+            <li><a class="dropdown-item" href="{% url "secretariador:lista-comisionados-externos" %}"><i class="bi bi-list-ul me-1"></i>Comisionados Externos</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:lista-vehiculos" %}"><i class="bi bi-list-ul me-1"></i>Vehículos</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:lista-memorandum" %}"><i class="bi bi-list-ul me-1"></i>Memorándum</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:lista-decretos" %}"><i class="bi bi-list-ul me-1"></i>Decretos</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:lista-resoluciones" %}"><i class="bi bi-list-ul me-1"></i>Resoluciones</a></li>
-            <li><a class="dropdown-item" href="{% url "secretariador:lista-paquetes-resoluciones" %}"><i class="bi bi-file-earmark-zip me-1"></i>Paquetes de Resoluciones</a></li>
           </ul>
         </li>
         {% endif %}
@@ -176,6 +178,8 @@
           </a>
           <ul class="dropdown-menu dropdown-menu-lg-start">
             <li><a class="dropdown-item" href="{% url "secretariador:pdf-merge" %}"><i class="bi bi-file-pdf text-danger me-1"></i>Combinar PDFs</a></li>
+            {% if perms.secretariador.change_encabezadodocumento %}<li><a class="dropdown-item" href="{% url "secretariador:actualizar-encabezado" %}"><i class="bi bi-file-earmark-word me-1"></i>Actualizar Encabezado</a></li>{% endif %}
+            {% if perms.secretariador.view_instrumentoslegalesresoluciones %}<li><a class="dropdown-item" href="{% url "secretariador:lista-paquetes-resoluciones" %}"><i class="bi bi-file-earmark-zip me-1"></i>Paquetes de Resoluciones</a></li>{% endif %}
           </ul>
         </li>
         {% endif %}
@@ -305,6 +309,7 @@
           <ul class="dropdown-menu dropdown-menu-lg-start">
             <li class="dropdown-item fw-bold text-muted"><small>Panel</small></li>
             <li><a class="dropdown-item" href="{% url 'dashboard' %}"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a></li>
+            <li><a class="dropdown-item" href="{% url 'todo_list' %}"><i class="bi bi-list-check me-1"></i>Tareas pendientes</a></li>
             <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="bi bi-person-gear me-1"></i>Panel de administración</a></li>
             <li><a class="dropdown-item" href="{% url 'management_commands' %}"><i class="bi bi-terminal me-1"></i>Ejecutar comandos</a></li>
             <li><a class="dropdown-item" href="/v1/api/docs"><i class="bi bi-person-gear me-1"></i>API Docs</a></li>

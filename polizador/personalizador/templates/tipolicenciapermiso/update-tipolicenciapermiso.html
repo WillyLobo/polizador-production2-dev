@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+{% block title %}<title>{{object.tipolicenciapermiso_nombre}}</title>{% endblock title %}
+
+{{ form.media.css }}
+<form id="mainForm" action="{% url "personalizador:update-tipolicenciapermiso" object.id %}" method="POST">
+  {% csrf_token %}
+  {% include "partials/tipolicenciapermiso-form-partial.html" %}
+</form>
+{{ form.media.js }}
+{% endblock %}
+
+{% block actions %}
+  {% url 'personalizador:lista-tipolicenciapermisos' as volver_target %}
+  {% include "partials/form-actions.html" with volver_url=volver_target %}
+{% endblock %}

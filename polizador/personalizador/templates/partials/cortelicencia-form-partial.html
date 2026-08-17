@@ -1,0 +1,89 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+<div class="card mb-3">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Corte de Licencia - {{ licencia }}</div>
+    <div class="card-body p-2">
+        <div class="row">
+            <div class="col-md-4">
+                {{form.cortelicencia_fecha_reintegro.as_field_group}}
+            </div>
+            <div class="col-md-4">
+                {{form.cortelicencia_dias_gozados.as_field_group}}
+            </div>
+            <div class="col-md-4">
+                {{form.cortelicencia_dias_pendientes.as_field_group}}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                {{form.cortelicencia_fecha_vencimiento.as_field_group}}
+            </div>
+            <div class="col-md-8">
+                {{form.cortelicencia_adjunto.as_field_group}}
+            </div>
+        </div>
+        <div class="form-group">
+            {{form.cortelicencia_motivo.as_field_group}}
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+  var LICENCIA_FECHA_DESDE = "{{ licencia.licenciapermiso_fecha_desde|date:'Y-m-d' }}";
+  var LICENCIA_CANTIDAD = {{ licencia.licenciapermiso_cantidad|default:0 }};
+  var LICENCIA_UNIDAD = "{{ licencia.licenciapermiso_tipo.tipolicenciapermiso_unidad }}";
+
+  function parseISODate(str) {
+    if (!str) return null;
+    var partes = str.split("-");
+    if (partes.length !== 3) return null;
+    var d = new Date(parseInt(partes[0], 10), parseInt(partes[1], 10) - 1, parseInt(partes[2], 10));
+    return isNaN(d.getTime()) ? null : d;
+  }
+
+  function contarDias(desde, hasta, soloHabiles) {
+    var dias = 0;
+    var actual = new Date(desde.getTime());
+    while (actual <= hasta) {
+      if (!soloHabiles || (actual.getDay() !== 0 && actual.getDay() !== 6)) {
+        dias++;
+      }
+      actual.setDate(actual.getDate() + 1);
+    }
+    return dias;
+  }
+
+  // Recalcula días gozados/pendientes en base a la fecha de reintegro elegida; los
+  // campos quedan editables por si hace falta un ajuste manual (ej. licencia con
+  // interrupciones previas ya descontadas de otra forma).
+  $(document).on("change", "#id_cortelicencia_fecha_reintegro", function() {
+    if (LICENCIA_UNIDAD === "HS") return;
+    var desde = parseISODate(LICENCIA_FECHA_DESDE);
+    var reintegro = parseISODate($(this).val());
+    if (!desde || !reintegro || reintegro < desde) return;
+    var gozados = contarDias(desde, reintegro, LICENCIA_UNIDAD === "DH");
+    var pendientes = Math.max(LICENCIA_CANTIDAD - gozados, 0);
+    $("#id_cortelicencia_dias_gozados").val(gozados);
+    $("#id_cortelicencia_dias_pendientes").val(pendientes);
+  });
+})();
+</script>
+
+<div class="card mb-3">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Nota / Actuación</div>
+    <div class="card-body p-2">
+        <div class="row">
+            <div class="col-md-4">
+                {{form.cortelicencia_nota_jurisdiccion.as_field_group}}
+            </div>
+            <div class="col-md-4">
+                {{form.cortelicencia_nota_numero.as_field_group}}
+            </div>
+            <div class="col-md-4">
+                {{form.cortelicencia_nota_ano.as_field_group}}
+            </div>
+        </div>
+    </div>
+</div>

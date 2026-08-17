@@ -74,3 +74,11 @@ class DepartamentoPerCreate(Schema):
 class DepartamentoPerUpdate(Schema):
     departamento_nombre: Optional[str] = None
     departamento_cuof: Optional[str] = None
+
+
+class LicenciaPermisoBalanceOut(Schema):
+    unidad: str
+    unidad_display: str
+    correspondientes: Optional[int] = None
+    usados: int
+    disponibles: Optional[int] = None

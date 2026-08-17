@@ -126,8 +126,15 @@ class RepresentanteTecnicoAdmin(ImportExportMixin, SimpleHistoryAdmin):
     list_filter = ["representantetecnico_profesion"]
     autocomplete_fields = ["representantetecnico_profesion"]
 
+class ComisionadoExternoAdmin(ImportExportMixin, SimpleHistoryAdmin):
+    resource_class = ComisionadoExternoResource
+    list_display = ["agente_nombreyapellido", "dni", "cuil", "institucion_origen"]
+    search_fields = ["agente_nombres", "agente_apellidos", "dni", "cuil"]
+    list_filter = ["sexo"]
+    autocomplete_fields = ["sexo"]
+
 class TipoLicenciaPermisoAdmin(SimpleHistoryAdmin):
-    list_display = ["tipolicenciapermiso_nombre", "tipolicenciapermiso_categoria", "tipolicenciapermiso_unidad", "tipolicenciapermiso_tope_cantidad", "tipolicenciapermiso_activo"]
+    list_display = ["tipolicenciapermiso_articulo","tipolicenciapermiso_nombre", "tipolicenciapermiso_categoria", "tipolicenciapermiso_unidad", "tipolicenciapermiso_tope_cantidad", "tipolicenciapermiso_activo"]
     search_fields = ["tipolicenciapermiso_nombre"]
     list_filter = ["tipolicenciapermiso_categoria", "tipolicenciapermiso_activo"]
 
@@ -135,7 +142,16 @@ class LicenciaPermisoAdmin(SimpleHistoryAdmin):
     list_display = ["licenciapermiso_agente", "licenciapermiso_tipo", "licenciapermiso_fecha_desde", "licenciapermiso_anulada"]
     search_fields = ["licenciapermiso_agente__agente_nombreyapellido"]
     list_filter = ["licenciapermiso_anulada", "licenciapermiso_tipo__tipolicenciapermiso_categoria"]
-    autocomplete_fields = ["licenciapermiso_agente", "licenciapermiso_tipo"]
+    autocomplete_fields = ["licenciapermiso_agente", "licenciapermiso_tipo", "licenciapermiso_saldo_de_corte"]
+
+class CorteLicenciaAdmin(SimpleHistoryAdmin):
+    list_display = ["cortelicencia_licencia", "cortelicencia_fecha_reintegro", "cortelicencia_dias_pendientes", "dias_restantes", "cortelicencia_fecha_vencimiento"]
+    search_fields = ["cortelicencia_licencia__licenciapermiso_agente__agente_nombreyapellido", "cortelicencia_nota_actuacion"]
+    autocomplete_fields = ["cortelicencia_licencia"]
+
+    def dias_restantes(self, obj):
+        return obj.dias_restantes
+    dias_restantes.short_description = "Días Restantes"
 
 admin.site.register(Agente, AgenteAdmin)
 admin.site.register(GeneroAgente, GeneroAgenteAdmin)
@@ -153,5 +169,7 @@ admin.site.register(Gerencia, GerenciaAdmin)
 admin.site.register(Direccion, DireccionAdmin)
 admin.site.register(Departamento, DepartamentoAdmin)
 admin.site.register(RepresentanteTecnico, RepresentanteTecnicoAdmin)
+admin.site.register(ComisionadoExterno, ComisionadoExternoAdmin)
 admin.site.register(TipoLicenciaPermiso, TipoLicenciaPermisoAdmin)
 admin.site.register(LicenciaPermiso, LicenciaPermisoAdmin)
+admin.site.register(CorteLicencia, CorteLicenciaAdmin)

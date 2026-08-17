@@ -1,5 +1,17 @@
 from django import forms
 
+from core.models import Todo
+
+
+class TodoForm(forms.ModelForm):
+    class Meta:
+        model = Todo
+        fields = ["title", "description"]
+        widgets = {
+            "title": forms.TextInput(attrs={"class": "form-control"}),
+            "description": forms.Textarea(attrs={"class": "form-control", "rows": 3}),
+        }
+
 
 class BaseCommandRunForm(forms.Form):
     """Base para los forms declarados en core.management_commands_registry: valida los
@@ -13,6 +25,13 @@ class BaseCommandRunForm(forms.Form):
 
 class CheckResolucionesForm(BaseCommandRunForm):
     """El comando `resolucion_audit` no toma argumentos."""
+
+    def to_argv(self):
+        return []
+
+
+class CargarTiposLicenciaForm(BaseCommandRunForm):
+    """El comando `cargar_tipos_licencia` no toma argumentos."""
 
     def to_argv(self):
         return []

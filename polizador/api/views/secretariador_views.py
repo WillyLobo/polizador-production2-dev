@@ -650,11 +650,11 @@ def _solicitud_datatable_row(s: Solicitud, user) -> dict:
     if s.solicitud_provincia.provincia_nombre == "Chaco":
         editarlink = f"<a href='/viaticos/crearsolicitud/{id_}'>{editlinkimg}</a>"
         eliminarlink = f"<a href='/viaticos/eliminar/solicitud/{id_}'>{eliminarlinkimg}</a>"
-        generarlink = f"<a href='/viaticos/creardocumento/solicitud/{id_}'>{generarlinkimg}</a>"
+        generarlink = f"<a href='/viaticos/creardocumento/solicitud/{id_}/editar-texto'>{generarlinkimg}</a>"
     else:
         editarlink = f"<a href='/viaticos/crearsolicitudexterior/{id_}'>{editlinkimg}</a>"
         eliminarlink = f"<a href='/viaticos/eliminar/solicitudexterior/{id_}'>{eliminarlinkimg}</a>"
-        generarlink = f"<a href='/viaticos/creardocumento/solicitudexterior/{id_}'>{generarlinkimg}</a>"
+        generarlink = f"<a href='/viaticos/creardocumento/solicitudexterior/{id_}/editar-texto'>{generarlinkimg}</a>"
 
     if s.solicitud_resolucion is not None:
         detallelink = f"<a href='{s.solicitud_resolucion.instrumentolegalresoluciones.url}'>{pdflinkimg}</a>"
@@ -669,7 +669,7 @@ def _solicitud_datatable_row(s: Solicitud, user) -> dict:
         acciones = detallelink
 
     comisionados = "; ".join(
-        c.comisionadosolicitud_nombre.agente_nombreyapellido for c in s.comisionadosolicitud_set.all()
+        c.persona.agente_nombreyapellido for c in s.comisionadosolicitud_set.all()
     )
 
     return {
@@ -704,7 +704,11 @@ def datatable_solicitudes(
         Solicitud.objects.select_related(
             "solicitud_solicitante", "solicitud_provincia", "solicitud_vehiculo", "solicitud_resolucion"
         )
-        .prefetch_related("solicitud_localidades", "comisionadosolicitud_set__comisionadosolicitud_nombre")
+        .prefetch_related(
+            "solicitud_localidades",
+            "comisionadosolicitud_set__comisionadosolicitud_nombre",
+            "comisionadosolicitud_set__comisionadosolicitud_externo",
+        )
         .all()
     )
     records_total = qs.count()
@@ -720,6 +724,11 @@ def datatable_solicitudes(
             continue
         if key == "solicitud_dia_inhabil":
             qs = qs.filter(**{lookup: value in ("true", "True", "1")})
+        elif key == "Comisionados":
+            qs = qs.filter(
+                Q(comisionadosolicitud__comisionadosolicitud_nombre__agente_nombreyapellido__icontains=value)
+                | Q(comisionadosolicitud__comisionadosolicitud_externo__agente_nombreyapellido__icontains=value)
+            )
         else:
             qs = qs.filter(**{lookup: value})
         if key in _SOLICITUD_DATATABLE_DISTINCT_FILTER_KEYS:
@@ -733,6 +742,7 @@ def datatable_solicitudes(
             | Q(solicitud_actuacion_numero__icontains=search)
             | Q(solicitud_solicitante__agente_nombreyapellido__icontains=search)
             | Q(comisionadosolicitud__comisionadosolicitud_nombre__agente_nombreyapellido__icontains=search)
+            | Q(comisionadosolicitud__comisionadosolicitud_externo__agente_nombreyapellido__icontains=search)
             | Q(solicitud_localidades__localidad_nombre__icontains=search)
             | Q(solicitud_tareas__icontains=search)
             | Q(solicitud_vehiculo__vehiculo_str__icontains=search)
@@ -784,7 +794,7 @@ def datatable_solicitudes_filtro_vehiculos(request):
 @decorate_view(get_group_perms("dirgral_usuarios"), require_model_perm(ComisionadoSolicitud))
 @paginate(PerPagePagination)
 def list_comisionados_solicitudes(request, solicitud: str = ""):
-    qs = ComisionadoSolicitud.objects.select_related("comisionadosolicitud_nombre").all().order_by("-id")
+    qs = ComisionadoSolicitud.objects.select_related("comisionadosolicitud_nombre", "comisionadosolicitud_externo").all().order_by("-id")
     if solicitud:
         qs = qs.filter(comisionadosolicitud_foreign_id=solicitud)
     return qs
@@ -832,7 +842,7 @@ def _incorporacion_datatable_row(i: Incorporacion, user) -> dict:
     editarlink = f"<a href='/viaticos/crearincorporacion/{id_}'>{editlinkimg}</a>"
     detallelink = f"<a href='/viaticos/crearincorporacion/ver/{id_}'>{detallelinkimg}</a>"
     eliminarlink = f"<a href='/viaticos/eliminar/incorporacion/{id_}'>{eliminarlinkimg}</a>"
-    generarlink = f"<a href='/viaticos/creardocumento/incorporacion/{id_}'>{generarlinkimg}</a>"
+    generarlink = f"<a href='/viaticos/creardocumento/incorporacion/{id_}/editar-texto'>{generarlinkimg}</a>"
     if user.has_perm("secretariador.delete_incorporacion"):
         acciones = f"{editarlink}{detallelink}{eliminarlink}{generarlink}"
     elif user.has_perm("secretariador.change_incorporacion"):
@@ -880,6 +890,7 @@ _COMISIONADO_SELECT_RELATED = (
     "comisionadosolicitud_foreign",
     "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud",
     "comisionadosolicitud_nombre",
+    "comisionadosolicitud_externo",
     "comisionadosolicitud_foreign__solicitud_provincia",
     "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_provincia",
 )
@@ -908,7 +919,7 @@ def _calendar_events_by_agente(comisionados):
     seen = set()
     for comisionado in comisionados:
         foreign = _comisionado_solicitud_origin(comisionado)
-        nombre = comisionado.comisionadosolicitud_nombre.agente_nombreyapellido
+        nombre = comisionado.persona.agente_nombreyapellido
         key = (nombre, foreign.solicitud_fecha_desde)
         color = "red" if key in seen else ""
         seen.add(key)
