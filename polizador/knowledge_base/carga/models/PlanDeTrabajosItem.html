@@ -1,0 +1,20 @@
+<h1>PlanDeTrabajosItem</h1>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 996-1030)</p>
+<h2>Propósito</h2>
+<p><em>(pendiente de autoría)</em></p>
+<h2>Firma</h2>
+<pre><code class="language-python">class PlanDeTrabajosItem(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
+<ul>
+<li><code>carga/models.py:1067</code> — <code>items = PlanDeTrabajosItem.objects.filter(planitem_rubro=rubro)</code></li>
+<li><code>carga/models.py:1125</code> — <code>etapaitem_planitem = models.ForeignKey("PlanDeTrabajosItem", verbose_name="Item del Plan", on_delete=models.CASCADE)</code></li>
+<li><code>carga/models.py:1217</code> — <code>items = PlanDeTrabajosItem.objects.filter(planitem_rubro=rubro)</code></li>
+<li><code>carga/models.py:1243</code> — <code>fojaitem_planitem = models.ForeignKey("PlanDeTrabajosItem", verbose_name="Item del Plan", on_delete=models.CASCADE)</code></li>
+<li><code>carga/views/fojademedicionviews.py:7</code> — <code>from carga.models import FojaDeMedicion, PlanDeTrabajosItem, PlanDeTrabajosRubro</code></li>
+</ul>
+<h2>Flujo de datos</h2>
+<p><em>(pendiente de autoría)</em></p>
+<h2>Ver también</h2>
+<p><em>(pendiente de autoría)</em></p>

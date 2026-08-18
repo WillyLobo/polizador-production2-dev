@@ -1,0 +1,20 @@
+<h1>FojaDeMedicionItem</h1>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 1234-1267)</p>
+<h2>Propósito</h2>
+<p><em>(pendiente de autoría)</em></p>
+<h2>Firma</h2>
+<pre><code class="language-python">class FojaDeMedicionItem(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
+<ul>
+<li><code>carga/models.py:1202</code> — <code>"""Acumulado %% de cada item en la foja anterior (misma lógica que FojaDeMedicionItem.save()).</code></li>
+<li><code>carga/signals.py:3</code> — <code>from .models import FojaDeMedicion, FojaDeMedicionItem, PlanDeTrabajosEtapa, ContratoMonto, ContratoTramoPago</code></li>
+<li><code>carga/signals.py:41</code> — <code>@receiver(post_save, sender=FojaDeMedicionItem)</code></li>
+<li><code>carga/signals.py:43</code> — <code>"""FojaDeMedicionItem.save() calcula fojaitem_pct_acumulado como una copia</code></li>
+<li><code>carga/signals.py:53</code> — <code>item_siguiente = FojaDeMedicionItem.objects.filter(</code></li>
+</ul>
+<h2>Flujo de datos</h2>
+<p><em>(pendiente de autoría)</em></p>
+<h2>Ver también</h2>
+<p><em>(pendiente de autoría)</em></p>

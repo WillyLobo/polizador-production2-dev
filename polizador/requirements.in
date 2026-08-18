@@ -18,6 +18,7 @@ google-cloud-documentai==3.15.0
 google-cloud-storage==3.13.1
 google-cloud-vision==3.15.0
 gunicorn==26.0.0
+Markdown==3.10.3
 numba==0.67.0
 numexpr==2.14.2
 odfpy==1.4.1

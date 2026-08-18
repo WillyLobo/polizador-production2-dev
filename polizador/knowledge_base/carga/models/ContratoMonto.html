@@ -1,0 +1,20 @@
+<h1>ContratoMonto</h1>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 1357-1372)</p>
+<h2>Propósito</h2>
+<p><em>(pendiente de autoría)</em></p>
+<h2>Firma</h2>
+<pre><code class="language-python">class ContratoMonto(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
+<ul>
+<li><code>carga/models.py:474</code> — <code>la suma/fecha más reciente de los ContratoMonto de todos los Contratos de la obra,</code></li>
+<li><code>carga/models.py:476</code> — <code>montos = ContratoMonto.objects.filter(contratomonto_contrato__contrato_obra=self)</code></li>
+<li><code>carga/models.py:508</code> — <code># Los _uvi_fecha quedan en None cuando no hay un ContratoMonto que los origine</code></li>
+<li><code>carga/models.py:935</code> — <code>rubro_contratomonto = models.ForeignKey("ContratoMonto", verbose_name="Monto de Contrato", on_delete=models.SET_NULL, null=True, blank=True, related_name="rubros_plan")</code></li>
+<li><code>carga/models.py:943</code> — <code>"(ContratoMonto) al generar certificados desde una Foja.",</code></li>
+</ul>
+<h2>Flujo de datos</h2>
+<p><em>(pendiente de autoría)</em></p>
+<h2>Ver también</h2>
+<p><em>(pendiente de autoría)</em></p>

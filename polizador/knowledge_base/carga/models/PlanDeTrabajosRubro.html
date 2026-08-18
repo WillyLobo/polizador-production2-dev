@@ -1,0 +1,20 @@
+<h1>PlanDeTrabajosRubro</h1>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 922-994)</p>
+<h2>Propósito</h2>
+<p><em>(pendiente de autoría)</em></p>
+<h2>Firma</h2>
+<pre><code class="language-python">class PlanDeTrabajosRubro(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
+<ul>
+<li><code>carga/models.py:1003</code> — <code>planitem_rubro = models.ForeignKey("PlanDeTrabajosRubro", verbose_name="Rubro de Plan de Trabajos", on_delete=models.CASCADE, related_name="items")</code></li>
+<li><code>carga/models.py:1042</code> — <code>etapa_rubro = models.ForeignKey("PlanDeTrabajosRubro", verbose_name="Rubro de Plan de Trabajos", on_delete=models.CASCADE, related_name="etapas")</code></li>
+<li><code>carga/models.py:1165</code> — <code>foja_rubro = models.ForeignKey("PlanDeTrabajosRubro", verbose_name="Rubro de Plan de Trabajos", on_delete=models.CASCADE, related_name="fojas")</code></li>
+<li><code>carga/views/ajaxviews.py:120</code> — <code>return PlanDeTrabajosRubro.objects.filter(pk=rubro_id).values_list(</code></li>
+<li><code>carga/views/fojademedicionviews.py:7</code> — <code>from carga.models import FojaDeMedicion, PlanDeTrabajosItem, PlanDeTrabajosRubro</code></li>
+</ul>
+<h2>Flujo de datos</h2>
+<p><em>(pendiente de autoría)</em></p>
+<h2>Ver también</h2>
+<p><em>(pendiente de autoría)</em></p>

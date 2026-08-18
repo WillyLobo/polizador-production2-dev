@@ -142,6 +142,11 @@ TEMPLATES[0]['OPTIONS']['context_processors'].append("polizador.context_processo
 # via core.views.SchemaDocsView / schema_docs_asset.
 SCHEMA_DOCS_ROOT = BASE_DIR / "templates" / "schema_docs"
 
+# Documentación navegable del código (una página por clase/función), generada por
+# `manage.py kb_extract` + autoría manual y servida read-only a superusers via
+# core.views.KnowledgeBaseIndexView / KnowledgeBasePageView. Ver knowledge_base/README.md.
+KNOWLEDGE_BASE_ROOT = BASE_DIR / "knowledge_base"
+
 AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
     # `allauth` specific authentication methods, such as login by email

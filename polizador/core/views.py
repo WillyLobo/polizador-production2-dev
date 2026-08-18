@@ -1,7 +1,10 @@
+import posixpath
+import re
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied
-from django.http import JsonResponse
+from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
 from django.views.decorators.clickjacking import xframe_options_sameorigin
@@ -10,7 +13,7 @@ from django.views.static import serve
 
 from django.conf import settings
 
-from core import dashboard_data, management_runner
+from core import dashboard_data, knowledge_base, management_runner
 from core.forms import TodoForm
 from core.management_commands_registry import COMMAND_REGISTRY
 from core.models import ManagementCommandRun, Todo
@@ -52,6 +55,63 @@ def schema_docs_asset(request, path):
     if not request.user.is_authenticated or not request.user.is_superuser:
         raise PermissionDenied
     return serve(request, path, document_root=settings.SCHEMA_DOCS_ROOT)
+
+
+_MD_LINK_RE = re.compile(r'href="([^"#?]+)\.md"')
+
+
+def _rewrite_doc_links(html: str, page_path: str) -> str:
+    """Reescribe los links relativos `../modulo/Simbolo.md` que las páginas autoradas usan
+    en "Ver también" (ver knowledge_base/README.md) a la URL real de knowledge_base_page."""
+    base_dir = posixpath.dirname(page_path)
+
+    def repl(match):
+        relative = match.group(1)
+        if relative.startswith(("http://", "https://")):
+            return match.group(0)
+        resolved = posixpath.normpath(posixpath.join(base_dir, relative))
+        return f'href="{reverse("knowledge_base_page", kwargs={"page_path": resolved})}"'
+
+    return _MD_LINK_RE.sub(repl, html)
+
+
+class KnowledgeBaseIndexView(SuperuserRequiredMixin, TemplateView):
+    template_name = "knowledge_base/index.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tree = knowledge_base.load_tree()
+        all_symbols = [s for modules in tree.values() for symbols in modules.values() for s in symbols]
+        context["tree"] = tree
+        context["total_symbols"] = len(all_symbols)
+        context["authored_symbols"] = sum(1 for s in all_symbols if s["authored"])
+        return context
+
+
+class KnowledgeBasePageView(SuperuserRequiredMixin, TemplateView):
+    template_name = "knowledge_base/page.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        page_path = kwargs["page_path"].strip("/")
+        symbol = knowledge_base.resolve_page_path(page_path)
+        if symbol is None:
+            raise Http404(f"No se conoce la página de base de conocimiento '{page_path}'.")
+
+        html_file = knowledge_base.html_path(page_path)
+        content_html = None
+        if html_file.exists():
+            content_html = _rewrite_doc_links(html_file.read_text(encoding="utf-8"), page_path)
+
+        parts = page_path.split("/")
+        context["tree"] = knowledge_base.load_tree()
+        context["symbol"] = symbol
+        context["page_path"] = page_path
+        context["content_html"] = content_html
+        context["breadcrumbs"] = parts
+        context["current_app"] = parts[0]
+        context["current_module"] = "/".join(parts[1:-1])
+        return context
 
 
 class ManagementCommandsView(SuperuserRequiredMixin, TemplateView):

@@ -1,0 +1,20 @@
+<h1>matriz_field_name</h1>
+<p><strong>Módulo:</strong> <code>carga/forms/plandetrabajosetapaforms.py</code> (líneas 5-6)</p>
+<h2>Propósito</h2>
+<p><em>(pendiente de autoría)</em></p>
+<h2>Firma</h2>
+<pre><code class="language-python">def matriz_field_name(item_pk, col_index):
+</code></pre>
+<h2>Uso real</h2>
+<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
+<ul>
+<li><code>carga/views/plandetrabajosetapaviews.py:13</code> — <code>from carga.forms.plandetrabajosetapaforms import build_matriz_form, matriz_field_name</code></li>
+<li><code>carga/views/plandetrabajosetapaviews.py:55</code> — <code>"cells": [form[matriz_field_name(item.pk, col)] for col in range(total_columns)],</code></li>
+<li><code>carga/views/plandetrabajosetapaviews.py:79</code> — <code>initial[matriz_field_name(etapaitem.etapaitem_planitem_id, col)] = etapaitem.etapaitem_pct_proyectado_mes</code></li>
+<li><code>carga/forms/plandetrabajosetapaforms.py:20</code> — <code>self.fields[matriz_field_name(item.pk, col)] = forms.DecimalField(</code></li>
+<li><code>carga/forms/plandetrabajosetapaforms.py:34</code> — <code>return self.cleaned_data.get(matriz_field_name(item_pk, col_index)) or Decimal("0")</code></li>
+</ul>
+<h2>Flujo de datos</h2>
+<p><em>(pendiente de autoría)</em></p>
+<h2>Ver también</h2>
+<p><em>(pendiente de autoría)</em></p>
