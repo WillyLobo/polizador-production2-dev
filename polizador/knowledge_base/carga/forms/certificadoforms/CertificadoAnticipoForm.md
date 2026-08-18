@@ -4,16 +4,16 @@ kind: class
 module: carga/forms/certificadoforms.py
 lines: 77-114
 signature_hash: sha1:c3f0877de4698ff0a18ff7798b3c809d6b2c3d57
-authored: false
+authored: true
 ---
 
 # CertificadoAnticipoForm
 
-**Módulo:** `carga/forms/certificadoforms.py` (líneas 77-114)
+**Módulo:** `carga/forms/certificadoforms.py` (líneas 77-114) · hereda de `forms.ModelForm`
 
 ## Propósito
 
-_(pendiente de autoría)_
+`ModelForm` especializado para Certificado tipo ANTICIPO (sin Foja, con `certificado_anticipo_pct` cargado a mano). `clean()` delega en `certificacion.validar_anticipo_nuevo(obra, financiamiento, pct)` la regla de negocio real (probablemente: que el % acumulado de anticipos no exceda algún límite) y traduce su `ValidationError` a un error de formulario.
 
 ## Firma
 
@@ -23,14 +23,9 @@ class CertificadoAnticipoForm(forms.ModelForm):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/certificadoviews.py:287` — `form_class = CertificadoAnticipoForm`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearCertificadoAnticipo` (`carga/views/certificadoviews.py`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Certificado](../../models/Certificado.md)
+- [CrearCertificadoAnticipo](../../views/certificadoviews/CrearCertificadoAnticipo.md)

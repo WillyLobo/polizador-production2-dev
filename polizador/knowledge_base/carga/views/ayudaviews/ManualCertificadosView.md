@@ -4,16 +4,16 @@ kind: class
 module: carga/views/ayudaviews.py
 lines: 12-13
 signature_hash: sha1:b1a0d050cf44ebe4d38b379517a898b343b2e8fb
-authored: false
+authored: true
 ---
 
 # ManualCertificadosView
 
-**Módulo:** `carga/views/ayudaviews.py` (líneas 12-13)
+**Módulo:** `carga/views/ayudaviews.py` (líneas 12-13) · hereda de `generic.TemplateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+`TemplateView` sin lógica: página de ayuda estática sobre el flujo de Certificados.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class ManualCertificadosView(generic.TemplateView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Enlazada desde el navbar/menú de ayuda.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Certificado](../../models/Certificado.md)

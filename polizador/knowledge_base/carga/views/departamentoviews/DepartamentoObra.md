@@ -4,16 +4,16 @@ kind: class
 module: carga/views/departamentoviews.py
 lines: 50-54
 signature_hash: sha1:be7fddc03c253e61eabc53dc1c5347fc9b5973fb
-authored: false
+authored: true
 ---
 
 # DepartamentoObra
 
-**Módulo:** `carga/views/departamentoviews.py` (líneas 50-54)
+**Módulo:** `carga/views/departamentoviews.py` (líneas 50-54) · hereda de `PermissionRequiredMixin, generic.DetailView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Ficha de detalle de Departamento centrada en mostrar las Obras vinculadas a esta entrada del catálogo (sin lógica propia más allá del `DetailView` — el filtrado de Obras relacionadas lo resuelve el template, no una `get_context_data` propia).
 
 ## Firma
 
@@ -23,14 +23,9 @@ class DepartamentoObra(PermissionRequiredMixin, generic.DetailView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`DepartamentoObra` (`carga:departamento-obra`), enlazada desde el listado de Departamento.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Departamento](../../models/Departamento.md)
+- [Obra](../../models/Obra.md)

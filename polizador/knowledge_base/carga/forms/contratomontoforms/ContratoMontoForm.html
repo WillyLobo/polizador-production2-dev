@@ -1,16 +1,14 @@
 <h1>ContratoMontoForm</h1>
-<p><strong>Módulo:</strong> <code>carga/forms/contratomontoforms.py</code> (líneas 5-24)</p>
+<p><strong>Módulo:</strong> <code>carga/forms/contratomontoforms.py</code> (líneas 5-24) · hereda de <code>forms.ModelForm</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>ModelForm</code> estándar para ContratoMonto (monto por rubro+financiamiento de un Contrato). Sin lógica propia.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class ContratoMontoForm(forms.ModelForm):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/forms/contratoforms.py:52</code> — <code>form=ContratoMontoForm,</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Form base de <code>ContratoMontoFormset</code> (<code>carga/forms/contratoforms.py</code>).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/ContratoMonto.md">ContratoMonto</a></li>
+<li><a href="ContratoMontoFormset.md">ContratoMontoFormset</a></li>
+</ul>

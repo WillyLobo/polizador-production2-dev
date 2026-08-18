@@ -4,16 +4,16 @@ kind: class
 module: carga/views/municipioviews.py
 lines: 21-37
 signature_hash: sha1:f217a73d195e96cf0ed8a2dffdbf58a6435059dd
-authored: false
+authored: true
 ---
 
 # CrearMunicipio
 
-**Módulo:** `carga/views/municipioviews.py` (líneas 21-37)
+**Módulo:** `carga/views/municipioviews.py` (líneas 21-37) · hereda de `PermissionRequiredMixin, generic.CreateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Alta de Municipio vía `ModelForm` estándar.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class CrearMunicipio(PermissionRequiredMixin, generic.CreateView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearMunicipio` (`carga:crear-municipio`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Municipio](../../models/Municipio.md)

@@ -1,20 +1,22 @@
 <h1>AddRelatedPermissionMixin</h1>
 <p><strong>Módulo:</strong> <code>carga/forms/mixins.py</code> (líneas 1-20)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Complemento de <a href="../../views/ajaxviews/AddRelatedWidgetMixin.md">AddRelatedWidgetMixin</a>: oculta el
+botón "+" de un campo select2 si el usuario actual no tiene el permiso <code>add_&lt;modelo&gt;</code> del
+modelo relacionado — así el botón nunca ofrece una acción que de todos modos fallaría por
+permisos. Requiere que la vista instancie el form pasando <code>user=request.user</code>
+(<code>core.mixins.UserKwargsMixin</code> es el mecanismo estándar para eso en este proyecto).</p>
+<p>Recorre todos los campos del form buscando widgets con <code>add_related_url_name</code> seteado
+(la marca que deja <code>AddRelatedWidgetMixin</code>), y en cada uno resuelve el modelo relacionado
+desde <code>field.queryset.model</code> para chequear el permiso correspondiente.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class AddRelatedPermissionMixin:
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/ajaxviews.py:14</code> — <code>`add_related_allowed</code> puede setearlo AddRelatedPermissionMixin (carga/forms/mixins.py)`</li>
-<li><code>carga/forms/obraforms.py:3</code> — <code>from carga.forms.mixins import AddRelatedPermissionMixin</code></li>
-<li><code>carga/forms/obraforms.py:20</code> — <code>class ObraForm(AddRelatedPermissionMixin, forms.ModelForm):</code></li>
-<li><code>carga/forms/polizaforms.py:4</code> — <code>from carga.forms.mixins import AddRelatedPermissionMixin</code></li>
-<li><code>carga/forms/polizaforms.py:16</code> — <code>class PolizaForm(AddRelatedPermissionMixin, forms.ModelForm):</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>class PolizaForm(AddRelatedPermissionMixin, forms.ModelForm)</code>, <code>class ObraForm(AddRelatedPermissionMixin, forms.ModelForm)</code>.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../views/ajaxviews/AddRelatedWidgetMixin.md">AddRelatedWidgetMixin</a></li>
+<li><a href="PolizaForm.md">PolizaForm</a></li>
+<li><a href="ObraForm.md">ObraForm</a></li>
+</ul>

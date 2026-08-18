@@ -4,16 +4,23 @@ kind: class
 module: carga/forms/obraforms.py
 lines: 20-170
 signature_hash: sha1:2e582a44a334b21e3cb5f3dbd2273315d207f2c6
-authored: false
+authored: true
 ---
 
 # ObraForm
 
-**Módulo:** `carga/forms/obraforms.py` (líneas 20-170)
+**Módulo:** `carga/forms/obraforms.py` (líneas 20-170) · hereda de `AddRelatedPermissionMixin, forms.ModelForm`
 
 ## Propósito
 
-_(pendiente de autoría)_
+El `ModelForm` más grande de `carga`: ~30 campos de Obra, todos declarados vía
+`Meta.fields`/`widgets` sin ningún `clean()` propio — la validación real de negocio de
+Obra vive en `Obra.clean()` (a nivel modelo), no acá. La única pieza no estándar es el
+campo `obra_georeferencia`: no usa el `PointField` de GIS directamente, sino un
+`LatLngField`/`LatLngWidget` (`core.widgets`) a medida — probablemente porque el widget
+nativo de `django.contrib.gis` para un `PointField` no encaja con el resto del layout
+Bootstrap del sitio, y este par convierte lat/lng planos a `Point` en la limpieza del
+form.
 
 ## Firma
 
@@ -23,15 +30,9 @@ class ObraForm(AddRelatedPermissionMixin, forms.ModelForm):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/obraviews.py:76` — `form_class = ObraForm`
-- `carga/views/obraviews.py:102` — `form_class = ObraForm`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearObra`/`UpdateObra` (`carga/views/obraviews.py`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Obra](../../models/Obra.md)
+- [AddRelatedPermissionMixin](AddRelatedPermissionMixin.md)

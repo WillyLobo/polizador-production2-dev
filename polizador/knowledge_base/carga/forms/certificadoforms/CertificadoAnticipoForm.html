@@ -1,16 +1,14 @@
 <h1>CertificadoAnticipoForm</h1>
-<p><strong>Módulo:</strong> <code>carga/forms/certificadoforms.py</code> (líneas 77-114)</p>
+<p><strong>Módulo:</strong> <code>carga/forms/certificadoforms.py</code> (líneas 77-114) · hereda de <code>forms.ModelForm</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>ModelForm</code> especializado para Certificado tipo ANTICIPO (sin Foja, con <code>certificado_anticipo_pct</code> cargado a mano). <code>clean()</code> delega en <code>certificacion.validar_anticipo_nuevo(obra, financiamiento, pct)</code> la regla de negocio real (probablemente: que el % acumulado de anticipos no exceda algún límite) y traduce su <code>ValidationError</code> a un error de formulario.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class CertificadoAnticipoForm(forms.ModelForm):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/certificadoviews.py:287</code> — <code>form_class = CertificadoAnticipoForm</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>CrearCertificadoAnticipo</code> (<code>carga/views/certificadoviews.py</code>).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/Certificado.md">Certificado</a></li>
+<li><a href="../../views/certificadoviews/CrearCertificadoAnticipo.md">CrearCertificadoAnticipo</a></li>
+</ul>

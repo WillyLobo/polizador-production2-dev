@@ -4,7 +4,7 @@ kind: class
 module: carga/views/ajaxviews.py
 lines: 105-122
 signature_hash: sha1:879de436012553293add675800bd9045edb4ed4f
-authored: false
+authored: true
 ---
 
 # FojaRubroDependentWidgetMixin
@@ -13,7 +13,10 @@ authored: false
 
 ## Propósito
 
-_(pendiente de autoría)_
+Mismo mecanismo que `PlanDependentWidgetMixin` pero para `FojaDeMedicionForm`: acota
+resultados AJAX a la Obra del `foja_rubro` elegido en el formulario. Lo usa
+`certificadolegacywidget` para no ofrecer, como candidatos a vincular en una Foja legacy,
+Certificados de *otras* Obras.
 
 ## Firma
 
@@ -23,14 +26,9 @@ class FojaRubroDependentWidgetMixin:
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/ajaxviews.py:124` — `class certificadolegacywidget(FojaRubroDependentWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget):`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`class certificadolegacywidget(FojaRubroDependentWidgetMixin, ...)`.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [certificadolegacywidget](certificadolegacywidget.md)
+- [FojaDeMedicion](../../models/FojaDeMedicion.md)

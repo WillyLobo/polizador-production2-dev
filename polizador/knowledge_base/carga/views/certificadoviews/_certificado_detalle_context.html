@@ -1,17 +1,23 @@
 <h1>_certificado_detalle_context</h1>
 <p><strong>Módulo:</strong> <code>carga/views/certificadoviews.py</code> (líneas 82-180)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>El contexto completo de la ficha/impresión de un Certificado: financiamiento, plan
+vigente, todos los <code>ContratoMonto</code> del Contrato relevante (el de origen si es Hecho
+Consumado — elegido a mano, no necesariamente el vigente de la obra — o el vigente para
+PARCIAL/ANTICIPO), el monto/incidencia % de este certificado dentro de su financiamiento,
+el desglose por ítem (<a href="_desglose_items_certificado.md">_desglose_items_certificado</a>), el
+detalle de tramos Ley 27397 con sus montos recalculados, la cotización UVI efectivamente
+usada, y los firmantes institucionales (Gerente Operativo, Directora de Certificaciones,
+Jefe de Certificaciones) resueltos desde <code>personalizador.Directorio/Gerencia/Departamento</code>
+por nombre fijo — no por configuración, así que un rename de esos cargos en RRHH rompería
+silenciosamente esta función.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def _certificado_detalle_context(certificado):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/certificadoviews.py:377</code> — <code>ctx.update(_certificado_detalle_context(self.object))</code></li>
-<li><code>carga/views/certificadoviews.py:390</code> — <code>ctx.update(_certificado_detalle_context(self.object))</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>DetalleCertificado.get_context_data</code> / <code>ImprimirCertificado.get_context_data</code> (mismo módulo, más abajo).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/Certificado.md">Certificado</a></li>
+<li><a href="DetalleCertificado.md">DetalleCertificado</a></li>
+</ul>

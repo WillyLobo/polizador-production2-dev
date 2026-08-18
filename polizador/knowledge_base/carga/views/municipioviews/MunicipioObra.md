@@ -4,16 +4,16 @@ kind: class
 module: carga/views/municipioviews.py
 lines: 50-54
 signature_hash: sha1:d7611d6b26fae7b1eabbdc81558b223f358ddd66
-authored: false
+authored: true
 ---
 
 # MunicipioObra
 
-**Módulo:** `carga/views/municipioviews.py` (líneas 50-54)
+**Módulo:** `carga/views/municipioviews.py` (líneas 50-54) · hereda de `PermissionRequiredMixin, generic.DetailView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Ficha de detalle de Municipio centrada en mostrar las Obras vinculadas a esta entrada del catálogo (sin lógica propia más allá del `DetailView` — el filtrado de Obras relacionadas lo resuelve el template, no una `get_context_data` propia).
 
 ## Firma
 
@@ -23,14 +23,9 @@ class MunicipioObra(PermissionRequiredMixin, generic.DetailView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`MunicipioObra` (`carga:municipio-obra`), enlazada desde el listado de Municipio.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Municipio](../../models/Municipio.md)
+- [Obra](../../models/Obra.md)

@@ -4,7 +4,7 @@ kind: function
 module: carga/views/conjuntoviews.py
 lines: 57-60
 signature_hash: sha1:d852cc5f23e288977a4146cafa2004fea3c7accc
-authored: false
+authored: true
 ---
 
 # PaginaListaConjuntos
@@ -13,7 +13,10 @@ authored: false
 
 ## Propósito
 
-_(pendiente de autoría)_
+Función vista simple: solo renderiza la página que contiene la tabla (`Lista-conjuntos.html`), sin
+pasarle datos. La tabla se llena después vía AJAX contra un endpoint genérico de listado
+(`api/views/generics.py`, fuera de `carga` — no cubierto en esta fase), siguiendo el
+patrón `django-ajax-datatable` que describe CLAUDE.md.
 
 ## Firma
 
@@ -23,14 +26,8 @@ def PaginaListaConjuntos(request):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`PaginaListaConjuntos` (`carga:lista-conjuntos`), enlazada desde el navbar/dropdown de listados.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [ConjuntoLicitado](../../models/ConjuntoLicitado.md)

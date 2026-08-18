@@ -4,7 +4,7 @@ kind: function
 module: carga/views/obraviews.py
 lines: 179-182
 signature_hash: sha1:6328f6619ffa1e9b1c43b5c0f5c62376c995d379
-authored: false
+authored: true
 ---
 
 # PaginaListaObrasExtendida
@@ -13,7 +13,7 @@ authored: false
 
 ## Propósito
 
-_(pendiente de autoría)_
+Variante de `PaginaListaObras` con más columnas/filtros ("extendida") — mismo patrón de página vacía + tabla AJAX, sin `permission_required` explícito propio (solo `login_required`).
 
 ## Firma
 
@@ -23,14 +23,8 @@ def PaginaListaObrasExtendida(request):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`PaginaListaObrasExtendida` (`carga:lista-obras-extendida`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [PaginaListaObras](PaginaListaObras.md)

@@ -1,17 +1,13 @@
 <h1>obramultiplewidget</h1>
-<p><strong>Módulo:</strong> <code>carga/views/ajaxviews.py</code> (líneas 184-189)</p>
+<p><strong>Módulo:</strong> <code>carga/views/ajaxviews.py</code> (líneas 184-189) · hereda de <code>LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Widget select2 (<code>django-select2</code>) para elegir un(a) Obra vía búsqueda AJAX incremental, en vez de un <code>&lt;select&gt;</code> con todas las opciones cargadas de una — ver CLAUDE.md sobre <code>django-select2</code>. <code>search_fields</code> define contra qué columnas busca <code>django-select2</code> con <code>icontains</code>. Selección múltiple, mismos <code>search_fields</code> que <code>obrawidget</code>.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class obramultiplewidget(LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/forms/obraforms.py:12</code> — <code>obramultiplewidget</code></li>
-<li><code>carga/forms/obraforms.py:167</code> — <code>"obra_principal":obramultiplewidget(attrs={</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>Obra.obra_principal</code> (<code>ManyToManyField</code> a sí misma, "Obra Madre").</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="obrawidget.md">obrawidget</a></li>
+</ul>

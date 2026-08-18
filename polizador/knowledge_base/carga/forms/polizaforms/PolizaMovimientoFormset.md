@@ -4,16 +4,16 @@ kind: class
 module: carga/forms/polizaforms.py
 lines: 75-77
 signature_hash: sha1:530425ae99c5f3bf395762e3e642558e22c219ae
-authored: false
+authored: true
 ---
 
 # PolizaMovimientoFormset
 
-**Módulo:** `carga/forms/polizaforms.py` (líneas 75-77)
+**Módulo:** `carga/forms/polizaforms.py` (líneas 75-77) · hereda de `forms.models.BaseInlineFormSet`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Formset inline de `Poliza_Movimiento` sobre una Poliza (`can_delete=False`). Mismo `__init__` vestigial que `ContratoMontoFormset` (no agrega nada sobre la clase base).
 
 ## Firma
 
@@ -23,17 +23,9 @@ class PolizaMovimientoFormset(forms.models.BaseInlineFormSet):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/polizaviews.py:24` — `formset_name = PolizaMovimientoFormset`
-- `carga/views/polizaviews.py:45` — `formset_name = PolizaMovimientoFormset`
-- `carga/forms/polizaforms.py:79` — `PolizaMovimientoFormset = inlineformset_factory(`
-- `carga/forms/polizaforms.py:83` — `formset = PolizaMovimientoFormset,`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`formset_name = PolizaMovimientoFormset` en `CrearPoliza`/`UpdatePoliza`.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Poliza_Movimiento](../../models/Poliza_Movimiento.md)
+- [PolizaMovimientoForm](PolizaMovimientoForm.md)

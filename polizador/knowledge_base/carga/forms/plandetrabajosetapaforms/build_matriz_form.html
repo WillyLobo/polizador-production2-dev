@@ -1,18 +1,24 @@
 <h1>build_matriz_form</h1>
 <p><strong>Módulo:</strong> <code>carga/forms/plandetrabajosetapaforms.py</code> (líneas 9-63)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Fábrica de una clase <code>forms.Form</code> dinámica: un campo <code>DecimalField</code> por cada combinación
+(<code>PlanDeTrabajosItem</code>, columna/etapa) — no un <code>ModelForm</code> ni un formset, porque la grilla
+no mapea 1:1 a filas de una tabla sino a una matriz completa de valores que después la
+vista (<code>PlanDeTrabajosEtapaMatriz.post</code>) traduce a instancias de
+<code>PlanDeTrabajosEtapa</code>/<code>PlanDeTrabajosEtapaItem</code>.</p>
+<p><code>clean()</code> valida dos cosas a la vez: por fila (item), que la suma de todas sus columnas
+más lo que ya llevaba acumulado (<code>anterior_map</code>) no supere su <code>planitem_incidencia_pct</code>;
+y por columna (etapa), que la suma de todos los items de esa etapa no supere 100% —
+mismas reglas que <code>BaseFojaDeMedicionItemFormset</code> aplica del lado real (Foja), pero acá
+sobre valores <em>proyectados</em> y en una sola pasada de formulario en vez de un formset.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def build_matriz_form(items, total_columns, anterior_map):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/plandetrabajosetapaviews.py:13</code> — <code>from carga.forms.plandetrabajosetapaforms import build_matriz_form, matriz_field_name</code></li>
-<li><code>carga/views/plandetrabajosetapaviews.py:81</code> — <code>form_class = build_matriz_form(items, total_columns, anterior_map)</code></li>
-<li><code>carga/views/plandetrabajosetapaviews.py:92</code> — <code>form_class = build_matriz_form(items, total_columns, anterior_map)</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>PlanDeTrabajosEtapaMatriz.get/post</code> (<code>carga/views/plandetrabajosetapaviews.py</code>) construyen la clase con <code>build_matriz_form(items, total_columns, anterior_map)</code> y la instancian.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="matriz_field_name.md">matriz_field_name</a></li>
+<li><a href="../../views/plandetrabajosetapaviews/PlanDeTrabajosEtapaMatriz.md">PlanDeTrabajosEtapaMatriz</a></li>
+<li><a href="../../models/PlanDeTrabajosEtapaItem.md">PlanDeTrabajosEtapaItem</a></li>
+</ul>

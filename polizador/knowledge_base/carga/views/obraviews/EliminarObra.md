@@ -4,16 +4,18 @@ kind: class
 module: carga/views/obraviews.py
 lines: 63-68
 signature_hash: sha1:46b38a1fe86774eb78bd9097671f7ef6ca6ce6bf
-authored: false
+authored: true
 ---
 
 # EliminarObra
 
-**Módulo:** `carga/views/obraviews.py` (líneas 63-68)
+**Módulo:** `carga/views/obraviews.py` (líneas 63-68) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Confirma y ejecuta el borrado de una Obra, mostrando antes (vía `DeleteRelatedObjectsMixin`
+— `core/mixins.py` + `core/deletion.py::get_deleted_objects`) los objetos relacionados que
+se borrarían en cascada, para que el usuario no borre a ciegas.
 
 ## Firma
 
@@ -23,14 +25,8 @@ class EliminarObra(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.D
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Enlazada desde el listado/ficha de Obra.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Obra](../../models/Obra.md)

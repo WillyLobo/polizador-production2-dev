@@ -4,16 +4,16 @@ kind: class
 module: carga/views/localidadviews.py
 lines: 21-37
 signature_hash: sha1:42a7ba84d1131524b1556093b224baae0b7f936b
-authored: false
+authored: true
 ---
 
 # CrearLocalidad
 
-**Módulo:** `carga/views/localidadviews.py` (líneas 21-37)
+**Módulo:** `carga/views/localidadviews.py` (líneas 21-37) · hereda de `PermissionRequiredMixin, generic.CreateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Alta de Localidad vía `ModelForm` estándar.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class CrearLocalidad(PermissionRequiredMixin, generic.CreateView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearLocalidad` (`carga:crear-localidad`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Localidad](../../models/Localidad.md)

@@ -4,16 +4,16 @@ kind: class
 module: carga/views/ajaxviews.py
 lines: 163-167
 signature_hash: sha1:435551f7b4a6332d6ced1c5d8ca08e803ddff45c
-authored: false
+authored: true
 ---
 
 # receptorwidget
 
-**Módulo:** `carga/views/ajaxviews.py` (líneas 163-167)
+**Módulo:** `carga/views/ajaxviews.py` (líneas 163-167) · hereda de `AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Widget select2 (`django-select2`) para elegir un(a) Receptor vía búsqueda AJAX incremental, en vez de un `<select>` con todas las opciones cargadas de una — ver CLAUDE.md sobre `django-select2`. `search_fields` define contra qué columnas busca `django-select2` con `icontains`. Con alta rápida (`carga:crear-receptor`).
 
 ## Firma
 
@@ -23,15 +23,8 @@ class receptorwidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSel
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/forms/polizaforms.py:8` — `from carga.views.ajaxviews import areawidget, polizawidget, receptorwidget`
-- `carga/forms/polizaforms.py:70` — `"poliza_movimiento_receptor":receptorwidget(attrs={"class":"form-control customSelect2"}),`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`Poliza_Movimiento.poliza_movimiento_receptor` en `PolizaMovimientoForm`.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Receptor](../../models/Receptor.md)

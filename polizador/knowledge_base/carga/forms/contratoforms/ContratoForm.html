@@ -1,17 +1,13 @@
 <h1>ContratoForm</h1>
-<p><strong>Módulo:</strong> <code>carga/forms/contratoforms.py</code> (líneas 9-44)</p>
+<p><strong>Módulo:</strong> <code>carga/forms/contratoforms.py</code> (líneas 9-44) · hereda de <code>forms.ModelForm</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>ModelForm</code> estándar para Contrato: datos de resolución + el flag <code>contrato_certificacion_por_etapas</code> que decide si la Obra certifica por % mensual o por tramos fijos (ver la página del modelo). Sin <code>clean()</code> propio; el único <code>__init__</code> custom solo fuerza un label ("Obra") en un campo que no lo trae por defecto.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class ContratoForm(forms.ModelForm):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/contratoviews.py:19</code> — <code>form_class = ContratoForm</code></li>
-<li><code>carga/views/contratoviews.py:41</code> — <code>form_class = ContratoForm</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>CrearContrato</code>/<code>UpdateContrato</code> (<code>carga/views/contratoviews.py</code>).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/Contrato.md">Contrato</a></li>
+</ul>

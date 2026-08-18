@@ -4,16 +4,16 @@ kind: class
 module: carga/views/regionviews.py
 lines: 21-37
 signature_hash: sha1:45f8088eb26c3505edac57d2b84944b972a0bb38
-authored: false
+authored: true
 ---
 
 # CrearRegion
 
-**Módulo:** `carga/views/regionviews.py` (líneas 21-37)
+**Módulo:** `carga/views/regionviews.py` (líneas 21-37) · hereda de `PermissionRequiredMixin, generic.CreateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Alta de Region vía `ModelForm` estándar.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class CrearRegion(PermissionRequiredMixin, generic.CreateView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearRegion` (`carga:crear-region`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Region](../../models/Region.md)

@@ -1,14 +1,14 @@
 <h1>UpdateFojaDeMedicion</h1>
-<p><strong>Módulo:</strong> <code>carga/views/fojademedicionviews.py</code> (líneas 190-248)</p>
+<p><strong>Módulo:</strong> <code>carga/views/fojademedicionviews.py</code> (líneas 190-248) · hereda de <code>PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Mismo patrón <code>get</code>/<code>post</code> manual que <code>CrearFojaDeMedicion</code> (formset de items + formset de fotos), sin la parte de precarga por querystring ni de vinculación legacy (una Foja ya creada ya tiene su rubro fijo). <code>prepare_formset</code> repuebla el <code>%</code> anterior de cada fila al reconstruir el formset, tanto al mostrarlo (<code>get</code>) como al re-renderizarlo con errores (<code>post</code>).</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class UpdateFojaDeMedicion(PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Ver <a href="../../signals/recalcular_acumulado_fojas_siguientes.md#uso-real">recalcular_acumulado_fojas_siguientes § Uso real</a> — es la vista citada ahí (<code>carga/views/fojademedicionviews.py:232</code>).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/FojaDeMedicion.md">FojaDeMedicion</a></li>
+<li><a href="CrearFojaDeMedicion.md">CrearFojaDeMedicion</a></li>
+</ul>

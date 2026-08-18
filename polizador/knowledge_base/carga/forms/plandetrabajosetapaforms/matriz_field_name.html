@@ -1,20 +1,14 @@
 <h1>matriz_field_name</h1>
 <p><strong>Módulo:</strong> <code>carga/forms/plandetrabajosetapaforms.py</code> (líneas 5-6)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Helper trivial: <code>f"item_{item_pk}_col_{col_index}"</code> — el nombre de campo dinámico que identifica una celda (item × columna/etapa) de la grilla de <code>build_matriz_form</code>. Factorizado aparte porque tanto el form dinámico como la vista (<code>PlanDeTrabajosEtapaMatriz</code>) necesitan generar/leer el mismo nombre de campo.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def matriz_field_name(item_pk, col_index):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/plandetrabajosetapaviews.py:13</code> — <code>from carga.forms.plandetrabajosetapaforms import build_matriz_form, matriz_field_name</code></li>
-<li><code>carga/views/plandetrabajosetapaviews.py:55</code> — <code>"cells": [form[matriz_field_name(item.pk, col)] for col in range(total_columns)],</code></li>
-<li><code>carga/views/plandetrabajosetapaviews.py:79</code> — <code>initial[matriz_field_name(etapaitem.etapaitem_planitem_id, col)] = etapaitem.etapaitem_pct_proyectado_mes</code></li>
-<li><code>carga/forms/plandetrabajosetapaforms.py:20</code> — <code>self.fields[matriz_field_name(item.pk, col)] = forms.DecimalField(</code></li>
-<li><code>carga/forms/plandetrabajosetapaforms.py:34</code> — <code>return self.cleaned_data.get(matriz_field_name(item_pk, col_index)) or Decimal("0")</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>build_matriz_form</code> (mismo módulo) y <code>PlanDeTrabajosEtapaMatriz.get/post</code> (<code>carga/views/plandetrabajosetapaviews.py</code>).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="build_matriz_form.md">build_matriz_form</a></li>
+<li><a href="../../views/plandetrabajosetapaviews/PlanDeTrabajosEtapaMatriz.md">PlanDeTrabajosEtapaMatriz</a></li>
+</ul>

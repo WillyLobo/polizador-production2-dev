@@ -4,16 +4,16 @@ kind: class
 module: carga/forms/representantetecnicoforms.py
 lines: 4-28
 signature_hash: sha1:d6d83fe010f14fb85b695ff286e6a05262530657
-authored: false
+authored: true
 ---
 
 # RepresentanteTecnicoForm
 
-**Módulo:** `carga/forms/representantetecnicoforms.py` (líneas 4-28)
+**Módulo:** `carga/forms/representantetecnicoforms.py` (líneas 4-28) · hereda de `forms.ModelForm`
 
 ## Propósito
 
-_(pendiente de autoría)_
+`ModelForm` estándar para `personalizador.RepresentanteTecnico` (vive en `personalizador`, pero el CRUD web está en `carga` — ver `carga/views/representantetecnicoviews.py`). Sin lógica propia: datos de contacto + matrícula profesional.
 
 ## Firma
 
@@ -23,15 +23,8 @@ class RepresentanteTecnicoForm(forms.ModelForm):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/representantetecnicoviews.py:26` — `form_class = RepresentanteTecnicoForm`
-- `carga/views/representantetecnicoviews.py:46` — `form_class = RepresentanteTecnicoForm`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearRepresentanteTecnico`/`UpdateRepresentanteTecnico`.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Obra](../../models/Obra.md) — `obra_representantetecnico` es el M2M que lo consume.

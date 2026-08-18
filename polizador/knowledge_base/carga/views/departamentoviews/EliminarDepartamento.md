@@ -4,16 +4,18 @@ kind: class
 module: carga/views/departamentoviews.py
 lines: 12-17
 signature_hash: sha1:0c8331fd62247187b7b4adeb44e035e22c231c1a
-authored: false
+authored: true
 ---
 
 # EliminarDepartamento
 
-**Módulo:** `carga/views/departamentoviews.py` (líneas 12-17)
+**Módulo:** `carga/views/departamentoviews.py` (líneas 12-17) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Confirma y ejecuta el borrado de un Departamento, mostrando antes (vía `DeleteRelatedObjectsMixin`
+— `core/mixins.py` + `core/deletion.py::get_deleted_objects`) los objetos relacionados que
+se borrarían en cascada, para que el usuario no borre a ciegas.
 
 ## Firma
 
@@ -23,14 +25,8 @@ class EliminarDepartamento(PermissionRequiredMixin, DeleteRelatedObjectsMixin, g
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Enlazada desde el listado y la ficha de Departamento (botón de borrar de `polizador/context_processors.py::eliminarlinkimg`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Departamento](../../models/Departamento.md)

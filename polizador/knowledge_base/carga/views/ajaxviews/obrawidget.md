@@ -4,16 +4,16 @@ kind: class
 module: carga/views/ajaxviews.py
 lines: 58-63
 signature_hash: sha1:0752e061da799ae6a481b78c440e173d913490e8
-authored: false
+authored: true
 ---
 
 # obrawidget
 
-**Módulo:** `carga/views/ajaxviews.py` (líneas 58-63)
+**Módulo:** `carga/views/ajaxviews.py` (líneas 58-63) · hereda de `LoginRequiredMixin, s2forms.ModelSelect2Widget`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Widget select2 (`django-select2`) para elegir un(a) Obra vía búsqueda AJAX incremental, en vez de un `<select>` con todas las opciones cargadas de una — ver CLAUDE.md sobre `django-select2`. `search_fields` define contra qué columnas busca `django-select2` con `icontains`. Busca por nombre, empresa contratista y convenio/ACU.
 
 ## Firma
 
@@ -23,18 +23,8 @@ class obrawidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/forms/certificadoforms.py:4` — `from carga.views.ajaxviews import contratowidget, obrawidget`
-- `carga/forms/certificadoforms.py:41` — `"certificado_obra":obrawidget(attrs={"class":"form-control customSelect2"}),`
-- `carga/forms/certificadoforms.py:96` — `"certificado_obra":obrawidget(attrs={"class":"form-control customSelect2"}),`
-- `carga/forms/certificadoforms.py:138` — `"certificado_obra":obrawidget(attrs={"class":"form-control customSelect2"}),`
-- `carga/forms/contratoforms.py:28` — `"contrato_obra":obrawidget(attrs={"class":"form-control customSelect2"}),`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Campo `ForeignKey` a Obra en varios forms (`ContratoForm`, `PolizaForm`, `PlanDeTrabajosForm`...).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Obra](../../models/Obra.md)

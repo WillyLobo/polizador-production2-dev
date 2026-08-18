@@ -4,16 +4,16 @@ kind: class
 module: carga/views/documentosdigitalesviews.py
 lines: 43-49
 signature_hash: sha1:ebdd24c0488fd72bc312a0c5c042e3b6d7c28376
-authored: false
+authored: true
 ---
 
 # UpdateContratoDigital
 
-**Módulo:** `carga/views/documentosdigitalesviews.py` (líneas 43-49)
+**Módulo:** `carga/views/documentosdigitalesviews.py` (líneas 43-49) · hereda de `PermissionRequiredMixin, generic.UpdateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Edición de un `ContratosDigitales` ya cargado.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class UpdateContratoDigital(PermissionRequiredMixin, generic.UpdateView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`UpdateContratoDigital` (`carga:update-contrato-digital`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [ContratosDigitales](../../models/ContratosDigitales.md)

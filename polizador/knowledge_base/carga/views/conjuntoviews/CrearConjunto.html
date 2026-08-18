@@ -1,14 +1,13 @@
 <h1>CrearConjunto</h1>
-<p><strong>Módulo:</strong> <code>carga/views/conjuntoviews.py</code> (líneas 20-37)</p>
+<p><strong>Módulo:</strong> <code>carga/views/conjuntoviews.py</code> (líneas 20-37) · hereda de <code>PopupCreateMixin, PermissionRequiredMixin, generic.CreateView</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Alta de ConjuntoLicitado vía <code>ModelForm</code> estándar. Usa <code>PopupCreateMixin</code> (<code>core/mixins.py</code>): si se abre en el modal de "agregar relacionado" de un widget select2 (<code>AddRelatedWidgetMixin</code>, <code>carga/views/ajaxviews.py</code>), devuelve el objeto creado como opción ya seleccionada en vez de redirigir a otra página.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class CrearConjunto(PopupCreateMixin, PermissionRequiredMixin, generic.CreateView):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>CrearConjunto</code> (<code>carga:crear-conjunto</code>).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/ConjuntoLicitado.md">ConjuntoLicitado</a></li>
+</ul>

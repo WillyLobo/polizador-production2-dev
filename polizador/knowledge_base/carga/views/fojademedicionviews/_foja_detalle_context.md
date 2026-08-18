@@ -4,7 +4,7 @@ kind: function
 module: carga/views/fojademedicionviews.py
 lines: 13-46
 signature_hash: sha1:5ca256f130bdba60e182063173f85b480023ce78
-authored: false
+authored: true
 ---
 
 # _foja_detalle_context
@@ -13,7 +13,7 @@ authored: false
 
 ## Propósito
 
-_(pendiente de autoría)_
+Contexto de la ficha/impresión de una Foja: items con su % anterior/mes/acumulado, el responsable institucional (Gerente Operativo, resuelto por nombre fijo igual que en `_certificado_detalle_context`), totales de la fila, y las fotos adjuntas paginadas de a 3 por página (para el layout de impresión).
 
 ## Firma
 
@@ -23,15 +23,9 @@ def _foja_detalle_context(foja):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/fojademedicionviews.py:270` — `ctx.update(_foja_detalle_context(self.object))`
-- `carga/views/fojademedicionviews.py:282` — `ctx.update(_foja_detalle_context(self.object))`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`DetalleFojaDeMedicion.get_context_data` / `ImprimirFojaDeMedicion.get_context_data` (mismo módulo).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [FojaDeMedicion](../../models/FojaDeMedicion.md)
+- [DetalleFojaDeMedicion](DetalleFojaDeMedicion.md)

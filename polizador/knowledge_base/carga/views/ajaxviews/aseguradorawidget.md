@@ -4,16 +4,16 @@ kind: class
 module: carga/views/ajaxviews.py
 lines: 151-155
 signature_hash: sha1:cdeaf42e798c8aadfe1e7af49d01dc8dd1e47bcc
-authored: false
+authored: true
 ---
 
 # aseguradorawidget
 
-**Módulo:** `carga/views/ajaxviews.py` (líneas 151-155)
+**Módulo:** `carga/views/ajaxviews.py` (líneas 151-155) · hereda de `AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Widget select2 (`django-select2`) para elegir un(a) Aseguradora vía búsqueda AJAX incremental, en vez de un `<select>` con todas las opciones cargadas de una — ver CLAUDE.md sobre `django-select2`. `search_fields` define contra qué columnas busca `django-select2` con `icontains`. Catálogo chico, con alta rápida (`carga:crear-aseguradora`).
 
 ## Firma
 
@@ -23,15 +23,8 @@ class aseguradorawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginReq
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/forms/polizaforms.py:5` — `from carga.views.ajaxviews import obrawidget, empresawidget, aseguradorawidget`
-- `carga/forms/polizaforms.py:48` — `"poliza_aseguradora":aseguradorawidget(attrs={"class":"form-control customSelect2"}),`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`Poliza.poliza_aseguradora` en `PolizaForm`.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Aseguradora](../../models/Aseguradora.md)

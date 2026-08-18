@@ -4,16 +4,16 @@ kind: class
 module: carga/views/polizaviews.py
 lines: 43-51
 signature_hash: sha1:b833728011b9e0cd425015f308bcc8668cd53ca1
-authored: false
+authored: true
 ---
 
 # UpdatePoliza
 
-**Módulo:** `carga/views/polizaviews.py` (líneas 43-51)
+**Módulo:** `carga/views/polizaviews.py` (líneas 43-51) · hereda de `PermissionRequiredMixin, UserKwargsMixin, UserFormsetKwargsMixin, FormsetViewMixin, generic.UpdateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Edición de Póliza + formset de movimientos (se pueden agregar movimientos nuevos sin crear otra Póliza).
 
 ## Firma
 
@@ -23,14 +23,8 @@ class UpdatePoliza(PermissionRequiredMixin, UserKwargsMixin, UserFormsetKwargsMi
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`UpdatePoliza` (`carga:update-poliza`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Poliza](../../models/Poliza.md)

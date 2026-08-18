@@ -4,16 +4,16 @@ kind: class
 module: carga/forms/documentosdigitalesforms.py
 lines: 5-21
 signature_hash: sha1:556c74f169913753a4258f62d7ffee488b920e09
-authored: false
+authored: true
 ---
 
 # ContratoDigitalForm
 
-**Módulo:** `carga/forms/documentosdigitalesforms.py` (líneas 5-21)
+**Módulo:** `carga/forms/documentosdigitalesforms.py` (líneas 5-21) · hereda de `forms.ModelForm`
 
 ## Propósito
 
-_(pendiente de autoría)_
+`ModelForm` estándar para `ContratosDigitales` (documento PDF adjunto a un Contrato, con su `ContratoRubro`/tipo).
 
 ## Firma
 
@@ -23,15 +23,8 @@ class ContratoDigitalForm(forms.ModelForm):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/documentosdigitalesviews.py:22` — `form_class = ContratoDigitalForm`
-- `carga/views/documentosdigitalesviews.py:48` — `form_class = ContratoDigitalForm`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearContratoDigital`/`UpdateContratoDigital` (`carga/views/documentosdigitalesviews.py`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [ContratosDigitales](../../models/ContratosDigitales.md)

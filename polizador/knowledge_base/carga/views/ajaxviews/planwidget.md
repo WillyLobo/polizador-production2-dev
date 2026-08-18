@@ -4,16 +4,16 @@ kind: class
 module: carga/views/ajaxviews.py
 lines: 71-74
 signature_hash: sha1:563bc77db94a9ea373b809e30f4e58a35e6e3bdc
-authored: false
+authored: true
 ---
 
 # planwidget
 
-**Módulo:** `carga/views/ajaxviews.py` (líneas 71-74)
+**Módulo:** `carga/views/ajaxviews.py` (líneas 71-74) · hereda de `LoginRequiredMixin, s2forms.ModelSelect2Widget`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Widget select2 (`django-select2`) para elegir un(a) PlanDeTrabajos vía búsqueda AJAX incremental, en vez de un `<select>` con todas las opciones cargadas de una — ver CLAUDE.md sobre `django-select2`. `search_fields` define contra qué columnas busca `django-select2` con `icontains`. Busca por el nombre de la Obra dueña del plan.
 
 ## Firma
 
@@ -23,15 +23,8 @@ class planwidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/forms/plandetrabajosrubroforms.py:5` — `from carga.views.ajaxviews import planwidget, contratomontowidget, rubroanteriorwidget`
-- `carga/forms/plandetrabajosrubroforms.py:24` — `"rubro_plan": planwidget(attrs={"class": "form-control customSelect2"}),`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Selección de Plan de Trabajos en formularios que lo referencian.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [PlanDeTrabajos](../../models/PlanDeTrabajos.md)

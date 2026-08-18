@@ -4,16 +4,16 @@ kind: class
 module: carga/views/programaviews.py
 lines: 21-38
 signature_hash: sha1:aa620788d66e8df3dca2fb262688a81b2eee9146
-authored: false
+authored: true
 ---
 
 # CrearPrograma
 
-**Módulo:** `carga/views/programaviews.py` (líneas 21-38)
+**Módulo:** `carga/views/programaviews.py` (líneas 21-38) · hereda de `PopupCreateMixin, PermissionRequiredMixin, generic.CreateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Alta de Programa vía `ModelForm` estándar. Usa `PopupCreateMixin` (`core/mixins.py`): si se abre en el modal de "agregar relacionado" de un widget select2 (`AddRelatedWidgetMixin`, `carga/views/ajaxviews.py`), devuelve el objeto creado como opción ya seleccionada en vez de redirigir a otra página.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class CrearPrograma(PopupCreateMixin, PermissionRequiredMixin, generic.CreateVie
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearPrograma` (`carga:crear-programa`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Programa](../../models/Programa.md)

@@ -4,16 +4,16 @@ kind: class
 module: carga/views/ajaxviews.py
 lines: 178-182
 signature_hash: sha1:51372dd33f4d51946a838d05883c9d515670204f
-authored: false
+authored: true
 ---
 
 # empresawidget
 
-**Módulo:** `carga/views/ajaxviews.py` (líneas 178-182)
+**Módulo:** `carga/views/ajaxviews.py` (líneas 178-182) · hereda de `AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Widget select2 (`django-select2`) para elegir un(a) Empresa vía búsqueda AJAX incremental, en vez de un `<select>` con todas las opciones cargadas de una — ver CLAUDE.md sobre `django-select2`. `search_fields` define contra qué columnas busca `django-select2` con `icontains`. Con alta rápida (`carga:crear-empresa`).
 
 ## Firma
 
@@ -23,17 +23,8 @@ class empresawidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSele
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/forms/obraforms.py:5` — `empresawidget,`
-- `carga/forms/obraforms.py:74` — `"obra_empresa":empresawidget(attrs={`
-- `carga/forms/polizaforms.py:5` — `from carga.views.ajaxviews import obrawidget, empresawidget, aseguradorawidget`
-- `carga/forms/polizaforms.py:49` — `"poliza_tomador":empresawidget(attrs={"class":"form-control customSelect2"}),`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`Obra.obra_empresa`, `Poliza.poliza_tomador`.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Empresa](../../models/Empresa.md)

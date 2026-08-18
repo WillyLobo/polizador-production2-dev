@@ -4,16 +4,16 @@ kind: class
 module: carga/views/departamentoviews.py
 lines: 21-37
 signature_hash: sha1:0401a5806a75d88386b1ec5e16ecb105c78245a0
-authored: false
+authored: true
 ---
 
 # CrearDepartamento
 
-**Módulo:** `carga/views/departamentoviews.py` (líneas 21-37)
+**Módulo:** `carga/views/departamentoviews.py` (líneas 21-37) · hereda de `PermissionRequiredMixin, generic.CreateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Alta de Departamento vía `ModelForm` estándar.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class CrearDepartamento(PermissionRequiredMixin, generic.CreateView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearDepartamento` (`carga:crear-departamento`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Departamento](../../models/Departamento.md)

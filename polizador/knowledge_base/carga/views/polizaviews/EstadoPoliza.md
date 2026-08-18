@@ -4,16 +4,16 @@ kind: class
 module: carga/views/polizaviews.py
 lines: 61-78
 signature_hash: sha1:6b82c0b2747fcb2c21ee4f2e0ff1c7f64a5e87bd
-authored: false
+authored: true
 ---
 
 # EstadoPoliza
 
-**Módulo:** `carga/views/polizaviews.py` (líneas 61-78)
+**Módulo:** `carga/views/polizaviews.py` (líneas 61-78) · hereda de `PermissionRequiredMixin, generic.DetailView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Ficha de estado de una Póliza. Guarda el `id` de la Póliza en la sesión (`request.session['poliza_id']`) — probablemente para que otra vista/flujo (ej. impresión) sepa cuál fue la última consultada sin pasarlo por URL.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class EstadoPoliza(PermissionRequiredMixin, generic.DetailView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`EstadoPoliza` (`carga:estado-poliza`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Poliza](../../models/Poliza.md)

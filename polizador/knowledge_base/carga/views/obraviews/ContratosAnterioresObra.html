@@ -1,14 +1,14 @@
 <h1>ContratosAnterioresObra</h1>
-<p><strong>Módulo:</strong> <code>carga/views/obraviews.py</code> (líneas 149-162)</p>
+<p><strong>Módulo:</strong> <code>carga/views/obraviews.py</code> (líneas 149-162) · hereda de <code>PermissionRequiredMixin, generic.DetailView</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Mismo patrón que <code>PlanesAnterioresObra</code> pero para Contratos: lista los que no son el vigente (<code>Obra.contrato_vigente()</code>).</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class ContratosAnterioresObra(PermissionRequiredMixin, generic.DetailView):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>ContratosAnterioresObra</code> (<code>carga:contratos-anteriores-obra</code>), enlazada desde <code>UpdateObra</code> cuando <code>tiene_contratos_anteriores</code>.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/Contrato.md">Contrato</a></li>
+<li><a href="../../models/Obra.md">Obra</a></li>
+</ul>

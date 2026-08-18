@@ -4,16 +4,16 @@ kind: class
 module: carga/views/representantetecnicoviews.py
 lines: 41-47
 signature_hash: sha1:5fe07cb866e9e33386519aba2578f55ea8ded30d
-authored: false
+authored: true
 ---
 
 # UpdateRepresentanteTecnico
 
-**Módulo:** `carga/views/representantetecnicoviews.py` (líneas 41-47)
+**Módulo:** `carga/views/representantetecnicoviews.py` (líneas 41-47) · hereda de `PermissionRequiredMixin, generic.UpdateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Edición de RepresentanteTecnico vía `ModelForm` estándar.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class UpdateRepresentanteTecnico(PermissionRequiredMixin, generic.UpdateView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`UpdateRepresentanteTecnico` (`carga:update-representantetecnico`), enlazada desde el listado/ficha.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [RepresentanteTecnico](../../models/RepresentanteTecnico.md)

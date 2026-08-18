@@ -4,16 +4,22 @@ kind: class
 module: carga/views/ajaxviews.py
 lines: 124-137
 signature_hash: sha1:9da06354964f6a4a3aab27f3fe9396f67d6d208c
-authored: false
+authored: true
 ---
 
 # certificadolegacywidget
 
-**Módulo:** `carga/views/ajaxviews.py` (líneas 124-137)
+**Módulo:** `carga/views/ajaxviews.py` (líneas 124-137) · hereda de `FojaRubroDependentWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Widget de selección múltiple para vincular Certificados existentes a una Foja de
+Medición cargada como "legacy" (`FojaDeMedicion.foja_legacy=True`) — el mecanismo para
+asociar certificados históricos, cargados antes de que las Fojas existieran en el
+sistema, a la Foja que se está reconstruyendo retroactivamente. Candidatos: Certificados
+de la misma Obra (`FojaRubroDependentWidgetMixin`) que todavía no tienen ninguna Foja
+asociada (`certificado_foja__isnull=True`) — así no se puede vincular dos veces el mismo
+Certificado.
 
 ## Firma
 
@@ -23,15 +29,10 @@ class certificadolegacywidget(FojaRubroDependentWidgetMixin, LoginRequiredMixin,
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/forms/fojademedicionforms.py:6` — `from carga.views.ajaxviews import rubrowidget, agentemultiplewidget, certificadolegacywidget`
-- `carga/forms/fojademedicionforms.py:23` — `widget=certificadolegacywidget(attrs={"class": "form-control customSelect2"}),`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`FojaDeMedicionForm` (campo `foja_legacy_certificados`), consumido en `CrearFojaDeMedicion._vincular_certificados_legacy`.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [FojaDeMedicion](../../models/FojaDeMedicion.md)
+- [Certificado](../../models/Certificado.md)
+- [CrearFojaDeMedicion](CrearFojaDeMedicion.md)

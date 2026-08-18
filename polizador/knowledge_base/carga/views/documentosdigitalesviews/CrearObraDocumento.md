@@ -4,16 +4,16 @@ kind: class
 module: carga/views/documentosdigitalesviews.py
 lines: 60-83
 signature_hash: sha1:20f3c69a86e1b12917c43ed5d722eae1b2ecbeee
-authored: false
+authored: true
 ---
 
 # CrearObraDocumento
 
-**Módulo:** `carga/views/documentosdigitalesviews.py` (líneas 60-83)
+**Módulo:** `carga/views/documentosdigitalesviews.py` (líneas 60-83) · hereda de `PermissionRequiredMixin, generic.CreateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Alta de un documento PDF adjunto a una Obra (`ObraDocumento`). Si viene `?obra=<id>`, precarga la Obra destino.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class CrearObraDocumento(PermissionRequiredMixin, generic.CreateView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearObraDocumento` (`carga:crear-obra-documento`), enlazada desde la ficha de Obra.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [ObraDocumento](../../models/ObraDocumento.md)

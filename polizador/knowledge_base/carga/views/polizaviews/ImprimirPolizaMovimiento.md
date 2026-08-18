@@ -4,16 +4,16 @@ kind: class
 module: carga/views/polizaviews.py
 lines: 81-85
 signature_hash: sha1:e9a3c80abfaea708fb4b501321a1c4ad48f08195
-authored: false
+authored: true
 ---
 
 # ImprimirPolizaMovimiento
 
-**Módulo:** `carga/views/polizaviews.py` (líneas 81-85)
+**Módulo:** `carga/views/polizaviews.py` (líneas 81-85) · hereda de `PermissionRequiredMixin, generic.DetailView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Ficha de impresión de un `Poliza_Movimiento` puntual (recibo/constancia del movimiento).
 
 ## Firma
 
@@ -23,14 +23,8 @@ class ImprimirPolizaMovimiento(PermissionRequiredMixin, generic.DetailView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`ImprimirPolizaMovimiento` (`carga:imprimir-poliza-movimiento`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Poliza_Movimiento](../../models/Poliza_Movimiento.md)

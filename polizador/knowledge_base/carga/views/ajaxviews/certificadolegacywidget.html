@@ -1,17 +1,21 @@
 <h1>certificadolegacywidget</h1>
-<p><strong>Módulo:</strong> <code>carga/views/ajaxviews.py</code> (líneas 124-137)</p>
+<p><strong>Módulo:</strong> <code>carga/views/ajaxviews.py</code> (líneas 124-137) · hereda de <code>FojaRubroDependentWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Widget de selección múltiple para vincular Certificados existentes a una Foja de
+Medición cargada como "legacy" (<code>FojaDeMedicion.foja_legacy=True</code>) — el mecanismo para
+asociar certificados históricos, cargados antes de que las Fojas existieran en el
+sistema, a la Foja que se está reconstruyendo retroactivamente. Candidatos: Certificados
+de la misma Obra (<code>FojaRubroDependentWidgetMixin</code>) que todavía no tienen ninguna Foja
+asociada (<code>certificado_foja__isnull=True</code>) — así no se puede vincular dos veces el mismo
+Certificado.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class certificadolegacywidget(FojaRubroDependentWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/forms/fojademedicionforms.py:6</code> — <code>from carga.views.ajaxviews import rubrowidget, agentemultiplewidget, certificadolegacywidget</code></li>
-<li><code>carga/forms/fojademedicionforms.py:23</code> — <code>widget=certificadolegacywidget(attrs={"class": "form-control customSelect2"}),</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>FojaDeMedicionForm</code> (campo <code>foja_legacy_certificados</code>), consumido en <code>CrearFojaDeMedicion._vincular_certificados_legacy</code>.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/FojaDeMedicion.md">FojaDeMedicion</a></li>
+<li><a href="../../models/Certificado.md">Certificado</a></li>
+<li><a href="CrearFojaDeMedicion.md">CrearFojaDeMedicion</a></li>
+</ul>

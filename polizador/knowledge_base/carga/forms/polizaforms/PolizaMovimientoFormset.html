@@ -1,19 +1,14 @@
 <h1>PolizaMovimientoFormset</h1>
-<p><strong>Módulo:</strong> <code>carga/forms/polizaforms.py</code> (líneas 75-77)</p>
+<p><strong>Módulo:</strong> <code>carga/forms/polizaforms.py</code> (líneas 75-77) · hereda de <code>forms.models.BaseInlineFormSet</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Formset inline de <code>Poliza_Movimiento</code> sobre una Poliza (<code>can_delete=False</code>). Mismo <code>__init__</code> vestigial que <code>ContratoMontoFormset</code> (no agrega nada sobre la clase base).</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class PolizaMovimientoFormset(forms.models.BaseInlineFormSet):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/polizaviews.py:24</code> — <code>formset_name = PolizaMovimientoFormset</code></li>
-<li><code>carga/views/polizaviews.py:45</code> — <code>formset_name = PolizaMovimientoFormset</code></li>
-<li><code>carga/forms/polizaforms.py:79</code> — <code>PolizaMovimientoFormset = inlineformset_factory(</code></li>
-<li><code>carga/forms/polizaforms.py:83</code> — <code>formset = PolizaMovimientoFormset,</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>formset_name = PolizaMovimientoFormset</code> en <code>CrearPoliza</code>/<code>UpdatePoliza</code>.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/Poliza_Movimiento.md">Poliza_Movimiento</a></li>
+<li><a href="PolizaMovimientoForm.md">PolizaMovimientoForm</a></li>
+</ul>

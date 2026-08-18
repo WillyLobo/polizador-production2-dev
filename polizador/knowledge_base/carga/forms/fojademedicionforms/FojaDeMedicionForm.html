@@ -1,18 +1,31 @@
 <h1>FojaDeMedicionForm</h1>
-<p><strong>Módulo:</strong> <code>carga/forms/fojademedicionforms.py</code> (líneas 10-124)</p>
+<p><strong>Módulo:</strong> <code>carga/forms/fojademedicionforms.py</code> (líneas 10-124) · hereda de <code>forms.ModelForm</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>El form más elaborado de <code>carga</code> junto con <code>ObraForm</code>. Dos campos no-modelo:
+<code>foja_numero_manual</code> (solo usado si <code>foja_legacy</code>, ver <code>clean()</code>) y
+<code>foja_legacy_certificados</code> (para vincular Certificados históricos, ver
+<a href="../../views/ajaxviews/certificadolegacywidget.md">certificadolegacywidget</a>).</p>
+<p><code>__init__</code> hace bastante trabajo dinámico: acota <code>foja_rubro</code> a rubros de Planes vigentes;
+si ya hay un rubro elegido (en <code>self.data</code> o <code>self.initial</code>), calcula los inspectores
+candidatos (Agentes que inspeccionan la Obra dueña del rubro) y precarga
+<code>foja_inspector</code> con todos ellos por defecto en una Foja nueva; y si el Rubro elegido
+todavía no tiene <code>trabajos_fecha_inicio</code> en su Plan, agrega dinámicamente un campo
+<code>trabajos_fecha_inicio</code> (con label distinto según sea la primera vez o un "reinicio" tras
+reprogramación) — campo que la vista (<code>CrearFojaDeMedicion._save_fecha_inicio</code>) después
+usa para setear esa fecha en el Plan.</p>
+<p><code>clean()</code> solo aplica si <code>foja_legacy=True</code>: valida que el número manual sea menor al
+<code>rubro_foja_numero_inicial</code> configurado (si no, hay que configurar ese campo primero en
+el Rubro) y que no choque con una Foja ya cargada para ese número — y si todo está bien,
+setea <code>self.instance.foja_numero</code> directamente (saltándose la auto-numeración de la
+señal, que ya de por sí no toca las fojas legacy).</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class FojaDeMedicionForm(forms.ModelForm):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/ajaxviews.py:106</code> — <code>"""Widgets en FojaDeMedicionForm: escopean resultados AJAX a la Obra del</code>foja_rubro``</li>
-<li><code>carga/views/fojademedicionviews.py:58</code> — <code>form_class = FojaDeMedicionForm</code></li>
-<li><code>carga/views/fojademedicionviews.py:198</code> — <code>form_class = FojaDeMedicionForm</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>CrearFojaDeMedicion</code>/<code>UpdateFojaDeMedicion</code> (<code>carga/views/fojademedicionviews.py</code>).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/FojaDeMedicion.md">FojaDeMedicion</a></li>
+<li><a href="../../signals/auto_increment_foja_numero.md">auto_increment_foja_numero</a></li>
+<li><a href="../../views/ajaxviews/certificadolegacywidget.md">certificadolegacywidget</a></li>
+</ul>

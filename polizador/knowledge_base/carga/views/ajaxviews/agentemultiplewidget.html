@@ -1,19 +1,14 @@
 <h1>agentemultiplewidget</h1>
-<p><strong>Módulo:</strong> <code>carga/views/ajaxviews.py</code> (líneas 139-143)</p>
+<p><strong>Módulo:</strong> <code>carga/views/ajaxviews.py</code> (líneas 139-143) · hereda de <code>LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Widget select2 (<code>django-select2</code>) para elegir un(a) Agente (personalizador) vía búsqueda AJAX incremental, en vez de un <code>&lt;select&gt;</code> con todas las opciones cargadas de una — ver CLAUDE.md sobre <code>django-select2</code>. <code>search_fields</code> define contra qué columnas busca <code>django-select2</code> con <code>icontains</code>. Selección múltiple (<code>ModelSelect2MultipleWidget</code>), busca por nombres y apellidos.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class agentemultiplewidget(LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/forms/fojademedicionforms.py:6</code> — <code>from carga.views.ajaxviews import rubrowidget, agentemultiplewidget, certificadolegacywidget</code></li>
-<li><code>carga/forms/fojademedicionforms.py:41</code> — <code>"foja_inspector": agentemultiplewidget(attrs={"class": "form-control customSelect2"}),</code></li>
-<li><code>carga/forms/obraforms.py:8</code> — <code>agentemultiplewidget,</code></li>
-<li><code>carga/forms/obraforms.py:157</code> — <code>"obra_inspector": agentemultiplewidget(attrs={</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>Obra.obra_inspector</code>, <code>FojaDeMedicion.foja_inspector</code> (ambos <code>ManyToManyField</code>).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/Obra.md">Obra</a></li>
+<li><a href="../../models/FojaDeMedicion.md">FojaDeMedicion</a></li>
+</ul>

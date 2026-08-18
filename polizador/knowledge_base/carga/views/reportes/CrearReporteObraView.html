@@ -1,14 +1,13 @@
 <h1>CrearReporteObraView</h1>
-<p><strong>Módulo:</strong> <code>carga/views/reportes.py</code> (líneas 71-155)</p>
+<p><strong>Módulo:</strong> <code>carga/views/reportes.py</code> (líneas 71-155) · hereda de <code>PermissionRequiredMixin, generic.ListView</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Reporte de Obras con filtros combinables (localidad, empresa, programa, rubro certificado, financiamiento, y un filtro de % de avance con comparador =/&lt;/&gt; vía <code>tipodefiltro</code>). También sin filtros devuelve vacío. <code>get_context_data</code> calcula a mano (no en la query) el acumulado en pesos/UVI y el saldo de cada Obra listada, iterando sus Certificados — con muchas Obras en el resultado esto es N+1 real, aunque mitigado por el <code>prefetch_related('certificado_set')</code> del queryset.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class CrearReporteObraView(PermissionRequiredMixin, generic.ListView):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>CrearReporteObraView</code> (<code>carga:crear-reporte-obra</code>), enlazada desde el mega-menú "Reportes".</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/Obra.md">Obra</a></li>
+</ul>

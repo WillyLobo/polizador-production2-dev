@@ -4,16 +4,18 @@ kind: class
 module: carga/views/certificadoviews.py
 lines: 183-188
 signature_hash: sha1:0324e7ec8b37b081d562921c9b9f4d2416e27757
-authored: false
+authored: true
 ---
 
 # EliminarCertificado
 
-**Módulo:** `carga/views/certificadoviews.py` (líneas 183-188)
+**Módulo:** `carga/views/certificadoviews.py` (líneas 183-188) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Confirma y ejecuta el borrado de un Certificado, mostrando antes (vía `DeleteRelatedObjectsMixin`
+— `core/mixins.py` + `core/deletion.py::get_deleted_objects`) los objetos relacionados que
+se borrarían en cascada, para que el usuario no borre a ciegas.
 
 ## Firma
 
@@ -23,14 +25,8 @@ class EliminarCertificado(PermissionRequiredMixin, DeleteRelatedObjectsMixin, ge
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Enlazada desde el listado/ficha de Certificado.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Certificado](../../models/Certificado.md)

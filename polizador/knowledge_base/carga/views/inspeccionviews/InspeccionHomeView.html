@@ -1,14 +1,20 @@
 <h1>InspeccionHomeView</h1>
-<p><strong>Módulo:</strong> <code>carga/views/inspeccionviews.py</code> (líneas 10-36)</p>
+<p><strong>Módulo:</strong> <code>carga/views/inspeccionviews.py</code> (líneas 10-36) · hereda de <code>generic.ListView</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Home alternativa para el rol de inspección de obra (no el dashboard general): lista las
+Obras donde el usuario logueado figura como <code>obra_inspector</code> (vía su <code>Agente</code> vinculado,
+<code>request.user.agente</code>), y separado, las Fojas de Medición donde figura como
+<code>foja_inspector</code> — ambos vacíos si el usuario no tiene un <code>Agente</code> asociado o no
+pertenece al grupo <code>inspeccion</code>. Si además pertenece al grupo <code>certificadores</code>, agrega un
+tercer listado: Fojas sin ningún Certificado generado todavía
+(<code>certificado__isnull=True</code>) — la cola de trabajo pendiente de certificar.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class InspeccionHomeView(generic.ListView):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>path('home/', InspeccionHomeView.as_view(), name='home')</code> (<code>polizador/urls.py</code>) — la página <code>/home/</code> del sitio.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/Obra.md">Obra</a></li>
+<li><a href="../../models/FojaDeMedicion.md">FojaDeMedicion</a></li>
+</ul>

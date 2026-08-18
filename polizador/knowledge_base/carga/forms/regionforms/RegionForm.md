@@ -4,16 +4,16 @@ kind: class
 module: carga/forms/regionforms.py
 lines: 4-14
 signature_hash: sha1:28d5a0bc4d7349f2807a3224c8a2f3fa41a8b78b
-authored: false
+authored: true
 ---
 
 # RegionForm
 
-**Módulo:** `carga/forms/regionforms.py` (líneas 4-14)
+**Módulo:** `carga/forms/regionforms.py` (líneas 4-14) · hereda de `forms.ModelForm`
 
 ## Propósito
 
-_(pendiente de autoría)_
+`ModelForm` estándar para Region, sin `clean()` ni lógica propia — solo declara `Meta.fields`/`widgets` (inputs Bootstrap, sin validación más allá de la del modelo). Un solo campo: `region_numero`.
 
 ## Firma
 
@@ -23,15 +23,8 @@ class RegionForm(forms.ModelForm):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/regionviews.py:26` — `form_class = RegionForm`
-- `carga/views/regionviews.py:46` — `form_class = RegionForm`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearRegion/UpdateRegion` (`carga/views/`), tanto para alta como edición.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Region](../../models/Region.md)

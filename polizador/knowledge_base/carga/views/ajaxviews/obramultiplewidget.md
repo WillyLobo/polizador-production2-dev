@@ -4,16 +4,16 @@ kind: class
 module: carga/views/ajaxviews.py
 lines: 184-189
 signature_hash: sha1:061c972bed79cb9615d1262d1a7ce1f8176949e8
-authored: false
+authored: true
 ---
 
 # obramultiplewidget
 
-**Módulo:** `carga/views/ajaxviews.py` (líneas 184-189)
+**Módulo:** `carga/views/ajaxviews.py` (líneas 184-189) · hereda de `LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Widget select2 (`django-select2`) para elegir un(a) Obra vía búsqueda AJAX incremental, en vez de un `<select>` con todas las opciones cargadas de una — ver CLAUDE.md sobre `django-select2`. `search_fields` define contra qué columnas busca `django-select2` con `icontains`. Selección múltiple, mismos `search_fields` que `obrawidget`.
 
 ## Firma
 
@@ -23,15 +23,8 @@ class obramultiplewidget(LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget)
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/forms/obraforms.py:12` — `obramultiplewidget`
-- `carga/forms/obraforms.py:167` — `"obra_principal":obramultiplewidget(attrs={`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`Obra.obra_principal` (`ManyToManyField` a sí misma, "Obra Madre").
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [obrawidget](obrawidget.md)

@@ -1,20 +1,16 @@
 <h1>SmallCatalogWidgetMixin</h1>
 <p><strong>Módulo:</strong> <code>carga/views/ajaxviews.py</code> (líneas 34-41)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Para catálogos con pocas filas (provincias, departamentos, municipios...): fuerza
+<code>data-minimum-input-length=0</code> para que select2 muestre los primeros resultados apenas se
+abre el combo, sin que el usuario tenga que escribir nada primero — no tendría sentido
+pedir 2-3 caracteres mínimos en una tabla de 24 provincias.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class SmallCatalogWidgetMixin:
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/ajaxviews.py:99</code> — <code>class programawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):</code></li>
-<li><code>carga/views/ajaxviews.py:151</code> — <code>class aseguradorawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):</code></li>
-<li><code>carga/views/ajaxviews.py:157</code> — <code>class areawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):</code></li>
-<li><code>carga/views/ajaxviews.py:191</code> — <code>class provinciawidget(SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):</code></li>
-<li><code>carga/views/ajaxviews.py:196</code> — <code>class departamentomultiplewidget(SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget):</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>class provinciawidget(SmallCatalogWidgetMixin, ...)</code>, junto con <code>departamentowidget</code>, <code>municipiowidget</code>, <code>aseguradorawidget</code>, <code>areawidget</code>, <code>programawidget</code>.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="provinciawidget.md">provinciawidget</a></li>
+</ul>

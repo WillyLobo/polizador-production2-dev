@@ -1,16 +1,24 @@
 <h1>_desglose_items_certificado</h1>
 <p><strong>Módulo:</strong> <code>carga/views/certificadoviews.py</code> (líneas 29-79)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Arma, para un Certificado con Foja de origen (PARCIAL/HECHO_CONSUMADO — no ETAPA, ver
+más abajo), una fila por <code>FojaDeMedicionItem</code> de esa Foja con su incidencia % fija (del
+Plan de Trabajos), su acumulado anterior/mes/total, y el monto valorizado (en UVI y
+pesos, convertido a la fecha del certificado) que le corresponde según esa incidencia.
+Es el desglose "por qué este certificado vale lo que vale, ítem por ítem" que se muestra
+en el detalle/impresión.</p>
+<p><strong>ETAPA se excluye a propósito, con Foja igual</strong>: un certificado de Etapa sí tiene
+<code>certificado_foja</code> (la que disparó el tramo), pero su monto sale del % <em>fijo</em> del tramo
+(<code>ContratoTramoPago.tramo_pct_pago</code>), no del avance real de esa Foja — mostrar un
+desglose por ítem ahí sería engañoso, porque no es la base real de lo certificado.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def _desglose_items_certificado(certificado, contratomonto_rubro):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/certificadoviews.py:167</code> — <code>"desglose_items": _desglose_items_certificado(certificado, contratomonto_rubro),</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>_certificado_detalle_context(certificado)</code> (mismo módulo, más abajo).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/Certificado.md">Certificado</a></li>
+<li><a href="../../models/FojaDeMedicionItem.md">FojaDeMedicionItem</a></li>
+<li><a href="_certificado_detalle_context.md">_certificado_detalle_context</a></li>
+</ul>

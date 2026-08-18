@@ -4,16 +4,18 @@ kind: class
 module: carga/views/receptorviews.py
 lines: 11-16
 signature_hash: sha1:9165526bcde6ae270bcac6b80bfee18220dce1f7
-authored: false
+authored: true
 ---
 
 # EliminarReceptor
 
-**Módulo:** `carga/views/receptorviews.py` (líneas 11-16)
+**Módulo:** `carga/views/receptorviews.py` (líneas 11-16) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Confirma y ejecuta el borrado de un Receptor, mostrando antes (vía `DeleteRelatedObjectsMixin`
+— `core/mixins.py` + `core/deletion.py::get_deleted_objects`) los objetos relacionados que
+se borrarían en cascada, para que el usuario no borre a ciegas.
 
 ## Firma
 
@@ -23,14 +25,8 @@ class EliminarReceptor(PermissionRequiredMixin, DeleteRelatedObjectsMixin, gener
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Enlazada desde el listado y la ficha de Receptor (botón de borrar de `polizador/context_processors.py::eliminarlinkimg`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Receptor](../../models/Receptor.md)

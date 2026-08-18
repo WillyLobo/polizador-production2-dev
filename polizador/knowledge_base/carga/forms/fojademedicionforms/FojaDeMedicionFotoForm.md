@@ -4,16 +4,16 @@ kind: class
 module: carga/forms/fojademedicionforms.py
 lines: 230-238
 signature_hash: sha1:366657168ba190067eb43f03c023df5ea7f34f29
-authored: false
+authored: true
 ---
 
 # FojaDeMedicionFotoForm
 
-**Módulo:** `carga/forms/fojademedicionforms.py` (líneas 230-238)
+**Módulo:** `carga/forms/fojademedicionforms.py` (líneas 230-238) · hereda de `forms.ModelForm`
 
 ## Propósito
 
-_(pendiente de autoría)_
+`ModelForm` mínimo para `FojaDeMedicionFoto`: un solo campo, el archivo de imagen.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class FojaDeMedicionFotoForm(forms.ModelForm):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/forms/fojademedicionforms.py:243` — `form=FojaDeMedicionFotoForm,`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Form base de `FojaDeMedicionFotoFormset`, usado en `CrearFojaDeMedicion`/`UpdateFojaDeMedicion`.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [FojaDeMedicionFoto](../../models/FojaDeMedicionFoto.md)

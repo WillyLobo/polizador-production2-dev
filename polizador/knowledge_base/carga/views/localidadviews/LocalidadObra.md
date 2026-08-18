@@ -4,16 +4,16 @@ kind: class
 module: carga/views/localidadviews.py
 lines: 50-54
 signature_hash: sha1:f672f8e13239e3481fdd31a2a13b8b0aceb505db
-authored: false
+authored: true
 ---
 
 # LocalidadObra
 
-**Módulo:** `carga/views/localidadviews.py` (líneas 50-54)
+**Módulo:** `carga/views/localidadviews.py` (líneas 50-54) · hereda de `PermissionRequiredMixin, generic.DetailView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Ficha de detalle de Localidad centrada en mostrar las Obras vinculadas a esta entrada del catálogo (sin lógica propia más allá del `DetailView` — el filtrado de Obras relacionadas lo resuelve el template, no una `get_context_data` propia).
 
 ## Firma
 
@@ -23,14 +23,9 @@ class LocalidadObra(PermissionRequiredMixin, generic.DetailView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`LocalidadObra` (`carga:localidad-obra`), enlazada desde el listado de Localidad.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Localidad](../../models/Localidad.md)
+- [Obra](../../models/Obra.md)

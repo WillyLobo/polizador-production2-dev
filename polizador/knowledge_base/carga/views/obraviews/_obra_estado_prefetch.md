@@ -4,7 +4,7 @@ kind: function
 module: carga/views/obraviews.py
 lines: 24-60
 signature_hash: sha1:07b55b26c9ef4dbc72cc9377069cd3ba8ef6a5ff
-authored: false
+authored: true
 ---
 
 # _obra_estado_prefetch
@@ -13,7 +13,13 @@ authored: false
 
 ## Propósito
 
-_(pendiente de autoría)_
+Lista de `prefetch_related`/`Prefetch` que arma de una sola vez todo lo que
+`estado-obra.html` recorre (contratos con sus montos y documentos, certificados con su
+rubro, todos los planes de trabajos con sus rubros/items/etapas/fojas) — evita el N+1 que
+tendría esa ficha si cada relación se resolviera fila por fila al renderizar el template.
+Factorizada en función aparte porque `EstadoObra.get_queryset()` la necesita dos veces:
+una para la Obra pedida y otra (recursiva) para su `obra_madre`, que en la ficha también
+muestra su propio detalle anidado.
 
 ## Firma
 
@@ -23,15 +29,9 @@ def _obra_estado_prefetch():
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/obraviews.py:124` — `prefetch = _obra_estado_prefetch()`
-- `carga/views/obraviews.py:129` — `Prefetch("obra_madre", queryset=Obra.objects.prefetch_related(*_obra_estado_prefetch())),`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`EstadoObra.get_queryset()` (mismo módulo, más abajo).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [EstadoObra](EstadoObra.md)
+- [Obra](../../models/Obra.md)

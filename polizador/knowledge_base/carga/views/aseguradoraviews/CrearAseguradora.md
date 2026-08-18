@@ -4,16 +4,16 @@ kind: class
 module: carga/views/aseguradoraviews.py
 lines: 21-38
 signature_hash: sha1:cd90f5005cd4cdc4bc94b680272c95a8f7089b5e
-authored: false
+authored: true
 ---
 
 # CrearAseguradora
 
-**Módulo:** `carga/views/aseguradoraviews.py` (líneas 21-38)
+**Módulo:** `carga/views/aseguradoraviews.py` (líneas 21-38) · hereda de `PopupCreateMixin, PermissionRequiredMixin, generic.CreateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Alta de Aseguradora vía `ModelForm` estándar. Usa `PopupCreateMixin` (`core/mixins.py`): si se abre en el modal de "agregar relacionado" de un widget select2 (`AddRelatedWidgetMixin`, `carga/views/ajaxviews.py`), devuelve el objeto creado como opción ya seleccionada en vez de redirigir a otra página.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class CrearAseguradora(PopupCreateMixin, PermissionRequiredMixin, generic.Create
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearAseguradora` (`carga:crear-aseguradora`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Aseguradora](../../models/Aseguradora.md)

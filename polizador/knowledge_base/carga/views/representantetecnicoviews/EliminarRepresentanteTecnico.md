@@ -4,16 +4,18 @@ kind: class
 module: carga/views/representantetecnicoviews.py
 lines: 12-17
 signature_hash: sha1:e24fbee4e9abacc884a297f20bb5d41f9135ed72
-authored: false
+authored: true
 ---
 
 # EliminarRepresentanteTecnico
 
-**Módulo:** `carga/views/representantetecnicoviews.py` (líneas 12-17)
+**Módulo:** `carga/views/representantetecnicoviews.py` (líneas 12-17) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Confirma y ejecuta el borrado de un RepresentanteTecnico, mostrando antes (vía `DeleteRelatedObjectsMixin`
+— `core/mixins.py` + `core/deletion.py::get_deleted_objects`) los objetos relacionados que
+se borrarían en cascada, para que el usuario no borre a ciegas.
 
 ## Firma
 
@@ -23,14 +25,8 @@ class EliminarRepresentanteTecnico(PermissionRequiredMixin, DeleteRelatedObjects
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Enlazada desde el listado y la ficha de RepresentanteTecnico (botón de borrar de `polizador/context_processors.py::eliminarlinkimg`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [RepresentanteTecnico](../../models/RepresentanteTecnico.md)

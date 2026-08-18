@@ -4,16 +4,16 @@ kind: class
 module: carga/views/conjuntoviews.py
 lines: 40-46
 signature_hash: sha1:84dfdd06c78fa286eaffcb07823f4466826605fd
-authored: false
+authored: true
 ---
 
 # UpdateConjunto
 
-**Módulo:** `carga/views/conjuntoviews.py` (líneas 40-46)
+**Módulo:** `carga/views/conjuntoviews.py` (líneas 40-46) · hereda de `PermissionRequiredMixin, generic.UpdateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Edición de ConjuntoLicitado vía `ModelForm` estándar.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class UpdateConjunto(PermissionRequiredMixin, generic.UpdateView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`UpdateConjunto` (`carga:update-conjunto`), enlazada desde el listado/ficha.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [ConjuntoLicitado](../../models/ConjuntoLicitado.md)

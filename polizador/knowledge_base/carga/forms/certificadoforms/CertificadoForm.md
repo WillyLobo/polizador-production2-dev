@@ -4,16 +4,16 @@ kind: class
 module: carga/forms/certificadoforms.py
 lines: 11-61
 signature_hash: sha1:cb16a473f5b8cb7d0de1e2fa6fff5c64a7b2fa53
-authored: false
+authored: true
 ---
 
 # CertificadoForm
 
-**Módulo:** `carga/forms/certificadoforms.py` (líneas 11-61)
+**Módulo:** `carga/forms/certificadoforms.py` (líneas 11-61) · hereda de `forms.ModelForm`
 
 ## Propósito
 
-_(pendiente de autoría)_
+El `ModelForm` "genérico" de Certificado (sin tipo forzado — a diferencia de `CertificadoAnticipoForm`/`CertificadoHechoConsumadoForm`), usado tanto para alta manual como para edición. `certificado_foja` es `HiddenInput` — se precarga por querystring en `CrearCertificado.get_initial`, no se elige desde este form. Sin `clean()` propio: toda la validación cruzada por tipo vive en `Certificado.clean()` (modelo), que corre igual sobre esta instancia.
 
 ## Firma
 
@@ -23,15 +23,9 @@ class CertificadoForm(forms.ModelForm):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/certificadoviews.py:197` — `form_class = CertificadoForm`
-- `carga/views/certificadoviews.py:359` — `form_class = CertificadoForm`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearCertificado`/`UpdateCertificado` (`carga/views/certificadoviews.py`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Certificado](../../models/Certificado.md)
+- [CrearCertificado](../../views/certificadoviews/CrearCertificado.md)

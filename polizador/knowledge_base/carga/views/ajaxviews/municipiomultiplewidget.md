@@ -4,16 +4,16 @@ kind: class
 module: carga/views/ajaxviews.py
 lines: 216-219
 signature_hash: sha1:acdfb0b8d54359043c7e0199b99556dc2c4d4c77
-authored: false
+authored: true
 ---
 
 # municipiomultiplewidget
 
-**Módulo:** `carga/views/ajaxviews.py` (líneas 216-219)
+**Módulo:** `carga/views/ajaxviews.py` (líneas 216-219) · hereda de `SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Widget select2 (`django-select2`) para elegir un(a) Municipio vía búsqueda AJAX incremental, en vez de un `<select>` con todas las opciones cargadas de una — ver CLAUDE.md sobre `django-select2`. `search_fields` define contra qué columnas busca `django-select2` con `icontains`. Selección múltiple, catálogo chico.
 
 ## Firma
 
@@ -23,15 +23,8 @@ class municipiomultiplewidget(SmallCatalogWidgetMixin, LoginRequiredMixin, s2for
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/forms/obraforms.py:11` — `municipiomultiplewidget,`
-- `carga/forms/obraforms.py:86` — `"obra_municipio_m":municipiomultiplewidget(attrs={`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`Obra.obra_municipio_m` en `ObraForm`.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Municipio](../../models/Municipio.md)

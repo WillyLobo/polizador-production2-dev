@@ -4,16 +4,16 @@ kind: class
 module: carga/views/areaviews.py
 lines: 30-36
 signature_hash: sha1:7660be42d0b00c9f2e303c956c8c0c08dcb34cd7
-authored: false
+authored: true
 ---
 
 # UpdateArea
 
-**Módulo:** `carga/views/areaviews.py` (líneas 30-36)
+**Módulo:** `carga/views/areaviews.py` (líneas 30-36) · hereda de `PermissionRequiredMixin, generic.UpdateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Edición de Area vía `ModelForm` estándar.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class UpdateArea(PermissionRequiredMixin, generic.UpdateView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`UpdateArea` (`carga:update-area`), enlazada desde el listado/ficha.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Area](../../models/Area.md)

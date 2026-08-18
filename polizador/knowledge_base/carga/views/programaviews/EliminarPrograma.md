@@ -4,16 +4,18 @@ kind: class
 module: carga/views/programaviews.py
 lines: 12-17
 signature_hash: sha1:26fee4ba71d4ec79b73bd3d124292e015a289df9
-authored: false
+authored: true
 ---
 
 # EliminarPrograma
 
-**Módulo:** `carga/views/programaviews.py` (líneas 12-17)
+**Módulo:** `carga/views/programaviews.py` (líneas 12-17) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Confirma y ejecuta el borrado de un Programa, mostrando antes (vía `DeleteRelatedObjectsMixin`
+— `core/mixins.py` + `core/deletion.py::get_deleted_objects`) los objetos relacionados que
+se borrarían en cascada, para que el usuario no borre a ciegas.
 
 ## Firma
 
@@ -23,14 +25,8 @@ class EliminarPrograma(PermissionRequiredMixin, DeleteRelatedObjectsMixin, gener
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Enlazada desde el listado y la ficha de Programa (botón de borrar de `polizador/context_processors.py::eliminarlinkimg`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Programa](../../models/Programa.md)

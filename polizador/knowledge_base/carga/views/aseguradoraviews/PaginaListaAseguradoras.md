@@ -4,7 +4,7 @@ kind: function
 module: carga/views/aseguradoraviews.py
 lines: 52-55
 signature_hash: sha1:e0fd7e88bed3af98ce7ad644e3ee3adbe8ba5a35
-authored: false
+authored: true
 ---
 
 # PaginaListaAseguradoras
@@ -13,7 +13,10 @@ authored: false
 
 ## Propósito
 
-_(pendiente de autoría)_
+Función vista simple: solo renderiza la página que contiene la tabla (`Lista-aseguradoras.html`), sin
+pasarle datos. La tabla se llena después vía AJAX contra un endpoint genérico de listado
+(`api/views/generics.py`, fuera de `carga` — no cubierto en esta fase), siguiendo el
+patrón `django-ajax-datatable` que describe CLAUDE.md.
 
 ## Firma
 
@@ -23,14 +26,8 @@ def PaginaListaAseguradoras(request):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`PaginaListaAseguradoras` (`carga:lista-aseguradoras`), enlazada desde el navbar/dropdown de listados.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Aseguradora](../../models/Aseguradora.md)

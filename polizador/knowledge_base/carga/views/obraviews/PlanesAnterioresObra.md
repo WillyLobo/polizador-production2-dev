@@ -4,16 +4,16 @@ kind: class
 module: carga/views/obraviews.py
 lines: 133-146
 signature_hash: sha1:313a9903fdfe282ff426df133c5ed46e6a80aec2
-authored: false
+authored: true
 ---
 
 # PlanesAnterioresObra
 
-**Módulo:** `carga/views/obraviews.py` (líneas 133-146)
+**Módulo:** `carga/views/obraviews.py` (líneas 133-146) · hereda de `PermissionRequiredMixin, generic.DetailView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Lista los Planes de Trabajos de la Obra que no son el vigente (`Obra.plan_vigente()`) — el historial de reprogramaciones, ordenado del más reciente al más viejo.
 
 ## Firma
 
@@ -23,14 +23,9 @@ class PlanesAnterioresObra(PermissionRequiredMixin, generic.DetailView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`PlanesAnterioresObra` (`carga:planes-anteriores-obra`), enlazada desde `EstadoObra`.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [PlanDeTrabajos](../../models/PlanDeTrabajos.md)
+- [Obra](../../models/Obra.md)

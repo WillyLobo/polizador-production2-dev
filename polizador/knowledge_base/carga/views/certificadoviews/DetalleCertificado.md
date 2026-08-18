@@ -4,16 +4,16 @@ kind: class
 module: carga/views/certificadoviews.py
 lines: 369-378
 signature_hash: sha1:e2714317e6a738c7fe250f0044f4bdc8cea0f4c4
-authored: false
+authored: true
 ---
 
 # DetalleCertificado
 
-**Módulo:** `carga/views/certificadoviews.py` (líneas 369-378)
+**Módulo:** `carga/views/certificadoviews.py` (líneas 369-378) · hereda de `PermissionRequiredMixin, generic.DetailView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Ficha de detalle de un Certificado (usada también como base para impresión, ver `ImprimirCertificado`), con todo el contexto de `_certificado_detalle_context`.
 
 ## Firma
 
@@ -23,14 +23,9 @@ class DetalleCertificado(PermissionRequiredMixin, generic.DetailView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`DetalleCertificado` (`carga:detalle-certificado`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [_certificado_detalle_context](_certificado_detalle_context.md)
+- [ImprimirCertificado](ImprimirCertificado.md)

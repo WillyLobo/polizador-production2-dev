@@ -1,17 +1,13 @@
 <h1>aseguradorawidget</h1>
-<p><strong>Módulo:</strong> <code>carga/views/ajaxviews.py</code> (líneas 151-155)</p>
+<p><strong>Módulo:</strong> <code>carga/views/ajaxviews.py</code> (líneas 151-155) · hereda de <code>AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Widget select2 (<code>django-select2</code>) para elegir un(a) Aseguradora vía búsqueda AJAX incremental, en vez de un <code>&lt;select&gt;</code> con todas las opciones cargadas de una — ver CLAUDE.md sobre <code>django-select2</code>. <code>search_fields</code> define contra qué columnas busca <code>django-select2</code> con <code>icontains</code>. Catálogo chico, con alta rápida (<code>carga:crear-aseguradora</code>).</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class aseguradorawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/forms/polizaforms.py:5</code> — <code>from carga.views.ajaxviews import obrawidget, empresawidget, aseguradorawidget</code></li>
-<li><code>carga/forms/polizaforms.py:48</code> — <code>"poliza_aseguradora":aseguradorawidget(attrs={"class":"form-control customSelect2"}),</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>Poliza.poliza_aseguradora</code> en <code>PolizaForm</code>.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/Aseguradora.md">Aseguradora</a></li>
+</ul>

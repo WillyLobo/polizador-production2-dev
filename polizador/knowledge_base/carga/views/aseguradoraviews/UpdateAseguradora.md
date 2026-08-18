@@ -4,16 +4,16 @@ kind: class
 module: carga/views/aseguradoraviews.py
 lines: 42-48
 signature_hash: sha1:ff89fdc962c4a266ff46d4642c137165688a42b2
-authored: false
+authored: true
 ---
 
 # UpdateAseguradora
 
-**Módulo:** `carga/views/aseguradoraviews.py` (líneas 42-48)
+**Módulo:** `carga/views/aseguradoraviews.py` (líneas 42-48) · hereda de `PermissionRequiredMixin, generic.UpdateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Edición de Aseguradora vía `ModelForm` estándar.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class UpdateAseguradora(PermissionRequiredMixin, generic.UpdateView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`UpdateAseguradora` (`carga:update-aseguradora`), enlazada desde el listado/ficha.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Aseguradora](../../models/Aseguradora.md)

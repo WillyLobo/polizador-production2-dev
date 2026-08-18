@@ -4,16 +4,16 @@ kind: class
 module: carga/views/fojademedicionviews.py
 lines: 263-271
 signature_hash: sha1:7345564d6ebd1415273d98a7f1293fd6d321515d
-authored: false
+authored: true
 ---
 
 # DetalleFojaDeMedicion
 
-**Módulo:** `carga/views/fojademedicionviews.py` (líneas 263-271)
+**Módulo:** `carga/views/fojademedicionviews.py` (líneas 263-271) · hereda de `PermissionRequiredMixin, generic.DetailView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Ficha de detalle de una Foja (base también de la impresión), con el contexto de `_foja_detalle_context`.
 
 ## Firma
 
@@ -23,14 +23,9 @@ class DetalleFojaDeMedicion(PermissionRequiredMixin, generic.DetailView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`DetalleFojaDeMedicion` (`carga:detalle-fojademedicion`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [_foja_detalle_context](_foja_detalle_context.md)
+- [ImprimirFojaDeMedicion](ImprimirFojaDeMedicion.md)

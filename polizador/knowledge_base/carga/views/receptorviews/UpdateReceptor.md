@@ -4,16 +4,16 @@ kind: class
 module: carga/views/receptorviews.py
 lines: 41-47
 signature_hash: sha1:506b696666c2130b687f465233f8d7156b1957ea
-authored: false
+authored: true
 ---
 
 # UpdateReceptor
 
-**Módulo:** `carga/views/receptorviews.py` (líneas 41-47)
+**Módulo:** `carga/views/receptorviews.py` (líneas 41-47) · hereda de `PermissionRequiredMixin, generic.UpdateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Edición de Receptor vía `ModelForm` estándar.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class UpdateReceptor(PermissionRequiredMixin, generic.UpdateView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`UpdateReceptor` (`carga:update-receptor`), enlazada desde el listado/ficha.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Receptor](../../models/Receptor.md)

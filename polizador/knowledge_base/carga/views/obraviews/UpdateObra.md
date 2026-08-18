@@ -4,16 +4,16 @@ kind: class
 module: carga/views/obraviews.py
 lines: 97-114
 signature_hash: sha1:58b578a636ecd03a6fef35a71fa95ade1519ede6
-authored: false
+authored: true
 ---
 
 # UpdateObra
 
-**Módulo:** `carga/views/obraviews.py` (líneas 97-114)
+**Módulo:** `carga/views/obraviews.py` (líneas 97-114) · hereda de `PermissionRequiredMixin, UserKwargsMixin, generic.UpdateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Edición de Obra. Agrega al contexto el Contrato vigente (y sus montos) y si hay más de uno, un flag `tiene_contratos_anteriores` para mostrar el link a `ContratosAnterioresObra`.
 
 ## Firma
 
@@ -23,14 +23,9 @@ class UpdateObra(PermissionRequiredMixin, UserKwargsMixin, generic.UpdateView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`UpdateObra` (`carga:update-obra`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Obra](../../models/Obra.md)
+- [ContratosAnterioresObra](ContratosAnterioresObra.md)

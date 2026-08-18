@@ -4,16 +4,16 @@ kind: class
 module: carga/views/certificadoviews.py
 lines: 354-365
 signature_hash: sha1:78f4ba143e7751cd30899f1f5b61b60edef73979
-authored: false
+authored: true
 ---
 
 # UpdateCertificado
 
-**Módulo:** `carga/views/certificadoviews.py` (líneas 354-365)
+**Módulo:** `carga/views/certificadoviews.py` (líneas 354-365) · hereda de `PermissionRequiredMixin, generic.UpdateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Edición de un Certificado ya cargado, sin restricción de tipo (a diferencia de las vistas de creación especializadas). `form_valid` guarda con `commit=False` primero — vestigial en su forma actual (no hace nada entre medio), probablemente un lugar preparado para lógica futura de recálculo al editar.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class UpdateCertificado(PermissionRequiredMixin, generic.UpdateView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`UpdateCertificado` (`carga:update-certificado`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Certificado](../../models/Certificado.md)

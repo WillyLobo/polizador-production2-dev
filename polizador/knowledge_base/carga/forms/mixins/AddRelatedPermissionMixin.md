@@ -4,7 +4,7 @@ kind: class
 module: carga/forms/mixins.py
 lines: 1-20
 signature_hash: sha1:70ed9da8850e4a9795ee416c71d82b46a385a426
-authored: false
+authored: true
 ---
 
 # AddRelatedPermissionMixin
@@ -13,7 +13,15 @@ authored: false
 
 ## Propósito
 
-_(pendiente de autoría)_
+Complemento de [AddRelatedWidgetMixin](../../views/ajaxviews/AddRelatedWidgetMixin.md): oculta el
+botón "+" de un campo select2 si el usuario actual no tiene el permiso `add_<modelo>` del
+modelo relacionado — así el botón nunca ofrece una acción que de todos modos fallaría por
+permisos. Requiere que la vista instancie el form pasando `user=request.user`
+(`core.mixins.UserKwargsMixin` es el mecanismo estándar para eso en este proyecto).
+
+Recorre todos los campos del form buscando widgets con `add_related_url_name` seteado
+(la marca que deja `AddRelatedWidgetMixin`), y en cada uno resuelve el modelo relacionado
+desde `field.queryset.model` para chequear el permiso correspondiente.
 
 ## Firma
 
@@ -23,18 +31,10 @@ class AddRelatedPermissionMixin:
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/ajaxviews.py:14` — ``add_related_allowed` puede setearlo AddRelatedPermissionMixin (carga/forms/mixins.py)`
-- `carga/forms/obraforms.py:3` — `from carga.forms.mixins import AddRelatedPermissionMixin`
-- `carga/forms/obraforms.py:20` — `class ObraForm(AddRelatedPermissionMixin, forms.ModelForm):`
-- `carga/forms/polizaforms.py:4` — `from carga.forms.mixins import AddRelatedPermissionMixin`
-- `carga/forms/polizaforms.py:16` — `class PolizaForm(AddRelatedPermissionMixin, forms.ModelForm):`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`class PolizaForm(AddRelatedPermissionMixin, forms.ModelForm)`, `class ObraForm(AddRelatedPermissionMixin, forms.ModelForm)`.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [AddRelatedWidgetMixin](../../views/ajaxviews/AddRelatedWidgetMixin.md)
+- [PolizaForm](PolizaForm.md)
+- [ObraForm](ObraForm.md)

@@ -4,16 +4,16 @@ kind: class
 module: carga/views/reportes.py
 lines: 158-185
 signature_hash: sha1:3d7f457f3f047ccdbd45598c8f5793333f94efa8
-authored: false
+authored: true
 ---
 
 # CrearListaUvi
 
-**Módulo:** `carga/views/reportes.py` (líneas 158-185)
+**Módulo:** `carga/views/reportes.py` (líneas 158-185) · hereda de `PermissionRequiredMixin, generic.ListView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Listado de cotizaciones `Uvi` en un rango de fechas — por defecto los últimos ~60 días hasta 10 días en el futuro; con `fecha_inicial`/`fecha_final` en querystring (formato `dd/mm/aaaa`), ese rango exacto.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class CrearListaUvi(PermissionRequiredMixin, generic.ListView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearListaUvi` (`carga:lista-uvi`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Uvi](../../models/Uvi.md)

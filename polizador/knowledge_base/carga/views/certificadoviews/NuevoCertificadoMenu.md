@@ -4,16 +4,16 @@ kind: class
 module: carga/views/certificadoviews.py
 lines: 348-350
 signature_hash: sha1:4ca8ebfe08727ee9526f1247df2086e63748627f
-authored: false
+authored: true
 ---
 
 # NuevoCertificadoMenu
 
-**Módulo:** `carga/views/certificadoviews.py` (líneas 348-350)
+**Módulo:** `carga/views/certificadoviews.py` (líneas 348-350) · hereda de `PermissionRequiredMixin, generic.TemplateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+`TemplateView` sin lógica: menú intermedio que enlaza a las distintas formas de crear un Certificado (manual, desde Foja, Anticipo, Hecho Consumado) — un punto de entrada único en vez de que el usuario tenga que saber cuál URL usar.
 
 ## Firma
 
@@ -23,14 +23,9 @@ class NuevoCertificadoMenu(PermissionRequiredMixin, generic.TemplateView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`NuevoCertificadoMenu` (`carga:nuevo-certificado-menu`), enlazada desde el navbar ("Obras > Nuevo Certificado").
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [GenerarCertificadosDesdeFoja](GenerarCertificadosDesdeFoja.md)
+- [CrearCertificadoAnticipo](CrearCertificadoAnticipo.md)

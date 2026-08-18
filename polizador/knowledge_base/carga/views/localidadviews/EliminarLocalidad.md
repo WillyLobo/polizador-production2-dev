@@ -4,16 +4,18 @@ kind: class
 module: carga/views/localidadviews.py
 lines: 12-17
 signature_hash: sha1:570054f04cab3a7a43486f77e4c58647a4bfea08
-authored: false
+authored: true
 ---
 
 # EliminarLocalidad
 
-**Módulo:** `carga/views/localidadviews.py` (líneas 12-17)
+**Módulo:** `carga/views/localidadviews.py` (líneas 12-17) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Confirma y ejecuta el borrado de una Localidad, mostrando antes (vía `DeleteRelatedObjectsMixin`
+— `core/mixins.py` + `core/deletion.py::get_deleted_objects`) los objetos relacionados que
+se borrarían en cascada, para que el usuario no borre a ciegas.
 
 ## Firma
 
@@ -23,14 +25,8 @@ class EliminarLocalidad(PermissionRequiredMixin, DeleteRelatedObjectsMixin, gene
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Enlazada desde el listado y la ficha de Localidad (botón de borrar de `polizador/context_processors.py::eliminarlinkimg`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Localidad](../../models/Localidad.md)

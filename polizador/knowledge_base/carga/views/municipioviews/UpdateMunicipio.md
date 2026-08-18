@@ -4,16 +4,16 @@ kind: class
 module: carga/views/municipioviews.py
 lines: 41-47
 signature_hash: sha1:e7556f8ab6f45219ab574dcf8e8938ee8d763e49
-authored: false
+authored: true
 ---
 
 # UpdateMunicipio
 
-**Módulo:** `carga/views/municipioviews.py` (líneas 41-47)
+**Módulo:** `carga/views/municipioviews.py` (líneas 41-47) · hereda de `PermissionRequiredMixin, generic.UpdateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Edición de Municipio vía `ModelForm` estándar.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class UpdateMunicipio(PermissionRequiredMixin, generic.UpdateView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`UpdateMunicipio` (`carga:update-municipio`), enlazada desde el listado/ficha.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Municipio](../../models/Municipio.md)

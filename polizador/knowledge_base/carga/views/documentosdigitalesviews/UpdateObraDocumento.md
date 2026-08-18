@@ -4,16 +4,16 @@ kind: class
 module: carga/views/documentosdigitalesviews.py
 lines: 86-92
 signature_hash: sha1:f402e6dd50b0d0eb65f00b364b1e7bf2b9d87c6c
-authored: false
+authored: true
 ---
 
 # UpdateObraDocumento
 
-**Módulo:** `carga/views/documentosdigitalesviews.py` (líneas 86-92)
+**Módulo:** `carga/views/documentosdigitalesviews.py` (líneas 86-92) · hereda de `PermissionRequiredMixin, generic.UpdateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Edición de un `ObraDocumento` ya cargado.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class UpdateObraDocumento(PermissionRequiredMixin, generic.UpdateView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`UpdateObraDocumento` (`carga:update-obra-documento`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [ObraDocumento](../../models/ObraDocumento.md)

@@ -4,7 +4,7 @@ kind: class
 module: carga/views/ajaxviews.py
 lines: 8-32
 signature_hash: sha1:c078c4feaee97771e4f27ba55d9e892118f25034
-authored: false
+authored: true
 ---
 
 # AddRelatedWidgetMixin
@@ -13,7 +13,17 @@ authored: false
 
 ## Propósito
 
-_(pendiente de autoría)_
+Mixin que agrega un botón "+" al lado de un `<select>` de select2: al hacer click abre
+(en un modal Bootstrap) el form de alta del modelo relacionado, y al guardar inserta el
+objeto recién creado como opción ya seleccionada en el select de origen — sin recargar la
+página ni perder el resto del formulario que se estaba completando.
+
+Requiere `add_related_url_name` (el nombre de URL del `CreateView` correspondiente, que
+a su vez debe usar `PopupCreateMixin` — ver `core/mixins.py` — para saber que tiene que
+devolver el objeto creado en vez de redirigir). `add_related_allowed` puede ponerlo en
+`False` `AddRelatedPermissionMixin` (`carga/forms/mixins.py`) para ocultar el botón según
+el permiso `add_<modelo>` del usuario actual — el botón nunca se muestra si el usuario no
+podría completar el alta de todos modos.
 
 ## Firma
 
@@ -23,18 +33,9 @@ class AddRelatedWidgetMixin:
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/ajaxviews.py:65` — `class conjuntowidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):`
-- `carga/views/ajaxviews.py:99` — `class programawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):`
-- `carga/views/ajaxviews.py:151` — `class aseguradorawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):`
-- `carga/views/ajaxviews.py:157` — `class areawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):`
-- `carga/views/ajaxviews.py:163` — `class receptorwidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`carga/static/carga/js/select2-add-related.js` (cargado globalmente en `templates/base.html`) es el JS que engancha el click del botón `.select2-add-related` con el modal `#addRelatedModal`.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [PlanDependentWidgetMixin](PlanDependentWidgetMixin.md)
+- [programawidget](programawidget.md) — uno de los widgets que lo usa.

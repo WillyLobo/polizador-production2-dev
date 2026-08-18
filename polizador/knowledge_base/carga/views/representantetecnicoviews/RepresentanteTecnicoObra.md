@@ -4,16 +4,16 @@ kind: class
 module: carga/views/representantetecnicoviews.py
 lines: 50-54
 signature_hash: sha1:dc5a44eb5c787061c8059cdff4feccc59f4b03ba
-authored: false
+authored: true
 ---
 
 # RepresentanteTecnicoObra
 
-**Módulo:** `carga/views/representantetecnicoviews.py` (líneas 50-54)
+**Módulo:** `carga/views/representantetecnicoviews.py` (líneas 50-54) · hereda de `PermissionRequiredMixin, generic.DetailView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Ficha de detalle de RepresentanteTecnico centrada en mostrar las Obras vinculadas a esta entrada del catálogo (sin lógica propia más allá del `DetailView` — el filtrado de Obras relacionadas lo resuelve el template, no una `get_context_data` propia).
 
 ## Firma
 
@@ -23,14 +23,9 @@ class RepresentanteTecnicoObra(PermissionRequiredMixin, generic.DetailView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`RepresentanteTecnicoObra` (`carga:representantetecnico-obra`), enlazada desde el listado de RepresentanteTecnico.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [RepresentanteTecnico](../../models/RepresentanteTecnico.md)
+- [Obra](../../models/Obra.md)

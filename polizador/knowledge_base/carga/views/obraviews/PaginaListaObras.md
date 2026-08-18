@@ -4,7 +4,7 @@ kind: function
 module: carga/views/obraviews.py
 lines: 166-176
 signature_hash: sha1:768cd9aa8ca5149c7da874d037df3333ecadc37c
-authored: false
+authored: true
 ---
 
 # PaginaListaObras
@@ -13,7 +13,10 @@ authored: false
 
 ## Propósito
 
-_(pendiente de autoría)_
+Función vista simple: solo renderiza la página que contiene la tabla (`Lista-obras.html`), sin
+pasarle datos. La tabla se llena después vía AJAX contra un endpoint genérico de listado
+(`api/views/generics.py`, fuera de `carga` — no cubierto en esta fase), siguiendo el
+patrón `django-ajax-datatable` que describe CLAUDE.md.
 
 ## Firma
 
@@ -23,14 +26,8 @@ def PaginaListaObras(request):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`PaginaListaObras` (`carga:lista-obras`) — destino por defecto tras crear/borrar una Obra.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Obra](../../models/Obra.md)

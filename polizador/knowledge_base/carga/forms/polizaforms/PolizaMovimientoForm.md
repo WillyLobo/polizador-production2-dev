@@ -4,16 +4,16 @@ kind: class
 module: carga/forms/polizaforms.py
 lines: 56-73
 signature_hash: sha1:91cad77e416e4d3261d8c34b71690efba1b1cb33
-authored: false
+authored: true
 ---
 
 # PolizaMovimientoForm
 
-**Módulo:** `carga/forms/polizaforms.py` (líneas 56-73)
+**Módulo:** `carga/forms/polizaforms.py` (líneas 56-73) · hereda de `AddRelatedPermissionMixin, forms.ModelForm`
 
 ## Propósito
 
-_(pendiente de autoría)_
+`ModelForm` para `Poliza_Movimiento` (fecha, receptor, área, número de póliza), con `AddRelatedPermissionMixin`.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class PolizaMovimientoForm(AddRelatedPermissionMixin, forms.ModelForm):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/forms/polizaforms.py:82` — `form = PolizaMovimientoForm,`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Form base de `PolizaMovimientoFormset`.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Poliza_Movimiento](../../models/Poliza_Movimiento.md)

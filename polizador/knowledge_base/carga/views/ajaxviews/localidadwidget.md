@@ -4,16 +4,16 @@ kind: class
 module: carga/views/ajaxviews.py
 lines: 211-214
 signature_hash: sha1:fd297fed14e0eb7d2f792bd1c534d0deb7e54103
-authored: false
+authored: true
 ---
 
 # localidadwidget
 
-**Módulo:** `carga/views/ajaxviews.py` (líneas 211-214)
+**Módulo:** `carga/views/ajaxviews.py` (líneas 211-214) · hereda de `LoginRequiredMixin, s2forms.ModelSelect2Widget`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Widget select2 (`django-select2`) para elegir un(a) Localidad vía búsqueda AJAX incremental, en vez de un `<select>` con todas las opciones cargadas de una — ver CLAUDE.md sobre `django-select2`. `search_fields` define contra qué columnas busca `django-select2` con `icontains`. Selección simple.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class localidadwidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Campos `ForeignKey` a Localidad.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [localidadmultiplewidget](localidadmultiplewidget.md)

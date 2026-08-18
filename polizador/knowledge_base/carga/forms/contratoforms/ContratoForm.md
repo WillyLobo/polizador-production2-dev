@@ -4,16 +4,16 @@ kind: class
 module: carga/forms/contratoforms.py
 lines: 9-44
 signature_hash: sha1:ccb506e78e86295b5ea478b0dabd4ee769856429
-authored: false
+authored: true
 ---
 
 # ContratoForm
 
-**Módulo:** `carga/forms/contratoforms.py` (líneas 9-44)
+**Módulo:** `carga/forms/contratoforms.py` (líneas 9-44) · hereda de `forms.ModelForm`
 
 ## Propósito
 
-_(pendiente de autoría)_
+`ModelForm` estándar para Contrato: datos de resolución + el flag `contrato_certificacion_por_etapas` que decide si la Obra certifica por % mensual o por tramos fijos (ver la página del modelo). Sin `clean()` propio; el único `__init__` custom solo fuerza un label ("Obra") en un campo que no lo trae por defecto.
 
 ## Firma
 
@@ -23,15 +23,8 @@ class ContratoForm(forms.ModelForm):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/contratoviews.py:19` — `form_class = ContratoForm`
-- `carga/views/contratoviews.py:41` — `form_class = ContratoForm`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearContrato`/`UpdateContrato` (`carga/views/contratoviews.py`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Contrato](../../models/Contrato.md)

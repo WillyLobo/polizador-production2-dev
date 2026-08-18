@@ -4,16 +4,18 @@ kind: class
 module: carga/views/polizaviews.py
 lines: 13-18
 signature_hash: sha1:efe6eafbac3d922ae2121b2c21815402c140886f
-authored: false
+authored: true
 ---
 
 # EliminarPoliza
 
-**Módulo:** `carga/views/polizaviews.py` (líneas 13-18)
+**Módulo:** `carga/views/polizaviews.py` (líneas 13-18) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Confirma y ejecuta el borrado de una Poliza, mostrando antes (vía `DeleteRelatedObjectsMixin`
+— `core/mixins.py` + `core/deletion.py::get_deleted_objects`) los objetos relacionados que
+se borrarían en cascada, para que el usuario no borre a ciegas.
 
 ## Firma
 
@@ -23,14 +25,8 @@ class EliminarPoliza(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Enlazada desde el listado/ficha de Póliza.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Poliza](../../models/Poliza.md)

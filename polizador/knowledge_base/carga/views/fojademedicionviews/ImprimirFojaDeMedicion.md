@@ -4,16 +4,16 @@ kind: class
 module: carga/views/fojademedicionviews.py
 lines: 275-284
 signature_hash: sha1:7adaca61b415dcdcfa5116395b1b3284e3d77508
-authored: false
+authored: true
 ---
 
 # ImprimirFojaDeMedicion
 
-**Módulo:** `carga/views/fojademedicionviews.py` (líneas 275-284)
+**Módulo:** `carga/views/fojademedicionviews.py` (líneas 275-284) · hereda de `PermissionRequiredMixin, generic.DetailView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Mismo template y contexto que `DetalleFojaDeMedicion`, con `auto_print=True` (mismo patrón que `ImprimirCertificado`).
 
 ## Firma
 
@@ -23,14 +23,8 @@ class ImprimirFojaDeMedicion(PermissionRequiredMixin, generic.DetailView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`ImprimirFojaDeMedicion` (`carga:imprimir-fojademedicion`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [DetalleFojaDeMedicion](DetalleFojaDeMedicion.md)

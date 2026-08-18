@@ -4,16 +4,16 @@ kind: class
 module: carga/views/empresaviews.py
 lines: 21-38
 signature_hash: sha1:47f0b65705fae0ecd7f03af23fd1ee733139f272
-authored: false
+authored: true
 ---
 
 # CrearEmpresa
 
-**Módulo:** `carga/views/empresaviews.py` (líneas 21-38)
+**Módulo:** `carga/views/empresaviews.py` (líneas 21-38) · hereda de `PopupCreateMixin, PermissionRequiredMixin, generic.CreateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Alta de Empresa vía `ModelForm` estándar. Usa `PopupCreateMixin` (`core/mixins.py`): si se abre en el modal de "agregar relacionado" de un widget select2 (`AddRelatedWidgetMixin`, `carga/views/ajaxviews.py`), devuelve el objeto creado como opción ya seleccionada en vez de redirigir a otra página.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class CrearEmpresa(PopupCreateMixin, PermissionRequiredMixin, generic.CreateView
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearEmpresa` (`carga:crear-empresa`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Empresa](../../models/Empresa.md)

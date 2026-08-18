@@ -4,16 +4,16 @@ kind: class
 module: carga/views/empresaviews.py
 lines: 42-48
 signature_hash: sha1:c5e6041246c8c98ec907573230db82331afd7d68
-authored: false
+authored: true
 ---
 
 # UpdateEmpresa
 
-**Módulo:** `carga/views/empresaviews.py` (líneas 42-48)
+**Módulo:** `carga/views/empresaviews.py` (líneas 42-48) · hereda de `PermissionRequiredMixin, generic.UpdateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Edición de Empresa vía `ModelForm` estándar.
 
 ## Firma
 
@@ -23,14 +23,8 @@ class UpdateEmpresa(PermissionRequiredMixin, generic.UpdateView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`UpdateEmpresa` (`carga:update-empresa`), enlazada desde el listado/ficha.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Empresa](../../models/Empresa.md)

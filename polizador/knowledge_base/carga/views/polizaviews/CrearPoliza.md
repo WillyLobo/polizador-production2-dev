@@ -4,16 +4,16 @@ kind: class
 module: carga/views/polizaviews.py
 lines: 22-40
 signature_hash: sha1:abad3099aa9336c6745088025e3c2f46ef27bfbb
-authored: false
+authored: true
 ---
 
 # CrearPoliza
 
-**Módulo:** `carga/views/polizaviews.py` (líneas 22-40)
+**Módulo:** `carga/views/polizaviews.py` (líneas 22-40) · hereda de `PermissionRequiredMixin, UserKwargsMixin, UserFormsetKwargsMixin, FormsetViewMixin, generic.CreateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Alta de Póliza junto con su formset inline de `Poliza_Movimiento` (el primer movimiento) — usa `UserKwargsMixin`/`UserFormsetKwargsMixin` para que el form/formset tengan acceso al usuario logueado (probablemente para defaults o filtros por permiso, ver `core/mixins.py`).
 
 ## Firma
 
@@ -23,14 +23,9 @@ class CrearPoliza(PermissionRequiredMixin, UserKwargsMixin, UserFormsetKwargsMix
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearPoliza` (`carga:crear-poliza`), enlazada desde la ficha de Obra.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Poliza](../../models/Poliza.md)
+- [Poliza_Movimiento](../../models/Poliza_Movimiento.md)

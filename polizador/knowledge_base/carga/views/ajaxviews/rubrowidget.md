@@ -4,16 +4,16 @@ kind: class
 module: carga/views/ajaxviews.py
 lines: 76-80
 signature_hash: sha1:4031d29d50dc533d6ad36f297f89435d57760049
-authored: false
+authored: true
 ---
 
 # rubrowidget
 
-**Módulo:** `carga/views/ajaxviews.py` (líneas 76-80)
+**Módulo:** `carga/views/ajaxviews.py` (líneas 76-80) · hereda de `LoginRequiredMixin, s2forms.ModelSelect2Widget`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Widget select2 (`django-select2`) para elegir un(a) PlanDeTrabajosRubro vía búsqueda AJAX incremental, en vez de un `<select>` con todas las opciones cargadas de una — ver CLAUDE.md sobre `django-select2`. `search_fields` define contra qué columnas busca `django-select2` con `icontains`. Busca por nombre de rubro y por la Obra del plan.
 
 ## Firma
 
@@ -23,15 +23,8 @@ class rubrowidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/forms/fojademedicionforms.py:6` — `from carga.views.ajaxviews import rubrowidget, agentemultiplewidget, certificadolegacywidget`
-- `carga/forms/fojademedicionforms.py:37` — `"foja_rubro": rubrowidget(attrs={"class": "form-control customSelect2"}),`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Selección de Rubro en formularios que lo referencian (ej. `FojaDeMedicionForm`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [PlanDeTrabajosRubro](../../models/PlanDeTrabajosRubro.md)

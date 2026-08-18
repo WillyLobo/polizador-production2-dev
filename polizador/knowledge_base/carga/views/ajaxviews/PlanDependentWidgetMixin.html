@@ -1,17 +1,23 @@
 <h1>PlanDependentWidgetMixin</h1>
 <p><strong>Módulo:</strong> <code>carga/views/ajaxviews.py</code> (líneas 43-56)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Mixin para widgets usados dentro de <code>PlanDeTrabajosRubroForm</code>: acota los resultados AJAX
+al Plan de Trabajos elegido en el campo hermano <code>rubro_plan</code> del mismo formulario
+(<code>dependent_fields = {"rubro_plan": "rubro_plan_actual"}</code>, mecanismo de
+<code>django-select2</code> que reenvía el valor actual de ese campo en cada request AJAX). Por
+ejemplo, <code>contratomontowidget</code> lo usa para no ofrecer montos de Contratos de <em>otras</em> Obras
+en el combo de "Monto de Contrato" de un Rubro.</p>
+<p><code>_plan_actual(dependent_fields)</code> es el helper compartido que las subclases usan en su
+propio <code>filter_queryset()</code> para resolver el <code>PlanDeTrabajos</code> real a partir del ID
+recibido.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class PlanDependentWidgetMixin:
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/ajaxviews.py:82</code> — <code>class rubroanteriorwidget(PlanDependentWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):</code></li>
-<li><code>carga/views/ajaxviews.py:226</code> — <code>class contratomontowidget(PlanDependentWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>class rubroanteriorwidget(PlanDependentWidgetMixin, ...)</code>, <code>class contratomontowidget(PlanDependentWidgetMixin, ...)</code> — ambos en <code>PlanDeTrabajosRubroForm</code>.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="rubroanteriorwidget.md">rubroanteriorwidget</a></li>
+<li><a href="contratomontowidget.md">contratomontowidget</a></li>
+<li><a href="../../models/PlanDeTrabajosRubro.md">PlanDeTrabajosRubro</a></li>
+</ul>

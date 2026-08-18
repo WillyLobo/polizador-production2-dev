@@ -4,16 +4,16 @@ kind: class
 module: carga/views/ajaxviews.py
 lines: 157-161
 signature_hash: sha1:9a5bf7772dea4232a802c56f4ba65420df7ff4c4
-authored: false
+authored: true
 ---
 
 # areawidget
 
-**Módulo:** `carga/views/ajaxviews.py` (líneas 157-161)
+**Módulo:** `carga/views/ajaxviews.py` (líneas 157-161) · hereda de `AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Widget select2 (`django-select2`) para elegir un(a) Area vía búsqueda AJAX incremental, en vez de un `<select>` con todas las opciones cargadas de una — ver CLAUDE.md sobre `django-select2`. `search_fields` define contra qué columnas busca `django-select2` con `icontains`. Catálogo chico, con alta rápida (`carga:crear-area`).
 
 ## Firma
 
@@ -23,15 +23,8 @@ class areawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMi
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/forms/polizaforms.py:8` — `from carga.views.ajaxviews import areawidget, polizawidget, receptorwidget`
-- `carga/forms/polizaforms.py:71` — `"poliza_movimiento_area":areawidget(attrs={"class":"form-control customSelect2"}),`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`Poliza_Movimiento.poliza_movimiento_area` en `PolizaMovimientoForm`.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Area](../../models/Area.md)

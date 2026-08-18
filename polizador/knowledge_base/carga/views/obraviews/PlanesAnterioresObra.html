@@ -1,14 +1,14 @@
 <h1>PlanesAnterioresObra</h1>
-<p><strong>Módulo:</strong> <code>carga/views/obraviews.py</code> (líneas 133-146)</p>
+<p><strong>Módulo:</strong> <code>carga/views/obraviews.py</code> (líneas 133-146) · hereda de <code>PermissionRequiredMixin, generic.DetailView</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Lista los Planes de Trabajos de la Obra que no son el vigente (<code>Obra.plan_vigente()</code>) — el historial de reprogramaciones, ordenado del más reciente al más viejo.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class PlanesAnterioresObra(PermissionRequiredMixin, generic.DetailView):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>PlanesAnterioresObra</code> (<code>carga:planes-anteriores-obra</code>), enlazada desde <code>EstadoObra</code>.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/PlanDeTrabajos.md">PlanDeTrabajos</a></li>
+<li><a href="../../models/Obra.md">Obra</a></li>
+</ul>

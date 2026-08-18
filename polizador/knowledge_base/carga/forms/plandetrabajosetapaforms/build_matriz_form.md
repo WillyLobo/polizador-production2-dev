@@ -4,7 +4,7 @@ kind: function
 module: carga/forms/plandetrabajosetapaforms.py
 lines: 9-63
 signature_hash: sha1:cdb5505432e4c09d74f331864bd1b47835a6b5b3
-authored: false
+authored: true
 ---
 
 # build_matriz_form
@@ -13,7 +13,17 @@ authored: false
 
 ## Propósito
 
-_(pendiente de autoría)_
+Fábrica de una clase `forms.Form` dinámica: un campo `DecimalField` por cada combinación
+(`PlanDeTrabajosItem`, columna/etapa) — no un `ModelForm` ni un formset, porque la grilla
+no mapea 1:1 a filas de una tabla sino a una matriz completa de valores que después la
+vista (`PlanDeTrabajosEtapaMatriz.post`) traduce a instancias de
+`PlanDeTrabajosEtapa`/`PlanDeTrabajosEtapaItem`.
+
+`clean()` valida dos cosas a la vez: por fila (item), que la suma de todas sus columnas
+más lo que ya llevaba acumulado (`anterior_map`) no supere su `planitem_incidencia_pct`;
+y por columna (etapa), que la suma de todos los items de esa etapa no supere 100% —
+mismas reglas que `BaseFojaDeMedicionItemFormset` aplica del lado real (Foja), pero acá
+sobre valores *proyectados* y en una sola pasada de formulario en vez de un formset.
 
 ## Firma
 
@@ -23,16 +33,10 @@ def build_matriz_form(items, total_columns, anterior_map):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/plandetrabajosetapaviews.py:13` — `from carga.forms.plandetrabajosetapaforms import build_matriz_form, matriz_field_name`
-- `carga/views/plandetrabajosetapaviews.py:81` — `form_class = build_matriz_form(items, total_columns, anterior_map)`
-- `carga/views/plandetrabajosetapaviews.py:92` — `form_class = build_matriz_form(items, total_columns, anterior_map)`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`PlanDeTrabajosEtapaMatriz.get/post` (`carga/views/plandetrabajosetapaviews.py`) construyen la clase con `build_matriz_form(items, total_columns, anterior_map)` y la instancian.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [matriz_field_name](matriz_field_name.md)
+- [PlanDeTrabajosEtapaMatriz](../../views/plandetrabajosetapaviews/PlanDeTrabajosEtapaMatriz.md)
+- [PlanDeTrabajosEtapaItem](../../models/PlanDeTrabajosEtapaItem.md)

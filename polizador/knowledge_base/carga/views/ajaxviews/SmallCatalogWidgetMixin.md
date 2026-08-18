@@ -4,7 +4,7 @@ kind: class
 module: carga/views/ajaxviews.py
 lines: 34-41
 signature_hash: sha1:8c350205c6d565d63eeaa4441b7eaba0db2ee57e
-authored: false
+authored: true
 ---
 
 # SmallCatalogWidgetMixin
@@ -13,7 +13,10 @@ authored: false
 
 ## Propósito
 
-_(pendiente de autoría)_
+Para catálogos con pocas filas (provincias, departamentos, municipios...): fuerza
+`data-minimum-input-length=0` para que select2 muestre los primeros resultados apenas se
+abre el combo, sin que el usuario tenga que escribir nada primero — no tendría sentido
+pedir 2-3 caracteres mínimos en una tabla de 24 provincias.
 
 ## Firma
 
@@ -23,18 +26,8 @@ class SmallCatalogWidgetMixin:
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/ajaxviews.py:99` — `class programawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):`
-- `carga/views/ajaxviews.py:151` — `class aseguradorawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):`
-- `carga/views/ajaxviews.py:157` — `class areawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):`
-- `carga/views/ajaxviews.py:191` — `class provinciawidget(SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):`
-- `carga/views/ajaxviews.py:196` — `class departamentomultiplewidget(SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget):`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`class provinciawidget(SmallCatalogWidgetMixin, ...)`, junto con `departamentowidget`, `municipiowidget`, `aseguradorawidget`, `areawidget`, `programawidget`.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [provinciawidget](provinciawidget.md)

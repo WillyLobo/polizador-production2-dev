@@ -4,16 +4,16 @@ kind: class
 module: carga/forms/plandetrabajositemforms.py
 lines: 4-25
 signature_hash: sha1:039e3155e9ea4a4673df5e36fc30fa65bc82b5f3
-authored: false
+authored: true
 ---
 
 # PlanDeTrabajosItemForm
 
-**Módulo:** `carga/forms/plandetrabajositemforms.py` (líneas 4-25)
+**Módulo:** `carga/forms/plandetrabajositemforms.py` (líneas 4-25) · hereda de `forms.ModelForm`
 
 ## Propósito
 
-_(pendiente de autoría)_
+`ModelForm` para `PlanDeTrabajosItem` (nombre, orden, % de incidencia). Su único `clean()` normaliza `planitem_nombre` a mayúsculas — consistencia de datos cargados a mano por distintos usuarios.
 
 ## Firma
 
@@ -23,15 +23,8 @@ class PlanDeTrabajosItemForm(forms.ModelForm):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/forms/plandetrabajosrubroforms.py:4` — `from carga.forms.plandetrabajositemforms import PlanDeTrabajosItemForm`
-- `carga/forms/plandetrabajosrubroforms.py:74` — `form=PlanDeTrabajosItemForm,`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Form base de `PlanDeTrabajosItemFormset` (dentro de `PlanDeTrabajosRubroForm`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [PlanDeTrabajosItem](../../models/PlanDeTrabajosItem.md)

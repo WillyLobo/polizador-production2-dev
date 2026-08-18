@@ -4,16 +4,18 @@ kind: class
 module: carga/views/municipioviews.py
 lines: 12-17
 signature_hash: sha1:799ba26e8410e717d5a40cc670a1a363e695a225
-authored: false
+authored: true
 ---
 
 # EliminarMunicipio
 
-**Módulo:** `carga/views/municipioviews.py` (líneas 12-17)
+**Módulo:** `carga/views/municipioviews.py` (líneas 12-17) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Confirma y ejecuta el borrado de un Municipio, mostrando antes (vía `DeleteRelatedObjectsMixin`
+— `core/mixins.py` + `core/deletion.py::get_deleted_objects`) los objetos relacionados que
+se borrarían en cascada, para que el usuario no borre a ciegas.
 
 ## Firma
 
@@ -23,14 +25,8 @@ class EliminarMunicipio(PermissionRequiredMixin, DeleteRelatedObjectsMixin, gene
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Enlazada desde el listado y la ficha de Municipio (botón de borrar de `polizador/context_processors.py::eliminarlinkimg`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Municipio](../../models/Municipio.md)

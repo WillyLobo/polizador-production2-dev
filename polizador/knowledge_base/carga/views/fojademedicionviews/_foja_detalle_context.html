@@ -1,17 +1,14 @@
 <h1>_foja_detalle_context</h1>
 <p><strong>Módulo:</strong> <code>carga/views/fojademedicionviews.py</code> (líneas 13-46)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Contexto de la ficha/impresión de una Foja: items con su % anterior/mes/acumulado, el responsable institucional (Gerente Operativo, resuelto por nombre fijo igual que en <code>_certificado_detalle_context</code>), totales de la fila, y las fotos adjuntas paginadas de a 3 por página (para el layout de impresión).</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def _foja_detalle_context(foja):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/fojademedicionviews.py:270</code> — <code>ctx.update(_foja_detalle_context(self.object))</code></li>
-<li><code>carga/views/fojademedicionviews.py:282</code> — <code>ctx.update(_foja_detalle_context(self.object))</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>DetalleFojaDeMedicion.get_context_data</code> / <code>ImprimirFojaDeMedicion.get_context_data</code> (mismo módulo).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/FojaDeMedicion.md">FojaDeMedicion</a></li>
+<li><a href="DetalleFojaDeMedicion.md">DetalleFojaDeMedicion</a></li>
+</ul>

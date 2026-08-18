@@ -1,14 +1,14 @@
 <h1>EstadoObra</h1>
-<p><strong>Módulo:</strong> <code>carga/views/obraviews.py</code> (líneas 117-130)</p>
+<p><strong>Módulo:</strong> <code>carga/views/obraviews.py</code> (líneas 117-130) · hereda de <code>PermissionRequiredMixin, generic.DetailView</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>La ficha principal de una Obra: todo el estado consolidado (contratos, montos, planes de trabajos, rubros, fojas, certificados) en una sola página, usando <code>_obra_estado_prefetch()</code> para traerlo todo sin N+1.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class EstadoObra(PermissionRequiredMixin, generic.DetailView):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>EstadoObra</code> (<code>carga:estado-obra</code>) — destino de la mayoría de los flujos de creación (Contrato, Plan de Trabajos, Foja...) una vez guardados.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="_obra_estado_prefetch.md">_obra_estado_prefetch</a></li>
+<li><a href="../../models/Obra.md">Obra</a></li>
+</ul>

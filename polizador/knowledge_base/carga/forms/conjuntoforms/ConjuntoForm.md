@@ -4,16 +4,16 @@ kind: class
 module: carga/forms/conjuntoforms.py
 lines: 5-31
 signature_hash: sha1:4c3a919571ca994e53a9ce37875a2bfc9a765cbd
-authored: false
+authored: true
 ---
 
 # ConjuntoForm
 
-**Módulo:** `carga/forms/conjuntoforms.py` (líneas 5-31)
+**Módulo:** `carga/forms/conjuntoforms.py` (líneas 5-31) · hereda de `forms.ModelForm`
 
 ## Propósito
 
-_(pendiente de autoría)_
+`ModelForm` estándar para ConjuntoLicitado: datos de resolución (mismo patrón `tipo/año/número/jurisdicción/acta` que Obra/Contrato) más `conjunto_subconjunto` para el sub-agrupamiento. Sin lógica propia.
 
 ## Firma
 
@@ -23,15 +23,8 @@ class ConjuntoForm(forms.ModelForm):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/conjuntoviews.py:25` — `form_class = ConjuntoForm`
-- `carga/views/conjuntoviews.py:45` — `form_class = ConjuntoForm`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearConjunto`/`UpdateConjunto` (`carga/views/conjuntoviews.py`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [ConjuntoLicitado](../../models/ConjuntoLicitado.md)

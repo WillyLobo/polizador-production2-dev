@@ -4,16 +4,16 @@ kind: class
 module: carga/forms/programaforms.py
 lines: 4-14
 signature_hash: sha1:ce11be721f760ae3c593ca660a46bffab71cd509
-authored: false
+authored: true
 ---
 
 # ProgramaForm
 
-**Módulo:** `carga/forms/programaforms.py` (líneas 4-14)
+**Módulo:** `carga/forms/programaforms.py` (líneas 4-14) · hereda de `forms.ModelForm`
 
 ## Propósito
 
-_(pendiente de autoría)_
+`ModelForm` estándar para Programa, sin `clean()` ni lógica propia — solo declara `Meta.fields`/`widgets` (inputs Bootstrap, sin validación más allá de la del modelo). Un solo campo: `programa_nombre`.
 
 ## Firma
 
@@ -23,15 +23,8 @@ class ProgramaForm(forms.ModelForm):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/programaviews.py:26` — `form_class = ProgramaForm`
-- `carga/views/programaviews.py:46` — `form_class = ProgramaForm`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearPrograma/UpdatePrograma` (`carga/views/`), tanto para alta como edición.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Programa](../../models/Programa.md)

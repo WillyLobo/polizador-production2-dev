@@ -4,16 +4,16 @@ kind: class
 module: carga/views/programaviews.py
 lines: 50-54
 signature_hash: sha1:f9ce1fca1b999c7adee4455390dae99fb09ff146
-authored: false
+authored: true
 ---
 
 # ProgramaObra
 
-**Módulo:** `carga/views/programaviews.py` (líneas 50-54)
+**Módulo:** `carga/views/programaviews.py` (líneas 50-54) · hereda de `PermissionRequiredMixin, generic.DetailView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Ficha de detalle de Programa centrada en mostrar las Obras vinculadas a esta entrada del catálogo (sin lógica propia más allá del `DetailView` — el filtrado de Obras relacionadas lo resuelve el template, no una `get_context_data` propia).
 
 ## Firma
 
@@ -23,14 +23,9 @@ class ProgramaObra(PermissionRequiredMixin, generic.DetailView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`ProgramaObra` (`carga:programa-obra`), enlazada desde el listado de Programa.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Programa](../../models/Programa.md)
+- [Obra](../../models/Obra.md)
