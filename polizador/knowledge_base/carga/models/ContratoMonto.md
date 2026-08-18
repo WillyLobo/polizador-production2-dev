@@ -4,16 +4,23 @@ kind: class
 module: carga/models.py
 lines: 1357-1372
 signature_hash: sha1:d6aca3c952661c05835e3fad07e60e8820f8f533
-authored: false
+authored: true
 ---
 
 # ContratoMonto
 
-**Módulo:** `carga/models.py` (líneas 1357-1372)
+**Módulo:** `carga/models.py` (líneas 1357-1372) · hereda de `models.Model`
 
 ## Propósito
 
-_(pendiente de autoría)_
+El monto de un Contrato desglosado por Rubro de Certificado + Financiamiento (una fila
+por combinación), en pesos y UVI. Es la fuente real de dos cálculos ya cubiertos en otras
+páginas: `Obra.recalcular_montos_contrato()` los suma agrupados por financiamiento para
+desnormalizar el total de la Obra (ver
+[recalcular_montos_obra](../signals/recalcular_montos_obra.md)), y
+`PlanDeTrabajosRubro.monto_base_pesos()`/`monto_base_uvi()` usan el `ContratoMonto`
+vinculado (`rubro_contratomonto`) como base para proyectar Etapas, en vez del
+`rubro_presupuesto` cargado a mano.
 
 ## Firma
 
@@ -23,18 +30,10 @@ class ContratoMonto(models.Model):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/models.py:474` — `la suma/fecha más reciente de los ContratoMonto de todos los Contratos de la obra,`
-- `carga/models.py:476` — `montos = ContratoMonto.objects.filter(contratomonto_contrato__contrato_obra=self)`
-- `carga/models.py:508` — `# Los _uvi_fecha quedan en None cuando no hay un ContratoMonto que los origine`
-- `carga/models.py:935` — `rubro_contratomonto = models.ForeignKey("ContratoMonto", verbose_name="Monto de Contrato", on_delete=models.SET_NULL, null=True, blank=True, related_name="rubros_plan")`
-- `carga/models.py:943` — `"(ContratoMonto) al generar certificados desde una Foja.",`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Formset inline dentro de `CrearContrato`/`UpdateContrato` (`carga/views/contratoviews.py`, `formset_name = ContratoMontoFormset`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Contrato](Contrato.md)
+- [recalcular_montos_obra](../signals/recalcular_montos_obra.md)
+- [PlanDeTrabajosRubro](PlanDeTrabajosRubro.md)

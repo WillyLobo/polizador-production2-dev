@@ -1,20 +1,51 @@
 <h1>Obra</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 323-543)</p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 323-543) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>El modelo central de <code>carga</code>: una obra pública IPDUV, con su empresa contratista, ubicación
+geográfica (Región/Departamento/Municipio/Localidad, todos M2M salvo Región),
+financiamiento total desglosado por Nación/Provincia/Terceros (pesos y UVI), resolución de
+adjudicación, y las relaciones hacia Contrato/PlanDeTrabajos/Certificado/Póliza que cuelgan
+de ella. Es, con 220 líneas y ~25 métodos/propiedades, el modelo más grande de <code>carga</code>
+junto con <code>Certificado</code>.</p>
+<p>Dos ideas de diseño no obvias:</p>
+<ul>
+<li><strong>Los montos de contrato son desnormalizados, no calculados al vuelo.</strong>
+  <code>obra_contrato_{nacion,provincia,terceros}_{pesos,uvi,uvi_fecha}</code> son campos reales en
+  la tabla, mantenidos sincronizados por la señal
+  <a href="../signals/recalcular_montos_obra.md">recalcular_montos_obra</a> cada vez que cambia un
+  <code>ContratoMonto</code> de cualquier Contrato de la Obra — ver ese método
+  (<code>recalcular_montos_contrato()</code>) para el detalle del recálculo.
+  <code>obra_contrato_total_pesos</code>/<code>obra_contrato_total_uvi</code> sí son <code>GeneratedField</code> (calculados
+  por la base de datos, <code>db_persist=True</code>), la suma de los tres desnormalizados.</li>
+<li><strong>"Vigente" es siempre el más reciente por fecha, no un flag.</strong> <code>plan_vigente()</code> y
+  <code>contrato_vigente()</code> no filtran por ningún campo "activo": toman el
+  <code>PlanDeTrabajos</code>/<code>Contrato</code> con <code>fecha</code> (y <code>pk</code> como desempate) más grande. Ambos
+  métodos tienen la misma optimización: si la relación inversa ya viene precargada vía
+  <code>prefetch_related</code>, ordenan en Python sobre esa colección en memoria en vez de disparar
+  un <code>.order_by().first()</code> que ignoraría el prefetch y traería una instancia nueva sin sus
+  propios prefetches anidados.</li>
+</ul>
+<p><code>ultimo_certificado_avance()</code> tiene su propia complejidad: solo cuenta como "certificado de
+avance real" a los de tipo PARCIAL/HECHO_CONSUMADO/ETAPA (o LEGACY con
+<code>certificado_rubro_obra&gt;0</code>) — un Anticipo es un pool sobre toda la Obra, no un avance de
+rubro puntual, y si fuera el certificado más reciente "taparía" el % de avance real con un
+0 si se lo tomara como el último sin más.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class Obra(models.Model):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/models.py:182</code> — <code>poliza_obra = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.CASCADE)</code></li>
-<li><code>carga/models.py:315</code> — <code># Compartido por los campos de resolución cargados a mano (Obra/ConjuntoLicitado/Contrato),</code></li>
-<li><code>carga/models.py:547</code> — <code>"""Anota el % acumulado del último certificado (Obra) y el % acumulado de Anticipo del</code></li>
-<li><code>carga/models.py:563</code> — <code>verbose_name = "Documento de Obra"</code></li>
-<li><code>carga/models.py:564</code> — <code>verbose_name_plural = "Documentos de Obra"</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<pre><code class="language-python"># carga/views/obraviews.py (CrearObra.form_valid, ModelForm estándar)
+self.object = form.save()
+</code></pre>
+<p><code>recalcular_montos_contrato()</code> en particular se usa así, disparado por la señal (no a mano):</p>
+<pre><code class="language-python"># carga/signals.py:62 (recalcular_montos_obra)
+instance.contratomonto_contrato.contrato_obra.recalcular_montos_contrato()
+</code></pre>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../signals/recalcular_montos_obra.md">recalcular_montos_obra</a> — señal que mantiene sincronizados los montos desnormalizados de este modelo.</li>
+<li><a href="Contrato.md">Contrato</a></li>
+<li><a href="PlanDeTrabajos.md">PlanDeTrabajos</a></li>
+<li><a href="Certificado.md">Certificado</a></li>
+<li><a href="obras_con_acumulado_anotado.md">obras_con_acumulado_anotado</a></li>
+</ul>

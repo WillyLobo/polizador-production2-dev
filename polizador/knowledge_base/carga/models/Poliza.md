@@ -4,16 +4,19 @@ kind: class
 module: carga/models.py
 lines: 160-192
 signature_hash: sha1:22b3a5ba9a934b5d36dd5d2b390b1e0513a36bf0
-authored: false
+authored: true
 ---
 
 # Poliza
 
-**Módulo:** `carga/models.py` (líneas 160-192)
+**Módulo:** `carga/models.py` (líneas 160-192) · hereda de `models.Model`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Póliza de garantía (ejecución de contrato, sustitución de fondo de reparo, o anticipo
+financiero — ver `CONCEPTO`) que una Empresa (`poliza_tomador`) presenta para una Obra
+puntual. El `UniqueConstraint` sobre (fecha, número, aseguradora, tomador) es la defensa
+contra carga duplicada de la misma póliza física.
 
 ## Firma
 
@@ -23,18 +26,10 @@ class Poliza(models.Model):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/models.py:204` — `poliza_movimiento_numero    = models.ForeignKey("Poliza", verbose_name="Póliza", on_delete=models.CASCADE)`
-- `carga/views/polizaviews.py:7` — `from carga.models import Poliza, Poliza_Movimiento`
-- `carga/views/polizaviews.py:16` — `model = Poliza`
-- `carga/views/polizaviews.py:27` — `model = Poliza`
-- `carga/views/polizaviews.py:48` — `model = Poliza`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Se crea/edita desde `CrearPoliza`/`UpdatePoliza` (`carga/views/polizaviews.py`), junto con su primer `Poliza_Movimiento` vía formset (`FormsetViewMixin`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Poliza_Movimiento](Poliza_Movimiento.md) — historial de movimientos de esta Póliza.
+- [Empresa](Empresa.md)
+- [Aseguradora](Aseguradora.md)

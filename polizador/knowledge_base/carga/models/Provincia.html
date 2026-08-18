@@ -1,18 +1,17 @@
 <h1>Provincia</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 229-241)</p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 229-241) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Tabla de referencia geográfica (provincias de Argentina). La <code>id</code> es un <code>IntegerField</code>
+explícito, no autoincremental — se carga desde una fuente externa (probablemente el
+nomenclador de INDEC/IGN) que ya trae sus propios códigos numéricos, y el modelo los
+respeta en vez de generar sus propios PKs.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class Provincia(models.Model):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/models.py:372</code> — <code>obra_contrato_provincia_pesos = models.DecimalField("Monto Provincia en Pesos", max_digits=12 ,decimal_places=2, default=0 , validators=[MinValueValidator(0)], blank=True, null=True)</code></li>
-<li><code>carga/models.py:373</code> — <code>obra_contrato_provincia_uvi = models.DecimalField("Monto Provincia en UVI", max_digits=12 ,decimal_places=2, default=0, validators=[MinValueValidator(0)], blank=True, null=True)</code></li>
-<li><code>carga/models.py:634</code> — <code>("P", "Provincia"),</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Tabla de solo lectura para el usuario final: no tiene form ni vista de creación en <code>carga</code> — se carga vía fixture/comando, no desde la UI.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="Departamento.md">Departamento</a></li>
+<li><a href="Localidad.md">Localidad</a></li>
+</ul>

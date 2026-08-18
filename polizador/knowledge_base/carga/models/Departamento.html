@@ -1,20 +1,15 @@
 <h1>Departamento</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 259-273)</p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 259-273) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Tabla de referencia geográfica (departamentos de la provincia). Mismo patrón que <code>Provincia</code>: <code>id</code> explícito, no autoincremental, cargado desde una fuente externa.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class Departamento(models.Model):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/models.py:286</code> — <code>localidad_departamento   = models.ForeignKey("Departamento", verbose_name="Departamento", on_delete=models.RESTRICT)</code></li>
-<li><code>carga/models.py:292</code> — <code># return "{} - Departamento {}".format(self.localidad_nombre, self.localidad_departamento)</code></li>
-<li><code>carga/models.py:305</code> — <code>municipio_departamento  = models.ForeignKey("Departamento", verbose_name="Departamento", on_delete=models.CASCADE)</code></li>
-<li><code>carga/models.py:342</code> — <code>obra_departamento_m = models.ManyToManyField("Departamento", related_name="obra_departamento", verbose_name="Departamento", blank=True)</code></li>
-<li><code>carga/views/certificadoviews.py:24</code> — <code>from personalizador.models import Departamento, Direccion, Directorio, Gerencia</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Tabla de solo lectura desde la UI de <code>carga</code> — se carga vía fixture/comando.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="Provincia.md">Provincia</a></li>
+<li><a href="Localidad.md">Localidad</a></li>
+<li><a href="Municipio.md">Municipio</a></li>
+</ul>

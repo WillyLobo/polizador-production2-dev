@@ -1,20 +1,13 @@
 <h1>Programa</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 213-227)</p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 213-227) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Catálogo de programas de financiamiento (ej. FO.PRO.VI., PROCREAR) bajo los que se ejecuta una Obra — ver <code>Obra.obra_programa</code>.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class Programa(models.Model):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/models.py:348</code> — <code>obra_programa = models.ForeignKey("Programa", verbose_name="Programa", on_delete=models.CASCADE)</code></li>
-<li><code>carga/views/programaviews.py:7</code> — <code>from carga.models import Programa</code></li>
-<li><code>carga/views/programaviews.py:15</code> — <code>model = Programa</code></li>
-<li><code>carga/views/programaviews.py:24</code> — <code>model = Programa</code></li>
-<li><code>carga/views/programaviews.py:30</code> — <code>title = "Crear Programa"</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Alta/edición vía <code>ProgramaForm</code> (<code>carga/forms/programaforms.py</code>).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="Obra.md">Obra</a></li>
+</ul>

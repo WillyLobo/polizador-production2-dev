@@ -4,16 +4,16 @@ kind: class
 module: carga/models.py
 lines: 87-101
 signature_hash: sha1:0be9de63e1a1a029945f42a96e885dbb4da5fdb1
-authored: false
+authored: true
 ---
 
 # Receptor
 
-**Módulo:** `carga/models.py` (líneas 87-101)
+**Módulo:** `carga/models.py` (líneas 87-101) · hereda de `models.Model`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Catálogo de personas/entidades que reciben una Póliza al moverse entre áreas — ver `Poliza_Movimiento.poliza_movimiento_receptor`. Tabla de referencia simple, sin lógica propia.
 
 ## Firma
 
@@ -23,18 +23,8 @@ class Receptor(models.Model):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/models.py:202` — `poliza_movimiento_receptor  = models.ForeignKey("Receptor", verbose_name="Receptor", on_delete=models.CASCADE)`
-- `carga/views/receptorviews.py:14` — `model = models.Receptor`
-- `carga/views/receptorviews.py:23` — `model = models.Receptor`
-- `carga/views/receptorviews.py:29` — `title = "Crear Receptor"`
-- `carga/views/receptorviews.py:44` — `model = models.Receptor`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Alta/edición vía `ReceptorForm` (`carga/forms/receptorforms.py`), un `ModelForm` estándar sin campos calculados.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Poliza_Movimiento](Poliza_Movimiento.md) — único FK hacia este modelo.

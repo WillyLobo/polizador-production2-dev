@@ -4,16 +4,16 @@ kind: class
 module: carga/models.py
 lines: 213-227
 signature_hash: sha1:596422f29fba99dc532fa4a67bfb113afbe27043
-authored: false
+authored: true
 ---
 
 # Programa
 
-**Módulo:** `carga/models.py` (líneas 213-227)
+**Módulo:** `carga/models.py` (líneas 213-227) · hereda de `models.Model`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Catálogo de programas de financiamiento (ej. FO.PRO.VI., PROCREAR) bajo los que se ejecuta una Obra — ver `Obra.obra_programa`.
 
 ## Firma
 
@@ -23,18 +23,8 @@ class Programa(models.Model):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/models.py:348` — `obra_programa = models.ForeignKey("Programa", verbose_name="Programa", on_delete=models.CASCADE)`
-- `carga/views/programaviews.py:7` — `from carga.models import Programa`
-- `carga/views/programaviews.py:15` — `model = Programa`
-- `carga/views/programaviews.py:24` — `model = Programa`
-- `carga/views/programaviews.py:30` — `title = "Crear Programa"`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Alta/edición vía `ProgramaForm` (`carga/forms/programaforms.py`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Obra](Obra.md)

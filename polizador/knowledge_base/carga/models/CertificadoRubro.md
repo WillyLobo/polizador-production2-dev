@@ -4,16 +4,20 @@ kind: class
 module: carga/models.py
 lines: 600-611
 signature_hash: sha1:eb0ec1cb5ce7fcedd060844262142d91ac48d705
-authored: false
+authored: true
 ---
 
 # CertificadoRubro
 
-**Módulo:** `carga/models.py` (líneas 600-611)
+**Módulo:** `carga/models.py` (líneas 600-611) · hereda de `models.Model`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Catálogo normalizado de "rubros" de certificación (Vivienda, Infraestructura Frentista,
+Terreno, Redeterminación, Nexos y Redes, Complementario, Deductivo...). Reemplaza al
+`CharField` con `choices` original (`Certificado.RUBRO`, todavía presente en el modelo
+como `certificado_rubro`, marcado "Obsoleto" en un comentario) — `certificado_rubro_db`
+es el FK real hacia acá, usado por el código actual.
 
 ## Firma
 
@@ -23,18 +27,9 @@ class CertificadoRubro(models.Model):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/models.py:644` — `# Obsoleto -> se migro a una tabla aparte(carga.models.CertificadoRubro)`
-- `carga/models.py:668` — `certificado_rubro = models.CharField("Rubro", max_length=1, choices=RUBRO, default="V") # Obsoleto -> se migro a una tabla aparte(carga.models.CertificadoRubro)`
-- `carga/models.py:669` — `certificado_rubro_db = models.ForeignKey("CertificadoRubro", verbose_name="Rubro", on_delete=models.PROTECT, default=1)`
-- `carga/models.py:937` — `"CertificadoRubro",`
-- `carga/models.py:1364` — `contratomonto_rubro = models.ForeignKey("CertificadoRubro", verbose_name="Rubro Certificado", on_delete=models.CASCADE)`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Referenciado desde `Certificado.certificado_rubro_db` y `PlanDeTrabajosRubro.rubro_certificado_rubro` (para poder ubicar el `ContratoMonto` correcto al generar un certificado desde una Foja).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Certificado](Certificado.md)
+- [PlanDeTrabajosRubro](PlanDeTrabajosRubro.md)

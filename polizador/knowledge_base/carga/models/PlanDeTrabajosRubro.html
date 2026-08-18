@@ -1,20 +1,30 @@
 <h1>PlanDeTrabajosRubro</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 922-994)</p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 922-994) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Un rubro dentro de un Plan de Trabajos (ej. "Vivienda", "Infraestructura"), con su
+presupuesto y, opcionalmente, un <code>ContratoMonto</code> vinculado (<code>monto_base_pesos()</code>/
+<code>monto_base_uvi()</code> usan ese monto de contrato si existe, convertido UVI→pesos vía
+<code>Uvi.pesos_equivalentes()</code>, y si no caen al <code>rubro_presupuesto</code> cargado a mano).</p>
+<p>Es la pieza que arma la <strong>cadena de reprogramación</strong> que atraviesa buena parte de
+<code>carga</code>: <code>rubro_anterior</code> (FK a sí mismo) enlaza este Rubro con el de un Plan previo del
+que es continuación, y <code>rubro_cadena_ids()</code>/<code>rubro_cadena_siguiente_ids()</code> recorren esa
+cadena hacia atrás/adelante respectivamente. Estos dos métodos son la base de la
+numeración continua de Fojas/Etapas (<code>FojaDeMedicion.foja_siguiente()</code>,
+<code>PlanDeTrabajosEtapa.etapa_anterior()</code>, las señales
+<a href="../signals/auto_increment_foja_numero.md">auto_increment_foja_numero</a>/
+<a href="../signals/auto_increment_etapa_numero.md">auto_increment_etapa_numero</a>) y del recálculo
+en cascada (<a href="../signals/recalcular_acumulado_fojas_siguientes.md">recalcular_acumulado_fojas_siguientes</a>):
+todos ellos filtran por <code>rubro_id__in=chain_ids</code> en vez de por un único rubro, para que
+una reprogramación no reinicie la numeración ni rompa el recálculo hacia adelante.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class PlanDeTrabajosRubro(models.Model):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/models.py:1003</code> — <code>planitem_rubro = models.ForeignKey("PlanDeTrabajosRubro", verbose_name="Rubro de Plan de Trabajos", on_delete=models.CASCADE, related_name="items")</code></li>
-<li><code>carga/models.py:1042</code> — <code>etapa_rubro = models.ForeignKey("PlanDeTrabajosRubro", verbose_name="Rubro de Plan de Trabajos", on_delete=models.CASCADE, related_name="etapas")</code></li>
-<li><code>carga/models.py:1165</code> — <code>foja_rubro = models.ForeignKey("PlanDeTrabajosRubro", verbose_name="Rubro de Plan de Trabajos", on_delete=models.CASCADE, related_name="fojas")</code></li>
-<li><code>carga/views/ajaxviews.py:120</code> — <code>return PlanDeTrabajosRubro.objects.filter(pk=rubro_id).values_list(</code></li>
-<li><code>carga/views/fojademedicionviews.py:7</code> — <code>from carga.models import FojaDeMedicion, PlanDeTrabajosItem, PlanDeTrabajosRubro</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>PlandeTrabajoForm</code> (<code>carga/forms/plandetrabajosforms.py</code>) para el alta; la reprogramación (asignar <code>rubro_anterior</code>) se hace al crear el Rubro del nuevo Plan.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="PlanDeTrabajosItem.md">PlanDeTrabajosItem</a> — misma cadena de reprogramación, a nivel de item.</li>
+<li><a href="FojaDeMedicion.md">FojaDeMedicion</a></li>
+<li><a href="PlanDeTrabajosEtapa.md">PlanDeTrabajosEtapa</a></li>
+<li><a href="ContratoMonto.md">ContratoMonto</a></li>
+</ul>

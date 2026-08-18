@@ -4,16 +4,16 @@ kind: class
 module: carga/models.py
 lines: 1386-1397
 signature_hash: sha1:7eda4b44c084ec085a5bfc24607c193a9de13d43
-authored: false
+authored: true
 ---
 
 # ContratosDigitales
 
-**Módulo:** `carga/models.py` (líneas 1386-1397)
+**Módulo:** `carga/models.py` (líneas 1386-1397) · hereda de `models.Model`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Documento PDF adjunto a un Contrato, con un `ContratoRubro` (tipo de documento) — el equivalente de `ObraDocumento` pero para Contrato, y con categorización propia.
 
 ## Firma
 
@@ -23,18 +23,10 @@ class ContratosDigitales(models.Model):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/models.py:470` — `return ContratosDigitales.objects.filter(contratodigital_contrato__contrato_obra=self)`
-- `carga/views/documentosdigitalesviews.py:9` — `from carga.models import ContratosDigitales, ObraDocumento`
-- `carga/views/documentosdigitalesviews.py:20` — `model = ContratosDigitales`
-- `carga/views/documentosdigitalesviews.py:46` — `model = ContratosDigitales`
-- `carga/views/documentosdigitalesviews.py:55` — `model = ContratosDigitales`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`Contrato.documentos_contrato` (related_name) es la relación inversa; también hay `Obra.documentos_contrato()`, que filtra por todos los Contratos de la Obra.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Contrato](Contrato.md)
+- [ContratoRubro](ContratoRubro.md)
+- [ObraDocumento](ObraDocumento.md)

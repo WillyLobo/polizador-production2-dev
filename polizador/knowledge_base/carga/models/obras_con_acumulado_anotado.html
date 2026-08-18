@@ -1,16 +1,24 @@
 <h1>obras_con_acumulado_anotado</h1>
 <p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 546-558)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Anota en una sola query (vía <code>Subquery</code>) el % acumulado del último Certificado de avance y
+el % acumulado de Anticipo del último Certificado de Anticipo de cada Obra del queryset —
+pensada para listados de Obras que necesitan mostrar esos dos números sin un N+1 (una
+query de Certificado por Obra listada).</p>
+<p><strong>Advertencia real, no hipotética:</strong> está importada en <code>carga/views/obraviews.py</code> pero
+ningún lugar de ese archivo la está llamando actualmente (<code>grep</code> no encuentra
+<code>obras_con_acumulado_anotado(</code> en el código, solo el import). O quedó de una versión
+anterior de la lista de Obras que la usaba y se dejó de usar sin limpiar el import, o está
+pensada para una vista que todavía no la adoptó — antes de reusarla, confirmá si el
+listado que la necesita sigue haciendo el cálculo por otro lado (ej. <code>ultimo_certificado_avance()</code>
+llamado por fila, que sí es un N+1).</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def obras_con_acumulado_anotado(queryset):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/obraviews.py:13</code> — <code>obras_con_acumulado_anotado,</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Ninguno vivo detectado — ver la advertencia arriba.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="Obra.md">Obra</a></li>
+<li><a href="Certificado.md">Certificado</a></li>
+</ul>

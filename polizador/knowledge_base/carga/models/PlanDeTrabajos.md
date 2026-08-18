@@ -4,16 +4,21 @@ kind: class
 module: carga/models.py
 lines: 894-920
 signature_hash: sha1:4f05d042b12e792d78cb46c5edd7b1ff8ddd519d
-authored: false
+authored: true
 ---
 
 # PlanDeTrabajos
 
-**Módulo:** `carga/models.py` (líneas 894-920)
+**Módulo:** `carga/models.py` (líneas 894-920) · hereda de `models.Model`
 
 ## Propósito
 
-_(pendiente de autoría)_
+El plan de trabajos vigente de una Obra: fecha de vigencia, duración en meses
+(`trabajos_meses`), y opcionalmente vinculado a un Contrato concreto. Una Obra puede tener
+varios `PlanDeTrabajos` a lo largo del tiempo (reprogramaciones) — `vigentes()` es un
+`classmethod` que devuelve, para cada Obra, solo el más reciente (mayor `trabajos_fecha`,
+`pk` como desempate) vía `Subquery`, y `es_vigente()` lo usa para chequear una instancia
+puntual.
 
 ## Firma
 
@@ -23,18 +28,9 @@ class PlanDeTrabajos(models.Model):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/models.py:929` — `rubro_plan = models.ForeignKey("PlanDeTrabajos", verbose_name="Plan de Trabajos", on_delete=models.CASCADE, related_name="rubros")`
-- `carga/views/ajaxviews.py:56` — `return PlanDeTrabajos.objects.filter(pk=plan_id).first() if plan_id else None`
-- `carga/views/obraviews.py:17` — `PlanDeTrabajos,`
-- `carga/views/obraviews.py:49` — `queryset=PlanDeTrabajos.objects.prefetch_related(`
-- `carga/views/plandetrabajosrubroviews.py:6` — `from carga.models import PlanDeTrabajos, PlanDeTrabajosRubro, ContratoMonto, Certificado`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearPlanDeTrabajos` (`carga/views/plandetrabajosviews.py`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Obra](Obra.md)
+- [PlanDeTrabajosRubro](PlanDeTrabajosRubro.md)

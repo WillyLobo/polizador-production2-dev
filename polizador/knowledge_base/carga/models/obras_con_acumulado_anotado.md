@@ -4,7 +4,7 @@ kind: function
 module: carga/models.py
 lines: 546-558
 signature_hash: sha1:6cf6bfc962f51195118d72edababba887d65d071
-authored: false
+authored: true
 ---
 
 # obras_con_acumulado_anotado
@@ -13,7 +13,18 @@ authored: false
 
 ## Propósito
 
-_(pendiente de autoría)_
+Anota en una sola query (vía `Subquery`) el % acumulado del último Certificado de avance y
+el % acumulado de Anticipo del último Certificado de Anticipo de cada Obra del queryset —
+pensada para listados de Obras que necesitan mostrar esos dos números sin un N+1 (una
+query de Certificado por Obra listada).
+
+**Advertencia real, no hipotética:** está importada en `carga/views/obraviews.py` pero
+ningún lugar de ese archivo la está llamando actualmente (`grep` no encuentra
+`obras_con_acumulado_anotado(` en el código, solo el import). O quedó de una versión
+anterior de la lista de Obras que la usaba y se dejó de usar sin limpiar el import, o está
+pensada para una vista que todavía no la adoptó — antes de reusarla, confirmá si el
+listado que la necesita sigue haciendo el cálculo por otro lado (ej. `ultimo_certificado_avance()`
+llamado por fila, que sí es un N+1).
 
 ## Firma
 
@@ -23,14 +34,9 @@ def obras_con_acumulado_anotado(queryset):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/obraviews.py:13` — `obras_con_acumulado_anotado,`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Ninguno vivo detectado — ver la advertencia arriba.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Obra](Obra.md)
+- [Certificado](Certificado.md)

@@ -4,16 +4,26 @@ kind: class
 module: carga/models.py
 lines: 1282-1322
 signature_hash: sha1:df4e65f5f9f1f26bda4502847338c57ab85b540a
-authored: false
+authored: true
 ---
 
 # Contrato
 
-**Módulo:** `carga/models.py` (líneas 1282-1322)
+**Módulo:** `carga/models.py` (líneas 1282-1322) · hereda de `models.Model`
 
 ## Propósito
 
-_(pendiente de autoría)_
+El contrato de obra (legal/administrativo) de una Obra — puede haber más de uno a lo
+largo del tiempo (`contrato_vigente()` en `Obra` toma el más reciente, mismo patrón que
+`plan_vigente()`). `contrato_resolucion_display` sigue el mismo patrón que
+`Obra.obra_resolucion_display`/`ConjuntoLicitado.conjunto_resolucion_display`.
+
+El campo con más impacto en el resto del sistema es
+`contrato_certificacion_por_etapas`: si está tildado, esta Obra **no** genera
+certificados PARCIAL (%mes de la Foja) — en su lugar, certifica en tramos fijos de %
+disparados cuando el avance acumulado de la Foja alcanza el umbral de cada
+`ContratoTramoPago`. Es la bifurcación central que decide si `certificacion.py` construye
+certificados PARCIAL o ETAPA para esta Obra.
 
 ## Firma
 
@@ -23,18 +33,11 @@ class Contrato(models.Model):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/models.py:162` — `("C", "Garantía de Ejecución de Contrato"),`
-- `carga/models.py:315` — `# Compartido por los campos de resolución cargados a mano (Obra/ConjuntoLicitado/Contrato),`
-- `carga/models.py:364` — `obra_fecha_contrato = models.DateField("Fecha de Firma de Contrato", blank=True, null=True)`
-- `carga/models.py:456` — `"""Retorna el Contrato más reciente (vigente) de la obra.`
-- `carga/models.py:641` — `("ETAPA", "Certificado de Etapa de Contrato"),`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearContrato`/`UpdateContrato` (`carga/views/contratoviews.py`), con el formset inline de `ContratoMonto`.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Obra](Obra.md)
+- [ContratoTramoPago](ContratoTramoPago.md) — solo relevante cuando `contrato_certificacion_por_etapas=True`.
+- [ContratoMonto](ContratoMonto.md)
+- [Certificado](Certificado.md) — tipos PARCIAL vs ETAPA.

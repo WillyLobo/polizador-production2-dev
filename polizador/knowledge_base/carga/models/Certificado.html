@@ -1,20 +1,64 @@
 <h1>Certificado</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 626-857)</p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 626-857) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>El otro modelo central de <code>carga</code>: un certificado de pago (avance de obra) sobre una Obra.
+Con 231 líneas es el modelo más grande del módulo. Su complejidad viene de que
+<code>certificado_tipo</code> (<code>TIPO</code>) no es una simple etiqueta — cada tipo tiene reglas de negocio
+propias, todas enforced en <code>clean()</code>:</p>
+<ul>
+<li><strong>PARCIAL</strong>: certificado de avance mensual normal. Requiere <code>certificado_foja</code> (la Foja
+  de Medición de origen) y <strong>no</strong> debe tener <code>certificado_contrato_origen</code>.</li>
+<li><strong>ANTICIPO</strong>: adelanto financiero sobre toda la Obra (no un rubro puntual — es un
+  "pool"). No lleva Foja. Usa <code>certificado_anticipo_pct</code> (cargado a mano) y los campos
+  <code>editable=False</code> <code>certificado_anticipo_anterior</code>/<code>certificado_anticipo_acumulado</code>/
+  <code>certificado_anticipo_saldo_pct</code>, todos calculados automáticamente por
+  <code>certificacion.calcular_monto_anticipo</code>/<code>certificacion.aplicar_descuento_anticipo</code> (no
+  por este modelo).</li>
+<li><strong>HECHO_CONSUMADO</strong>: certificado sin Foja, amparado directamente por un
+  Contrato/Resolución (<code>certificado_contrato_origen</code>, obligatorio acá).</li>
+<li><strong>ETAPA</strong>: certificación por tramos fijos de Contrato (ver
+  <code>Contrato.contrato_certificacion_por_etapas</code>) — requiere tanto <code>certificado_foja</code> (la
+  Foja que alcanzó el umbral) como <code>certificado_contrato_tramo</code> (el <code>ContratoTramoPago</code>
+  que salda), y tampoco lleva <code>certificado_contrato_origen</code>.</li>
+<li><strong>LEGACY</strong>: certificados históricos sin clasificar, antes de que existiera esta
+  distinción de tipos.</li>
+</ul>
+<p><code>certificado_monto_cobrar</code>/<code>certificado_monto_cobrar_uvi</code> son <code>GeneratedField</code> (calculados
+por la base): monto menos devolución menos descuento de anticipo. <code>certificado_pct_principal</code>
+es el % "genérico" para listados que no distinguen tipo (usa <code>certificado_anticipo_pct</code>,
+<code>certificado_etapa_pct</code> o <code>certificado_mes_pct</code> según corresponda).</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class Certificado(models.Model):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/models.py:423</code> — <code>"""Último Certificado (por fecha) de tipo PARCIAL/HECHO_CONSUMADO/ETAPA (o su</code></li>
-<li><code>carga/models.py:549</code> — <code>ultimo_acumulado = Certificado.objects.filter(</code></li>
-<li><code>carga/models.py:552</code> — <code>ultimo_anticipo_acumulado = Certificado.objects.filter(</code></li>
-<li><code>carga/models.py:938</code> — <code>verbose_name="Rubro de Certificado",</code></li>
-<li><code>carga/models.py:1364</code> — <code>contratomonto_rubro = models.ForeignKey("CertificadoRubro", verbose_name="Rubro Certificado", on_delete=models.CASCADE)</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Un certificado PARCIAL se construye en <code>certificacion.py</code>, no directamente en una vista
+(la vista arma los datos y delega el cálculo):</p>
+<pre><code class="language-python"># carga/certificacion.py:703
+certificado = Certificado(
+    certificado_obra=obra,
+    certificado_tipo=&quot;PARCIAL&quot;,
+    certificado_foja=foja,
+    certificado_financiamiento=financiamiento,
+    certificado_rubro_db=contratomonto.contratomonto_rubro,
+    certificado_mes_pct=mes_pct,
+    ...
+)
+</code></pre>
+<p>Un certificado ETAPA, con la misma lógica pero disparado por tramos pendientes:</p>
+<pre><code class="language-python"># carga/certificacion.py:639 (dentro del loop de tramos_pendientes)
+certificado = Certificado(
+    certificado_obra=contrato.contrato_obra,
+    certificado_tipo=&quot;ETAPA&quot;,
+    certificado_foja=foja,
+    certificado_contrato_tramo=tramo,
+    ...
+)
+</code></pre>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="Obra.md">Obra</a></li>
+<li><a href="FojaDeMedicion.md">FojaDeMedicion</a></li>
+<li><a href="Contrato.md">Contrato</a> — <code>contrato_certificacion_por_etapas</code> decide si esta Obra genera certificados PARCIAL o ETAPA.</li>
+<li><a href="ContratoTramoPago.md">ContratoTramoPago</a></li>
+<li><a href="CertificadoRubro.md">CertificadoRubro</a></li>
+</ul>

@@ -1,20 +1,18 @@
 <h1>ConjuntoLicitado</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 859-892)</p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 859-892) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Agrupa varias Obras que salieron a licitación juntas (un "conjunto licitado"), con su
+propia resolución de adjudicación. Soporta un nivel de sub-agrupamiento vía
+<code>conjunto_subconjunto</code> (FK a sí mismo) — un Conjunto puede pertenecer a otro Conjunto
+mayor. <code>conjunto_resolucion_display</code> sigue el mismo patrón que <code>Obra.obra_resolucion_display</code>
+y <code>Contrato.contrato_resolucion_display</code>: prioriza el FK a <code>secretariador.InstrumentosLegalesResoluciones</code>
+si existe, si no arma el número "legado" a mano (<code>RES-{año}-{numero}-{jurisdiccion}-{acta}</code>).</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class ConjuntoLicitado(models.Model):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/models.py:315</code> — <code># Compartido por los campos de resolución cargados a mano (Obra/ConjuntoLicitado/Contrato),</code></li>
-<li><code>carga/models.py:345</code> — <code>obra_conjunto = models.ForeignKey("ConjuntoLicitado", verbose_name="Conjunto Licitado", on_delete=models.SET_NULL, null=True, blank=True)</code></li>
-<li><code>carga/views/conjuntoviews.py:7</code> — <code>from carga.models import ConjuntoLicitado</code></li>
-<li><code>carga/views/conjuntoviews.py:15</code> — <code>model = ConjuntoLicitado</code></li>
-<li><code>carga/views/conjuntoviews.py:23</code> — <code>model = ConjuntoLicitado</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>CrearConjunto</code>/<code>UpdateConjunto</code> (<code>carga/views/conjuntoviews.py</code>); <code>Obra.obra_conjunto</code> es el FK que vincula cada Obra a su Conjunto.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="Obra.md">Obra</a></li>
+</ul>

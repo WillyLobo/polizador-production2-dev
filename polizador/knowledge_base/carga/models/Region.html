@@ -1,20 +1,17 @@
 <h1>Region</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 243-256)</p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 243-256) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Agrupación administrativa interna simple (<code>region_numero</code>), usada para clasificar Obras
+(<code>Obra.obra_region</code>) y Municipios (<code>Municipio.municipio_region</code>). No es una división
+geográfica real como Provincia/Departamento/Municipio/Localidad — es más bien una
+etiqueta de agrupamiento propia del sistema, sin geometría ni jerarquía asociada.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class Region(models.Model):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/models.py:306</code> — <code>municipio_region        = models.ForeignKey("Region", verbose_name="Región", on_delete=models.SET_NULL, null=True, blank=True)</code></li>
-<li><code>carga/models.py:341</code> — <code>obra_region = models.ForeignKey("Region", on_delete=models.SET_NULL, verbose_name="Región", null=True, blank=True)</code></li>
-<li><code>carga/views/regionviews.py:7</code> — <code>from carga.models import Region</code></li>
-<li><code>carga/views/regionviews.py:15</code> — <code>model = Region</code></li>
-<li><code>carga/views/regionviews.py:24</code> — <code>model = Region</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Alta/edición vía <code>RegionForm</code> (<code>carga/forms/regionforms.py</code>).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="Obra.md">Obra</a></li>
+<li><a href="Municipio.md">Municipio</a></li>
+</ul>

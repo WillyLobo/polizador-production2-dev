@@ -4,16 +4,16 @@ kind: class
 module: carga/models.py
 lines: 1269-1280
 signature_hash: sha1:f89ad6b580b0427b30284611b1b80ff77873d92b
-authored: false
+authored: true
 ---
 
 # FojaDeMedicionFoto
 
-**Módulo:** `carga/models.py` (líneas 1269-1280)
+**Módulo:** `carga/models.py` (líneas 1269-1280) · hereda de `models.Model`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Foto adjunta (evidencia fotográfica) de una Foja de Medición — a diferencia de los otros adjuntos del módulo, acepta imagen (jpeg/png), no PDF.
 
 ## Firma
 
@@ -23,15 +23,8 @@ class FojaDeMedicionFoto(models.Model):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/forms/fojademedicionforms.py:234` — `model = models.FojaDeMedicionFoto`
-- `carga/forms/fojademedicionforms.py:242` — `model=models.FojaDeMedicionFoto,`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Formset inline dentro de `CrearFojaDeMedicion`/`UpdateFojaDeMedicion` (`carga/views/fojademedicionviews.py:146,234`, `foto_formset.save()`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [FojaDeMedicion](FojaDeMedicion.md)

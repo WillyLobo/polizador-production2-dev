@@ -1,20 +1,18 @@
 <h1>Poliza</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 160-192)</p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 160-192) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Póliza de garantía (ejecución de contrato, sustitución de fondo de reparo, o anticipo
+financiero — ver <code>CONCEPTO</code>) que una Empresa (<code>poliza_tomador</code>) presenta para una Obra
+puntual. El <code>UniqueConstraint</code> sobre (fecha, número, aseguradora, tomador) es la defensa
+contra carga duplicada de la misma póliza física.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class Poliza(models.Model):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/models.py:204</code> — <code>poliza_movimiento_numero    = models.ForeignKey("Poliza", verbose_name="Póliza", on_delete=models.CASCADE)</code></li>
-<li><code>carga/views/polizaviews.py:7</code> — <code>from carga.models import Poliza, Poliza_Movimiento</code></li>
-<li><code>carga/views/polizaviews.py:16</code> — <code>model = Poliza</code></li>
-<li><code>carga/views/polizaviews.py:27</code> — <code>model = Poliza</code></li>
-<li><code>carga/views/polizaviews.py:48</code> — <code>model = Poliza</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Se crea/edita desde <code>CrearPoliza</code>/<code>UpdatePoliza</code> (<code>carga/views/polizaviews.py</code>), junto con su primer <code>Poliza_Movimiento</code> vía formset (<code>FormsetViewMixin</code>).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="Poliza_Movimiento.md">Poliza_Movimiento</a> — historial de movimientos de esta Póliza.</li>
+<li><a href="Empresa.md">Empresa</a></li>
+<li><a href="Aseguradora.md">Aseguradora</a></li>
+</ul>

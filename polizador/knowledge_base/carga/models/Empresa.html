@@ -1,20 +1,17 @@
 <h1>Empresa</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 135-158)</p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 135-158) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Empresa constructora contratista. Es tanto la adjudicataria de una Obra
+(<code>Obra.obra_empresa</code>) como, potencialmente, la tomadora de una Póliza de garantía
+(<code>Poliza.poliza_tomador</code>) — son dos roles distintos que el modelo no distingue por campo,
+solo por cuál FK la referencia.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class Empresa(models.Model):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/models.py:181</code> — <code>poliza_tomador = models.ForeignKey("Empresa", verbose_name="Tomador", on_delete=models.CASCADE)</code></li>
-<li><code>carga/models.py:340</code> — <code>obra_empresa = models.ForeignKey("Empresa", on_delete=models.CASCADE, verbose_name="Empresa")</code></li>
-<li><code>carga/views/documentosdigitalesviews.py:121</code> — <code>#        {"name": "certificado_empresa", "title":"Empresa", "foreign_field":"certificado_obra__obra_empresa__empresa_nombre","width":85},</code></li>
-<li><code>carga/views/empresaviews.py:7</code> — <code>from carga.models import Empresa</code></li>
-<li><code>carga/views/empresaviews.py:15</code> — <code>model = Empresa</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>ObraForm</code>/<code>EmpresaForm</code> (<code>carga/forms/obraforms.py</code>, <code>carga/forms/empresaforms.py</code>), <code>ModelForm</code>s estándar.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="Obra.md">Obra</a></li>
+<li><a href="Poliza.md">Poliza</a></li>
+</ul>

@@ -4,7 +4,7 @@ kind: function
 module: carga/models.py
 lines: 80-85
 signature_hash: sha1:f684f2a25909f08f1a537f2a119554c6ca8f29fa
-authored: false
+authored: true
 ---
 
 # generate_name_foja_foto
@@ -13,7 +13,15 @@ authored: false
 
 ## Propósito
 
-_(pendiente de autoría)_
+Callback `upload_to` de un `FileField`: Django lo llama con la instancia (todavía sin
+guardar del todo) y el nombre original del archivo, y espera de vuelta la ruta relativa
+donde `GCloudAndLocalStorage` (ver CLAUDE.md) va a escribirlo, tanto en GCS como en
+`MEDIA_ROOT` local.
+
+Es el único de los siete que preserva la extensión original del archivo subido
+(`os.path.splitext(filename)[1]`) en vez de forzar `.pdf` — porque estos son adjuntos de
+imagen (`content_types=("image/jpeg", "image/png")`), no PDFs. Sin partición por fecha:
+`fotos_foja_medicion/<fotofoja_uuid>.<ext>`.
 
 ## Firma
 
@@ -23,14 +31,8 @@ def generate_name_foja_foto(instance, filename):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/models.py:1276` — `fotofoja_archivo = models.FileField(verbose_name="Foto", upload_to=generate_name_foja_foto, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("image/jpeg", "image/png"))], max_length=500)`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`FojaDeMedicionFoto.fotofoja_archivo = models.FileField(upload_to=generate_name_foja_foto, ...)` (carga/models.py:1276).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [FojaDeMedicionFoto](FojaDeMedicionFoto.md)

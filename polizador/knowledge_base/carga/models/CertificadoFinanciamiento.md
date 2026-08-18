@@ -4,16 +4,19 @@ kind: class
 module: carga/models.py
 lines: 613-624
 signature_hash: sha1:eb304ac3d1a3cc450eea5fd1b359197f42b09d4d
-authored: false
+authored: true
 ---
 
 # CertificadoFinanciamiento
 
-**Módulo:** `carga/models.py` (líneas 613-624)
+**Módulo:** `carga/models.py` (líneas 613-624) · hereda de `models.Model`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Catálogo normalizado de fuentes de financiamiento (Nación/Provincia/Terceros), con
+`_nombre_corto` de un carácter (N/P/T) — el mismo código corto que usan
+`Certificado.FINANCIAMIENTO` (todavía un `CharField` de choices, sin migrar a FK) y
+`Obra.recalcular_montos_contrato()` para agrupar montos.
 
 ## Firma
 
@@ -23,16 +26,9 @@ class CertificadoFinanciamiento(models.Model):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/models.py:1365` — `contratomonto_financiamiento = models.ForeignKey("CertificadoFinanciamiento", verbose_name="Financiamiento", on_delete=models.CASCADE)`
-- `carga/views/certificadoviews.py:23` — `from carga.models import Certificado, CertificadoFinanciamiento, ContratoMonto, FojaDeMedicion, PlanDeTrabajosEtapa, Uvi`
-- `carga/views/certificadoviews.py:84` — `financiamiento = CertificadoFinanciamiento.objects.filter(`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Referenciado desde `ContratoMonto.contratomonto_financiamiento`.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [ContratoMonto](ContratoMonto.md)
+- [Certificado](Certificado.md)

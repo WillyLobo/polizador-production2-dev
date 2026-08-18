@@ -1,20 +1,16 @@
 <h1>Municipio</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 297-313)</p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 297-313) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Tabla de referencia geográfica intermedia entre Departamento y Localidad, con un <code>Region</code> asociado (agrupación administrativa interna, no geográfica).</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class Municipio(models.Model):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/models.py:287</code> — <code>localidad_municipio     = models.ForeignKey("Municipio", verbose_name="Municipio", on_delete=models.CASCADE)</code></li>
-<li><code>carga/models.py:343</code> — <code>obra_municipio_m = models.ManyToManyField("Municipio", related_name="obra_municipio", verbose_name="Municipio", blank=True)</code></li>
-<li><code>carga/views/municipioviews.py:7</code> — <code>from carga.models import Municipio</code></li>
-<li><code>carga/views/municipioviews.py:15</code> — <code>model = Municipio</code></li>
-<li><code>carga/views/municipioviews.py:24</code> — <code>model = Municipio</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Tabla de solo lectura desde la UI — <code>Obra.obra_municipio_m</code> es un <code>ManyToManyField</code> hacia acá.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="Obra.md">Obra</a></li>
+<li><a href="Departamento.md">Departamento</a></li>
+<li><a href="Localidad.md">Localidad</a></li>
+<li><a href="Region.md">Region</a></li>
+</ul>

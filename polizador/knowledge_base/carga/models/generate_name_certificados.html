@@ -1,16 +1,20 @@
 <h1>generate_name_certificados</h1>
 <p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 29-37)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Callback <code>upload_to</code> de un <code>FileField</code>: Django lo llama con la instancia (todavía sin
+guardar del todo) y el nombre original del archivo, y espera de vuelta la ruta relativa
+donde <code>GCloudAndLocalStorage</code> (ver CLAUDE.md) va a escribirlo, tanto en GCS como en
+<code>MEDIA_ROOT</code> local.</p>
+<p>Agrupa por <code>certificados/&lt;año&gt;/&lt;mes&gt;/</code> según <code>certificado_fecha</code>, y nombra el archivo
+<code>&lt;certificado_uuid&gt;_&lt;certificado_expediente&gt;.pdf</code> — el expediente en el nombre es solo
+para que el archivo sea reconocible a simple vista en el bucket; la referencia real en la
+base es siempre por UUID.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def generate_name_certificados(instance, filename):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/models.py:784</code> — <code>certificado_digital = models.FileField(upload_to=generate_name_certificados, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], null=True, blank=True)</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>Certificado.certificado_digital = models.FileField(upload_to=generate_name_certificados, ...)</code> (carga/models.py:784).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="Certificado.md">Certificado</a></li>
+</ul>

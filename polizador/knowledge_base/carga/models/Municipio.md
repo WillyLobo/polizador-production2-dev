@@ -4,16 +4,16 @@ kind: class
 module: carga/models.py
 lines: 297-313
 signature_hash: sha1:d3cb8abcf1a118aef8254eb5359fbc82805109dd
-authored: false
+authored: true
 ---
 
 # Municipio
 
-**Módulo:** `carga/models.py` (líneas 297-313)
+**Módulo:** `carga/models.py` (líneas 297-313) · hereda de `models.Model`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Tabla de referencia geográfica intermedia entre Departamento y Localidad, con un `Region` asociado (agrupación administrativa interna, no geográfica).
 
 ## Firma
 
@@ -23,18 +23,11 @@ class Municipio(models.Model):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/models.py:287` — `localidad_municipio     = models.ForeignKey("Municipio", verbose_name="Municipio", on_delete=models.CASCADE)`
-- `carga/models.py:343` — `obra_municipio_m = models.ManyToManyField("Municipio", related_name="obra_municipio", verbose_name="Municipio", blank=True)`
-- `carga/views/municipioviews.py:7` — `from carga.models import Municipio`
-- `carga/views/municipioviews.py:15` — `model = Municipio`
-- `carga/views/municipioviews.py:24` — `model = Municipio`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Tabla de solo lectura desde la UI — `Obra.obra_municipio_m` es un `ManyToManyField` hacia acá.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Obra](Obra.md)
+- [Departamento](Departamento.md)
+- [Localidad](Localidad.md)
+- [Region](Region.md)

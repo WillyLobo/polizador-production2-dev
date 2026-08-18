@@ -4,7 +4,7 @@ kind: function
 module: carga/models.py
 lines: 39-47
 signature_hash: sha1:7775197d31dcb71d83716ddbe206e934e27c0d06
-authored: false
+authored: true
 ---
 
 # generate_name_polizas
@@ -13,7 +13,13 @@ authored: false
 
 ## Propósito
 
-_(pendiente de autoría)_
+Callback `upload_to` de un `FileField`: Django lo llama con la instancia (todavía sin
+guardar del todo) y el nombre original del archivo, y espera de vuelta la ruta relativa
+donde `GCloudAndLocalStorage` (ver CLAUDE.md) va a escribirlo, tanto en GCS como en
+`MEDIA_ROOT` local.
+
+Mismo patrón que `generate_name_certificados` pero para Pólizas: `polizas/<año>/<mes>/`
+según `poliza_fecha`, nombrado `<poliza_uuid>_<poliza_expediente>.pdf`.
 
 ## Firma
 
@@ -23,14 +29,8 @@ def generate_name_polizas(instance, filename):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/models.py:185` — `poliza_digital = models.FileField(verbose_name="Póliza Digital", upload_to=generate_name_polizas, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], max_length=500, null=True, blank=True)`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`Poliza.poliza_digital = models.FileField(upload_to=generate_name_polizas, ...)` (carga/models.py:185).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Poliza](Poliza.md)

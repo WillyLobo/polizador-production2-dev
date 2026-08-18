@@ -1,20 +1,19 @@
 <h1>PlanDeTrabajos</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 894-920)</p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 894-920) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>El plan de trabajos vigente de una Obra: fecha de vigencia, duración en meses
+(<code>trabajos_meses</code>), y opcionalmente vinculado a un Contrato concreto. Una Obra puede tener
+varios <code>PlanDeTrabajos</code> a lo largo del tiempo (reprogramaciones) — <code>vigentes()</code> es un
+<code>classmethod</code> que devuelve, para cada Obra, solo el más reciente (mayor <code>trabajos_fecha</code>,
+<code>pk</code> como desempate) vía <code>Subquery</code>, y <code>es_vigente()</code> lo usa para chequear una instancia
+puntual.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class PlanDeTrabajos(models.Model):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/models.py:929</code> — <code>rubro_plan = models.ForeignKey("PlanDeTrabajos", verbose_name="Plan de Trabajos", on_delete=models.CASCADE, related_name="rubros")</code></li>
-<li><code>carga/views/ajaxviews.py:56</code> — <code>return PlanDeTrabajos.objects.filter(pk=plan_id).first() if plan_id else None</code></li>
-<li><code>carga/views/obraviews.py:17</code> — <code>PlanDeTrabajos,</code></li>
-<li><code>carga/views/obraviews.py:49</code> — <code>queryset=PlanDeTrabajos.objects.prefetch_related(</code></li>
-<li><code>carga/views/plandetrabajosrubroviews.py:6</code> — <code>from carga.models import PlanDeTrabajos, PlanDeTrabajosRubro, ContratoMonto, Certificado</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>CrearPlanDeTrabajos</code> (<code>carga/views/plandetrabajosviews.py</code>).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="Obra.md">Obra</a></li>
+<li><a href="PlanDeTrabajosRubro.md">PlanDeTrabajosRubro</a></li>
+</ul>

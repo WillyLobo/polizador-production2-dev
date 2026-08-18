@@ -1,16 +1,17 @@
 <h1>generate_name_obra_documento</h1>
 <p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 56-61)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Callback <code>upload_to</code> de un <code>FileField</code>: Django lo llama con la instancia (todavía sin
+guardar del todo) y el nombre original del archivo, y espera de vuelta la ruta relativa
+donde <code>GCloudAndLocalStorage</code> (ver CLAUDE.md) va a escribirlo, tanto en GCS como en
+<code>MEDIA_ROOT</code> local.</p>
+<p>Sin partición por fecha: <code>documentos_obra/&lt;obradocumento_uuid&gt;.pdf</code>.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def generate_name_obra_documento(instance, filename):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/models.py:570</code> — <code>obradocumento_archivo = models.FileField(verbose_name="Archivo", upload_to=generate_name_obra_documento, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], max_length=500)</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>ObraDocumento.obradocumento_archivo = models.FileField(upload_to=generate_name_obra_documento, ...)</code> (carga/models.py:570).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="ObraDocumento.md">ObraDocumento</a></li>
+</ul>

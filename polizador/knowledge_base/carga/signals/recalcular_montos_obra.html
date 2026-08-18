@@ -1,14 +1,45 @@
 <h1>recalcular_montos_obra</h1>
-<p><strong>Módulo:</strong> <code>carga/signals.py</code> (líneas 62-64)</p>
+<p><strong>Módulo:</strong> <code>carga/signals.py</code> (líneas 62-64) · receiver de <code>post_save</code> <strong>y</strong> <code>post_delete</code> sobre <code>ContratoMonto</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>Obra</code> guarda campos desnormalizados (<code>obra_contrato_{nacion,provincia,terceros}_{pesos,uvi,uvi_fecha}</code>)
+que son, en rigor, una agregación de los <code>ContratoMonto</code> de todos los Contratos de esa
+Obra. Esta señal es lo que mantiene esa desnormalización sincronizada: cada vez que se
+crea, edita o borra un <code>ContratoMonto</code>, delega en
+<code>Obra.recalcular_montos_contrato()</code> (ver <a href="../models/Obra.md">Obra</a>), que vuelve a sumar
+todos los montos agrupados por código de financiamiento (N/P/T) y pisa los campos de la
+Obra con <code>queryset.update(...)</code>.</p>
+<p>Está enganchada tanto a <code>post_save</code> como a <code>post_delete</code> (dos <code>@receiver</code> apilados sobre
+la misma función) porque borrar un <code>ContratoMonto</code> también debe disparar el recálculo —
+si solo escuchara <code>post_save</code>, borrar el último monto de un financiamiento dejaría el
+campo desnormalizado de la Obra con un valor viejo que ya no tiene respaldo.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def recalcular_montos_obra(sender, instance, **kwargs):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
+<p>No se llama directamente. Se dispara al guardar el formset inline de montos de un
+Contrato:</p>
+<pre><code class="language-python"># carga/views/contratoviews.py (CrearContrato/UpdateContrato, vía FormsetViewMixin)
+formset_name = ContratoMontoFormset
+# formset.save() -&gt; cada ContratoMonto.save()/delete() -&gt; post_save/post_delete -&gt; esta señal
+</code></pre>
 <h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant V as Crear/UpdateContrato (formset de montos)
+    participant CM as ContratoMonto
+    participant S as recalcular_montos_obra
+    participant O as Obra
+
+    V-&gt;&gt;CM: formset.save() (crea/edita/borra montos)
+    CM--&gt;&gt;S: post_save / post_delete
+    S-&gt;&gt;O: recalcular_montos_contrato()
+    O-&gt;&gt;O: suma ContratoMonto de todos los Contratos, agrupado por N/P/T
+    O-&gt;&gt;O: Obra.objects.filter(pk=self.pk).update(**valores)
+</code></pre>
+<p><code>recalcular_montos_contrato()</code> usa <code>queryset.update()</code> en vez de <code>instance.save()</code>
+justamente para no volver a disparar señales sobre la propia <code>Obra</code> — evita un loop y dos
+UPDATE innecesarios si el Contrato también tuviera lógica en <code>post_save</code>.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../models/Obra.md">Obra</a> — dueña de los campos desnormalizados y del método <code>recalcular_montos_contrato()</code> que esta señal invoca.</li>
+<li><a href="../models/ContratoMonto.md">ContratoMonto</a></li>
+</ul>

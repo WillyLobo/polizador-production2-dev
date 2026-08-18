@@ -4,16 +4,21 @@ kind: class
 module: carga/models.py
 lines: 1324-1355
 signature_hash: sha1:c56c78b5f0faad730aab842324870aebe5273b91
-authored: false
+authored: true
 ---
 
 # ContratoTramoPago
 
-**Módulo:** `carga/models.py` (líneas 1324-1355)
+**Módulo:** `carga/models.py` (líneas 1324-1355) · hereda de `models.Model`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Un tramo de pago fijo de un Contrato con `contrato_certificacion_por_etapas=True`:
+`tramo_pct_pago` es el % del Contrato que se certifica cuando este tramo se dispara, y
+`tramo_pct_disparador` es el umbral de % de avance acumulado (de la Foja) que lo habilita.
+`tramo_numero` es correlativo por Contrato, auto-asignado por
+[auto_increment_tramo_numero](../signals/auto_increment_tramo_numero.md) — el más simple
+de los tres patrones de auto-numeración del módulo (sin cadena de reprogramación).
 
 ## Firma
 
@@ -23,18 +28,10 @@ class ContratoTramoPago(models.Model):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/models.py:729` — `"ContratoTramoPago",`
-- `carga/models.py:1306` — `"ContratoTramoPago).",`
-- `carga/signals.py:3` — `from .models import FojaDeMedicion, FojaDeMedicionItem, PlanDeTrabajosEtapa, ContratoMonto, ContratoTramoPago`
-- `carga/signals.py:67` — `@receiver(pre_save, sender=ContratoTramoPago)`
-- `carga/signals.py:71` — `last_tramo = ContratoTramoPago.objects.filter(`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`GestionarTramosContrato` (`carga/views/contratotramopagoviews.py:35`), formset inline sobre un Contrato.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Contrato](Contrato.md)
+- [Certificado](Certificado.md) — `certificado_contrato_tramo` es el `OneToOneField` que salda un Tramo.
+- [auto_increment_tramo_numero](../signals/auto_increment_tramo_numero.md)

@@ -1,14 +1,29 @@
 <h1>auto_increment_tramo_numero</h1>
-<p><strong>Módulo:</strong> <code>carga/signals.py</code> (líneas 68-75)</p>
+<p><strong>Módulo:</strong> <code>carga/signals.py</code> (líneas 68-75) · receiver de <code>pre_save</code> sobre <code>ContratoTramoPago</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Mismo patrón de auto-numeración que
+<a href="auto_increment_foja_numero.md">auto_increment_foja_numero</a> y
+<a href="auto_increment_etapa_numero.md">auto_increment_etapa_numero</a>, acá para
+<code>ContratoTramoPago</code> (los tramos de pago de un Contrato con certificación por etapas — ver
+<code>Contrato.contrato_certificacion_por_etapas</code>). Es el más simple de los tres: no hay
+concepto de cadena/reprogramación, <code>tramo_numero</code> es simplemente correlativo dentro del
+mismo <code>Contrato</code> (<code>tramo_contrato</code>), arrancando en 1.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def auto_increment_tramo_numero(sender, instance, **kwargs):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
+<p>Se dispara al guardar el formset de tramos de un Contrato:</p>
+<pre><code class="language-python"># carga/views/contratotramopagoviews.py:35 (GestionarTramosContrato.post)
+with transaction.atomic():
+    formset.save()  # cada ContratoTramoPago nuevo -&gt; pre_save -&gt; asigna tramo_numero
+</code></pre>
 <h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ol>
+<li>Si <code>instance.pk</code> ya existe (edición) → no hace nada.</li>
+<li>Si es un Tramo nuevo: <code>ContratoTramoPago.objects.filter(tramo_contrato=instance.tramo_contrato).order_by('-tramo_numero').first()</code>, y asigna <code>last_tramo.tramo_numero + 1</code> (o <code>1</code> si es el primero del Contrato).</li>
+</ol>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../models/ContratoTramoPago.md">ContratoTramoPago</a></li>
+<li><a href="auto_increment_foja_numero.md">auto_increment_foja_numero</a> / <a href="auto_increment_etapa_numero.md">auto_increment_etapa_numero</a> — mismo patrón de auto-numeración, con la variante de cadena de rubro.</li>
+</ul>

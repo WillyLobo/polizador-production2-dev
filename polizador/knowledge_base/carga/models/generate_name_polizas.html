@@ -1,16 +1,18 @@
 <h1>generate_name_polizas</h1>
 <p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 39-47)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Callback <code>upload_to</code> de un <code>FileField</code>: Django lo llama con la instancia (todavía sin
+guardar del todo) y el nombre original del archivo, y espera de vuelta la ruta relativa
+donde <code>GCloudAndLocalStorage</code> (ver CLAUDE.md) va a escribirlo, tanto en GCS como en
+<code>MEDIA_ROOT</code> local.</p>
+<p>Mismo patrón que <code>generate_name_certificados</code> pero para Pólizas: <code>polizas/&lt;año&gt;/&lt;mes&gt;/</code>
+según <code>poliza_fecha</code>, nombrado <code>&lt;poliza_uuid&gt;_&lt;poliza_expediente&gt;.pdf</code>.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def generate_name_polizas(instance, filename):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/models.py:185</code> — <code>poliza_digital = models.FileField(verbose_name="Póliza Digital", upload_to=generate_name_polizas, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], max_length=500, null=True, blank=True)</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>Poliza.poliza_digital = models.FileField(upload_to=generate_name_polizas, ...)</code> (carga/models.py:185).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="Poliza.md">Poliza</a></li>
+</ul>

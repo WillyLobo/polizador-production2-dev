@@ -4,7 +4,7 @@ kind: function
 module: carga/models.py
 lines: 73-78
 signature_hash: sha1:a77ce226d468a1990b378b487965abb67422cf6f
-authored: false
+authored: true
 ---
 
 # generate_name_rubro_documento
@@ -13,7 +13,12 @@ authored: false
 
 ## Propósito
 
-_(pendiente de autoría)_
+Callback `upload_to` de un `FileField`: Django lo llama con la instancia (todavía sin
+guardar del todo) y el nombre original del archivo, y espera de vuelta la ruta relativa
+donde `GCloudAndLocalStorage` (ver CLAUDE.md) va a escribirlo, tanto en GCS como en
+`MEDIA_ROOT` local.
+
+Sin partición por fecha: `documentos_rubro_plan/<rubro_uuid>.pdf`.
 
 ## Firma
 
@@ -23,14 +28,8 @@ def generate_name_rubro_documento(instance, filename):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/models.py:934` — `rubro_documento_digital = models.FileField(verbose_name="Documento Digital", upload_to=generate_name_rubro_documento, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], max_length=500, null=True, blank=True)`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`PlanDeTrabajosRubro.rubro_documento_digital = models.FileField(upload_to=generate_name_rubro_documento, ...)` (carga/models.py:934).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [PlanDeTrabajosRubro](PlanDeTrabajosRubro.md)

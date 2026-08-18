@@ -4,16 +4,20 @@ kind: class
 module: carga/models.py
 lines: 1374-1384
 signature_hash: sha1:85ec9d2ec8cacd3078e75b82adff08d80ba06841
-authored: false
+authored: true
 ---
 
 # ContratoRubro
 
-**Módulo:** `carga/models.py` (líneas 1374-1384)
+**Módulo:** `carga/models.py` (líneas 1374-1384) · hereda de `models.Model`
 
 ## Propósito
 
-_(pendiente de autoría)_
+**Ojo con el nombre:** este es un tercer concepto de "Rubro" en `carga/models.py`, sin
+relación con `CertificadoRubro` ni con `PlanDeTrabajosRubro`. `ContratoRubro` es solo la
+categoría de un archivo adjunto de Contrato (`ContratosDigitales.contratodigital_tipo`) —
+un catálogo de tipos de documento ("Contrato firmado", "Acta de inicio", etc., según lo
+que se haya cargado), no una unidad de obra ni de certificación.
 
 ## Firma
 
@@ -23,14 +27,10 @@ class ContratoRubro(models.Model):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/models.py:1395` — `contratodigital_tipo = models.ForeignKey("ContratoRubro", verbose_name="Rubro Contrato", on_delete=models.CASCADE)`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Referenciado desde `ContratosDigitales.contratodigital_tipo`.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [ContratosDigitales](ContratosDigitales.md)
+- [CertificadoRubro](CertificadoRubro.md) — no confundir.
+- [PlanDeTrabajosRubro](PlanDeTrabajosRubro.md) — no confundir.

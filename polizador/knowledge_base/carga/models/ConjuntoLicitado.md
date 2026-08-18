@@ -4,16 +4,21 @@ kind: class
 module: carga/models.py
 lines: 859-892
 signature_hash: sha1:b5b1317a64be2bc391558178677e0d9cf17c4b05
-authored: false
+authored: true
 ---
 
 # ConjuntoLicitado
 
-**Módulo:** `carga/models.py` (líneas 859-892)
+**Módulo:** `carga/models.py` (líneas 859-892) · hereda de `models.Model`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Agrupa varias Obras que salieron a licitación juntas (un "conjunto licitado"), con su
+propia resolución de adjudicación. Soporta un nivel de sub-agrupamiento vía
+`conjunto_subconjunto` (FK a sí mismo) — un Conjunto puede pertenecer a otro Conjunto
+mayor. `conjunto_resolucion_display` sigue el mismo patrón que `Obra.obra_resolucion_display`
+y `Contrato.contrato_resolucion_display`: prioriza el FK a `secretariador.InstrumentosLegalesResoluciones`
+si existe, si no arma el número "legado" a mano (`RES-{año}-{numero}-{jurisdiccion}-{acta}`).
 
 ## Firma
 
@@ -23,18 +28,8 @@ class ConjuntoLicitado(models.Model):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/models.py:315` — `# Compartido por los campos de resolución cargados a mano (Obra/ConjuntoLicitado/Contrato),`
-- `carga/models.py:345` — `obra_conjunto = models.ForeignKey("ConjuntoLicitado", verbose_name="Conjunto Licitado", on_delete=models.SET_NULL, null=True, blank=True)`
-- `carga/views/conjuntoviews.py:7` — `from carga.models import ConjuntoLicitado`
-- `carga/views/conjuntoviews.py:15` — `model = ConjuntoLicitado`
-- `carga/views/conjuntoviews.py:23` — `model = ConjuntoLicitado`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`CrearConjunto`/`UpdateConjunto` (`carga/views/conjuntoviews.py`); `Obra.obra_conjunto` es el FK que vincula cada Obra a su Conjunto.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Obra](Obra.md)

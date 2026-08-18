@@ -4,16 +4,18 @@ kind: class
 module: carga/models.py
 lines: 194-211
 signature_hash: sha1:524780e24ff7d59178e35d9b345e2df51544f2d1
-authored: false
+authored: true
 ---
 
 # Poliza_Movimiento
 
-**Módulo:** `carga/models.py` (líneas 194-211)
+**Módulo:** `carga/models.py` (líneas 194-211) · hereda de `models.Model`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Registro de que una Póliza física pasó por un Área, recibida por un Receptor, en una
+fecha — el historial de "por dónde anduvo" el documento papel/expediente, independiente de
+`simple_history` (que audita cambios de campos, no traslados del objeto físico).
 
 ## Firma
 
@@ -23,18 +25,10 @@ class Poliza_Movimiento(models.Model):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/polizaviews.py:7` — `from carga.models import Poliza, Poliza_Movimiento`
-- `carga/views/polizaviews.py:57` — `model = Poliza_Movimiento`
-- `carga/views/polizaviews.py:84` — `model = Poliza_Movimiento`
-- `carga/forms/polizaforms.py:7` — `from carga.models import Poliza, Poliza_Movimiento`
-- `carga/forms/polizaforms.py:60` — `model = models.Poliza_Movimiento`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Se crea junto con la Póliza en `CrearPoliza`, y se pueden agregar movimientos nuevos desde `UpdatePoliza` (`carga/views/polizaviews.py`), ambas con formset inline.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Poliza](Poliza.md)
+- [Receptor](Receptor.md)
+- [Area](Area.md)

@@ -1,18 +1,17 @@
 <h1>CertificadoFinanciamiento</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 613-624)</p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 613-624) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Catálogo normalizado de fuentes de financiamiento (Nación/Provincia/Terceros), con
+<code>_nombre_corto</code> de un carácter (N/P/T) — el mismo código corto que usan
+<code>Certificado.FINANCIAMIENTO</code> (todavía un <code>CharField</code> de choices, sin migrar a FK) y
+<code>Obra.recalcular_montos_contrato()</code> para agrupar montos.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class CertificadoFinanciamiento(models.Model):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/models.py:1365</code> — <code>contratomonto_financiamiento = models.ForeignKey("CertificadoFinanciamiento", verbose_name="Financiamiento", on_delete=models.CASCADE)</code></li>
-<li><code>carga/views/certificadoviews.py:23</code> — <code>from carga.models import Certificado, CertificadoFinanciamiento, ContratoMonto, FojaDeMedicion, PlanDeTrabajosEtapa, Uvi</code></li>
-<li><code>carga/views/certificadoviews.py:84</code> — <code>financiamiento = CertificadoFinanciamiento.objects.filter(</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Referenciado desde <code>ContratoMonto.contratomonto_financiamiento</code>.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="ContratoMonto.md">ContratoMonto</a></li>
+<li><a href="Certificado.md">Certificado</a></li>
+</ul>

@@ -1,6 +1,6 @@
 {
   "carga": {
-    "generated_at": "2026-08-18T22:08:25.598011+00:00",
+    "generated_at": "2026-08-18T22:28:29.287957+00:00",
     "modules": {
       "forms/areaforms": {
         "file": "carga/forms/areaforms.py",
@@ -1580,7 +1580,7 @@
         "file": "carga/models.py",
         "symbols": {
           "Area": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -1648,7 +1648,7 @@
             "stale": false
           },
           "Aseguradora": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -1716,7 +1716,7 @@
             "stale": false
           },
           "Certificado": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -1826,7 +1826,7 @@
             "stale": false
           },
           "CertificadoFinanciamiento": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -1874,7 +1874,7 @@
             "stale": false
           },
           "CertificadoRubro": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -1932,7 +1932,7 @@
             "stale": false
           },
           "ConjuntoLicitado": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -2012,7 +2012,7 @@
             "stale": false
           },
           "Contrato": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -2082,7 +2082,7 @@
             "stale": false
           },
           "ContratoMonto": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -2140,7 +2140,7 @@
             "stale": false
           },
           "ContratoRubro": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -2178,7 +2178,7 @@
             "stale": false
           },
           "ContratoTramoPago": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -2236,7 +2236,7 @@
             "stale": false
           },
           "ContratosDigitales": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -2283,7 +2283,7 @@
             "stale": false
           },
           "Departamento": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -2351,7 +2351,7 @@
             "stale": false
           },
           "Empresa": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -2419,7 +2419,7 @@
             "stale": false
           },
           "FojaDeMedicion": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -2539,7 +2539,7 @@
             "stale": false
           },
           "FojaDeMedicionFoto": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -2582,7 +2582,7 @@
             "stale": false
           },
           "FojaDeMedicionItem": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -2650,7 +2650,7 @@
             "stale": false
           },
           "INDEC": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -2682,7 +2682,7 @@
             "stale": false
           },
           "Localidad": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -2750,7 +2750,7 @@
             "stale": false
           },
           "Municipio": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -2818,7 +2818,7 @@
             "stale": false
           },
           "Obra": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -3068,7 +3068,7 @@
             "stale": false
           },
           "ObraDocumento": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -3126,7 +3126,7 @@
             "stale": false
           },
           "PlanDeTrabajos": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -3216,7 +3216,7 @@
             "stale": false
           },
           "PlanDeTrabajosEtapa": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -3356,7 +3356,7 @@
             "stale": false
           },
           "PlanDeTrabajosEtapaItem": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -3419,7 +3419,7 @@
             "stale": false
           },
           "PlanDeTrabajosItem": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -3497,7 +3497,7 @@
             "stale": false
           },
           "PlanDeTrabajosRubro": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -3605,7 +3605,7 @@
             "stale": false
           },
           "Poliza": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -3673,7 +3673,7 @@
             "stale": false
           },
           "Poliza_Movimiento": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -3741,7 +3741,7 @@
             "stale": false
           },
           "Programa": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -3809,7 +3809,7 @@
             "stale": false
           },
           "Prototipo": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -3830,7 +3830,7 @@
             "stale": false
           },
           "Provincia": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -3878,7 +3878,7 @@
             "stale": false
           },
           "Receptor": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -3946,7 +3946,7 @@
             "stale": false
           },
           "Region": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -4014,7 +4014,7 @@
             "stale": false
           },
           "Uvi": {
-            "authored": false,
+            "authored": true,
             "bases": [
               "models.Model"
             ],
@@ -4084,7 +4084,7 @@
             "stale": false
           },
           "add_months": {
-            "authored": false,
+            "authored": true,
             "bases": [],
             "candidate_usages": [
               {
@@ -4109,7 +4109,7 @@
             "stale": false
           },
           "generate_name_certificados": {
-            "authored": false,
+            "authored": true,
             "bases": [],
             "candidate_usages": [
               {
@@ -4134,7 +4134,7 @@
             "stale": false
           },
           "generate_name_contratos": {
-            "authored": false,
+            "authored": true,
             "bases": [],
             "candidate_usages": [
               {
@@ -4159,7 +4159,7 @@
             "stale": false
           },
           "generate_name_foja_foto": {
-            "authored": false,
+            "authored": true,
             "bases": [],
             "candidate_usages": [
               {
@@ -4184,7 +4184,7 @@
             "stale": false
           },
           "generate_name_obra_documento": {
-            "authored": false,
+            "authored": true,
             "bases": [],
             "candidate_usages": [
               {
@@ -4209,7 +4209,7 @@
             "stale": false
           },
           "generate_name_polizas": {
-            "authored": false,
+            "authored": true,
             "bases": [],
             "candidate_usages": [
               {
@@ -4234,7 +4234,7 @@
             "stale": false
           },
           "generate_name_resoluciones": {
-            "authored": false,
+            "authored": true,
             "bases": [],
             "candidate_usages": [],
             "decorators": [],
@@ -4253,7 +4253,7 @@
             "stale": false
           },
           "generate_name_rubro_documento": {
-            "authored": false,
+            "authored": true,
             "bases": [],
             "candidate_usages": [
               {
@@ -4278,7 +4278,7 @@
             "stale": false
           },
           "obras_con_acumulado_anotado": {
-            "authored": false,
+            "authored": true,
             "bases": [],
             "candidate_usages": [
               {
@@ -4308,7 +4308,7 @@
         "file": "carga/signals.py",
         "symbols": {
           "auto_increment_etapa_numero": {
-            "authored": false,
+            "authored": true,
             "bases": [],
             "candidate_usages": [
               {
@@ -4335,7 +4335,7 @@
             "stale": false
           },
           "auto_increment_foja_numero": {
-            "authored": false,
+            "authored": true,
             "bases": [],
             "candidate_usages": [
               {
@@ -4362,7 +4362,7 @@
             "stale": false
           },
           "auto_increment_tramo_numero": {
-            "authored": false,
+            "authored": true,
             "bases": [],
             "candidate_usages": [],
             "decorators": [
@@ -4404,7 +4404,7 @@
             "stale": false
           },
           "recalcular_montos_obra": {
-            "authored": false,
+            "authored": true,
             "bases": [],
             "candidate_usages": [],
             "decorators": [

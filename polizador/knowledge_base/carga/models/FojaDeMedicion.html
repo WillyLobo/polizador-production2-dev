@@ -1,20 +1,30 @@
 <h1>FojaDeMedicion</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 1155-1232)</p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 1155-1232) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Registro mensual de avance real de obra para un Rubro de Plan de Trabajos — el "gemelo
+real" de <code>PlanDeTrabajosEtapa</code> (ver esa página para la comparación estructural completa).
+<code>foja_numero</code> es correlativo dentro de la cadena de rubro reprogramado, asignado por
+<a href="../signals/auto_increment_foja_numero.md">auto_increment_foja_numero</a>; <code>foja_legacy</code>
+marca las Fojas cargadas a mano para preservar historial previo al sistema (esas se
+saltean de la auto-numeración).</p>
+<p><code>foja_anterior()</code>/<code>foja_siguiente()</code> navegan la cadena (<code>rubro_cadena_ids()</code>/
+<code>rubro_cadena_siguiente_ids()</code>) por <code>foja_numero</code>, no por <code>foja_periodo</code> — el período es
+solo una etiqueta visual, el orden real es el número de foja. <code>anterior_items_map()</code> es un
+<code>staticmethod</code> usado para prellenar formularios: da, para cada item de un rubro, el
+acumulado que tenía en la última Foja ya cargada, sin necesidad de instanciar una Foja
+completa.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class FojaDeMedicion(models.Model):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/models.py:787</code> — <code>certificado_foja = models.ForeignKey("FojaDeMedicion", verbose_name="Foja de Medición de Origen", on_delete=models.SET_NULL, null=True, blank=True)</code></li>
-<li><code>carga/models.py:1057</code> — <code>que FojaDeMedicion.anterior_items_map())."""</code></li>
-<li><code>carga/models.py:1242</code> — <code>fojaitem_foja = models.ForeignKey("FojaDeMedicion", verbose_name="Foja de Medición", on_delete=models.CASCADE, related_name="items")</code></li>
-<li><code>carga/models.py:1275</code> — <code>fotofoja_foja = models.ForeignKey("FojaDeMedicion", verbose_name="Foja de Medición", on_delete=models.CASCADE, related_name="fotos")</code></li>
-<li><code>carga/signals.py:3</code> — <code>from .models import FojaDeMedicion, FojaDeMedicionItem, PlanDeTrabajosEtapa, ContratoMonto, ContratoTramoPago</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<pre><code class="language-python"># carga/views/fojademedicionviews.py (CrearFojaDeMedicion.form_valid)
+self.object = form.save()  # -&gt; pre_save: auto_increment_foja_numero
+formset.save()               # -&gt; cada FojaDeMedicionItem.save() + cascada hacia adelante
+</code></pre>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="FojaDeMedicionItem.md">FojaDeMedicionItem</a></li>
+<li><a href="PlanDeTrabajosRubro.md">PlanDeTrabajosRubro</a> — dueño de la cadena de reprogramación que estos métodos recorren.</li>
+<li><a href="PlanDeTrabajosEtapa.md">PlanDeTrabajosEtapa</a> — su equivalente proyectado.</li>
+<li><a href="../signals/auto_increment_foja_numero.md">auto_increment_foja_numero</a></li>
+</ul>

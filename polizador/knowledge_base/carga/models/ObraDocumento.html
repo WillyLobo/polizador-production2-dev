@@ -1,20 +1,13 @@
 <h1>ObraDocumento</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 561-574)</p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 561-574) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Documento PDF adjunto a una Obra (genérico — sin tipo/categoría propia, a diferencia de <code>ContratosDigitales</code> que sí tiene <code>contratodigital_tipo</code>).</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class ObraDocumento(models.Model):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/documentosdigitalesviews.py:9</code> — <code>from carga.models import ContratosDigitales, ObraDocumento</code></li>
-<li><code>carga/views/documentosdigitalesviews.py:63</code> — <code>model = ObraDocumento</code></li>
-<li><code>carga/views/documentosdigitalesviews.py:89</code> — <code>model = ObraDocumento</code></li>
-<li><code>carga/views/documentosdigitalesviews.py:98</code> — <code>model = ObraDocumento</code></li>
-<li><code>carga/forms/documentosdigitalesforms.py:27</code> — <code>model = models.ObraDocumento</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>ObraDocumentoForm</code> (buscar en <code>carga/forms/</code>), asociada a <code>Obra.documentos_obra</code> (related_name).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="Obra.md">Obra</a></li>
+</ul>

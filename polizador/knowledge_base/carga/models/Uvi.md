@@ -4,16 +4,22 @@ kind: class
 module: carga/models.py
 lines: 1399-1420
 signature_hash: sha1:147afb88e27310bfe2c89ce0297bcd1f4e1e23f1
-authored: false
+authored: true
 ---
 
 # Uvi
 
-**Módulo:** `carga/models.py` (líneas 1399-1420)
+**Módulo:** `carga/models.py` (líneas 1399-1420) · hereda de `models.Model`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Cotización diaria de la UVI (Unidad de Vivienda), la unidad de indexación en la que se
+expresan buena parte de los montos de este módulo (Obra, Certificado, ContratoMonto,
+PlanDeTrabajosRubro...). `pesos_equivalentes(monto_uvi, fecha)` es el método realmente
+usado en todo el código: convierte un monto UVI a pesos con la cotización vigente a esa
+fecha, o la anterior más cercana si no hay una cotización exacta para ese día
+(`filter(uvi_fecha__lte=fecha).order_by('-uvi_fecha').first()`) — nunca la cotización
+*futura* más cercana, siempre hacia atrás en el tiempo.
 
 ## Firma
 
@@ -23,18 +29,15 @@ class Uvi(models.Model):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
+```python
+# carga/models.py:499 (Obra.obra_contrato_nacion_pesos_actualizado)
+return Uvi.pesos_equivalentes(self.obra_contrato_nacion_uvi, datetime.today())
+```
 
-- `carga/models.py:496` — `return Uvi.pesos_equivalentes(monto_uvi, fecha)`
-- `carga/models.py:980` — `pesos = Uvi.pesos_equivalentes(cm.contratomonto_uvi, cm.contratomonto_uvi_fecha)`
-- `carga/views/certificadoviews.py:23` — `from carga.models import Certificado, CertificadoFinanciamiento, ContratoMonto, FojaDeMedicion, PlanDeTrabajosEtapa, Uvi`
-- `carga/views/certificadoviews.py:60` — `monto_basico_pesos = Uvi.pesos_equivalentes(monto_basico_uvi, certificado.certificado_fecha)`
-- `carga/views/certificadoviews.py:61` — `monto_total_pesos = Uvi.pesos_equivalentes(monto_total_uvi, certificado.certificado_fecha)`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Los valores se sincronizan desde la API pública del BCRA vía el management command
+`bcra_uvi` (ver `carga/bcra_api.py`, CLAUDE.md).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Obra](Obra.md)
+- [PlanDeTrabajosRubro](PlanDeTrabajosRubro.md)
