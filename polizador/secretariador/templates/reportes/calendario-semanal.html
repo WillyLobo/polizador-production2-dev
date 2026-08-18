@@ -27,7 +27,7 @@
             events: {
                 url: '/v1/api/calendario/semanal/',
                 {% if agente %}
-                extraParams: { agente: '{{agente.id}}' },
+                extraParams: { agente: '{{agente.id|unlocalize}}' },
                 {% endif %}
             },
         });
