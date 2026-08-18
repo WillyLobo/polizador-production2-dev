@@ -161,6 +161,154 @@ class ReportesCalendarioViewsTest(TestCase):
         self.assertNotIn('value="2099"', content)
 
 
+class ValorViaticoDiaTests(TestCase):
+    """Prueba ComisionadoSolicitud.valor_viatico_dia() (secretariador/models.py),
+    incluyendo las reglas configurables en ReglasViatico (gabinete, autoridades del
+    Directorio, escalafón único forzado) que reemplazan al viejo estrato=2 fijo."""
+
+    def setUp(self):
+        from carga.models import Provincia
+        from personalizador.models import Agente, ComisionadoExterno, Directorio, GeneroAgente
+        from secretariador.models import (
+            ComisionadoSolicitud, InstrumentosLegalesDecretos, MontoViaticoDiario,
+            ReglasViatico, Solicitud,
+        )
+
+        self.ComisionadoSolicitud = ComisionadoSolicitud
+        self.ReglasViatico = ReglasViatico
+
+        genero = GeneroAgente.objects.create(generoagente_nombre="Test")
+        self.provincia_chaco = Provincia.objects.create(id=1, provincia_nombre="Chaco")
+        self.provincia_otra = Provincia.objects.create(id=2, provincia_nombre="Corrientes")
+
+        decreto = InstrumentosLegalesDecretos.objects.create(
+            instrumentolegaldecretos_numero="1", instrumentolegaldecretos_ano="2026",
+        )
+        self.monto = MontoViaticoDiario.objects.create(
+            montoviaticodiario_decreto_reglamentario=decreto,
+            montoviaticodiario_estrato_uno_interior=10, montoviaticodiario_estrato_dos_interior=20,
+            montoviaticodiario_estrato_tres_interior=30, montoviaticodiario_estrato_cuatro_interior=40,
+            montoviaticodiario_estrato_uno_exterior=100, montoviaticodiario_estrato_dos_exterior=200,
+            montoviaticodiario_estrato_tres_exterior=300, montoviaticodiario_estrato_cuatro_exterior=400,
+        )
+
+        self.solicitante = Agente.objects.create(
+            agente_nombres="Solicitante", agente_apellidos="Test",
+            sexo=genero, dni=30000001, cuil="20300000013",
+        )
+        self.agente_normal = Agente.objects.create(
+            agente_nombres="Normal", agente_apellidos="Test",
+            sexo=genero, dni=30000002, cuil="20300000023",
+        )
+        self.agente_gabinete = Agente.objects.create(
+            agente_nombres="Gabinete", agente_apellidos="Test",
+            sexo=genero, dni=30000003, cuil="20300000033", agente_personal_de_gabinete=True,
+        )
+        self.agente_autoridad = Agente.objects.create(
+            agente_nombres="Autoridad", agente_apellidos="Test",
+            sexo=genero, dni=30000004, cuil="20300000043",
+        )
+        Directorio.objects.create(
+            directorio_nombre="Presidencia", directorio_cuof="001",
+            directorio_autoridad_a_cargo_fk=self.agente_autoridad,
+        )
+        self.externo = ComisionadoExterno.objects.create(
+            agente_nombres="Externo", agente_apellidos="Test",
+            sexo=genero, dni=30000005, cuil="20300000053",
+        )
+        self._solicitud_numero = 0
+
+    def _comisionado(self, provincia, agente=None, externo=None, **kwargs):
+        self._solicitud_numero += 1
+        solicitud = self.Solicitud.objects.create(
+            solicitud_actuacion_ano=2026, solicitud_actuacion_numero=self._solicitud_numero,
+            solicitud_solicitante=self.solicitante, solicitud_provincia=provincia,
+            solicitud_decreto_viaticos=self.monto,
+            solicitud_fecha_desde="2026-01-01", solicitud_fecha_hasta="2026-01-02",
+            solicitud_tareas="Tarea de prueba", solicitud_dia_inhabil=False,
+        )
+        kwargs.setdefault("comisionadosolicitud_colaborador", False)
+        kwargs.setdefault("comisionadosolicitud_chofer", False)
+        return self.ComisionadoSolicitud(
+            comisionadosolicitud_foreign=solicitud,
+            comisionadosolicitud_nombre=agente, comisionadosolicitud_externo=externo,
+            **kwargs,
+        )
+
+    @property
+    def Solicitud(self):
+        from secretariador.models import Solicitud
+        return Solicitud
+
+    def test_agente_normal_usa_escalafon_por_defecto_dos(self):
+        comisionado = self._comisionado(self.provincia_chaco, agente=self.agente_normal)
+        self.assertEqual(comisionado.valor_viatico_dia(), self.monto.montoviaticodiario_estrato_dos_interior)
+
+    def test_agente_normal_con_escalafon_explicito(self):
+        self.agente_normal.agente_escalafon = 3
+        self.agente_normal.save()
+        comisionado = self._comisionado(self.provincia_otra, agente=self.agente_normal)
+        self.assertEqual(comisionado.valor_viatico_dia(), self.monto.montoviaticodiario_estrato_tres_exterior)
+
+    def test_gabinete_no_cobra_por_defecto(self):
+        comisionado = self._comisionado(self.provincia_chaco, agente=self.agente_gabinete)
+        self.assertEqual(comisionado.valor_viatico_dia(), 0)
+
+    def test_gabinete_cobra_si_la_regla_lo_habilita(self):
+        reglas = self.ReglasViatico.get_solo()
+        reglas.reglas_gabinete_cobra_viatico = True
+        reglas.save()
+        comisionado = self._comisionado(self.provincia_chaco, agente=self.agente_gabinete)
+        self.assertEqual(comisionado.valor_viatico_dia(), self.monto.montoviaticodiario_estrato_dos_interior)
+
+    def test_autoridad_no_cobra_dentro_de_chaco_por_defecto(self):
+        comisionado = self._comisionado(self.provincia_chaco, agente=self.agente_autoridad)
+        self.assertEqual(comisionado.valor_viatico_dia(), 0)
+
+    def test_autoridad_cobra_estrato_cuatro_fuera_de_chaco(self):
+        comisionado = self._comisionado(self.provincia_otra, agente=self.agente_autoridad)
+        self.assertEqual(comisionado.valor_viatico_dia(), self.monto.montoviaticodiario_estrato_cuatro_exterior)
+
+    def test_autoridad_cobra_dentro_de_chaco_si_la_regla_lo_habilita(self):
+        reglas = self.ReglasViatico.get_solo()
+        reglas.reglas_autoridades_cobra_viatico_chaco = True
+        reglas.save()
+        comisionado = self._comisionado(self.provincia_chaco, agente=self.agente_autoridad)
+        self.assertEqual(comisionado.valor_viatico_dia(), self.monto.montoviaticodiario_estrato_cuatro_interior)
+
+    def test_comisionado_externo_usa_escalafon_default_de_externos(self):
+        comisionado = self._comisionado(self.provincia_chaco, externo=self.externo)
+        self.assertEqual(comisionado.valor_viatico_dia(), self.monto.montoviaticodiario_estrato_dos_interior)
+
+    def test_comisionado_externo_no_cobra_si_la_regla_lo_deshabilita(self):
+        reglas = self.ReglasViatico.get_solo()
+        reglas.reglas_externos_cobra_viatico = False
+        reglas.save()
+        comisionado = self._comisionado(self.provincia_chaco, externo=self.externo)
+        self.assertEqual(comisionado.valor_viatico_dia(), 0)
+
+    def test_escalafon_unico_forzado_pisa_todo_incluido_externos_y_autoridades(self):
+        reglas = self.ReglasViatico.get_solo()
+        reglas.reglas_escalafon_unico_habilitado = True
+        reglas.reglas_escalafon_unico_valor = 1
+        reglas.reglas_gabinete_cobra_viatico = True
+        reglas.reglas_autoridades_cobra_viatico_chaco = True
+        reglas.save()
+        for kwargs in (
+            {"agente": self.agente_normal}, {"agente": self.agente_gabinete},
+            {"agente": self.agente_autoridad}, {"externo": self.externo},
+        ):
+            with self.subTest(**kwargs):
+                comisionado = self._comisionado(self.provincia_chaco, **kwargs)
+                self.assertEqual(
+                    comisionado.valor_viatico_dia(), self.monto.montoviaticodiario_estrato_uno_interior,
+                )
+
+    def test_colaborador_no_cobra_sin_importar_escalafon(self):
+        comisionado = self._comisionado(self.provincia_chaco, agente=self.agente_normal, comisionadosolicitud_colaborador=True)
+        self.assertEqual(comisionado.valor_viatico_dia(), 0)
+
+
 # --- Empaquetado de resoluciones (paquetes_resoluciones.py) -------------------
 #
 # armar_zip/armar_pdf son lógica pura (reciben bytes ya leídos, en memoria) así

@@ -21,9 +21,9 @@ admin.site.register(CustomUser, CustomUserAdmin)
 
 class AgenteAdmin(ImportExportMixin, SimpleHistoryAdmin):
     resource_class = AgenteResource
-    list_display = ["agente_nombreyapellido", "dni", "n_legajo", "categoria", "oficina"]
+    list_display = ["agente_nombreyapellido", "dni", "n_legajo", "categoria", "oficina", "agente_escalafon"]
     search_fields = ["agente_nombres", "agente_apellidos", "dni", "cuil"]
-    list_filter = ["sexo", "categoria", "agente_verificado_contra_padron", "agente_es_inpector_obra", "agente_personal_transitorio", "agente_personal_de_gabinete"]
+    list_filter = ["sexo", "categoria", "agente_verificado_contra_padron", "agente_es_inpector_obra", "agente_personal_transitorio", "agente_personal_de_gabinete", "agente_escalafon"]
     autocomplete_fields = [
         "agente_usuario",
         "sexo",

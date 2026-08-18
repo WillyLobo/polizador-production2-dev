@@ -129,6 +129,13 @@ class Agente(models.Model):
     agente_es_inpector_obra = models.BooleanField("Inspector de Obra",default=False, help_text="El agente es inspector de obra")
     agente_personal_transitorio = models.BooleanField("Personal Transitorio",default=False, help_text="Tildar si el agente es personal transitorio")
     agente_personal_de_gabinete = models.BooleanField("Personal de Gabinete",default=False, help_text="Tildar si el agente es personal de gabinete")
+    ESCALAFON_CHOICES = (
+        (1, "I"),
+        (2, "II"),
+        (3, "III"),
+        (4, "IV"),
+    )
+    agente_escalafon = models.PositiveSmallIntegerField("Escalafón", choices=ESCALAFON_CHOICES, default=2, help_text="Escalafón (I-IV) usado para calcular el viático diario. Las autoridades del Directorio usan el escalafón configurado en Reglas de Cálculo de Viáticos, independientemente de este valor.")
     # Otros
     agente_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     agente_history = HistoricalRecords()

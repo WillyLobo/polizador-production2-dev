@@ -301,6 +301,39 @@ class MontoViaticoDiario(models.Model):
     def __str__(self):
         return f"{self.montoviaticodiario_decreto_reglamentario}"
 
+ESCALAFON_CHOICES = (
+    (1, "I"),
+    (2, "II"),
+    (3, "III"),
+    (4, "IV"),
+)
+
+class ReglasViatico(models.Model):
+    class Meta:
+        verbose_name = "Reglas de Cálculo de Viáticos"
+        verbose_name_plural = "Reglas de Cálculo de Viáticos"
+
+    reglas_gabinete_cobra_viatico = models.BooleanField("Personal de gabinete cobra viático", default=False)
+    reglas_autoridades_cobra_viatico_chaco = models.BooleanField("Autoridades (Directorio) cobran viático dentro de Chaco", default=False)
+    reglas_autoridades_escalafon = models.PositiveSmallIntegerField("Escalafón de autoridades (Directorio)", choices=ESCALAFON_CHOICES, default=4)
+    reglas_escalafon_unico_habilitado = models.BooleanField("Forzar un único escalafón para todos", default=False)
+    reglas_escalafon_unico_valor = models.PositiveSmallIntegerField("Escalafón único", choices=ESCALAFON_CHOICES, default=2)
+    reglas_externos_cobra_viatico = models.BooleanField("Comisionados externos cobran viático", default=True)
+    reglas_escalafon_default_externos = models.PositiveSmallIntegerField("Escalafón por defecto para comisionados externos", choices=ESCALAFON_CHOICES, default=2)
+    reglas_history = HistoricalRecords()
+
+    def __str__(self):
+        return "Reglas de Cálculo de Viáticos"
+
+    def save(self, *args, **kwargs):
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def get_solo(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
 class Organigrama(models.Model):
     class Meta:
         verbose_name = "Organigrama"
@@ -498,39 +531,47 @@ class ComisionadoSolicitud(models.Model):
 
     def valor_viatico_dia(self):
         """
-        Calculates the daily viatic value based on the position and stratum of the commissioned person.
+        Calculates the daily viatic value based on the escalafón of the commissioned
+        person and the rules configured in ReglasViatico.
 
         Returns:
-            float: The daily viatic value. Returns 0 if the position is "Vocal" or "Presidente".
+            float: The daily viatic value. Returns 0 if excepted by ReglasViatico or
+            by comisionadosolicitud_colaborador/comisionadosolicitud_sin_viatico.
         """
+        if self.comisionadosolicitud_colaborador or self.comisionadosolicitud_sin_viatico:
+            return 0
+
         foreign = self.get_origin()
-
-        estrato = 2
-
-        # TODO: comisionado_cargo (Organigrama) was dropped when Comisionado merged into
-        # personalizador.Agente; the "Vocal"/"Presidente" override and per-cargo escalafon
-        # used to come from Organigrama. Until Agente.oficina is mapped back to that data
-        # (pending data orchestration), default to escalafon 2 and skip the override.
         decreto = foreign.solicitud_decreto_viaticos
         es_chaco = foreign.solicitud_provincia.provincia_nombre == "Chaco"
+        reglas = ReglasViatico.get_solo()
 
         # Los chequeos de directorio/gabinete solo aplican a agentes del
-        # organismo: un comisionado externo nunca cae en esos casos.
+        # organismo; un comisionado externo tiene su propia excepción
+        # (reglas_externos_cobra_viatico).
+        es_autoridad = False
         if self.comisionadosolicitud_nombre is not None:
-            if self.comisionadosolicitud_nombre.directorio_set.all() and es_chaco:
+            agente = self.comisionadosolicitud_nombre
+            es_autoridad = agente.directorio_set.exists()
+            if agente.agente_personal_de_gabinete and not reglas.reglas_gabinete_cobra_viatico:
                 return 0
-            if self.comisionadosolicitud_nombre.agente_personal_de_gabinete:
+            if es_autoridad and es_chaco and not reglas.reglas_autoridades_cobra_viatico_chaco:
                 return 0
-        if self.comisionadosolicitud_colaborador:
+        elif not reglas.reglas_externos_cobra_viatico:
             return 0
-        if self.comisionadosolicitud_sin_viatico:
-            return 0
-        
+
+        if reglas.reglas_escalafon_unico_habilitado:
+            estrato = reglas.reglas_escalafon_unico_valor
+        elif self.comisionadosolicitud_nombre is not None:
+            estrato = reglas.reglas_autoridades_escalafon if es_autoridad else self.comisionadosolicitud_nombre.agente_escalafon
+        else:
+            estrato = reglas.reglas_escalafon_default_externos
+
         if es_chaco:
             campo = f"montoviaticodiario_estrato_{['uno', 'dos', 'tres', 'cuatro'][int(estrato)-1]}_interior"
         else:
             campo = f"montoviaticodiario_estrato_{['uno', 'dos', 'tres', 'cuatro'][int(estrato)-1]}_exterior"
-        
+
         return getattr(decreto, campo)
     
     def viaticos_computado(self):
