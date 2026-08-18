@@ -1,0 +1,13 @@
+<h1>InstrumentosLegalesDecretosForm</h1>
+<p><strong>Módulo:</strong> <code>secretariador/forms/instrumentoslegalesform.py</code> (líneas 56-93) · hereda de <code>BaseFormMixin, forms.ModelForm</code></p>
+<h2>Propósito</h2>
+<p><code>ModelForm</code> para Decreto. Mismo patrón de <code>__init__</code> con tipo/año por defecto que <code>InstrumentosLegalesMemorandumForm</code>.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class InstrumentosLegalesDecretosForm(BaseFormMixin, forms.ModelForm):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearInstrumentoLegalDecreto</code>/<code>UpdateInstrumentoLegalDecreto</code>, y reusado en <code>CrearMontoViaticoDiario</code>/<code>UpdateMontoViaticoDiario</code> (el form del Decreto, con el formset de montos aparte).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/InstrumentosLegalesDecretos.md">InstrumentosLegalesDecretos</a></li>
+</ul>

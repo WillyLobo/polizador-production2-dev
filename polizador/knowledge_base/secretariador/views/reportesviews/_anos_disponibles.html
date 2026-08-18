@@ -1,0 +1,13 @@
+<h1>_anos_disponibles</h1>
+<p><strong>Módulo:</strong> <code>secretariador/views/reportesviews.py</code> (líneas 15-18)</p>
+<h2>Propósito</h2>
+<p>Años con al menos una Solicitud (<code>Solicitud.objects.dates("solicitud_fecha_desde", "year")</code>), para poblar los <code>&lt;select name="ano"&gt;</code> de los reportes de calendario en vez de hardcodear un rango fijo.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _anos_disponibles():
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearReporteViaticosPorAgenteIndividual.get_context_data</code>, <code>CalendarioAnual.get_context_data</code> (mismo módulo).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/Solicitud.md">Solicitud</a></li>
+</ul>

@@ -1,0 +1,13 @@
+<h1>MontoViaticoDiarioForm</h1>
+<p><strong>Módulo:</strong> <code>secretariador/forms/montoviaticodiarioform.py</code> (líneas 5-27) · hereda de <code>BaseFormMixin, forms.ModelForm</code></p>
+<h2>Propósito</h2>
+<p>Los ocho campos de estrato de <code>MontoViaticoDiario</code>, todos con <code>TextInput</code>+<code>inputmode="numeric"</code> en vez de <code>NumberInput</code> — probablemente para tener más control sobre el formato/validación en el cliente que el que da un <code>&lt;input type="number"&gt;</code> nativo del navegador.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class MontoViaticoDiarioForm(BaseFormMixin, forms.ModelForm):
+</code></pre>
+<h2>Uso real</h2>
+<p>Form base de <code>MontoViaticoDiarioFormset</code> (<code>inlineformset_factory</code> con <code>max_num=1</code> — un Decreto tiene a lo sumo un juego de montos).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/MontoViaticoDiario.md">MontoViaticoDiario</a></li>
+</ul>

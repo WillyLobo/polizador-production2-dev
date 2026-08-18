@@ -1,0 +1,44 @@
+<h1>ComisionadoSolicitud</h1>
+<p><strong>Módulo:</strong> <code>secretariador/models.py</code> (líneas 460-603) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Un agente (o persona externa) comisionado dentro de una <code>Solicitud</code> — o, alternativamente,
+dentro de una <code>Incorporacion</code> posterior a esa Solicitud (<code>comisionadosolicitud_foreign</code> y
+<code>comisionadosolicitud_incorporacion_foreign</code> son ambos opcionales, ninguno de los dos
+mutuamente excluyente vía constraint como sí lo son agente/externo — <code>get_origin()</code>
+resuelve cuál de los dos aplica). El <code>CheckConstraint</code> <code>comisionadosolicitud_agente_xor_externo</code>
+exige exactamente uno de <code>comisionadosolicitud_nombre</code> (Agente) /
+<code>comisionadosolicitud_externo</code> (ComisionadoExterno) — nunca ambos, nunca ninguno.
+<code>persona</code> (property) devuelve el que corresponda, aprovechando que ambos modelos exponen
+los mismos nombres de atributo (ver el docstring de
+<a href="../../personalizador/models/ComisionadoExterno.md">ComisionadoExterno</a>).</p>
+<p><strong>El cálculo de viático vive acá, no en <code>Solicitud</code>:</strong></p>
+<ul>
+<li><code>valor_viatico_dia()</code>: retorna 0 si es colaborador o <code>sin_viatico</code>; si no, resuelve las
+  excepciones de <a href="ReglasViatico.md">ReglasViatico</a> (gabinete, autoridades del Directorio
+  dentro del Chaco, comisionados externos) y después el escalafón aplicable (único forzado,
+  el de autoridades si <code>agente.directorio_set.exists()</code>, el propio <code>agente_escalafon</code>, o el
+  default de externos) para indexar el campo correcto de
+  <a href="MontoViaticoDiario.md">MontoViaticoDiario</a> (estrato × interior/exterior según la
+  Provincia de la Solicitud de origen).</li>
+<li><code>viaticos_computado()</code>: días de la Solicitud/Incorporación de origen × valor diario.</li>
+<li><code>viaticos_total()</code>: computado + combustible + gastos + pasaje.</li>
+</ul>
+<p><code>save()</code> recalcula y persiste los tres (<code>_cantidad_de_dias</code>, <code>_viatico_diario</code>,
+<code>_viatico_computado</code>, <code>_viatico_total</code>) en cada guardado — son snapshots calculados al
+momento de guardar, no propiedades derivadas en cada lectura (mismo patrón que
+<code>carga.FojaDeMedicionItem.fojaitem_pct_acumulado</code>, aunque acá no hay una señal de cascada
+hacia adelante porque no hay "comisionados siguientes" en una cadena).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class ComisionadoSolicitud(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<pre><code class="language-python"># secretariador/views/solicitudviews.py (CrearSolicitud, vía FormsetViewMixin)
+formset.save()  # -&gt; cada ComisionadoSolicitud.save() recalcula sus 4 campos de viático
+</code></pre>
+<h2>Ver también</h2>
+<ul>
+<li><a href="Solicitud.md">Solicitud</a></li>
+<li><a href="ReglasViatico.md">ReglasViatico</a></li>
+<li><a href="MontoViaticoDiario.md">MontoViaticoDiario</a></li>
+<li><a href="../../personalizador/models/ComisionadoExterno.md">ComisionadoExterno</a></li>
+</ul>

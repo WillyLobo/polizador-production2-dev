@@ -1,0 +1,13 @@
+<h1>ActualizarEncabezado</h1>
+<p><strong>Módulo:</strong> <code>secretariador/views/encabezadoviews.py</code> (líneas 11-31) · hereda de <code>PermissionRequiredMixin, generic.CreateView</code></p>
+<h2>Propósito</h2>
+<p>Sube un nuevo <code>EncabezadoDocumento</code> (<code>.docx</code> base con el encabezado institucional) y registra quién lo subió (<code>form_valid</code> setea <code>encabezadodocumento_subido_por</code> antes de guardar). Muestra los últimos 10 encabezados subidos como historial.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class ActualizarEncabezado(PermissionRequiredMixin, generic.CreateView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>ActualizarEncabezado</code> (<code>secretariador:actualizar-encabezado</code>), enlazada desde el navbar ("Herramientas").</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/EncabezadoDocumento.md">EncabezadoDocumento</a></li>
+</ul>

@@ -1,0 +1,14 @@
+<h1>ConcatOp</h1>
+<p><strong>Módulo:</strong> <code>secretariador/models.py</code> (líneas 74-78) · hereda de <code>models.Func</code></p>
+<h2>Propósito</h2>
+<p>Mismo <code>models.Func</code> mínimo que <code>carga.models.ConcatOp</code> (concatenación SQL vía <code>||</code>), redefinido acá en vez de importarse de <code>carga</code> — duplicación menor entre apps que no comparten esa utilidad. Usado para armar los campos <code>_str</code>/<code>_actuacion</code> generados por la base en varios modelos de este archivo.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class ConcatOp(models.Func):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>InstrumentosLegalesMemorandum.instrumentolegalmemorandum_str</code>, <code>InstrumentosLegalesResoluciones.instrumentolegalresoluciones_str/numero_sgt</code>, <code>Solicitud.solicitud_actuacion</code>, <code>Incorporacion.incorporacion_actuacion</code>, <code>Vehiculo.vehiculo_str</code> (todos <code>GeneratedField</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="Solicitud.md">Solicitud</a></li>
+<li><a href="Vehiculo.md">Vehiculo</a></li>
+</ul>

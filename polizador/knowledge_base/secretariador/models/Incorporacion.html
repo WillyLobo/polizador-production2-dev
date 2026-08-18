@@ -1,0 +1,20 @@
+<h1>Incorporacion</h1>
+<p><strong>Módulo:</strong> <code>secretariador/models.py</code> (líneas 605-642) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Incorpora agentes adicionales a una <code>Solicitud</code> ya resuelta (aprobada), con su propia
+actuación electrónica y, opcionalmente, su propia resolución — sin duplicar la Solicitud
+original. Sus propios <code>ComisionadoSolicitud</code> (vía
+<code>comisionadosolicitud_incorporacion_foreign</code>) son <em>además de</em> los de la Solicitud
+original, no un reemplazo — ver <code>_calcular_texto_incorporacion</code> en
+<code>incorporacionviews.py</code>, que arma el <code>.docx</code> mencionando tanto los agentes originales
+como los incorporados.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class Incorporacion(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearIncorporacion</code>/<code>UpdateIncorporacion</code> (<code>secretariador/views/incorporacionviews.py</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="Solicitud.md">Solicitud</a></li>
+<li><a href="ComisionadoSolicitud.md">ComisionadoSolicitud</a></li>
+</ul>

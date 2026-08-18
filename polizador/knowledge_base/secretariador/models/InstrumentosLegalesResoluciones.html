@@ -1,0 +1,23 @@
+<h1>InstrumentosLegalesResoluciones</h1>
+<p><strong>Módulo:</strong> <code>secretariador/models.py</code> (líneas 137-222) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Una resolución institucional (Presidencia o Directorio), con acción clasificada
+(Adjudicatoria/Aprobatoria/Ratificatoria/Ampliatoria) y estado de escaneo. Dos
+<code>GeneratedField</code> construyen representaciones textuales distintas del mismo número:
+<code>instrumentolegalresoluciones_str</code> (para mostrar, formato corto <code>numero-acta-ano</code> en
+Directorio o <code>numero-ano</code> en Presidencia) e <code>instrumentolegalresoluciones_numero_sgt</code>
+(formato largo <code>RES-ano-numero-10-{acta|1}</code>, pensado para calzar con el formato que usa
+el SGT — Sistema de Gestión de Trámites, ver <code>carga/management/commands/sync_resoluciones_sgt</code>
+y <code>personalizador/management/commands</code> en CLAUDE.md — al importar/exportar resoluciones).
+<code>get_absolute_url</code> deriva a una de dos vistas de edición distintas (Presidencia/Directorio)
+según <code>instrumentolegalresoluciones_tipo</code>.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class InstrumentosLegalesResoluciones(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>Obra.obra_resolucion_fk</code>, <code>Contrato.contrato_resolucion_fk</code>, <code>ConjuntoLicitado.conjunto_resolucion_fk</code> (<code>carga</code>), <code>Solicitud.solicitud_resolucion</code>, <code>Incorporacion.incorporacion_resolucion</code> (mismo módulo) — el instrumento legal más referenciado entre apps del proyecto.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="Solicitud.md">Solicitud</a></li>
+<li><a href="Incorporacion.md">Incorporacion</a></li>
+</ul>

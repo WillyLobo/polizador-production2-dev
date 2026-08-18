@@ -1,0 +1,13 @@
+<h1>ComisionadoWidget</h1>
+<p><strong>Módulo:</strong> <code>secretariador/views/ajaxviews.py</code> (líneas 52-56) · hereda de <code>LoginRequiredMixin, s2forms.ModelSelect2Widget</code></p>
+<h2>Propósito</h2>
+<p>Widget select2 para elegir un Agente en su rol de "comisionado" (nombres/apellidos) — mismo <code>search_fields</code> que <code>carga.views.ajaxviews.agentewidget</code>/<code>personalizador.views.ajaxviews.agentewidget</code>, redefinido acá en vez de reusar uno de esos dos.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class ComisionadoWidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>Solicitud.solicitud_solicitante</code>, <code>ComisionadoSolicitud.comisionadosolicitud_nombre</code>, <code>Vehiculo.vehiculo_titular_agente</code>, <code>Incorporacion.incorporacion_solicitante</code> en varios forms de <code>secretariador</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/ComisionadoSolicitud.md">ComisionadoSolicitud</a></li>
+</ul>

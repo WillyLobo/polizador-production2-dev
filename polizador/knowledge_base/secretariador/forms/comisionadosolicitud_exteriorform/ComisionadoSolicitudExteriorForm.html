@@ -1,0 +1,21 @@
+<h1>ComisionadoSolicitudExteriorForm</h1>
+<p><strong>Módulo:</strong> <code>secretariador/forms/comisionadosolicitud_exteriorform.py</code> (líneas 8-86) · hereda de <code>BaseFormMixin, forms.ModelForm</code></p>
+<h2>Propósito</h2>
+<p><code>ModelForm</code> para <code>ComisionadoSolicitud</code>, variante para el flujo Exterior (incluye
+<code>comisionadosolicitud_pasaje</code>, que la variante estándar no tiene expuesto en este form —
+ver <code>ComisionadoSolicitudForm</code>). <code>clean()</code> valida que se haya elegido exactamente uno de
+Agente/Externo (redundante con el <code>CheckConstraint</code> del modelo, para dar el error
+asociado al campo del formulario) y que esa persona no esté ya comisionada en <strong>otra</strong>
+Solicitud con las mismas fechas exactas (<code>solicitud_fecha_desde</code>/<code>solicitud_fecha_hasta</code>,
+leídos de <code>self.data</code> — no de otro campo del propio form, ya que pertenecen al form padre
+<code>Solicitud</code>, no al formset de comisionados) — salvo que esa otra Solicitud esté anulada.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class ComisionadoSolicitudExteriorForm(BaseFormMixin, forms.ModelForm):
+</code></pre>
+<h2>Uso real</h2>
+<p>Form base de <code>ComisionadoSolicitudExteriorFormset</code> (definido con <code>inlineformset_factory</code> en <code>solicitud_exteriorform.py</code>, sin subclase propia — por eso no aparece como símbolo aparte en este manifest).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/ComisionadoSolicitud.md">ComisionadoSolicitud</a></li>
+<li><a href="ComisionadoSolicitudForm.md">ComisionadoSolicitudForm</a> — misma validación, para el flujo Chaco.</li>
+</ul>

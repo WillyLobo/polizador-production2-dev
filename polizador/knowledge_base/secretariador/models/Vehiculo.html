@@ -1,0 +1,13 @@
+<h1>Vehiculo</h1>
+<p><strong>Módulo:</strong> <code>secretariador/models.py</code> (líneas 350-390) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Un vehículo (de la empresa, oficial, o particular) disponible para comisiones de servicio, con su titular (Agente o Empresa, ambos opcionales) y datos de póliza. <code>save()</code> normaliza la patente sacándole espacios (<code>"AB 123 CD"</code> → <code>"AB123CD"</code>) antes de guardar, para que las búsquedas/comparaciones no dependan de cómo lo tipeó el usuario.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class Vehiculo(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>Solicitud.solicitud_vehiculo</code> en <code>SolicitudForm</code>/<code>SolicitudExteriorForm</code> (vía <code>VehiculoWidget</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="Solicitud.md">Solicitud</a></li>
+</ul>

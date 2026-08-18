@@ -1,0 +1,16 @@
+<h1>EliminarInstrumentoLegalResolucionDirectorio</h1>
+<p><strong>Módulo:</strong> <code>secretariador/views/instrumentolegalviews.py</code> (líneas 168-173) · hereda de <code>PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView</code></p>
+<h2>Propósito</h2>
+<p>Confirma y ejecuta el borrado de una InstrumentosLegalesResoluciones (Directorio), mostrando antes (vía <code>DeleteRelatedObjectsMixin</code>
+— <code>core/mixins.py</code> + <code>core/deletion.py::get_deleted_objects</code>) los objetos relacionados que
+se borrarían en cascada.
+ Mismo <code>permission_required</code> que la versión Presidencia (<code>delete_instrumentoslegalesresoluciones</code>) — son el mismo modelo, la distinción Presidencia/Directorio es solo de formulario/template, no de permisos.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class EliminarInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
+</code></pre>
+<h2>Uso real</h2>
+<p>Enlazada desde el listado de resoluciones.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/InstrumentosLegalesResoluciones.md">InstrumentosLegalesResoluciones</a></li>
+</ul>

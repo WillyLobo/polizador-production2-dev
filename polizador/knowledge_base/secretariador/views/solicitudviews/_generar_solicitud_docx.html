@@ -1,0 +1,14 @@
+<h1>_generar_solicitud_docx</h1>
+<p><strong>Módulo:</strong> <code>secretariador/views/solicitudviews.py</code> (líneas 100-125)</p>
+<h2>Propósito</h2>
+<p>Genera el <code>.docx</code> final: si la Solicitud ya tiene <code>solicitud_texto_actuacion</code> guardado (editado a mano), usa esos párrafos/artículos; si no, recalcula con <code>_calcular_texto_solicitud</code>. Abre el <code>EncabezadoDocumento.vigente()</code> como base y delega el armado real del documento en <code>docx_builder.build_resolucion_docx</code> (fuera del alcance de este manifest — combina el encabezado con el texto vía plantilla).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _generar_solicitud_docx(actuacion):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>solicitud_docx</code> (mismo módulo, más abajo).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="_calcular_texto_solicitud.md">_calcular_texto_solicitud</a></li>
+<li><a href="../../models/EncabezadoDocumento.md">EncabezadoDocumento</a></li>
+</ul>

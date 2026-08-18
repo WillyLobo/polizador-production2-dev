@@ -1,0 +1,13 @@
+<h1>ParrafoForm</h1>
+<p><strong>Módulo:</strong> <code>secretariador/forms/textoactuacionform.py</code> (líneas 4-6) · hereda de <code>forms.Form</code></p>
+<h2>Propósito</h2>
+<p>Un único campo de texto libre (<code>Textarea</code>), representando un considerando editable ("parrafo_uno"..."N") en el flujo de revisión de texto antes de generar el <code>.docx</code>.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class ParrafoForm(forms.Form):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>ParrafoFormSet = forms.formset_factory(ParrafoForm, extra=0)</code> (mismo módulo, sin subclase propia — no aparece como símbolo aparte), usado en <code>textoactuacionviews.revisar_texto_actuacion</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../views/textoactuacionviews/revisar_texto_actuacion.md">revisar_texto_actuacion</a></li>
+</ul>

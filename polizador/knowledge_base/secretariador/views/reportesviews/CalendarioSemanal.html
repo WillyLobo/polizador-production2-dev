@@ -1,0 +1,13 @@
+<h1>CalendarioSemanal</h1>
+<p><strong>Módulo:</strong> <code>secretariador/views/reportesviews.py</code> (líneas 315-331) · hereda de <code>PermissionRequiredMixin, generic.TemplateView</code></p>
+<h2>Propósito</h2>
+<p>Mismo patrón shell-de-filtros que <code>CrearReporteViaticosPorAgenteIndividual</code>, para la vista semanal general del calendario de comisiones — eventos vía <code>/v1/api/calendario/semanal/</code>.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CalendarioSemanal(PermissionRequiredMixin, generic.TemplateView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CalendarioSemanal</code> (<code>secretariador:calendario-semanal</code>), enlazada desde el navbar ("Viáticos").</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="CalendarioAnual.md">CalendarioAnual</a></li>
+</ul>

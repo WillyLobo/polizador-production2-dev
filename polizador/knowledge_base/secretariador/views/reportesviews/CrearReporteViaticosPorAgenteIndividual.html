@@ -1,0 +1,13 @@
+<h1>CrearReporteViaticosPorAgenteIndividual</h1>
+<p><strong>Módulo:</strong> <code>secretariador/views/reportesviews.py</code> (líneas 293-312) · hereda de <code>PermissionRequiredMixin, generic.TemplateView</code></p>
+<h2>Propósito</h2>
+<p>Shell de filtros para el calendario de viáticos de un Agente puntual — los eventos del calendario en sí los trae FullCalendar vía AJAX desde <code>/v1/api/calendario/agente-individual/</code> (<code>api/views/secretariador_views.py</code>, fuera de <code>secretariador</code>); esta vista solo arma los valores iniciales (año, agente elegido) para que el template los use al inicializar el calendario.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CrearReporteViaticosPorAgenteIndividual(PermissionRequiredMixin, generic.TemplateView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearReporteViaticosPorAgenteIndividual</code> (<code>secretariador:crear-reporte-viaticos-por-agente-individual</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="_anos_disponibles.md">_anos_disponibles</a></li>
+</ul>

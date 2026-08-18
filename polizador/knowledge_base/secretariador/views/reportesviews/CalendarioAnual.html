@@ -1,0 +1,14 @@
+<h1>CalendarioAnual</h1>
+<p><strong>Módulo:</strong> <code>secretariador/views/reportesviews.py</code> (líneas 334-354) · hereda de <code>PermissionRequiredMixin, generic.TemplateView</code></p>
+<h2>Propósito</h2>
+<p>Mismo patrón, vista anual — eventos vía <code>/v1/api/calendario/anual/</code>. Sin año explícito en la URL, arranca en la semana actual; con <code>?ano=</code>, arranca el 1° de enero de ese año.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CalendarioAnual(PermissionRequiredMixin, generic.TemplateView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CalendarioAnual</code> (<code>secretariador:calendario-anual</code>), enlazada desde el navbar.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="_anos_disponibles.md">_anos_disponibles</a></li>
+<li><a href="CalendarioSemanal.md">CalendarioSemanal</a></li>
+</ul>

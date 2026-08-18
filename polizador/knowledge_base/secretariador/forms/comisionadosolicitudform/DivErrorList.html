@@ -1,0 +1,13 @@
+<h1>DivErrorList</h1>
+<p><strong>Módulo:</strong> <code>secretariador/forms/comisionadosolicitudform.py</code> (líneas 9-10) · hereda de <code>forms.utils.ErrorList</code></p>
+<h2>Propósito</h2>
+<p>Subclase mínima de <code>forms.utils.ErrorList</code> que solo cambia el <code>template_name</code> a <code>"generic/error_as_div.html"</code> — para que los errores de <code>ComisionadoSolicitudForm</code> se rendericen como <code>&lt;div&gt;</code>s en vez de la lista <code>&lt;ul&gt;</code> por defecto de Django (probablemente para encajar con el layout Bootstrap del formset).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class DivErrorList(forms.utils.ErrorList):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>ComisionadoSolicitudForm.__init__</code>: <code>self.error_class = DivErrorList</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="ComisionadoSolicitudForm.md">ComisionadoSolicitudForm</a></li>
+</ul>

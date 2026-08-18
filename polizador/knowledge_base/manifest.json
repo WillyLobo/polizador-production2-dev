@@ -14905,5 +14905,4739 @@
         }
       }
     }
+  },
+  "secretariador": {
+    "generated_at": "2026-08-18T23:16:32.381819+00:00",
+    "modules": {
+      "forms/comisionadoform": {
+        "file": "secretariador/forms/comisionadoform.py",
+        "symbols": {
+          "ComisionadoExternoForm": {
+            "authored": true,
+            "bases": [
+              "BaseFormMixin",
+              "forms.ModelForm"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/comisionadoviews.py",
+                "line": 9,
+                "snippet": "from secretariador.forms.comisionadoform import ComisionadoForm, ComisionadoExternoForm"
+              },
+              {
+                "file": "secretariador/views/comisionadoviews.py",
+                "line": 68,
+                "snippet": "form_class = ComisionadoExternoForm"
+              },
+              {
+                "file": "secretariador/views/comisionadoviews.py",
+                "line": 88,
+                "snippet": "form_class = ComisionadoExternoForm"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              51,
+              86
+            ],
+            "methods": [],
+            "module": "secretariador/forms/comisionadoform.py",
+            "name": "ComisionadoExternoForm",
+            "page_path": "secretariador/forms/comisionadoform/ComisionadoExternoForm",
+            "signature": "class ComisionadoExternoForm(BaseFormMixin, forms.ModelForm):",
+            "signature_hash": "sha1:b2cec185eeff2063cdc86e2a18b265a547d3ad03",
+            "stale": false
+          },
+          "ComisionadoForm": {
+            "authored": true,
+            "bases": [
+              "BaseFormMixin",
+              "forms.ModelForm"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/comisionadoviews.py",
+                "line": 9,
+                "snippet": "from secretariador.forms.comisionadoform import ComisionadoForm, ComisionadoExternoForm"
+              },
+              {
+                "file": "secretariador/views/comisionadoviews.py",
+                "line": 18,
+                "snippet": "form_class = ComisionadoForm"
+              },
+              {
+                "file": "secretariador/views/comisionadoviews.py",
+                "line": 37,
+                "snippet": "form_class = ComisionadoForm"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              6,
+              49
+            ],
+            "methods": [],
+            "module": "secretariador/forms/comisionadoform.py",
+            "name": "ComisionadoForm",
+            "page_path": "secretariador/forms/comisionadoform/ComisionadoForm",
+            "signature": "class ComisionadoForm(BaseFormMixin, forms.ModelForm):",
+            "signature_hash": "sha1:4f2a031907f1bd7bb2ecfd3d0930c96b9760de78",
+            "stale": false
+          }
+        }
+      },
+      "forms/comisionadosolicitud_exteriorform": {
+        "file": "secretariador/forms/comisionadosolicitud_exteriorform.py",
+        "symbols": {
+          "ComisionadoSolicitudExteriorForm": {
+            "authored": true,
+            "bases": [
+              "BaseFormMixin",
+              "forms.ModelForm"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/forms/solicitud_exteriorform.py",
+                "line": 3,
+                "snippet": "from secretariador.forms.comisionadosolicitud_exteriorform import ComisionadoSolicitudExteriorForm"
+              },
+              {
+                "file": "secretariador/forms/solicitud_exteriorform.py",
+                "line": 128,
+                "snippet": "form = ComisionadoSolicitudExteriorForm,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              8,
+              86
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  56,
+                  59
+                ],
+                "name": "__init__",
+                "signature": "def __init__(self, *args, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  61,
+                  86
+                ],
+                "name": "clean",
+                "signature": "def clean(self):"
+              }
+            ],
+            "module": "secretariador/forms/comisionadosolicitud_exteriorform.py",
+            "name": "ComisionadoSolicitudExteriorForm",
+            "page_path": "secretariador/forms/comisionadosolicitud_exteriorform/ComisionadoSolicitudExteriorForm",
+            "signature": "class ComisionadoSolicitudExteriorForm(BaseFormMixin, forms.ModelForm):",
+            "signature_hash": "sha1:c04f60058510d8157cd685ab4d586b604f6e6f5b",
+            "stale": false
+          }
+        }
+      },
+      "forms/comisionadosolicitudform": {
+        "file": "secretariador/forms/comisionadosolicitudform.py",
+        "symbols": {
+          "ComisionadoSolicitudForm": {
+            "authored": true,
+            "bases": [
+              "AddRelatedPermissionMixin",
+              "BaseFormMixin",
+              "forms.ModelForm"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/forms/incorporacionform.py",
+                "line": 3,
+                "snippet": "from secretariador.forms.comisionadosolicitudform import ComisionadoSolicitudForm"
+              },
+              {
+                "file": "secretariador/forms/incorporacionform.py",
+                "line": 46,
+                "snippet": "form = ComisionadoSolicitudForm,"
+              },
+              {
+                "file": "secretariador/forms/solicitudform.py",
+                "line": 4,
+                "snippet": "from secretariador.forms.comisionadosolicitudform import ComisionadoSolicitudForm"
+              },
+              {
+                "file": "secretariador/forms/solicitudform.py",
+                "line": 143,
+                "snippet": "form = ComisionadoSolicitudForm,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              12,
+              84
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  53,
+                  57
+                ],
+                "name": "__init__",
+                "signature": "def __init__(self, *args, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  59,
+                  84
+                ],
+                "name": "clean",
+                "signature": "def clean(self):"
+              }
+            ],
+            "module": "secretariador/forms/comisionadosolicitudform.py",
+            "name": "ComisionadoSolicitudForm",
+            "page_path": "secretariador/forms/comisionadosolicitudform/ComisionadoSolicitudForm",
+            "signature": "class ComisionadoSolicitudForm(AddRelatedPermissionMixin, BaseFormMixin, forms.ModelForm):",
+            "signature_hash": "sha1:41e57bf78fed4ea6f0722ac5f895f7ecd902b7ab",
+            "stale": false
+          },
+          "DivErrorList": {
+            "authored": true,
+            "bases": [
+              "forms.utils.ErrorList"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/forms/comisionadosolicitudform.py",
+                "line": 55,
+                "snippet": "self.error_class = DivErrorList"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              9,
+              10
+            ],
+            "methods": [],
+            "module": "secretariador/forms/comisionadosolicitudform.py",
+            "name": "DivErrorList",
+            "page_path": "secretariador/forms/comisionadosolicitudform/DivErrorList",
+            "signature": "class DivErrorList(forms.utils.ErrorList):",
+            "signature_hash": "sha1:21d9c13870bb3e4d2dce69ed4cd0fa95d09a1163",
+            "stale": false
+          }
+        }
+      },
+      "forms/encabezadoform": {
+        "file": "secretariador/forms/encabezadoform.py",
+        "symbols": {
+          "EncabezadoDocumentoForm": {
+            "authored": true,
+            "bases": [
+              "BaseFormMixin",
+              "forms.ModelForm"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/encabezadoviews.py",
+                "line": 7,
+                "snippet": "from secretariador.forms.encabezadoform import EncabezadoDocumentoForm"
+              },
+              {
+                "file": "secretariador/views/encabezadoviews.py",
+                "line": 16,
+                "snippet": "form_class = EncabezadoDocumentoForm"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              8,
+              27
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  20,
+                  27
+                ],
+                "name": "clean_encabezadodocumento_archivo",
+                "signature": "def clean_encabezadodocumento_archivo(self):"
+              }
+            ],
+            "module": "secretariador/forms/encabezadoform.py",
+            "name": "EncabezadoDocumentoForm",
+            "page_path": "secretariador/forms/encabezadoform/EncabezadoDocumentoForm",
+            "signature": "class EncabezadoDocumentoForm(BaseFormMixin, forms.ModelForm):",
+            "signature_hash": "sha1:83c277ecbe6c77dfb71d127d55c28fd0b3f9563b",
+            "stale": false
+          }
+        }
+      },
+      "forms/incorporacionform": {
+        "file": "secretariador/forms/incorporacionform.py",
+        "symbols": {
+          "IncorporacionForm": {
+            "authored": true,
+            "bases": [
+              "BaseFormMixin",
+              "forms.ModelForm"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/incorporacionviews.py",
+                "line": 151,
+                "snippet": "form_class = IncorporacionForm"
+              },
+              {
+                "file": "secretariador/views/incorporacionviews.py",
+                "line": 215,
+                "snippet": "form_class = IncorporacionForm"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              11,
+              41
+            ],
+            "methods": [],
+            "module": "secretariador/forms/incorporacionform.py",
+            "name": "IncorporacionForm",
+            "page_path": "secretariador/forms/incorporacionform/IncorporacionForm",
+            "signature": "class IncorporacionForm(BaseFormMixin, forms.ModelForm):",
+            "signature_hash": "sha1:616bfaf6d93698caaf3df42e02444f95d850fce9",
+            "stale": false
+          }
+        }
+      },
+      "forms/instrumentoslegalesform": {
+        "file": "secretariador/forms/instrumentoslegalesform.py",
+        "symbols": {
+          "InstrumentosLegalesDecretosForm": {
+            "authored": true,
+            "bases": [
+              "BaseFormMixin",
+              "forms.ModelForm"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/instrumentolegalviews.py",
+                "line": 31,
+                "snippet": "form_class = InstrumentosLegalesDecretosForm"
+              },
+              {
+                "file": "secretariador/views/instrumentolegalviews.py",
+                "line": 92,
+                "snippet": "form_class = InstrumentosLegalesDecretosForm"
+              },
+              {
+                "file": "secretariador/views/montoviaticodiarioviews.py",
+                "line": 9,
+                "snippet": "from secretariador.forms.instrumentoslegalesform import InstrumentosLegalesDecretosForm"
+              },
+              {
+                "file": "secretariador/views/montoviaticodiarioviews.py",
+                "line": 18,
+                "snippet": "form_class = InstrumentosLegalesDecretosForm"
+              },
+              {
+                "file": "secretariador/views/montoviaticodiarioviews.py",
+                "line": 69,
+                "snippet": "form_class = InstrumentosLegalesDecretosForm"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              56,
+              93
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  90,
+                  93
+                ],
+                "name": "__init__",
+                "signature": "def __init__(self, *args, **kwargs):"
+              }
+            ],
+            "module": "secretariador/forms/instrumentoslegalesform.py",
+            "name": "InstrumentosLegalesDecretosForm",
+            "page_path": "secretariador/forms/instrumentoslegalesform/InstrumentosLegalesDecretosForm",
+            "signature": "class InstrumentosLegalesDecretosForm(BaseFormMixin, forms.ModelForm):",
+            "signature_hash": "sha1:50b6b5289aaf99f51d2d65d10341513e50c4b587",
+            "stale": false
+          },
+          "InstrumentosLegalesMemorandumForm": {
+            "authored": true,
+            "bases": [
+              "BaseFormMixin",
+              "forms.ModelForm"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/instrumentolegalviews.py",
+                "line": 17,
+                "snippet": "form_class = InstrumentosLegalesMemorandumForm"
+              },
+              {
+                "file": "secretariador/views/instrumentolegalviews.py",
+                "line": 73,
+                "snippet": "form_class = InstrumentosLegalesMemorandumForm"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              10,
+              54
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  51,
+                  54
+                ],
+                "name": "__init__",
+                "signature": "def __init__(self, *args, **kwargs):"
+              }
+            ],
+            "module": "secretariador/forms/instrumentoslegalesform.py",
+            "name": "InstrumentosLegalesMemorandumForm",
+            "page_path": "secretariador/forms/instrumentoslegalesform/InstrumentosLegalesMemorandumForm",
+            "signature": "class InstrumentosLegalesMemorandumForm(BaseFormMixin, forms.ModelForm):",
+            "signature_hash": "sha1:f89e642e0921abc05035b644b08d3fe49810390f",
+            "stale": false
+          },
+          "InstrumentosLegalesResolucionesDirectorioForm": {
+            "authored": true,
+            "bases": [
+              "BaseFormMixin",
+              "forms.ModelForm"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/instrumentolegalviews.py",
+                "line": 59,
+                "snippet": "form_class = InstrumentosLegalesResolucionesDirectorioForm"
+              },
+              {
+                "file": "secretariador/views/instrumentolegalviews.py",
+                "line": 130,
+                "snippet": "form_class = InstrumentosLegalesResolucionesDirectorioForm"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              141,
+              189
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  186,
+                  189
+                ],
+                "name": "__init__",
+                "signature": "def __init__(self, *args, **kwargs):"
+              }
+            ],
+            "module": "secretariador/forms/instrumentoslegalesform.py",
+            "name": "InstrumentosLegalesResolucionesDirectorioForm",
+            "page_path": "secretariador/forms/instrumentoslegalesform/InstrumentosLegalesResolucionesDirectorioForm",
+            "signature": "class InstrumentosLegalesResolucionesDirectorioForm(BaseFormMixin, forms.ModelForm):",
+            "signature_hash": "sha1:84f6243c23778a1bdec7ff65900425f04b1a5206",
+            "stale": false
+          },
+          "InstrumentosLegalesResolucionesPresidenciaForm": {
+            "authored": true,
+            "bases": [
+              "BaseFormMixin",
+              "forms.ModelForm"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/instrumentolegalviews.py",
+                "line": 45,
+                "snippet": "form_class = InstrumentosLegalesResolucionesPresidenciaForm"
+              },
+              {
+                "file": "secretariador/views/instrumentolegalviews.py",
+                "line": 111,
+                "snippet": "form_class = InstrumentosLegalesResolucionesPresidenciaForm"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              95,
+              139
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  136,
+                  139
+                ],
+                "name": "__init__",
+                "signature": "def __init__(self, *args, **kwargs):"
+              }
+            ],
+            "module": "secretariador/forms/instrumentoslegalesform.py",
+            "name": "InstrumentosLegalesResolucionesPresidenciaForm",
+            "page_path": "secretariador/forms/instrumentoslegalesform/InstrumentosLegalesResolucionesPresidenciaForm",
+            "signature": "class InstrumentosLegalesResolucionesPresidenciaForm(BaseFormMixin, forms.ModelForm):",
+            "signature_hash": "sha1:7b4b757b1c030072b18b347958386ff992a8f675",
+            "stale": false
+          }
+        }
+      },
+      "forms/montoviaticodiarioform": {
+        "file": "secretariador/forms/montoviaticodiarioform.py",
+        "symbols": {
+          "MontoViaticoDiarioForm": {
+            "authored": true,
+            "bases": [
+              "BaseFormMixin",
+              "forms.ModelForm"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/forms/montoviaticodiarioform.py",
+                "line": 32,
+                "snippet": "form = MontoViaticoDiarioForm,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              5,
+              27
+            ],
+            "methods": [],
+            "module": "secretariador/forms/montoviaticodiarioform.py",
+            "name": "MontoViaticoDiarioForm",
+            "page_path": "secretariador/forms/montoviaticodiarioform/MontoViaticoDiarioForm",
+            "signature": "class MontoViaticoDiarioForm(BaseFormMixin, forms.ModelForm):",
+            "signature_hash": "sha1:2de65430719dfd1f2e21f3b639bdf93c62bfda96",
+            "stale": false
+          }
+        }
+      },
+      "forms/organigramaform": {
+        "file": "secretariador/forms/organigramaform.py",
+        "symbols": {
+          "OrganigramaForm": {
+            "authored": true,
+            "bases": [
+              "BaseFormMixin",
+              "forms.ModelForm"
+            ],
+            "candidate_usages": [],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              5,
+              21
+            ],
+            "methods": [],
+            "module": "secretariador/forms/organigramaform.py",
+            "name": "OrganigramaForm",
+            "page_path": "secretariador/forms/organigramaform/OrganigramaForm",
+            "signature": "class OrganigramaForm(BaseFormMixin, forms.ModelForm):",
+            "signature_hash": "sha1:91363728dc419db2244ed4a693fee912ea55b64a",
+            "stale": false
+          }
+        }
+      },
+      "forms/solicitud_exteriorform": {
+        "file": "secretariador/forms/solicitud_exteriorform.py",
+        "symbols": {
+          "SolicitudExteriorForm": {
+            "authored": true,
+            "bases": [
+              "BaseFormMixin",
+              "forms.ModelForm"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/solicitud_exteriorviews.py",
+                "line": 168,
+                "snippet": "form_class = SolicitudExteriorForm"
+              },
+              {
+                "file": "secretariador/views/solicitud_exteriorviews.py",
+                "line": 232,
+                "snippet": "form_class = SolicitudExteriorForm"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              18,
+              123
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  95,
+                  99
+                ],
+                "name": "__init__",
+                "signature": "def __init__(self, *args, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": "Validates the form data and raises a ValidationError if the \"fecha_hasta\" field is less than the \"fecha_desde\" field.\n\nThis function is called by the Django form framework to validate the form data before it is saved. It checks if the value \nof the \"fecha_hasta\" field is less than the value of the \"fecha_desde\" field. If it is, a ValidationError is raised with \nthe message \"Fecha final tiene que ser mayor a fecha inicial.\"\n\nParameters:\n    self (object): The current instance of the form.\n\nReturns:\n    None\n\nRaises:\n    forms.ValidationError: If the \"fecha_hasta\" field is less than the \"fecha_desde\" field.",
+                "lines": [
+                  102,
+                  123
+                ],
+                "name": "clean",
+                "signature": "def clean(self):"
+              }
+            ],
+            "module": "secretariador/forms/solicitud_exteriorform.py",
+            "name": "SolicitudExteriorForm",
+            "page_path": "secretariador/forms/solicitud_exteriorform/SolicitudExteriorForm",
+            "signature": "class SolicitudExteriorForm(BaseFormMixin, forms.ModelForm):",
+            "signature_hash": "sha1:0b9d6e8ff058f4304ca1f89c6bdd1861bafb7abe",
+            "stale": false
+          }
+        }
+      },
+      "forms/solicitudform": {
+        "file": "secretariador/forms/solicitudform.py",
+        "symbols": {
+          "ComisionadoSolicitudFormset": {
+            "authored": true,
+            "bases": [
+              "forms.models.BaseInlineFormSet"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/solicitudviews.py",
+                "line": 159,
+                "snippet": "formset_name = ComisionadoSolicitudFormset"
+              },
+              {
+                "file": "secretariador/views/solicitudviews.py",
+                "line": 175,
+                "snippet": "formset_name = ComisionadoSolicitudFormset"
+              },
+              {
+                "file": "secretariador/forms/solicitudform.py",
+                "line": 140,
+                "snippet": "ComisionadoSolicitudFormset = inlineformset_factory("
+              },
+              {
+                "file": "secretariador/forms/solicitudform.py",
+                "line": 144,
+                "snippet": "formset = ComisionadoSolicitudFormset,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              136,
+              138
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  137,
+                  138
+                ],
+                "name": "__init__",
+                "signature": "def __init__(self, *args, **kwargs):"
+              }
+            ],
+            "module": "secretariador/forms/solicitudform.py",
+            "name": "ComisionadoSolicitudFormset",
+            "page_path": "secretariador/forms/solicitudform/ComisionadoSolicitudFormset",
+            "signature": "class ComisionadoSolicitudFormset(forms.models.BaseInlineFormSet):",
+            "signature_hash": "sha1:a524336aff350ab1fa7876b924947f07d8b7c70f",
+            "stale": false
+          },
+          "SolicitudForm": {
+            "authored": true,
+            "bases": [
+              "BaseFormMixin",
+              "forms.ModelForm"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/solicitudviews.py",
+                "line": 164,
+                "snippet": "form_class = SolicitudForm"
+              },
+              {
+                "file": "secretariador/views/solicitudviews.py",
+                "line": 180,
+                "snippet": "form_class = SolicitudForm"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              20,
+              134
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  98,
+                  109
+                ],
+                "name": "__init__",
+                "signature": "def __init__(self, *args, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": "Validates the form data and raises a ValidationError if the \"fecha_hasta\" field is less than the \"fecha_desde\" field.\n\nThis function is called by the Django form framework to validate the form data before it is saved. It checks if the value \nof the \"fecha_hasta\" field is less than the value of the \"fecha_desde\" field. If it is, a ValidationError is raised with \nthe message \"Fecha final tiene que ser mayor a fecha inicial.\"\n\nParameters:\n    self (object): The current instance of the form.\n\nReturns:\n    None\n\nRaises:\n    forms.ValidationError: If the \"fecha_hasta\" field is less than the \"fecha_desde\" field.",
+                "lines": [
+                  113,
+                  134
+                ],
+                "name": "clean",
+                "signature": "def clean(self):"
+              }
+            ],
+            "module": "secretariador/forms/solicitudform.py",
+            "name": "SolicitudForm",
+            "page_path": "secretariador/forms/solicitudform/SolicitudForm",
+            "signature": "class SolicitudForm(BaseFormMixin, forms.ModelForm):",
+            "signature_hash": "sha1:7ff3017c6d72454ce986668d31021d08ddfd3bbd",
+            "stale": false
+          }
+        }
+      },
+      "forms/textoactuacionform": {
+        "file": "secretariador/forms/textoactuacionform.py",
+        "symbols": {
+          "ArticuloDosFilaForm": {
+            "authored": true,
+            "bases": [
+              "forms.Form"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/forms/textoactuacionform.py",
+                "line": 23,
+                "snippet": "ArticuloDosFormSet = forms.formset_factory(ArticuloDosFilaForm, extra=0)"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              16,
+              20
+            ],
+            "methods": [],
+            "module": "secretariador/forms/textoactuacionform.py",
+            "name": "ArticuloDosFilaForm",
+            "page_path": "secretariador/forms/textoactuacionform/ArticuloDosFilaForm",
+            "signature": "class ArticuloDosFilaForm(forms.Form):",
+            "signature_hash": "sha1:207c52ea4aca3723a957a32de27c63ff4cfb2cda",
+            "stale": false
+          },
+          "ArticuloUnoForm": {
+            "authored": true,
+            "bases": [
+              "forms.Form"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/textoactuacionviews.py",
+                "line": 6,
+                "snippet": "from secretariador.forms.textoactuacionform import ArticuloDosFormSet, ArticuloUnoForm, ParrafoFormSet"
+              },
+              {
+                "file": "secretariador/views/textoactuacionviews.py",
+                "line": 53,
+                "snippet": "articulo_uno_form = ArticuloUnoForm(request.POST, prefix=\"articulo_uno\")"
+              },
+              {
+                "file": "secretariador/views/textoactuacionviews.py",
+                "line": 80,
+                "snippet": "articulo_uno_form = ArticuloUnoForm("
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              12,
+              13
+            ],
+            "methods": [],
+            "module": "secretariador/forms/textoactuacionform.py",
+            "name": "ArticuloUnoForm",
+            "page_path": "secretariador/forms/textoactuacionform/ArticuloUnoForm",
+            "signature": "class ArticuloUnoForm(forms.Form):",
+            "signature_hash": "sha1:0eb39a328000424297473b44ed61493cc323b012",
+            "stale": false
+          },
+          "ParrafoForm": {
+            "authored": true,
+            "bases": [
+              "forms.Form"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/forms/textoactuacionform.py",
+                "line": 9,
+                "snippet": "ParrafoFormSet = forms.formset_factory(ParrafoForm, extra=0)"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Un considerando editable (parrafo_uno..N).",
+            "kind": "class",
+            "lines": [
+              4,
+              6
+            ],
+            "methods": [],
+            "module": "secretariador/forms/textoactuacionform.py",
+            "name": "ParrafoForm",
+            "page_path": "secretariador/forms/textoactuacionform/ParrafoForm",
+            "signature": "class ParrafoForm(forms.Form):",
+            "signature_hash": "sha1:163978a6f6b59f19ad308c7182e98292be7802eb",
+            "stale": false
+          }
+        }
+      },
+      "forms/vehiculoform": {
+        "file": "secretariador/forms/vehiculoform.py",
+        "symbols": {
+          "VehiculoForm": {
+            "authored": true,
+            "bases": [
+              "BaseFormMixin",
+              "forms.ModelForm"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/vehiculoviews.py",
+                "line": 9,
+                "snippet": "from secretariador.forms.vehiculoform import VehiculoForm"
+              },
+              {
+                "file": "secretariador/views/vehiculoviews.py",
+                "line": 18,
+                "snippet": "form_class = VehiculoForm"
+              },
+              {
+                "file": "secretariador/views/vehiculoviews.py",
+                "line": 37,
+                "snippet": "form_class = VehiculoForm"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              12,
+              58
+            ],
+            "methods": [],
+            "module": "secretariador/forms/vehiculoform.py",
+            "name": "VehiculoForm",
+            "page_path": "secretariador/forms/vehiculoform/VehiculoForm",
+            "signature": "class VehiculoForm(BaseFormMixin, forms.ModelForm):",
+            "signature_hash": "sha1:c507477994c4890336642366675b8d1b236f4604",
+            "stale": false
+          }
+        }
+      },
+      "models": {
+        "file": "secretariador/models.py",
+        "symbols": {
+          "ComisionadoSolicitud": {
+            "authored": true,
+            "bases": [
+              "models.Model"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/delete_inlines.py",
+                "line": 8,
+                "snippet": "from secretariador.models import ComisionadoSolicitud"
+              },
+              {
+                "file": "secretariador/views/delete_inlines.py",
+                "line": 17,
+                "snippet": "comisionado = ComisionadoSolicitud.objects.get(id=pk)"
+              },
+              {
+                "file": "secretariador/views/delete_inlines.py",
+                "line": 18,
+                "snippet": "except ComisionadoSolicitud.DoesNotExist:"
+              },
+              {
+                "file": "secretariador/views/delete_inlines.py",
+                "line": 34,
+                "snippet": "comisionado = ComisionadoSolicitud.objects.get(id=pk)"
+              },
+              {
+                "file": "secretariador/views/delete_inlines.py",
+                "line": 35,
+                "snippet": "except ComisionadoSolicitud.DoesNotExist:"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              460,
+              603
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  491,
+                  492
+                ],
+                "name": "get_origin",
+                "signature": "def get_origin(self):"
+              },
+              {
+                "decorators": [
+                  "property"
+                ],
+                "docstring": "Devuelve el Agente o el ComisionadoExterno cargado, sea cual sea\n(son mutuamente excluyentes, ver constraint `comisionadosolicitud_agente_xor_externo`).\nAmbos exponen los mismos atributos (`agente_nombres`, `agente_apellidos`,\n`agente_nombreyapellido`, `abreviatura`, `dni`, `cuil`, `sexo`), así que\nel resto del código puede leer `comisionado.persona.<attr>` sin\nimportar de qué tipo es.",
+                "lines": [
+                  495,
+                  502
+                ],
+                "name": "persona",
+                "signature": "def persona(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": "Returns a string representation of the object.\nThe string representation consists of the foreign key value, which is either the value of `comisionadosolicitud_foreign` or `comisionadosolicitud_incorporacion_foreign`,\nfollowed by the last name and first name of the commissioned person (Agente or ComisionadoExterno).\n\nReturns:\n    str: A string representation of the object.",
+                "lines": [
+                  504,
+                  515
+                ],
+                "name": "__str__",
+                "signature": "def __str__(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": "Sets the `comisionadosolicitud_combustible`, `comisionadosolicitud_pasaje` and `comisionadosolicitud_gastos` fields to 0 if they are None, otherwise keeps their current values.\nThis function is used to ensure that these fields are always set to a non-null value. It is typically called during the cleaning process of a form or model instance.\nReturns:\n    None",
+                "lines": [
+                  517,
+                  530
+                ],
+                "name": "clean",
+                "signature": "def clean(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": "Calculates the daily viatic value based on the escalafón of the commissioned\nperson and the rules configured in ReglasViatico.\n\nReturns:\n    float: The daily viatic value. Returns 0 if excepted by ReglasViatico or\n    by comisionadosolicitud_colaborador/comisionadosolicitud_sin_viatico.",
+                "lines": [
+                  532,
+                  575
+                ],
+                "name": "valor_viatico_dia",
+                "signature": "def valor_viatico_dia(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": "Calculates the total amount of viaticos based on the position and stratum of the commissioned person.\n\nReturns:\n    float: The total amount of viaticos computed.",
+                "lines": [
+                  577,
+                  586
+                ],
+                "name": "viaticos_computado",
+                "signature": "def viaticos_computado(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": "Calculates the total amount of viaticos based on the computed viaticos, combustible, and gastos.\n\nReturns:\n    float: The total amount of viaticos.",
+                "lines": [
+                  588,
+                  596
+                ],
+                "name": "viaticos_total",
+                "signature": "def viaticos_total(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  598,
+                  603
+                ],
+                "name": "save",
+                "signature": "def save(self, *args, **kwargs):"
+              }
+            ],
+            "module": "secretariador/models.py",
+            "name": "ComisionadoSolicitud",
+            "page_path": "secretariador/models/ComisionadoSolicitud",
+            "signature": "class ComisionadoSolicitud(models.Model):",
+            "signature_hash": "sha1:39d140cddf62c5db2dbd749256ed8dcc20692516",
+            "stale": false
+          },
+          "ConcatOp": {
+            "authored": true,
+            "bases": [
+              "models.Func"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/models.py",
+                "line": 118,
+                "snippet": "expression=ConcatOp(Cast('instrumentolegalmemorandum_numero', output_field=models.TextField()), models.Value(\" - \"), 'instrumentolegalmemorandum_ano', models.Value(\" - \"), 'instrumentolegalmemorandum_tipo'),"
+              },
+              {
+                "file": "secretariador/models.py",
+                "line": 178,
+                "snippet": "then=ConcatOp(Cast('instrumentolegalresoluciones_numero', output_field=models.TextField()), models.Value(\"-\"), 'instrumentolegalresoluciones_acta', models.Value(\"-\"), 'instrumentolegalresoluciones_ano'),"
+              },
+              {
+                "file": "secretariador/models.py",
+                "line": 180,
+                "snippet": "default=ConcatOp(Cast('instrumentolegalresoluciones_numero', output_field=models.TextField()), models.Value(\"-\"), 'instrumentolegalresoluciones_ano'),"
+              },
+              {
+                "file": "secretariador/models.py",
+                "line": 194,
+                "snippet": "then=ConcatOp(models.Value(\"RES-\"), \"instrumentolegalresoluciones_ano\", models.Value(\"-\"), Cast(\"instrumentolegalresoluciones_numero\", output_field=models.TextField()), models.Value(\"-10-\"), \"instrumentolegalresoluciones_acta\"),"
+              },
+              {
+                "file": "secretariador/models.py",
+                "line": 196,
+                "snippet": "default=ConcatOp(models.Value(\"RES-\"), \"instrumentolegalresoluciones_ano\", models.Value(\"-\"), Cast(\"instrumentolegalresoluciones_numero\", output_field=models.TextField()), models.Value(\"-10-1\")),"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              74,
+              78
+            ],
+            "methods": [],
+            "module": "secretariador/models.py",
+            "name": "ConcatOp",
+            "page_path": "secretariador/models/ConcatOp",
+            "signature": "class ConcatOp(models.Func):",
+            "signature_hash": "sha1:225a344487f7e94fcaf0e38abd23c4f2dd235671",
+            "stale": false
+          },
+          "EncabezadoDocumento": {
+            "authored": true,
+            "bases": [
+              "models.Model"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/encabezadoviews.py",
+                "line": 6,
+                "snippet": "from secretariador.models import EncabezadoDocumento"
+              },
+              {
+                "file": "secretariador/views/encabezadoviews.py",
+                "line": 14,
+                "snippet": "model = EncabezadoDocumento"
+              },
+              {
+                "file": "secretariador/views/encabezadoviews.py",
+                "line": 30,
+                "snippet": "context[\"historial\"] = EncabezadoDocumento.objects.all()[:10]"
+              },
+              {
+                "file": "secretariador/views/incorporacionviews.py",
+                "line": 9,
+                "snippet": "from secretariador.models import EncabezadoDocumento, Incorporacion, InstrumentosLegalesDecretos"
+              },
+              {
+                "file": "secretariador/views/incorporacionviews.py",
+                "line": 99,
+                "snippet": "encabezado = EncabezadoDocumento.vigente()"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              644,
+              670
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  664,
+                  665
+                ],
+                "name": "__str__",
+                "signature": "def __str__(self):"
+              },
+              {
+                "decorators": [
+                  "classmethod"
+                ],
+                "docstring": "Devuelve el encabezado subido más recientemente, o None si nunca se subió uno.",
+                "lines": [
+                  668,
+                  670
+                ],
+                "name": "vigente",
+                "signature": "def vigente(cls):"
+              }
+            ],
+            "module": "secretariador/models.py",
+            "name": "EncabezadoDocumento",
+            "page_path": "secretariador/models/EncabezadoDocumento",
+            "signature": "class EncabezadoDocumento(models.Model):",
+            "signature_hash": "sha1:8ef455e2f5a43efe2f5e9e0ee78ca1637aff4e52",
+            "stale": false
+          },
+          "Incorporacion": {
+            "authored": true,
+            "bases": [
+              "models.Model"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/models.py",
+                "line": 475,
+                "snippet": "comisionadosolicitud_incorporacion_foreign = models.ForeignKey(\"Incorporacion\", on_delete=models.CASCADE, null=True, blank=True)"
+              },
+              {
+                "file": "secretariador/views/incorporacionviews.py",
+                "line": 9,
+                "snippet": "from secretariador.models import EncabezadoDocumento, Incorporacion, InstrumentosLegalesDecretos"
+              },
+              {
+                "file": "secretariador/views/incorporacionviews.py",
+                "line": 120,
+                "snippet": "actuacion = Incorporacion.objects.get(pk=pk)"
+              },
+              {
+                "file": "secretariador/views/incorporacionviews.py",
+                "line": 137,
+                "snippet": "actuacion = Incorporacion.objects.get(pk=pk)"
+              },
+              {
+                "file": "secretariador/views/incorporacionviews.py",
+                "line": 149,
+                "snippet": "model = Incorporacion"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              605,
+              642
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  635,
+                  636
+                ],
+                "name": "__str__",
+                "signature": "def __str__(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  638,
+                  639
+                ],
+                "name": "cantidad_de_dias",
+                "signature": "def cantidad_de_dias(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  641,
+                  642
+                ],
+                "name": "get_absolute_url",
+                "signature": "def get_absolute_url(self):"
+              }
+            ],
+            "module": "secretariador/models.py",
+            "name": "Incorporacion",
+            "page_path": "secretariador/models/Incorporacion",
+            "signature": "class Incorporacion(models.Model):",
+            "signature_hash": "sha1:34505b7206a4296320ae21c5751b1b4d8252e112",
+            "stale": false
+          },
+          "InstrumentosLegalesDecretos": {
+            "authored": true,
+            "bases": [
+              "models.Model"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/models.py",
+                "line": 297,
+                "snippet": "montoviaticodiario_decreto_reglamentario    = models.ForeignKey(\"InstrumentosLegalesDecretos\", on_delete=models.CASCADE)"
+              },
+              {
+                "file": "secretariador/views/incorporacionviews.py",
+                "line": 9,
+                "snippet": "from secretariador.models import EncabezadoDocumento, Incorporacion, InstrumentosLegalesDecretos"
+              },
+              {
+                "file": "secretariador/views/instrumentolegalviews.py",
+                "line": 7,
+                "snippet": "from secretariador.models import InstrumentosLegalesMemorandum, InstrumentosLegalesDecretos, InstrumentosLegalesResoluciones"
+              },
+              {
+                "file": "secretariador/views/instrumentolegalviews.py",
+                "line": 29,
+                "snippet": "model = InstrumentosLegalesDecretos"
+              },
+              {
+                "file": "secretariador/views/instrumentolegalviews.py",
+                "line": 90,
+                "snippet": "model = InstrumentosLegalesDecretos"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              224,
+              280
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  270,
+                  271
+                ],
+                "name": "__str__",
+                "signature": "def __str__(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  273,
+                  280
+                ],
+                "name": "get_absolute_url",
+                "signature": "def get_absolute_url(self):"
+              }
+            ],
+            "module": "secretariador/models.py",
+            "name": "InstrumentosLegalesDecretos",
+            "page_path": "secretariador/models/InstrumentosLegalesDecretos",
+            "signature": "class InstrumentosLegalesDecretos(models.Model):",
+            "signature_hash": "sha1:0d733b5eb0de6f274d78d364492860548af39dfc",
+            "stale": false
+          },
+          "InstrumentosLegalesMemorandum": {
+            "authored": true,
+            "bases": [
+              "models.Model"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/instrumentolegalviews.py",
+                "line": 7,
+                "snippet": "from secretariador.models import InstrumentosLegalesMemorandum, InstrumentosLegalesDecretos, InstrumentosLegalesResoluciones"
+              },
+              {
+                "file": "secretariador/views/instrumentolegalviews.py",
+                "line": 15,
+                "snippet": "model = InstrumentosLegalesMemorandum"
+              },
+              {
+                "file": "secretariador/views/instrumentolegalviews.py",
+                "line": 71,
+                "snippet": "model = InstrumentosLegalesMemorandum"
+              },
+              {
+                "file": "secretariador/views/instrumentolegalviews.py",
+                "line": 147,
+                "snippet": "model = InstrumentosLegalesMemorandum"
+              },
+              {
+                "file": "secretariador/forms/instrumentoslegalesform.py",
+                "line": 2,
+                "snippet": "from secretariador.models import InstrumentosLegalesMemorandum, InstrumentosLegalesDecretos, InstrumentosLegalesResoluciones"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              94,
+              135
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  128,
+                  129
+                ],
+                "name": "__str__",
+                "signature": "def __str__(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  131,
+                  135
+                ],
+                "name": "get_absolute_url",
+                "signature": "def get_absolute_url(self):"
+              }
+            ],
+            "module": "secretariador/models.py",
+            "name": "InstrumentosLegalesMemorandum",
+            "page_path": "secretariador/models/InstrumentosLegalesMemorandum",
+            "signature": "class InstrumentosLegalesMemorandum(models.Model):",
+            "signature_hash": "sha1:9195747ea569e20819e38002bd1e11ed3c52492d",
+            "stale": false
+          },
+          "InstrumentosLegalesResoluciones": {
+            "authored": true,
+            "bases": [
+              "models.Model"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/models.py",
+                "line": 426,
+                "snippet": "solicitud_resolucion = models.ForeignKey(\"InstrumentosLegalesResoluciones\", verbose_name=\"Resolución Aprobada\", on_delete=models.CASCADE, blank=True, null=True)"
+              },
+              {
+                "file": "secretariador/models.py",
+                "line": 630,
+                "snippet": "incorporacion_resolucion = models.ForeignKey(\"InstrumentosLegalesResoluciones\", verbose_name=\"Resolución Aprobada\", help_text=\"Resolución que aprueba la incorporación de los agentes.\", on_delete=models.CASCADE, blank=True, null=True)"
+              },
+              {
+                "file": "secretariador/views/ajaxviews.py",
+                "line": 27,
+                "snippet": "resolucion = InstrumentosLegalesResoluciones.objects.filter(instrumentolegalresoluciones_numero=numero, instrumentolegalresoluciones_ano=ano).exists()"
+              },
+              {
+                "file": "secretariador/views/instrumentolegalviews.py",
+                "line": 7,
+                "snippet": "from secretariador.models import InstrumentosLegalesMemorandum, InstrumentosLegalesDecretos, InstrumentosLegalesResoluciones"
+              },
+              {
+                "file": "secretariador/views/instrumentolegalviews.py",
+                "line": 43,
+                "snippet": "model = InstrumentosLegalesResoluciones"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              137,
+              222
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  213,
+                  216
+                ],
+                "name": "__str__",
+                "signature": "def __str__(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  218,
+                  222
+                ],
+                "name": "get_absolute_url",
+                "signature": "def get_absolute_url(self):"
+              }
+            ],
+            "module": "secretariador/models.py",
+            "name": "InstrumentosLegalesResoluciones",
+            "page_path": "secretariador/models/InstrumentosLegalesResoluciones",
+            "signature": "class InstrumentosLegalesResoluciones(models.Model):",
+            "signature_hash": "sha1:1f770bd0c0c4d98b9339b6568f8e8a8b3e9806a8",
+            "stale": false
+          },
+          "MontoViaticoDiario": {
+            "authored": true,
+            "bases": [
+              "models.Model"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/models.py",
+                "line": 419,
+                "snippet": "solicitud_decreto_viaticos = models.ForeignKey(\"MontoViaticoDiario\", on_delete=models.CASCADE)"
+              },
+              {
+                "file": "secretariador/views/montoviaticodiarioviews.py",
+                "line": 7,
+                "snippet": "from secretariador.models import InstrumentosLegalesDecretos, MontoViaticoDiario"
+              },
+              {
+                "file": "secretariador/views/montoviaticodiarioviews.py",
+                "line": 118,
+                "snippet": "model = MontoViaticoDiario"
+              },
+              {
+                "file": "secretariador/forms/montoviaticodiarioform.py",
+                "line": 2,
+                "snippet": "from secretariador.models import MontoViaticoDiario, InstrumentosLegalesDecretos"
+              },
+              {
+                "file": "secretariador/forms/montoviaticodiarioform.py",
+                "line": 7,
+                "snippet": "model = MontoViaticoDiario"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              282,
+              302
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  301,
+                  302
+                ],
+                "name": "__str__",
+                "signature": "def __str__(self):"
+              }
+            ],
+            "module": "secretariador/models.py",
+            "name": "MontoViaticoDiario",
+            "page_path": "secretariador/models/MontoViaticoDiario",
+            "signature": "class MontoViaticoDiario(models.Model):",
+            "signature_hash": "sha1:25d1aa44934980ba234a2c8dcff96f7308e34af4",
+            "stale": false
+          },
+          "Organigrama": {
+            "authored": true,
+            "bases": [
+              "models.Model"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/forms/organigramaform.py",
+                "line": 2,
+                "snippet": "from secretariador.models import Organigrama"
+              },
+              {
+                "file": "secretariador/forms/organigramaform.py",
+                "line": 7,
+                "snippet": "model = Organigrama"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              337,
+              348
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  347,
+                  348
+                ],
+                "name": "__str__",
+                "signature": "def __str__(self):"
+              }
+            ],
+            "module": "secretariador/models.py",
+            "name": "Organigrama",
+            "page_path": "secretariador/models/Organigrama",
+            "signature": "class Organigrama(models.Model):",
+            "signature_hash": "sha1:419032e7a971537a3475f46119e8cdfd91d545e6",
+            "stale": false
+          },
+          "ReglasViatico": {
+            "authored": true,
+            "bases": [
+              "models.Model"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/models.py",
+                "line": 535,
+                "snippet": "person and the rules configured in ReglasViatico."
+              },
+              {
+                "file": "secretariador/models.py",
+                "line": 538,
+                "snippet": "float: The daily viatic value. Returns 0 if excepted by ReglasViatico or"
+              },
+              {
+                "file": "secretariador/models.py",
+                "line": 547,
+                "snippet": "reglas = ReglasViatico.get_solo()"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              311,
+              335
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  325,
+                  326
+                ],
+                "name": "__str__",
+                "signature": "def __str__(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  328,
+                  330
+                ],
+                "name": "save",
+                "signature": "def save(self, *args, **kwargs):"
+              },
+              {
+                "decorators": [
+                  "classmethod"
+                ],
+                "docstring": null,
+                "lines": [
+                  333,
+                  335
+                ],
+                "name": "get_solo",
+                "signature": "def get_solo(cls):"
+              }
+            ],
+            "module": "secretariador/models.py",
+            "name": "ReglasViatico",
+            "page_path": "secretariador/models/ReglasViatico",
+            "signature": "class ReglasViatico(models.Model):",
+            "signature_hash": "sha1:dc3723381cf81638fdfe690d50913781185bd582",
+            "stale": false
+          },
+          "Solicitud": {
+            "authored": true,
+            "bases": [
+              "models.Model"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/models.py",
+                "line": 462,
+                "snippet": "verbose_name = \"Comisionado Solicitud\""
+              },
+              {
+                "file": "secretariador/models.py",
+                "line": 474,
+                "snippet": "comisionadosolicitud_foreign = models.ForeignKey(\"Solicitud\", on_delete=models.CASCADE, null=True, blank=True)"
+              },
+              {
+                "file": "secretariador/models.py",
+                "line": 620,
+                "snippet": "incorporacion_solicitud = models.ForeignKey(\"Solicitud\", help_text=\"Actuación a la que se incorpora los agentes.\", on_delete=models.CASCADE)"
+              },
+              {
+                "file": "secretariador/views/incorporacionviews.py",
+                "line": 21,
+                "snippet": "incorporación de agentes a una Solicitud ya resuelta.\"\"\""
+              },
+              {
+                "file": "secretariador/views/incorporacionviews.py",
+                "line": 277,
+                "snippet": "# \tmodel = Solicitud"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              392,
+              458
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  437,
+                  440
+                ],
+                "name": "solicitud_fechas",
+                "signature": "def solicitud_fechas(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  442,
+                  444
+                ],
+                "name": "get_comisionados",
+                "signature": "def get_comisionados(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  446,
+                  447
+                ],
+                "name": "__str__",
+                "signature": "def __str__(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  449,
+                  450
+                ],
+                "name": "lista_localidades",
+                "signature": "def lista_localidades(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  451,
+                  452
+                ],
+                "name": "lista_comisionados",
+                "signature": "def lista_comisionados(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  454,
+                  458
+                ],
+                "name": "get_absolute_url",
+                "signature": "def get_absolute_url(self):"
+              }
+            ],
+            "module": "secretariador/models.py",
+            "name": "Solicitud",
+            "page_path": "secretariador/models/Solicitud",
+            "signature": "class Solicitud(models.Model):",
+            "signature_hash": "sha1:6317ef1e666e53593883f6a8ac8099c94b9421dd",
+            "stale": false
+          },
+          "Vehiculo": {
+            "authored": true,
+            "bases": [
+              "models.Model"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/models.py",
+                "line": 423,
+                "snippet": "solicitud_vehiculo = models.ForeignKey(\"Vehiculo\", on_delete=models.CASCADE, blank=True, null=True)"
+              },
+              {
+                "file": "secretariador/views/vehiculoviews.py",
+                "line": 8,
+                "snippet": "from secretariador.models import Vehiculo"
+              },
+              {
+                "file": "secretariador/views/vehiculoviews.py",
+                "line": 16,
+                "snippet": "model = Vehiculo"
+              },
+              {
+                "file": "secretariador/views/vehiculoviews.py",
+                "line": 21,
+                "snippet": "title = \"Crear Vehiculo\""
+              },
+              {
+                "file": "secretariador/views/vehiculoviews.py",
+                "line": 35,
+                "snippet": "model = Vehiculo"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              350,
+              390
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  385,
+                  386
+                ],
+                "name": "__str__",
+                "signature": "def __str__(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  388,
+                  390
+                ],
+                "name": "save",
+                "signature": "def save(self, *args, **kwargs):"
+              }
+            ],
+            "module": "secretariador/models.py",
+            "name": "Vehiculo",
+            "page_path": "secretariador/models/Vehiculo",
+            "signature": "class Vehiculo(models.Model):",
+            "signature_hash": "sha1:38e8187a3a9d7ade6d4d5f990a8cc3567ca6bd7f",
+            "stale": false
+          },
+          "date_validation": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [],
+            "docstring": "Validates if the provided date value is not earlier than the current date.\n:param value: The date value to be validated.\n:raises ValidationError: If the value is earlier than the current date.",
+            "kind": "function",
+            "lines": [
+              65,
+              72
+            ],
+            "methods": [],
+            "module": "secretariador/models.py",
+            "name": "date_validation",
+            "page_path": "secretariador/models/date_validation",
+            "signature": "def date_validation(value):",
+            "signature_hash": "sha1:6bee5a992bbf24a7ea64f8e54e3817266664e3d0",
+            "stale": false
+          },
+          "generate_name_decretos": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/models.py",
+                "line": 247,
+                "snippet": "instrumentolegaldecretos = models.FileField(upload_to=generate_name_decretos, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=(\"application/pdf\"))], null=True, blank=True)"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Generates a name for a decree file based on the given instance and filename.\n\nParameters:\n    instance (object): The instance of the decree.\n    filename (str): The original filename of the decree.\n\nReturns:\n    str: The generated name for the decree file.",
+            "kind": "function",
+            "lines": [
+              17,
+              31
+            ],
+            "methods": [],
+            "module": "secretariador/models.py",
+            "name": "generate_name_decretos",
+            "page_path": "secretariador/models/generate_name_decretos",
+            "signature": "def generate_name_decretos(instance, filename):",
+            "signature_hash": "sha1:d2b52324ae4b00e2f5232a6811c76a9100606159",
+            "stale": false
+          },
+          "generate_name_memorandum": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/models.py",
+                "line": 116,
+                "snippet": "instrumentolegalmemorandum = models.FileField(upload_to=generate_name_memorandum, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=(\"application/pdf\"))], null=True, blank=True)"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Generates a name for a memorandum file based on the given instance and filename.\n\nParameters:\n    instance (object): The instance of the resolution.\n    filename (str): The original filename of the resolution.\n\nReturns:\n    str: The generated name for the resolution file.",
+            "kind": "function",
+            "lines": [
+              50,
+              64
+            ],
+            "methods": [],
+            "module": "secretariador/models.py",
+            "name": "generate_name_memorandum",
+            "page_path": "secretariador/models/generate_name_memorandum",
+            "signature": "def generate_name_memorandum(instance, filename):",
+            "signature_hash": "sha1:61b5459bc4bfb0c76a6078fc9cc6cfcfec610e87",
+            "stale": false
+          },
+          "generate_name_resoluciones": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/models.py",
+                "line": 173,
+                "snippet": "instrumentolegalresoluciones = models.FileField(upload_to=generate_name_resoluciones, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=(\"application/pdf\"))], null=True, blank=True)"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Generates a name for a resolution file based on the given instance and filename.\n\nParameters:\n    instance (object): The instance of the resolution.\n    filename (str): The original filename of the resolution.\n\nReturns:\n    str: The generated name for the resolution file.",
+            "kind": "function",
+            "lines": [
+              32,
+              49
+            ],
+            "methods": [],
+            "module": "secretariador/models.py",
+            "name": "generate_name_resoluciones",
+            "page_path": "secretariador/models/generate_name_resoluciones",
+            "signature": "def generate_name_resoluciones(instance, filename):",
+            "signature_hash": "sha1:9d310800c5aedcfa18bd19ba0bbffe2c68beda04",
+            "stale": false
+          }
+        }
+      },
+      "views/ajaxviews": {
+        "file": "secretariador/views/ajaxviews.py",
+        "symbols": {
+          "ComisionadoExternoWidget": {
+            "authored": true,
+            "bases": [
+              "AddRelatedWidgetMixin",
+              "LoginRequiredMixin",
+              "s2forms.ModelSelect2Widget"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/forms/comisionadosolicitud_exteriorform.py",
+                "line": 4,
+                "snippet": "from secretariador.views.ajaxviews import ComisionadoWidget, ComisionadoExternoWidget"
+              },
+              {
+                "file": "secretariador/forms/comisionadosolicitud_exteriorform.py",
+                "line": 26,
+                "snippet": "\"comisionadosolicitud_externo\":ComisionadoExternoWidget(attrs={"
+              },
+              {
+                "file": "secretariador/forms/comisionadosolicitudform.py",
+                "line": 4,
+                "snippet": "from secretariador.views.ajaxviews import ComisionadoWidget, ComisionadoExternoWidget"
+              },
+              {
+                "file": "secretariador/forms/comisionadosolicitudform.py",
+                "line": 30,
+                "snippet": "\"comisionadosolicitud_externo\":ComisionadoExternoWidget(attrs={"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              58,
+              63
+            ],
+            "methods": [],
+            "module": "secretariador/views/ajaxviews.py",
+            "name": "ComisionadoExternoWidget",
+            "page_path": "secretariador/views/ajaxviews/ComisionadoExternoWidget",
+            "signature": "class ComisionadoExternoWidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):",
+            "signature_hash": "sha1:008939fe1821aa1001074f909ff3be52d93fdcb3",
+            "stale": false
+          },
+          "ComisionadoWidget": {
+            "authored": true,
+            "bases": [
+              "LoginRequiredMixin",
+              "s2forms.ModelSelect2Widget"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/forms/comisionadosolicitud_exteriorform.py",
+                "line": 4,
+                "snippet": "from secretariador.views.ajaxviews import ComisionadoWidget, ComisionadoExternoWidget"
+              },
+              {
+                "file": "secretariador/forms/comisionadosolicitud_exteriorform.py",
+                "line": 22,
+                "snippet": "\"comisionadosolicitud_nombre\":ComisionadoWidget(attrs={"
+              },
+              {
+                "file": "secretariador/forms/comisionadosolicitudform.py",
+                "line": 4,
+                "snippet": "from secretariador.views.ajaxviews import ComisionadoWidget, ComisionadoExternoWidget"
+              },
+              {
+                "file": "secretariador/forms/comisionadosolicitudform.py",
+                "line": 26,
+                "snippet": "\"comisionadosolicitud_nombre\":ComisionadoWidget(attrs={"
+              },
+              {
+                "file": "secretariador/forms/incorporacionform.py",
+                "line": 7,
+                "snippet": "from secretariador.views.ajaxviews import ResolucionWidget, SolicitudWidget, ComisionadoWidget"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              52,
+              56
+            ],
+            "methods": [],
+            "module": "secretariador/views/ajaxviews.py",
+            "name": "ComisionadoWidget",
+            "page_path": "secretariador/views/ajaxviews/ComisionadoWidget",
+            "signature": "class ComisionadoWidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):",
+            "signature_hash": "sha1:a6e7741a4ac13c204a3c18e5cddabb90d1b10090",
+            "stale": false
+          },
+          "DecretoWidget": {
+            "authored": true,
+            "bases": [
+              "LoginRequiredMixin",
+              "s2forms.ModelSelect2Widget"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/forms/solicitud_exteriorform.py",
+                "line": 11,
+                "snippet": "DecretoWidget,"
+              },
+              {
+                "file": "secretariador/forms/solicitud_exteriorform.py",
+                "line": 56,
+                "snippet": "\"solicitud_decreto_viaticos\":DecretoWidget(attrs={"
+              },
+              {
+                "file": "secretariador/forms/solicitudform.py",
+                "line": 13,
+                "snippet": "DecretoWidget,"
+              },
+              {
+                "file": "secretariador/forms/solicitudform.py",
+                "line": 58,
+                "snippet": "\"solicitud_decreto_viaticos\":DecretoWidget(attrs={"
+              },
+              {
+                "file": "secretariador/forms/vehiculoform.py",
+                "line": 8,
+                "snippet": "DecretoWidget,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              71,
+              74
+            ],
+            "methods": [],
+            "module": "secretariador/views/ajaxviews.py",
+            "name": "DecretoWidget",
+            "page_path": "secretariador/views/ajaxviews/DecretoWidget",
+            "signature": "class DecretoWidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):",
+            "signature_hash": "sha1:0088c5f3349eb55b16bafa51a7ab786bccf512e3",
+            "stale": false
+          },
+          "LocalidadMultipleWidget": {
+            "authored": true,
+            "bases": [
+              "LoginRequiredMixin",
+              "s2forms.ModelSelect2MultipleWidget"
+            ],
+            "candidate_usages": [],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              33,
+              38
+            ],
+            "methods": [],
+            "module": "secretariador/views/ajaxviews.py",
+            "name": "LocalidadMultipleWidget",
+            "page_path": "secretariador/views/ajaxviews/LocalidadMultipleWidget",
+            "signature": "class LocalidadMultipleWidget(LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget):",
+            "signature_hash": "sha1:6ee2b163ab4e1b5766991f1678404e49e786e089",
+            "stale": false
+          },
+          "ResolucionWidget": {
+            "authored": true,
+            "bases": [
+              "LoginRequiredMixin",
+              "s2forms.ModelSelect2Widget"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/forms/incorporacionform.py",
+                "line": 7,
+                "snippet": "from secretariador.views.ajaxviews import ResolucionWidget, SolicitudWidget, ComisionadoWidget"
+              },
+              {
+                "file": "secretariador/forms/incorporacionform.py",
+                "line": 38,
+                "snippet": "\"incorporacion_resolucion\":ResolucionWidget(attrs={"
+              },
+              {
+                "file": "secretariador/forms/solicitud_exteriorform.py",
+                "line": 8,
+                "snippet": "ResolucionWidget,"
+              },
+              {
+                "file": "secretariador/forms/solicitud_exteriorform.py",
+                "line": 90,
+                "snippet": "\"solicitud_resolucion\":ResolucionWidget(attrs={"
+              },
+              {
+                "file": "secretariador/forms/solicitudform.py",
+                "line": 10,
+                "snippet": "ResolucionWidget,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              40,
+              45
+            ],
+            "methods": [],
+            "module": "secretariador/views/ajaxviews.py",
+            "name": "ResolucionWidget",
+            "page_path": "secretariador/views/ajaxviews/ResolucionWidget",
+            "signature": "class ResolucionWidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):",
+            "signature_hash": "sha1:a14fcf5edb6b0eb07fa9f2dccda343be8d4f7df2",
+            "stale": false
+          },
+          "SolicitudWidget": {
+            "authored": true,
+            "bases": [
+              "LoginRequiredMixin",
+              "s2forms.ModelSelect2Widget"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/forms/incorporacionform.py",
+                "line": 7,
+                "snippet": "from secretariador.views.ajaxviews import ResolucionWidget, SolicitudWidget, ComisionadoWidget"
+              },
+              {
+                "file": "secretariador/forms/incorporacionform.py",
+                "line": 23,
+                "snippet": "\"incorporacion_solicitud\":SolicitudWidget(attrs={"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              47,
+              50
+            ],
+            "methods": [],
+            "module": "secretariador/views/ajaxviews.py",
+            "name": "SolicitudWidget",
+            "page_path": "secretariador/views/ajaxviews/SolicitudWidget",
+            "signature": "class SolicitudWidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):",
+            "signature_hash": "sha1:0cd9c5eb9f01434b14c543ff297c5826e6bb590a",
+            "stale": false
+          },
+          "VehiculoWidget": {
+            "authored": true,
+            "bases": [
+              "LoginRequiredMixin",
+              "s2forms.ModelSelect2Widget"
+            ],
+            "candidate_usages": [
+              {
+                "file": "secretariador/forms/solicitud_exteriorform.py",
+                "line": 10,
+                "snippet": "VehiculoWidget,"
+              },
+              {
+                "file": "secretariador/forms/solicitud_exteriorform.py",
+                "line": 83,
+                "snippet": "\"solicitud_vehiculo\":VehiculoWidget(attrs={"
+              },
+              {
+                "file": "secretariador/forms/solicitudform.py",
+                "line": 12,
+                "snippet": "VehiculoWidget,"
+              },
+              {
+                "file": "secretariador/forms/solicitudform.py",
+                "line": 86,
+                "snippet": "\"solicitud_vehiculo\":VehiculoWidget(attrs={"
+              },
+              {
+                "file": "secretariador/forms/vehiculoform.py",
+                "line": 7,
+                "snippet": "VehiculoWidget,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              65,
+              69
+            ],
+            "methods": [],
+            "module": "secretariador/views/ajaxviews.py",
+            "name": "VehiculoWidget",
+            "page_path": "secretariador/views/ajaxviews/VehiculoWidget",
+            "signature": "class VehiculoWidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):",
+            "signature_hash": "sha1:3a749ac75f2de47b77bb29f5292eaa0198f072ab",
+            "stale": false
+          },
+          "check_resolucion": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('secretariador.add_solicitud', login_url='/')"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              20,
+              31
+            ],
+            "methods": [],
+            "module": "secretariador/views/ajaxviews.py",
+            "name": "check_resolucion",
+            "page_path": "secretariador/views/ajaxviews/check_resolucion",
+            "signature": "def check_resolucion(request):",
+            "signature_hash": "sha1:6219505d7a7e205eb9d75cde230a0bffafc8d96b",
+            "stale": false
+          },
+          "get_agentes": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('secretariador.add_solicitud', login_url='/')"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              13,
+              16
+            ],
+            "methods": [],
+            "module": "secretariador/views/ajaxviews.py",
+            "name": "get_agentes",
+            "page_path": "secretariador/views/ajaxviews/get_agentes",
+            "signature": "def get_agentes(request):",
+            "signature_hash": "sha1:381beeb787bc2601ac350608542e3e0a6669653b",
+            "stale": false
+          }
+        }
+      },
+      "views/comisionadoviews": {
+        "file": "secretariador/views/comisionadoviews.py",
+        "symbols": {
+          "CrearComisionado": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.CreateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              13,
+              29
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  23,
+                  24
+                ],
+                "name": "get_title",
+                "signature": "def get_title(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  26,
+                  29
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, **kwargs):"
+              }
+            ],
+            "module": "secretariador/views/comisionadoviews.py",
+            "name": "CrearComisionado",
+            "page_path": "secretariador/views/comisionadoviews/CrearComisionado",
+            "signature": "class CrearComisionado(PermissionRequiredMixin, generic.CreateView):",
+            "signature_hash": "sha1:7549e24f1c02f7633ef404575a2c2521c976e308",
+            "stale": false
+          },
+          "CrearComisionadoExterno": {
+            "authored": true,
+            "bases": [
+              "PopupCreateMixin",
+              "PermissionRequiredMixin",
+              "generic.CreateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              63,
+              80
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  74,
+                  75
+                ],
+                "name": "get_title",
+                "signature": "def get_title(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  77,
+                  80
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, **kwargs):"
+              }
+            ],
+            "module": "secretariador/views/comisionadoviews.py",
+            "name": "CrearComisionadoExterno",
+            "page_path": "secretariador/views/comisionadoviews/CrearComisionadoExterno",
+            "signature": "class CrearComisionadoExterno(PopupCreateMixin, PermissionRequiredMixin, generic.CreateView):",
+            "signature_hash": "sha1:a22700b1ccab6d553e736957142da387ad84d97e",
+            "stale": false
+          },
+          "EliminarComisionado": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "DeleteRelatedObjectsMixin",
+              "generic.DeleteView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              41,
+              46
+            ],
+            "methods": [],
+            "module": "secretariador/views/comisionadoviews.py",
+            "name": "EliminarComisionado",
+            "page_path": "secretariador/views/comisionadoviews/EliminarComisionado",
+            "signature": "class EliminarComisionado(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):",
+            "signature_hash": "sha1:fa4a9099733a69e52404e025cab261d0fe1eb928",
+            "stale": false
+          },
+          "EliminarComisionadoExterno": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "DeleteRelatedObjectsMixin",
+              "generic.DeleteView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              92,
+              97
+            ],
+            "methods": [],
+            "module": "secretariador/views/comisionadoviews.py",
+            "name": "EliminarComisionadoExterno",
+            "page_path": "secretariador/views/comisionadoviews/EliminarComisionadoExterno",
+            "signature": "class EliminarComisionadoExterno(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):",
+            "signature_hash": "sha1:c7476b92c68f8e17c35b4be57f5c7493cb584a34",
+            "stale": false
+          },
+          "PaginaListaComisionados": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('personalizador.view_agente', raise_exception=True)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              57,
+              60
+            ],
+            "methods": [],
+            "module": "secretariador/views/comisionadoviews.py",
+            "name": "PaginaListaComisionados",
+            "page_path": "secretariador/views/comisionadoviews/PaginaListaComisionados",
+            "signature": "def PaginaListaComisionados(request):",
+            "signature_hash": "sha1:0ba3e142f56f5660e0c335481f92244d2d243c18",
+            "stale": false
+          },
+          "PaginaListaComisionadosExternos": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('personalizador.view_comisionadoexterno', raise_exception=True)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              101,
+              104
+            ],
+            "methods": [],
+            "module": "secretariador/views/comisionadoviews.py",
+            "name": "PaginaListaComisionadosExternos",
+            "page_path": "secretariador/views/comisionadoviews/PaginaListaComisionadosExternos",
+            "signature": "def PaginaListaComisionadosExternos(request):",
+            "signature_hash": "sha1:591d0828876f5733f593d271d1c13e168c0ec1e2",
+            "stale": false
+          },
+          "UpdateComisionado": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.UpdateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              32,
+              38
+            ],
+            "methods": [],
+            "module": "secretariador/views/comisionadoviews.py",
+            "name": "UpdateComisionado",
+            "page_path": "secretariador/views/comisionadoviews/UpdateComisionado",
+            "signature": "class UpdateComisionado(PermissionRequiredMixin, generic.UpdateView):",
+            "signature_hash": "sha1:8864b873d6878d61d141637130717404873aa158",
+            "stale": false
+          },
+          "UpdateComisionadoExterno": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.UpdateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              83,
+              89
+            ],
+            "methods": [],
+            "module": "secretariador/views/comisionadoviews.py",
+            "name": "UpdateComisionadoExterno",
+            "page_path": "secretariador/views/comisionadoviews/UpdateComisionadoExterno",
+            "signature": "class UpdateComisionadoExterno(PermissionRequiredMixin, generic.UpdateView):",
+            "signature_hash": "sha1:9f8c69734779aca35ecd6614169853a3321aa5bb",
+            "stale": false
+          }
+        }
+      },
+      "views/delete_inlines": {
+        "file": "secretariador/views/delete_inlines.py",
+        "symbols": {
+          "delete_comisionadosolicitud": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/delete_inlines.py",
+                "line": 14,
+                "snippet": "@permission_required('secretariador.delete_comisionadosolicitud')"
+              },
+              {
+                "file": "secretariador/views/delete_inlines.py",
+                "line": 31,
+                "snippet": "@permission_required('secretariador.delete_comisionadosolicitud')"
+              }
+            ],
+            "decorators": [
+              "login_required",
+              "permission_required('secretariador.delete_comisionadosolicitud')"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              15,
+              28
+            ],
+            "methods": [],
+            "module": "secretariador/views/delete_inlines.py",
+            "name": "delete_comisionadosolicitud",
+            "page_path": "secretariador/views/delete_inlines/delete_comisionadosolicitud",
+            "signature": "def delete_comisionadosolicitud(request, pk):",
+            "signature_hash": "sha1:7a58ef65018db140f7bab6e33c316b51852ed37d",
+            "stale": false
+          },
+          "delete_incorporacion_comisionadosolicitud": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('secretariador.delete_comisionadosolicitud')"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              32,
+              45
+            ],
+            "methods": [],
+            "module": "secretariador/views/delete_inlines.py",
+            "name": "delete_incorporacion_comisionadosolicitud",
+            "page_path": "secretariador/views/delete_inlines/delete_incorporacion_comisionadosolicitud",
+            "signature": "def delete_incorporacion_comisionadosolicitud(request, pk):",
+            "signature_hash": "sha1:97a65e9dc3f48364a500c8281698eb37f4c161bc",
+            "stale": false
+          }
+        }
+      },
+      "views/encabezadoviews": {
+        "file": "secretariador/views/encabezadoviews.py",
+        "symbols": {
+          "ActualizarEncabezado": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.CreateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              11,
+              31
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  21,
+                  22
+                ],
+                "name": "get_title",
+                "signature": "def get_title(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  24,
+                  26
+                ],
+                "name": "form_valid",
+                "signature": "def form_valid(self, form):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  28,
+                  31
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, **kwargs):"
+              }
+            ],
+            "module": "secretariador/views/encabezadoviews.py",
+            "name": "ActualizarEncabezado",
+            "page_path": "secretariador/views/encabezadoviews/ActualizarEncabezado",
+            "signature": "class ActualizarEncabezado(PermissionRequiredMixin, generic.CreateView):",
+            "signature_hash": "sha1:98a5841a8d26230a45609c119f237b69349a7a8d",
+            "stale": false
+          }
+        }
+      },
+      "views/incorporacionviews": {
+        "file": "secretariador/views/incorporacionviews.py",
+        "symbols": {
+          "CrearIncorporacion": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.CreateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              146,
+              207
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  156,
+                  157
+                ],
+                "name": "get_title",
+                "signature": "def get_title(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  159,
+                  168
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  170,
+                  175
+                ],
+                "name": "get",
+                "signature": "def get(self, request, *args, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  177,
+                  186
+                ],
+                "name": "post",
+                "signature": "def post(self, request, *args, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": "If the form is valid, save the associated model.",
+                "lines": [
+                  188,
+                  197
+                ],
+                "name": "form_valid",
+                "signature": "def form_valid(self, form, formset):"
+              },
+              {
+                "decorators": [],
+                "docstring": "Renders the response based on the context data with the form and formset if the form is invalid.\n\n:param form: The form instance.\n:param comisionadosformset: The comisionados formset instance.\n:return: The response rendered based on the context data.",
+                "lines": [
+                  199,
+                  207
+                ],
+                "name": "form_invalid",
+                "signature": "def form_invalid(self, form, comisionadosformset):"
+              }
+            ],
+            "module": "secretariador/views/incorporacionviews.py",
+            "name": "CrearIncorporacion",
+            "page_path": "secretariador/views/incorporacionviews/CrearIncorporacion",
+            "signature": "class CrearIncorporacion(PermissionRequiredMixin, generic.CreateView):",
+            "signature_hash": "sha1:4b6bfe3136537484447d2ed89e9f15d27494ea56",
+            "stale": false
+          },
+          "EliminarIncorporacion": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "DeleteRelatedObjectsMixin",
+              "generic.DeleteView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              266,
+              271
+            ],
+            "methods": [],
+            "module": "secretariador/views/incorporacionviews.py",
+            "name": "EliminarIncorporacion",
+            "page_path": "secretariador/views/incorporacionviews/EliminarIncorporacion",
+            "signature": "class EliminarIncorporacion(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):",
+            "signature_hash": "sha1:79df2f220d64717c740dc3b8aff4acbd927bd620",
+            "stale": false
+          },
+          "PaginaListaIncorporaciones": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('secretariador.view_incorporacion', raise_exception=True)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              282,
+              285
+            ],
+            "methods": [],
+            "module": "secretariador/views/incorporacionviews.py",
+            "name": "PaginaListaIncorporaciones",
+            "page_path": "secretariador/views/incorporacionviews/PaginaListaIncorporaciones",
+            "signature": "def PaginaListaIncorporaciones(request):",
+            "signature_hash": "sha1:a35b3df278c2574139cc38db734ddaa752dbf9f3",
+            "stale": false
+          },
+          "UpdateIncorporacion": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.UpdateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              210,
+              262
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  218,
+                  227
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  229,
+                  234
+                ],
+                "name": "get",
+                "signature": "def get(self, request, *args, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  236,
+                  245
+                ],
+                "name": "post",
+                "signature": "def post(self, request, *args, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  247,
+                  252
+                ],
+                "name": "form_valid",
+                "signature": "def form_valid(self, form, comisionadosformset):"
+              },
+              {
+                "decorators": [],
+                "docstring": "Renders the response based on the context data with the form and formset if the form is invalid.\n\n:param form: The form instance.\n:param comisionadosformset: The comisionados formset instance.\n:return: The response rendered based on the context data.",
+                "lines": [
+                  254,
+                  262
+                ],
+                "name": "form_invalid",
+                "signature": "def form_invalid(self, form, comisionadosformset):"
+              }
+            ],
+            "module": "secretariador/views/incorporacionviews.py",
+            "name": "UpdateIncorporacion",
+            "page_path": "secretariador/views/incorporacionviews/UpdateIncorporacion",
+            "signature": "class UpdateIncorporacion(PermissionRequiredMixin, generic.UpdateView):",
+            "signature_hash": "sha1:dc7ad2bcc3be394738353ce0605c31d72161dbdc",
+            "stale": false
+          },
+          "_calcular_texto_incorporacion": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/incorporacionviews.py",
+                "line": 92,
+                "snippet": "visto_texto, _parrafos_default, _articulo_uno_default, _articulo_dos_default = _calcular_texto_incorporacion(actuacion)"
+              },
+              {
+                "file": "secretariador/views/incorporacionviews.py",
+                "line": 97,
+                "snippet": "visto_texto, parrafos, articulo_uno, articulo_dos_filas = _calcular_texto_incorporacion(actuacion)"
+              },
+              {
+                "file": "secretariador/views/incorporacionviews.py",
+                "line": 121,
+                "snippet": "_visto_texto, parrafos_default, articulo_uno_default, articulo_dos_default = _calcular_texto_incorporacion(actuacion)"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Igual que en `solicitudviews`/`solicitud_exteriorviews` pero para la\nincorporación de agentes a una Solicitud ya resuelta.",
+            "kind": "function",
+            "lines": [
+              19,
+              86
+            ],
+            "methods": [],
+            "module": "secretariador/views/incorporacionviews.py",
+            "name": "_calcular_texto_incorporacion",
+            "page_path": "secretariador/views/incorporacionviews/_calcular_texto_incorporacion",
+            "signature": "def _calcular_texto_incorporacion(actuacion):",
+            "signature_hash": "sha1:a0adb032c011b43d1860b4275c3e878e0a54ed9f",
+            "stale": false
+          },
+          "_generar_incorporacion_docx": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/incorporacionviews.py",
+                "line": 138,
+                "snippet": "out = _generar_incorporacion_docx(actuacion)"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              89,
+              114
+            ],
+            "methods": [],
+            "module": "secretariador/views/incorporacionviews.py",
+            "name": "_generar_incorporacion_docx",
+            "page_path": "secretariador/views/incorporacionviews/_generar_incorporacion_docx",
+            "signature": "def _generar_incorporacion_docx(actuacion):",
+            "signature_hash": "sha1:a7030f95d82f834f8335b45c53a5f57b76562a79",
+            "stale": false
+          },
+          "editar_texto_incorporacion": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('secretariador.change_incorporacion', raise_exception=True)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              119,
+              131
+            ],
+            "methods": [],
+            "module": "secretariador/views/incorporacionviews.py",
+            "name": "editar_texto_incorporacion",
+            "page_path": "secretariador/views/incorporacionviews/editar_texto_incorporacion",
+            "signature": "def editar_texto_incorporacion(request, pk):",
+            "signature_hash": "sha1:be00b19ab97969943eef497e2efdd12328bc6981",
+            "stale": false
+          },
+          "incorporacion_docx": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('secretariador.view_incorporacion', raise_exception=True)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              136,
+              143
+            ],
+            "methods": [],
+            "module": "secretariador/views/incorporacionviews.py",
+            "name": "incorporacion_docx",
+            "page_path": "secretariador/views/incorporacionviews/incorporacion_docx",
+            "signature": "def incorporacion_docx(request, pk):",
+            "signature_hash": "sha1:0fa2059bc131ffea17eaee9564938c7a29e54ba6",
+            "stale": false
+          }
+        }
+      },
+      "views/instrumentolegalviews": {
+        "file": "secretariador/views/instrumentolegalviews.py",
+        "symbols": {
+          "CrearInstrumentoLegalDecreto": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.CreateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              26,
+              37
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  36,
+                  37
+                ],
+                "name": "get_title",
+                "signature": "def get_title(self):"
+              }
+            ],
+            "module": "secretariador/views/instrumentolegalviews.py",
+            "name": "CrearInstrumentoLegalDecreto",
+            "page_path": "secretariador/views/instrumentolegalviews/CrearInstrumentoLegalDecreto",
+            "signature": "class CrearInstrumentoLegalDecreto(PermissionRequiredMixin, generic.CreateView):",
+            "signature_hash": "sha1:00788ea9cc73ca6a8e616448acde77e0ecfe6903",
+            "stale": false
+          },
+          "CrearInstrumentoLegalMemorandum": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.CreateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              12,
+              23
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  22,
+                  23
+                ],
+                "name": "get_title",
+                "signature": "def get_title(self):"
+              }
+            ],
+            "module": "secretariador/views/instrumentolegalviews.py",
+            "name": "CrearInstrumentoLegalMemorandum",
+            "page_path": "secretariador/views/instrumentolegalviews/CrearInstrumentoLegalMemorandum",
+            "signature": "class CrearInstrumentoLegalMemorandum(PermissionRequiredMixin, generic.CreateView):",
+            "signature_hash": "sha1:78ddbf844257b0afddd06a6b64dd4e5cdd6e5d63",
+            "stale": false
+          },
+          "CrearInstrumentoLegalResolucionDirectorio": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.CreateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              54,
+              65
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  64,
+                  65
+                ],
+                "name": "get_title",
+                "signature": "def get_title(self):"
+              }
+            ],
+            "module": "secretariador/views/instrumentolegalviews.py",
+            "name": "CrearInstrumentoLegalResolucionDirectorio",
+            "page_path": "secretariador/views/instrumentolegalviews/CrearInstrumentoLegalResolucionDirectorio",
+            "signature": "class CrearInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, generic.CreateView):",
+            "signature_hash": "sha1:54721be567e4a9a1022f423d9d3da05cf88c7a7f",
+            "stale": false
+          },
+          "CrearInstrumentoLegalResolucionPresidencia": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.CreateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              40,
+              51
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  50,
+                  51
+                ],
+                "name": "get_title",
+                "signature": "def get_title(self):"
+              }
+            ],
+            "module": "secretariador/views/instrumentolegalviews.py",
+            "name": "CrearInstrumentoLegalResolucionPresidencia",
+            "page_path": "secretariador/views/instrumentolegalviews/CrearInstrumentoLegalResolucionPresidencia",
+            "signature": "class CrearInstrumentoLegalResolucionPresidencia(PermissionRequiredMixin, generic.CreateView):",
+            "signature_hash": "sha1:49e5767330d3f1f29f4ab9054c6344f29d02c6ab",
+            "stale": false
+          },
+          "EliminarInstrumentoLegalDecreto": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "DeleteRelatedObjectsMixin",
+              "generic.DeleteView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              152,
+              157
+            ],
+            "methods": [],
+            "module": "secretariador/views/instrumentolegalviews.py",
+            "name": "EliminarInstrumentoLegalDecreto",
+            "page_path": "secretariador/views/instrumentolegalviews/EliminarInstrumentoLegalDecreto",
+            "signature": "class EliminarInstrumentoLegalDecreto(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):",
+            "signature_hash": "sha1:c0c0cb179ebec61385af59d42bb9d80777d0b5fd",
+            "stale": false
+          },
+          "EliminarInstrumentoLegalMemorandum": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "DeleteRelatedObjectsMixin",
+              "generic.DeleteView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              144,
+              149
+            ],
+            "methods": [],
+            "module": "secretariador/views/instrumentolegalviews.py",
+            "name": "EliminarInstrumentoLegalMemorandum",
+            "page_path": "secretariador/views/instrumentolegalviews/EliminarInstrumentoLegalMemorandum",
+            "signature": "class EliminarInstrumentoLegalMemorandum(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):",
+            "signature_hash": "sha1:aaec0ad5d16904c87005380d6868addf36a9d747",
+            "stale": false
+          },
+          "EliminarInstrumentoLegalResolucionDirectorio": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "DeleteRelatedObjectsMixin",
+              "generic.DeleteView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              168,
+              173
+            ],
+            "methods": [],
+            "module": "secretariador/views/instrumentolegalviews.py",
+            "name": "EliminarInstrumentoLegalResolucionDirectorio",
+            "page_path": "secretariador/views/instrumentolegalviews/EliminarInstrumentoLegalResolucionDirectorio",
+            "signature": "class EliminarInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):",
+            "signature_hash": "sha1:125c437f2eb6254f184fefa6673b79bdaabf5a75",
+            "stale": false
+          },
+          "EliminarInstrumentoLegalResolucionPresidencia": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "DeleteRelatedObjectsMixin",
+              "generic.DeleteView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              160,
+              165
+            ],
+            "methods": [],
+            "module": "secretariador/views/instrumentolegalviews.py",
+            "name": "EliminarInstrumentoLegalResolucionPresidencia",
+            "page_path": "secretariador/views/instrumentolegalviews/EliminarInstrumentoLegalResolucionPresidencia",
+            "signature": "class EliminarInstrumentoLegalResolucionPresidencia(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):",
+            "signature_hash": "sha1:385439c3c55ea895caf698615092471cfc4426ad",
+            "stale": false
+          },
+          "PaginaListaInstrumentosLegalesDecretos": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('secretariador.view_instrumentoslegalesdecretos', raise_exception=True)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              184,
+              187
+            ],
+            "methods": [],
+            "module": "secretariador/views/instrumentolegalviews.py",
+            "name": "PaginaListaInstrumentosLegalesDecretos",
+            "page_path": "secretariador/views/instrumentolegalviews/PaginaListaInstrumentosLegalesDecretos",
+            "signature": "def PaginaListaInstrumentosLegalesDecretos(request):",
+            "signature_hash": "sha1:9b9150fbb4922d91832de361380c2d140cfb7e3d",
+            "stale": false
+          },
+          "PaginaListaInstrumentosLegalesMemorandum": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('secretariador.view_instrumentoslegalesmemorandum', raise_exception=True)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              177,
+              180
+            ],
+            "methods": [],
+            "module": "secretariador/views/instrumentolegalviews.py",
+            "name": "PaginaListaInstrumentosLegalesMemorandum",
+            "page_path": "secretariador/views/instrumentolegalviews/PaginaListaInstrumentosLegalesMemorandum",
+            "signature": "def PaginaListaInstrumentosLegalesMemorandum(request):",
+            "signature_hash": "sha1:4b6001d615a919f07a73b4fba1c449fec8cb94aa",
+            "stale": false
+          },
+          "PaginaListaInstrumentosLegalesResoluciones": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('secretariador.view_instrumentoslegalesresoluciones', raise_exception=True)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              191,
+              194
+            ],
+            "methods": [],
+            "module": "secretariador/views/instrumentolegalviews.py",
+            "name": "PaginaListaInstrumentosLegalesResoluciones",
+            "page_path": "secretariador/views/instrumentolegalviews/PaginaListaInstrumentosLegalesResoluciones",
+            "signature": "def PaginaListaInstrumentosLegalesResoluciones(request):",
+            "signature_hash": "sha1:53fe8102a6f1ad0bbf20f9278a39c308cfb4c21c",
+            "stale": false
+          },
+          "UpdateInstrumentoLegalDecreto": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.UpdateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              87,
+              103
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  95,
+                  103
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, *args, **kwargs):"
+              }
+            ],
+            "module": "secretariador/views/instrumentolegalviews.py",
+            "name": "UpdateInstrumentoLegalDecreto",
+            "page_path": "secretariador/views/instrumentolegalviews/UpdateInstrumentoLegalDecreto",
+            "signature": "class UpdateInstrumentoLegalDecreto(PermissionRequiredMixin, generic.UpdateView):",
+            "signature_hash": "sha1:8e656cd31dd0c01f37ccd52343afc40ab1ffd30d",
+            "stale": false
+          },
+          "UpdateInstrumentoLegalMemorandum": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.UpdateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              68,
+              84
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  76,
+                  84
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, *args, **kwargs):"
+              }
+            ],
+            "module": "secretariador/views/instrumentolegalviews.py",
+            "name": "UpdateInstrumentoLegalMemorandum",
+            "page_path": "secretariador/views/instrumentolegalviews/UpdateInstrumentoLegalMemorandum",
+            "signature": "class UpdateInstrumentoLegalMemorandum(PermissionRequiredMixin, generic.UpdateView):",
+            "signature_hash": "sha1:9f58e064c90cc0bd2cb44b430743062d8956631a",
+            "stale": false
+          },
+          "UpdateInstrumentoLegalResolucionDirectorio": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.UpdateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              125,
+              141
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  133,
+                  141
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, *args, **kwargs):"
+              }
+            ],
+            "module": "secretariador/views/instrumentolegalviews.py",
+            "name": "UpdateInstrumentoLegalResolucionDirectorio",
+            "page_path": "secretariador/views/instrumentolegalviews/UpdateInstrumentoLegalResolucionDirectorio",
+            "signature": "class UpdateInstrumentoLegalResolucionDirectorio(PermissionRequiredMixin, generic.UpdateView):",
+            "signature_hash": "sha1:d58685998c0e761dfc199368c6d7db752ccba2df",
+            "stale": false
+          },
+          "UpdateInstrumentoLegalResolucionPresidencia": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.UpdateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              106,
+              122
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  114,
+                  122
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, *args, **kwargs):"
+              }
+            ],
+            "module": "secretariador/views/instrumentolegalviews.py",
+            "name": "UpdateInstrumentoLegalResolucionPresidencia",
+            "page_path": "secretariador/views/instrumentolegalviews/UpdateInstrumentoLegalResolucionPresidencia",
+            "signature": "class UpdateInstrumentoLegalResolucionPresidencia(PermissionRequiredMixin, generic.UpdateView):",
+            "signature_hash": "sha1:9d186960069a0948077f30e1830642b884416b68",
+            "stale": false
+          }
+        }
+      },
+      "views/montoviaticodiarioviews": {
+        "file": "secretariador/views/montoviaticodiarioviews.py",
+        "symbols": {
+          "CrearMontoViaticoDiario": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.CreateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              13,
+              61
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  23,
+                  24
+                ],
+                "name": "get_title",
+                "signature": "def get_title(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  26,
+                  30
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  32,
+                  37
+                ],
+                "name": "get",
+                "signature": "def get(self, request, *args, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  39,
+                  48
+                ],
+                "name": "post",
+                "signature": "def post(self, request, *args, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  50,
+                  58
+                ],
+                "name": "form_valid",
+                "signature": "def form_valid(self, form, formset):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  60,
+                  61
+                ],
+                "name": "form_invalid",
+                "signature": "def form_invalid(self, form, montoviaticodiarioformset):"
+              }
+            ],
+            "module": "secretariador/views/montoviaticodiarioviews.py",
+            "name": "CrearMontoViaticoDiario",
+            "page_path": "secretariador/views/montoviaticodiarioviews/CrearMontoViaticoDiario",
+            "signature": "class CrearMontoViaticoDiario(PermissionRequiredMixin, generic.CreateView):",
+            "signature_hash": "sha1:997277d8e2dbe7f80740c2ea52b0c9480d16d793",
+            "stale": false
+          },
+          "EliminarMontoViaticoDiario": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "DeleteRelatedObjectsMixin",
+              "generic.DeleteView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              115,
+              120
+            ],
+            "methods": [],
+            "module": "secretariador/views/montoviaticodiarioviews.py",
+            "name": "EliminarMontoViaticoDiario",
+            "page_path": "secretariador/views/montoviaticodiarioviews/EliminarMontoViaticoDiario",
+            "signature": "class EliminarMontoViaticoDiario(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):",
+            "signature_hash": "sha1:bfd377037aa48d9e22eab84d6cf8faf6eac9a142",
+            "stale": false
+          },
+          "UpdateMontoViaticoDiario": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.UpdateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              64,
+              111
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  72,
+                  76
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  78,
+                  83
+                ],
+                "name": "get",
+                "signature": "def get(self, request, *args, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  85,
+                  94
+                ],
+                "name": "post",
+                "signature": "def post(self, request, *args, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  96,
+                  101
+                ],
+                "name": "form_valid",
+                "signature": "def form_valid(self, form, montoviaticodiarioformset):"
+              },
+              {
+                "decorators": [],
+                "docstring": "Renders the response based on the context data with the form and formset if the form is invalid.\n\n:param form: The form instance.\n:param comisionadosformset: The comisionados formset instance.\n:return: The response rendered based on the context data.",
+                "lines": [
+                  103,
+                  111
+                ],
+                "name": "form_invalid",
+                "signature": "def form_invalid(self, form, montoviaticodiarioformset):"
+              }
+            ],
+            "module": "secretariador/views/montoviaticodiarioviews.py",
+            "name": "UpdateMontoViaticoDiario",
+            "page_path": "secretariador/views/montoviaticodiarioviews/UpdateMontoViaticoDiario",
+            "signature": "class UpdateMontoViaticoDiario(PermissionRequiredMixin, generic.UpdateView):",
+            "signature_hash": "sha1:def1497674cf6e87778e8e81f124996cb978273f",
+            "stale": false
+          }
+        }
+      },
+      "views/paqueteresolucionesviews": {
+        "file": "secretariador/views/paqueteresolucionesviews.py",
+        "symbols": {
+          "PaginaListaPaquetesResoluciones": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('secretariador.view_instrumentoslegalesresoluciones', raise_exception=True)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              72,
+              76
+            ],
+            "methods": [],
+            "module": "secretariador/views/paqueteresolucionesviews.py",
+            "name": "PaginaListaPaquetesResoluciones",
+            "page_path": "secretariador/views/paqueteresolucionesviews/PaginaListaPaquetesResoluciones",
+            "signature": "def PaginaListaPaquetesResoluciones(request):",
+            "signature_hash": "sha1:e671f409e175de4a88642872b6fd2bb93b858f16",
+            "stale": false
+          },
+          "_listar_meses": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/paqueteresolucionesviews.py",
+                "line": 76,
+                "snippet": "return render(request, template_name, {\"meses\": _listar_meses(bucket)})"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Lee los subdirectorios `{ano}-{mes}/` bajo DESTINO_PREFIJO y arma, para\ncada uno, la lista de paquete-NN.zip y/o paquete-NN.pdf que contiene\n(ignorando el prefijo _scratch/ de blobs temporales que puede haber\nquedado de una corrida interrumpida). Un mes puede tener uno, otro o\nambos formatos, según qué comando se haya corrido.",
+            "kind": "function",
+            "lines": [
+              16,
+              67
+            ],
+            "methods": [],
+            "module": "secretariador/views/paqueteresolucionesviews.py",
+            "name": "_listar_meses",
+            "page_path": "secretariador/views/paqueteresolucionesviews/_listar_meses",
+            "signature": "def _listar_meses(bucket):",
+            "signature_hash": "sha1:6a0811627c6bf537d1bd32f989c664bab13de601",
+            "stale": false
+          },
+          "descargar_paquete_resoluciones": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('secretariador.view_instrumentoslegalesresoluciones', raise_exception=True)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              81,
+              92
+            ],
+            "methods": [],
+            "module": "secretariador/views/paqueteresolucionesviews.py",
+            "name": "descargar_paquete_resoluciones",
+            "page_path": "secretariador/views/paqueteresolucionesviews/descargar_paquete_resoluciones",
+            "signature": "def descargar_paquete_resoluciones(request, ano, mes, formato, indice):",
+            "signature_hash": "sha1:465e9f555c3eee5286c8ee738f0dce71b5c459da",
+            "stale": false
+          }
+        }
+      },
+      "views/redirects": {
+        "file": "secretariador/views/redirects.py",
+        "symbols": {
+          "redirect_decretos": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              5,
+              8
+            ],
+            "methods": [],
+            "module": "secretariador/views/redirects.py",
+            "name": "redirect_decretos",
+            "page_path": "secretariador/views/redirects/redirect_decretos",
+            "signature": "def redirect_decretos(request):",
+            "signature_hash": "sha1:d29ed6466824a6313abeea35500200b3b859a8f0",
+            "stale": false
+          },
+          "redirect_resoluciones": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              11,
+              14
+            ],
+            "methods": [],
+            "module": "secretariador/views/redirects.py",
+            "name": "redirect_resoluciones",
+            "page_path": "secretariador/views/redirects/redirect_resoluciones",
+            "signature": "def redirect_resoluciones(request):",
+            "signature_hash": "sha1:a47fb22c575ec1c93465c9849fff1ed81ee4ac10",
+            "stale": false
+          },
+          "redirect_solicitudes": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              17,
+              20
+            ],
+            "methods": [],
+            "module": "secretariador/views/redirects.py",
+            "name": "redirect_solicitudes",
+            "page_path": "secretariador/views/redirects/redirect_solicitudes",
+            "signature": "def redirect_solicitudes(request):",
+            "signature_hash": "sha1:add141266209a7588fe314759db9ab78cf19f375",
+            "stale": false
+          }
+        }
+      },
+      "views/reportesviews": {
+        "file": "secretariador/views/reportesviews.py",
+        "symbols": {
+          "CalendarioAnual": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.TemplateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              334,
+              354
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  342,
+                  354
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, **kwargs):"
+              }
+            ],
+            "module": "secretariador/views/reportesviews.py",
+            "name": "CalendarioAnual",
+            "page_path": "secretariador/views/reportesviews/CalendarioAnual",
+            "signature": "class CalendarioAnual(PermissionRequiredMixin, generic.TemplateView):",
+            "signature_hash": "sha1:a64558be9f7e0de256633ab4b0632ac79fd12aec",
+            "stale": false
+          },
+          "CalendarioSemanal": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.TemplateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              315,
+              331
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  323,
+                  331
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, **kwargs):"
+              }
+            ],
+            "module": "secretariador/views/reportesviews.py",
+            "name": "CalendarioSemanal",
+            "page_path": "secretariador/views/reportesviews/CalendarioSemanal",
+            "signature": "class CalendarioSemanal(PermissionRequiredMixin, generic.TemplateView):",
+            "signature_hash": "sha1:8cfbb69e6adff4df21b1fdaef023cbf9540f7a7f",
+            "stale": false
+          },
+          "CrearReporteAusenciasPorAgente": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.ListView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              154,
+              212
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  161,
+                  212
+                ],
+                "name": "get_queryset",
+                "signature": "def get_queryset(self):"
+              }
+            ],
+            "module": "secretariador/views/reportesviews.py",
+            "name": "CrearReporteAusenciasPorAgente",
+            "page_path": "secretariador/views/reportesviews/CrearReporteAusenciasPorAgente",
+            "signature": "class CrearReporteAusenciasPorAgente(PermissionRequiredMixin, generic.ListView):",
+            "signature_hash": "sha1:3158ad280e6fe147f53ed2f468b7ddaeae0344ed",
+            "stale": false
+          },
+          "CrearReporteComisionesDuplicadas": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.ListView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": "Genera reporte de comisiones duplicadas.",
+            "kind": "class",
+            "lines": [
+              215,
+              290
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  226,
+                  290
+                ],
+                "name": "get_queryset",
+                "signature": "def get_queryset(self):"
+              }
+            ],
+            "module": "secretariador/views/reportesviews.py",
+            "name": "CrearReporteComisionesDuplicadas",
+            "page_path": "secretariador/views/reportesviews/CrearReporteComisionesDuplicadas",
+            "signature": "class CrearReporteComisionesDuplicadas(PermissionRequiredMixin, generic.ListView):",
+            "signature_hash": "sha1:12bd9d17655ecf7cd64d95e3fd4b9a58d99462d3",
+            "stale": false
+          },
+          "CrearReporteViaticosPorAgente": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.ListView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              27,
+              86
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  34,
+                  86
+                ],
+                "name": "get_queryset",
+                "signature": "def get_queryset(self):"
+              }
+            ],
+            "module": "secretariador/views/reportesviews.py",
+            "name": "CrearReporteViaticosPorAgente",
+            "page_path": "secretariador/views/reportesviews/CrearReporteViaticosPorAgente",
+            "signature": "class CrearReporteViaticosPorAgente(PermissionRequiredMixin, generic.ListView):",
+            "signature_hash": "sha1:192218a368de67d763a361fa5333f9efc000c1ac",
+            "stale": false
+          },
+          "CrearReporteViaticosPorAgenteIndividual": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.TemplateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              293,
+              312
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  301,
+                  312
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, **kwargs):"
+              }
+            ],
+            "module": "secretariador/views/reportesviews.py",
+            "name": "CrearReporteViaticosPorAgenteIndividual",
+            "page_path": "secretariador/views/reportesviews/CrearReporteViaticosPorAgenteIndividual",
+            "signature": "class CrearReporteViaticosPorAgenteIndividual(PermissionRequiredMixin, generic.TemplateView):",
+            "signature_hash": "sha1:9706331b0c9192d502ba6568cb44c0099b60e3b2",
+            "stale": false
+          },
+          "CrearReporteViaticosporArea": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.ListView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              89,
+              151
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  96,
+                  151
+                ],
+                "name": "get_queryset",
+                "signature": "def get_queryset(self):"
+              }
+            ],
+            "module": "secretariador/views/reportesviews.py",
+            "name": "CrearReporteViaticosporArea",
+            "page_path": "secretariador/views/reportesviews/CrearReporteViaticosporArea",
+            "signature": "class CrearReporteViaticosporArea(PermissionRequiredMixin, generic.ListView):",
+            "signature_hash": "sha1:47cc8e3fac3fef0b6332b2cbc96932e868a46ff3",
+            "stale": false
+          },
+          "PDFMergeTemplateView": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.TemplateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              22,
+              24
+            ],
+            "methods": [],
+            "module": "secretariador/views/reportesviews.py",
+            "name": "PDFMergeTemplateView",
+            "page_path": "secretariador/views/reportesviews/PDFMergeTemplateView",
+            "signature": "class PDFMergeTemplateView(PermissionRequiredMixin, generic.TemplateView):",
+            "signature_hash": "sha1:30759897d5ba0467a8d0eb8ddcbc3c2b97fbb958",
+            "stale": false
+          },
+          "_anos_disponibles": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/reportesviews.py",
+                "line": 310,
+                "snippet": "\"anos_disponibles\": _anos_disponibles(),"
+              },
+              {
+                "file": "secretariador/views/reportesviews.py",
+                "line": 352,
+                "snippet": "\"anos_disponibles\": _anos_disponibles(),"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              15,
+              18
+            ],
+            "methods": [],
+            "module": "secretariador/views/reportesviews.py",
+            "name": "_anos_disponibles",
+            "page_path": "secretariador/views/reportesviews/_anos_disponibles",
+            "signature": "def _anos_disponibles():",
+            "signature_hash": "sha1:de98046a16061c5153575abcfb86e63d728c0978",
+            "stale": false
+          }
+        }
+      },
+      "views/solicitud_exteriorviews": {
+        "file": "secretariador/views/solicitud_exteriorviews.py",
+        "symbols": {
+          "CrearSolicitudExterior": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.CreateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              163,
+              224
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  173,
+                  174
+                ],
+                "name": "get_title",
+                "signature": "def get_title(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  176,
+                  185
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  187,
+                  192
+                ],
+                "name": "get",
+                "signature": "def get(self, request, *args, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  194,
+                  203
+                ],
+                "name": "post",
+                "signature": "def post(self, request, *args, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": "If the form is valid, save the associated model.",
+                "lines": [
+                  205,
+                  214
+                ],
+                "name": "form_valid",
+                "signature": "def form_valid(self, form, formset):"
+              },
+              {
+                "decorators": [],
+                "docstring": "Renders the response based on the context data with the form and formset if the form is invalid.\n\n:param form: The form instance.\n:param comisionadosformset: The comisionados formset instance.\n:return: The response rendered based on the context data.",
+                "lines": [
+                  216,
+                  224
+                ],
+                "name": "form_invalid",
+                "signature": "def form_invalid(self, form, comisionadosformset):"
+              }
+            ],
+            "module": "secretariador/views/solicitud_exteriorviews.py",
+            "name": "CrearSolicitudExterior",
+            "page_path": "secretariador/views/solicitud_exteriorviews/CrearSolicitudExterior",
+            "signature": "class CrearSolicitudExterior(PermissionRequiredMixin, generic.CreateView):",
+            "signature_hash": "sha1:effad9389ef4a423ff908878fdf100adc1f368e5",
+            "stale": false
+          },
+          "EliminarSolicitudExterior": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "DeleteRelatedObjectsMixin",
+              "generic.DeleteView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              283,
+              288
+            ],
+            "methods": [],
+            "module": "secretariador/views/solicitud_exteriorviews.py",
+            "name": "EliminarSolicitudExterior",
+            "page_path": "secretariador/views/solicitud_exteriorviews/EliminarSolicitudExterior",
+            "signature": "class EliminarSolicitudExterior(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):",
+            "signature_hash": "sha1:0734a7c1f7a3a8515e28baa13d9101a7e4d9329b",
+            "stale": false
+          },
+          "UpdateSolicitudExterior": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.UpdateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              227,
+              279
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  235,
+                  244
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  246,
+                  251
+                ],
+                "name": "get",
+                "signature": "def get(self, request, *args, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  253,
+                  262
+                ],
+                "name": "post",
+                "signature": "def post(self, request, *args, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  264,
+                  269
+                ],
+                "name": "form_valid",
+                "signature": "def form_valid(self, form, comisionadosformset):"
+              },
+              {
+                "decorators": [],
+                "docstring": "Renders the response based on the context data with the form and formset if the form is invalid.\n\n:param form: The form instance.\n:param comisionadosformset: The comisionados formset instance.\n:return: The response rendered based on the context data.",
+                "lines": [
+                  271,
+                  279
+                ],
+                "name": "form_invalid",
+                "signature": "def form_invalid(self, form, comisionadosformset):"
+              }
+            ],
+            "module": "secretariador/views/solicitud_exteriorviews.py",
+            "name": "UpdateSolicitudExterior",
+            "page_path": "secretariador/views/solicitud_exteriorviews/UpdateSolicitudExterior",
+            "signature": "class UpdateSolicitudExterior(PermissionRequiredMixin, generic.UpdateView):",
+            "signature_hash": "sha1:2a7175a8a6a7e55bf0f4333735aec635eb2dafdc",
+            "stale": false
+          },
+          "_calcular_texto_exterior": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/solicitud_exteriorviews.py",
+                "line": 109,
+                "snippet": "visto_texto, _parrafos_default, _articulo_uno_default, _articulo_dos_default = _calcular_texto_exterior(actuacion)"
+              },
+              {
+                "file": "secretariador/views/solicitud_exteriorviews.py",
+                "line": 114,
+                "snippet": "visto_texto, parrafos, articulo_uno, articulo_dos_filas = _calcular_texto_exterior(actuacion)"
+              },
+              {
+                "file": "secretariador/views/solicitud_exteriorviews.py",
+                "line": 138,
+                "snippet": "_visto_texto, parrafos_default, articulo_uno_default, articulo_dos_default = _calcular_texto_exterior(actuacion)"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Igual que `solicitudviews._calcular_texto_solicitud` pero con la\nredacción usada para actuaciones de otras provincias (exterior).",
+            "kind": "function",
+            "lines": [
+              21,
+              103
+            ],
+            "methods": [],
+            "module": "secretariador/views/solicitud_exteriorviews.py",
+            "name": "_calcular_texto_exterior",
+            "page_path": "secretariador/views/solicitud_exteriorviews/_calcular_texto_exterior",
+            "signature": "def _calcular_texto_exterior(actuacion):",
+            "signature_hash": "sha1:e0daa3288a80aab8fab7f91209f78387ccda62cb",
+            "stale": false
+          },
+          "_generar_exterior_docx": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/solicitud_exteriorviews.py",
+                "line": 155,
+                "snippet": "out = _generar_exterior_docx(actuacion)"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              106,
+              131
+            ],
+            "methods": [],
+            "module": "secretariador/views/solicitud_exteriorviews.py",
+            "name": "_generar_exterior_docx",
+            "page_path": "secretariador/views/solicitud_exteriorviews/_generar_exterior_docx",
+            "signature": "def _generar_exterior_docx(actuacion):",
+            "signature_hash": "sha1:b98660c8e9e1fc3daf21c0903da5196ff040bf08",
+            "stale": false
+          },
+          "editar_texto_solicitud_exterior": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('secretariador.change_solicitud', raise_exception=True)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              136,
+              148
+            ],
+            "methods": [],
+            "module": "secretariador/views/solicitud_exteriorviews.py",
+            "name": "editar_texto_solicitud_exterior",
+            "page_path": "secretariador/views/solicitud_exteriorviews/editar_texto_solicitud_exterior",
+            "signature": "def editar_texto_solicitud_exterior(request, pk):",
+            "signature_hash": "sha1:93b0674e533e722c45c067bf3dd9b105537000fe",
+            "stale": false
+          },
+          "exterior_docx": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('secretariador.view_solicitud', raise_exception=True)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              153,
+              160
+            ],
+            "methods": [],
+            "module": "secretariador/views/solicitud_exteriorviews.py",
+            "name": "exterior_docx",
+            "page_path": "secretariador/views/solicitud_exteriorviews/exterior_docx",
+            "signature": "def exterior_docx(request, pk):",
+            "signature_hash": "sha1:2fbec043ed05b311ab98d05bb161ffe1c34fd8c0",
+            "stale": false
+          }
+        }
+      },
+      "views/solicitudviews": {
+        "file": "secretariador/views/solicitudviews.py",
+        "symbols": {
+          "CrearSolicitud": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "UserFormsetKwargsMixin",
+              "FormsetViewMixin",
+              "generic.CreateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              157,
+              170
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  169,
+                  170
+                ],
+                "name": "get_title",
+                "signature": "def get_title(self):"
+              }
+            ],
+            "module": "secretariador/views/solicitudviews.py",
+            "name": "CrearSolicitud",
+            "page_path": "secretariador/views/solicitudviews/CrearSolicitud",
+            "signature": "class CrearSolicitud(PermissionRequiredMixin, UserFormsetKwargsMixin, FormsetViewMixin, generic.CreateView):",
+            "signature_hash": "sha1:00ecd67842c5d66975e444cba89dc875c58e91b1",
+            "stale": false
+          },
+          "EliminarSolicitud": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "DeleteRelatedObjectsMixin",
+              "generic.DeleteView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              184,
+              189
+            ],
+            "methods": [],
+            "module": "secretariador/views/solicitudviews.py",
+            "name": "EliminarSolicitud",
+            "page_path": "secretariador/views/solicitudviews/EliminarSolicitud",
+            "signature": "class EliminarSolicitud(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):",
+            "signature_hash": "sha1:65c9bddd464e92247c0b46a8e5fc7bf4211b10f4",
+            "stale": false
+          },
+          "PaginaListaSolicitudes": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('secretariador.view_solicitud', raise_exception=True)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              200,
+              203
+            ],
+            "methods": [],
+            "module": "secretariador/views/solicitudviews.py",
+            "name": "PaginaListaSolicitudes",
+            "page_path": "secretariador/views/solicitudviews/PaginaListaSolicitudes",
+            "signature": "def PaginaListaSolicitudes(request):",
+            "signature_hash": "sha1:c6563bc9b6ee56bacfd7e6a5ef3c7904ab557895",
+            "stale": false
+          },
+          "UpdateSolicitud": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "UserFormsetKwargsMixin",
+              "FormsetViewMixin",
+              "generic.UpdateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              173,
+              181
+            ],
+            "methods": [],
+            "module": "secretariador/views/solicitudviews.py",
+            "name": "UpdateSolicitud",
+            "page_path": "secretariador/views/solicitudviews/UpdateSolicitud",
+            "signature": "class UpdateSolicitud(PermissionRequiredMixin, UserFormsetKwargsMixin, FormsetViewMixin, generic.UpdateView):",
+            "signature_hash": "sha1:7fea5b8aa9f08275f48182ef828e453012770e13",
+            "stale": false
+          },
+          "VerSolicitud": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.DetailView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              192,
+              196
+            ],
+            "methods": [],
+            "module": "secretariador/views/solicitudviews.py",
+            "name": "VerSolicitud",
+            "page_path": "secretariador/views/solicitudviews/VerSolicitud",
+            "signature": "class VerSolicitud(PermissionRequiredMixin, generic.DetailView):",
+            "signature_hash": "sha1:5acb9af5412f10ab9ba38d3e2a0902eb028d2e82",
+            "stale": false
+          },
+          "_calcular_texto_solicitud": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/solicitud_exteriorviews.py",
+                "line": 22,
+                "snippet": "\"\"\"Igual que `solicitudviews._calcular_texto_solicitud` pero con la"
+              },
+              {
+                "file": "secretariador/views/solicitudviews.py",
+                "line": 103,
+                "snippet": "visto_texto, _parrafos_default, _articulo_uno_default, _articulo_dos_default = _calcular_texto_solicitud(actuacion)"
+              },
+              {
+                "file": "secretariador/views/solicitudviews.py",
+                "line": 108,
+                "snippet": "visto_texto, parrafos, articulo_uno, articulo_dos_filas = _calcular_texto_solicitud(actuacion)"
+              },
+              {
+                "file": "secretariador/views/solicitudviews.py",
+                "line": 132,
+                "snippet": "_visto_texto, parrafos_default, articulo_uno_default, articulo_dos_default = _calcular_texto_solicitud(actuacion)"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Arma, a partir de los datos actuales de la Solicitud, el texto por\ndefault (VISTO/considerandos/artículos) que se ofrece como punto de\npartida en el formulario de edición y como fallback si la actuación\ntodavía no tiene texto guardado en `solicitud_texto_actuacion`.",
+            "kind": "function",
+            "lines": [
+              19,
+              97
+            ],
+            "methods": [],
+            "module": "secretariador/views/solicitudviews.py",
+            "name": "_calcular_texto_solicitud",
+            "page_path": "secretariador/views/solicitudviews/_calcular_texto_solicitud",
+            "signature": "def _calcular_texto_solicitud(actuacion):",
+            "signature_hash": "sha1:e6e99d763c9df5adaeca9396e79358dafcb1051a",
+            "stale": false
+          },
+          "_generar_solicitud_docx": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/solicitudviews.py",
+                "line": 149,
+                "snippet": "out = _generar_solicitud_docx(actuacion)"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              100,
+              125
+            ],
+            "methods": [],
+            "module": "secretariador/views/solicitudviews.py",
+            "name": "_generar_solicitud_docx",
+            "page_path": "secretariador/views/solicitudviews/_generar_solicitud_docx",
+            "signature": "def _generar_solicitud_docx(actuacion):",
+            "signature_hash": "sha1:2fc64a467736020d0c0dcf036bbdcffffadf94c7",
+            "stale": false
+          },
+          "editar_texto_solicitud": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('secretariador.change_solicitud', raise_exception=True)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              130,
+              142
+            ],
+            "methods": [],
+            "module": "secretariador/views/solicitudviews.py",
+            "name": "editar_texto_solicitud",
+            "page_path": "secretariador/views/solicitudviews/editar_texto_solicitud",
+            "signature": "def editar_texto_solicitud(request, pk):",
+            "signature_hash": "sha1:c20dae1ef142b6f3f56e9b4b12d667a1d1a2937b",
+            "stale": false
+          },
+          "solicitud_docx": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('secretariador.view_solicitud', raise_exception=True)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              147,
+              154
+            ],
+            "methods": [],
+            "module": "secretariador/views/solicitudviews.py",
+            "name": "solicitud_docx",
+            "page_path": "secretariador/views/solicitudviews/solicitud_docx",
+            "signature": "def solicitud_docx(request, pk):",
+            "signature_hash": "sha1:1397f149b3c18a836ac22cecf255e9f23deb8cc3",
+            "stale": false
+          }
+        }
+      },
+      "views/textoactuacionviews": {
+        "file": "secretariador/views/textoactuacionviews.py",
+        "symbols": {
+          "_articulo_dos_inicial": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/textoactuacionviews.py",
+                "line": 86,
+                "snippet": "initial=_articulo_dos_inicial(articulo_dos_default, texto_guardado),"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Filas a mostrar en el formset: siempre una por cada agente\ncomisionado actual (`articulo_dos_default`); si hay texto guardado para\nese agente se usa el guardado, si no el recién calculado.",
+            "kind": "function",
+            "lines": [
+              16,
+              26
+            ],
+            "methods": [],
+            "module": "secretariador/views/textoactuacionviews.py",
+            "name": "_articulo_dos_inicial",
+            "page_path": "secretariador/views/textoactuacionviews/_articulo_dos_inicial",
+            "signature": "def _articulo_dos_inicial(articulo_dos_default, texto_guardado):",
+            "signature_hash": "sha1:7c015ca46858068710ef64546e2823d092132b18",
+            "stale": false
+          },
+          "revisar_texto_actuacion": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/incorporacionviews.py",
+                "line": 16,
+                "snippet": "from secretariador.views.textoactuacionviews import revisar_texto_actuacion"
+              },
+              {
+                "file": "secretariador/views/incorporacionviews.py",
+                "line": 122,
+                "snippet": "return revisar_texto_actuacion("
+              },
+              {
+                "file": "secretariador/views/solicitud_exteriorviews.py",
+                "line": 18,
+                "snippet": "from secretariador.views.textoactuacionviews import revisar_texto_actuacion"
+              },
+              {
+                "file": "secretariador/views/solicitud_exteriorviews.py",
+                "line": 139,
+                "snippet": "return revisar_texto_actuacion("
+              },
+              {
+                "file": "secretariador/views/solicitudviews.py",
+                "line": 16,
+                "snippet": "from secretariador.views.textoactuacionviews import revisar_texto_actuacion"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Vista GET/POST compartida por los tres flujos (solicitud, solicitud\nexterior, incorporación) para revisar/editar el texto de considerandos\ny artículos antes de generar el .docx.\n\n`parrafos_default`/`articulo_uno_default`/`articulo_dos_default` son el\ntexto recién calculado con las reglas de negocio de cada flujo (mismas\nque se usaban antes para armar directamente el .docx). Si la actuación\nya tiene texto guardado en `texto_field_name`, se usa ese como valor\ninicial del formulario en lugar del recién calculado.",
+            "kind": "function",
+            "lines": [
+              29,
+              96
+            ],
+            "methods": [],
+            "module": "secretariador/views/textoactuacionviews.py",
+            "name": "revisar_texto_actuacion",
+            "page_path": "secretariador/views/textoactuacionviews/revisar_texto_actuacion",
+            "signature": "def revisar_texto_actuacion(request, *, actuacion, texto_field_name, generar_docx_url_name, parrafos_default, articulo_uno_default, articulo_dos_default, extra_context=None):",
+            "signature_hash": "sha1:e7fd931862b531a7d7686b0c22631744b98de31c",
+            "stale": false
+          },
+          "texto_actuacion_guardado": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/views/textoactuacionviews.py",
+                "line": 49,
+                "snippet": "texto_guardado = texto_actuacion_guardado(actuacion, texto_field_name)"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              12,
+              13
+            ],
+            "methods": [],
+            "module": "secretariador/views/textoactuacionviews.py",
+            "name": "texto_actuacion_guardado",
+            "page_path": "secretariador/views/textoactuacionviews/texto_actuacion_guardado",
+            "signature": "def texto_actuacion_guardado(actuacion, texto_field_name):",
+            "signature_hash": "sha1:b822d92fb58efd638cfe35ca1ed07d42ddf9a354",
+            "stale": false
+          }
+        }
+      },
+      "views/vehiculoviews": {
+        "file": "secretariador/views/vehiculoviews.py",
+        "symbols": {
+          "CrearVehiculo": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.CreateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              13,
+              29
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  23,
+                  24
+                ],
+                "name": "get_title",
+                "signature": "def get_title(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  26,
+                  29
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, **kwargs):"
+              }
+            ],
+            "module": "secretariador/views/vehiculoviews.py",
+            "name": "CrearVehiculo",
+            "page_path": "secretariador/views/vehiculoviews/CrearVehiculo",
+            "signature": "class CrearVehiculo(PermissionRequiredMixin, generic.CreateView):",
+            "signature_hash": "sha1:de7c7bb4fbb862a32713bac5347de98140b9b95b",
+            "stale": false
+          },
+          "EliminarVehiculo": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "DeleteRelatedObjectsMixin",
+              "generic.DeleteView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              41,
+              46
+            ],
+            "methods": [],
+            "module": "secretariador/views/vehiculoviews.py",
+            "name": "EliminarVehiculo",
+            "page_path": "secretariador/views/vehiculoviews/EliminarVehiculo",
+            "signature": "class EliminarVehiculo(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):",
+            "signature_hash": "sha1:f646c078d98eefe0277f294a7bb988bb66a67667",
+            "stale": false
+          },
+          "PaginaListaVehiculos": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('secretariador.view_vehiculo', raise_exception=True)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              50,
+              53
+            ],
+            "methods": [],
+            "module": "secretariador/views/vehiculoviews.py",
+            "name": "PaginaListaVehiculos",
+            "page_path": "secretariador/views/vehiculoviews/PaginaListaVehiculos",
+            "signature": "def PaginaListaVehiculos(request):",
+            "signature_hash": "sha1:f78803052449625b56a0c2f31ef76d6cc2ba5338",
+            "stale": false
+          },
+          "UpdateVehiculo": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.UpdateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              32,
+              38
+            ],
+            "methods": [],
+            "module": "secretariador/views/vehiculoviews.py",
+            "name": "UpdateVehiculo",
+            "page_path": "secretariador/views/vehiculoviews/UpdateVehiculo",
+            "signature": "class UpdateVehiculo(PermissionRequiredMixin, generic.UpdateView):",
+            "signature_hash": "sha1:3f8f1c4647bed2eaf417a2cfcb97efb0cdc440e7",
+            "stale": false
+          }
+        }
+      }
+    }
   }
 }
