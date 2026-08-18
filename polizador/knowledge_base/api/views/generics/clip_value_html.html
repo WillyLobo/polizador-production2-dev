@@ -1,0 +1,11 @@
+<h1>clip_value_html</h1>
+<p><strong>Módulo:</strong> <code>api/views/generics.py</code> (líneas 59-67)</p>
+<h2>Propósito</h2>
+<p>Replica el truncado de columna <code>max_length</code> de <code>django-ajax-datatable</code>: envuelve el valor en <code>&lt;span title="texto completo"&gt;</code> y corta el texto visible con "…" — para preservar el mismo comportamiento visual (hover para ver completo) que tenían los <code>AjaxDatatableView</code> que estos endpoints reemplazaron.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def clip_value_html(text, max_length: int) -&gt; str:
+</code></pre>
+<h2>Uso real</h2>
+<p><code>_obra_ext_datatable_row</code>, <code>_memorandum_datatable_row</code>, <code>_resolucion_datatable_row</code>, <code>_solicitud_datatable_row</code>, y otros row-builders con columnas de texto largo.</p>
+<h2>Ver también</h2>
+<p><em>(sin referencias cruzadas)</em></p>

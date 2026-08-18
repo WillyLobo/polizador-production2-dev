@@ -1,0 +1,14 @@
+<h1>licenciapermiso_balance</h1>
+<p><strong>Módulo:</strong> <code>api/views/personalizador_views.py</code> (líneas 912-925)</p>
+<h2>Propósito</h2>
+<p>Días/horas correspondientes, usados y disponibles de un <code>TipoLicenciaPermiso</code> para un <code>Agente</code> en un año dado (actual por defecto) — expone <code>personalizador.licencias.balance_tipo</code> como endpoint HTTP, el mismo cálculo que usa <code>ControlLicenciasAgente</code> (<code>personalizador/views/licenciapermisoviews.py</code>) del lado servidor-renderizado; acá es para consumo AJAX/JS (ej. actualizar un balance sin recargar la página al elegir tipo/año en un <code>&lt;select&gt;</code>).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def licenciapermiso_balance(request, agente: int, tipo: int, anio: int=None):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>GET /v1/api/licenciapermiso-balance/?agente=&lt;id&gt;&amp;tipo=&lt;id&gt;&amp;anio=&lt;anio&gt;</code> — response=<code>LicenciaPermisoBalanceOut</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../personalizador/models/LicenciaPermiso.md">LicenciaPermiso</a></li>
+<li><a href="../../../personalizador/views/licenciapermisoviews/ControlLicenciasAgente.md">ControlLicenciasAgente</a></li>
+</ul>

@@ -1,0 +1,14 @@
+<h1>TodoStatusUpdateView</h1>
+<p><strong>Módulo:</strong> <code>core/views.py</code> (líneas 217-226) · hereda de <code>SuperuserRequiredMixin, View</code></p>
+<h2>Propósito</h2>
+<p>Cambia solo el <code>status</code> de una tarea (<code>save(update_fields=["status", "updated_at"])</code>, no todos los campos) — pensada para un botón/dropdown rápido en el listado, sin pasar por el form completo de edición. Valida el valor contra <code>Todo.Status.values</code> antes de guardar.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class TodoStatusUpdateView(SuperuserRequiredMixin, View):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>TodoStatusUpdateView</code> (<code>todo_status_update</code>), enlazada desde <code>TodoListView</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../models/Todo.md">Todo</a></li>
+<li><a href="TodoListView.md">TodoListView</a></li>
+</ul>

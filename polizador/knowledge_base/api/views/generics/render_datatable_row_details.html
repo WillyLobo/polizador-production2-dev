@@ -1,0 +1,13 @@
+<h1>render_datatable_row_details</h1>
+<p><strong>Módulo:</strong> <code>api/views/generics.py</code> (líneas 77-99)</p>
+<h2>Propósito</h2>
+<p>Renderiza la expansión de fila de un datatable: un template específico <code>ajax_datatable/&lt;app&gt;/&lt;model&gt;/render_row_details.html</code> si existe, si no un dump genérico campo/valor (mismo comportamiento default que <code>AjaxDatatableView.render_row_details</code> del paquete que este endpoint reemplaza) — incluye M2M como texto separado por comas.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def render_datatable_row_details(model, obj, request) -&gt; str:
+</code></pre>
+<h2>Uso real</h2>
+<p><code>register_simple_datatable</code>'s <code>_detalle</code> endpoint interno (mismo módulo, más abajo).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="register_simple_datatable.md">register_simple_datatable</a></li>
+</ul>

@@ -1,0 +1,14 @@
+<h1>DryRunCheckApplyForm</h1>
+<p><strong>Módulo:</strong> <code>core/forms.py</code> (líneas 58-80) · hereda de <code>BaseCommandRunForm</code></p>
+<h2>Propósito</h2>
+<p>Base reusable para comandos con tres modos mutuamente excluyentes (radio buttons, no checkboxes independientes): chequeo de solo lectura (preseleccionado, el más seguro), simulación detallada, o aplicar los cambios de verdad. <code>to_argv()</code> traduce el modo elegido al flag correspondiente (<code>--check</code>/<code>--dry-run</code>/nada para aplicar).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class DryRunCheckApplyForm(BaseCommandRunForm):
+</code></pre>
+<h2>Uso real</h2>
+<p>Superclase de <code>FixObraResolucionNumbersForm</code>/<code>NumerosCertificadosAuditForm</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="BaseCommandRunForm.md">BaseCommandRunForm</a></li>
+<li><a href="FixObraResolucionNumbersForm.md">FixObraResolucionNumbersForm</a></li>
+</ul>

@@ -1,0 +1,13 @@
+<h1>list_incorporaciones</h1>
+<p><strong>Módulo:</strong> <code>api/views/secretariador_views.py</code> (líneas 820-824)</p>
+<h2>Propósito</h2>
+<p>Listado paginado (<code>PerPagePagination</code>) de <code>Incorporacion</code>, gateado por <code>require_model_perm(Incorporacion)</code> (permiso <code>view_&lt;modelo&gt;</code>). Con <code>?solicitud=</code> para acotar. Sin <code>retrieve</code>/<code>update</code>.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def list_incorporaciones(request, solicitud: str=''):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>GET /v1/api/incorporaciones/</code> — response=<code>List[IncorporacionOut]</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../secretariador/models/Incorporacion.md">Incorporacion</a></li>
+</ul>

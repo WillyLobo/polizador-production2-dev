@@ -1,0 +1,14 @@
+<h1>_calendar_events_by_agente</h1>
+<p><strong>Módulo:</strong> <code>api/views/secretariador_views.py</code> (líneas 916-927)</p>
+<h2>Propósito</h2>
+<p>Arma la lista de eventos para el calendario general (anual/semanal, no el individual): marca en rojo (<code>color="red"</code>) la segunda comisión (o posterior) de un mismo agente que empieza el mismo día — una señal visual de posible superposición/error de carga, calculada con un <code>set</code> de <code>(nombre, fecha_desde)</code> ya vistos.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _calendar_events_by_agente(comisionados):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>calendario_eventos_anual</code>, <code>calendario_eventos_semanal</code> (mismo módulo).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="_calendar_event.md">_calendar_event</a></li>
+<li><a href="../../../secretariador/views/reportesviews/CrearReporteComisionesDuplicadas.md">CrearReporteComisionesDuplicadas</a> — mismo espíritu de detección de superposición, por otro camino.</li>
+</ul>

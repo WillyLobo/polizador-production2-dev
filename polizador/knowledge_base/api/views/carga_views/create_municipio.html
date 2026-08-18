@@ -1,0 +1,13 @@
+<h1>create_municipio</h1>
+<p><strong>Módulo:</strong> <code>api/views/carga_views.py</code> (líneas 538-539)</p>
+<h2>Propósito</h2>
+<p>Alta de <code>Municipio</code> desde <code>MunicipioCreate</code> (<code>payload.model_dump()</code> directo a <code>Municipio.objects.create()</code> — sin lógica de negocio propia acá, la validación vive en el schema ninja/Pydantic).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def create_municipio(request, payload: MunicipioCreate):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>POST /v1/api/municipios/</code> — response=<code>MunicipioOut</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../carga/models/Municipio.md">Municipio</a></li>
+</ul>

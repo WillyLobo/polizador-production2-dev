@@ -14,10 +14,13 @@ from pathlib import Path
 
 from django.conf import settings
 
-# Fuentes cubiertas en la pasada mecánica. `views/*.py` y `forms/*.py` porque cada app
-# de este proyecto las organiza como paquetes (un módulo por modelo), no como
-# views.py/forms.py únicos — ver CLAUDE.md.
-SOURCE_GLOBS = ("models.py", "signals.py", "views/*.py", "forms/*.py")
+# Fuentes cubiertas en la pasada mecánica. La mayoría de las apps de este proyecto
+# organizan views/forms como paquetes (un módulo por modelo, ver CLAUDE.md), de ahí
+# `views/*.py`/`forms/*.py`; algunas apps más chicas (ej. `core`) los tienen como archivo
+# único, de ahí `views.py`/`forms.py` sueltos. Los `views.py`/`forms.py` sueltos que
+# quedaron como stub muerto en apps con paquete (carga, secretariador, personalizador)
+# no generan ningún símbolo, así que incluir el patrón acá es inocuo para esas apps.
+SOURCE_GLOBS = ("models.py", "signals.py", "views.py", "views/*.py", "forms.py", "forms/*.py")
 
 FRONT_MATTER_DELIM = "---"
 

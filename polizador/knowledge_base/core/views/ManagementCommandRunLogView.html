@@ -1,0 +1,13 @@
+<h1>ManagementCommandRunLogView</h1>
+<p><strong>Módulo:</strong> <code>core/views.py</code> (líneas 159-171) · hereda de <code>SuperuserRequiredMixin, View</code></p>
+<h2>Propósito</h2>
+<p>Endpoint JSON de polling: devuelve el log <strong>incremental</strong> desde <code>offset</code> (<code>run.log[offset:]</code>, no el log completo cada vez) más el nuevo offset y el estado actual — el patrón estándar para mostrar la salida de un subprocess largo sin re-mandar todo el texto en cada poll.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class ManagementCommandRunLogView(SuperuserRequiredMixin, View):
+</code></pre>
+<h2>Uso real</h2>
+<p>Polling JS desde <code>comandos/detail.html</code> (template de <code>ManagementCommandRunDetailView</code>), cada N segundos mientras <code>status==RUNNING</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="ManagementCommandRunDetailView.md">ManagementCommandRunDetailView</a></li>
+</ul>

@@ -1,0 +1,13 @@
+<h1>_obra_out</h1>
+<p><strong>Módulo:</strong> <code>api/views/carga_views.py</code> (líneas 725-759)</p>
+<h2>Propósito</h2>
+<p>Serializa una Obra a dict a mano (no delega en el schema ninja automático) porque incluye los M2M como listas de IDs (<code>departamento_ids</code>/<code>municipio_ids</code>/<code>localidad_ids</code>/<code>inspector_ids</code>, vía <code>.values_list('id', flat=True)</code>) — el shape que <code>retrieve_obra</code>/<code>create_obra</code>/<code>update_obra</code> devuelven, distinto del que armaría la serialización automática de un <code>ForeignKey</code>/<code>ManyToManyField</code> sin tratamiento especial.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _obra_out(o: Obra) -&gt; dict:
+</code></pre>
+<h2>Uso real</h2>
+<p><code>retrieve_obra</code>, <code>create_obra</code>, <code>update_obra</code> (mismo módulo, todas debajo).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../carga/models/Obra.md">Obra</a></li>
+</ul>

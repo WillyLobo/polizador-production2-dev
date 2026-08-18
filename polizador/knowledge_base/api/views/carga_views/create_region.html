@@ -1,0 +1,13 @@
+<h1>create_region</h1>
+<p><strong>Módulo:</strong> <code>api/views/carga_views.py</code> (líneas 414-415)</p>
+<h2>Propósito</h2>
+<p>Alta de <code>Region</code> desde <code>RegionCreate</code> (<code>payload.model_dump()</code> directo a <code>Region.objects.create()</code> — sin lógica de negocio propia acá, la validación vive en el schema ninja/Pydantic).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def create_region(request, payload: RegionCreate):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>POST /v1/api/regiones/</code> — response=<code>RegionOut</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../carga/models/Region.md">Region</a></li>
+</ul>

@@ -1,0 +1,13 @@
+<h1>_client_ip</h1>
+<p><strong>Módulo:</strong> <code>core/signals.py</code> (líneas 7-11)</p>
+<h2>Propósito</h2>
+<p>Extrae la IP del cliente de la request, priorizando <code>X-Forwarded-For</code> (el primer valor de la lista, si el sitio está detrás de un proxy/load balancer) y cayendo a <code>REMOTE_ADDR</code> si no hay ese header.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _client_ip(request):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>registrar_login</code> (mismo módulo, más abajo).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="registrar_login.md">registrar_login</a></li>
+</ul>

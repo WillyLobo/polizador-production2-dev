@@ -1,0 +1,13 @@
+<h1>CopiarBucketDevForm</h1>
+<p><strong>Módulo:</strong> <code>core/forms.py</code> (líneas 93-125) · hereda de <code>BaseCommandRunForm</code></p>
+<h2>Propósito</h2>
+<p>Solo expone <code>dry_run</code> (tildado por defecto — hay que destildarlo a propósito para copiar de verdad), <code>overwrite</code>, y <code>storage_class</code> en destino. Deliberadamente <strong>no</strong> expone <code>--source</code>/<code>--destination</code>: el comando ya trae como default el único sentido autorizado (producción → dev), y aceptar nombres de bucket libres desde la web podría copiar/pisar datos en el bucket equivocado con credenciales que sí tienen permiso de escritura.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CopiarBucketDevForm(BaseCommandRunForm):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>COMMAND_REGISTRY["copiar_bucket_dev"]["form"]</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="BaseCommandRunForm.md">BaseCommandRunForm</a></li>
+</ul>

@@ -18,13 +18,15 @@ el % acumulado de Anticipo del último Certificado de Anticipo de cada Obra del 
 pensada para listados de Obras que necesitan mostrar esos dos números sin un N+1 (una
 query de Certificado por Obra listada).
 
-**Advertencia real, no hipotética:** está importada en `carga/views/obraviews.py` pero
-ningún lugar de ese archivo la está llamando actualmente (`grep` no encuentra
-`obras_con_acumulado_anotado(` en el código, solo el import). O quedó de una versión
-anterior de la lista de Obras que la usaba y se dejó de usar sin limpiar el import, o está
-pensada para una vista que todavía no la adoptó — antes de reusarla, confirmá si el
-listado que la necesita sigue haciendo el cálculo por otro lado (ej. `ultimo_certificado_avance()`
-llamado por fila, que sí es un N+1).
+**Corrección sobre una nota anterior de esta misma página:** está importada en
+`carga/views/obraviews.py` pero ningún lugar de ese archivo la llama (`grep` solo
+encuentra el import, no una call-site) — eso llevó a documentar acá, en una pasada
+anterior, que parecía código muerto. No lo es: sí se usa, pero desde `api`, no desde
+`carga`. `api/views/carga_views.py::datatable_obras` es la call-site real — el endpoint
+detrás del listado principal de Obras (`Lista-obras.html`) la llama para poder mostrar
+las columnas de % acumulado sin un N+1 (una query de Certificado por Obra listada). El
+import muerto en `obraviews.py` sigue siendo genuinamente muerto y podría limpiarse, pero
+la función en sí está viva.
 
 ## Firma
 
@@ -34,9 +36,14 @@ def obras_con_acumulado_anotado(queryset):
 
 ## Uso real
 
-Ninguno vivo detectado — ver la advertencia arriba.
+`api/views/carga_views.py::datatable_obras` — `obras_con_acumulado_anotado(queryset)`
+sobre el queryset de Obras antes de paginar/serializar; `_obra_datatable_row` lee las dos
+columnas anotadas (`obra_acum_pct_anotado`/`obra_anticipo_acumulado_anotado`) vía
+`getattr(o, ..., None)`, asumiendo que quien armó el queryset ya corrió esta función.
 
 ## Ver también
 
 - [Obra](Obra.md)
 - [Certificado](Certificado.md)
+- [datatable_obras](../../api/views/carga_views/datatable_obras.md)
+- [_obra_datatable_row](../../api/views/carga_views/_obra_datatable_row.md)

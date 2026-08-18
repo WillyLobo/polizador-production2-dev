@@ -1,0 +1,15 @@
+<h1>datatable_obras</h1>
+<p><strong>Módulo:</strong> <code>api/views/carga_views.py</code> (líneas 867-916)</p>
+<h2>Propósito</h2>
+<p>El endpoint real detrás del listado principal de Obras (reemplaza al <code>AjaxDatatableView</code> comentado que quedó muerto en <code>carga/views/documentosdigitalesviews.py</code>): pagina/filtra/busca a mano (no usa <code>register_simple_datatable</code> porque necesita <code>obras_con_acumulado_anotado()</code> para las dos columnas de % acumulado, algo que el helper genérico no contempla) sobre un queryset con <code>select_related</code>+<code>prefetch_related</code> completo.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def datatable_obras(request, draw: int=1, start: int=0, length: int=50, search: str='', order_by: str='-id', filters: str='{}'):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>GET /v1/api/datatables/obras/</code> — consumido por <code>Lista-obras.html</code> (<code>carga:lista-obras</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../carga/models/Obra.md">Obra</a></li>
+<li><a href="_obra_datatable_row.md">_obra_datatable_row</a></li>
+<li><a href="../../../carga/models/obras_con_acumulado_anotado.md">obras_con_acumulado_anotado</a></li>
+</ul>

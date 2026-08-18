@@ -1,0 +1,13 @@
+<h1>parse_order_by</h1>
+<p><strong>Módulo:</strong> <code>api/views/generics.py</code> (líneas 46-56)</p>
+<h2>Propósito</h2>
+<p>Traduce el string <code>order_by</code> que manda <code>ninja-datatable.js</code> (columnas separadas por coma, prefijo <code>-</code> para descendente) a una lista de argumentos de <code>.order_by()</code> de Django, mapeando cada clave de columna a un campo real vía <code>fields_map</code> (con <code>default_field</code> de fallback si la clave no está mapeada).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def parse_order_by(order_by: str, fields_map: dict, default_field: str='id') -&gt; list:
+</code></pre>
+<h2>Uso real</h2>
+<p>Todos los endpoints <code>datatable_*</code> a mano (no <code>register_simple_datatable</code>, que ya lo llama internamente): <code>datatable_obras</code>, <code>datatable_certificados</code>, <code>datatable_solicitudes</code>, etc.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="register_simple_datatable.md">register_simple_datatable</a></li>
+</ul>

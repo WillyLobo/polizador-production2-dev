@@ -1,0 +1,11 @@
+<h1>_simple_acciones</h1>
+<p><strong>Módulo:</strong> <code>api/views/personalizador_views.py</code> (líneas 273-278)</p>
+<h2>Propósito</h2>
+<p>Helper compartido por la mayoría de los <code>_X_datatable_row</code> de este módulo: arma la columna <code>acciones</code> (editar+eliminar, o solo editar, o vacío) según <code>delete_perm</code>/<code>change_perm</code> del usuario — el mismo <code>if/elif/else</code> de tres ramas que el resto de <code>carga_views.py</code> repite inline en cada función, factorizado acá una sola vez.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _simple_acciones(user, delete_perm, change_perm, editarlink, eliminarlink):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>_generoagente_datatable_row</code>, <code>_tituloprofesional_datatable_row</code>, <code>_categoria_datatable_row</code>, y la mayoría de los demás <code>_X_datatable_row</code> de este módulo.</p>
+<h2>Ver también</h2>
+<p><em>(sin referencias cruzadas)</em></p>

@@ -1,0 +1,20 @@
+<h1>BaseCommandRunForm</h1>
+<p><strong>Módulo:</strong> <code>core/forms.py</code> (líneas 16-23) · hereda de <code>forms.Form</code></p>
+<h2>Propósito</h2>
+<p>La base de <strong>todos</strong> los forms de <code>COMMAND_REGISTRY</code>: un <code>forms.Form</code> (no <code>ModelForm</code> —
+no hay una instancia de modelo, es puro input de parámetros) con un único contrato,
+<code>to_argv()</code>, que traduce los campos ya validados al <code>argv</code> real que recibe el subprocess
+del management command. Deliberadamente manual (no se arma dinámicamente inspeccionando
+<code>argparse</code> del comando): cada comando habilitado en el registry define su propia subclase
+explícita, así que agregar un parámetro nuevo requiere tocar tanto el comando como su
+form — el costo elegido a propósito para no exponer automáticamente cualquier flag nuevo
+de un comando a la web sin revisión.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class BaseCommandRunForm(forms.Form):
+</code></pre>
+<h2>Uso real</h2>
+<p>Superclase de las 13 subclases de este módulo (una por comando en <code>COMMAND_REGISTRY</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="DryRunCheckApplyForm.md">DryRunCheckApplyForm</a></li>
+</ul>

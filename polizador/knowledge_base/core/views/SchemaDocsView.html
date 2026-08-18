@@ -1,0 +1,13 @@
+<h1>SchemaDocsView</h1>
+<p><strong>Módulo:</strong> <code>core/views.py</code> (líneas 27-28) · hereda de <code>SuperuserRequiredMixin, TemplateView</code></p>
+<h2>Propósito</h2>
+<p>Sirve el índice del sitio estático generado por SchemaSpy (esquema de la base de datos) — un <code>TemplateView</code> sin contexto propio, el sitio foráneo (con su propio bootstrap/AdminLTE, sin extender <code>base.html</code>) vive entero bajo <code>SCHEMA_DOCS_ROOT</code>. Ver <code>schema_docs_asset</code> para cómo se sirven los demás archivos del sitio.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class SchemaDocsView(SuperuserRequiredMixin, TemplateView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>SchemaDocsView</code> (<code>schema_docs</code>), enlazada desde el navbar ("Administracion &gt; Externos &gt; Schema de la base de datos").</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="schema_docs_asset.md">schema_docs_asset</a></li>
+</ul>

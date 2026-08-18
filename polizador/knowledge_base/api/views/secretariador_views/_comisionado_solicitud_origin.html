@@ -1,0 +1,13 @@
+<h1>_comisionado_solicitud_origin</h1>
+<p><strong>Módulo:</strong> <code>api/views/secretariador_views.py</code> (líneas 899-902)</p>
+<h2>Propósito</h2>
+<p>Mismo patrón que <code>ComisionadoSolicitud.get_origin()</code> (modelo): resuelve si el origen de un comisionado es una <code>Solicitud</code> directa o la <code>Solicitud</code> de una <code>Incorporacion</code> — reimplementado acá en vez de llamar al método del modelo (redundancia menor entre capa API y modelo).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _comisionado_solicitud_origin(comisionado):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>_calendar_events_by_agente</code>, <code>calendario_eventos_agente_individual</code> (mismo módulo).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../secretariador/models/ComisionadoSolicitud.md">ComisionadoSolicitud</a></li>
+</ul>

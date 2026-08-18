@@ -1,0 +1,13 @@
+<h1>_resolucion_numero_completo</h1>
+<p><strong>Módulo:</strong> <code>api/views/secretariador_views.py</code> (líneas 315-320)</p>
+<h2>Propósito</h2>
+<p>Arma el número mostrado de una Resolución: <code>"numero/ano"</code> para Presidencia, <code>"numero/acta/ano"</code> para Directorio (con acta) — usado en la columna del listado combinado Presidencia+Directorio, donde <code>InstrumentosLegalesResoluciones.__str__</code> no alcanza porque ahí el formato es "RES-...".</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _resolucion_numero_completo(r: InstrumentosLegalesResoluciones) -&gt; str:
+</code></pre>
+<h2>Uso real</h2>
+<p><code>_resolucion_datatable_row</code> (mismo módulo, más abajo).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../secretariador/models/InstrumentosLegalesResoluciones.md">InstrumentosLegalesResoluciones</a></li>
+</ul>

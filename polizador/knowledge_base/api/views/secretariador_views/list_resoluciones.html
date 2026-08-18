@@ -1,0 +1,13 @@
+<h1>list_resoluciones</h1>
+<p><strong>Módulo:</strong> <code>api/views/secretariador_views.py</code> (líneas 96-100)</p>
+<h2>Propósito</h2>
+<p>Listado paginado (<code>PerPagePagination</code>) de <code>InstrumentosLegalesResoluciones</code>, gateado por <code>require_model_perm(InstrumentosLegalesResoluciones)</code> (permiso <code>view_&lt;modelo&gt;</code>). Con <code>?ano=</code> para acotar por año.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def list_resoluciones(request, ano: str=''):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>GET /v1/api/resoluciones/</code> — response=<code>List[InstrumentosLegalesResolucionesOut]</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../secretariador/models/InstrumentosLegalesResoluciones.md">InstrumentosLegalesResoluciones</a></li>
+</ul>
