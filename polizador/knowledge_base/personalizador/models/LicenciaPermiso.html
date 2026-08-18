@@ -1,0 +1,37 @@
+<h1>LicenciaPermiso</h1>
+<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 535-617) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Registro administrativo de una licencia/permiso ya otorgado a un agente — sin flujo de
+solicitud/aprobación propio (a diferencia del circuito de viáticos de <code>secretariador</code>):
+se carga el hecho consumado, respaldado o no por un instrumento legal formal
+(Resolución/Decreto/Memorandum, mutuamente excluyentes).</p>
+<p><code>clean()</code> hace varias validaciones cruzadas:</p>
+<ol>
+<li>A lo sumo un instrumento legal vinculado (no dos a la vez).</li>
+<li><code>fecha_hasta</code> no puede ser anterior a <code>fecha_desde</code>.</li>
+<li>Si consume el saldo de un <code>CorteLicencia</code> (<code>licenciapermiso_saldo_de_corte</code>): que el
+   corte sea del mismo agente y tipo que la licencia original, que no haya vencido, y que
+   la cantidad no supere el saldo restante del corte (recalculando el saldo "como si"
+   esta edición no existiera todavía, para permitir reducir una cantidad ya cargada sin
+   que se autobloquee contra sí misma).</li>
+<li><strong>Solo para el tipo "Anual Proporcional" (adelanto, Art. 10)</strong>: importa
+   <code>personalizador.licencias.balance_tipo</code> (import diferido, adentro del método, para
+   evitar un ciclo de import ya que <code>licencias.py</code> importa este módulo) y valida que la
+   cantidad no supere el cupo disponible del año <em>siguiente</em> — un adelanto consume cupo
+   futuro, no el del año en que se carga.</li>
+</ol>
+<p>Es, junto con <code>Oficina</code>, el modelo con la lógica de negocio más densa de
+<code>personalizador</code>.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class LicenciaPermiso(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<pre><code class="language-python"># personalizador/views/licenciapermisoviews.py (CrearLicenciaPermiso.form_valid, vía FormsetViewMixin)
+self.object = form.save()  # -&gt; LicenciaPermiso.clean() corre dentro de full_clean()
+</code></pre>
+<h2>Ver también</h2>
+<ul>
+<li><a href="TipoLicenciaPermiso.md">TipoLicenciaPermiso</a></li>
+<li><a href="CorteLicencia.md">CorteLicencia</a></li>
+<li><a href="Agente.md">Agente</a></li>
+</ul>

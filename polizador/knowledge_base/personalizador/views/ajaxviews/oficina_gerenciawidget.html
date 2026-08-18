@@ -1,0 +1,14 @@
+<h1>oficina_gerenciawidget</h1>
+<p><strong>Módulo:</strong> <code>personalizador/views/ajaxviews.py</code> (líneas 99-101) · hereda de <code>OficinaGerenciaDependentWidgetMixin, AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget</code></p>
+<h2>Propósito</h2>
+<p>Widget select2 (<code>django-select2</code>) para elegir Gerencia vía búsqueda AJAX incremental — ver CLAUDE.md sobre <code>django-select2</code> y <code>carga/views/ajaxviews.py</code> (mismo patrón, definido allá). Dependiente del Directorio elegido (<code>OficinaGerenciaDependentWidgetMixin</code>). Con alta rápida (<code>personalizador:crear-gerencia</code>).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class oficina_gerenciawidget(OficinaGerenciaDependentWidgetMixin, AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>Oficina.cargo_gerencia</code> en <code>OficinaForm</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="OficinaGerenciaDependentWidgetMixin.md">OficinaGerenciaDependentWidgetMixin</a></li>
+<li><a href="../../models/Oficina.md">Oficina</a></li>
+</ul>

@@ -1,0 +1,13 @@
+<h1>tituloprofesionalmultiplewidget</h1>
+<p><strong>Módulo:</strong> <code>personalizador/views/ajaxviews.py</code> (líneas 18-20) · hereda de <code>AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget</code></p>
+<h2>Propósito</h2>
+<p>Widget select2 (<code>django-select2</code>) para elegir uno o más TituloProfesional vía búsqueda AJAX incremental — ver CLAUDE.md sobre <code>django-select2</code> y <code>carga/views/ajaxviews.py</code> (mismo patrón, definido allá). Catálogo chico, con alta rápida (<code>personalizador:crear-tituloprofesional</code>).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class tituloprofesionalmultiplewidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>Agente.titulo_profesional</code> en <code>AgenteForm</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/TituloProfesional.md">TituloProfesional</a></li>
+</ul>

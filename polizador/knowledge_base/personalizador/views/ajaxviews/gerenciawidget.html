@@ -1,0 +1,13 @@
+<h1>gerenciawidget</h1>
+<p><strong>Módulo:</strong> <code>personalizador/views/ajaxviews.py</code> (líneas 50-52) · hereda de <code>AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget</code></p>
+<h2>Propósito</h2>
+<p>Widget select2 (<code>django-select2</code>) para elegir Gerencia vía búsqueda AJAX incremental — ver CLAUDE.md sobre <code>django-select2</code> y <code>carga/views/ajaxviews.py</code> (mismo patrón, definido allá). Catálogo chico, con alta rápida (<code>personalizador:crear-gerencia</code>).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class gerenciawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>Direccion.direccion_gerencia</code>, <code>Departamento.departamento_gerencia</code> en sus forms.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/Gerencia.md">Gerencia</a></li>
+</ul>

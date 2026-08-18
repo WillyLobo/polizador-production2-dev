@@ -1,0 +1,24 @@
+<h1>TipoLicenciaPermiso</h1>
+<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 483-533) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Catálogo normalizado de tipos de licencia/permiso según la Ley 645-A (ordinaria,
+extraordinaria, permiso), con toda la parametrización que define cómo se computa cada
+tipo: unidad (días corridos/hábiles/horas), tope y período del tope, si es remunerada,
+antigüedad mínima requerida, si requiere certificado, si genera compensación horaria a
+devolver. Se carga vía management command (<code>cargar_tipos_licencia</code>, ver CLAUDE.md), no
+hay flujo de alta pensado para uso frecuente desde la UI aunque el CRUD exista.</p>
+<p>Es el catálogo que toda la lógica de cálculo de saldos en <code>personalizador/licencias.py</code>
+consulta — en particular, dos nombres de tipo están hardcodeados como constantes ahí
+(<code>LICENCIA_ANUAL_ORDINARIA_NOMBRE = "Anual"</code>, <code>LICENCIA_ANUAL_INVIERNO_NOMBRE = "Anual de
+Invierno"</code>, <code>LICENCIA_ANUAL_ADELANTADA_NOMBRE = "Anual Proporcional"</code>): renombrar estos
+tres registros del catálogo rompería silenciosamente el cálculo de balances, porque el
+código los busca por <code>tipolicenciapermiso_nombre</code> exacto, no por un flag dedicado.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class TipoLicenciaPermiso(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearTipoLicenciaPermiso</code>/<code>UpdateTipoLicenciaPermiso</code> (<code>personalizador/views/tipolicenciapermisoviews.py</code>); consumido extensamente por <code>personalizador/licencias.py</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="LicenciaPermiso.md">LicenciaPermiso</a></li>
+</ul>

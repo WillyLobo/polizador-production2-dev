@@ -1,0 +1,13 @@
+<h1>TipoLicenciaPermisoForm</h1>
+<p><strong>Módulo:</strong> <code>personalizador/forms/tipolicenciapermisoforms.py</code> (líneas 4-36) · hereda de <code>forms.ModelForm</code></p>
+<h2>Propósito</h2>
+<p><code>ModelForm</code> estándar para <code>TipoLicenciaPermiso</code>: expone toda la parametrización del tipo (unidad, tope, período del tope, si es remunerada, antigüedad mínima, si requiere certificado/compensación horaria). Sin <code>clean()</code> propio.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class TipoLicenciaPermisoForm(forms.ModelForm):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearTipoLicenciaPermiso</code>/<code>UpdateTipoLicenciaPermiso</code> — en la práctica el catálogo se carga vía management command, este form es más para ajustes puntuales.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/TipoLicenciaPermiso.md">TipoLicenciaPermiso</a></li>
+</ul>

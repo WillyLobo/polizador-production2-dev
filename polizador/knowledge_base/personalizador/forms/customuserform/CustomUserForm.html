@@ -1,0 +1,17 @@
+<h1>CustomUserForm</h1>
+<p><strong>Módulo:</strong> <code>personalizador/forms/customuserform.py</code> (líneas 5-24) · hereda de <code>SignupForm, forms.ModelForm</code></p>
+<h2>Propósito</h2>
+<p>Form de signup de <code>django-allauth</code>, no un <code>ModelForm</code> de administración: hereda de
+<code>SignupForm</code> (de allauth) <strong>y</strong> <code>forms.ModelForm</code> a la vez, para agregar <code>first_name</code>/
+<code>last_name</code> al flujo estándar de registro de cuenta del sitio. <code>save(request)</code> delega en
+<code>SignupForm.save()</code> (que crea el <code>CustomUser</code> con allauth) y solo agrega la asignación de
+nombre/apellido antes de devolver el usuario creado.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CustomUserForm(SignupForm, forms.ModelForm):
+</code></pre>
+<h2>Uso real</h2>
+<p>Configurado como <code>ACCOUNT_FORMS['signup']</code> (o equivalente) en <code>settings.py</code>, usado por las vistas de signup de <code>allauth.account</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/CustomUser.md">CustomUser</a></li>
+</ul>

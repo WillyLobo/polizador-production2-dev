@@ -1,0 +1,22 @@
+<h1>ComisionadoExterno</h1>
+<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 440-473) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Persona externa al Instituto (de otro organismo, contratada puntualmente) que puede
+comisionarse a viajar en una Solicitud de viáticos de <code>secretariador</code>, sin ser un
+<code>Agente</code> — explícitamente no debe aparecer en reportes de RRHH/organigrama/nómina (ver
+el docstring del modelo). Expone deliberadamente los mismos nombres de atributo que
+<code>Agente</code> (<code>agente_nombres</code>, <code>agente_apellidos</code>, <code>dni</code>, <code>cuil</code>, <code>sexo</code>...) para el
+subconjunto de datos que necesita <code>secretariador.ComisionadoSolicitud.persona</code> — así ese
+campo puede apuntar indistintamente a un <code>Agente</code> o a un <code>ComisionadoExterno</code> sin lógica
+condicional por tipo en el código que solo lee esos atributos comunes.</p>
+<p>Mismo patrón de <code>save()</code> que <code>Agente</code>: infiere <code>abreviatura</code> de <code>sexo</code> si no se cargó.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class ComisionadoExterno(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>secretariador.ComisionadoSolicitud.persona</code> (GenericForeignKey o unión de tipos, ver <code>secretariador</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="Agente.md">Agente</a></li>
+<li><a href="abreviatura_default_por_sexo.md">abreviatura_default_por_sexo</a></li>
+</ul>

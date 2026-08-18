@@ -1,0 +1,13 @@
+<h1>AgenteForm</h1>
+<p><strong>Módulo:</strong> <code>personalizador/forms/agenteforms.py</code> (líneas 11-121) · hereda de <code>forms.ModelForm</code></p>
+<h2>Propósito</h2>
+<p>El <code>ModelForm</code> más grande de <code>personalizador</code>: prácticamente todos los ~50 campos de Agente, cada catálogo relacionado con su propio widget select2 (género, títulos, categoría, denominación de cargo, oficina, apartado, CEIC, grupo, actividad específica) más <code>localidadwidget</code>/<code>provinciawidget</code> de <code>carga</code> para el domicilio. Sin <code>clean()</code> propio — ninguna validación cruzada a nivel form, todo lo que hay vive en <code>Agente.save()</code> (inferir abreviatura).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class AgenteForm(forms.ModelForm):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearAgente</code>/<code>UpdateAgente</code> (<code>personalizador/views/agenteviews.py</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/Agente.md">Agente</a></li>
+</ul>

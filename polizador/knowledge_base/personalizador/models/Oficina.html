@@ -1,0 +1,27 @@
+<h1>Oficina</h1>
+<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 271-331) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Un nodo del árbol organizacional Directorio &gt; Gerencia &gt; Dirección &gt; Departamento — pero
+no es un catálogo más de "oficinas" con nombre propio: es la combinación de FKs
+(<code>cargo_directorio</code>/<code>cargo_gerencia</code>/<code>cargo_direccion</code>/<code>cargo_departamento</code>) que ubica a
+un <code>Agente</code> (<code>Agente.oficina</code>) en ese árbol, y su <code>__str__</code> arma el nombre concatenando
+los niveles no vacíos.</p>
+<p><code>clean()</code> es la pieza real: una Oficina se ubica en el nivel <strong>más profundo</strong> que se le
+asigna (Departamento, si no Dirección, si no Gerencia), y los niveles superiores se
+<strong>derivan</strong> de ese nodo en vez de elegirse por separado — así no puede quedar una
+inconsistencia como "una Dirección que en realidad depende de otra Gerencia". Si el
+usuario ya cargó a mano un nivel superior que no coincide con el derivado, <code>clean()</code>
+rechaza el guardado con un <code>ValidationError</code> en vez de sobreescribirlo silenciosamente.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class Oficina(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearOficina</code>/<code>UpdateOficina</code> (<code>personalizador/views/oficinaviews.py</code>), con los widgets dependientes <code>oficina_gerenciawidget</code>/<code>oficina_direccionwidget</code>/<code>oficina_departamentowidget</code> (<code>personalizador/views/ajaxviews.py</code>) acotando las opciones según lo ya elegido.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="Directorio.md">Directorio</a></li>
+<li><a href="Gerencia.md">Gerencia</a></li>
+<li><a href="Direccion.md">Direccion</a></li>
+<li><a href="Departamento.md">Departamento</a></li>
+<li><a href="Agente.md">Agente</a></li>
+</ul>

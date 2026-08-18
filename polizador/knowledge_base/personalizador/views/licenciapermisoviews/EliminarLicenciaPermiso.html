@@ -1,0 +1,15 @@
+<h1>EliminarLicenciaPermiso</h1>
+<p><strong>Módulo:</strong> <code>personalizador/views/licenciapermisoviews.py</code> (líneas 18-23) · hereda de <code>PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView</code></p>
+<h2>Propósito</h2>
+<p>Confirma y ejecuta el borrado de una LicenciaPermiso, mostrando antes (vía <code>DeleteRelatedObjectsMixin</code>
+— <code>core/mixins.py</code> + <code>core/deletion.py::get_deleted_objects</code>) los objetos relacionados que
+se borrarían en cascada.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class EliminarLicenciaPermiso(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
+</code></pre>
+<h2>Uso real</h2>
+<p>Enlazada desde el listado/ficha.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/LicenciaPermiso.md">LicenciaPermiso</a></li>
+</ul>

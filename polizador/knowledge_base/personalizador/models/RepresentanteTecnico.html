@@ -1,0 +1,13 @@
+<h1>RepresentanteTecnico</h1>
+<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 420-438) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Profesional externo (arquitecto, ingeniero...) responsable técnico de una Obra de <code>carga</code> — no es un <code>Agente</code> (no es empleado del organismo). Vive en <code>personalizador</code> pero su CRUD web está en <code>carga</code> (<code>carga/views/representantetecnicoviews.py</code>), ver esa página.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class RepresentanteTecnico(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>Obra.obra_representantetecnico</code> (M2M, <code>carga/models.py</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="TituloProfesional.md">TituloProfesional</a></li>
+</ul>

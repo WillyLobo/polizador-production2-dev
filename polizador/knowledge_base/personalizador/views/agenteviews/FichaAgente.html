@@ -1,0 +1,21 @@
+<h1>FichaAgente</h1>
+<p><strong>Módulo:</strong> <code>personalizador/views/agenteviews.py</code> (líneas 54-81) · hereda de <code>PermissionRequiredMixin, generic.DetailView</code></p>
+<h2>Propósito</h2>
+<p>La ficha principal de un Agente: precarga con <code>select_related</code>/<code>prefetch_related</code> todas
+las relaciones que la plantilla recorre (título profesional, oficina y designación
+temporal con sus cuatro niveles de árbol organizacional, licencias), y agrega al contexto
+el balance de licencias del año actual (<code>resumen_agente</code>, función de
+<code>personalizador/licencias.py</code> — fuera del alcance de este manifest, ver
+<a href="../licenciapermisoviews/ControlLicenciasAgente.md">ControlLicenciasAgente</a> para el mismo
+patrón de uso) y los saldos de cortes de licencia pendientes, más las 10 licencias más
+recientes.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class FichaAgente(PermissionRequiredMixin, generic.DetailView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>FichaAgente</code> (<code>personalizador:ficha-agente</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/Agente.md">Agente</a></li>
+<li><a href="../licenciapermisoviews/ControlLicenciasAgente.md">ControlLicenciasAgente</a></li>
+</ul>

@@ -1,0 +1,13 @@
+<h1>DevolucionHorasPermiso</h1>
+<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 704-718) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Registro de horas devueltas por un agente para compensar un permiso que la ley obliga a devolver con horas de trabajo (ej. razones particulares, lactancia — ver <code>TipoLicenciaPermiso.tipolicenciapermiso_compensacion_horaria</code>). Un <code>LicenciaPermiso</code> puede tener varias devoluciones parciales (<code>related_name="devolucionhoras_set"</code>).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class DevolucionHorasPermiso(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p>Formset inline (<code>DevolucionHorasPermisoFormset</code>) dentro de <code>CrearLicenciaPermiso</code>/<code>UpdateLicenciaPermiso</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="LicenciaPermiso.md">LicenciaPermiso</a></li>
+</ul>

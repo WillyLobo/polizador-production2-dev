@@ -1,0 +1,13 @@
+<h1>departamentowidget</h1>
+<p><strong>Módulo:</strong> <code>personalizador/views/ajaxviews.py</code> (líneas 58-60) · hereda de <code>AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget</code></p>
+<h2>Propósito</h2>
+<p>Widget select2 (<code>django-select2</code>) para elegir Departamento (personalizador) vía búsqueda AJAX incremental — ver CLAUDE.md sobre <code>django-select2</code> y <code>carga/views/ajaxviews.py</code> (mismo patrón, definido allá). Catálogo chico, con alta rápida (<code>personalizador:crear-departamento</code>). No confundir con <code>carga.views.ajaxviews.departamentowidget</code> (geográfico, modelo distinto).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class departamentowidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+</code></pre>
+<h2>Uso real</h2>
+<p>Campos que referencian <code>personalizador.Departamento</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/Departamento.md">Departamento</a></li>
+</ul>

@@ -1,0 +1,13 @@
+<h1>CrearAgente</h1>
+<p><strong>Módulo:</strong> <code>personalizador/views/agenteviews.py</code> (líneas 23-40) · hereda de <code>PopupCreateMixin, PermissionRequiredMixin, generic.CreateView</code></p>
+<h2>Propósito</h2>
+<p>Alta de Agente vía <code>AgenteForm</code> (el más grande del módulo, ~50 campos). Usa <code>PopupCreateMixin</code> para poder abrirse como "agregar relacionado" desde cualquier <code>agentewidget</code> (ej. al elegir la autoridad a cargo de una Gerencia sin salir de ese formulario).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CrearAgente(PopupCreateMixin, PermissionRequiredMixin, generic.CreateView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearAgente</code> (<code>personalizador:crear-agente</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/Agente.md">Agente</a></li>
+</ul>

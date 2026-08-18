@@ -1,0 +1,25 @@
+<h1>CorteLicencia</h1>
+<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 626-702) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Interrupción de una Licencia Anual (Ordinaria o de Invierno) ya otorgada: el agente se
+reintegra a sus tareas antes de agotar los días, y el saldo pendiente queda disponible
+para usarse después — total o fraccionado, vía
+<code>LicenciaPermiso.licenciapermiso_saldo_de_corte</code> — hasta <code>cortelicencia_fecha_vencimiento</code>.</p>
+<p><code>clean()</code> valida que la Licencia interrumpida sea de uno de los dos tipos que admiten
+corte (importa las constantes de nombre desde <code>personalizador.licencias</code>, mismo patrón de
+import diferido que <code>LicenciaPermiso.clean()</code>), que las fechas de reintegro caigan dentro
+del rango de la licencia original, y que días gozados + días pendientes no superen la
+cantidad total de la licencia.</p>
+<p><code>dias_restantes</code> (property) descuenta de <code>cortelicencia_dias_pendientes</code> lo que ya se
+usó vía <code>usos_saldo</code> (la relación inversa desde <code>LicenciaPermiso.licenciapermiso_saldo_de_corte</code>,
+sumando solo registros no anulados) — es el número que decide si un corte todavía tiene
+algo para ofrecer. <code>vencido</code> combina eso con la fecha de vencimiento.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CorteLicencia(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearCorteLicencia</code> (<code>personalizador/views/cortelicenciaviews.py</code>), enlazada desde la ficha de una <code>LicenciaPermiso</code> de tipo Anual/Anual de Invierno.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="LicenciaPermiso.md">LicenciaPermiso</a></li>
+</ul>
