@@ -30,7 +30,7 @@ def _calcular_texto_solicitud(actuacion):
 
 ## Uso real
 
-`_generar_solicitud_docx` (mismo módulo).
+`_generar_solicitud_docx` (mismo módulo) y `editar_texto_solicitud` (mismo módulo), que la usa para precalcular los valores por defecto del formulario de revisión.
 
 ## Ver también
 

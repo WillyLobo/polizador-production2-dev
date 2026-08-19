@@ -1,0 +1,32 @@
+<h1>_valor_comparable</h1>
+<p><strong>Módulo:</strong> <code>secretariador/signals.py</code> (líneas 45-54)</p>
+<h2>Propósito</h2>
+<p>Normaliza el valor en memoria de <code>campo</code> en <code>instance</code> al mismo tipo que devuelve una
+consulta <code>.values(...)</code> a la base, para que las comparaciones "¿cambió este campo?" en
+<code>invalidar_texto_actuacion_por_cambio_de_datos</code>/<code>invalidar_texto_incorporacion_por_cambio_de_datos</code>
+no den falsos positivos.</p>
+<p>El caso concreto que motivó esto: un test creaba una <code>Solicitud</code> con
+<code>solicitud_fecha_hasta="2026-01-02"</code> (string) — Django no llama a <code>to_python()</code> en una
+asignación directa de atributo (solo lo hace <code>full_clean()</code>/la limpieza de un
+<code>ModelForm</code>), así que ese string queda tal cual en el atributo hasta el próximo
+<code>refresh_from_db()</code>. Compararlo sin normalizar contra el <code>datetime.date</code> que trae la fila
+existente (<code>anterior[campo]</code>, ya tipado por la consulta) daba <code>True</code> aunque la fecha no
+hubiera cambiado en absoluto, e invalidaba el texto guardado sin motivo.</p>
+<p>Para los campos de FK guardados como <code>*_id</code> (p. ej. <code>solicitud_vehiculo_id</code>) no hace falta
+normalizar — siempre son enteros simples en ambos lados — así que la función los devuelve
+directo, sin pasar por <code>to_python()</code> (que además no aplica: <code>_meta.get_field()</code> con el
+nombre del atributo <code>_id</code> no resuelve al campo real).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _valor_comparable(instance, campo):
+</code></pre>
+<h2>Uso real</h2>
+<p>Usada por el closure <code>cambio()</code> dentro de
+<a href="invalidar_texto_actuacion_por_cambio_de_datos.md">invalidar_texto_actuacion_por_cambio_de_datos</a>
+y directamente por
+<a href="invalidar_texto_incorporacion_por_cambio_de_datos.md">invalidar_texto_incorporacion_por_cambio_de_datos</a>
+(<code>secretariador/signals.py:101</code> y <code>:116</code>), ambas dentro del mismo módulo.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="invalidar_texto_actuacion_por_cambio_de_datos.md">invalidar_texto_actuacion_por_cambio_de_datos</a></li>
+<li><a href="invalidar_texto_incorporacion_por_cambio_de_datos.md">invalidar_texto_incorporacion_por_cambio_de_datos</a></li>
+</ul>

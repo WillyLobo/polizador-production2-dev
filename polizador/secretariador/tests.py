@@ -576,3 +576,172 @@ class ListarPaquetesResolucionesTest(TestCase):
         from secretariador.views.paqueteresolucionesviews import _listar_meses
 
         self.assertEqual(_listar_meses(self.bucket), [])
+
+
+class InvalidarTextoActuacionSignalsTestMixin:
+    """Fixtures comunes para probar `secretariador/signals.py`: que editar los
+    datos de una Solicitud/Incorporacion invalide el `*_texto_actuacion`
+    guardado a mano, para que `editar_texto_solicitud`/`editar_texto_incorporacion`
+    (y la generación del .docx) recalculen el texto en vez de mostrar uno
+    desactualizado (ver `revisar_texto_actuacion` en textoactuacionviews.py)."""
+
+    def setUp(self):
+        from carga.models import Departamento, Localidad, Municipio, Provincia
+        from personalizador.models import Agente, GeneroAgente
+        from secretariador.models import (
+            ComisionadoSolicitud, Incorporacion, InstrumentosLegalesDecretos,
+            InstrumentosLegalesResoluciones, MontoViaticoDiario, Solicitud,
+        )
+
+        self.Solicitud = Solicitud
+        self.Incorporacion = Incorporacion
+        self.ComisionadoSolicitud = ComisionadoSolicitud
+
+        genero = GeneroAgente.objects.create(generoagente_nombre="Test")
+        self.provincia = Provincia.objects.create(id=1, provincia_nombre="Chaco")
+        depto = Departamento.objects.create(id=1, departamento_nombre="Depto Test")
+        municipio = Municipio.objects.create(id=1, municipio_nombre="Municipio Test", municipio_departamento=depto)
+        self.localidad = Localidad.objects.create(
+            id=1, localidad_nombre="Resistencia", localidad_departamento=depto, localidad_municipio=municipio,
+        )
+
+        decreto = InstrumentosLegalesDecretos.objects.create(
+            instrumentolegaldecretos_numero="1", instrumentolegaldecretos_ano="2026",
+        )
+        self.monto = MontoViaticoDiario.objects.create(
+            montoviaticodiario_decreto_reglamentario=decreto,
+            montoviaticodiario_estrato_uno_interior=10, montoviaticodiario_estrato_dos_interior=20,
+            montoviaticodiario_estrato_tres_interior=30, montoviaticodiario_estrato_cuatro_interior=40,
+            montoviaticodiario_estrato_uno_exterior=100, montoviaticodiario_estrato_dos_exterior=200,
+            montoviaticodiario_estrato_tres_exterior=300, montoviaticodiario_estrato_cuatro_exterior=400,
+        )
+        self.solicitante = Agente.objects.create(
+            agente_nombres="Solicitante", agente_apellidos="Test", sexo=genero, dni=30000001, cuil="20300000013",
+        )
+        self.agente = Agente.objects.create(
+            agente_nombres="Normal", agente_apellidos="Test", sexo=genero, dni=30000002, cuil="20300000023",
+        )
+        self.resolucion = InstrumentosLegalesResoluciones.objects.create(
+            instrumentolegalresoluciones_numero=1, instrumentolegalresoluciones_ano="2026",
+        )
+        self.otra_resolucion = InstrumentosLegalesResoluciones.objects.create(
+            instrumentolegalresoluciones_numero=2, instrumentolegalresoluciones_ano="2026",
+        )
+
+        self.solicitud = self.Solicitud.objects.create(
+            solicitud_actuacion_ano=2026, solicitud_actuacion_numero=1,
+            solicitud_solicitante=self.solicitante, solicitud_provincia=self.provincia,
+            solicitud_decreto_viaticos=self.monto,
+            solicitud_fecha_desde="2026-01-01", solicitud_fecha_hasta="2026-01-02",
+            solicitud_tareas="Tarea de prueba", solicitud_dia_inhabil=False,
+            solicitud_resolucion=self.resolucion,
+            solicitud_texto_actuacion={"parrafos": ["viejo"], "articulo_uno": "viejo", "articulo_dos": []},
+        )
+
+
+class InvalidarTextoSolicitudTest(InvalidarTextoActuacionSignalsTestMixin, TestCase):
+    def test_cambiar_fecha_invalida_texto_guardado(self):
+        self.solicitud.solicitud_fecha_hasta = "2026-01-05"
+        self.solicitud.save()
+        self.solicitud.refresh_from_db()
+        self.assertIsNone(self.solicitud.solicitud_texto_actuacion)
+
+    def test_guardar_solo_el_texto_no_lo_invalida(self):
+        self.solicitud.solicitud_texto_actuacion = {"parrafos": ["nuevo"], "articulo_uno": "nuevo", "articulo_dos": []}
+        self.solicitud.save(update_fields=["solicitud_texto_actuacion"])
+        self.solicitud.refresh_from_db()
+        self.assertEqual(self.solicitud.solicitud_texto_actuacion["parrafos"], ["nuevo"])
+
+    def test_agregar_comisionado_invalida_texto_guardado(self):
+        self.ComisionadoSolicitud.objects.create(
+            comisionadosolicitud_foreign=self.solicitud, comisionadosolicitud_nombre=self.agente,
+            comisionadosolicitud_colaborador=False, comisionadosolicitud_chofer=False,
+        )
+        self.solicitud.refresh_from_db()
+        self.assertIsNone(self.solicitud.solicitud_texto_actuacion)
+
+    def test_borrar_comisionado_invalida_texto_guardado(self):
+        com = self.ComisionadoSolicitud.objects.create(
+            comisionadosolicitud_foreign=self.solicitud, comisionadosolicitud_nombre=self.agente,
+            comisionadosolicitud_colaborador=False, comisionadosolicitud_chofer=False,
+        )
+        # repoblar el texto guardado, ya que crear el comisionado lo invalidó
+        self.solicitud.solicitud_texto_actuacion = {"parrafos": ["viejo"], "articulo_uno": "viejo", "articulo_dos": []}
+        self.solicitud.save(update_fields=["solicitud_texto_actuacion"])
+
+        com.delete()
+        self.solicitud.refresh_from_db()
+        self.assertIsNone(self.solicitud.solicitud_texto_actuacion)
+
+    def test_agregar_localidad_invalida_texto_guardado(self):
+        self.solicitud.solicitud_localidades.add(self.localidad)
+        self.solicitud.refresh_from_db()
+        self.assertIsNone(self.solicitud.solicitud_texto_actuacion)
+
+    def test_cambiar_resolucion_no_invalida_texto_propio_de_la_solicitud(self):
+        """`solicitud_resolucion` no se usa en `_calcular_texto_solicitud`, solo
+        en `_calcular_texto_incorporacion` de una Incorporacion asociada."""
+        self.solicitud.solicitud_resolucion = self.otra_resolucion
+        self.solicitud.save()
+        self.solicitud.refresh_from_db()
+        self.assertIsNotNone(self.solicitud.solicitud_texto_actuacion)
+
+
+class InvalidarTextoIncorporacionTest(InvalidarTextoActuacionSignalsTestMixin, TestCase):
+    def setUp(self):
+        super().setUp()
+        self.incorporacion = self.Incorporacion.objects.create(
+            incorporacion_solicitud=self.solicitud,
+            incorporacion_actuacion_ano=2026, incorporacion_actuacion_numero=1,
+            incorporacion_solicitante=self.solicitante,
+            incorporacion_texto_actuacion={"parrafos": ["viejo"], "articulo_uno": "viejo", "articulo_dos": []},
+        )
+
+    def test_cambiar_numero_de_actuacion_propio_invalida_su_texto(self):
+        self.incorporacion.incorporacion_actuacion_numero = 2
+        self.incorporacion.save()
+        self.incorporacion.refresh_from_db()
+        self.assertIsNone(self.incorporacion.incorporacion_texto_actuacion)
+
+    def test_cambiar_resolucion_de_la_solicitud_invalida_texto_de_incorporacion(self):
+        """`solicitud_resolucion` sí se usa en `_calcular_texto_incorporacion`
+        (vía `actuacion.incorporacion_solicitud.solicitud_resolucion`)."""
+        self.solicitud.solicitud_resolucion = self.otra_resolucion
+        self.solicitud.save()
+        self.incorporacion.refresh_from_db()
+        self.assertIsNone(self.incorporacion.incorporacion_texto_actuacion)
+
+    def test_cambiar_fecha_de_la_solicitud_invalida_texto_de_incorporacion(self):
+        self.solicitud.solicitud_fecha_hasta = "2026-01-05"
+        self.solicitud.save()
+        self.incorporacion.refresh_from_db()
+        self.assertIsNone(self.incorporacion.incorporacion_texto_actuacion)
+
+    def test_agregar_localidad_a_la_solicitud_invalida_texto_de_incorporacion(self):
+        self.solicitud.solicitud_localidades.add(self.localidad)
+        self.incorporacion.refresh_from_db()
+        self.assertIsNone(self.incorporacion.incorporacion_texto_actuacion)
+
+    def test_agregar_agente_a_la_solicitud_invalida_texto_de_incorporacion(self):
+        self.ComisionadoSolicitud.objects.create(
+            comisionadosolicitud_foreign=self.solicitud, comisionadosolicitud_nombre=self.agente,
+            comisionadosolicitud_colaborador=False, comisionadosolicitud_chofer=False,
+        )
+        self.incorporacion.refresh_from_db()
+        self.assertIsNone(self.incorporacion.incorporacion_texto_actuacion)
+
+    def test_agregar_agente_directo_a_la_incorporacion_invalida_su_texto(self):
+        self.ComisionadoSolicitud.objects.create(
+            comisionadosolicitud_incorporacion_foreign=self.incorporacion, comisionadosolicitud_nombre=self.agente,
+            comisionadosolicitud_colaborador=False, comisionadosolicitud_chofer=False,
+        )
+        self.incorporacion.refresh_from_db()
+        self.assertIsNone(self.incorporacion.incorporacion_texto_actuacion)
+
+    def test_cambiar_solicitud_no_toca_texto_propio_de_otra_incorporacion_inexistente(self):
+        """Una Solicitud sin Incorporacion asociada no debe romper la invalidación."""
+        self.solicitud.solicitud_texto_actuacion = {"parrafos": ["x"], "articulo_uno": "x", "articulo_dos": []}
+        self.solicitud.save(update_fields=["solicitud_texto_actuacion"])
+        self.solicitud.solicitud_actuacion_numero = 42
+        self.solicitud.solicitud_texto_actuacion = None
+        self.solicitud.save()  # no debe tirar excepción aunque no haya texto que invalidar

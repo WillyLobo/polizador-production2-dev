@@ -28,6 +28,24 @@ o bien solo persiste el texto (`actuacion.save(update_fields=[texto_field_name])
 vuelve a la ficha, o guarda y redirige a la URL de generación del `.docx` del flujo
 correspondiente (`generar_docx_url_name`, parametrizado por el caller).
 
+En el GET, el valor inicial de cada campo del formulario sale de
+`texto_actuacion_guardado(actuacion, texto_field_name)` si la actuación ya tiene texto
+guardado (`solicitud_texto_actuacion`/`incorporacion_texto_actuacion`), y de los
+`*_default` recién calculados si no. Para `articulo_dos` la elección es por fila
+(`_articulo_dos_inicial`, mismo módulo): toma como base la lista *actual* de agentes
+comisionados y solo reutiliza la fila guardada de los que siguen estando; un agente nuevo
+aparece con su valor recién calculado, uno eliminado simplemente desaparece. Para
+`parrafos`/`articulo_uno` no hay ese tipo de reconciliación fila a fila — es todo el texto
+guardado o todo el recién calculado. Por eso `solicitud_texto_actuacion`/
+`incorporacion_texto_actuacion` necesitan invalidarse activamente cuando cambian los
+datos que el texto describe (agentes, fechas, localidades, vehículo, resolución
+referenciada): si no, esta vista seguiría prellenando el formulario con un texto guardado
+desactualizado en vez de reflejar el cambio. Ese es el trabajo de los receivers en
+`secretariador/signals.py` (ver
+[invalidar_texto_actuacion_por_cambio_de_datos](../../signals/invalidar_texto_actuacion_por_cambio_de_datos.md)
+y las demás señales del módulo) — ponen el campo en `None` para que el próximo GET caiga
+en la rama `*_default`.
+
 ## Firma
 
 ```python
@@ -52,3 +70,4 @@ return revisar_texto_actuacion(
 - [editar_texto_solicitud](../solicitudviews/editar_texto_solicitud.md)
 - [editar_texto_solicitud_exterior](../solicitud_exteriorviews/editar_texto_solicitud_exterior.md)
 - [editar_texto_incorporacion](../incorporacionviews/editar_texto_incorporacion.md)
+- [invalidar_texto_actuacion_por_cambio_de_datos](../../signals/invalidar_texto_actuacion_por_cambio_de_datos.md) — mantiene sincronizado el texto que esta vista prellena.

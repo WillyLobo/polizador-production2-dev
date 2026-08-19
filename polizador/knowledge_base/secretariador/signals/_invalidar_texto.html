@@ -1,0 +1,26 @@
+<h1>_invalidar_texto</h1>
+<p><strong>Módulo:</strong> <code>secretariador/signals.py</code> (líneas 57-63)</p>
+<h2>Propósito</h2>
+<p>Helper genérico compartido por <code>Solicitud</code> e <code>Incorporacion</code>: si la fila <code>pk</code> de <code>model</code>
+existe y su <code>campo_texto</code> (<code>solicitud_texto_actuacion</code>/<code>incorporacion_texto_actuacion</code>) no
+es ya <code>None</code>, lo pone en <code>None</code> y guarda solo ese campo
+(<code>obj.save(update_fields=[campo_texto])</code>). El <code>.exclude(**{campo_texto: None})</code> evita un
+<code>UPDATE</code> (y el <code>post_save</code>/historial que dispara) cuando no hace falta — el texto ya
+estaba vacío.</p>
+<p>Recibe <code>model</code> como parámetro en vez de estar hardcodeado a <code>Solicitud</code> para no duplicar
+la misma lógica de "buscar, comparar, limpiar, guardar" en dos funciones casi idénticas
+para <code>Solicitud</code> e <code>Incorporacion</code>.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _invalidar_texto(model, pk, campo_texto):
+</code></pre>
+<h2>Uso real</h2>
+<p>Instanciado para cada modelo por los dos wrappers de una línea del mismo módulo:
+<code>_invalidar_texto(Solicitud, solicitud_id, "solicitud_texto_actuacion")</code> en
+<a href="_invalidar_texto_solicitud.md">_invalidar_texto_solicitud</a> y
+<code>_invalidar_texto(Incorporacion, incorporacion_id, "incorporacion_texto_actuacion")</code> en
+<a href="_invalidar_texto_incorporacion.md">_invalidar_texto_incorporacion</a>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="_invalidar_texto_solicitud.md">_invalidar_texto_solicitud</a></li>
+<li><a href="_invalidar_texto_incorporacion.md">_invalidar_texto_incorporacion</a></li>
+</ul>

@@ -28,3 +28,4 @@ def _generar_exterior_docx(actuacion):
 ## Ver también
 
 - [_calcular_texto_exterior](_calcular_texto_exterior.md)
+- [_generar_solicitud_docx](../solicitudviews/_generar_solicitud_docx.md) — mismo patrón, con la nota sobre invalidación del texto guardado.

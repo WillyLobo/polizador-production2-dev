@@ -13,7 +13,11 @@ de edición distintos según si el viaje es dentro o fuera de la provincia (ver
 <code>solicitudviews.py</code> vs <code>solicitud_exteriorviews.py</code>).</p>
 <p><code>solicitud_texto_actuacion</code> guarda el texto de considerandos/artículos editado a mano
 desde la web (ver <code>textoactuacionviews.py</code>); si está vacío, el <code>.docx</code> se genera con el
-texto calculado automáticamente a partir de los datos de la solicitud.</p>
+texto calculado automáticamente a partir de los datos de la solicitud. Los receivers de
+<code>secretariador/signals.py</code> ponen este campo en <code>None</code> automáticamente apenas cambian los
+datos de la Solicitud que ese texto describe (agentes, fechas, localidades, vehículo),
+para que no quede desactualizado respecto de un texto guardado antes del cambio — ver
+<a href="../signals/invalidar_texto_actuacion_por_cambio_de_datos.md">invalidar_texto_actuacion_por_cambio_de_datos</a>.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class Solicitud(models.Model):
 </code></pre>

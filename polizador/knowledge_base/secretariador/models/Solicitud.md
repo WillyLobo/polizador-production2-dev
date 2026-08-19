@@ -27,7 +27,11 @@ de edición distintos según si el viaje es dentro o fuera de la provincia (ver
 
 `solicitud_texto_actuacion` guarda el texto de considerandos/artículos editado a mano
 desde la web (ver `textoactuacionviews.py`); si está vacío, el `.docx` se genera con el
-texto calculado automáticamente a partir de los datos de la solicitud.
+texto calculado automáticamente a partir de los datos de la solicitud. Los receivers de
+`secretariador/signals.py` ponen este campo en `None` automáticamente apenas cambian los
+datos de la Solicitud que ese texto describe (agentes, fechas, localidades, vehículo),
+para que no quede desactualizado respecto de un texto guardado antes del cambio — ver
+[invalidar_texto_actuacion_por_cambio_de_datos](../signals/invalidar_texto_actuacion_por_cambio_de_datos.md).
 
 ## Firma
 

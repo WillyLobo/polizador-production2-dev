@@ -1,0 +1,30 @@
+<h1>invalidar_texto_incorporacion_por_cambio_de_datos</h1>
+<p><strong>Módulo:</strong> <code>secretariador/signals.py</code> (líneas 110-117) · receiver de <code>pre_save</code> sobre <code>Incorporacion</code></p>
+<h2>Propósito</h2>
+<p>La contraparte de <a href="invalidar_texto_actuacion_por_cambio_de_datos.md">invalidar_texto_actuacion_por_cambio_de_datos</a>
+pero para los campos propios de <code>Incorporacion</code> en vez de los de <code>Solicitud</code>:
+<code>incorporacion_actuacion_jurisdiccion</code>/<code>_numero</code>/<code>_ano</code> (<code>CAMPOS_TEXTO_INCORPORACION</code>), que
+son los que arman <code>incorporacion_actuacion</code> (el <code>GeneratedField</code> que
+<code>_calcular_texto_incorporacion</code> usa en el <code>visto_texto</code>). Si cambia el número de
+actuación de la Incorporacion, invalida <code>incorporacion_texto_actuacion</code> para que no quede
+un texto guardado que sigue mencionando el número de actuación viejo.</p>
+<p>Los cambios en la Solicitud asociada (<code>incorporacion_solicitud</code>) — resolución, fechas,
+tareas, localidades, agentes — <strong>no</strong> pasan por acá: esos los detecta
+<code>invalidar_texto_actuacion_por_cambio_de_datos</code> (<code>pre_save</code> sobre <code>Solicitud</code>) y
+<a href="invalidar_texto_actuacion_por_comisionados.md">invalidar_texto_actuacion_por_comisionados</a>,
+que delegan en <a href="_invalidar_incorporacion_de_solicitud.md">_invalidar_incorporacion_de_solicitud</a>
+para propagar la invalidación hacia la Incorporacion.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def invalidar_texto_incorporacion_por_cambio_de_datos(sender, instance, **kwargs):
+</code></pre>
+<h2>Uso real</h2>
+<p>No se llama nunca directamente — se dispara solo en cada <code>Incorporacion.save()</code>, típicamente
+desde <code>UpdateIncorporacion</code> o desde <code>revisar_texto_actuacion</code> al persistir el texto de la
+incorporación (mismo mecanismo que en Solicitud: como ahí ningún otro campo cambia, el
+texto recién guardado sobrevive).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="_valor_comparable.md">_valor_comparable</a></li>
+<li><a href="invalidar_texto_actuacion_por_cambio_de_datos.md">invalidar_texto_actuacion_por_cambio_de_datos</a> — misma lógica, para <code>Solicitud</code>.</li>
+<li><a href="../models/Incorporacion.md">Incorporacion</a></li>
+</ul>

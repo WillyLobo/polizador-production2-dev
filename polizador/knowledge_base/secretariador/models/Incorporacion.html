@@ -8,6 +8,13 @@ original. Sus propios <code>ComisionadoSolicitud</code> (vía
 original, no un reemplazo — ver <code>_calcular_texto_incorporacion</code> en
 <code>incorporacionviews.py</code>, que arma el <code>.docx</code> mencionando tanto los agentes originales
 como los incorporados.</p>
+<p><code>incorporacion_texto_actuacion</code> es el mismo mecanismo que <code>Solicitud.solicitud_texto_actuacion</code>:
+texto editado a mano que gana sobre el recién calculado si está presente. Como el texto de
+una Incorporacion también depende de datos de su <code>incorporacion_solicitud</code> (resolución,
+fechas, tareas, localidades, agentes originales), los receivers de
+<code>secretariador/signals.py</code> invalidan <code>incorporacion_texto_actuacion</code> tanto ante cambios
+propios como ante cambios en la Solicitud asociada o en sus agentes — ver
+<a href="../signals/invalidar_texto_incorporacion_por_cambio_de_datos.md">invalidar_texto_incorporacion_por_cambio_de_datos</a>.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class Incorporacion(models.Model):
 </code></pre>

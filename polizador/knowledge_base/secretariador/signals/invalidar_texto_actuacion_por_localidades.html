@@ -1,0 +1,41 @@
+<h1>invalidar_texto_actuacion_por_localidades</h1>
+<p><strong>Módulo:</strong> <code>secretariador/signals.py</code> (líneas 121-124) · receiver de <code>m2m_changed</code> sobre <code>Solicitud.solicitud_localidades.through</code></p>
+<h2>Propósito</h2>
+<p><code>solicitud_localidades</code> es un <code>ManyToManyField</code>, así que agregar/quitar una localidad no
+pasa por <code>Solicitud.save()</code> — Django lo maneja con <code>add()</code>/<code>remove()</code>/<code>clear()</code> sobre la
+tabla intermedia, sin disparar <code>pre_save</code>/<code>post_save</code> de <code>Solicitud</code>. Como
+<code>_calcular_texto_solicitud</code>/<code>_calcular_texto_incorporacion</code> sí usan
+<code>solicitud_localidades</code> (vía <code>docx_texto.generate_localidad_list</code>), esta señal aparte es
+necesaria: sin ella, cambiar las localidades de una Solicitud no invalidaría el texto
+guardado, igual que el bug original con fechas/agentes/vehículo.</p>
+<p>Solo actúa en <code>post_add</code>/<code>post_remove</code>/<code>post_clear</code> (después de que el cambio ya se
+aplicó a la tabla intermedia) — ignora <code>pre_add</code>/<code>pre_remove</code>/<code>pre_clear</code> para no
+invalidar dos veces por la misma operación. Invalida tanto el texto de la propia
+Solicitud como el de su Incorporacion asociada, si tiene una.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def invalidar_texto_actuacion_por_localidades(sender, instance, action, **kwargs):
+</code></pre>
+<h2>Uso real</h2>
+<p>No se llama nunca directamente — Django la dispara sola en cada
+<code>solicitud.solicitud_localidades.add(...)</code>/<code>.remove(...)</code>/<code>.clear()</code>. En la práctica, la
+dispara <code>form.save_m2m()</code>, que <code>UpdateView</code>/<code>CreateView</code> llaman automáticamente después de
+<code>form.save()</code> cuando el <code>ModelForm</code> incluye un campo m2m (<code>solicitud_localidades</code> está en
+<code>SolicitudForm.Meta.fields</code>).</p>
+<h2>Flujo de datos</h2>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant U as UpdateSolicitud.form_valid
+    participant M2M as solicitud_localidades (m2m)
+    participant Sig as invalidar_texto_actuacion_por_localidades
+
+    U-&gt;&gt;M2M: form.save_m2m() (tras form.save())
+    M2M--&gt;&gt;Sig: m2m_changed (action=post_add/post_remove/post_clear)
+    Sig-&gt;&gt;Sig: _invalidar_texto_solicitud(instance.pk)
+    Sig-&gt;&gt;Sig: _invalidar_incorporacion_de_solicitud(instance.pk)
+</code></pre>
+<h2>Ver también</h2>
+<ul>
+<li><a href="_invalidar_texto_solicitud.md">_invalidar_texto_solicitud</a></li>
+<li><a href="_invalidar_incorporacion_de_solicitud.md">_invalidar_incorporacion_de_solicitud</a></li>
+<li><a href="invalidar_texto_actuacion_por_cambio_de_datos.md">invalidar_texto_actuacion_por_cambio_de_datos</a> — misma invalidación, para los campos escalares de Solicitud.</li>
+<li><a href="../models/Solicitud.md">Solicitud</a></li>
+</ul>

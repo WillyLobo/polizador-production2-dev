@@ -28,3 +28,5 @@ def _generar_incorporacion_docx(actuacion):
 ## Ver también
 
 - [_calcular_texto_incorporacion](_calcular_texto_incorporacion.md)
+- [_generar_solicitud_docx](../solicitudviews/_generar_solicitud_docx.md) — mismo patrón, con la nota sobre invalidación del texto guardado.
+- [invalidar_texto_incorporacion_por_cambio_de_datos](../../signals/invalidar_texto_incorporacion_por_cambio_de_datos.md)

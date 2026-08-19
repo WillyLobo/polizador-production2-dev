@@ -22328,7 +22328,7 @@
     }
   },
   "secretariador": {
-    "generated_at": "2026-08-18T23:16:32.381819+00:00",
+    "generated_at": "2026-08-19T15:09:42.479787+00:00",
     "modules": {
       "forms/comisionadoform": {
         "file": "secretariador/forms/comisionadoform.py",
@@ -23033,6 +23033,11 @@
             ],
             "candidate_usages": [
               {
+                "file": "secretariador/views.py",
+                "line": 10,
+                "snippet": "from .forms.solicitudform import SolicitudForm"
+              },
+              {
                 "file": "secretariador/views/solicitudviews.py",
                 "line": 164,
                 "snippet": "form_class = SolicitudForm"
@@ -23230,29 +23235,29 @@
             ],
             "candidate_usages": [
               {
+                "file": "secretariador/signals.py",
+                "line": 4,
+                "snippet": "from .models import ComisionadoSolicitud, Incorporacion, Solicitud"
+              },
+              {
+                "file": "secretariador/signals.py",
+                "line": 7,
+                "snippet": "# `solicitud_localidades` (m2m) y los agentes (ComisionadoSolicitud) se manejan aparte."
+              },
+              {
+                "file": "secretariador/signals.py",
+                "line": 127,
+                "snippet": "@receiver(post_save, sender=ComisionadoSolicitud)"
+              },
+              {
+                "file": "secretariador/signals.py",
+                "line": 128,
+                "snippet": "@receiver(post_delete, sender=ComisionadoSolicitud)"
+              },
+              {
                 "file": "secretariador/views/delete_inlines.py",
                 "line": 8,
                 "snippet": "from secretariador.models import ComisionadoSolicitud"
-              },
-              {
-                "file": "secretariador/views/delete_inlines.py",
-                "line": 17,
-                "snippet": "comisionado = ComisionadoSolicitud.objects.get(id=pk)"
-              },
-              {
-                "file": "secretariador/views/delete_inlines.py",
-                "line": 18,
-                "snippet": "except ComisionadoSolicitud.DoesNotExist:"
-              },
-              {
-                "file": "secretariador/views/delete_inlines.py",
-                "line": 34,
-                "snippet": "comisionado = ComisionadoSolicitud.objects.get(id=pk)"
-              },
-              {
-                "file": "secretariador/views/delete_inlines.py",
-                "line": 35,
-                "snippet": "except ComisionadoSolicitud.DoesNotExist:"
               }
             ],
             "decorators": [],
@@ -23482,24 +23487,24 @@
                 "snippet": "comisionadosolicitud_incorporacion_foreign = models.ForeignKey(\"Incorporacion\", on_delete=models.CASCADE, null=True, blank=True)"
               },
               {
-                "file": "secretariador/views/incorporacionviews.py",
-                "line": 9,
-                "snippet": "from secretariador.models import EncabezadoDocumento, Incorporacion, InstrumentosLegalesDecretos"
+                "file": "secretariador/signals.py",
+                "line": 4,
+                "snippet": "from .models import ComisionadoSolicitud, Incorporacion, Solicitud"
               },
               {
-                "file": "secretariador/views/incorporacionviews.py",
-                "line": 120,
-                "snippet": "actuacion = Incorporacion.objects.get(pk=pk)"
+                "file": "secretariador/signals.py",
+                "line": 24,
+                "snippet": "# `actuacion.incorporacion_solicitud.<campo>`) para la Incorporacion asociada,"
               },
               {
-                "file": "secretariador/views/incorporacionviews.py",
-                "line": 137,
-                "snippet": "actuacion = Incorporacion.objects.get(pk=pk)"
+                "file": "secretariador/signals.py",
+                "line": 26,
+                "snippet": "# no se usa en el texto de la propia Solicitud, pero sí en el de su Incorporacion."
               },
               {
-                "file": "secretariador/views/incorporacionviews.py",
-                "line": 149,
-                "snippet": "model = Incorporacion"
+                "file": "secretariador/signals.py",
+                "line": 36,
+                "snippet": "# Campos propios de Incorporacion que alimentan `_calcular_texto_incorporacion`"
               }
             ],
             "decorators": [],
@@ -23817,6 +23822,11 @@
             ],
             "candidate_usages": [
               {
+                "file": "secretariador/views.py",
+                "line": 9,
+                "snippet": "from secretariador.models import Organigrama, Vehiculo, Solicitud"
+              },
+              {
                 "file": "secretariador/forms/organigramaform.py",
                 "line": 2,
                 "snippet": "from secretariador.models import Organigrama"
@@ -23945,14 +23955,14 @@
                 "snippet": "incorporacion_solicitud = models.ForeignKey(\"Solicitud\", help_text=\"Actuación a la que se incorpora los agentes.\", on_delete=models.CASCADE)"
               },
               {
-                "file": "secretariador/views/incorporacionviews.py",
-                "line": 21,
-                "snippet": "incorporación de agentes a una Solicitud ya resuelta.\"\"\""
+                "file": "secretariador/signals.py",
+                "line": 4,
+                "snippet": "from .models import ComisionadoSolicitud, Incorporacion, Solicitud"
               },
               {
-                "file": "secretariador/views/incorporacionviews.py",
-                "line": 277,
-                "snippet": "# \tmodel = Solicitud"
+                "file": "secretariador/signals.py",
+                "line": 6,
+                "snippet": "# Campos de Solicitud que alimentan `_calcular_texto_solicitud`/`_calcular_texto_exterior`."
               }
             ],
             "decorators": [],
@@ -24043,6 +24053,11 @@
                 "snippet": "solicitud_vehiculo = models.ForeignKey(\"Vehiculo\", on_delete=models.CASCADE, blank=True, null=True)"
               },
               {
+                "file": "secretariador/views.py",
+                "line": 9,
+                "snippet": "from secretariador.models import Organigrama, Vehiculo, Solicitud"
+              },
+              {
                 "file": "secretariador/views/vehiculoviews.py",
                 "line": 8,
                 "snippet": "from secretariador.models import Vehiculo"
@@ -24056,11 +24071,6 @@
                 "file": "secretariador/views/vehiculoviews.py",
                 "line": 21,
                 "snippet": "title = \"Crear Vehiculo\""
-              },
-              {
-                "file": "secretariador/views/vehiculoviews.py",
-                "line": 35,
-                "snippet": "model = Vehiculo"
               }
             ],
             "decorators": [],
@@ -24191,6 +24201,251 @@
             "page_path": "secretariador/models/generate_name_resoluciones",
             "signature": "def generate_name_resoluciones(instance, filename):",
             "signature_hash": "sha1:9d310800c5aedcfa18bd19ba0bbffe2c68beda04",
+            "stale": false
+          }
+        }
+      },
+      "signals": {
+        "file": "secretariador/signals.py",
+        "symbols": {
+          "_invalidar_incorporacion_de_solicitud": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/signals.py",
+                "line": 106,
+                "snippet": "_invalidar_incorporacion_de_solicitud(instance.pk)"
+              },
+              {
+                "file": "secretariador/signals.py",
+                "line": 124,
+                "snippet": "_invalidar_incorporacion_de_solicitud(instance.pk)"
+              },
+              {
+                "file": "secretariador/signals.py",
+                "line": 133,
+                "snippet": "_invalidar_incorporacion_de_solicitud(instance.comisionadosolicitud_foreign_id)"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Invalida el texto de la Incorporacion asociada a esta Solicitud, si existe\n(relación 1 a 1 en la práctica: `unique_incorporacion_1` sobre `incorporacion_solicitud`).",
+            "kind": "function",
+            "lines": [
+              74,
+              80
+            ],
+            "methods": [],
+            "module": "secretariador/signals.py",
+            "name": "_invalidar_incorporacion_de_solicitud",
+            "page_path": "secretariador/signals/_invalidar_incorporacion_de_solicitud",
+            "signature": "def _invalidar_incorporacion_de_solicitud(solicitud_id):",
+            "signature_hash": "sha1:de528274e4b4a4506dde5f87884de9488182ac71",
+            "stale": false
+          },
+          "_invalidar_texto": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/signals.py",
+                "line": 67,
+                "snippet": "_invalidar_texto(Solicitud, solicitud_id, \"solicitud_texto_actuacion\")"
+              },
+              {
+                "file": "secretariador/signals.py",
+                "line": 71,
+                "snippet": "_invalidar_texto(Incorporacion, incorporacion_id, \"incorporacion_texto_actuacion\")"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              57,
+              63
+            ],
+            "methods": [],
+            "module": "secretariador/signals.py",
+            "name": "_invalidar_texto",
+            "page_path": "secretariador/signals/_invalidar_texto",
+            "signature": "def _invalidar_texto(model, pk, campo_texto):",
+            "signature_hash": "sha1:5035a1850b57f2a644f3a2848db136a0a2f94607",
+            "stale": false
+          },
+          "_invalidar_texto_incorporacion": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/signals.py",
+                "line": 80,
+                "snippet": "_invalidar_texto_incorporacion(incorporacion_id)"
+              },
+              {
+                "file": "secretariador/signals.py",
+                "line": 135,
+                "snippet": "_invalidar_texto_incorporacion(instance.comisionadosolicitud_incorporacion_foreign_id)"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              70,
+              71
+            ],
+            "methods": [],
+            "module": "secretariador/signals.py",
+            "name": "_invalidar_texto_incorporacion",
+            "page_path": "secretariador/signals/_invalidar_texto_incorporacion",
+            "signature": "def _invalidar_texto_incorporacion(incorporacion_id):",
+            "signature_hash": "sha1:f067fe861e7d87c0a666e8bbec43dd3499c093e4",
+            "stale": false
+          },
+          "_invalidar_texto_solicitud": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/signals.py",
+                "line": 123,
+                "snippet": "_invalidar_texto_solicitud(instance.pk)"
+              },
+              {
+                "file": "secretariador/signals.py",
+                "line": 132,
+                "snippet": "_invalidar_texto_solicitud(instance.comisionadosolicitud_foreign_id)"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              66,
+              67
+            ],
+            "methods": [],
+            "module": "secretariador/signals.py",
+            "name": "_invalidar_texto_solicitud",
+            "page_path": "secretariador/signals/_invalidar_texto_solicitud",
+            "signature": "def _invalidar_texto_solicitud(solicitud_id):",
+            "signature_hash": "sha1:97ee4da9c88d0e90cf5cb8c1d8363e4c10ce840c",
+            "stale": false
+          },
+          "_valor_comparable": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/signals.py",
+                "line": 101,
+                "snippet": "return any(anterior[campo] != _valor_comparable(instance, campo) for campo in lista)"
+              },
+              {
+                "file": "secretariador/signals.py",
+                "line": 116,
+                "snippet": "if any(anterior[campo] != _valor_comparable(instance, campo) for campo in CAMPOS_TEXTO_INCORPORACION):"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Normaliza el valor en memoria de `campo` al tipo que devuelve la\nconsulta a la base. Sin esto, comparar contra un valor recién asignado\npero todavía no \"pasado por\" el campo (p. ej. una fecha asignada como\nstring) contra el `date` que trae la fila existente dispararía una\ninvalidación espuria.",
+            "kind": "function",
+            "lines": [
+              45,
+              54
+            ],
+            "methods": [],
+            "module": "secretariador/signals.py",
+            "name": "_valor_comparable",
+            "page_path": "secretariador/signals/_valor_comparable",
+            "signature": "def _valor_comparable(instance, campo):",
+            "signature_hash": "sha1:09d5b09bf666ba1c899d928b5fd9012f0c8f8591",
+            "stale": false
+          },
+          "invalidar_texto_actuacion_por_cambio_de_datos": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "receiver(pre_save, sender=Solicitud)"
+            ],
+            "docstring": "`solicitud_texto_actuacion` (y, en cascada, `incorporacion_texto_actuacion`\nde la Incorporacion asociada) son snapshots editados a mano del texto de la\nresolución. Si después cambian los datos de la Solicitud que ese texto\ndescribe, el snapshot queda desactualizado y `editar_texto_solicitud`/\n`editar_texto_incorporacion` seguirían mostrándolo tal cual, sin reflejar\nel cambio (ver `revisar_texto_actuacion` en textoactuacionviews.py). Los\ninvalidamos acá para forzar el recálculo la próxima vez que se abra el\nformulario de texto o se genere el .docx.",
+            "kind": "function",
+            "lines": [
+              84,
+              106
+            ],
+            "methods": [],
+            "module": "secretariador/signals.py",
+            "name": "invalidar_texto_actuacion_por_cambio_de_datos",
+            "page_path": "secretariador/signals/invalidar_texto_actuacion_por_cambio_de_datos",
+            "signature": "def invalidar_texto_actuacion_por_cambio_de_datos(sender, instance, **kwargs):",
+            "signature_hash": "sha1:530b2400a6b8929ca6e04f61151d066fba766b10",
+            "stale": false
+          },
+          "invalidar_texto_actuacion_por_comisionados": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "receiver(post_save, sender=ComisionadoSolicitud)",
+              "receiver(post_delete, sender=ComisionadoSolicitud)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              129,
+              135
+            ],
+            "methods": [],
+            "module": "secretariador/signals.py",
+            "name": "invalidar_texto_actuacion_por_comisionados",
+            "page_path": "secretariador/signals/invalidar_texto_actuacion_por_comisionados",
+            "signature": "def invalidar_texto_actuacion_por_comisionados(sender, instance, **kwargs):",
+            "signature_hash": "sha1:1b04b9c05957f8334094b76727ac54ed73666a11",
+            "stale": false
+          },
+          "invalidar_texto_actuacion_por_localidades": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "receiver(m2m_changed, sender=Solicitud.solicitud_localidades.through)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              121,
+              124
+            ],
+            "methods": [],
+            "module": "secretariador/signals.py",
+            "name": "invalidar_texto_actuacion_por_localidades",
+            "page_path": "secretariador/signals/invalidar_texto_actuacion_por_localidades",
+            "signature": "def invalidar_texto_actuacion_por_localidades(sender, instance, action, **kwargs):",
+            "signature_hash": "sha1:d489b1147fffc41f1d1cab8e4c6969cd03ed35dc",
+            "stale": false
+          },
+          "invalidar_texto_incorporacion_por_cambio_de_datos": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "receiver(pre_save, sender=Incorporacion)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              110,
+              117
+            ],
+            "methods": [],
+            "module": "secretariador/signals.py",
+            "name": "invalidar_texto_incorporacion_por_cambio_de_datos",
+            "page_path": "secretariador/signals/invalidar_texto_incorporacion_por_cambio_de_datos",
+            "signature": "def invalidar_texto_incorporacion_por_cambio_de_datos(sender, instance, **kwargs):",
+            "signature_hash": "sha1:8a7da2d52dbffa360ba759720abec8e571cb64ac",
             "stale": false
           }
         }
@@ -25108,6 +25363,16 @@
             "bases": [],
             "candidate_usages": [
               {
+                "file": "secretariador/signals.py",
+                "line": 23,
+                "snippet": "# Campos de Solicitud que además alimentan `_calcular_texto_incorporacion` (vía"
+              },
+              {
+                "file": "secretariador/signals.py",
+                "line": 36,
+                "snippet": "# Campos propios de Incorporacion que alimentan `_calcular_texto_incorporacion`"
+              },
+              {
                 "file": "secretariador/views/incorporacionviews.py",
                 "line": 92,
                 "snippet": "visto_texto, _parrafos_default, _articulo_uno_default, _articulo_dos_default = _calcular_texto_incorporacion(actuacion)"
@@ -25166,7 +25431,13 @@
           "editar_texto_incorporacion": {
             "authored": true,
             "bases": [],
-            "candidate_usages": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/signals.py",
+                "line": 89,
+                "snippet": "`editar_texto_incorporacion` seguirían mostrándolo tal cual, sin reflejar"
+              }
+            ],
             "decorators": [
               "login_required",
               "permission_required('secretariador.change_incorporacion', raise_exception=True)"
@@ -26489,6 +26760,11 @@
             "bases": [],
             "candidate_usages": [
               {
+                "file": "secretariador/signals.py",
+                "line": 6,
+                "snippet": "# Campos de Solicitud que alimentan `_calcular_texto_solicitud`/`_calcular_texto_exterior`."
+              },
+              {
                 "file": "secretariador/views/solicitud_exteriorviews.py",
                 "line": 109,
                 "snippet": "visto_texto, _parrafos_default, _articulo_uno_default, _articulo_dos_default = _calcular_texto_exterior(actuacion)"
@@ -26732,6 +27008,11 @@
             "bases": [],
             "candidate_usages": [
               {
+                "file": "secretariador/signals.py",
+                "line": 6,
+                "snippet": "# Campos de Solicitud que alimentan `_calcular_texto_solicitud`/`_calcular_texto_exterior`."
+              },
+              {
                 "file": "secretariador/views/solicitud_exteriorviews.py",
                 "line": 22,
                 "snippet": "\"\"\"Igual que `solicitudviews._calcular_texto_solicitud` pero con la"
@@ -26795,7 +27076,13 @@
           "editar_texto_solicitud": {
             "authored": true,
             "bases": [],
-            "candidate_usages": [],
+            "candidate_usages": [
+              {
+                "file": "secretariador/signals.py",
+                "line": 88,
+                "snippet": "describe, el snapshot queda desactualizado y `editar_texto_solicitud`/"
+              }
+            ],
             "decorators": [
               "login_required",
               "permission_required('secretariador.change_solicitud', raise_exception=True)"
@@ -26871,6 +27158,11 @@
             "bases": [],
             "candidate_usages": [
               {
+                "file": "secretariador/signals.py",
+                "line": 90,
+                "snippet": "el cambio (ver `revisar_texto_actuacion` en textoactuacionviews.py). Los"
+              },
+              {
                 "file": "secretariador/views/incorporacionviews.py",
                 "line": 16,
                 "snippet": "from secretariador.views.textoactuacionviews import revisar_texto_actuacion"
@@ -26889,11 +27181,6 @@
                 "file": "secretariador/views/solicitud_exteriorviews.py",
                 "line": 139,
                 "snippet": "return revisar_texto_actuacion("
-              },
-              {
-                "file": "secretariador/views/solicitudviews.py",
-                "line": 16,
-                "snippet": "from secretariador.views.textoactuacionviews import revisar_texto_actuacion"
               }
             ],
             "decorators": [],
