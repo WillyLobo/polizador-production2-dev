@@ -113,7 +113,7 @@ class InstrumentosLegalesMemorandum(models.Model):
     instrumentolegalmemorandum_ano = models.CharField("Año", max_length=5)
     instrumentolegalmemorandum_fecha_aprobacion = models.DateField("Fecha de Aprobación", default=timezone.now)
     instrumentolegalmemorandum_descripcion = models.CharField("Descripción", max_length=600, default="")
-    instrumentolegalmemorandum = models.FileField(upload_to=generate_name_memorandum, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], null=True, blank=True)
+    instrumentolegalmemorandum = models.FileField(upload_to=generate_name_memorandum, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], null=True, blank=True)
     instrumentolegalmemorandum_str = GeneratedField(
         expression=ConcatOp(Cast('instrumentolegalmemorandum_numero', output_field=models.TextField()), models.Value(" - "), 'instrumentolegalmemorandum_ano', models.Value(" - "), 'instrumentolegalmemorandum_tipo'),
         output_field=models.TextField(),
@@ -170,7 +170,7 @@ class InstrumentosLegalesResoluciones(models.Model):
     instrumentolegalresoluciones_estado_escaneo = models.CharField("Estado del escaneo", max_length=1, choices=ESTADO_ESCANEO, default="N")
     instrumentolegalresoluciones_ad_referendum = models.BooleanField("Ad referendum", default=False)
     instrumentolegalresoluciones_accion = models.CharField("Acción", max_length=3, choices=ACCION, blank=True, null=True)
-    instrumentolegalresoluciones = models.FileField(upload_to=generate_name_resoluciones, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], null=True, blank=True)
+    instrumentolegalresoluciones = models.FileField(upload_to=generate_name_resoluciones, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], null=True, blank=True)
     instrumentolegalresoluciones_str = GeneratedField(
         expression=models.Case(
             models.When(
@@ -244,7 +244,7 @@ class InstrumentosLegalesDecretos(models.Model):
     instrumentolegaldecretos_ano = models.CharField("Año", max_length=5)
     instrumentolegaldecretos_fecha_aprobacion = models.DateField("Fecha de Aprobación", default=timezone.now)
     instrumentolegaldecretos_descripcion = models.CharField("Descripción", max_length=600, default="Escala de viáticos")
-    instrumentolegaldecretos = models.FileField(upload_to=generate_name_decretos, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], null=True, blank=True)
+    instrumentolegaldecretos = models.FileField(upload_to=generate_name_decretos, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], null=True, blank=True)
     instrumentolegaldecretos_str = GeneratedField(
         expression=ConcatOp(Cast('instrumentolegaldecretos_numero', output_field=models.TextField()), models.Value(" - "), 'instrumentolegaldecretos_ano', models.Value(" - "), 'instrumentolegaldecretos_tipo'),
         output_field=models.TextField(),

@@ -182,7 +182,7 @@ class Poliza(models.Model):
     poliza_obra = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.CASCADE)
     poliza_monto_pesos = models.DecimalField("Monto Sustituido en Pesos", max_digits=15, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)])
     poliza_monto_uvi = models.DecimalField("Monto Sustituido en UVI", max_digits=15, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)])
-    poliza_digital = models.FileField(verbose_name="Póliza Digital", upload_to=generate_name_polizas, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], max_length=500, null=True, blank=True)
+    poliza_digital = models.FileField(verbose_name="Póliza Digital", upload_to=generate_name_polizas, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], max_length=500, null=True, blank=True)
     poliza_history = HistoricalRecords()
     
     def __str__(self):
@@ -781,7 +781,7 @@ class Certificado(models.Model):
         output_field=models.DecimalField("Monto a Cobrar UVI", max_digits=12, decimal_places=2, default=0, editable=False),
         db_persist=True
     )
-    certificado_digital = models.FileField(upload_to=generate_name_certificados, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], null=True, blank=True)
+    certificado_digital = models.FileField(upload_to=generate_name_certificados, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], null=True, blank=True)
     certificado_fecha_carga = models.DateField("Fecha de carga", default=timezone.now)
     certificado_fecha_carga_legacy = models.BooleanField("Es Certificado Viejo", default=False)
     certificado_foja = models.ForeignKey("FojaDeMedicion", verbose_name="Foja de Medición de Origen", on_delete=models.SET_NULL, null=True, blank=True)
@@ -931,7 +931,7 @@ class PlanDeTrabajosRubro(models.Model):
     rubro_orden = models.PositiveIntegerField("Orden", default=0)
     rubro_presupuesto = models.DecimalField("Presupuesto", max_digits=15, decimal_places=2, default=0, validators=[MinValueValidator(0)])
     rubro_anterior = models.ForeignKey("self", verbose_name="Rubro Anterior (Plan Previo)", on_delete=models.SET_NULL, null=True, blank=True, related_name="rubro_siguiente")
-    rubro_documento_digital = models.FileField(verbose_name="Documento Digital", upload_to=generate_name_rubro_documento, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], max_length=500, null=True, blank=True)
+    rubro_documento_digital = models.FileField(verbose_name="Documento Digital", upload_to=generate_name_rubro_documento, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], max_length=500, null=True, blank=True)
     rubro_contratomonto = models.ForeignKey("ContratoMonto", verbose_name="Monto de Contrato", on_delete=models.SET_NULL, null=True, blank=True, related_name="rubros_plan")
     rubro_certificado_rubro = models.ForeignKey(
         "CertificadoRubro",
@@ -1393,7 +1393,7 @@ class ContratosDigitales(models.Model):
     contratodigital_nombre_archivo = models.CharField("Nombre del Archivo", max_length=100, blank=True, null=True)
     contratodigital_descripcion = models.TextField("Descripción")
     contratodigital_tipo = models.ForeignKey("ContratoRubro", verbose_name="Rubro Contrato", on_delete=models.CASCADE)
-    contratodigital_archivo = models.FileField(upload_to=generate_name_contratos, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf"))], max_length=500, null=True, blank=True)
+    contratodigital_archivo = models.FileField(upload_to=generate_name_contratos, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], max_length=500, null=True, blank=True)
     contratodigital_history = HistoricalRecords()
 
 class Uvi(models.Model):
