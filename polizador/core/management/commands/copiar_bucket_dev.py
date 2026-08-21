@@ -11,6 +11,10 @@ COLDLINE, ya que en dev no hace falta acceso frecuente).
     python manage.py copiar_bucket_dev
     python manage.py copiar_bucket_dev --dry-run
     python manage.py copiar_bucket_dev --overwrite --storage-class NEARLINE
+    python manage.py copiar_bucket_dev --exclude-prefix pg_backup/
+
+Por default excluye pg_backup/ (backups de la base, no tiene sentido llevarlos
+a dev). Pasar --exclude-prefix "" para copiar también esos objetos.
 """
 from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
@@ -37,6 +41,10 @@ class Command(BaseCommand):
             "--dry-run", action="store_true",
             help="No copia nada, solo informa cuántos objetos copiaría/saltearía.",
         )
+        parser.add_argument(
+            "--exclude-prefix", default="pg_backup/",
+            help='Prefijo de objetos a excluir de la copia (default: "pg_backup/"). Vacío para copiar todo.',
+        )
 
     def handle(self, *args, **options):
         if not settings.GS_CREDENTIALS:
@@ -50,6 +58,7 @@ class Command(BaseCommand):
         storage_class = options["storage_class"]
         overwrite = options["overwrite"]
         dry_run = options["dry_run"]
+        exclude_prefix = options["exclude_prefix"]
 
         client = storage.Client(credentials=settings.GS_CREDENTIALS, project=settings.GS_CREDENTIALS.project_id)
         source_bucket = client.bucket(source_name)
@@ -61,9 +70,14 @@ class Command(BaseCommand):
 
         copiados = 0
         salteados = 0
+        excluidos = 0
         errores = 0
 
         for source_blob in client.list_blobs(source_name):
+            if exclude_prefix and source_blob.name.startswith(exclude_prefix):
+                excluidos += 1
+                continue
+
             tamano_existente = existentes.get(source_blob.name)
             if not overwrite and tamano_existente == source_blob.size:
                 salteados += 1
@@ -98,5 +112,5 @@ class Command(BaseCommand):
         accion = "Se copiarían" if dry_run else "Copiados"
         self.stdout.write(self.style.SUCCESS(
             f"{accion} {copiados} objeto(s) a gs://{destination_name}/ "
-            f"({salteados} ya estaban igual, {errores} error(es))."
+            f"({salteados} ya estaban igual, {excluidos} excluidos por prefijo, {errores} error(es))."
         ))
