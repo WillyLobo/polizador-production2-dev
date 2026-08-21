@@ -1,0 +1,20 @@
+<h1>CrearPeriodoLicencia</h1>
+<p><strong>Módulo:</strong> <code>personalizador/views/periodolicenciaviews.py</code> (líneas 21-37) · hereda de <code>PermissionRequiredMixin, generic.CreateView</code></p>
+<h2>Propósito</h2>
+<p>Alta de <code>PeriodoLicencia</code> vía <code>ModelForm</code> estándar. <code>get_initial()</code> precarga
+<code>periodolicencia_categoria</code>/<code>periodolicencia_anio</code> desde querystring (<code>?categoria=&amp;anio=</code>)
+— es el link que ofrece <code>ControlLicenciasAgente</code> cuando el período que le corresponde a
+un año todavía no existe.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CrearPeriodoLicencia(PermissionRequiredMixin, generic.CreateView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearPeriodoLicencia</code> (<code>personalizador:crear-periodolicencia</code>), enlazada desde
+<code>Lista-periodolicencias.html</code> y desde <code>control-licencias.html</code> cuando falta el período
+del año seleccionado.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/PeriodoLicencia.md">PeriodoLicencia</a></li>
+<li><a href="../../forms/periodolicenciaforms/PeriodoLicenciaForm.md">PeriodoLicenciaForm</a></li>
+<li><a href="../licenciapermisoviews/ControlLicenciasAgente.md">ControlLicenciasAgente</a></li>
+</ul>

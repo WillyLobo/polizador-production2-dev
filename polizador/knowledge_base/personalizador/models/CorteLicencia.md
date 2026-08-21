@@ -2,14 +2,14 @@
 symbol: CorteLicencia
 kind: class
 module: personalizador/models.py
-lines: 626-702
-signature_hash: sha1:f51a56c62c6506909f9309a70afe2d2eb159806e
+lines: 753-829
+signature_hash: sha1:39381922ce6552dabcd90058ac35d8d2fc92b872
 authored: true
 ---
 
 # CorteLicencia
 
-**Módulo:** `personalizador/models.py` (líneas 626-702) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 753-829) · hereda de `models.Model`
 
 ## Propósito
 
@@ -29,6 +29,11 @@ usó vía `usos_saldo` (la relación inversa desde `LicenciaPermiso.licenciaperm
 sumando solo registros no anulados) — es el número que decide si un corte todavía tiene
 algo para ofrecer. `vencido` combina eso con la fecha de vencimiento.
 
+`dias_restantes` también se usa desde `LicenciaPermiso.clean()` para bloquear un
+adelanto de Art. 10: si el agente tiene un `CorteLicencia` con saldo pendiente sobre un
+[PeriodoLicencia](PeriodoLicencia.md) `LOR_ANUAL` anterior al que se está adelantando, la
+carga se rechaza hasta resolverlo.
+
 ## Firma
 
 ```python
@@ -42,3 +47,4 @@ class CorteLicencia(models.Model):
 ## Ver también
 
 - [LicenciaPermiso](LicenciaPermiso.md)
+- [PeriodoLicencia](PeriodoLicencia.md)

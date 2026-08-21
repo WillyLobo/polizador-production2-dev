@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+{% block title %}<title>{{object}}</title>{% endblock title %}
+
+{{ form.media.css }}
+<form id="mainForm" action="{% url "personalizador:update-periodolicencia" object.id %}" method="POST">
+  {% csrf_token %}
+  {% include "partials/periodolicencia-form-partial.html" %}
+</form>
+{{ form.media.js }}
+{% endblock %}
+
+{% block actions %}
+  {% url 'personalizador:lista-periodolicencias' as volver_target %}
+  {% include "partials/form-actions.html" with volver_url=volver_target %}
+{% endblock %}

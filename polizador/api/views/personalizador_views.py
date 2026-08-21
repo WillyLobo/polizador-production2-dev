@@ -24,7 +24,7 @@ from personalizador.models import (
     Agente, ApartadoCargo, ActividadEspecifica, CargoTipo, Categoria, CEIC,
     ComisionadoExterno, Departamento, DenominacionCargo, Direccion, Directorio,
     Gerencia, GeneroAgente, GrupoCargo, Oficina, RepresentanteTecnico, TituloProfesional,
-    LicenciaPermiso, TipoLicenciaPermiso,
+    LicenciaPermiso, PeriodoLicencia, TipoLicenciaPermiso,
 )
 from personalizador.licencias import (
     balance_tipo, resumen_agente, saldos_pendientes_agente,
@@ -904,6 +904,48 @@ register_simple_datatable(
     row_builder=_tipolicenciapermiso_datatable_row,
     default_order="tipolicenciapermiso_categoria",
     boolean_filter_keys=frozenset({"tipolicenciapermiso_activo"}),
+)
+
+
+# --- PeriodoLicencia datatable ---
+def _periodolicencia_datatable_row(p: PeriodoLicencia, user) -> dict:
+    id_ = p.id
+    acciones = _simple_acciones(
+        user, "personalizador.delete_periodolicencia", "personalizador.change_periodolicencia",
+        f"<a href='/personal/licencias/periodos/crear/{id_}'>{editlinkimg}</a>",
+        f"<a href='/personal/licencias/periodos/eliminar/{id_}'>{eliminarlinkimg}</a>",
+    )
+    if p.periodolicencia_categoria == "LOR_ANUAL":
+        turno1, turno2 = "—", "—"
+    else:
+        turno1 = f"{p.periodolicencia_turno1_desde} al {p.periodolicencia_turno1_hasta}"
+        turno2 = f"{p.periodolicencia_turno2_desde} al {p.periodolicencia_turno2_hasta}"
+    return {
+        "id": p.id,
+        "periodolicencia_categoria": p.get_periodolicencia_categoria_display(),
+        "periodolicencia_anio": p.periodolicencia_anio,
+        "periodolicencia_apertura": p.periodolicencia_apertura or "—",
+        "periodolicencia_fecha_limite_solicitud": p.periodolicencia_fecha_limite_solicitud or "—",
+        "periodolicencia_turno1": turno1,
+        "periodolicencia_turno2": turno2,
+        "acciones": acciones,
+    }
+
+
+register_simple_datatable(
+    router, PeriodoLicencia, "periodolicencias",
+    order_fields={
+        "id": "id",
+        "periodolicencia_categoria": "periodolicencia_categoria",
+        "periodolicencia_anio": "periodolicencia_anio",
+    },
+    filter_fields={
+        "periodolicencia_categoria": "periodolicencia_categoria",
+        "periodolicencia_anio": "periodolicencia_anio",
+    },
+    search_lookups=[],
+    row_builder=_periodolicencia_datatable_row,
+    default_order="-periodolicencia_anio",
 )
 
 

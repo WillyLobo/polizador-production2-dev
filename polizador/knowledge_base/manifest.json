@@ -1,6 +1,6 @@
 {
   "api": {
-    "generated_at": "2026-08-18T23:39:26.333485+00:00",
+    "generated_at": "2026-08-21T17:14:28.958923+00:00",
     "modules": {
       "views/carga_views": {
         "file": "api/views/carga_views.py",
@@ -4137,6 +4137,31 @@
             "signature_hash": "sha1:e409d70aeb507d669b6c66bf384861560135a64a",
             "stale": false
           },
+          "_periodolicencia_datatable_row": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "api/views/personalizador_views.py",
+                "line": 947,
+                "snippet": "row_builder=_periodolicencia_datatable_row,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              911,
+              932
+            ],
+            "methods": [],
+            "module": "api/views/personalizador_views.py",
+            "name": "_periodolicencia_datatable_row",
+            "page_path": "api/views/personalizador_views/_periodolicencia_datatable_row",
+            "signature": "def _periodolicencia_datatable_row(p: PeriodoLicencia, user) -> dict:",
+            "signature_hash": "sha1:7363e0fbb8e59b05f9bccb9b2a777a5b71b14d71",
+            "stale": false
+          },
           "_representantetecnico_datatable_row": {
             "authored": true,
             "bases": [],
@@ -4456,15 +4481,15 @@
             "docstring": "Días/horas correspondientes, usados y disponibles de `tipo` para `agente` en\n`anio` (año actual por defecto). Para la Licencia Anual Ordinaria, `correspondientes`\nya viene calculado según la antigüedad del agente (ver `licencias.balance_tipo`).",
             "kind": "function",
             "lines": [
-              912,
-              925
+              954,
+              967
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "licenciapermiso_balance",
             "page_path": "api/views/personalizador_views/licenciapermiso_balance",
             "signature": "def licenciapermiso_balance(request, agente: int, tipo: int, anio: int=None):",
-            "signature_hash": "sha1:fb565efc0ccb888dfdeaf4ad2f5c7bd7707be4d6",
+            "signature_hash": "sha1:1d8fe3e2142261858dbe6997879d75073ffc1d6b",
             "stale": false
           },
           "list_departamentos_personal": {
@@ -16795,7 +16820,7 @@
     }
   },
   "personalizador": {
-    "generated_at": "2026-08-18T23:05:02.756131+00:00",
+    "generated_at": "2026-08-21T17:14:27.028736+00:00",
     "modules": {
       "forms/actividadespecificaforms": {
         "file": "personalizador/forms/actividadespecificaforms.py",
@@ -17480,6 +17505,43 @@
           }
         }
       },
+      "forms/periodolicenciaforms": {
+        "file": "personalizador/forms/periodolicenciaforms.py",
+        "symbols": {
+          "PeriodoLicenciaForm": {
+            "authored": true,
+            "bases": [
+              "forms.ModelForm"
+            ],
+            "candidate_usages": [
+              {
+                "file": "personalizador/views/periodolicenciaviews.py",
+                "line": 26,
+                "snippet": "form_class = PeriodoLicenciaForm"
+              },
+              {
+                "file": "personalizador/views/periodolicenciaviews.py",
+                "line": 46,
+                "snippet": "form_class = PeriodoLicenciaForm"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              6,
+              30
+            ],
+            "methods": [],
+            "module": "personalizador/forms/periodolicenciaforms.py",
+            "name": "PeriodoLicenciaForm",
+            "page_path": "personalizador/forms/periodolicenciaforms/PeriodoLicenciaForm",
+            "signature": "class PeriodoLicenciaForm(forms.ModelForm):",
+            "signature_hash": "sha1:de687f8906bd7c24f808be5b96fa5d88c23e1c07",
+            "stale": false
+          }
+        }
+      },
       "forms/tipolicenciapermisoforms": {
         "file": "personalizador/forms/tipolicenciapermisoforms.py",
         "symbols": {
@@ -18004,7 +18066,7 @@
               },
               {
                 "file": "personalizador/models.py",
-                "line": 651,
+                "line": 778,
                 "snippet": "expression=ConcatOp('cortelicencia_nota_jurisdiccion', models.Value(\"-\"), 'cortelicencia_nota_numero', models.Value(\"-\"), 'cortelicencia_nota_ano'),"
               }
             ],
@@ -18031,12 +18093,17 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 553,
+                "line": 647,
                 "snippet": "\"CorteLicencia\", verbose_name=\"Usa saldo de corte\", related_name=\"usos_saldo\","
               },
               {
                 "file": "personalizador/models.py",
-                "line": 620,
+                "line": 730,
+                "snippet": "cortes_pendientes = CorteLicencia.objects.filter("
+              },
+              {
+                "file": "personalizador/models.py",
+                "line": 747,
                 "snippet": "\"\"\"Genera el nombre de archivo para el adjunto (nota) de un CorteLicencia.\"\"\""
               },
               {
@@ -18048,27 +18115,22 @@
                 "file": "personalizador/views/cortelicenciaviews.py",
                 "line": 18,
                 "snippet": "model = CorteLicencia"
-              },
-              {
-                "file": "personalizador/views/cortelicenciaviews.py",
-                "line": 46,
-                "snippet": "model = CorteLicencia"
               }
             ],
             "decorators": [],
             "docstring": "Interrupción de una Licencia Anual (Ordinaria o de Invierno) ya otorgada:\nel agente se reintegra a sus tareas por necesidades del organismo antes de agotar\nlos días, y el saldo pendiente queda disponible para usarse después (total o\nfraccionado, ver `LicenciaPermiso.licenciapermiso_saldo_de_corte`) hasta la fecha\nde vencimiento.",
             "kind": "class",
             "lines": [
-              626,
-              702
+              753,
+              829
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  663,
-                  686
+                  790,
+                  813
                 ],
                 "name": "clean",
                 "signature": "def clean(self):"
@@ -18079,8 +18141,8 @@
                 ],
                 "docstring": null,
                 "lines": [
-                  689,
-                  691
+                  816,
+                  818
                 ],
                 "name": "dias_usados_saldo",
                 "signature": "def dias_usados_saldo(self):"
@@ -18091,8 +18153,8 @@
                 ],
                 "docstring": null,
                 "lines": [
-                  694,
-                  695
+                  821,
+                  822
                 ],
                 "name": "dias_restantes",
                 "signature": "def dias_restantes(self):"
@@ -18103,8 +18165,8 @@
                 ],
                 "docstring": null,
                 "lines": [
-                  698,
-                  699
+                  825,
+                  826
                 ],
                 "name": "vencido",
                 "signature": "def vencido(self):"
@@ -18113,8 +18175,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  701,
-                  702
+                  828,
+                  829
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -18124,7 +18186,7 @@
             "name": "CorteLicencia",
             "page_path": "personalizador/models/CorteLicencia",
             "signature": "class CorteLicencia(models.Model):",
-            "signature_hash": "sha1:f51a56c62c6506909f9309a70afe2d2eb159806e",
+            "signature_hash": "sha1:39381922ce6552dabcd90058ac35d8d2fc92b872",
             "stale": false
           },
           "CustomUser": {
@@ -18301,16 +18363,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              704,
-              718
+              831,
+              845
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  717,
-                  718
+                  844,
+                  845
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -18320,7 +18382,7 @@
             "name": "DevolucionHorasPermiso",
             "page_path": "personalizador/models/DevolucionHorasPermiso",
             "signature": "class DevolucionHorasPermiso(models.Model):",
-            "signature_hash": "sha1:933a796883f7f939e62b9b557aef0681356496db",
+            "signature_hash": "sha1:f6d8e331f88fdcf3b37c7f9f7d9c4817a8a3d78e",
             "stale": false
           },
           "Direccion": {
@@ -18626,17 +18688,17 @@
               },
               {
                 "file": "personalizador/models.py",
-                "line": 630,
+                "line": 757,
                 "snippet": "fraccionado, ver `LicenciaPermiso.licenciapermiso_saldo_de_corte`) hasta la fecha"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 637,
+                "line": 764,
                 "snippet": "\"LicenciaPermiso\", verbose_name=\"Licencia interrumpida\","
               },
               {
                 "file": "personalizador/models.py",
-                "line": 710,
+                "line": 837,
                 "snippet": "devolucionhoras_licencia = models.ForeignKey(\"LicenciaPermiso\", verbose_name=\"Licencia/Permiso\", on_delete=models.CASCADE, related_name=\"devolucionhoras_set\")"
               },
               {
@@ -18649,16 +18711,16 @@
             "docstring": "Registro administrativo de una licencia/permiso ya otorgado a un agente (no hay\nflujo de solicitud/aprobación: se carga el hecho consumado, respaldado o no por un\ninstrumento legal formal).",
             "kind": "class",
             "lines": [
-              535,
-              617
+              629,
+              744
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  568,
-                  614
+                  667,
+                  741
                 ],
                 "name": "clean",
                 "signature": "def clean(self):"
@@ -18667,8 +18729,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  616,
-                  617
+                  743,
+                  744
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -18678,7 +18740,7 @@
             "name": "LicenciaPermiso",
             "page_path": "personalizador/models/LicenciaPermiso",
             "signature": "class LicenciaPermiso(models.Model):",
-            "signature_hash": "sha1:96a347e1bff42c97e02cf6e284ed494be5cf23c9",
+            "signature_hash": "sha1:c0693467e5c7ddc4d66737c0156cb55a5e90c39b",
             "stale": false
           },
           "Oficina": {
@@ -18749,6 +18811,106 @@
             "signature_hash": "sha1:ef6624976743e0278ca6749b9808a459b978b074",
             "stale": false
           },
+          "PeriodoLicencia": {
+            "authored": true,
+            "bases": [
+              "models.Model"
+            ],
+            "candidate_usages": [
+              {
+                "file": "personalizador/models.py",
+                "line": 550,
+                "snippet": "PeriodoLicencia LOR_ANUAL dado, la primera vez que se necesita (ver"
+              },
+              {
+                "file": "personalizador/models.py",
+                "line": 565,
+                "snippet": "periodolicenciaagente_periodo = models.ForeignKey(\"PeriodoLicencia\", verbose_name=\"Período\", on_delete=models.CASCADE)"
+              },
+              {
+                "file": "personalizador/models.py",
+                "line": 652,
+                "snippet": "\"PeriodoLicencia\", verbose_name=\"Período de Licencia\","
+              },
+              {
+                "file": "personalizador/views/periodolicenciaviews.py",
+                "line": 7,
+                "snippet": "from personalizador.models import PeriodoLicencia"
+              },
+              {
+                "file": "personalizador/views/periodolicenciaviews.py",
+                "line": 15,
+                "snippet": "model = PeriodoLicencia"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Ancla explícita de año calendario para los 3 tipos \"año-vencido\" de Licencia\nAnual (Art. 7, Art. 10 y Anual de Invierno, Ley 645-A). Reemplaza la inferencia\nimplícita de año que antes vivía en personalizador.licencias (via fecha_desde.year\n+/- corrimientos hardcodeados). Art. 7 y Art. 10 comparten el mismo período de un\naño dado (categoria LOR_ANUAL): Art. 10 no tiene cupo propio, adelanta días del\nmismo cupo de Art. 7. Anual de Invierno usa su propia categoría, con su propia\nestructura de fechas (2 turnos fijos por decreto, sin apertura/límite de estilo\nLOR_ANUAL).",
+            "kind": "class",
+            "lines": [
+              483,
+              545
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  527,
+                  542
+                ],
+                "name": "clean",
+                "signature": "def clean(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  544,
+                  545
+                ],
+                "name": "__str__",
+                "signature": "def __str__(self):"
+              }
+            ],
+            "module": "personalizador/models.py",
+            "name": "PeriodoLicencia",
+            "page_path": "personalizador/models/PeriodoLicencia",
+            "signature": "class PeriodoLicencia(models.Model):",
+            "signature_hash": "sha1:6dac056ca667c4d2fd47f92f2f1bda800c3301c8",
+            "stale": false
+          },
+          "PeriodoLicenciaAgente": {
+            "authored": true,
+            "bases": [
+              "models.Model"
+            ],
+            "candidate_usages": [],
+            "decorators": [],
+            "docstring": "Cupo (días correspondientes por antigüedad) congelado para un agente en un\nPeriodoLicencia LOR_ANUAL dado, la primera vez que se necesita (ver\npersonalizador.licencias.get_or_create_periodo_agente). Evita que una corrección\nposterior de Agente.fecha_ingreso altere retroactivamente balances de períodos ya\notorgados. No se usa para LOR_INVIERNO (esa licencia no tiene cupo por antigüedad).",
+            "kind": "class",
+            "lines": [
+              548,
+              574
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  573,
+                  574
+                ],
+                "name": "__str__",
+                "signature": "def __str__(self):"
+              }
+            ],
+            "module": "personalizador/models.py",
+            "name": "PeriodoLicenciaAgente",
+            "page_path": "personalizador/models/PeriodoLicenciaAgente",
+            "signature": "class PeriodoLicenciaAgente(models.Model):",
+            "signature_hash": "sha1:451166359266a828090e4590f3bc7a0382cfdbee",
+            "stale": false
+          },
           "RepresentanteTecnico": {
             "authored": true,
             "bases": [
@@ -18789,7 +18951,7 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 545,
+                "line": 639,
                 "snippet": "licenciapermiso_tipo = models.ForeignKey(\"TipoLicenciaPermiso\", verbose_name=\"Tipo\", on_delete=models.CASCADE)"
               },
               {
@@ -18817,16 +18979,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              483,
-              533
+              577,
+              627
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  532,
-                  533
+                  626,
+                  627
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -18836,7 +18998,7 @@
             "name": "TipoLicenciaPermiso",
             "page_path": "personalizador/models/TipoLicenciaPermiso",
             "signature": "class TipoLicenciaPermiso(models.Model):",
-            "signature_hash": "sha1:1b3f942bb3bcd3ee8341b82629ff9e2e40556230",
+            "signature_hash": "sha1:454b3250c3421c9d8c0426adc3622463cf7dd3ad",
             "stale": false
           },
           "TituloProfesional": {
@@ -18933,7 +19095,7 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 656,
+                "line": 783,
                 "snippet": "\"Adjunto (nota)\", upload_to=generate_name_cortelicencia, max_length=500,"
               }
             ],
@@ -18941,15 +19103,15 @@
             "docstring": "Genera el nombre de archivo para el adjunto (nota) de un CorteLicencia.",
             "kind": "function",
             "lines": [
-              619,
-              624
+              746,
+              751
             ],
             "methods": [],
             "module": "personalizador/models.py",
             "name": "generate_name_cortelicencia",
             "page_path": "personalizador/models/generate_name_cortelicencia",
             "signature": "def generate_name_cortelicencia(instance, filename):",
-            "signature_hash": "sha1:2f421c770de7ed39fe393043988b1785f239f650",
+            "signature_hash": "sha1:13bf0346ccfdfc7b8aae76d090a2918c509606be",
             "stale": false
           },
           "generate_name_licenciapermiso": {
@@ -18958,7 +19120,7 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 561,
+                "line": 660,
                 "snippet": "\"Adjunto (certificado/comunicación)\", upload_to=generate_name_licenciapermiso, max_length=500,"
               }
             ],
@@ -21784,14 +21946,14 @@
             "kind": "function",
             "lines": [
               99,
-              113
+              115
             ],
             "methods": [],
             "module": "personalizador/views/licenciapermisoviews.py",
             "name": "ControlLicenciasAgente",
             "page_path": "personalizador/views/licenciapermisoviews/ControlLicenciasAgente",
             "signature": "def ControlLicenciasAgente(request, pk):",
-            "signature_hash": "sha1:f293d78b44f263407b7d74e4156087165817c647",
+            "signature_hash": "sha1:af7aa831c83aa48adb2c991b56ea2385721fba37",
             "stale": false
           },
           "CrearLicenciaPermiso": {
@@ -22077,6 +22239,117 @@
             "page_path": "personalizador/views/oficinaviews/UpdateOficina",
             "signature": "class UpdateOficina(PermissionRequiredMixin, generic.UpdateView):",
             "signature_hash": "sha1:c5380bf3c44cca81afa6e494d75dd0bb6ba9fbc3",
+            "stale": false
+          }
+        }
+      },
+      "views/periodolicenciaviews": {
+        "file": "personalizador/views/periodolicenciaviews.py",
+        "symbols": {
+          "CrearPeriodoLicencia": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.CreateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              21,
+              37
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  29,
+                  37
+                ],
+                "name": "get_initial",
+                "signature": "def get_initial(self):"
+              }
+            ],
+            "module": "personalizador/views/periodolicenciaviews.py",
+            "name": "CrearPeriodoLicencia",
+            "page_path": "personalizador/views/periodolicenciaviews/CrearPeriodoLicencia",
+            "signature": "class CrearPeriodoLicencia(PermissionRequiredMixin, generic.CreateView):",
+            "signature_hash": "sha1:6b55dedb855c6272cc690f284d74538d209dd22b",
+            "stale": false
+          },
+          "EliminarPeriodoLicencia": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "DeleteRelatedObjectsMixin",
+              "generic.DeleteView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              12,
+              17
+            ],
+            "methods": [],
+            "module": "personalizador/views/periodolicenciaviews.py",
+            "name": "EliminarPeriodoLicencia",
+            "page_path": "personalizador/views/periodolicenciaviews/EliminarPeriodoLicencia",
+            "signature": "class EliminarPeriodoLicencia(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):",
+            "signature_hash": "sha1:589ef90e40c19251e8d70028ca310ea5832149f3",
+            "stale": false
+          },
+          "PaginaListaPeriodoLicencias": {
+            "authored": true,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('personalizador.view_periodolicencia', raise_exception=True)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              52,
+              55
+            ],
+            "methods": [],
+            "module": "personalizador/views/periodolicenciaviews.py",
+            "name": "PaginaListaPeriodoLicencias",
+            "page_path": "personalizador/views/periodolicenciaviews/PaginaListaPeriodoLicencias",
+            "signature": "def PaginaListaPeriodoLicencias(request):",
+            "signature_hash": "sha1:d4950613c2a4431cbf726f8c07073f25b4fc6083",
+            "stale": false
+          },
+          "UpdatePeriodoLicencia": {
+            "authored": true,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.UpdateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              41,
+              47
+            ],
+            "methods": [],
+            "module": "personalizador/views/periodolicenciaviews.py",
+            "name": "UpdatePeriodoLicencia",
+            "page_path": "personalizador/views/periodolicenciaviews/UpdatePeriodoLicencia",
+            "signature": "class UpdatePeriodoLicencia(PermissionRequiredMixin, generic.UpdateView):",
+            "signature_hash": "sha1:bffebf2210e5d4b75e4a7031e43e0dcd38d8c99a",
             "stale": false
           }
         }

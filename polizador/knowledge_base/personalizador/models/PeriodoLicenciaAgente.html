@@ -1,0 +1,32 @@
+<h1>PeriodoLicenciaAgente</h1>
+<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 548-574) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Cupo (<code>periodolicenciaagente_dias_correspondientes</code>) congelado para un agente en un
+<a href="PeriodoLicencia.md">PeriodoLicencia</a> <code>LOR_ANUAL</code> dado, calculado una única vez por
+<code>personalizador.licencias.get_or_create_periodo_agente</code> — la primera vez que se necesita
+(al guardar la primera <code>LicenciaPermiso</code> de Art. 7/Art. 10 contra ese período). De ahí en
+más, <code>balance_tipo</code> siempre lee este valor guardado en vez de recalcular
+<code>dias_licencia_ordinaria_correspondientes(agente, año)</code> en vivo.</p>
+<p>Existe para que una corrección posterior de <code>Agente.fecha_ingreso</code> (ej. un error de
+carga, un reconocimiento de antigüedad) no altere retroactivamente el balance de un
+período ya otorgado y parcial o totalmente usado — el tramo de antigüedad vigente al
+momento de otorgarse queda fijado, tal como haya quedado reflejado en el decreto/
+instrumento legal de ese año. No se usa para <code>LOR_INVIERNO</code>: esa licencia no tiene cupo
+por antigüedad.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class PeriodoLicenciaAgente(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<pre><code class="language-python"># personalizador/licencias.py — get_or_create_periodo_agente
+PeriodoLicenciaAgente.objects.get_or_create(
+    periodolicenciaagente_agente=agente, periodolicenciaagente_periodo=periodo,
+    defaults={&quot;periodolicenciaagente_dias_correspondientes&quot;: dias_licencia_ordinaria_correspondientes(agente, periodo.periodolicencia_anio)},
+)
+</code></pre>
+<p>Llamado desde <code>LicenciaPermiso.clean()</code> para todo período <code>LOR_ANUAL</code> que se resuelve, y
+desde <code>backfill_periodolicencia</code> (management command) al backfillear históricos.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="PeriodoLicencia.md">PeriodoLicencia</a></li>
+<li><a href="LicenciaPermiso.md">LicenciaPermiso</a></li>
+</ul>

@@ -15,6 +15,24 @@
     </form>
   </div>
   <div class="card-body p-2">
+    <div class="d-flex flex-wrap gap-3 mb-2 small">
+      {% if periodo_anual %}
+        <span>Período Anual {{ anio }}: apertura {{ periodo_anual.periodolicencia_apertura }}, límite de solicitud {{ periodo_anual.periodolicencia_fecha_limite_solicitud }}</span>
+      {% else %}
+        <span class="text-danger">
+          No existe el período Anual {{ anio }}.
+          <a href="{% url 'personalizador:crear-periodolicencia' %}?categoria=LOR_ANUAL&anio={{ anio }}">Crearlo</a>
+        </span>
+      {% endif %}
+      {% if periodo_invierno %}
+        <span>Período de Invierno {{ anio }}: turno 1 {{ periodo_invierno.periodolicencia_turno1_desde }} al {{ periodo_invierno.periodolicencia_turno1_hasta }}, turno 2 {{ periodo_invierno.periodolicencia_turno2_desde }} al {{ periodo_invierno.periodolicencia_turno2_hasta }}</span>
+      {% else %}
+        <span class="text-danger">
+          No existe el período de Invierno {{ anio }}.
+          <a href="{% url 'personalizador:crear-periodolicencia' %}?categoria=LOR_INVIERNO&anio={{ anio }}">Crearlo</a>
+        </span>
+      {% endif %}
+    </div>
     <div class="table-responsive">
       <table class="table table-sm table-striped align-middle mb-0">
         <thead>

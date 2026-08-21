@@ -10,8 +10,8 @@ from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
 from personalizador.management.commands.importar_informe_ipduv import _blank, _normalize_text
-from personalizador.licencias import LICENCIA_IMPORTADA_MOTIVO_PREFIJO as TAG
-from personalizador.models import Agente, LicenciaPermiso, TipoLicenciaPermiso
+from personalizador.licencias import LICENCIA_IMPORTADA_MOTIVO_PREFIJO as TAG, get_periodo, periodo_objetivo
+from personalizador.models import Agente, LicenciaPermiso, PeriodoLicencia, TipoLicenciaPermiso
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +57,12 @@ TIPO_KIND = {
 # adelanto ya tomado el año anterior (mismo dato que la col_art10_nuevo de la
 # hoja anterior) y NO se importa para no duplicar; y una columna rotulada con
 # año+1 (dentro de "columnas", kind="art10") que es el adelanto nuevo de ese
-# año contra el cupo del año siguiente, y si se importa.
+# año, y si se importa. Ojo: el rotulo "año+1" de esta columna es la
+# convencion coloquial de la planilla (nombra el adelanto por el año en que
+# mayormente se goza), NO el año de devengamiento -- fecha_desde se guarda
+# con el año de la hoja (cfg["anio"]), sin corrimiento; el PeriodoLicencia
+# que le corresponde es el de ese mismo año (ver personalizador.licencias.
+# periodo_objetivo).
 LOA_SHEETS = [
     {
         "sheet": "L.O.A. 2025",
@@ -178,9 +183,12 @@ class Command(BaseCommand):
         "Cada fila trae un TOTAL ANUAL usado por agente y tipo, sin fecha "
         "puntual, asi que por cada celda con datos se crea/actualiza UN "
         "LicenciaPermiso sintetico con fecha_desde=1/1 del año que "
-        "corresponde (año de la hoja, o año+1 para 'Anual de Invierno' y "
-        "para el adelanto Art. 10, que ya aplica su propio corrimiento de "
-        "año en el modelo) y licenciapermiso_motivo empezando con "
+        "corresponde (año de la hoja, o año+1 solo para 'Anual de Invierno'; "
+        "el adelanto Art. 10 NO se corre -- su año de devengamiento es el "
+        "propio de la hoja, aunque la planilla rotule esa columna con año+1 "
+        "por ser el año en que mayormente se goza -- ver "
+        "personalizador.licencias.periodo_objetivo) y "
+        "licenciapermiso_motivo empezando con "
         f"'{TAG}'. Ese prefijo es lo que permite re-correr el import sin "
         "duplicar (busca un registro existente por agente+tipo+fecha_desde+"
         "ese prefijo y lo actualiza en vez de crear uno nuevo) sin pisar "
@@ -192,8 +200,10 @@ class Command(BaseCommand):
         "numeros positivos/negativos y texto libre como 'D3') no se importa, "
         "solo se lista en el xlsx de errores para revision manual. Cada "
         "registro pasa por LicenciaPermiso.full_clean() antes de guardarse; "
-        "si el modelo lo rechaza (ej. supera el cupo disponible del Art. 10) "
-        "se saltea y queda como aviso."
+        "si el modelo lo rechaza (ej. supera el cupo disponible del Art. 10, o "
+        "falta el PeriodoLicencia 'Anual de Invierno' de ese año -- los de "
+        "categoria LOR_ANUAL se autocrean, los de Invierno no, por no tener "
+        "formula fija de turnos) se saltea y queda como aviso."
     )
 
     def add_arguments(self, parser):
@@ -432,12 +442,36 @@ class Command(BaseCommand):
                     "hoja": cfg["sheet"], "anio_hoja": cfg["anio"], "fila": fila_excel, "col": col,
                 })
 
+    def _asegurar_periodo_anual(self, tipo, fecha):
+        """Autocrea el PeriodoLicencia LOR_ANUAL correspondiente a `tipo`/`fecha` con
+        la formula legal (apertura 15/12, limite 31/03 del anio siguiente) si
+        todavia no existe -- este comando ya conoce el anio/categoria
+        explicitamente por config de hoja, a diferencia de una carga manual.
+        LOR_INVIERNO NO se autocrea (turnos por decreto, sin formula fija): si
+        falta, LicenciaPermiso.full_clean() la va a rechazar mas abajo y queda
+        como aviso normal, igual que cualquier otro rechazo de validacion."""
+        resultado = periodo_objetivo(tipo.tipolicenciapermiso_nombre, fecha.year)
+        if resultado is None:
+            return
+        categoria, anio = resultado
+        if categoria != "LOR_ANUAL" or get_periodo(categoria, anio):
+            return
+        periodo = PeriodoLicencia(
+            periodolicencia_categoria="LOR_ANUAL", periodolicencia_anio=anio,
+            periodolicencia_apertura=date(anio, 12, 15),
+            periodolicencia_fecha_limite_solicitud=date(anio + 1, 3, 31),
+        )
+        periodo.full_clean()
+        periodo.save()
+
     def _guardar_licencia(self, item, avisos, stats):
         agente, tipo, fecha, cantidad = item["agente"], item["tipo"], item["fecha"], item["cantidad"]
         motivo = (
             f"{TAG} Total anual registrado en la hoja '{item['hoja']}' para {item['anio_hoja']}. "
             "Sin fecha exacta de goce; ver la planilla original para el detalle dia a dia."
         )
+
+        self._asegurar_periodo_anual(tipo, fecha)
 
         existente = LicenciaPermiso.objects.filter(
             licenciapermiso_agente=agente, licenciapermiso_tipo=tipo,

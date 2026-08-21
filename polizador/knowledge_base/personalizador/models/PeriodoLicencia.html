@@ -1,0 +1,42 @@
+<h1>PeriodoLicencia</h1>
+<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 483-545) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Ancla explícita de año calendario para los 3 tipos "año-vencido" de Licencia Anual (Art.
+7, Art. 10 y Anual de Invierno, Ley 645-A). Reemplaza la inferencia implícita de año que
+antes vivía en <code>personalizador/licencias.py</code> (vía <code>fecha_desde.year</code> +/- corrimientos
+hardcodeados) — ver <a href="LicenciaPermiso.md">LicenciaPermiso</a>, que ahora resuelve y guarda el
+período en <code>licenciapermiso_periodo</code> desde <code>clean()</code>.</p>
+<p><code>periodolicencia_categoria</code> distingue dos pozos independientes:</p>
+<ul>
+<li><code>LOR_ANUAL</code>: compartido por Art. 7 (Anual) y Art. 10 (Anual Proporcional) — Art. 10 no
+  tiene cupo propio, adelanta días del mismo pozo de Art. 7 de su propio
+  <code>fecha_desde.year</code> (año vencido: el período <code>&lt;año&gt;</code> recién abre el 15/12 de ese año,
+  así que tomarlo antes de esa fecha es "adelantarlo", no consumir el año siguiente).
+  Usa <code>periodolicencia_apertura</code>/<code>periodolicencia_fecha_limite_solicitud</code> (este último
+  solo dato de referencia, sin enforcement).</li>
+<li><code>LOR_INVIERNO</code>: pozo propio, sin cupo por antigüedad. Usa los 4 campos de turno
+  (<code>periodolicencia_turno1_desde/hasta</code>, <code>periodolicencia_turno2_desde/hasta</code>) en vez de
+  apertura/límite — la Licencia de Invierno se fija por decreto en 2 turnos de fechas
+  fijas cada año, sin fórmula (se cargan a mano).</li>
+</ul>
+<p><code>clean()</code> exige los 2 campos de <code>LOR_ANUAL</code> o los 4 de <code>LOR_INVIERNO</code> según corresponda
+(nunca se autocompletan con un default calculado del lado del modelo: son datos legales
+reales — fecha de un decreto — que el sistema no debe inventar en silencio; la precarga
+15/12/&lt;año&gt;-31/03/&lt;año+1&gt; para <code>LOR_ANUAL</code> vive del lado del form, en JS, ver
+<a href="../forms/periodolicenciaforms/PeriodoLicenciaForm.md">PeriodoLicenciaForm</a>), y que el
+Turno 2 empiece después de que termine el Turno 1.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class PeriodoLicencia(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>personalizador.licencias.resolver_periodo_para_licencia</code>/<code>get_periodo</code> (resuelven cuál
+<code>PeriodoLicencia</code> corresponde a una <code>LicenciaPermiso</code>, sin autocrear); <code>personalizador.
+management.commands.backfill_periodolicencia</code> (backfill de registros históricos) e
+<code>importar_control_licencias</code> (sí autocrea los de <code>LOR_ANUAL</code> con la fórmula legal, porque
+ya conoce año/categoría por config de hoja).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="LicenciaPermiso.md">LicenciaPermiso</a></li>
+<li><a href="PeriodoLicenciaAgente.md">PeriodoLicenciaAgente</a></li>
+<li><a href="../views/periodolicenciaviews/CrearPeriodoLicencia.md">CrearPeriodoLicencia</a></li>
+</ul>

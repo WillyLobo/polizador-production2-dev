@@ -1,5 +1,5 @@
 <h1>CorteLicencia</h1>
-<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 626-702) · hereda de <code>models.Model</code></p>
+<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 753-829) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
 <p>Interrupción de una Licencia Anual (Ordinaria o de Invierno) ya otorgada: el agente se
 reintegra a sus tareas antes de agotar los días, y el saldo pendiente queda disponible
@@ -14,6 +14,10 @@ cantidad total de la licencia.</p>
 usó vía <code>usos_saldo</code> (la relación inversa desde <code>LicenciaPermiso.licenciapermiso_saldo_de_corte</code>,
 sumando solo registros no anulados) — es el número que decide si un corte todavía tiene
 algo para ofrecer. <code>vencido</code> combina eso con la fecha de vencimiento.</p>
+<p><code>dias_restantes</code> también se usa desde <code>LicenciaPermiso.clean()</code> para bloquear un
+adelanto de Art. 10: si el agente tiene un <code>CorteLicencia</code> con saldo pendiente sobre un
+<a href="PeriodoLicencia.md">PeriodoLicencia</a> <code>LOR_ANUAL</code> anterior al que se está adelantando, la
+carga se rechaza hasta resolverlo.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class CorteLicencia(models.Model):
 </code></pre>
@@ -22,4 +26,5 @@ algo para ofrecer. <code>vencido</code> combina eso con la fecha de vencimiento.
 <h2>Ver también</h2>
 <ul>
 <li><a href="LicenciaPermiso.md">LicenciaPermiso</a></li>
+<li><a href="PeriodoLicencia.md">PeriodoLicencia</a></li>
 </ul>

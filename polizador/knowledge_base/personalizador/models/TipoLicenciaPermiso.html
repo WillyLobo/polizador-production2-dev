@@ -1,5 +1,5 @@
 <h1>TipoLicenciaPermiso</h1>
-<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 483-533) · hereda de <code>models.Model</code></p>
+<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 577-627) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
 <p>Catálogo normalizado de tipos de licencia/permiso según la Ley 645-A (ordinaria,
 extraordinaria, permiso), con toda la parametrización que define cómo se computa cada
@@ -13,6 +13,13 @@ consulta — en particular, dos nombres de tipo están hardcodeados como constan
 Invierno"</code>, <code>LICENCIA_ANUAL_ADELANTADA_NOMBRE = "Anual Proporcional"</code>): renombrar estos
 tres registros del catálogo rompería silenciosamente el cálculo de balances, porque el
 código los busca por <code>tipolicenciapermiso_nombre</code> exacto, no por un flag dedicado.</p>
+<p>El comando <code>cargar_tipos_licencia</code> (que hace <code>update_or_create</code> por <code>(categoria, nombre)</code>)
+mitiga el riesgo simétrico — que alguien renombre un tipo a mano en el admin sin
+actualizar <code>TIPOS_DATA</code> — con un chequeo previo (<code>--dry-run</code> para solo reportar) que
+compara por <code>articulo</code> (más estable que <code>nombre</code>) y avisa de posibles renombres/duplicados
+antes de escribir; encontró y permitió reconciliar un duplicado real (<code>pk=13</code> "Permiso por
+Exámenes" vs <code>pk=42</code> "Exámenes", mismo Art. 36/37) que había quedado de una corrida
+anterior sin este chequeo.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class TipoLicenciaPermiso(models.Model):
 </code></pre>

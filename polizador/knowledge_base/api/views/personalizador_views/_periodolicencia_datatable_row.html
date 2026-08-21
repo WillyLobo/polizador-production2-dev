@@ -1,0 +1,24 @@
+<h1>_periodolicencia_datatable_row</h1>
+<p><strong>Módulo:</strong> <code>api/views/personalizador_views.py</code> (líneas 911-932)</p>
+<h2>Propósito</h2>
+<p>Row-builder para <code>register_simple_datatable</code> (ver <code>api/views/generics.py</code>): arma la fila
+del listado de <code>PeriodoLicencia</code>. Para <code>LOR_ANUAL</code> muestra apertura/fecha límite de
+solicitud y "—" en las columnas de turno (no aplican); para <code>LOR_INVIERNO</code> es al revés,
+muestra los 2 turnos combinados en texto ("<code>&lt;desde&gt;</code> al <code>&lt;hasta&gt;</code>") y "—" en
+apertura/límite. <code>acciones</code> trae los links editar/eliminar solo si el usuario tiene el
+permiso correspondiente (<code>_simple_acciones</code>).</p>
+<p><code>register_simple_datatable</code> además registra automáticamente el endpoint de detalle
+(<code>with_detail=True</code> por default) que renderiza
+<code>templates/ajax_datatable/personalizador/periodolicencia/render_row_details.html</code> — la
+expansión de fila que lista, para el período clickeado, cada <code>LicenciaPermiso</code> vinculada
+(<code>object.licenciapermiso_set.all</code>) con agente, tipo, fecha y cantidad.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _periodolicencia_datatable_row(p: PeriodoLicencia, user) -&gt; dict:
+</code></pre>
+<h2>Uso real</h2>
+<p><code>register_simple_datatable(router, PeriodoLicencia, "periodolicencias", row_builder=_periodolicencia_datatable_row, ...)</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../personalizador/models/PeriodoLicencia.md">PeriodoLicencia</a></li>
+<li><a href="../../../personalizador/views/periodolicenciaviews/PaginaListaPeriodoLicencias.md">PaginaListaPeriodoLicencias</a></li>
+</ul>

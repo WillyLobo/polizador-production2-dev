@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% block title %}<title>Períodos de Licencia</title>{% endblock title%}
+
+<div class="min-vh-100">
+  <div class="card">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small d-flex justify-content-between align-items-center">
+      <span>Períodos de Licencia</span>
+      {% if perms.personalizador.add_periodolicencia %}
+      <a href="{% url 'personalizador:crear-periodolicencia' %}" class="btn btn-sm btn-outline-success">
+        <i class="bi bi-plus-circle me-1"></i>Nuevo Período
+      </a>
+      {% endif %}
+    </div>
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table id="tablePeriodoLicencias" width="auto" class="table table-striped table-bordered align-middle mb-0">
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script language="javascript">
+
+  $(document).ready(function() {
+      var columns = [
+          {
+              data: 'periodolicencia_categoria', name: 'periodolicencia_categoria', title: 'Categoría',
+              filterType: 'select', filterChoices: [['LOR_ANUAL', 'Anual / Anual Proporcional'], ['LOR_INVIERNO', 'Anual de Invierno']],
+          },
+          { data: 'periodolicencia_anio', name: 'periodolicencia_anio', title: 'Año' },
+          { data: 'periodolicencia_apertura', title: 'Apertura', orderable: false, searchable: false },
+          { data: 'periodolicencia_fecha_limite_solicitud', title: 'Límite de Solicitud', orderable: false, searchable: false },
+          { data: 'periodolicencia_turno1', title: 'Turno 1 (Invierno)', orderable: false, searchable: false },
+          { data: 'periodolicencia_turno2', title: 'Turno 2 (Invierno)', orderable: false, searchable: false },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
+          $('#tablePeriodoLicencias'),
+          '/v1/api/datatables/periodolicencias/',
+          columns,
+          {
+              order: [[1, 'desc'], [0, 'asc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/periodolicencias/{id}/detalle/',
+          },
+      );
+  });
+
+</script>
+
+{% endblock %}

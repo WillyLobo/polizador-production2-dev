@@ -10,7 +10,9 @@ from django.core.exceptions import ValidationError
 from personalizador.licencias import (
     antiguedad_meses, balance_tipo, dias_licencia_ordinaria_correspondientes, dias_usados,
 )
-from personalizador.models import Agente, CorteLicencia, GeneroAgente, LicenciaPermiso, TipoLicenciaPermiso
+from personalizador.models import (
+    Agente, CorteLicencia, GeneroAgente, LicenciaPermiso, PeriodoLicencia, PeriodoLicenciaAgente, TipoLicenciaPermiso,
+)
 
 UserModel = get_user_model()
 
@@ -78,13 +80,20 @@ class BalanceTipoTest(TestCase):
             tipolicenciapermiso_unidad="DH", tipolicenciapermiso_tope_cantidad=1,
             tipolicenciapermiso_tope_periodo="VEZ",
         )
+        PeriodoLicencia.objects.create(
+            periodolicencia_categoria="LOR_ANUAL", periodolicencia_anio=2024,
+            periodolicencia_apertura=date(2024, 12, 15), periodolicencia_fecha_limite_solicitud=date(2025, 3, 31),
+        )
 
     def _licencia(self, tipo, cantidad, anulada=False, fecha_desde=date(2024, 3, 1)):
-        return LicenciaPermiso.objects.create(
+        licencia = LicenciaPermiso(
             licenciapermiso_agente=self.agente, licenciapermiso_tipo=tipo,
             licenciapermiso_fecha_desde=fecha_desde, licenciapermiso_cantidad=cantidad,
             licenciapermiso_anulada=anulada,
         )
+        licencia.full_clean()
+        licencia.save()
+        return licencia
 
     def test_licencia_anual_usa_antiguedad(self):
         self._licencia(self.tipo_anual, 10)
@@ -124,10 +133,20 @@ class CorteLicenciaTest(TestCase):
             tipolicenciapermiso_categoria="LOR", tipolicenciapermiso_nombre="Anual",
             tipolicenciapermiso_unidad="DC", tipolicenciapermiso_tope_periodo="VAR",
         )
-        self.licencia = LicenciaPermiso.objects.create(
+        PeriodoLicencia.objects.create(
+            periodolicencia_categoria="LOR_ANUAL", periodolicencia_anio=2024,
+            periodolicencia_apertura=date(2024, 12, 15), periodolicencia_fecha_limite_solicitud=date(2025, 3, 31),
+        )
+        PeriodoLicencia.objects.create(
+            periodolicencia_categoria="LOR_ANUAL", periodolicencia_anio=2025,
+            periodolicencia_apertura=date(2025, 12, 15), periodolicencia_fecha_limite_solicitud=date(2026, 3, 31),
+        )
+        self.licencia = LicenciaPermiso(
             licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_anual,
             licenciapermiso_fecha_desde=date(2024, 1, 5), licenciapermiso_cantidad=21,
         )
+        self.licencia.full_clean()
+        self.licencia.save()
 
     def _corte(self, dias_gozados=10, dias_pendientes=11, fecha_reintegro=date(2024, 1, 15)):
         return CorteLicencia.objects.create(
@@ -214,7 +233,9 @@ class CorteLicenciaTest(TestCase):
 
 class LicenciaAnualAdelantadaTest(TestCase):
     """Art. 10, Ley 645-A: la Licencia Anual Ordinaria puede adelantarse, total o
-    parcialmente, contra el cupo del año calendario siguiente."""
+    parcialmente, contra el cupo del PROPIO período de fecha_desde (año vencido: el
+    período <año> recién abre el 15/12/<año>, así que tomarlo antes es "adelantarlo"),
+    no contra el año siguiente."""
 
     def setUp(self):
         genero = GeneroAgente.objects.create(generoagente_nombre="Test")
@@ -231,18 +252,32 @@ class LicenciaAnualAdelantadaTest(TestCase):
             tipolicenciapermiso_categoria="LOR", tipolicenciapermiso_nombre="Anual Proporcional",
             tipolicenciapermiso_unidad="DC", tipolicenciapermiso_tope_periodo="VAR",
         )
+        self.periodo_2024 = PeriodoLicencia.objects.create(
+            periodolicencia_categoria="LOR_ANUAL", periodolicencia_anio=2024,
+            periodolicencia_apertura=date(2024, 12, 15), periodolicencia_fecha_limite_solicitud=date(2025, 3, 31),
+        )
+        self.periodo_2025 = PeriodoLicencia.objects.create(
+            periodolicencia_categoria="LOR_ANUAL", periodolicencia_anio=2025,
+            periodolicencia_apertura=date(2025, 12, 15), periodolicencia_fecha_limite_solicitud=date(2026, 3, 31),
+        )
 
-    def test_balance_adelantada_sin_uso_muestra_cupo_del_ano_siguiente(self):
-        balance = balance_tipo(self.agente, self.tipo_adelantada, 2024)
+    def _guardar(self, tipo, fecha_desde, cantidad):
+        licencia = LicenciaPermiso(
+            licenciapermiso_agente=self.agente, licenciapermiso_tipo=tipo,
+            licenciapermiso_fecha_desde=fecha_desde, licenciapermiso_cantidad=cantidad,
+        )
+        licencia.full_clean()
+        licencia.save()
+        return licencia
+
+    def test_balance_adelantada_sin_uso_muestra_cupo_del_propio_periodo(self):
+        balance = balance_tipo(self.agente, self.tipo_adelantada, 2025)
         self.assertEqual(balance["correspondientes"], 49)
         self.assertEqual(balance["usados"], 0)
         self.assertEqual(balance["disponibles"], 49)
 
-    def test_adelanto_consume_cupo_del_ano_siguiente_no_el_propio(self):
-        LicenciaPermiso.objects.create(
-            licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_adelantada,
-            licenciapermiso_fecha_desde=date(2024, 12, 20), licenciapermiso_cantidad=10,
-        )
+    def test_adelanto_consume_cupo_del_propio_periodo(self):
+        self._guardar(self.tipo_adelantada, date(2025, 8, 18), 10)
         self.assertEqual(dias_usados(self.agente, self.tipo_anual, 2024), 0)
         self.assertEqual(dias_usados(self.agente, self.tipo_anual, 2025), 10)
 
@@ -250,31 +285,180 @@ class LicenciaAnualAdelantadaTest(TestCase):
         self.assertEqual(balance_2025["correspondientes"], 49)
         self.assertEqual(balance_2025["disponibles"], 39)
 
-    def test_adelanto_no_puede_superar_cupo_disponible_del_ano_siguiente(self):
+    def test_adelanto_no_puede_superar_cupo_disponible(self):
         licencia = LicenciaPermiso(
             licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_adelantada,
-            licenciapermiso_fecha_desde=date(2024, 12, 20), licenciapermiso_cantidad=50,
+            licenciapermiso_fecha_desde=date(2025, 8, 18), licenciapermiso_cantidad=50,
         )
         with self.assertRaises(ValidationError):
             licencia.full_clean()
 
     def test_adelanto_descuenta_cupo_ya_comprometido_por_licencia_anual_normal(self):
-        LicenciaPermiso.objects.create(
-            licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_anual,
-            licenciapermiso_fecha_desde=date(2025, 1, 10), licenciapermiso_cantidad=40,
-        )
-        balance = balance_tipo(self.agente, self.tipo_adelantada, 2024)
+        self._guardar(self.tipo_anual, date(2025, 1, 10), 40)
+        balance = balance_tipo(self.agente, self.tipo_adelantada, 2025)
         self.assertEqual(balance["correspondientes"], 9)
 
     def test_editar_adelanto_no_se_descuenta_dos_veces_contra_si_mismo(self):
-        licencia = LicenciaPermiso.objects.create(
-            licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_adelantada,
-            licenciapermiso_fecha_desde=date(2024, 12, 20), licenciapermiso_cantidad=20,
-        )
+        licencia = self._guardar(self.tipo_adelantada, date(2025, 8, 18), 20)
         licencia.licenciapermiso_cantidad = 25
         licencia.full_clean()
         licencia.save()
         self.assertEqual(dias_usados(self.agente, self.tipo_anual, 2025), 25)
+
+    def test_periodo_compartido_entre_anual_y_art10(self):
+        """Art. 7 y Art. 10 comparten el mismo PeriodoLicencia LOR_ANUAL de un año
+        dado: Art. 10 no tiene cupo propio, adelanta días del mismo pozo de Art. 7."""
+        anual = self._guardar(self.tipo_anual, date(2025, 1, 10), 20)
+        adelanto = self._guardar(self.tipo_adelantada, date(2025, 8, 18), 10)
+
+        self.assertEqual(anual.licenciapermiso_periodo, self.periodo_2025)
+        self.assertEqual(adelanto.licenciapermiso_periodo, self.periodo_2025)
+        self.assertEqual(dias_usados(self.agente, self.tipo_anual, 2025), 30)
+
+    def test_congelado_no_cambia_si_se_corrige_fecha_ingreso_despues(self):
+        """El cupo por antigüedad se congela (PeriodoLicenciaAgente) la primera vez
+        que se usa un período: una corrección posterior de fecha_ingreso no debe
+        alterar retroactivamente el balance ya otorgado."""
+        self._guardar(self.tipo_anual, date(2024, 3, 1), 10)
+        self.assertEqual(balance_tipo(self.agente, self.tipo_anual, 2024)["correspondientes"], 49)
+
+        self.agente.fecha_ingreso = date(2023, 1, 1)  # antigüedad << 5 años -> otro tramo (23 días)
+        self.agente.save()
+
+        self.assertEqual(balance_tipo(self.agente, self.tipo_anual, 2024)["correspondientes"], 49)
+
+    def test_clean_falla_si_no_existe_periodo(self):
+        licencia = LicenciaPermiso(
+            licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_anual,
+            licenciapermiso_fecha_desde=date(2030, 1, 10), licenciapermiso_cantidad=10,
+        )
+        with self.assertRaises(ValidationError):
+            licencia.full_clean()
+
+
+class AdelantoBloqueadoPorSaldoPendienteTest(TestCase):
+    """No se puede tomar un adelanto de Art. 10 contra el período P (el propio año
+    de fecha_desde) mientras quede saldo pendiente sin resolver de un corte de un
+    período LOR_ANUAL anterior (estrictamente) a P."""
+
+    def setUp(self):
+        genero = GeneroAgente.objects.create(generoagente_nombre="Test")
+        self.agente = Agente.objects.create(
+            agente_nombres="Ana", agente_apellidos="Gomez",
+            sexo=genero, dni=30222333, cuil="27302223334",
+            fecha_ingreso=date(2000, 1, 1),  # +18 años -> 49 días/año
+        )
+        self.tipo_anual = TipoLicenciaPermiso.objects.create(
+            tipolicenciapermiso_categoria="LOR", tipolicenciapermiso_nombre="Anual",
+            tipolicenciapermiso_unidad="DC", tipolicenciapermiso_tope_periodo="VAR",
+        )
+        self.tipo_adelantada = TipoLicenciaPermiso.objects.create(
+            tipolicenciapermiso_categoria="LOR", tipolicenciapermiso_nombre="Anual Proporcional",
+            tipolicenciapermiso_unidad="DC", tipolicenciapermiso_tope_periodo="VAR",
+        )
+        for anio in (2023, 2024, 2025):
+            PeriodoLicencia.objects.create(
+                periodolicencia_categoria="LOR_ANUAL", periodolicencia_anio=anio,
+                periodolicencia_apertura=date(anio, 12, 15), periodolicencia_fecha_limite_solicitud=date(anio + 1, 3, 31),
+            )
+
+    def _licencia_con_corte(self, fecha_desde, cantidad, dias_gozados, dias_pendientes):
+        licencia = LicenciaPermiso(
+            licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_anual,
+            licenciapermiso_fecha_desde=fecha_desde, licenciapermiso_cantidad=cantidad,
+        )
+        licencia.full_clean()
+        licencia.save()
+        CorteLicencia.objects.create(
+            cortelicencia_licencia=licencia,
+            cortelicencia_fecha_reintegro=fecha_desde,
+            cortelicencia_dias_gozados=dias_gozados,
+            cortelicencia_dias_pendientes=dias_pendientes,
+            cortelicencia_fecha_vencimiento=date(fecha_desde.year + 2, 4, 30),
+        )
+        return licencia
+
+    def test_art10_bloqueado_por_saldo_de_corte_pendiente_de_periodo_anterior(self):
+        self._licencia_con_corte(date(2023, 1, 10), 42, dias_gozados=10, dias_pendientes=32)
+
+        adelanto = LicenciaPermiso(
+            licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_adelantada,
+            licenciapermiso_fecha_desde=date(2024, 3, 1), licenciapermiso_cantidad=5,
+        )
+        with self.assertRaises(ValidationError):
+            adelanto.full_clean()
+
+    def test_art10_permitido_si_corte_pendiente_es_del_mismo_periodo_destino(self):
+        """Un saldo pendiente del propio período que se está adelantando (P, no
+        anterior a P) no bloquea el adelanto."""
+        self._licencia_con_corte(date(2024, 1, 10), 42, dias_gozados=10, dias_pendientes=32)
+
+        adelanto = LicenciaPermiso(
+            licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_adelantada,
+            licenciapermiso_fecha_desde=date(2024, 8, 1), licenciapermiso_cantidad=5,
+        )
+        adelanto.full_clean()  # no debe levantar ValidationError
+        adelanto.save()
+
+
+class LicenciaInviernoTest(TestCase):
+    """Anual de Invierno usa su propia categoría de PeriodoLicencia (turnos fijos
+    por decreto) y no participa del congelado de cupo por antigüedad."""
+
+    def setUp(self):
+        genero = GeneroAgente.objects.create(generoagente_nombre="Test")
+        self.agente = Agente.objects.create(
+            agente_nombres="Ana", agente_apellidos="Gomez",
+            sexo=genero, dni=30222333, cuil="27302223334",
+            fecha_ingreso=date(2000, 1, 1),
+        )
+        self.tipo_invierno = TipoLicenciaPermiso.objects.create(
+            tipolicenciapermiso_categoria="LOR", tipolicenciapermiso_nombre="Anual de Invierno",
+            tipolicenciapermiso_unidad="DC", tipolicenciapermiso_tope_periodo="VAR",
+        )
+        self.periodo_invierno_2025 = PeriodoLicencia.objects.create(
+            periodolicencia_categoria="LOR_INVIERNO", periodolicencia_anio=2025,
+            periodolicencia_turno1_desde=date(2025, 7, 16), periodolicencia_turno1_hasta=date(2025, 7, 25),
+            periodolicencia_turno2_desde=date(2025, 7, 28), periodolicencia_turno2_hasta=date(2025, 8, 6),
+        )
+
+    def test_invierno_no_genera_periodolicenciaagente(self):
+        licencia = LicenciaPermiso(
+            licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_invierno,
+            licenciapermiso_fecha_desde=date(2025, 7, 16), licenciapermiso_cantidad=10,
+        )
+        licencia.full_clean()
+        licencia.save()
+
+        self.assertEqual(licencia.licenciapermiso_periodo, self.periodo_invierno_2025)
+        self.assertFalse(PeriodoLicenciaAgente.objects.filter(periodolicenciaagente_agente=self.agente).exists())
+
+
+class PeriodoLicenciaModelTest(TestCase):
+    """PeriodoLicencia.clean() exige los campos según categoría (Ley 645-A: fechas
+    reales de decreto, no inventadas por el sistema)."""
+
+    def test_anual_requiere_apertura_y_limite(self):
+        periodo = PeriodoLicencia(periodolicencia_categoria="LOR_ANUAL", periodolicencia_anio=2030)
+        with self.assertRaises(ValidationError):
+            periodo.full_clean()
+
+    def test_invierno_requiere_los_4_campos_de_turno(self):
+        periodo = PeriodoLicencia(
+            periodolicencia_categoria="LOR_INVIERNO", periodolicencia_anio=2030,
+            periodolicencia_turno1_desde=date(2030, 7, 16), periodolicencia_turno1_hasta=date(2030, 7, 25),
+        )
+        with self.assertRaises(ValidationError):
+            periodo.full_clean()
+
+    def test_invierno_turno2_debe_empezar_despues_del_turno1(self):
+        periodo = PeriodoLicencia(
+            periodolicencia_categoria="LOR_INVIERNO", periodolicencia_anio=2030,
+            periodolicencia_turno1_desde=date(2030, 7, 16), periodolicencia_turno1_hasta=date(2030, 7, 25),
+            periodolicencia_turno2_desde=date(2030, 7, 20), periodolicencia_turno2_hasta=date(2030, 8, 6),
+        )
+        with self.assertRaises(ValidationError):
+            periodo.full_clean()
 
 
 class LicenciaPermisoViewsPermissionTest(TestCase):

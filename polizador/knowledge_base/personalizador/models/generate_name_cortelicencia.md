@@ -2,14 +2,14 @@
 symbol: generate_name_cortelicencia
 kind: function
 module: personalizador/models.py
-lines: 619-624
-signature_hash: sha1:2f421c770de7ed39fe393043988b1785f239f650
+lines: 746-751
+signature_hash: sha1:13bf0346ccfdfc7b8aae76d090a2918c509606be
 authored: true
 ---
 
 # generate_name_cortelicencia
 
-**Módulo:** `personalizador/models.py` (líneas 619-624)
+**Módulo:** `personalizador/models.py` (líneas 746-751)
 
 ## Propósito
 

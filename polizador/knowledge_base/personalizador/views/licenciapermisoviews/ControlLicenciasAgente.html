@@ -1,5 +1,5 @@
 <h1>ControlLicenciasAgente</h1>
-<p><strong>Módulo:</strong> <code>personalizador/views/licenciapermisoviews.py</code> (líneas 99-113)</p>
+<p><strong>Módulo:</strong> <code>personalizador/views/licenciapermisoviews.py</code> (líneas 99-115)</p>
 <h2>Propósito</h2>
 <p>El panel de control de licencias de un Agente para un año dado (<code>?anio=</code>, default el año
 actual, con un selector de los últimos 5 años + el actual): combina
@@ -7,6 +7,11 @@ actual, con un selector de los últimos 5 años + el actual): combina
 cada <code>TipoLicenciaPermiso</code> activo) con <code>saldos_pendientes_agente</code> (cortes con saldo aún no
 vencido) en una sola pantalla — es la vista que le da uso real a toda la lógica de cálculo
 de <code>personalizador/licencias.py</code>.</p>
+<p>Además resuelve (sin crear) el <a href="../../models/PeriodoLicencia.md">PeriodoLicencia</a> <code>LOR_ANUAL</code>
+y <code>LOR_INVIERNO</code> del año seleccionado (<code>get_periodo</code>) y los pasa al contexto: el template
+muestra su apertura/límite de solicitud (o turnos, para Invierno), y si alguno todavía no
+existe ofrece un link a <code>crear-periodolicencia</code> con la categoría/año precargados por
+querystring.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def ControlLicenciasAgente(request, pk):
 </code></pre>
@@ -17,4 +22,6 @@ de <code>personalizador/licencias.py</code>.</p>
 <li><a href="../agenteviews/FichaAgente.md">FichaAgente</a></li>
 <li><a href="../../models/LicenciaPermiso.md">LicenciaPermiso</a></li>
 <li><a href="../../models/TipoLicenciaPermiso.md">TipoLicenciaPermiso</a></li>
+<li><a href="../../models/PeriodoLicencia.md">PeriodoLicencia</a></li>
+<li><a href="../periodolicenciaviews/CrearPeriodoLicencia.md">CrearPeriodoLicencia</a></li>
 </ul>

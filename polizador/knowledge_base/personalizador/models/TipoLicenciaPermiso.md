@@ -2,14 +2,14 @@
 symbol: TipoLicenciaPermiso
 kind: class
 module: personalizador/models.py
-lines: 483-533
-signature_hash: sha1:1b3f942bb3bcd3ee8341b82629ff9e2e40556230
+lines: 577-627
+signature_hash: sha1:454b3250c3421c9d8c0426adc3622463cf7dd3ad
 authored: true
 ---
 
 # TipoLicenciaPermiso
 
-**Módulo:** `personalizador/models.py` (líneas 483-533) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 577-627) · hereda de `models.Model`
 
 ## Propósito
 
@@ -26,6 +26,14 @@ consulta — en particular, dos nombres de tipo están hardcodeados como constan
 Invierno"`, `LICENCIA_ANUAL_ADELANTADA_NOMBRE = "Anual Proporcional"`): renombrar estos
 tres registros del catálogo rompería silenciosamente el cálculo de balances, porque el
 código los busca por `tipolicenciapermiso_nombre` exacto, no por un flag dedicado.
+
+El comando `cargar_tipos_licencia` (que hace `update_or_create` por `(categoria, nombre)`)
+mitiga el riesgo simétrico — que alguien renombre un tipo a mano en el admin sin
+actualizar `TIPOS_DATA` — con un chequeo previo (`--dry-run` para solo reportar) que
+compara por `articulo` (más estable que `nombre`) y avisa de posibles renombres/duplicados
+antes de escribir; encontró y permitió reconciliar un duplicado real (`pk=13` "Permiso por
+Exámenes" vs `pk=42` "Exámenes", mismo Art. 36/37) que había quedado de una corrida
+anterior sin este chequeo.
 
 ## Firma
 
