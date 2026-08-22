@@ -893,6 +893,7 @@ register_simple_datatable(
         "tipolicenciapermiso_activo": "tipolicenciapermiso_activo",
     },
     filter_fields={
+        "tipolicenciapermiso_articulo": "tipolicenciapermiso_articulo__icontains",
         "tipolicenciapermiso_nombre": "tipolicenciapermiso_nombre__icontains",
         "tipolicenciapermiso_categoria": "tipolicenciapermiso_categoria",
         "tipolicenciapermiso_activo": "tipolicenciapermiso_activo",
