@@ -13,17 +13,17 @@ logger = logging.getLogger(__name__)
 # no un número fijo.
 TIPOS_DATA = [
     # --- A) a) Licencias Ordinarias ---
-    {"categoria": "LOR", "nombre": "Anual", "articulo": "Art. 7/11", "unidad": "DC", "tope": None, "tope_periodo": "VAR", "remunerada": "SI", "antiguedad_meses": 6, "certificado": False, "compensacion": False,
+    {"categoria": "LOR", "nombre": "Anual", "articulo": "Art. 7", "unidad": "DC", "tope": None, "tope_periodo": "VAR", "remunerada": "SI", "antiguedad_meses": 6, "certificado": False, "compensacion": False,
      "observaciones": "Tope según antigüedad al 31/12 (Art. 8): 6m-5a=23 días, +5-10a=28, +10-18a=42, +18a=49 días corridos."},
     {"categoria": "LOR", "nombre": "Anual Proporcional", "articulo": "Art. 10", "unidad": "DC", "tope": None, "tope_periodo": "VAR", "remunerada": "SI", "antiguedad_meses": 6, "certificado": False, "compensacion": False,
      "observaciones": "Uso adelantado, total o parcial, de la Licencia Anual Ordinaria del propio período calendario de fecha_desde (que, por ser año vencido, recién abre el 15/12 de ese año): consume ese cupo antes de su apertura formal, en vez de esperar a diciembre. Debe efectivizarse dentro del plazo del último párrafo del Art. 7°. (La planilla de RRHH suele rotular esto como \"adelanto <año+1>\" por ser el año en que mayormente se goza, pero el período de devengamiento sigue siendo el de fecha_desde.)"},
-    {"categoria": "LOR", "nombre": "Motivos de Salud (Enfermedad o lesión común)", "articulo": "Art. 15/16", "unidad": "DC", "tope": 45, "tope_periodo": "ANI", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False},
-    {"categoria": "LOR", "nombre": "Motivos de Salud (Enfermedad prolongada o lesión grave)", "articulo": "Art. 17/20", "unidad": "DC", "tope": 730, "tope_periodo": "TOT", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False,
+    {"categoria": "LOR", "nombre": "Motivos de Salud (Enfermedad o lesión común)", "articulo": "Art. 14 A", "unidad": "DC", "tope": 45, "tope_periodo": "ANI", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False},
+    {"categoria": "LOR", "nombre": "Motivos de Salud (Enfermedad prolongada o lesión grave)", "articulo": "Art. 14 B", "unidad": "DC", "tope": 730, "tope_periodo": "TOT", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False,
      "observaciones": "2 años con goce de haberes + opción de 1 año más sin goce."},
-    {"categoria": "LOR", "nombre": "Motivos de Salud (Accidente de trabajo o enfermedad ocupacional)", "articulo": "Art. 21/22", "unidad": "DC", "tope": 730, "tope_periodo": "TOT", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False,
+    {"categoria": "LOR", "nombre": "Motivos de Salud (Accidente de trabajo o enfermedad ocupacional)", "articulo": "Art. 14 C", "unidad": "DC", "tope": 730, "tope_periodo": "TOT", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False,
      "observaciones": "2 años con remuneración íntegra + 1 año más sin goce."},
-    {"categoria": "LOR", "nombre": "Motivos de Salud (Atención de familiar enfermo)", "articulo": "Art. 23/24", "unidad": "DC", "tope": 30, "tope_periodo": "ANI", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False},
-    {"categoria": "LOR", "nombre": "Motivos de Salud (Enfermedad o lesión grave de familiar)", "articulo": "Art. 25", "unidad": "DC", "tope": 90, "tope_periodo": "ANI", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False,
+    {"categoria": "LOR", "nombre": "Motivos de Salud (Atención de familiar enfermo)", "articulo": "Art. 14 D", "unidad": "DC", "tope": 30, "tope_periodo": "ANI", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False},
+    {"categoria": "LOR", "nombre": "Motivos de Salud (Enfermedad o lesión grave de familiar)", "articulo": "Art. 14 E", "unidad": "DC", "tope": 90, "tope_periodo": "ANI", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False,
      "observaciones": "Subsume el término del Art. 23."},
     {"categoria": "LOR", "nombre": "Anual de Invierno", "articulo": "Art. 9", "unidad": "DC", "tope": 10, "tope_periodo": "ANI", "remunerada": "SI", "antiguedad_meses": 0, "certificado": False, "compensacion": False,
      "observaciones": "Período de goce fijado anualmente por el Poder Ejecutivo."},
