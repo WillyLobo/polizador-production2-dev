@@ -182,6 +182,8 @@
             <li><a class="dropdown-item" href="{% url "secretariador:pdf-merge" %}"><i class="bi bi-file-pdf text-danger me-1"></i>Combinar PDFs</a></li>
             {% if perms.secretariador.change_encabezadodocumento %}<li><a class="dropdown-item" href="{% url "secretariador:actualizar-encabezado" %}"><i class="bi bi-file-earmark-word me-1"></i>Actualizar Encabezado</a></li>{% endif %}
             {% if perms.secretariador.view_instrumentoslegalesresoluciones %}<li><a class="dropdown-item" href="{% url "secretariador:lista-paquetes-resoluciones" %}"><i class="bi bi-file-earmark-zip me-1"></i>Paquetes de Resoluciones</a></li>{% endif %}
+            <li><a class="dropdown-item" href="{% url "personalizador:organigrama" %}"><i class="bi bi-diagram-3 me-1"></i>Organigrama</a></li>
+
           </ul>
         </li>
         {% endif %}

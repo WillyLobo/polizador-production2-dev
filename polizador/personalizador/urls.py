@@ -19,10 +19,12 @@ from personalizador.views.licenciapermisoviews import *
 from personalizador.views.cortelicenciaviews import *
 from personalizador.views.tipolicenciapermisoviews import *
 from personalizador.views.periodolicenciaviews import *
+from personalizador.views.organigramaviews import *
 
 app_name = "personalizador"
 
 urlpatterns = [
+	path("organigrama/", OrganigramaView, name="organigrama"),
 ]
 
 generoagente_patterns = [
