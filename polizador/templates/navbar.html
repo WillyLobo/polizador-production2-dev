@@ -173,7 +173,7 @@
         {% endif %}
 
 		<!-- Herramientas -->
-        {% if "gciaoperativa_usuarios" in groups or "dirgral_usuarios" in groups or request.user.is_superuser %}
+        {% if "gciaoperativa_usuarios" in groups or "dirgral_usuarios" in groups or "rrhh_usuarios" in groups or request.user.is_superuser %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-briefcase me-1"></i>Herramientas
