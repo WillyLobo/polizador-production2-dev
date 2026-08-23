@@ -2,8 +2,9 @@ from datetime import timedelta
 
 import requests
 from django.conf import settings
+from django.core.cache import cache
 from django.db import connection
-from django.db.models import Count
+from django.db.models import Count, prefetch_related_objects
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
 
@@ -46,19 +47,58 @@ APP_DISPLAY_NAMES = {
 
 HISTORY_TYPE_LABELS = {"+": "Creado", "~": "Modificado", "-": "Eliminado"}
 
+# FK paths each model's __str__ dereferences, so changes_feed() can resolve them in one
+# bulk query per model instead of one query per row: h.instance rebuilds a bare instance
+# from the historical row with no select_related, so any FK access in __str__ would
+# otherwise hit the DB again for every one of the `limit` rows. Keep in sync with the
+# __str__ methods of the models listed in TRACKED_MODELS.
+STR_RELATED_FIELDS = {
+    Obra: ["obra_empresa"],
+    Certificado: ["certificado_obra__obra_empresa", "certificado_rubro_db"],
+    FojaDeMedicion: ["foja_rubro__rubro_plan__trabajos_obra__obra_empresa"],
+    LicenciaPermiso: ["licenciapermiso_tipo", "licenciapermiso_agente"],
+    CorteLicencia: [
+        "cortelicencia_licencia__licenciapermiso_tipo",
+        "cortelicencia_licencia__licenciapermiso_agente",
+    ],
+}
+
+
+def _light_instance(h, model):
+    """Rebuild a model instance from a historical row without going through
+    HistoricalRecords' `.instance` property: for models declared with
+    HistoricalRecords(excluded_fields=...) (Obra, Certificado), that property issues one
+    extra query PER ROW to refetch the excluded fields live from the current table, even
+    though changes_feed only needs the instance for __str__(), which never reads them.
+    Fields not present on the historical row (i.e. excluded ones) are simply left at
+    their model default."""
+    attrs = {}
+    for field in model._meta.fields:
+        try:
+            attrs[field.attname] = getattr(h, field.attname)
+        except AttributeError:
+            pass
+    return model(**attrs)
+
 
 def changes_feed(app_label, limit=50):
     entries = []
     for model, history_attr, label in TRACKED_MODELS[app_label]:
         history_manager = getattr(model, history_attr)
-        qs = history_manager.select_related("history_user").order_by("-history_date")[:limit]
-        for h in qs:
+        history_rows = list(
+            history_manager.select_related("history_user").order_by("-history_date")[:limit]
+        )
+        instances = [_light_instance(h, model) for h in history_rows]
+        related_fields = STR_RELATED_FIELDS.get(model)
+        if related_fields and instances:
+            prefetch_related_objects(instances, *related_fields)
+        for h, instance in zip(history_rows, instances):
             entries.append({
                 "fecha": h.history_date,
                 "usuario": h.history_user,
                 "tipo": HISTORY_TYPE_LABELS.get(h.history_type, h.history_type),
                 "modelo": label,
-                "objeto": str(h.instance),
+                "objeto": str(instance),
             })
     entries.sort(key=lambda e: e["fecha"], reverse=True)
     return entries[:limit]
@@ -98,12 +138,20 @@ def login_summary():
     }
 
 
+DASHBOARD_CACHE_TIMEOUT = 60  # segundos
+
+
 def sentry_health():
     """Cantidad de issues sin resolver en los últimos 14 días, vía la API de Sentry.
 
     Devuelve None si no está configurado (por ejemplo en desarrollo, donde
-    tampoco se inicializa el SDK de Sentry).
+    tampoco se inicializa el SDK de Sentry). El resultado se cachea porque implica
+    una llamada HTTP sincrónica a un servicio externo en cada carga del dashboard.
     """
+    return cache.get_or_set("dashboard:sentry_health", _fetch_sentry_health, DASHBOARD_CACHE_TIMEOUT)
+
+
+def _fetch_sentry_health():
     if not (settings.SENTRY_AUTH_TOKEN and settings.SENTRY_ORG and settings.SENTRY_PROJECT):
         return None
 
@@ -132,7 +180,12 @@ def sentry_health():
 
 def db_health():
     """Estado de la base vía las vistas pg_stat_* incorporadas de PostgreSQL
-    (no requiere ninguna extensión, a diferencia de pg_stat_statements)."""
+    (no requiere ninguna extensión, a diferencia de pg_stat_statements).
+    Cacheado: es una foto del estado del servidor, no datos por-usuario."""
+    return cache.get_or_set("dashboard:db_health", _fetch_db_health, DASHBOARD_CACHE_TIMEOUT)
+
+
+def _fetch_db_health():
     with connection.cursor() as cursor:
         cursor.execute("SELECT pg_size_pretty(pg_database_size(current_database()))")
         db_size = cursor.fetchone()[0]
@@ -181,7 +234,14 @@ def db_performance(limit=10):
 
     Devuelve None si la extensión no está instalada (por ejemplo en un entorno
     donde todavía no se corrió `CREATE EXTENSION pg_stat_statements`).
+    Cacheado: es una foto del estado del servidor, no datos por-usuario.
     """
+    return cache.get_or_set(
+        f"dashboard:db_performance:{limit}", lambda: _fetch_db_performance(limit), DASHBOARD_CACHE_TIMEOUT
+    )
+
+
+def _fetch_db_performance(limit):
     with connection.cursor() as cursor:
         cursor.execute("SELECT 1 FROM pg_extension WHERE extname = 'pg_stat_statements'")
         if cursor.fetchone() is None:
