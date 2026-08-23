@@ -1,0 +1,15 @@
+<h1>PaginaListaInstrumentosLegalesResoluciones</h1>
+<p><strong>Módulo:</strong> <code>secretariador/views/instrumentolegalviews.py</code> (líneas 191-194)</p>
+<h2>Propósito</h2>
+<p>Función vista simple: solo renderiza la página que contiene la tabla (<code>Lista-resoluciones.html</code>), sin
+pasarle datos. La tabla se llena después vía AJAX contra un endpoint genérico de listado
+(<code>api/views/generics.py</code>, fuera de <code>secretariador</code> — no cubierto en esta fase).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def PaginaListaInstrumentosLegalesResoluciones(request):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>PaginaListaInstrumentosLegalesResoluciones</code> (<code>secretariador:lista-resoluciones</code>) — lista tanto Presidencia como Directorio (mismo modelo).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/InstrumentosLegalesResoluciones.md">InstrumentosLegalesResoluciones</a></li>
+</ul>

@@ -111,12 +111,14 @@
             {% if perms.personalizador.add_tituloprofesional %}<li><a class="dropdown-item" href="{% url "personalizador:crear-tituloprofesional" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Título Profesional</a></li>{% endif %}
             {% if perms.personalizador.add_licenciapermiso %}<li><a class="dropdown-item" href="{% url "personalizador:crear-licenciapermiso" %}"><i class="bi bi-plus-circle me-1"></i>Registrar Licencia/Permiso</a></li>{% endif %}
             {% if perms.personalizador.add_tipolicenciapermiso %}<li><a class="dropdown-item" href="{% url "personalizador:crear-tipolicenciapermiso" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Tipo de Licencia/Permiso</a></li>{% endif %}
+            {% if perms.personalizador.add_periodolicencia %}<li><a class="dropdown-item" href="{% url "personalizador:crear-periodolicencia" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Período de Licencia</a></li>{% endif %}
             <li><hr class="dropdown-divider"></li>
             <li class="dropdown-item fw-bold text-muted"><small>LISTADOS</small></li>
             <li><a class="dropdown-item" href="{% url "personalizador:lista-agentes" %}"><i class="bi bi-list-ul me-1"></i>Agentes</a></li>
             <li><a class="dropdown-item" href="{% url "personalizador:lista-oficinas" %}"><i class="bi bi-list-ul me-1"></i>Oficinas</a></li>
             {% if perms.personalizador.view_licenciapermiso %}<li><a class="dropdown-item" href="{% url "personalizador:lista-licenciapermisos" %}"><i class="bi bi-calendar2-week me-1"></i>Licencias y Permisos</a></li>{% endif %}
             {% if perms.personalizador.view_tipolicenciapermiso %}<li><a class="dropdown-item" href="{% url "personalizador:lista-tipolicenciapermisos" %}"><i class="bi bi-list-ul me-1"></i>Tipos de Licencias/Permisos</a></li>{% endif %}
+            {% if perms.personalizador.view_periodolicencia %}<li><a class="dropdown-item" href="{% url "personalizador:lista-periodolicencias" %}"><i class="bi bi-calendar-range me-1"></i>Períodos de Licencia</a></li>{% endif %}
             {% comment %}
             <li><a class="dropdown-item" href="{% url "personalizador:lista-directorios" %}"><i class="bi bi-list-ul me-1"></i>Directorios</a></li>
             <li><a class="dropdown-item" href="{% url "personalizador:lista-gerencias" %}"><i class="bi bi-list-ul me-1"></i>Gerencias</a></li>
@@ -171,7 +173,7 @@
         {% endif %}
 
 		<!-- Herramientas -->
-        {% if "gciaoperativa_usuarios" in groups or "dirgral_usuarios" in groups or request.user.is_superuser %}
+        {% if "gciaoperativa_usuarios" in groups or "dirgral_usuarios" in groups or "rrhh_usuarios" in groups or request.user.is_superuser %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-briefcase me-1"></i>Herramientas
@@ -180,6 +182,8 @@
             <li><a class="dropdown-item" href="{% url "secretariador:pdf-merge" %}"><i class="bi bi-file-pdf text-danger me-1"></i>Combinar PDFs</a></li>
             {% if perms.secretariador.change_encabezadodocumento %}<li><a class="dropdown-item" href="{% url "secretariador:actualizar-encabezado" %}"><i class="bi bi-file-earmark-word me-1"></i>Actualizar Encabezado</a></li>{% endif %}
             {% if perms.secretariador.view_instrumentoslegalesresoluciones %}<li><a class="dropdown-item" href="{% url "secretariador:lista-paquetes-resoluciones" %}"><i class="bi bi-file-earmark-zip me-1"></i>Paquetes de Resoluciones</a></li>{% endif %}
+            <li><a class="dropdown-item" href="{% url "personalizador:organigrama" %}"><i class="bi bi-diagram-3 me-1"></i>Organigrama</a></li>
+
           </ul>
         </li>
         {% endif %}
@@ -312,6 +316,7 @@
             <li><a class="dropdown-item" href="{% url 'todo_list' %}"><i class="bi bi-list-check me-1"></i>Tareas pendientes</a></li>
             <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="bi bi-person-gear me-1"></i>Panel de administración</a></li>
             <li><a class="dropdown-item" href="{% url 'management_commands' %}"><i class="bi bi-terminal me-1"></i>Ejecutar comandos</a></li>
+            <li><a class="dropdown-item" href="{% url 'knowledge_base' %}"><i class="bi bi-book me-1"></i>Base de Conocimiento</a></li>
             <li><a class="dropdown-item" href="/v1/api/docs"><i class="bi bi-person-gear me-1"></i>API Docs</a></li>
             <li><hr class="dropdown-divider"></li>
             <li class="dropdown-item fw-bold text-muted"><small>Externos</small></li>

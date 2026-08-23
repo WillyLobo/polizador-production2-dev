@@ -1,0 +1,52 @@
+<h1>LicenciaPermiso</h1>
+<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 629-744) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Registro administrativo de una licencia/permiso ya otorgado a un agente — sin flujo de
+solicitud/aprobación propio (a diferencia del circuito de viáticos de <code>secretariador</code>):
+se carga el hecho consumado, respaldado o no por un instrumento legal formal
+(Resolución/Decreto/Memorandum, mutuamente excluyentes).</p>
+<p><code>clean()</code> hace varias validaciones cruzadas:</p>
+<ol>
+<li>A lo sumo un instrumento legal vinculado (no dos a la vez).</li>
+<li><code>fecha_hasta</code> no puede ser anterior a <code>fecha_desde</code>.</li>
+<li>Si consume el saldo de un <code>CorteLicencia</code> (<code>licenciapermiso_saldo_de_corte</code>): que el
+   corte sea del mismo agente y tipo que la licencia original, que no haya vencido, y que
+   la cantidad no supere el saldo restante del corte (recalculando el saldo "como si"
+   esta edición no existiera todavía, para permitir reducir una cantidad ya cargada sin
+   que se autobloquee contra sí misma).</li>
+<li>Para los 3 tipos "año-vencido" (Anual, Anual Proporcional, Anual de Invierno): importa
+   <code>personalizador.licencias.resolver_periodo_para_licencia</code>/<code>get_or_create_periodo_agente</code>
+   (import diferido, adentro del método, para evitar un ciclo ya que <code>licencias.py</code>
+   importa este módulo), resuelve el <a href="PeriodoLicencia.md">PeriodoLicencia</a> que corresponde
+   a <code>licenciapermiso_tipo</code>/<code>licenciapermiso_fecha_desde</code> y lo guarda en
+   <code>licenciapermiso_periodo</code> — si el período todavía no existe, <code>ValidationError</code> (no se
+   autocrea). Si el período es <code>LOR_ANUAL</code>, además congela el cupo del agente
+   (<a href="PeriodoLicenciaAgente.md">PeriodoLicenciaAgente</a>) si es la primera vez.</li>
+<li><strong>Solo para "Anual Proporcional" (adelanto, Art. 10)</strong>: valida que la cantidad no
+   supere el cupo disponible (<code>personalizador.licencias.balance_tipo</code>) del período de su
+   propio <code>fecha_desde.year</code> (no del año siguiente: año vencido, el período abre el 15/12
+   de ese mismo año, así que adelantarlo antes de esa fecha es lo que hace el Art. 10); y
+   bloquea el adelanto si el agente tiene un saldo de <code>CorteLicencia</code> pendiente sin
+   resolver de un período <code>LOR_ANUAL</code> anterior (evita acumular "deuda" de días sin gozar
+   mientras ya se está tomando un adelanto de goce más próximo).</li>
+</ol>
+<p>Es, junto con <code>Oficina</code>, el modelo con la lógica de negocio más densa de
+<code>personalizador</code>.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class LicenciaPermiso(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<pre><code class="language-python"># personalizador/views/licenciapermisoviews.py (CrearLicenciaPermiso.form_valid, vía FormsetViewMixin)
+self.object = form.save()  # -&gt; LicenciaPermiso.clean() corre dentro de full_clean()
+</code></pre>
+<p><code>personalizador.management.commands.importar_control_licencias</code> y
+<code>backfill_periodolicencia</code> también pasan por acá (el primero vía <code>full_clean()</code>; el
+segundo NO, para no rechazar datos históricos contra la regla nueva del punto 5 — solo
+completa <code>licenciapermiso_periodo</code> directamente).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="TipoLicenciaPermiso.md">TipoLicenciaPermiso</a></li>
+<li><a href="CorteLicencia.md">CorteLicencia</a></li>
+<li><a href="PeriodoLicencia.md">PeriodoLicencia</a></li>
+<li><a href="Agente.md">Agente</a></li>
+</ul>

@@ -1,0 +1,13 @@
+<h1>planwidget</h1>
+<p><strong>Módulo:</strong> <code>carga/views/ajaxviews.py</code> (líneas 71-74) · hereda de <code>LoginRequiredMixin, s2forms.ModelSelect2Widget</code></p>
+<h2>Propósito</h2>
+<p>Widget select2 (<code>django-select2</code>) para elegir un(a) PlanDeTrabajos vía búsqueda AJAX incremental, en vez de un <code>&lt;select&gt;</code> con todas las opciones cargadas de una — ver CLAUDE.md sobre <code>django-select2</code>. <code>search_fields</code> define contra qué columnas busca <code>django-select2</code> con <code>icontains</code>. Busca por el nombre de la Obra dueña del plan.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class planwidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
+</code></pre>
+<h2>Uso real</h2>
+<p>Selección de Plan de Trabajos en formularios que lo referencian.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/PlanDeTrabajos.md">PlanDeTrabajos</a></li>
+</ul>

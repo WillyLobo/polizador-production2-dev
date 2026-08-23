@@ -1,0 +1,13 @@
+<h1>create_programa</h1>
+<p><strong>Módulo:</strong> <code>api/views/carga_views.py</code> (líneas 317-318)</p>
+<h2>Propósito</h2>
+<p>Alta de <code>Programa</code> desde <code>ProgramaCreate</code> (<code>payload.model_dump()</code> directo a <code>Programa.objects.create()</code> — sin lógica de negocio propia acá, la validación vive en el schema ninja/Pydantic).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def create_programa(request, payload: ProgramaCreate):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>POST /v1/api/programas/</code> — response=<code>ProgramaOut</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../carga/models/Programa.md">Programa</a></li>
+</ul>

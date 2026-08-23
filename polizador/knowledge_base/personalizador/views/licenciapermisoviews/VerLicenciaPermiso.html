@@ -1,0 +1,14 @@
+<h1>VerLicenciaPermiso</h1>
+<p><strong>Módulo:</strong> <code>personalizador/views/licenciapermisoviews.py</code> (líneas 75-86) · hereda de <code>PermissionRequiredMixin, generic.DetailView</code></p>
+<h2>Propósito</h2>
+<p>Ficha de detalle de una LicenciaPermiso. Agrega <code>es_licencia_anual</code> al contexto (si el tipo es "Anual" o "Anual de Invierno") — el template lo usa para mostrar u ocultar el botón de "Registrar Corte de Licencia", que solo aplica a esos dos tipos.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class VerLicenciaPermiso(PermissionRequiredMixin, generic.DetailView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>VerLicenciaPermiso</code> (<code>personalizador:ver-licenciapermiso</code>) — también el destino post-guardado de <code>CrearCorteLicencia</code>/<code>UpdateCorteLicencia</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/LicenciaPermiso.md">LicenciaPermiso</a></li>
+<li><a href="../cortelicenciaviews/CrearCorteLicencia.md">CrearCorteLicencia</a></li>
+</ul>

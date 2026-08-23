@@ -1,0 +1,13 @@
+<h1>instrumentoresolucionwidget</h1>
+<p><strong>Módulo:</strong> <code>personalizador/views/ajaxviews.py</code> (líneas 159-163) · hereda de <code>LoginRequiredMixin, s2forms.ModelSelect2Widget</code></p>
+<h2>Propósito</h2>
+<p>Widget select2 (<code>django-select2</code>) para elegir InstrumentosLegalesResoluciones (secretariador) vía búsqueda AJAX incremental — ver CLAUDE.md sobre <code>django-select2</code> y <code>carga/views/ajaxviews.py</code> (mismo patrón, definido allá). Sin dependencia de otros campos.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class instrumentoresolucionwidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>LicenciaPermiso.licenciapermiso_instrumento_resolucion</code> en <code>LicenciaPermisoForm</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/LicenciaPermiso.md">LicenciaPermiso</a></li>
+</ul>

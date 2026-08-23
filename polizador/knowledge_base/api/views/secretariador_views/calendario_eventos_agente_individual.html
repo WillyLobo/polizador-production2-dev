@@ -1,0 +1,14 @@
+<h1>calendario_eventos_agente_individual</h1>
+<p><strong>Módulo:</strong> <code>api/views/secretariador_views.py</code> (líneas 932-945)</p>
+<h2>Propósito</h2>
+<p>Eventos del calendario de un Agente puntual en un año dado (Solicitudes directas + Incorporaciones, excluyendo anuladas) — sin la lógica de "marcar en rojo" de <code>_calendar_events_by_agente</code> (acá el título de cada evento es la actuación, no el nombre del agente, porque ya se sabe de quién es el calendario).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def calendario_eventos_agente_individual(request, agente: int, ano: int):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>GET /v1/api/calendario/agente-individual/?agente=&lt;id&gt;&amp;ano=&lt;ano&gt;</code> — consumido por <code>CrearReporteViaticosPorAgenteIndividual</code> (<code>secretariador/views/reportesviews.py</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../secretariador/views/reportesviews/CrearReporteViaticosPorAgenteIndividual.md">CrearReporteViaticosPorAgenteIndividual</a></li>
+<li><a href="_comisionado_solicitud_origin.md">_comisionado_solicitud_origin</a></li>
+</ul>

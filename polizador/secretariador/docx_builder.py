@@ -33,6 +33,10 @@ ARTICULO_DOS_TAB_POS = Pt(9921 / 20)
 # Sangría de primera línea de los "considerandos": w:ind firstLine="708".
 CONSIDERANDO_INDENT = Pt(708 / 20)
 
+# Espacio debajo del subpárrafo de cada agente del Artículo 2°, para separarlos
+# visualmente entre sí cuando hay varios.
+ARTICULO_DOS_ESPACIO_ENTRE_AGENTES = 120
+
 
 def _set_font(run, bold=False):
 	run.font.name = FONT_NAME
@@ -111,7 +115,7 @@ def add_articulo_dos_fila(doc, fila):
 	tab_run.add_tab()
 	_add_run(p_monto, f"${fila['monto']}")
 
-	p_sub = _add_paragraph(doc, before=0, after=0)
+	p_sub = _add_paragraph(doc, before=0, after=ARTICULO_DOS_ESPACIO_ENTRE_AGENTES)
 	_add_articulo_dos_tabs(p_sub)
 	_add_run(p_sub, fila["subparrafo"])
 	return p_monto, p_sub

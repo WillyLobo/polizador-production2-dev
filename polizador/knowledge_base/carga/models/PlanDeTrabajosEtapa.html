@@ -1,0 +1,31 @@
+<h1>PlanDeTrabajosEtapa</h1>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 1032-1114) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>El "gemelo proyectado" de <code>FojaDeMedicion</code>: mientras una Foja registra el avance <em>real</em>
+mes a mes, una Etapa registra el avance <em>proyectado</em> — misma estructura de numeración
+correlativa por rubro (<code>etapa_numero</code>, auto-asignado por
+<a href="../signals/auto_increment_etapa_numero.md">auto_increment_etapa_numero</a>) y misma noción
+de "anterior siguiendo la cadena de rubro reprogramado" (<code>etapa_anterior()</code>, análogo a
+<code>FojaDeMedicion.foja_anterior()</code>).</p>
+<p>La diferencia real está en <code>save()</code>: además de lo que hace la señal de numeración, calcula
+<code>etapa_fecha</code> a mano — proyecta un mes calendario más que la Etapa anterior
+(<a href="add_months.md">add_months</a>), o si es la primera Etapa de la cadena, usa
+<code>etapa_rubro.rubro_plan.trabajos_fecha</code>. El comentario en el código explica por qué no usa
+<code>self.etapa_anterior()</code> para esto: esa llamada compararía por <code>etapa_numero</code>, que todavía
+no está asignado en este punto (la señal <code>pre_save</code> corre <em>dentro</em> de
+<code>super().save()</code>, después de este código) — por eso busca "la última etapa de la cadena"
+directamente en vez de reusar el método.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class PlanDeTrabajosEtapa(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<pre><code class="language-python"># carga/views/plandetrabajosetapaviews.py:102 (PlanDeTrabajosEtapaMatriz.post)
+etapa = PlanDeTrabajosEtapa.objects.create(etapa_rubro=rubro)
+</code></pre>
+<h2>Ver también</h2>
+<ul>
+<li><a href="FojaDeMedicion.md">FojaDeMedicion</a> — misma estructura, del lado del avance real.</li>
+<li><a href="add_months.md">add_months</a></li>
+<li><a href="../signals/auto_increment_etapa_numero.md">auto_increment_etapa_numero</a></li>
+<li><a href="PlanDeTrabajosEtapaItem.md">PlanDeTrabajosEtapaItem</a></li>
+</ul>

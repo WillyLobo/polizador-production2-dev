@@ -1,0 +1,13 @@
+<h1>BcraUviForm</h1>
+<p><strong>Módulo:</strong> <code>core/forms.py</code> (líneas 40-55) · hereda de <code>BaseCommandRunForm</code></p>
+<h2>Propósito</h2>
+<p>Un solo campo (<code>full_sync</code>, checkbox): tildado agrega <code>--full-sync</code> (descarga toda la serie histórica del BCRA, ignorando lo ya guardado — los duplicados se saltean); sin tildar, el comando por defecto solo trae valores nuevos desde el último registrado.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class BcraUviForm(BaseCommandRunForm):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>COMMAND_REGISTRY["bcra_uvi"]["form"]</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../carga/models/Uvi.md">Uvi</a></li>
+</ul>

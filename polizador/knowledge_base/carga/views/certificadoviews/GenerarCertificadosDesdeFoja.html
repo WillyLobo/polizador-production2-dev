@@ -1,0 +1,21 @@
+<h1>GenerarCertificadosDesdeFoja</h1>
+<p><strong>Módulo:</strong> <code>carga/views/certificadoviews.py</code> (líneas 230-278) · hereda de <code>PermissionRequiredMixin, generic.View</code></p>
+<h2>Propósito</h2>
+<p>El flujo normal de certificación: a partir de una Foja de Medición ya cargada, construye
+(sin guardar — <code>preview=True</code>) los Certificados que correspondería generar
+(<code>construir_certificados_desde_foja</code>, <code>carga/certificacion.py</code>), se los muestra al
+usuario, y solo los persiste (<code>generar_certificados_desde_foja</code>) cuando confirma
+explícitamente (<code>"confirmar" in request.POST</code>) — un patrón de "vista previa antes de
+confirmar" para una operación que no es trivialmente reversible. Atrapa tanto
+<code>ValidationError</code> (reglas de negocio) como <code>Ley27397Error</code> (fallas del cálculo de
+indexación) y las muestra como error de formulario en vez de un 500.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class GenerarCertificadosDesdeFoja(PermissionRequiredMixin, generic.View):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>GenerarCertificadosDesdeFoja</code> (<code>carga:generar-certificados-foja</code>), enlazada desde la ficha de la Foja de Medición.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/FojaDeMedicion.md">FojaDeMedicion</a></li>
+<li><a href="../../models/Certificado.md">Certificado</a></li>
+</ul>

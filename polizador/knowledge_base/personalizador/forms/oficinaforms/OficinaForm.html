@@ -1,0 +1,19 @@
+<h1>OficinaForm</h1>
+<p><strong>Módulo:</strong> <code>personalizador/forms/oficinaforms.py</code> (líneas 8-24) · hereda de <code>forms.ModelForm</code></p>
+<h2>Propósito</h2>
+<p><code>ModelForm</code> para Oficina, con los cuatro campos del árbol organizacional (cada nivel
+condicionado al anterior vía los widgets <code>oficina_gerenciawidget</code>/<code>oficina_direccionwidget</code>/
+<code>oficina_departamentowidget</code> — ver <code>personalizador/views/ajaxviews.py</code>). El form en sí no
+tiene <code>clean()</code>: toda la validación/derivación de consistencia jerárquica vive en
+<code>Oficina.clean()</code> (modelo), este form solo restringe las <em>opciones ofrecidas</em> en cada
+select2 para guiar al usuario hacia una combinación válida antes de submitir.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class OficinaForm(forms.ModelForm):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearOficina</code>/<code>UpdateOficina</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/Oficina.md">Oficina</a></li>
+<li><a href="../ajaxviews/OficinaGerenciaDependentWidgetMixin.md">OficinaGerenciaDependentWidgetMixin</a></li>
+</ul>

@@ -1,0 +1,37 @@
+<h1>CrearFojaDeMedicion</h1>
+<p><strong>Módulo:</strong> <code>carga/views/fojademedicionviews.py</code> (líneas 50-186) · hereda de <code>PermissionRequiredMixin, FormsetViewMixin, generic.CreateView</code></p>
+<h2>Propósito</h2>
+<p>La vista más compleja del módulo <code>fojademedicionviews</code>: sobreescribe <code>get</code>/<code>post</code> en vez
+de apoyarse en el flujo estándar de <code>CreateView</code>, porque el formset de items
+(<code>FojaDeMedicionItemFormset</code>) tiene que armarse dinámicamente según el Rubro elegido — una
+fila por <code>PlanDeTrabajosItem</code> de ese rubro, no un número fijo de filas
+(<code>build_foja_item_formset_class(extra=items.count())</code>). En el <code>GET</code>, si viene
+<code>?rubro=&lt;id&gt;</code>, prellena cada fila con el <code>%</code> anterior de ese item
+(<code>FojaDeMedicion.anterior_items_map</code>) para que el usuario vea de entrada cuánto llevaba
+acumulado sin tener que ir a buscarlo.</p>
+<p>Además del formset de items, maneja un segundo formset independiente de fotos
+(<code>FojaDeMedicionFotoFormset</code>) y, si la Foja resulta ser <code>foja_legacy</code>, vincula los
+Certificados elegidos en el campo <code>foja_legacy_certificados</code> (ver
+<a href="../ajaxviews/certificadolegacywidget.md">certificadolegacywidget</a>) seteándoles
+<code>certificado_foja</code> después de guardar. También setea <code>PlanDeTrabajos.trabajos_fecha_inicio</code>
+la primera vez que se carga (si el form trae ese dato y el Plan todavía no lo tiene).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CrearFojaDeMedicion(PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
+</code></pre>
+<h2>Uso real</h2>
+<pre><code class="language-python"># carga/views/fojademedicionviews.py:140 (post)
+self.object = form.save()
+self._save_fecha_inicio(form)
+self._vincular_certificados_legacy(form)
+formset.instance = self.object
+formset.save()          # -&gt; cada FojaDeMedicionItem.save() + cascada (ver la señal)
+foto_formset.instance = self.object
+foto_formset.save()
+</code></pre>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/FojaDeMedicion.md">FojaDeMedicion</a></li>
+<li><a href="../../models/FojaDeMedicionItem.md">FojaDeMedicionItem</a></li>
+<li><a href="../../signals/recalcular_acumulado_fojas_siguientes.md">recalcular_acumulado_fojas_siguientes</a></li>
+<li><a href="../ajaxviews/certificadolegacywidget.md">certificadolegacywidget</a></li>
+</ul>

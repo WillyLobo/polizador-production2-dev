@@ -1,0 +1,30 @@
+<h1>PlanDeTrabajosEtapaMatriz</h1>
+<p><strong>Módulo:</strong> <code>carga/views/plandetrabajosetapaviews.py</code> (líneas 17-114) · hereda de <code>PermissionRequiredMixin, generic.View</code></p>
+<h2>Propósito</h2>
+<p>Carga/edita de una sola vez <strong>todas</strong> las Etapas Proyectadas de un Rubro, con una grilla
+fila=item / columna=etapa(mes) — la reproducción digital de la planilla de origen en
+papel. <code>_get_anterior_map</code> tiene una advertencia propia en su docstring: como la matriz
+edita de una sola vez las etapas existentes <em>y</em> las nuevas, el acumulado anterior tiene
+que excluir la etapa existente más reciente (si no, se contaría dos veces: una vía
+<code>anterior_map</code>, otra como columna de la matriz).</p>
+<p>El <code>post</code> es la única vista de <code>carga</code> que crea/actualiza <code>PlanDeTrabajosEtapa</code> y
+<code>PlanDeTrabajosEtapaItem</code> en bloque dentro de una <code>transaction.atomic()</code>: por cada
+columna sin Etapa existente, crea una (disparando
+<a href="../../signals/auto_increment_etapa_numero.md">auto_increment_etapa_numero</a>), y para cada
+celda hace <code>get_or_create</code> + <code>save()</code> explícito del <code>PlanDeTrabajosEtapaItem</code> — ver la
+nota sobre la ausencia de cascada hacia adelante en esa página del modelo.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class PlanDeTrabajosEtapaMatriz(PermissionRequiredMixin, generic.View):
+</code></pre>
+<h2>Uso real</h2>
+<pre><code class="language-python"># carga/views/plandetrabajosetapaviews.py:102
+etapa = PlanDeTrabajosEtapa.objects.create(etapa_rubro=rubro)
+...
+etapaitem.save()
+</code></pre>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/PlanDeTrabajosEtapa.md">PlanDeTrabajosEtapa</a></li>
+<li><a href="../../models/PlanDeTrabajosEtapaItem.md">PlanDeTrabajosEtapaItem</a></li>
+<li><a href="../../signals/auto_increment_etapa_numero.md">auto_increment_etapa_numero</a></li>
+</ul>

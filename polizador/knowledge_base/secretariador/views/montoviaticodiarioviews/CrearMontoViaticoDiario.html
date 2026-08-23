@@ -1,0 +1,14 @@
+<h1>CrearMontoViaticoDiario</h1>
+<p><strong>Módulo:</strong> <code>secretariador/views/montoviaticodiarioviews.py</code> (líneas 13-61) · hereda de <code>PermissionRequiredMixin, generic.CreateView</code></p>
+<h2>Propósito</h2>
+<p>Alta de un Decreto <strong>con</strong> su <code>MontoViaticoDiario</code> (formset de una sola fila, <code>max_num=1</code>) en el mismo paso — a diferencia de <code>instrumentolegalviews.CrearInstrumentoLegalDecreto</code> (solo el Decreto, sin montos). <code>get</code>/<code>post</code> manuales, mismo patrón que <code>incorporacionviews</code>.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CrearMontoViaticoDiario(PermissionRequiredMixin, generic.CreateView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearMontoViaticoDiario</code> (<code>secretariador:crear-montoviaticodiario</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/MontoViaticoDiario.md">MontoViaticoDiario</a></li>
+<li><a href="../../models/InstrumentosLegalesDecretos.md">InstrumentosLegalesDecretos</a></li>
+</ul>

@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}<title>{{ symbol.name }} · Base de Conocimiento | Polizador</title>{% endblock title %}
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.16.1/dist/mermaid.min.js"></script>
+
+<div class="container-fluid">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'knowledge_base' %}">Base de Conocimiento</a></li>
+      {% for part in breadcrumbs %}
+      <li class="breadcrumb-item {% if forloop.last %}active{% endif %}">{{ part }}</li>
+      {% endfor %}
+    </ol>
+  </nav>
+
+  <div class="row">
+    <div class="col-md-3 d-none d-md-block border-end">
+      {% include "knowledge_base/_tree.html" %}
+    </div>
+    <div class="col-md-9">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <span class="badge {% if symbol.kind == 'class' %}text-bg-primary{% else %}text-bg-info{% endif %}">{{ symbol.kind }}</span>
+        {% if symbol.stale %}
+        <span class="badge text-bg-warning">Desactualizada: la firma/docstring cambió desde la última autoría</span>
+        {% elif not symbol.authored %}
+        <span class="badge text-bg-secondary">Sin autoría todavía</span>
+        {% endif %}
+      </div>
+
+      {% if content_html %}
+      <article class="kb-content">
+        {{ content_html|safe }}
+      </article>
+      {% else %}
+      <div class="alert alert-warning">
+        Esta página todavía no tiene HTML generado. Corré
+        <code>python manage.py kb_extract {{ current_app }} --render</code> desde un checkout de desarrollo.
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('code.language-mermaid').forEach((el) => {
+    const pre = document.createElement('pre');
+    pre.className = 'mermaid';
+    pre.textContent = el.textContent;
+    el.closest('pre').replaceWith(pre);
+  });
+  if (window.mermaid) {
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'dark' : 'default',
+    });
+  }
+</script>
+{% endblock content %}

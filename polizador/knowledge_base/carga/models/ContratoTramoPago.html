@@ -1,0 +1,20 @@
+<h1>ContratoTramoPago</h1>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 1324-1355) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Un tramo de pago fijo de un Contrato con <code>contrato_certificacion_por_etapas=True</code>:
+<code>tramo_pct_pago</code> es el % del Contrato que se certifica cuando este tramo se dispara, y
+<code>tramo_pct_disparador</code> es el umbral de % de avance acumulado (de la Foja) que lo habilita.
+<code>tramo_numero</code> es correlativo por Contrato, auto-asignado por
+<a href="../signals/auto_increment_tramo_numero.md">auto_increment_tramo_numero</a> — el más simple
+de los tres patrones de auto-numeración del módulo (sin cadena de reprogramación).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class ContratoTramoPago(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>GestionarTramosContrato</code> (<code>carga/views/contratotramopagoviews.py:35</code>), formset inline sobre un Contrato.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="Contrato.md">Contrato</a></li>
+<li><a href="Certificado.md">Certificado</a> — <code>certificado_contrato_tramo</code> es el <code>OneToOneField</code> que salda un Tramo.</li>
+<li><a href="../signals/auto_increment_tramo_numero.md">auto_increment_tramo_numero</a></li>
+</ul>

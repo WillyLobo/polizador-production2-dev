@@ -9,7 +9,7 @@ from django.views import generic
 from personalizador.models import LicenciaPermiso, Agente, CorteLicencia
 from personalizador.forms.licenciapermisoforms import LicenciaPermisoForm, DevolucionHorasPermisoFormset
 from personalizador.licencias import (
-	resumen_agente, saldos_pendientes_agente,
+	resumen_agente, saldos_pendientes_agente, get_periodo,
 	LICENCIA_ANUAL_ORDINARIA_NOMBRE, LICENCIA_ANUAL_INVIERNO_NOMBRE,
 )
 from core.mixins import DeleteRelatedObjectsMixin, FormsetViewMixin
@@ -109,5 +109,7 @@ def ControlLicenciasAgente(request, pk):
 		"anios": range(timezone.now().year - 5, timezone.now().year + 1),
 		"resumen": resumen_agente(agente, anio),
 		"saldos_pendientes": saldos_pendientes_agente(agente),
+		"periodo_anual": get_periodo("LOR_ANUAL", anio),
+		"periodo_invierno": get_periodo("LOR_INVIERNO", anio),
 	}
 	return render(request, "licenciapermiso/control-licencias.html", context)

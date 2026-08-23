@@ -1,0 +1,15 @@
+<h1>ContratosDigitales</h1>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 1386-1397) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Documento PDF adjunto a un Contrato, con un <code>ContratoRubro</code> (tipo de documento) — el equivalente de <code>ObraDocumento</code> pero para Contrato, y con categorización propia.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class ContratosDigitales(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>Contrato.documentos_contrato</code> (related_name) es la relación inversa; también hay <code>Obra.documentos_contrato()</code>, que filtra por todos los Contratos de la Obra.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="Contrato.md">Contrato</a></li>
+<li><a href="ContratoRubro.md">ContratoRubro</a></li>
+<li><a href="ObraDocumento.md">ObraDocumento</a></li>
+</ul>

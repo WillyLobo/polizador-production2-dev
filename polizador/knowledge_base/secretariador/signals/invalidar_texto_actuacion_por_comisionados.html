@@ -1,0 +1,54 @@
+<h1>invalidar_texto_actuacion_por_comisionados</h1>
+<p><strong>Módulo:</strong> <code>secretariador/signals.py</code> (líneas 129-135) · receiver de <code>post_save</code> y <code>post_delete</code> sobre <code>ComisionadoSolicitud</code></p>
+<h2>Propósito</h2>
+<p><code>ComisionadoSolicitud</code> es la tabla de agentes comisionados, y alimenta la prosa del texto
+por dos caminos distintos según a qué esté enganchada:</p>
+<ul>
+<li><code>comisionadosolicitud_foreign</code> (agente de la Solicitud original, "agentes_solicitud"):
+  afecta tanto el texto de esa Solicitud (<code>_calcular_texto_solicitud</code>/
+  <code>_calcular_texto_exterior</code>) como el de su Incorporacion, si tiene una — porque
+  <code>_calcular_texto_incorporacion</code> menciona explícitamente a los agentes de la Solicitud
+  original además de los incorporados.</li>
+<li><code>comisionadosolicitud_incorporacion_foreign</code> (agente agregado directo en la
+  Incorporacion, "agentes_incorporacion"): afecta solo el texto de esa Incorporacion.</li>
+</ul>
+<p>Un mismo <code>ComisionadoSolicitud</code> tiene como mucho uno de los dos FK cargado (son excluyentes
+en la práctica, aunque no hay <code>CheckConstraint</code> que lo fuerce como sí lo hay para
+<code>comisionadosolicitud_nombre</code>/<code>comisionadosolicitud_externo</code>), así que en cada guardado o
+borrado esta función simplemente intenta invalidar los tres posibles destinos — las
+llamadas con <code>pk=None</code> (<code>comisionadosolicitud_foreign_id</code>/<code>comisionadosolicitud_incorporacion_foreign_id</code>
+en <code>None</code>) no hacen nada, por el <code>if not pk</code> de <a href="_invalidar_texto.md">_invalidar_texto</a>.</p>
+<p>Se engancha a <code>post_save</code> <strong>y</strong> <code>post_delete</code> (no solo <code>post_save</code>) porque borrar un
+agente comisionado —p. ej. sacarlo de la Solicitud— también deja desactualizado el texto
+guardado tanto como agregarlo o editar su rol de chofer/colaborador.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def invalidar_texto_actuacion_por_comisionados(sender, instance, **kwargs):
+</code></pre>
+<h2>Uso real</h2>
+<p>No se llama nunca directamente — se dispara sola en cada <code>ComisionadoSolicitud.save()</code>/
+<code>.delete()</code>. El disparador más común es guardar el formset de comisionados de una
+Solicitud o Incorporacion:</p>
+<pre><code class="language-python"># core/mixins.py (FormsetViewMixin.form_valid)
+formset.instance = self.object
+formset.save()  # guarda/borra cada ComisionadoSolicitud -&gt; post_save/post_delete -&gt; esta señal
+</code></pre>
+<h2>Flujo de datos</h2>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant F as formset.save()
+    participant C as ComisionadoSolicitud
+    participant Sig as invalidar_texto_actuacion_por_comisionados
+
+    F-&gt;&gt;C: save() (agente nuevo/editado) o delete() (agente sacado)
+    C--&gt;&gt;Sig: post_save / post_delete
+    Sig-&gt;&gt;Sig: _invalidar_texto_solicitud(comisionadosolicitud_foreign_id)
+    Sig-&gt;&gt;Sig: _invalidar_incorporacion_de_solicitud(comisionadosolicitud_foreign_id)
+    Sig-&gt;&gt;Sig: _invalidar_texto_incorporacion(comisionadosolicitud_incorporacion_foreign_id)
+    Note over Sig: los FK en None no invalidan nada (ver _invalidar_texto)
+</code></pre>
+<h2>Ver también</h2>
+<ul>
+<li><a href="_invalidar_texto_solicitud.md">_invalidar_texto_solicitud</a></li>
+<li><a href="_invalidar_incorporacion_de_solicitud.md">_invalidar_incorporacion_de_solicitud</a></li>
+<li><a href="_invalidar_texto_incorporacion.md">_invalidar_texto_incorporacion</a></li>
+<li><a href="../models/ComisionadoSolicitud.md">ComisionadoSolicitud</a></li>
+</ul>

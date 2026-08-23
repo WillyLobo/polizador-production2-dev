@@ -1,0 +1,14 @@
+<h1>build_foja_item_formset_class</h1>
+<p><strong>Módulo:</strong> <code>carga/forms/fojademedicionforms.py</code> (líneas 218-228)</p>
+<h2>Propósito</h2>
+<p>Fábrica de <code>FojaDeMedicionItemFormset</code> con un número de filas extra (<code>extra=</code>) igual a la cantidad de items del Rubro elegido — necesario porque <code>CrearFojaDeMedicion</code> no sabe de antemano cuántos items va a tener la Foja hasta que el usuario elige el Rubro (a diferencia del formset fijo <code>extra=0</code> que usa <code>UpdateFojaDeMedicion</code>, donde los items ya existen).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def build_foja_item_formset_class(extra):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearFojaDeMedicion.get/post</code> (<code>carga/views/fojademedicionviews.py</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="FojaDeMedicionItemForm.md">FojaDeMedicionItemForm</a></li>
+<li><a href="../../views/fojademedicionviews/CrearFojaDeMedicion.md">CrearFojaDeMedicion</a></li>
+</ul>

@@ -1,0 +1,53 @@
+<h1>revisar_texto_actuacion</h1>
+<p><strong>Módulo:</strong> <code>secretariador/views/textoactuacionviews.py</code> (líneas 29-96)</p>
+<h2>Propósito</h2>
+<p>La vista GET/POST compartida por los tres flujos de generación de documento
+(<code>solicitudviews.editar_texto_solicitud</code>, <code>solicitud_exteriorviews.editar_texto_solicitud_exterior</code>,
+<code>incorporacionviews.editar_texto_incorporacion</code>) para revisar/editar a mano los
+considerandos y artículos antes de generar el <code>.docx</code> — en vez de tres vistas casi
+idénticas, cada flujo le pasa su propio texto ya calculado
+(<code>parrafos_default</code>/<code>articulo_uno_default</code>/<code>articulo_dos_default</code>, con la redacción
+específica de ese flujo) y esta función maneja el formulario genéricamente.</p>
+<p>Si <code>EncabezadoDocumento.vigente()</code> es <code>None</code> (nunca se subió un encabezado base), corta
+con un 500 explícito y un mensaje claro en vez de fallar más adelante al intentar generar
+el <code>.docx</code> sin base. En el POST, según el botón (<code>accion=guardar</code> vs. cualquier otro),
+o bien solo persiste el texto (<code>actuacion.save(update_fields=[texto_field_name])</code>) y
+vuelve a la ficha, o guarda y redirige a la URL de generación del <code>.docx</code> del flujo
+correspondiente (<code>generar_docx_url_name</code>, parametrizado por el caller).</p>
+<p>En el GET, el valor inicial de cada campo del formulario sale de
+<code>texto_actuacion_guardado(actuacion, texto_field_name)</code> si la actuación ya tiene texto
+guardado (<code>solicitud_texto_actuacion</code>/<code>incorporacion_texto_actuacion</code>), y de los
+<code>*_default</code> recién calculados si no. Para <code>articulo_dos</code> la elección es por fila
+(<code>_articulo_dos_inicial</code>, mismo módulo): toma como base la lista <em>actual</em> de agentes
+comisionados y solo reutiliza la fila guardada de los que siguen estando; un agente nuevo
+aparece con su valor recién calculado, uno eliminado simplemente desaparece. Para
+<code>parrafos</code>/<code>articulo_uno</code> no hay ese tipo de reconciliación fila a fila — es todo el texto
+guardado o todo el recién calculado. Por eso <code>solicitud_texto_actuacion</code>/
+<code>incorporacion_texto_actuacion</code> necesitan invalidarse activamente cuando cambian los
+datos que el texto describe (agentes, fechas, localidades, vehículo, resolución
+referenciada): si no, esta vista seguiría prellenando el formulario con un texto guardado
+desactualizado en vez de reflejar el cambio. Ese es el trabajo de los receivers en
+<code>secretariador/signals.py</code> (ver
+<a href="../../signals/invalidar_texto_actuacion_por_cambio_de_datos.md">invalidar_texto_actuacion_por_cambio_de_datos</a>
+y las demás señales del módulo) — ponen el campo en <code>None</code> para que el próximo GET caiga
+en la rama <code>*_default</code>.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def revisar_texto_actuacion(request, *, actuacion, texto_field_name, generar_docx_url_name, parrafos_default, articulo_uno_default, articulo_dos_default, extra_context=None):
+</code></pre>
+<h2>Uso real</h2>
+<pre><code class="language-python"># secretariador/views/solicitudviews.py (editar_texto_solicitud)
+return revisar_texto_actuacion(
+    request, actuacion=actuacion, texto_field_name=&quot;solicitud_texto_actuacion&quot;,
+    generar_docx_url_name=&quot;secretariador:crear-documento-solicitud&quot;,
+    parrafos_default=parrafos_default, articulo_uno_default=articulo_uno_default,
+    articulo_dos_default=articulo_dos_default,
+)
+</code></pre>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/EncabezadoDocumento.md">EncabezadoDocumento</a></li>
+<li><a href="../solicitudviews/editar_texto_solicitud.md">editar_texto_solicitud</a></li>
+<li><a href="../solicitud_exteriorviews/editar_texto_solicitud_exterior.md">editar_texto_solicitud_exterior</a></li>
+<li><a href="../incorporacionviews/editar_texto_incorporacion.md">editar_texto_incorporacion</a></li>
+<li><a href="../../signals/invalidar_texto_actuacion_por_cambio_de_datos.md">invalidar_texto_actuacion_por_cambio_de_datos</a> — mantiene sincronizado el texto que esta vista prellena.</li>
+</ul>

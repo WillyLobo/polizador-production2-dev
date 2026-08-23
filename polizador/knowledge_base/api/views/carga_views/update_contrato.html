@@ -1,0 +1,13 @@
+<h1>update_contrato</h1>
+<p><strong>Módulo:</strong> <code>api/views/carga_views.py</code> (líneas 1612-1617)</p>
+<h2>Propósito</h2>
+<p>Actualización parcial de un <code>Contrato</code> (<code>payload.model_dump(exclude_unset=True)</code> — solo pisa los campos que vinieron en el payload, <code>setattr</code> campo por campo).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def update_contrato(request, id: int, payload: ContratoUpdate):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>PUT /v1/api/.../{{id}}/</code> — response=<code>ContratoOut</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../carga/models/Contrato.md">Contrato</a></li>
+</ul>

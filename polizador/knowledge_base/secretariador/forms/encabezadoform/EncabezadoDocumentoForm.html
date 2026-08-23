@@ -1,0 +1,13 @@
+<h1>EncabezadoDocumentoForm</h1>
+<p><strong>Módulo:</strong> <code>secretariador/forms/encabezadoform.py</code> (líneas 8-27) · hereda de <code>BaseFormMixin, forms.ModelForm</code></p>
+<h2>Propósito</h2>
+<p><code>ModelForm</code> para subir un <code>EncabezadoDocumento</code>. Su único campo tiene un <code>clean_encabezadodocumento_archivo</code> propio: delega en <code>secretariador.docx_header.tiene_encabezado_valido(archivo)</code> (fuera del alcance de este manifest) para rechazar un <code>.docx</code> que no tenga un encabezado de primera página reconocible — evita subir un archivo que rompería silenciosamente la generación de documentos más adelante.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class EncabezadoDocumentoForm(BaseFormMixin, forms.ModelForm):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>ActualizarEncabezado</code> (<code>secretariador/views/encabezadoviews.py</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/EncabezadoDocumento.md">EncabezadoDocumento</a></li>
+</ul>

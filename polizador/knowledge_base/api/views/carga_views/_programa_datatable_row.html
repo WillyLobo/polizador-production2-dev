@@ -1,0 +1,13 @@
+<h1>_programa_datatable_row</h1>
+<p><strong>Módulo:</strong> <code>api/views/carga_views.py</code> (líneas 338-349)</p>
+<h2>Propósito</h2>
+<p>Row-builder para <code>register_simple_datatable</code> (ver <code>api/views/generics.py</code>): arma la fila que consume el datatable JS — datos ya formateados a texto/HTML más una columna <code>acciones</code> con los links editar/detalle/eliminar, cada uno mostrado solo si <code>user.has_perm(...)</code> correspondiente. Columnas de <code>Programa</code>: id + nombre.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _programa_datatable_row(p: Programa, user) -&gt; dict:
+</code></pre>
+<h2>Uso real</h2>
+<p><code>row_builder</code> pasado a <code>register_simple_datatable(router, Programa, ...)</code> (misma sección del módulo).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../carga/models/Programa.md">Programa</a></li>
+</ul>

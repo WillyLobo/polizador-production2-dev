@@ -1,0 +1,18 @@
+<h1>CrearLicenciaPermiso</h1>
+<p><strong>Módulo:</strong> <code>personalizador/views/licenciapermisoviews.py</code> (líneas 27-59) · hereda de <code>PermissionRequiredMixin, FormsetViewMixin, generic.CreateView</code></p>
+<h2>Propósito</h2>
+<p>Alta de LicenciaPermiso junto con su formset inline de <code>DevolucionHorasPermiso</code>
+(<code>FormsetViewMixin</code>). <code>get_initial</code> soporta dos entradas por querystring: <code>?saldo_de_corte=&lt;id&gt;</code>
+precarga agente/tipo desde la licencia original del corte (para registrar un uso parcial
+de saldo), y <code>?agente=&lt;id&gt;</code> simplemente precarga el agente — mutuamente compatibles con
+el flujo normal de carga desde cero.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CrearLicenciaPermiso(PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearLicenciaPermiso</code> (<code>personalizador:crear-licenciapermiso</code>), enlazada desde la ficha de Agente y desde <code>saldos_pendientes</code> en <code>ControlLicenciasAgente</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/LicenciaPermiso.md">LicenciaPermiso</a></li>
+<li><a href="../../models/CorteLicencia.md">CorteLicencia</a></li>
+</ul>

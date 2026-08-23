@@ -1,0 +1,14 @@
+<h1>conjuntowidget</h1>
+<p><strong>Módulo:</strong> <code>carga/views/ajaxviews.py</code> (líneas 65-69) · hereda de <code>AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget</code></p>
+<h2>Propósito</h2>
+<p>Widget select2 (<code>django-select2</code>) para elegir un(a) ConjuntoLicitado vía búsqueda AJAX incremental, en vez de un <code>&lt;select&gt;</code> con todas las opciones cargadas de una — ver CLAUDE.md sobre <code>django-select2</code>. <code>search_fields</code> define contra qué columnas busca <code>django-select2</code> con <code>icontains</code>. Con botón de alta rápida (<code>AddRelatedWidgetMixin</code> → <code>carga:crear-conjunto</code>).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class conjuntowidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>Obra.obra_conjunto</code> en <code>ObraForm</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/ConjuntoLicitado.md">ConjuntoLicitado</a></li>
+<li><a href="AddRelatedWidgetMixin.md">AddRelatedWidgetMixin</a></li>
+</ul>

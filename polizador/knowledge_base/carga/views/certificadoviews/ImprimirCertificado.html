@@ -1,0 +1,13 @@
+<h1>ImprimirCertificado</h1>
+<p><strong>Módulo:</strong> <code>carga/views/certificadoviews.py</code> (líneas 382-392) · hereda de <code>PermissionRequiredMixin, generic.DetailView</code></p>
+<h2>Propósito</h2>
+<p>Mismo template y contexto que <code>DetalleCertificado</code>, con <code>auto_print=True</code> agregado — el template usa ese flag para disparar el diálogo de impresión del navegador automáticamente al cargar (<code>window.print()</code>), en vez de que el usuario tenga que buscar el botón.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class ImprimirCertificado(PermissionRequiredMixin, generic.DetailView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>ImprimirCertificado</code> (<code>carga:imprimir-certificado</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="DetalleCertificado.md">DetalleCertificado</a></li>
+</ul>

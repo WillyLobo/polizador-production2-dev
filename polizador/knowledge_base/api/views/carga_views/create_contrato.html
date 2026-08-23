@@ -1,0 +1,13 @@
+<h1>create_contrato</h1>
+<p><strong>Módulo:</strong> <code>api/views/carga_views.py</code> (líneas 1606-1607)</p>
+<h2>Propósito</h2>
+<p>Alta de <code>Contrato</code> desde <code>ContratoCreate</code> (<code>payload.model_dump()</code> directo a <code>Contrato.objects.create()</code> — sin lógica de negocio propia acá, la validación vive en el schema ninja/Pydantic).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def create_contrato(request, payload: ContratoCreate):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>POST /v1/api/contratos/</code> — response=<code>ContratoOut</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../carga/models/Contrato.md">Contrato</a></li>
+</ul>

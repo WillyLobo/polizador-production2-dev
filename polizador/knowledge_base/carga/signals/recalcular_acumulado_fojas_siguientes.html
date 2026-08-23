@@ -1,0 +1,57 @@
+<h1>recalcular_acumulado_fojas_siguientes</h1>
+<p><strong>Módulo:</strong> <code>carga/signals.py</code> (líneas 42-57) · receiver de <code>post_save</code> sobre <code>FojaDeMedicionItem</code></p>
+<h2>Propósito</h2>
+<p><code>FojaDeMedicionItem.save()</code> calcula <code>fojaitem_pct_acumulado</code> como una <strong>copia</strong> en el
+momento de guardar (<code>anterior.fojaitem_pct_acumulado + self.fojaitem_pct_avance_mes</code>), no
+como un valor derivado que se recalcula solo. Eso significa que si más tarde se edita el
+avance de una Foja anterior, el acumulado de las Fojas posteriores queda desactualizado —
+en el peor caso, terminando siendo <em>menor</em> que el de la Foja que se acaba de corregir
+(inconsistencia contraria a lo esperable en una serie acumulada).</p>
+<p>Esta señal es el mecanismo que evita esa desincronización: cada vez que se guarda un
+<code>FojaDeMedicionItem</code>, busca el item correspondiente en la Foja <em>siguiente</em> de la cadena y
+lo vuelve a guardar. Como ese <code>save()</code> también calcula su acumulado a partir del anterior
+(ya actualizado) y también dispara <code>post_save</code>, el recálculo se propaga en cascada hacia
+adelante hasta la última Foja de la cadena.</p>
+<p>"Cadena" acá no es necesariamente orden cronológico de creación: <code>foja_siguiente()</code> y
+<code>item_cadena_siguiente_ids()</code> siguen la cadena de <em>rubros reprogramados</em>
+(<code>rubro_cadena_siguiente_ids()</code>), así que el recálculo también cruza fojas que quedaron en
+un plan de trabajos reprogramado distinto del original.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def recalcular_acumulado_fojas_siguientes(sender, instance, **kwargs):
+</code></pre>
+<h2>Uso real</h2>
+<p>No se llama nunca directamente — se dispara solo, como cualquier receiver de señal, cada
+vez que se guarda un <code>FojaDeMedicionItem</code>. El disparador más común es editar una Foja de
+Medición desde el formset de items:</p>
+<pre><code class="language-python"># carga/views/fojademedicionviews.py:232 (UpdateFojaDeMedicion.form_valid)
+if formset.is_valid():
+    formset.instance = self.object
+    formset.save()  # guarda cada FojaDeMedicionItem -&gt; post_save -&gt; esta señal
+</code></pre>
+<h2>Flujo de datos</h2>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant V as UpdateFojaDeMedicion.form_valid
+    participant I1 as FojaDeMedicionItem (Foja N)
+    participant S as recalcular_acumulado_fojas_siguientes
+    participant I2 as FojaDeMedicionItem (Foja N+1)
+
+    V-&gt;&gt;I1: formset.save() -&gt; item.save()
+    I1-&gt;&gt;I1: fojaitem_pct_acumulado = anterior + avance_mes
+    I1--&gt;&gt;S: post_save
+    S-&gt;&gt;I2: foja_siguiente() + item_cadena_siguiente_ids()
+    alt existe item en la Foja siguiente
+        S-&gt;&gt;I2: item_siguiente.save()
+        I2-&gt;&gt;I2: recalcula su acumulado (usa I1, ya actualizado)
+        I2--&gt;&gt;S: post_save (la cascada continúa hacia la Foja N+2, N+3, ...)
+    else no hay Foja siguiente
+        S--&gt;&gt;V: no hace nada (fin de la cadena)
+    end
+</code></pre>
+<p>La recursión es implícita: la propia señal no se llama a sí misma, sino que cada
+<code>item_siguiente.save()</code> dispara un nuevo <code>post_save</code> que Django despacha al mismo
+receiver — la cascada termina sola cuando <code>foja_siguiente()</code> devuelve <code>None</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../models/FojaDeMedicionItem.md">FojaDeMedicionItem</a> — su <code>save()</code> es el que dispara esta señal y el que define cómo se calcula <code>fojaitem_pct_acumulado</code>.</li>
+<li><a href="../models/FojaDeMedicion.md">FojaDeMedicion</a> — <code>foja_siguiente()</code>/<code>foja_anterior()</code> son los que arman la cadena que esta señal recorre.</li>
+</ul>

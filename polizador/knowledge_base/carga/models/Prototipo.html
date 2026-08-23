@@ -1,0 +1,20 @@
+<h1>Prototipo</h1>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 577-598) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Modela un "prototipo habitacional" (tipología de vivienda: 1/2/3/4 dormitorios u otro) con
+su cantidad, superficie y UVIs por m² dentro de una Obra — pensado para obras de vivienda
+con varias tipologías de unidad.</p>
+<p><strong>Aparentemente sin uso activo desde la UI de <code>carga</code>:</strong> no aparece ningún <code>PrototipoForm</code>
+ni vista en <code>carga/views/</code>/<code>carga/forms/</code> — solo está registrado en el admin de Django
+(<code>carga/admin.py::PrototipoAdmin</code>, con soporte de import/export vía
+<code>resources.PrototipoResource</code>). Si necesitás cargar/editar Prototipos hoy, es vía
+<code>/admin/</code>, no desde el sitio.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class Prototipo(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p>Alta/edición actual: <code>/admin/carga/prototipo/</code> (Django admin), no hay flujo en la UI de <code>carga</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="Obra.md">Obra</a></li>
+</ul>

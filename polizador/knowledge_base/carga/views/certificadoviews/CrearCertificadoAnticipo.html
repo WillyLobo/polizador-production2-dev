@@ -1,0 +1,21 @@
+<h1>CrearCertificadoAnticipo</h1>
+<p><strong>Módulo:</strong> <code>carga/views/certificadoviews.py</code> (líneas 282-312) · hereda de <code>PermissionRequiredMixin, generic.CreateView</code></p>
+<h2>Propósito</h2>
+<p>Alta especializada de un Certificado tipo ANTICIPO. <code>get_form_kwargs</code> fuerza
+<code>certificado_tipo="ANTICIPO"</code> en la instancia <strong>antes</strong> de que el <code>ModelForm</code> la valide —
+necesario porque <code>Certificado.clean()</code> decide qué campos zapatear/exigir según el tipo, y
+<code>clean()</code> corre dentro de <code>form.is_valid()</code>, antes de que <code>form_valid()</code> llegue a
+ejecutarse. <code>form_valid</code> calcula <code>certificado_rubro_anticipo</code> (correlativo por
+obra+financiamiento, vía <code>certificacion.siguiente_numero</code>) y delega en
+<code>certificacion.calcular_monto_anticipo</code> el cálculo real del monto — este método no lo
+hace, solo orquesta.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CrearCertificadoAnticipo(PermissionRequiredMixin, generic.CreateView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearCertificadoAnticipo</code> (<code>carga:crear-certificado-anticipo</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/Certificado.md">Certificado</a></li>
+<li><a href="CrearCertificadoHechoConsumado.md">CrearCertificadoHechoConsumado</a> — mismo patrón de <code>get_form_kwargs</code>.</li>
+</ul>

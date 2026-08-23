@@ -1,0 +1,18 @@
+<h1>ContratoTramoPagoFormset</h1>
+<p><strong>Módulo:</strong> <code>carga/forms/contratotramopagoforms.py</code> (líneas 19-43) · hereda de <code>forms.models.BaseInlineFormSet</code></p>
+<h2>Propósito</h2>
+<p>Formset inline de <code>ContratoTramoPago</code>, con la única validación real de negocio de este
+módulo de forms a nivel de conjunto: la suma de <code>tramo_pct_pago</code> de todos los tramos (no
+borrados) debe dar 100% (con tolerancia de 0.5), y los <code>tramo_pct_disparador</code> deben ser
+no-decrecientes entre tramos — un tramo posterior no puede dispararse con un % de avance
+menor al del tramo anterior, o el orden de certificación no tendría sentido.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class ContratoTramoPagoFormset(forms.models.BaseInlineFormSet):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>formset_name = ContratoTramoPagoFormset</code> en <code>GestionarTramosContrato</code> (<code>carga/views/contratotramopagoviews.py</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/ContratoTramoPago.md">ContratoTramoPago</a></li>
+<li><a href="../../views/contratotramopagoviews/GestionarTramosContrato.md">GestionarTramosContrato</a></li>
+</ul>

@@ -1,0 +1,11 @@
+<h1>PerPagePagination</h1>
+<p><strong>Módulo:</strong> <code>api/views/generics.py</code> (líneas 16-43) · hereda de <code>PaginationBase</code></p>
+<h2>Propósito</h2>
+<p>Adapta el mecanismo de paginación de <code>django-ninja</code> (<code>PaginationBase</code>) al contrato original de esta API (<code>?page=&amp;per_page=</code> → <code>{count, next, previous, results}</code>) — para que los endpoints <code>list_*</code> migrados desde el esquema anterior no rompieran el contrato que ya consumían los datatables JS existentes, en vez de adoptar el estilo <code>limit/offset</code> por defecto de ninja.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class PerPagePagination(PaginationBase):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>@paginate(PerPagePagination)</code> en prácticamente todos los <code>list_*</code> de <code>carga_views.py</code>/<code>personalizador_views.py</code>/<code>secretariador_views.py</code>.</p>
+<h2>Ver también</h2>
+<p><em>(sin referencias cruzadas)</em></p>

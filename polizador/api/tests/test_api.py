@@ -1015,6 +1015,11 @@ class LicenciaPermisoBalanceAPITest(TestCase):
             tipolicenciapermiso_unidad="DC", tipolicenciapermiso_tope_cantidad=10,
             tipolicenciapermiso_tope_periodo="ANI",
         )
+        from personalizador.models import PeriodoLicencia
+        PeriodoLicencia.objects.create(
+            periodolicencia_categoria="LOR_ANUAL", periodolicencia_anio=2026,
+            periodolicencia_apertura=date(2026, 12, 15), periodolicencia_fecha_limite_solicitud=date(2027, 3, 31),
+        )
 
         self.user = UserModel.objects.create_user(username="licencias_user", password="pass1234!")
         perm = Permission.objects.get(codename="view_licenciapermiso", content_type__app_label="personalizador")
@@ -1052,11 +1057,13 @@ class LicenciaPermisoBalanceAPITest(TestCase):
         from datetime import date
         from personalizador.models import LicenciaPermiso
 
-        LicenciaPermiso.objects.create(
+        licencia = LicenciaPermiso(
             licenciapermiso_agente=self.agente, licenciapermiso_tipo=self.tipo_anual,
             licenciapermiso_fecha_desde=date(2026, 1, 5), licenciapermiso_fecha_hasta=date(2026, 1, 14),
             licenciapermiso_cantidad=10,
         )
+        licencia.full_clean()
+        licencia.save()
         resp = self.client.get(
             "/v1/api/licenciapermiso-balance/", {"agente": self.agente.id, "tipo": self.tipo_anual.id, "anio": 2026},
         )

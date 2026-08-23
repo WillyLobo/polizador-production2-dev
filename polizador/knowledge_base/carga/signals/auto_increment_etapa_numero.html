@@ -1,0 +1,32 @@
+<h1>auto_increment_etapa_numero</h1>
+<p><strong>Módulo:</strong> <code>carga/signals.py</code> (líneas 30-38) · receiver de <code>pre_save</code> sobre <code>PlanDeTrabajosEtapa</code></p>
+<h2>Propósito</h2>
+<p>Mismo patrón que <a href="auto_increment_foja_numero.md">auto_increment_foja_numero</a> pero para
+<code>PlanDeTrabajosEtapa</code>: al crear una Etapa nueva, busca la última <code>etapa_numero</code> dentro de
+la cadena de rubro (<code>rubro_cadena_ids()</code>, que sigue <code>rubro_anterior</code> a través de
+reprogramaciones) y le suma 1. A diferencia de las Fojas, acá no hay concepto de "legacy"
+ni de número inicial cargado a mano — siempre arranca en 1 si la cadena todavía no tiene
+ninguna Etapa.</p>
+<p>Que la numeración siga la cadena de rubro (no solo el rubro puntual) es lo que le permite
+sobrevivir a una reprogramación: cuando un Plan de Trabajos se reprograma, el Rubro nuevo
+queda enlazado al viejo vía <code>rubro_anterior</code>, y las Etapas del nuevo Rubro continúan la
+numeración del que reemplazó en vez de arrancar de nuevo desde 1.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def auto_increment_etapa_numero(sender, instance, **kwargs):
+</code></pre>
+<h2>Uso real</h2>
+<p>Se dispara al crear cada Etapa desde la vista de carga en grilla (una Etapa por columna,
+un item por fila):</p>
+<pre><code class="language-python"># carga/views/plandetrabajosetapaviews.py:102 (PlanDeTrabajosEtapaMatriz.post)
+etapa = PlanDeTrabajosEtapa.objects.create(etapa_rubro=rubro)  # pre_save -&gt; asigna etapa_numero
+</code></pre>
+<h2>Flujo de datos</h2>
+<ol>
+<li>Si <code>instance.pk</code> ya existe (edición) → no hace nada.</li>
+<li>Si es una Etapa nueva: <code>PlanDeTrabajosEtapa.objects.filter(etapa_rubro_id__in=chain_ids).order_by('-etapa_numero').first()</code> dentro de la cadena de rubro, y asigna <code>last_etapa.etapa_numero + 1</code> (o <code>1</code> si es la primera).</li>
+</ol>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../models/PlanDeTrabajosEtapa.md">PlanDeTrabajosEtapa</a></li>
+<li><a href="auto_increment_foja_numero.md">auto_increment_foja_numero</a> — mismo patrón, aplicado a <code>FojaDeMedicion</code>.</li>
+</ul>

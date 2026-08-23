@@ -1,0 +1,13 @@
+<h1>ManagementCommandRunDetailView</h1>
+<p><strong>Módulo:</strong> <code>core/views.py</code> (líneas 153-156) · hereda de <code>SuperuserRequiredMixin, DetailView</code></p>
+<h2>Propósito</h2>
+<p>Ficha de detalle de una corrida puntual (sin lógica propia — <code>DetailView</code> simple). El template hace polling contra <code>ManagementCommandRunLogView</code> para mostrar el log en vivo mientras el comando sigue corriendo.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class ManagementCommandRunDetailView(SuperuserRequiredMixin, DetailView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>ManagementCommandRunDetailView</code> (<code>management_command_run_detail</code>), destino tras lanzar un comando desde <code>ManagementCommandsView</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="ManagementCommandRunLogView.md">ManagementCommandRunLogView</a></li>
+</ul>

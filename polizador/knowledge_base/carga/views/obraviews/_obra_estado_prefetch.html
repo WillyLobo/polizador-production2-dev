@@ -1,0 +1,20 @@
+<h1>_obra_estado_prefetch</h1>
+<p><strong>Módulo:</strong> <code>carga/views/obraviews.py</code> (líneas 24-60)</p>
+<h2>Propósito</h2>
+<p>Lista de <code>prefetch_related</code>/<code>Prefetch</code> que arma de una sola vez todo lo que
+<code>estado-obra.html</code> recorre (contratos con sus montos y documentos, certificados con su
+rubro, todos los planes de trabajos con sus rubros/items/etapas/fojas) — evita el N+1 que
+tendría esa ficha si cada relación se resolviera fila por fila al renderizar el template.
+Factorizada en función aparte porque <code>EstadoObra.get_queryset()</code> la necesita dos veces:
+una para la Obra pedida y otra (recursiva) para su <code>obra_madre</code>, que en la ficha también
+muestra su propio detalle anidado.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _obra_estado_prefetch():
+</code></pre>
+<h2>Uso real</h2>
+<p><code>EstadoObra.get_queryset()</code> (mismo módulo, más abajo).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="EstadoObra.md">EstadoObra</a></li>
+<li><a href="../../models/Obra.md">Obra</a></li>
+</ul>

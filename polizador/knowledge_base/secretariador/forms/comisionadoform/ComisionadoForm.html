@@ -1,0 +1,13 @@
+<h1>ComisionadoForm</h1>
+<p><strong>Módulo:</strong> <code>secretariador/forms/comisionadoform.py</code> (líneas 6-49) · hereda de <code>BaseFormMixin, forms.ModelForm</code></p>
+<h2>Propósito</h2>
+<p><code>ModelForm</code> sobre <code>personalizador.Agente</code>, acotado a los campos relevantes para viáticos (nombres, sexo, oficina, DNI/CUIL, si es transitorio/gabinete) — la versión "liviana" de alta de Agente usada desde <code>secretariador</code>, en vez del <code>AgenteForm</code> completo de RRHH (~50 campos). Hereda <code>BaseFormMixin</code> (<code>core.mixins</code>), no visto en los forms de <code>carga</code>/<code>personalizador</code> (posiblemente agrega comportamiento común no cubierto en esta fase).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class ComisionadoForm(BaseFormMixin, forms.ModelForm):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearComisionado</code>/<code>UpdateComisionado</code> (<code>secretariador/views/comisionadoviews.py</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../personalizador/models/Agente.md">Agente</a></li>
+</ul>

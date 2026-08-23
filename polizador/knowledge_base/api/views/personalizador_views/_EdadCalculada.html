@@ -1,0 +1,13 @@
+<h1>_EdadCalculada</h1>
+<p><strong>Módulo:</strong> <code>api/views/personalizador_views.py</code> (líneas 690-694) · hereda de <code>Func</code></p>
+<h2>Propósito</h2>
+<p>Expresión SQL cruda (<code>models.Func</code> con <code>template = "EXTRACT(YEAR FROM AGE(%(expressions)s))"</code>) que calcula la edad en años completos <strong>en Postgres</strong>, no en Python — para poder ordenar/filtrar el datatable de Agentes por edad sin traer todas las filas a Python primero.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class _EdadCalculada(Func):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>Agente.objects.annotate(edad_calculada=_EdadCalculada(F('fecha_nacimiento')))</code>, en el <code>queryset=</code> de <code>register_simple_datatable(router, Agente, "agentes", ...)</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../personalizador/models/Agente.md">Agente</a></li>
+</ul>

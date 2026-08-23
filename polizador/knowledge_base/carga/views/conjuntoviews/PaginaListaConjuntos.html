@@ -1,0 +1,16 @@
+<h1>PaginaListaConjuntos</h1>
+<p><strong>Módulo:</strong> <code>carga/views/conjuntoviews.py</code> (líneas 57-60)</p>
+<h2>Propósito</h2>
+<p>Función vista simple: solo renderiza la página que contiene la tabla (<code>Lista-conjuntos.html</code>), sin
+pasarle datos. La tabla se llena después vía AJAX contra un endpoint genérico de listado
+(<code>api/views/generics.py</code>, fuera de <code>carga</code> — no cubierto en esta fase), siguiendo el
+patrón <code>django-ajax-datatable</code> que describe CLAUDE.md.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def PaginaListaConjuntos(request):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>PaginaListaConjuntos</code> (<code>carga:lista-conjuntos</code>), enlazada desde el navbar/dropdown de listados.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/ConjuntoLicitado.md">ConjuntoLicitado</a></li>
+</ul>

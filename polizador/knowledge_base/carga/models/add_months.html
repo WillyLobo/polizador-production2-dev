@@ -1,0 +1,19 @@
+<h1>add_months</h1>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 21-27)</p>
+<h2>Propósito</h2>
+<p>Suma <code>n</code> meses a una fecha, ajustando el día si el mes destino tiene menos días (ej. 31
+de enero + 1 mes → 28/29 de febrero, no un "3 de marzo" corrido por desborde). Es la única
+función de este módulo que no es un modelo ni un <code>upload_to</code>: existe porque
+<code>PlanDeTrabajosEtapa.save()</code> necesita proyectar la fecha de cada Etapa mensual a partir de
+la fecha de la Etapa anterior, y <code>timedelta(days=30)</code> no sirve para "un mes calendario".</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def add_months(fecha, n):
+</code></pre>
+<h2>Uso real</h2>
+<pre><code class="language-python"># carga/models.py:1087 (PlanDeTrabajosEtapa.save())
+self.etapa_fecha = add_months(anterior.etapa_fecha, 1) if anterior else self.etapa_rubro.rubro_plan.trabajos_fecha
+</code></pre>
+<h2>Ver también</h2>
+<ul>
+<li><a href="PlanDeTrabajosEtapa.md">PlanDeTrabajosEtapa</a> — única llamadora.</li>
+</ul>

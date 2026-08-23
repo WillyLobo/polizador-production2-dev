@@ -1,0 +1,20 @@
+<h1>InstrumentosLegalesDecretos</h1>
+<p><strong>Módulo:</strong> <code>secretariador/models.py</code> (líneas 224-280) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Un decreto (Nacional o Provincial). <code>instrumentolegaldecretos_establece_licencia_anual</code>/
+<code>_establece_licencia_invierno</code> son flags que se tildan automáticamente (probablemente vía
+OCR/import, no manualmente) cuando el decreto establece un período de Licencia Anual —
+<code>personalizador.views.ajaxviews.InstrumentoDecretoLicenciaDependentWidgetMixin</code> los usa
+para acotar el combo de decretos al cargar una Licencia/Permiso de ese tipo.
+<code>get_absolute_url</code> es condicional: si el decreto ya tiene un <code>MontoViaticoDiario</code>
+vinculado, va a la vista de edición de montos; si no, a la edición del decreto en sí —
+un decreto "es" un decreto reglamentario de viáticos recién cuando se le cargan montos.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class InstrumentosLegalesDecretos(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>MontoViaticoDiario.montoviaticodiario_decreto_reglamentario</code>; <code>personalizador.LicenciaPermiso.licenciapermiso_instrumento_decreto</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="MontoViaticoDiario.md">MontoViaticoDiario</a></li>
+</ul>

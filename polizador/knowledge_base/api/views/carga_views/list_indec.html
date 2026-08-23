@@ -1,0 +1,13 @@
+<h1>list_indec</h1>
+<p><strong>Módulo:</strong> <code>api/views/carga_views.py</code> (líneas 1767-1768)</p>
+<h2>Propósito</h2>
+<p>Listado paginado (<code>PerPagePagination</code>) de <code>INDEC</code>, gateado por <code>require_model_perm(INDEC)</code> (permiso <code>view_&lt;modelo&gt;</code>). Mismo patrón que Uvi: ver <code>latest_indec</code>.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def list_indec(request):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>GET /v1/api/indec/</code> — response=<code>List[INDECOut]</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../carga/models/INDEC.md">INDEC</a></li>
+</ul>

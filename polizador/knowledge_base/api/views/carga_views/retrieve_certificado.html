@@ -1,0 +1,13 @@
+<h1>retrieve_certificado</h1>
+<p><strong>Módulo:</strong> <code>api/views/carga_views.py</code> (líneas 1274-1275)</p>
+<h2>Propósito</h2>
+<p>Devuelve un <code>Certificado</code> puntual por <code>id</code> (<code>get_object_or_404</code>, 404 si no existe).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def retrieve_certificado(request, id: int):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>GET /v1/api/certificado/{{id}}/</code> — response=<code>CertificadoOut</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../carga/models/Certificado.md">Certificado</a></li>
+</ul>

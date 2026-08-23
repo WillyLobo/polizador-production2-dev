@@ -1,0 +1,33 @@
+<h1>register_simple_datatable</h1>
+<p><strong>Módulo:</strong> <code>api/views/generics.py</code> (líneas 102-181)</p>
+<h2>Propósito</h2>
+<p>La pieza central de infraestructura de todo <code>api/views/*.py</code>: registra el par de
+endpoints <code>GET /datatables/&lt;url_slug&gt;/</code> (+ <code>.../&lt;id&gt;/detalle/</code> salvo <code>with_detail=False</code>)
+para un listado "simple" — un modelo, un puñado de columnas, links de acción gateados por
+permiso, sin cómputo bespoke por fila más allá de <code>row_builder(obj, user) -&gt; dict</code>. Según
+su propio docstring, reemplaza ~10 listados tipo catálogo (Aseguradora, Programa,
+Departamento...) que antes eran copias casi idénticas del mismo boilerplate de
+<code>AjaxDatatableView</code>.</p>
+<p><code>boolean_filter_keys</code> es el mecanismo para que un filtro de <code>&lt;select&gt;</code> sobre un
+<code>BooleanField</code> funcione: sin esto, el string <code>"true"</code>/<code>"false"</code> que manda el frontend se
+pasaría tal cual a <code>.filter(campo="true")</code>, que nunca matchea un booleano real — con la
+clave listada acá, se coerciona a <code>bool</code> antes de filtrar (mismo patrón que
+<code>datatable_solicitudes</code>/<code>datatable_obras</code> hacen a mano para sus propios filtros
+booleanos, fuera de este helper).</p>
+<p>No es un símbolo capturado en el manifest — se generan dos funciones internas (<code>_list</code>,
+<code>_detalle</code>) que quedan registradas en el router, sin nombre propio expuesto al resto del
+código; por eso cada <code>register_simple_datatable(...)</code> de <code>carga_views.py</code>/
+<code>personalizador_views.py</code>/<code>secretariador_views.py</code> es una <em>llamada</em>, no una función
+nombrada, y no tiene su propia página en esta base de conocimiento — se documenta acá,
+en su definición.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def register_simple_datatable(router, model, url_slug: str, *, order_fields: dict, filter_fields: dict, search_lookups: list, row_builder, default_order: str='id', queryset=None, with_detail: bool=True, boolean_filter_keys: frozenset=frozenset()):
+</code></pre>
+<h2>Uso real</h2>
+<p>Todos los <code>register_simple_datatable(router, Modelo, "slug", ...)</code> de <code>carga_views.py</code>, <code>personalizador_views.py</code>, <code>secretariador_views.py</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="PerPagePagination.md">PerPagePagination</a></li>
+<li><a href="parse_order_by.md">parse_order_by</a></li>
+<li><a href="render_datatable_row_details.md">render_datatable_row_details</a></li>
+</ul>

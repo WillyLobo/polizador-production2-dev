@@ -1,0 +1,33 @@
+<h1>Agente</h1>
+<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 36-178) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>El modelo central de <code>personalizador</code>: un empleado del organismo, con sus datos
+personales, de dependencia (categoría, cargo, oficina), antigüedad reconocida por
+distintos instrumentos, y varios flags booleanos de clasificación. Con ~55 campos y dos
+<code>GeneratedField</code> (nombre completo en dos formatos, para ordenar/mostrar según el
+contexto), es el modelo más grande del módulo.</p>
+<p>Dos piezas no obvias:</p>
+<ul>
+<li><strong><code>agente_escalafon</code></strong> decide el viático diario que cobra el agente en el circuito de
+  comisión de servicio de <code>secretariador</code> — salvo que sea una autoridad del Directorio,
+  en cuyo caso <code>secretariador</code> usa el escalafón configurado en Reglas de Cálculo de
+  Viáticos en su lugar, independientemente de este campo (ver el help_text del campo).</li>
+<li><strong><code>antiguedad</code></strong> (property) no es solo <code>hoy - fecha_ingreso</code>: le suma los
+  años/meses/días reconocidos por <code>aportes_ley_resolucion_*</code> y <code>aportes_anses_*</code>
+  (antigüedad de otros organismos, reconocida por instrumento legal), con la convención
+  de cómputo 30 días = 1 mes, 12 meses = 1 año aplicada al total combinado, no a cada
+  fuente por separado.</li>
+</ul>
+<p><code>save()</code> solo hace una cosa no estándar: si no se cargó <code>abreviatura</code>, la infiere de
+<code>sexo</code> vía <a href="abreviatura_default_por_sexo.md">abreviatura_default_por_sexo</a>.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class Agente(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearAgente</code>/<code>UpdateAgente</code> (<code>personalizador/views/agenteviews.py</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="CustomUser.md">CustomUser</a></li>
+<li><a href="ComisionadoExterno.md">ComisionadoExterno</a> — mismo patrón para personas ajenas al organismo.</li>
+<li><a href="abreviatura_default_por_sexo.md">abreviatura_default_por_sexo</a></li>
+</ul>

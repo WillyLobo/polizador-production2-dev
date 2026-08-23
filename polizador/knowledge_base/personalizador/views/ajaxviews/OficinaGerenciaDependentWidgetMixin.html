@@ -1,0 +1,14 @@
+<h1>OficinaGerenciaDependentWidgetMixin</h1>
+<p><strong>Módulo:</strong> <code>personalizador/views/ajaxviews.py</code> (líneas 88-97) · hereda de <code>SmallCatalogWidgetMixin</code></p>
+<h2>Propósito</h2>
+<p>Acota las opciones de Gerencia al <code>Directorio</code> elegido en el campo hermano <code>cargo_directorio</code> de <code>OficinaForm</code> — evita que el usuario elija una combinación sin sentido en el select2 antes de guardar (la consistencia real la garantiza <code>Oficina.clean()</code>, esto es solo UX).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class OficinaGerenciaDependentWidgetMixin(SmallCatalogWidgetMixin):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>class oficina_gerenciawidget(OficinaGerenciaDependentWidgetMixin, ...)</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/Oficina.md">Oficina</a></li>
+<li><a href="oficina_gerenciawidget.md">oficina_gerenciawidget</a></li>
+</ul>

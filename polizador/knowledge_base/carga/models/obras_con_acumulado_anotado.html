@@ -1,0 +1,31 @@
+<h1>obras_con_acumulado_anotado</h1>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 546-558)</p>
+<h2>Propósito</h2>
+<p>Anota en una sola query (vía <code>Subquery</code>) el % acumulado del último Certificado de avance y
+el % acumulado de Anticipo del último Certificado de Anticipo de cada Obra del queryset —
+pensada para listados de Obras que necesitan mostrar esos dos números sin un N+1 (una
+query de Certificado por Obra listada).</p>
+<p><strong>Corrección sobre una nota anterior de esta misma página:</strong> está importada en
+<code>carga/views/obraviews.py</code> pero ningún lugar de ese archivo la llama (<code>grep</code> solo
+encuentra el import, no una call-site) — eso llevó a documentar acá, en una pasada
+anterior, que parecía código muerto. No lo es: sí se usa, pero desde <code>api</code>, no desde
+<code>carga</code>. <code>api/views/carga_views.py::datatable_obras</code> es la call-site real — el endpoint
+detrás del listado principal de Obras (<code>Lista-obras.html</code>) la llama para poder mostrar
+las columnas de % acumulado sin un N+1 (una query de Certificado por Obra listada). El
+import muerto en <code>obraviews.py</code> sigue siendo genuinamente muerto y podría limpiarse, pero
+la función en sí está viva.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def obras_con_acumulado_anotado(queryset):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>api/views/carga_views.py::datatable_obras</code> — <code>obras_con_acumulado_anotado(queryset)</code>
+sobre el queryset de Obras antes de paginar/serializar; <code>_obra_datatable_row</code> lee las dos
+columnas anotadas (<code>obra_acum_pct_anotado</code>/<code>obra_anticipo_acumulado_anotado</code>) vía
+<code>getattr(o, ..., None)</code>, asumiendo que quien armó el queryset ya corrió esta función.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="Obra.md">Obra</a></li>
+<li><a href="Certificado.md">Certificado</a></li>
+<li><a href="../../api/views/carga_views/datatable_obras.md">datatable_obras</a></li>
+<li><a href="../../api/views/carga_views/_obra_datatable_row.md">_obra_datatable_row</a></li>
+</ul>

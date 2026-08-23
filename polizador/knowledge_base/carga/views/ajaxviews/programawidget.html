@@ -1,0 +1,13 @@
+<h1>programawidget</h1>
+<p><strong>Módulo:</strong> <code>carga/views/ajaxviews.py</code> (líneas 99-103) · hereda de <code>AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget</code></p>
+<h2>Propósito</h2>
+<p>Widget select2 (<code>django-select2</code>) para elegir un(a) Programa vía búsqueda AJAX incremental, en vez de un <code>&lt;select&gt;</code> con todas las opciones cargadas de una — ver CLAUDE.md sobre <code>django-select2</code>. <code>search_fields</code> define contra qué columnas busca <code>django-select2</code> con <code>icontains</code>. Catálogo chico (<code>SmallCatalogWidgetMixin</code>) con alta rápida (<code>AddRelatedWidgetMixin</code> → <code>carga:crear-programa</code>).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class programawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>Obra.obra_programa</code> en <code>ObraForm</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/Programa.md">Programa</a></li>
+</ul>

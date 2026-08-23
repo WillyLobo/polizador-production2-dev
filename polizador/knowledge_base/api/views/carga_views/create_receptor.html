@@ -1,0 +1,13 @@
+<h1>create_receptor</h1>
+<p><strong>Módulo:</strong> <code>api/views/carga_views.py</code> (líneas 98-99)</p>
+<h2>Propósito</h2>
+<p>Alta de <code>Receptor</code> desde <code>ReceptorCreate</code> (<code>payload.model_dump()</code> directo a <code>Receptor.objects.create()</code> — sin lógica de negocio propia acá, la validación vive en el schema ninja/Pydantic).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def create_receptor(request, payload: ReceptorCreate):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>POST /v1/api/receptores/</code> — response=<code>ReceptorOut</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../carga/models/Receptor.md">Receptor</a></li>
+</ul>

@@ -1,0 +1,13 @@
+<h1>CrearComisionado</h1>
+<p><strong>Módulo:</strong> <code>secretariador/views/comisionadoviews.py</code> (líneas 13-29) · hereda de <code>PermissionRequiredMixin, generic.CreateView</code></p>
+<h2>Propósito</h2>
+<p>Alta de un Agente <strong>en su rol de comisionado</strong> — es decir, la misma tabla <code>personalizador.Agente</code>, con un <code>ComisionadoForm</code> acotado a los campos relevantes para viáticos (nombre, sexo, oficina, DNI/CUIL, si es transitorio/gabinete) en vez del <code>AgenteForm</code> completo de RRHH. <code>secretariador</code> no tiene su propio modelo de "comisionado interno" — reusa <code>Agente</code> con un form más chico.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CrearComisionado(PermissionRequiredMixin, generic.CreateView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearComisionado</code> (<code>secretariador:crear-comisionado</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../personalizador/models/Agente.md">Agente</a></li>
+</ul>

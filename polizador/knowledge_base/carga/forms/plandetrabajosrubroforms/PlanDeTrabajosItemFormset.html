@@ -1,0 +1,14 @@
+<h1>PlanDeTrabajosItemFormset</h1>
+<p><strong>Módulo:</strong> <code>carga/forms/plandetrabajosrubroforms.py</code> (líneas 56-69) · hereda de <code>forms.models.BaseInlineFormSet</code></p>
+<h2>Propósito</h2>
+<p>Formset inline de <code>PlanDeTrabajosItem</code> sobre un Rubro, con la misma validación de conjunto que <code>ContratoTramoPagoFormset</code>: la suma de <code>planitem_incidencia_pct</code> de todos los items (no borrados) debe dar 100% (tolerancia 0.5) — la incidencia de los items de un rubro siempre tiene que cubrir el 100% del rubro.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class PlanDeTrabajosItemFormset(forms.models.BaseInlineFormSet):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>formset_name = PlanDeTrabajosItemFormset</code> en <code>CrearPlanDeTrabajosRubro</code>/<code>UpdatePlanDeTrabajosRubro</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/PlanDeTrabajosItem.md">PlanDeTrabajosItem</a></li>
+<li><a href="PlanDeTrabajosItemForm.md">PlanDeTrabajosItemForm</a></li>
+</ul>

@@ -129,6 +129,13 @@ class Agente(models.Model):
     agente_es_inpector_obra = models.BooleanField("Inspector de Obra",default=False, help_text="El agente es inspector de obra")
     agente_personal_transitorio = models.BooleanField("Personal Transitorio",default=False, help_text="Tildar si el agente es personal transitorio")
     agente_personal_de_gabinete = models.BooleanField("Personal de Gabinete",default=False, help_text="Tildar si el agente es personal de gabinete")
+    ESCALAFON_CHOICES = (
+        (1, "I"),
+        (2, "II"),
+        (3, "III"),
+        (4, "IV"),
+    )
+    agente_escalafon = models.PositiveSmallIntegerField("Escalafón", choices=ESCALAFON_CHOICES, default=2, help_text="Escalafón (I-IV) usado para calcular el viático diario. Las autoridades del Directorio usan el escalafón configurado en Reglas de Cálculo de Viáticos, independientemente de este valor.")
     # Otros
     agente_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     agente_history = HistoricalRecords()
@@ -473,6 +480,100 @@ def generate_name_licenciapermiso(instance, filename):
     name = os.path.join(directorio, f"{instance.licenciapermiso_uuid}{extension}")
     return name
 
+class PeriodoLicencia(models.Model):
+    """Ancla explícita de año calendario para los 3 tipos "año-vencido" de Licencia
+    Anual (Art. 7, Art. 10 y Anual de Invierno, Ley 645-A). Reemplaza la inferencia
+    implícita de año que antes vivía en personalizador.licencias (via fecha_desde.year
+    +/- corrimientos hardcodeados). Art. 7 y Art. 10 comparten el mismo período de un
+    año dado (categoria LOR_ANUAL): Art. 10 no tiene cupo propio, adelanta días del
+    mismo cupo de Art. 7. Anual de Invierno usa su propia categoría, con su propia
+    estructura de fechas (2 turnos fijos por decreto, sin apertura/límite de estilo
+    LOR_ANUAL)."""
+    class Meta:
+        verbose_name = "Período de Licencia"
+        verbose_name_plural = "Períodos de Licencia"
+        ordering = ("-periodolicencia_anio", "periodolicencia_categoria")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["periodolicencia_categoria", "periodolicencia_anio"],
+                name="unique_periodolicencia_1"
+            ),
+        ]
+
+    CATEGORIA = (
+        ("LOR_ANUAL", "Anual / Anual Proporcional"),
+        ("LOR_INVIERNO", "Anual de Invierno"),
+    )
+
+    periodolicencia_categoria = models.CharField("Categoría", max_length=15, choices=CATEGORIA)
+    periodolicencia_anio = models.PositiveIntegerField("Año")
+    # Específicos de LOR_ANUAL. Nullable a nivel DB (una fila LOR_INVIERNO no los usa),
+    # pero clean() los exige cuando periodolicencia_categoria == "LOR_ANUAL".
+    periodolicencia_apertura = models.DateField("Apertura", blank=True, null=True, help_text="Por ley: 15/12 del propio año.")
+    periodolicencia_fecha_limite_solicitud = models.DateField(
+        "Fecha límite de solicitud", blank=True, null=True,
+        help_text="Por ley: 31/03 del año siguiente inclusive. Dato de referencia, no bloquea la carga de licencias fuera de esta ventana.",
+    )
+    # Específicos de LOR_INVIERNO: siempre 2 turnos de fechas fijas por decreto, sin
+    # fórmula (varían año a año, se cargan a mano). Nullable a nivel DB por el mismo
+    # motivo; clean() los exige cuando periodolicencia_categoria == "LOR_INVIERNO".
+    periodolicencia_turno1_desde = models.DateField("Turno 1 - Desde", blank=True, null=True)
+    periodolicencia_turno1_hasta = models.DateField("Turno 1 - Hasta", blank=True, null=True)
+    periodolicencia_turno2_desde = models.DateField("Turno 2 - Desde", blank=True, null=True)
+    periodolicencia_turno2_hasta = models.DateField("Turno 2 - Hasta", blank=True, null=True)
+    periodolicencia_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    periodolicencia_history = HistoricalRecords()
+
+    def clean(self):
+        super().clean()
+        if self.periodolicencia_categoria == "LOR_ANUAL":
+            if not self.periodolicencia_apertura or not self.periodolicencia_fecha_limite_solicitud:
+                raise ValidationError("Apertura y fecha límite de solicitud son obligatorias para un período Anual.")
+        elif self.periodolicencia_categoria == "LOR_INVIERNO":
+            turnos = (self.periodolicencia_turno1_desde, self.periodolicencia_turno1_hasta,
+                      self.periodolicencia_turno2_desde, self.periodolicencia_turno2_hasta)
+            if not all(turnos):
+                raise ValidationError("Los 4 campos de Turno 1 y Turno 2 son obligatorios para un período de Invierno.")
+            if self.periodolicencia_turno1_hasta < self.periodolicencia_turno1_desde:
+                raise ValidationError({"periodolicencia_turno1_hasta": "No puede ser anterior al inicio del Turno 1."})
+            if self.periodolicencia_turno2_hasta < self.periodolicencia_turno2_desde:
+                raise ValidationError({"periodolicencia_turno2_hasta": "No puede ser anterior al inicio del Turno 2."})
+            if self.periodolicencia_turno2_desde <= self.periodolicencia_turno1_hasta:
+                raise ValidationError({"periodolicencia_turno2_desde": "El Turno 2 debe comenzar después de que termine el Turno 1."})
+
+    def __str__(self):
+        return f"{self.get_periodolicencia_categoria_display()} {self.periodolicencia_anio}"
+
+
+class PeriodoLicenciaAgente(models.Model):
+    """Cupo (días correspondientes por antigüedad) congelado para un agente en un
+    PeriodoLicencia LOR_ANUAL dado, la primera vez que se necesita (ver
+    personalizador.licencias.get_or_create_periodo_agente). Evita que una corrección
+    posterior de Agente.fecha_ingreso altere retroactivamente balances de períodos ya
+    otorgados. No se usa para LOR_INVIERNO (esa licencia no tiene cupo por antigüedad)."""
+    class Meta:
+        verbose_name = "Período de Licencia por Agente"
+        verbose_name_plural = "Períodos de Licencia por Agente"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["periodolicenciaagente_agente", "periodolicenciaagente_periodo"],
+                name="unique_periodolicenciaagente_1"
+            ),
+        ]
+
+    periodolicenciaagente_agente = models.ForeignKey("Agente", verbose_name="Agente", on_delete=models.CASCADE)
+    periodolicenciaagente_periodo = models.ForeignKey("PeriodoLicencia", verbose_name="Período", on_delete=models.CASCADE)
+    periodolicenciaagente_dias_correspondientes = models.PositiveIntegerField(
+        "Días correspondientes",
+        help_text="Cupo congelado por antigüedad al momento en que se usó por primera vez este período. No se recalcula.",
+    )
+    periodolicenciaagente_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    periodolicenciaagente_history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.periodolicenciaagente_agente} - {self.periodolicenciaagente_periodo} ({self.periodolicenciaagente_dias_correspondientes}d)"
+
+
 class TipoLicenciaPermiso(models.Model):
     class Meta:
         verbose_name = "Tipo de Licencia/Permiso"
@@ -547,6 +648,11 @@ class LicenciaPermiso(models.Model):
         on_delete=models.PROTECT, blank=True, null=True,
         help_text="Completar si esta licencia consume el saldo pendiente de un corte anterior, en vez de ser un otorgamiento nuevo.",
     )
+    licenciapermiso_periodo = models.ForeignKey(
+        "PeriodoLicencia", verbose_name="Período de Licencia",
+        on_delete=models.PROTECT, blank=True, null=True,
+        help_text="Se completa automáticamente para Anual / Anual Proporcional / Anual de Invierno.",
+    )
     licenciapermiso_instrumento_resolucion = models.ForeignKey("secretariador.InstrumentosLegalesResoluciones", verbose_name="Resolución", on_delete=models.CASCADE, blank=True, null=True)
     licenciapermiso_instrumento_decreto = models.ForeignKey("secretariador.InstrumentosLegalesDecretos", verbose_name="Decreto", on_delete=models.CASCADE, blank=True, null=True)
     licenciapermiso_instrumento_memorandum = models.ForeignKey("secretariador.InstrumentosLegalesMemorandum", verbose_name="Memorandum", on_delete=models.CASCADE, blank=True, null=True)
@@ -591,9 +697,18 @@ class LicenciaPermiso(models.Model):
 
         if (self.licenciapermiso_tipo_id and self.licenciapermiso_agente_id and self.licenciapermiso_fecha_desde
                 and self.licenciapermiso_cantidad is not None and not self.licenciapermiso_anulada):
-            from personalizador.licencias import LICENCIA_ANUAL_ADELANTADA_NOMBRE, balance_tipo
+            from personalizador.licencias import (
+                LICENCIA_ANUAL_ADELANTADA_NOMBRE, balance_tipo,
+                resolver_periodo_para_licencia, get_or_create_periodo_agente,
+            )
 
             tipo = self.licenciapermiso_tipo
+            periodo = resolver_periodo_para_licencia(tipo, self.licenciapermiso_fecha_desde)
+            if periodo is not None:
+                self.licenciapermiso_periodo = periodo
+                if periodo.periodolicencia_categoria == "LOR_ANUAL":
+                    get_or_create_periodo_agente(self.licenciapermiso_agente, periodo)
+
             if tipo.tipolicenciapermiso_categoria == "LOR" and tipo.tipolicenciapermiso_nombre == LICENCIA_ANUAL_ADELANTADA_NOMBRE:
                 anio = self.licenciapermiso_fecha_desde.year
                 disponible = balance_tipo(self.licenciapermiso_agente, tipo, anio)["disponibles"]
@@ -604,7 +719,26 @@ class LicenciaPermiso(models.Model):
                         if anterior and not anterior[1]:
                             disponible += anterior[0]
                     if self.licenciapermiso_cantidad > disponible:
-                        raise ValidationError({"licenciapermiso_cantidad": f"Supera el cupo disponible del año siguiente para adelantar ({disponible})."})
+                        raise ValidationError({"licenciapermiso_cantidad": f"Supera el cupo disponible para adelantar ({disponible})."})
+
+                # No permitir adelantar contra el período de este fecha_desde (P)
+                # mientras quede saldo pendiente sin resolver de un corte de un
+                # período LOR_ANUAL anterior a P -- evita acumular "deuda" de días
+                # sin gozar mientras ya se está tomando un adelanto de goce más
+                # próximo (no bloquea si el saldo pendiente es del propio período P).
+                periodo_destino_anio = self.licenciapermiso_fecha_desde.year  # P
+                cortes_pendientes = CorteLicencia.objects.filter(
+                    cortelicencia_licencia__licenciapermiso_agente=self.licenciapermiso_agente,
+                    cortelicencia_licencia__licenciapermiso_periodo__periodolicencia_categoria="LOR_ANUAL",
+                    cortelicencia_licencia__licenciapermiso_periodo__periodolicencia_anio__lt=periodo_destino_anio,
+                ).select_related("cortelicencia_licencia__licenciapermiso_periodo")
+                pendiente = next((corte for corte in cortes_pendientes if corte.dias_restantes > 0), None)
+                if pendiente:
+                    raise ValidationError(
+                        f"El agente tiene un saldo pendiente de {pendiente.dias_restantes} días del período "
+                        f"{pendiente.cortelicencia_licencia.licenciapermiso_periodo}: debe resolverlo antes de "
+                        "tomar un adelanto contra un período posterior."
+                    )
 
     def __str__(self):
         return f"{self.licenciapermiso_tipo} - {self.licenciapermiso_agente} ({self.licenciapermiso_fecha_desde})"

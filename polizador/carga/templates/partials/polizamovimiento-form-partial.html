@@ -27,6 +27,7 @@
                 {{ error }}
             {% endfor %}
         {% endfor %}
+        {{ formset.non_form_errors }}
     </div>
     <div id="empty_form" style="display:none">
         <div class="row m-1 border rounded p-2" id="poliza_movimiento-form-{{form.prefix}}">

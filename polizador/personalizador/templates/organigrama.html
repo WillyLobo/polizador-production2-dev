@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% block title %}<title>Organigrama | Polizador</title>{% endblock title %}
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11.16.1/dist/mermaid.min.js"></script>
+
+<style>
+  .organigrama-legend .dot {
+    display: inline-block;
+    width: .7rem;
+    height: .7rem;
+    border-radius: 3px;
+    margin-right: .35rem;
+  }
+  .organigrama-sheet {
+    background:
+      linear-gradient(#DCE7EE 1px, transparent 1px) 0 0/28px 28px,
+      linear-gradient(90deg, #DCE7EE 1px, transparent 1px) 0 0/28px 28px,
+      #F7FAFC;
+    border: 1px solid #B9CBDB;
+    border-radius: .5rem;
+    overflow: auto;
+    padding: 1.5rem;
+    max-height: 78vh;
+  }
+  .organigrama-sheet pre.mermaid {
+    margin: 0;
+    background: transparent;
+    display: inline-block;
+    transform-origin: top left;
+  }
+  .organigrama-zoom-controls .btn {
+    width: 2.25rem;
+  }
+</style>
+
+<div class="min-vh-100">
+  <div class="d-flex flex-wrap justify-content-between align-items-end gap-2 mb-3">
+    <div>
+      <h4 class="mb-1">Organigrama</h4>
+      <p class="text-muted small mb-0">
+        Estructura jerárquica vigente de Directorio, Gerencia, Dirección y Departamento, generada desde los datos actuales.
+      </p>
+    </div>
+    <div class="d-flex gap-3 organigrama-legend small text-muted">
+      <span><span class="dot" style="background:#C98A2D;"></span>Directorio</span>
+      <span><span class="dot" style="background:#2F6FB0;"></span>Gerencia</span>
+      <span><span class="dot" style="background:#2F8F72;"></span>Dirección</span>
+      <span><span class="dot" style="background:#9C9587;"></span>Departamento</span>
+    </div>
+  </div>
+
+  <div class="row row-cols-2 row-cols-md-4 g-2 mb-3">
+    <div class="col">
+      <div class="card text-center h-100">
+        <div class="card-body py-2">
+          <div class="fs-5 fw-semibold">{{ counts.directorios }}</div>
+          <div class="small text-muted">Directorios</div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card text-center h-100">
+        <div class="card-body py-2">
+          <div class="fs-5 fw-semibold">{{ counts.gerencias }}</div>
+          <div class="small text-muted">Gerencias</div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card text-center h-100">
+        <div class="card-body py-2">
+          <div class="fs-5 fw-semibold">{{ counts.direcciones }}</div>
+          <div class="small text-muted">Direcciones</div>
+        </div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card text-center h-100">
+        <div class="card-body py-2">
+          <div class="fs-5 fw-semibold">{{ counts.departamentos }}</div>
+          <div class="small text-muted">Departamentos</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-body">
+      <div class="d-flex justify-content-end gap-1 organigrama-zoom-controls mb-2">
+        <button type="button" class="btn btn-sm btn-outline-secondary" id="organigramaZoomOut" title="Alejar">
+          <i class="bi bi-dash-lg"></i>
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" id="organigramaZoomReset" title="Restablecer zoom">
+          100%
+        </button>
+        <button type="button" class="btn btn-sm btn-outline-secondary" id="organigramaZoomIn" title="Acercar">
+          <i class="bi bi-plus-lg"></i>
+        </button>
+      </div>
+      <div class="organigrama-sheet" id="organigramaSheet">
+<pre class="mermaid">{{ mermaid_source }}</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (!window.mermaid) return;
+
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: "default",
+      themeVariables: { fontSize: "18px" },
+      flowchart: { nodeSpacing: 45, rankSpacing: 65 },
+    });
+
+    mermaid.run({ querySelector: "#organigramaSheet pre.mermaid" }).then(function () {
+      var pre = document.querySelector("#organigramaSheet pre.mermaid");
+      var svg = pre ? pre.querySelector("svg") : null;
+
+      // Mermaid deja el <svg> con width="100%" y sin height, pensado para
+      // encoger "responsive" hasta el ancho del contenedor: eso es lo que
+      // achicaba el texto. Lo fijamos a su tamaño natural (según el viewBox)
+      // para que se dibuje a tamaño real y el contenedor scrollee.
+      if (svg && svg.viewBox && svg.viewBox.baseVal && svg.viewBox.baseVal.width) {
+        var vb = svg.viewBox.baseVal;
+        svg.removeAttribute("width");
+        svg.removeAttribute("height");
+        svg.style.maxWidth = "none";
+        svg.style.width = vb.width + "px";
+        svg.style.height = vb.height + "px";
+      }
+
+      var zoomLabel = document.getElementById("organigramaZoomReset");
+      var zoom = 1;
+
+      function applyZoom() {
+        pre.style.transform = "scale(" + zoom + ")";
+        zoomLabel.textContent = Math.round(zoom * 100) + "%";
+      }
+
+      document.getElementById("organigramaZoomIn").addEventListener("click", function () {
+        zoom = Math.min(zoom + 0.15, 2.5);
+        applyZoom();
+      });
+      document.getElementById("organigramaZoomOut").addEventListener("click", function () {
+        zoom = Math.max(zoom - 0.15, 0.3);
+        applyZoom();
+      });
+      zoomLabel.addEventListener("click", function () {
+        zoom = 1;
+        applyZoom();
+      });
+    });
+  });
+</script>
+{% endblock content %}

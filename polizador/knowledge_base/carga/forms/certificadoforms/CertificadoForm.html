@@ -1,0 +1,14 @@
+<h1>CertificadoForm</h1>
+<p><strong>Módulo:</strong> <code>carga/forms/certificadoforms.py</code> (líneas 11-61) · hereda de <code>forms.ModelForm</code></p>
+<h2>Propósito</h2>
+<p>El <code>ModelForm</code> "genérico" de Certificado (sin tipo forzado — a diferencia de <code>CertificadoAnticipoForm</code>/<code>CertificadoHechoConsumadoForm</code>), usado tanto para alta manual como para edición. <code>certificado_foja</code> es <code>HiddenInput</code> — se precarga por querystring en <code>CrearCertificado.get_initial</code>, no se elige desde este form. Sin <code>clean()</code> propio: toda la validación cruzada por tipo vive en <code>Certificado.clean()</code> (modelo), que corre igual sobre esta instancia.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CertificadoForm(forms.ModelForm):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearCertificado</code>/<code>UpdateCertificado</code> (<code>carga/views/certificadoviews.py</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/Certificado.md">Certificado</a></li>
+<li><a href="../../views/certificadoviews/CrearCertificado.md">CrearCertificado</a></li>
+</ul>

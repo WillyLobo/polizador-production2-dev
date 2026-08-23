@@ -1,0 +1,14 @@
+<h1>_obra_datatable_row</h1>
+<p><strong>Módulo:</strong> <code>api/views/carga_views.py</code> (líneas 838-862)</p>
+<h2>Propósito</h2>
+<p>Row-builder para <code>register_simple_datatable</code> (ver <code>api/views/generics.py</code>): arma la fila que consume el datatable JS — datos ya formateados a texto/HTML más una columna <code>acciones</code> con los links editar/detalle/eliminar, cada uno mostrado solo si <code>user.has_perm(...)</code> correspondiente. Lee <code>obra_acum_pct_anotado</code>/<code>obra_anticipo_acumulado_anotado</code> como atributos anotados por queryset (<code>getattr(o, ..., None)</code>, no propiedades del modelo) — asume que quien arma el queryset (<code>datatable_obras</code>) ya corrió <code>carga.obras_con_acumulado_anotado()</code>.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _obra_datatable_row(o: Obra, user) -&gt; dict:
+</code></pre>
+<h2>Uso real</h2>
+<p><code>datatable_obras</code> (mismo módulo, más abajo).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../carga/models/Obra.md">Obra</a></li>
+<li><a href="../../../carga/models/obras_con_acumulado_anotado.md">obras_con_acumulado_anotado</a></li>
+</ul>

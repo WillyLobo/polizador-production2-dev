@@ -1,0 +1,33 @@
+<h1>_invalidar_incorporacion_de_solicitud</h1>
+<p><strong>Módulo:</strong> <code>secretariador/signals.py</code> (líneas 74-80)</p>
+<h2>Propósito</h2>
+<p>Puente entre <code>Solicitud</code> e <code>Incorporacion</code>: <code>_calcular_texto_incorporacion</code>
+(<code>incorporacionviews.py</code>) arma el texto de una Incorporacion leyendo datos de
+<code>actuacion.incorporacion_solicitud</code> (resolución, fechas, tareas, localidades, agentes
+originales) además de los propios de la Incorporacion. Eso significa que un cambio en la
+Solicitud "padre" puede dejar desactualizado el <code>incorporacion_texto_actuacion</code> guardado
+de su Incorporacion, aunque la Incorporacion en sí no haya cambiado nada.</p>
+<p>Esta función resuelve la Incorporacion asociada a <code>solicitud_id</code> — a lo sumo una, por el
+<code>UniqueConstraint</code> <code>unique_incorporacion_1</code> sobre <code>incorporacion_solicitud</code> — y delega la
+invalidación en <a href="_invalidar_texto_incorporacion.md">_invalidar_texto_incorporacion</a>. Si la
+Solicitud no tiene Incorporacion asociada, <code>Incorporacion.objects.filter(...).first()</code>
+devuelve <code>None</code> y <code>_invalidar_texto_incorporacion(None)</code> no hace nada (ver el <code>if not pk</code>
+de <a href="_invalidar_texto.md">_invalidar_texto</a>) — no hace falta chequear existencia antes de
+llamarla.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _invalidar_incorporacion_de_solicitud(solicitud_id):
+</code></pre>
+<h2>Uso real</h2>
+<p>Llamada desde los tres puntos que invalidan el texto de la propia Solicitud, para
+propagar la invalidación a su Incorporacion si tiene una:
+<a href="invalidar_texto_actuacion_por_cambio_de_datos.md">invalidar_texto_actuacion_por_cambio_de_datos</a>
+(campos propios de la Solicitud que también alimentan el texto de la Incorporacion, ver
+<code>CAMPOS_INCORPORACION_DESDE_SOLICITUD</code>),
+<a href="invalidar_texto_actuacion_por_localidades.md">invalidar_texto_actuacion_por_localidades</a> y
+<a href="invalidar_texto_actuacion_por_comisionados.md">invalidar_texto_actuacion_por_comisionados</a>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="_invalidar_texto_incorporacion.md">_invalidar_texto_incorporacion</a></li>
+<li><a href="../models/Solicitud.md">Solicitud</a></li>
+<li><a href="../models/Incorporacion.md">Incorporacion</a></li>
+</ul>

@@ -18,10 +18,13 @@ from personalizador.views.agenteviews import *
 from personalizador.views.licenciapermisoviews import *
 from personalizador.views.cortelicenciaviews import *
 from personalizador.views.tipolicenciapermisoviews import *
+from personalizador.views.periodolicenciaviews import *
+from personalizador.views.organigramaviews import *
 
 app_name = "personalizador"
 
 urlpatterns = [
+	path("organigrama/", OrganigramaView, name="organigrama"),
 ]
 
 generoagente_patterns = [
@@ -117,6 +120,11 @@ tipolicenciapermiso_patterns = [
 	path("crear/tipolicenciapermiso/<pk>", UpdateTipoLicenciaPermiso.as_view(), name="update-tipolicenciapermiso"),
 	path("eliminar/tipolicenciapermiso/<pk>", EliminarTipoLicenciaPermiso.as_view(), name="eliminar-tipolicenciapermiso"),
 ]
+periodolicencia_patterns = [
+	path("licencias/periodos/crear/", CrearPeriodoLicencia.as_view(), name="crear-periodolicencia"),
+	path("licencias/periodos/crear/<pk>", UpdatePeriodoLicencia.as_view(), name="update-periodolicencia"),
+	path("licencias/periodos/eliminar/<pk>", EliminarPeriodoLicencia.as_view(), name="eliminar-periodolicencia"),
+]
 
 ajax = [
 	path("listas/generoagentes", PaginaListaGeneroAgentes, name="lista-generoagentes"),
@@ -136,6 +144,7 @@ ajax = [
 	path("listas/agentes", PaginaListaAgentes, name="lista-agentes"),
 	path("listas/licenciapermisos", PaginaListaLicenciaPermisos, name="lista-licenciapermisos"),
 	path("listas/tipolicenciapermisos", PaginaListaTipoLicenciaPermisos, name="lista-tipolicenciapermisos"),
+	path("listas/periodolicencias", PaginaListaPeriodoLicencias, name="lista-periodolicencias"),
 ]
 
 urlpatterns += ajax
@@ -157,3 +166,4 @@ urlpatterns += agente_patterns
 urlpatterns += licenciapermiso_patterns
 urlpatterns += cortelicencia_patterns
 urlpatterns += tipolicenciapermiso_patterns
+urlpatterns += periodolicencia_patterns

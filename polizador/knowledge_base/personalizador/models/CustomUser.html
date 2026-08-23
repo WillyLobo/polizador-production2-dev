@@ -1,0 +1,18 @@
+<h1>CustomUser</h1>
+<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 24-34) · hereda de <code>AbstractUser</code></p>
+<h2>Propósito</h2>
+<p><code>AUTH_USER_MODEL</code> del proyecto (<code>AbstractUser</code> de Django + <code>first_name</code>/<code>last_name</code>
+redeclarados con label en español, más <code>usuario_dni</code> opcional). Es el modelo de
+autenticación (login/permisos), separado de <a href="Agente.md">Agente</a> (el registro de RRHH) —
+<code>Agente.agente_usuario</code> es el <code>OneToOneField</code> que los vincula cuando un empleado tiene
+cuenta en el sitio, pero un <code>CustomUser</code> puede existir sin <code>Agente</code> (ej. una cuenta de
+proveedor externo) y viceversa (un <code>Agente</code> cargado en RRHH sin acceso al sitio).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CustomUser(AbstractUser):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>settings.AUTH_USER_MODEL</code>; <code>CustomUserForm</code> (<code>personalizador/forms/customuserform.py</code>) lo usa para el signup de <code>django-allauth</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="Agente.md">Agente</a></li>
+</ul>

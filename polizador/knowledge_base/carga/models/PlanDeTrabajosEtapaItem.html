@@ -1,0 +1,30 @@
+<h1>PlanDeTrabajosEtapaItem</h1>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 1116-1153) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>El "gemelo proyectado" de <code>FojaDeMedicionItem</code>: mismo patrón de <code>save()</code> calculando
+<code>etapaitem_pct_proyectado_acumulado</code> como copia (anterior + este mes) en vez de un valor
+derivado — busca el item correspondiente en la Etapa anterior (<code>etapa_anterior()</code>, vía la
+cadena de rubro) y le suma su propio <code>etapaitem_pct_proyectado_mes</code>.</p>
+<p><strong>Observación real, no documentada en el código:</strong> a diferencia de
+<code>FojaDeMedicionItem</code>, <strong>no hay ninguna señal que propague el recálculo hacia adelante</strong>
+cuando se edita una Etapa anterior — no existe un
+<code>recalcular_acumulado_etapas_siguientes</code> equivalente a
+<a href="../signals/recalcular_acumulado_fojas_siguientes.md">recalcular_acumulado_fojas_siguientes</a>
+en <code>carga/signals.py</code>. En la práctica esto probablemente no genera inconsistencias porque
+<code>PlanDeTrabajosEtapaMatriz</code> (la única vista que las crea/edita) siempre reguarda <em>todas</em>
+las Etapas del rubro de una sola vez en la grilla — pero si alguna vez se edita una sola
+Etapa vieja por fuera de esa vista, las posteriores quedarían con el acumulado
+desactualizado, igual que le pasaba a <code>FojaDeMedicionItem</code> antes de esa señal.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class PlanDeTrabajosEtapaItem(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<pre><code class="language-python"># carga/views/plandetrabajosetapaviews.py:111 (PlanDeTrabajosEtapaMatriz.post)
+etapaitem.save()  # recalcula etapaitem_pct_proyectado_acumulado, sin disparar cascada hacia adelante
+</code></pre>
+<h2>Ver también</h2>
+<ul>
+<li><a href="FojaDeMedicionItem.md">FojaDeMedicionItem</a> — mismo patrón de <code>save()</code>, pero con cascada vía señal.</li>
+<li><a href="../signals/recalcular_acumulado_fojas_siguientes.md">recalcular_acumulado_fojas_siguientes</a> — la señal que este modelo NO tiene un equivalente.</li>
+<li><a href="PlanDeTrabajosEtapa.md">PlanDeTrabajosEtapa</a></li>
+</ul>

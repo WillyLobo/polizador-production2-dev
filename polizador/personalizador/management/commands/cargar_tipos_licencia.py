@@ -13,17 +13,17 @@ logger = logging.getLogger(__name__)
 # no un número fijo.
 TIPOS_DATA = [
     # --- A) a) Licencias Ordinarias ---
-    {"categoria": "LOR", "nombre": "Anual", "articulo": "Art. 7/11", "unidad": "DC", "tope": None, "tope_periodo": "VAR", "remunerada": "SI", "antiguedad_meses": 6, "certificado": False, "compensacion": False,
+    {"categoria": "LOR", "nombre": "Anual", "articulo": "Art. 7", "unidad": "DC", "tope": None, "tope_periodo": "VAR", "remunerada": "SI", "antiguedad_meses": 6, "certificado": False, "compensacion": False,
      "observaciones": "Tope según antigüedad al 31/12 (Art. 8): 6m-5a=23 días, +5-10a=28, +10-18a=42, +18a=49 días corridos."},
     {"categoria": "LOR", "nombre": "Anual Proporcional", "articulo": "Art. 10", "unidad": "DC", "tope": None, "tope_periodo": "VAR", "remunerada": "SI", "antiguedad_meses": 6, "certificado": False, "compensacion": False,
-     "observaciones": "Uso adelantado, total o parcial, de la Licencia Anual Ordinaria correspondiente al período calendario siguiente al de fecha_desde; consume ese cupo futuro en vez del cupo del año en que se toma. Debe efectivizarse dentro del plazo del último párrafo del Art. 7°."},
-    {"categoria": "LOR", "nombre": "Motivos de Salud (Enfermedad o lesión común)", "articulo": "Art. 15/16", "unidad": "DC", "tope": 45, "tope_periodo": "ANI", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False},
-    {"categoria": "LOR", "nombre": "Motivos de Salud (Enfermedad prolongada o lesión grave)", "articulo": "Art. 17/20", "unidad": "DC", "tope": 730, "tope_periodo": "TOT", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False,
+     "observaciones": "Uso adelantado, total o parcial, de la Licencia Anual Ordinaria del propio período calendario de fecha_desde (que, por ser año vencido, recién abre el 15/12 de ese año): consume ese cupo antes de su apertura formal, en vez de esperar a diciembre. Debe efectivizarse dentro del plazo del último párrafo del Art. 7°. (La planilla de RRHH suele rotular esto como \"adelanto <año+1>\" por ser el año en que mayormente se goza, pero el período de devengamiento sigue siendo el de fecha_desde.)"},
+    {"categoria": "LOR", "nombre": "Motivos de Salud (Enfermedad o lesión común)", "articulo": "Art. 14 A", "unidad": "DC", "tope": 45, "tope_periodo": "ANI", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False},
+    {"categoria": "LOR", "nombre": "Motivos de Salud (Enfermedad prolongada o lesión grave)", "articulo": "Art. 14 B", "unidad": "DC", "tope": 730, "tope_periodo": "TOT", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False,
      "observaciones": "2 años con goce de haberes + opción de 1 año más sin goce."},
-    {"categoria": "LOR", "nombre": "Motivos de Salud (Accidente de trabajo o enfermedad ocupacional)", "articulo": "Art. 21/22", "unidad": "DC", "tope": 730, "tope_periodo": "TOT", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False,
+    {"categoria": "LOR", "nombre": "Motivos de Salud (Accidente de trabajo o enfermedad ocupacional)", "articulo": "Art. 14 C", "unidad": "DC", "tope": 730, "tope_periodo": "TOT", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False,
      "observaciones": "2 años con remuneración íntegra + 1 año más sin goce."},
-    {"categoria": "LOR", "nombre": "Motivos de Salud (Atención de familiar enfermo)", "articulo": "Art. 23/24", "unidad": "DC", "tope": 30, "tope_periodo": "ANI", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False},
-    {"categoria": "LOR", "nombre": "Motivos de Salud (Enfermedad o lesión grave de familiar)", "articulo": "Art. 25", "unidad": "DC", "tope": 90, "tope_periodo": "ANI", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False,
+    {"categoria": "LOR", "nombre": "Motivos de Salud (Atención de familiar enfermo)", "articulo": "Art. 14 D", "unidad": "DC", "tope": 30, "tope_periodo": "ANI", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False},
+    {"categoria": "LOR", "nombre": "Motivos de Salud (Enfermedad o lesión grave de familiar)", "articulo": "Art. 14 E", "unidad": "DC", "tope": 90, "tope_periodo": "ANI", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False,
      "observaciones": "Subsume el término del Art. 23."},
     {"categoria": "LOR", "nombre": "Anual de Invierno", "articulo": "Art. 9", "unidad": "DC", "tope": 10, "tope_periodo": "ANI", "remunerada": "SI", "antiguedad_meses": 0, "certificado": False, "compensacion": False,
      "observaciones": "Período de goce fijado anualmente por el Poder Ejecutivo."},
@@ -37,7 +37,7 @@ TIPOS_DATA = [
     {"categoria": "LEX", "nombre": "Estudios de Interés General", "articulo": "Art. 32/33", "unidad": "DC", "tope": None, "tope_periodo": "VAR", "remunerada": "SI", "antiguedad_meses": 6, "certificado": True, "compensacion": False,
      "observaciones": "Término fijado según la actividad, a criterio de la autoridad competente."},
     {"categoria": "LEX", "nombre": "Estudios de Interés Particular", "articulo": "Art. 34/35", "unidad": "DC", "tope": None, "tope_periodo": "VAR", "remunerada": "NO", "antiguedad_meses": 12, "certificado": True, "compensacion": False},
-    {"categoria": "LEX", "nombre": "Exámenes", "articulo": "Art. 36/37", "unidad": "DH", "tope": 28, "tope_periodo": "ANI", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False,
+    {"categoria": "LEX", "nombre": "Permiso por Exámenes", "articulo": "Art. 36/37", "unidad": "DH", "tope": 28, "tope_periodo": "ANI", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False,
      "observaciones": "Fracciones máximas de 4 días hábiles por examen, hasta 8 si se rinde más de una materia."},
     {"categoria": "LEX", "nombre": "Incorporación a las Fuerzas Armadas", "articulo": "Art. 38", "unidad": "DC", "tope": None, "tope_periodo": "VAR", "remunerada": "SI", "antiguedad_meses": 0, "certificado": True, "compensacion": False,
      "observaciones": "Término determinado por las Fuerzas Armadas."},
@@ -86,9 +86,91 @@ TIPOS_DATA = [
 
 
 class Command(BaseCommand):
-    help = "Carga (o actualiza) el catálogo de Tipos de Licencia/Permiso de la Ley 645-A."
+    help = (
+        "Carga (o actualiza) el catálogo de Tipos de Licencia/Permiso de la Ley 645-A. "
+        "El match para update_or_create es (categoria, nombre): si alguien renombró un "
+        "TipoLicenciaPermiso a mano (admin, shell) sin actualizar TIPOS_DATA, ese nombre "
+        "ya no matchea y el comando CREA un duplicado en vez de actualizar el existente. "
+        "Antes de escribir, siempre chequea posibles renombres comparando por 'articulo' "
+        "(más estable que 'nombre') y avisa por consola; con --dry-run no escribe nada."
+    )
 
-    def handle(self, *args, **kwargs):
+    def add_arguments(self, parser):
+        parser.add_argument(
+            "--dry-run", action="store_true",
+            help="Solo corre la verificación de renombres/nuevos y muestra el resumen, sin guardar nada.",
+        )
+
+    def _verificar_renombres(self):
+        """Compara TIPOS_DATA contra la base por 'articulo' (categoria+articulo), que
+        es mucho más estable que 'nombre' (un artículo de la Ley 645-A no cambia,
+        pero el nombre de un tipo sí puede editarse a mano). Devuelve una lista de
+        avisos de texto; no modifica nada."""
+        avisos = []
+        existentes_por_nombre = {
+            (t.tipolicenciapermiso_categoria, t.tipolicenciapermiso_nombre)
+            for t in TipoLicenciaPermiso.objects.all()
+        }
+        existentes_por_articulo = {}
+        for t in TipoLicenciaPermiso.objects.exclude(tipolicenciapermiso_articulo__isnull=True).exclude(tipolicenciapermiso_articulo=""):
+            existentes_por_articulo.setdefault((t.tipolicenciapermiso_categoria, t.tipolicenciapermiso_articulo), []).append(t)
+
+        existentes_por_nombre_obj = {
+            (t.tipolicenciapermiso_categoria, t.tipolicenciapermiso_nombre): t
+            for t in TipoLicenciaPermiso.objects.all()
+        }
+        for item in TIPOS_DATA:
+            clave_nombre = (item["categoria"], item["nombre"])
+            if clave_nombre in existentes_por_nombre:
+                actual = existentes_por_nombre_obj[clave_nombre]
+                if actual.tipolicenciapermiso_articulo != item.get("articulo"):
+                    avisos.append(
+                        f"ARTICULO DISTINTO: {item['categoria']} {item['nombre']!r} (pk={actual.pk}) tiene "
+                        f"articulo={actual.tipolicenciapermiso_articulo!r} en la base, pero TIPOS_DATA "
+                        f"espera {item.get('articulo')!r}. Si se corre el comando así, se va a PISAR el "
+                        "valor de la base con el de TIPOS_DATA -- revisar cuál es el correcto antes de continuar."
+                    )
+                continue  # matchea por nombre, update_or_create lo va a actualizar bien
+
+            articulo = item.get("articulo")
+            candidatos = existentes_por_articulo.get((item["categoria"], articulo)) if articulo else None
+            if candidatos:
+                nombres_db = ", ".join(f"pk={c.pk} {c.tipolicenciapermiso_nombre!r}" for c in candidatos)
+                avisos.append(
+                    f"POSIBLE RENOMBRE: {item['categoria']} {articulo!r} en TIPOS_DATA se llama "
+                    f"{item['nombre']!r}, pero en la base ya existe con otro nombre ({nombres_db}). "
+                    "Si se corre el comando así, se va a CREAR un TipoLicenciaPermiso duplicado en "
+                    "vez de actualizar el existente -- reconciliar a mano antes de continuar "
+                    "(renombrar el de la base, o ajustar TIPOS_DATA si el nombre nuevo es el correcto)."
+                )
+            else:
+                avisos.append(
+                    f"NUEVO: {item['categoria']} {item['nombre']!r} (articulo={articulo!r}) no existe "
+                    "en la base todavía -- se va a crear."
+                )
+
+        nombres_data = {(item["categoria"], item["nombre"]) for item in TIPOS_DATA}
+        for t in TipoLicenciaPermiso.objects.all():
+            if (t.tipolicenciapermiso_categoria, t.tipolicenciapermiso_nombre) not in nombres_data:
+                avisos.append(
+                    f"EN LA BASE PERO NO EN TIPOS_DATA: pk={t.pk} {t.tipolicenciapermiso_categoria} "
+                    f"{t.tipolicenciapermiso_nombre!r} (articulo={t.tipolicenciapermiso_articulo!r}) -- "
+                    "no se toca (el comando nunca borra), pero revisar si es un duplicado viejo o un "
+                    "tipo agregado a mano que falta transcribir a TIPOS_DATA."
+                )
+        return avisos
+
+    def handle(self, *args, **options):
+        avisos = self._verificar_renombres()
+        for aviso in avisos:
+            self.stdout.write(self.style.WARNING(aviso))
+
+        if options["dry_run"]:
+            if not avisos:
+                self.stdout.write(self.style.SUCCESS("Sin discrepancias: TIPOS_DATA matchea la base 1 a 1."))
+            self.stdout.write(self.style.NOTICE("Modo dry-run: no se guardo ningun cambio en la base de datos."))
+            return
+
         with transaction.atomic():
             creados = 0
             actualizados = 0

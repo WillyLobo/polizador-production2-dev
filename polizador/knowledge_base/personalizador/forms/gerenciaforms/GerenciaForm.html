@@ -1,0 +1,14 @@
+<h1>GerenciaForm</h1>
+<p><strong>Módulo:</strong> <code>personalizador/forms/gerenciaforms.py</code> (líneas 5-27) · hereda de <code>forms.ModelForm</code></p>
+<h2>Propósito</h2>
+<p><code>ModelForm</code> estándar para Gerencia: agrega <code>gerencia_directorio</code> (<code>directoriowidget</code>) sobre los mismos campos que <code>DirectorioForm</code>. Sin lógica propia — la consistencia jerárquica no se valida acá (Gerencia no tiene una regla de derivación como Oficina).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class GerenciaForm(forms.ModelForm):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearGerencia</code>/<code>UpdateGerencia</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/Gerencia.md">Gerencia</a></li>
+<li><a href="../../models/Directorio.md">Directorio</a></li>
+</ul>

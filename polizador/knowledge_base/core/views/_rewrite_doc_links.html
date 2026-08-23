@@ -1,0 +1,20 @@
+<h1>_rewrite_doc_links</h1>
+<p><strong>Módulo:</strong> <code>core/views.py</code> (líneas 63-75)</p>
+<h2>Propósito</h2>
+<p>Reescribe, en tiempo de request, los links relativos <code>../modulo/Simbolo.md</code> que un <code>.md</code>
+autorado usa en su sección "Ver también" (formato pensado para navegar el markdown crudo
+en un PR/GitHub) a la URL real <code>knowledge_base_page</code> — resuelve la ruta relativa contra el
+directorio del <code>page_path</code> actual con <code>posixpath.normpath(posixpath.join(...))</code>, y arma el
+href final con <code>reverse()</code>. Deliberadamente vive acá (capa de vista) y no en
+<code>core/knowledge_base.py</code> (que solo convierte Markdown a HTML sin saber nada de URLs de
+Django) — separación explícita entre "generar HTML" y "servir HTML con links reales"
+documentada en el propio plan de implementación de esta feature.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _rewrite_doc_links(html: str, page_path: str) -&gt; str:
+</code></pre>
+<h2>Uso real</h2>
+<p><code>KnowledgeBasePageView.get_context_data</code> (mismo módulo, más abajo).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="KnowledgeBasePageView.md">KnowledgeBasePageView</a></li>
+</ul>

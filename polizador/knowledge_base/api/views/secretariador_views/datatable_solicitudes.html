@@ -1,0 +1,19 @@
+<h1>datatable_solicitudes</h1>
+<p><strong>Módulo:</strong> <code>api/views/secretariador_views.py</code> (líneas 694-762)</p>
+<h2>Propósito</h2>
+<p>El listado principal de Solicitudes: filtros a mano (no <code>register_simple_datatable</code>) con
+un caso especial — el filtro "Comisionados" busca tanto en <code>comisionadosolicitud_nombre</code>
+(Agente) como en <code>comisionadosolicitud_externo</code> (Externo) con un <code>Q</code> OR, porque son dos
+FKs mutuamente excluyentes del mismo concepto lógico. <code>solicitud_dia_inhabil</code> es un
+filtro booleano (coerción manual de <code>"true"/"1"</code> string a bool, mismo patrón que
+<code>register_simple_datatable</code>'s <code>boolean_filter_keys</code> mecaniza para el caso genérico).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def datatable_solicitudes(request, draw: int=1, start: int=0, length: int=50, search: str='', order_by: str='-solicitud_actuacion_ano,-solicitud_actuacion_numero', filters: str='{}'):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>GET /v1/api/datatables/solicitudes/</code> — consumido por <code>Lista-solicitudes.html</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../secretariador/models/Solicitud.md">Solicitud</a></li>
+<li><a href="_solicitud_datatable_row.md">_solicitud_datatable_row</a></li>
+</ul>

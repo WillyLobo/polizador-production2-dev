@@ -1,0 +1,74 @@
+<h1>invalidar_texto_actuacion_por_cambio_de_datos</h1>
+<p><strong>Módulo:</strong> <code>secretariador/signals.py</code> (líneas 84-106) · receiver de <code>pre_save</code> sobre <code>Solicitud</code></p>
+<h2>Propósito</h2>
+<p>Arregla un bug real: <code>revisar_texto_actuacion</code> (<code>textoactuacionviews.py</code>) usa
+<code>solicitud_texto_actuacion</code> como valor inicial del formulario de edición de texto —y
+<code>_generar_solicitud_docx</code>/<code>_generar_exterior_docx</code> lo usan directo para el <code>.docx</code>— sin
+ninguna reconciliación contra los datos actuales de la Solicitud. Antes de esta señal, una
+vez que alguien guardaba el texto a mano una vez, quedaba "congelado": si después se
+editaban los agentes, fechas, localidades o vehículo de la Solicitud, tanto el formulario
+de revisión como el <code>.docx</code> seguían mostrando el texto viejo, sin reflejar el cambio.</p>
+<p>Esta función compara, en el <code>pre_save</code> de cada guardado de <code>Solicitud</code>, los valores en
+base de datos contra los valores en memoria de <code>instance</code> para los campos que alimentan
+<code>_calcular_texto_solicitud</code>/<code>_calcular_texto_exterior</code> (<code>CAMPOS_TEXTO_SOLICITUD</code>: fechas,
+tareas, vehículo, ciudad/provincia, decreto de viáticos, día inhábil, número de actuación).
+Si alguno cambió, pone <code>instance.solicitud_texto_actuacion = None</code> — al no estar en
+<code>update_fields</code> de un guardado explícito de solo-texto (ver más abajo), esto vuelve a
+forzar el recálculo la próxima vez que se abra el formulario o se genere el <code>.docx</code>.</p>
+<p>De paso también compara un segundo set de campos (<code>CAMPOS_INCORPORACION_DESDE_SOLICITUD</code>)
+que no afectan el texto de la propia Solicitud pero sí el de una <code>Incorporacion</code> asociada
+(p. ej. <code>solicitud_resolucion</code>, que <code>_calcular_texto_incorporacion</code> lee vía
+<code>incorporacion_solicitud.solicitud_resolucion</code> pero que ninguna redacción de Solicitud usa
+directamente) — si esos cambiaron, invalida la Incorporacion vía
+<a href="_invalidar_incorporacion_de_solicitud.md">_invalidar_incorporacion_de_solicitud</a>.</p>
+<p><strong>Por qué no se pisa a sí misma al guardar el texto:</strong> cuando <code>revisar_texto_actuacion</code>
+persiste el texto editado a mano
+(<code>actuacion.save(update_fields=["solicitud_texto_actuacion"])</code>), la instancia que llega
+acá ya viene de un <code>Solicitud.objects.get(pk=pk)</code> fresco — ningún otro campo cambió, así
+que <code>cambio(CAMPOS_TEXTO_SOLICITUD)</code> da <code>False</code> y el texto recién guardado sobrevive.</p>
+<p><strong>Por qué se compara contra la base en vez de contra <code>instance._state</code>:</strong> un <code>pre_save</code> no
+tiene acceso directo al valor "antes de esta asignación" salvo que Django lo haya cargado
+él mismo; la forma simple y explícita es traer los valores actuales de la fila con una
+consulta (<code>Solicitud.objects.filter(pk=instance.pk).values(*campos)</code>) y comparar contra
+<code>instance</code> normalizado con <a href="_valor_comparable.md">_valor_comparable</a> — ver ahí por qué
+hace falta esa normalización y no alcanza con <code>!=</code> directo.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def invalidar_texto_actuacion_por_cambio_de_datos(sender, instance, **kwargs):
+</code></pre>
+<h2>Uso real</h2>
+<p>No se llama nunca directamente — se dispara solo en cada <code>Solicitud.save()</code>, sea desde
+<code>UpdateSolicitud</code>/<code>UpdateSolicitudExterior</code> (edición del formulario principal) o desde
+<code>revisar_texto_actuacion</code> al persistir el texto. El disparador típico del bug que arregla:</p>
+<pre><code class="language-python"># secretariador/views/solicitudviews.py (UpdateSolicitud, vía FormsetViewMixin.form_valid)
+self.object = form.save()  # cambia solicitud_fecha_hasta -&gt; pre_save -&gt; esta señal
+</code></pre>
+<h2>Flujo de datos</h2>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant U as UpdateSolicitud.form_valid
+    participant S as Solicitud (instance)
+    participant Sig as invalidar_texto_actuacion_por_cambio_de_datos
+    participant DB as Solicitud (fila en base)
+    participant Rev as revisar_texto_actuacion (próximo GET)
+
+    U-&gt;&gt;S: form.save()
+    S--&gt;&gt;Sig: pre_save
+    Sig-&gt;&gt;DB: values(*CAMPOS_TEXTO_SOLICITUD, *CAMPOS_INCORPORACION_DESDE_SOLICITUD)
+    DB--&gt;&gt;Sig: valores anteriores
+    alt algún campo de CAMPOS_TEXTO_SOLICITUD cambió
+        Sig-&gt;&gt;S: instance.solicitud_texto_actuacion = None
+    end
+    alt algún campo de CAMPOS_INCORPORACION_DESDE_SOLICITUD cambió
+        Sig-&gt;&gt;Sig: _invalidar_incorporacion_de_solicitud(instance.pk)
+    end
+    S-&gt;&gt;DB: UPDATE (incluye solicitud_texto_actuacion si se limpió)
+    Rev-&gt;&gt;DB: texto_actuacion_guardado(actuacion, &quot;solicitud_texto_actuacion&quot;)
+    DB--&gt;&gt;Rev: None -&gt; usa parrafos_default/articulo_uno_default recalculados
+</code></pre>
+<h2>Ver también</h2>
+<ul>
+<li><a href="_valor_comparable.md">_valor_comparable</a></li>
+<li><a href="_invalidar_incorporacion_de_solicitud.md">_invalidar_incorporacion_de_solicitud</a></li>
+<li><a href="../models/Solicitud.md">Solicitud</a></li>
+<li><a href="../views/textoactuacionviews/revisar_texto_actuacion.md">revisar_texto_actuacion</a></li>
+<li><a href="../views/solicitudviews/_generar_solicitud_docx.md">_generar_solicitud_docx</a></li>
+</ul>

@@ -1,0 +1,11 @@
+<h1>format_thousands</h1>
+<p><strong>Módulo:</strong> <code>api/views/generics.py</code> (líneas 70-74)</p>
+<h2>Propósito</h2>
+<p>Formatea un número con "." como separador de miles y "," como marca decimal (convención es-AR), replicando <code>locale.format_string("%.2f", value, True)</code> de los <code>AjaxDatatableView</code> legados <strong>sin tocar el locale del proceso</strong> (que es global y compartido entre requests — cambiar el locale del proceso para un solo request sería una condición de carrera entre requests concurrentes).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def format_thousands(value) -&gt; str:
+</code></pre>
+<h2>Uso real</h2>
+<p><code>_obra_ext_datatable_row</code>, <code>_certificado_datatable_row</code> (montos).</p>
+<h2>Ver también</h2>
+<p><em>(sin referencias cruzadas)</em></p>

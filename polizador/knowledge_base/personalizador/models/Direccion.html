@@ -1,0 +1,15 @@
+<h1>Direccion</h1>
+<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 381-398) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Tercer nivel del árbol organizacional. Puede colgar directamente de un <code>Directorio</code> o de una <code>Gerencia</code> (ambos FK opcionales) — <code>Oficina.clean()</code> es quien deriva cuál corresponde según el nodo más específico elegido.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class Direccion(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>direccionwidget</code>; tercer nivel consumido por <a href="Oficina.md">Oficina</a>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="Gerencia.md">Gerencia</a></li>
+<li><a href="Departamento.md">Departamento</a></li>
+<li><a href="Oficina.md">Oficina</a></li>
+</ul>

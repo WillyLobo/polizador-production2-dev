@@ -114,6 +114,12 @@ class CopiarBucketDevForm(BaseCommandRunForm):
         initial="COLDLINE",
         label="Storage class en destino",
     )
+    exclude_prefix = forms.CharField(
+        required=False,
+        initial="pg_backup/",
+        label="Excluir prefijo (opcional)",
+        help_text="Objetos bajo este prefijo no se copian a dev. Vacío: copia todo, incluido pg_backup/.",
+    )
 
     def to_argv(self):
         argv = []
@@ -122,6 +128,7 @@ class CopiarBucketDevForm(BaseCommandRunForm):
         if self.cleaned_data["overwrite"]:
             argv.append("--overwrite")
         argv += ["--storage-class", self.cleaned_data["storage_class"]]
+        argv += ["--exclude-prefix", self.cleaned_data["exclude_prefix"]]
         return argv
 
 

@@ -145,12 +145,12 @@ class CopiarBucketDevFormTest(TestCase):
     def test_dry_run_checked_by_default_maps_to_flag(self):
         form = CopiarBucketDevForm(data={"dry_run": "on", "storage_class": "COLDLINE"})
         assert form.is_valid()
-        assert form.to_argv() == ["--dry-run", "--storage-class", "COLDLINE"]
+        assert form.to_argv() == ["--dry-run", "--storage-class", "COLDLINE", "--exclude-prefix", ""]
 
     def test_unchecking_dry_run_and_checking_overwrite(self):
         form = CopiarBucketDevForm(data={"overwrite": "on", "storage_class": "NEARLINE"})
         assert form.is_valid()
-        assert form.to_argv() == ["--overwrite", "--storage-class", "NEARLINE"]
+        assert form.to_argv() == ["--overwrite", "--storage-class", "NEARLINE", "--exclude-prefix", ""]
 
     def test_rejects_unknown_storage_class(self):
         form = CopiarBucketDevForm(data={"storage_class": "FREEZER"})
@@ -159,6 +159,17 @@ class CopiarBucketDevFormTest(TestCase):
     def test_does_not_expose_bucket_names(self):
         assert "source" not in CopiarBucketDevForm.base_fields
         assert "destination" not in CopiarBucketDevForm.base_fields
+
+    def test_exclude_prefix_defaults_to_pg_backup(self):
+        form = CopiarBucketDevForm()
+        assert form.fields["exclude_prefix"].initial == "pg_backup/"
+
+    def test_exclude_prefix_is_passed_through(self):
+        form = CopiarBucketDevForm(
+            data={"dry_run": "on", "storage_class": "COLDLINE", "exclude_prefix": "pg_backup/"}
+        )
+        assert form.is_valid()
+        assert form.to_argv() == ["--dry-run", "--storage-class", "COLDLINE", "--exclude-prefix", "pg_backup/"]
 
 
 class ResaveComisionadoFormTest(TestCase):

@@ -1,0 +1,19 @@
+<h1>generate_name_contratos</h1>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 49-54)</p>
+<h2>Propósito</h2>
+<p>Callback <code>upload_to</code> de un <code>FileField</code>: Django lo llama con la instancia (todavía sin
+guardar del todo) y el nombre original del archivo, y espera de vuelta la ruta relativa
+donde <code>GCloudAndLocalStorage</code> (ver CLAUDE.md) va a escribirlo, tanto en GCS como en
+<code>MEDIA_ROOT</code> local.</p>
+<p>El más simple de los <code>upload_to</code> de este módulo: sin partición por fecha, todo va a
+<code>contratos_obra/&lt;contratodigital_uuid&gt;.pdf</code> — a diferencia de Certificados/Pólizas, los
+documentos digitales de un Contrato no tienen una fecha propia relevante para agrupar.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def generate_name_contratos(instance, filename):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>ContratosDigitales.contratodigital_archivo = models.FileField(upload_to=generate_name_contratos, ...)</code> (carga/models.py:1396).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="ContratosDigitales.md">ContratosDigitales</a></li>
+</ul>

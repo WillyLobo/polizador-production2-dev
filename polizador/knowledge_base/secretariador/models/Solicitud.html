@@ -1,0 +1,31 @@
+<h1>Solicitud</h1>
+<p><strong>Módulo:</strong> <code>secretariador/models.py</code> (líneas 392-458) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>El modelo central de <code>secretariador</code>: una solicitud de comisión de servicio (viáticos),
+identificada por una actuación electrónica (<code>solicitud_actuacion</code>, <code>GeneratedField</code> que
+concatena jurisdicción-año-número-AE, con dos <code>UniqueConstraint</code> distintas — una sobre el
+campo generado completo, otra sobre sus tres partes por separado, redundantes entre sí
+pero ambas declaradas). <code>solicitud_cantidad_de_dias</code> es otro <code>GeneratedField</code>: la resta de
+fechas calculada por la base de datos, no en Python.</p>
+<p><code>get_absolute_url</code> bifurca según la Provincia: si es "Chaco", va a la edición de Solicitud
+normal; si no, a la edición de Solicitud Exterior — son la misma tabla, dos flujos/vistas
+de edición distintos según si el viaje es dentro o fuera de la provincia (ver
+<code>solicitudviews.py</code> vs <code>solicitud_exteriorviews.py</code>).</p>
+<p><code>solicitud_texto_actuacion</code> guarda el texto de considerandos/artículos editado a mano
+desde la web (ver <code>textoactuacionviews.py</code>); si está vacío, el <code>.docx</code> se genera con el
+texto calculado automáticamente a partir de los datos de la solicitud. Los receivers de
+<code>secretariador/signals.py</code> ponen este campo en <code>None</code> automáticamente apenas cambian los
+datos de la Solicitud que ese texto describe (agentes, fechas, localidades, vehículo),
+para que no quede desactualizado respecto de un texto guardado antes del cambio — ver
+<a href="../signals/invalidar_texto_actuacion_por_cambio_de_datos.md">invalidar_texto_actuacion_por_cambio_de_datos</a>.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class Solicitud(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearSolicitud</code>/<code>UpdateSolicitud</code> (<code>secretariador/views/solicitudviews.py</code>), <code>CrearSolicitudExterior</code>/<code>UpdateSolicitudExterior</code> (<code>secretariador/views/solicitud_exteriorviews.py</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="ComisionadoSolicitud.md">ComisionadoSolicitud</a></li>
+<li><a href="InstrumentosLegalesResoluciones.md">InstrumentosLegalesResoluciones</a></li>
+<li><a href="Incorporacion.md">Incorporacion</a></li>
+</ul>

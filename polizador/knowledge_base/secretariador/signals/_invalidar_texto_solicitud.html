@@ -1,0 +1,23 @@
+<h1>_invalidar_texto_solicitud</h1>
+<p><strong>Módulo:</strong> <code>secretariador/signals.py</code> (líneas 66-67)</p>
+<h2>Propósito</h2>
+<p>Wrapper de una línea sobre <a href="_invalidar_texto.md">_invalidar_texto</a> fijado a
+<code>Solicitud</code>/<code>solicitud_texto_actuacion</code>, para que los receivers no repitan esos dos
+argumentos en cada punto donde hace falta invalidar el texto guardado de una Solicitud.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _invalidar_texto_solicitud(solicitud_id):
+</code></pre>
+<h2>Uso real</h2>
+<p>Llamado desde <a href="invalidar_texto_actuacion_por_localidades.md">invalidar_texto_actuacion_por_localidades</a>
+(cuando cambia el m2m <code>solicitud_localidades</code>) y desde
+<a href="invalidar_texto_actuacion_por_comisionados.md">invalidar_texto_actuacion_por_comisionados</a>
+(cuando se crea/edita/borra un <code>ComisionadoSolicitud</code> de la Solicitud). El tercer punto de
+invalidación, por cambios en los campos propios de la Solicitud, no pasa por acá: vive
+directo en <a href="invalidar_texto_actuacion_por_cambio_de_datos.md">invalidar_texto_actuacion_por_cambio_de_datos</a>,
+que ya tiene la instancia en mano dentro del <code>pre_save</code> y solo necesita poner
+<code>instance.solicitud_texto_actuacion = None</code> antes de que se guarde.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="_invalidar_texto.md">_invalidar_texto</a></li>
+<li><a href="../models/Solicitud.md">Solicitud</a></li>
+</ul>

@@ -1,0 +1,20 @@
+<h1>BaseFojaDeMedicionItemFormset</h1>
+<p><strong>Módulo:</strong> <code>carga/forms/fojademedicionforms.py</code> (líneas 152-206) · hereda de <code>BaseInlineFormSet</code></p>
+<h2>Propósito</h2>
+<p>Valida los items de una Foja entre sí y contra la Foja anterior del mismo rubro — la
+contraparte, a nivel formset (antes de guardar nada), de lo que
+<a href="../../signals/recalcular_acumulado_fojas_siguientes.md">recalcular_acumulado_fojas_siguientes</a>
+hace a nivel señal (después de guardar, hacia adelante). <code>_anterior_map()</code> resuelve el
+acumulado anterior de cada item candidato; <code>clean()</code> chequea, por item, que Anterior + Mes
+no supere la Incidencia fija del item, y en conjunto, que ninguno de los tres totales
+(Anterior/Mes/Acumulado) supere 100% en toda la Foja.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class BaseFojaDeMedicionItemFormset(BaseInlineFormSet):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>formset=BaseFojaDeMedicionItemFormset</code> en <code>FojaDeMedicionItemFormset</code>/<code>build_foja_item_formset_class</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/FojaDeMedicionItem.md">FojaDeMedicionItem</a></li>
+<li><a href="../../signals/recalcular_acumulado_fojas_siguientes.md">recalcular_acumulado_fojas_siguientes</a></li>
+</ul>

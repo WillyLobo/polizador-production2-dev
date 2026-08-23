@@ -1,0 +1,17 @@
+<h1>create_obra</h1>
+<p><strong>Módulo:</strong> <code>api/views/carga_views.py</code> (líneas 774-788)</p>
+<h2>Propósito</h2>
+<p>Alta de Obra con manejo explícito de los cuatro M2M (<code>departamento_ids</code>/<code>municipio_ids</code>/
+<code>localidad_ids</code>/<code>inspector_ids</code>): se los saca del payload antes de <code>Obra.objects.create()</code>
+(un M2M no se puede pasar a <code>create()</code>, la instancia todavía no tiene PK) y se asignan
+después con <code>.set()</code> sobre la instancia ya creada.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def create_obra(request, payload: ObraCreate):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>POST /v1/api/obras/</code> — response=<code>ObraOut</code> (vía <code>_obra_out</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../carga/models/Obra.md">Obra</a></li>
+<li><a href="_obra_out.md">_obra_out</a></li>
+</ul>

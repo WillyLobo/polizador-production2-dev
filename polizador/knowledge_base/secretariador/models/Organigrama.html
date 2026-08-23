@@ -1,0 +1,11 @@
+<h1>Organigrama</h1>
+<p><strong>Módulo:</strong> <code>secretariador/models.py</code> (líneas 337-348) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Catálogo simple (cargo + escalafón) — a diferencia de <code>personalizador.Oficina</code>/<code>Directorio</code>/<code>Gerencia</code>/etc. (el árbol organizacional real), este modelo parece una tabla de referencia standalone sin FK hacia/desde otros modelos de este manifest — posiblemente informativa o usada solo desde un reporte/template no cubierto acá.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class Organigrama(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>OrganigramaForm</code> (<code>secretariador/forms/organigramaform.py</code>) — no se encontró una vista de listado/CRUD en <code>secretariador/views/*.py</code> que la use (podría gestionarse solo desde <code>/admin/</code>).</p>
+<h2>Ver también</h2>
+<p><em>(sin referencias cruzadas)</em></p>

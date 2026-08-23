@@ -1,0 +1,13 @@
+<h1>generate_name_decretos</h1>
+<p><strong>Módulo:</strong> <code>secretariador/models.py</code> (líneas 17-31)</p>
+<h2>Propósito</h2>
+<p>Callback <code>upload_to</code> para el PDF de un <code>InstrumentosLegalesDecretos</code>: <code>instrumentoslegales/decretos/&lt;numero&gt;-&lt;ano&gt;-&lt;tipo&gt;.pdf</code> — a diferencia de los <code>upload_to</code> de <code>carga</code> (que usan un UUID), acá el nombre de archivo es humano-legible (número-año-tipo), sin partición por fecha en subdirectorios.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def generate_name_decretos(instance, filename):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>InstrumentosLegalesDecretos.instrumentolegaldecretos</code> (mismo módulo, más abajo).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="InstrumentosLegalesDecretos.md">InstrumentosLegalesDecretos</a></li>
+</ul>

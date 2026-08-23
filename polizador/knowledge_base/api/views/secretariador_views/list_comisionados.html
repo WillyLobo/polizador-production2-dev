@@ -1,0 +1,13 @@
+<h1>list_comisionados</h1>
+<p><strong>Módulo:</strong> <code>api/views/secretariador_views.py</code> (líneas 463-468)</p>
+<h2>Propósito</h2>
+<p>Listado paginado (<code>PerPagePagination</code>) de <code>Agente</code>, gateado por <code>require_model_perm(Agente)</code> (permiso <code>view_&lt;modelo&gt;</code>). Con <code>?q=</code> de texto libre (nombres/apellidos). "Comisionado" acá es el mismo <code>personalizador.Agente</code>, en su rol de viáticos — no un modelo propio de <code>secretariador</code>. Sin <code>update</code>.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def list_comisionados(request, q: str=''):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>GET /v1/api/comisionados/</code> — response=<code>List[AgenteOut]</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../secretariador/models/Agente.md">Agente</a></li>
+</ul>

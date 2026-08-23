@@ -1,0 +1,13 @@
+<h1>create_contrato_rubro</h1>
+<p><strong>Módulo:</strong> <code>api/views/carga_views.py</code> (líneas 1671-1672)</p>
+<h2>Propósito</h2>
+<p>Alta de <code>ContratoRubro</code> desde <code>ContratoRubroCreate</code> (<code>payload.model_dump()</code> directo a <code>ContratoRubro.objects.create()</code> — sin lógica de negocio propia acá, la validación vive en el schema ninja/Pydantic).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def create_contrato_rubro(request, payload: ContratoRubroCreate):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>POST /v1/api/contrato-rubros/</code> — response=<code>ContratoRubroOut</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../carga/models/ContratoRubro.md">ContratoRubro</a></li>
+</ul>

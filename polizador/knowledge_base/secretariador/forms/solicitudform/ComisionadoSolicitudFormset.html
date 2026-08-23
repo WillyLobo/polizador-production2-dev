@@ -1,0 +1,14 @@
+<h1>ComisionadoSolicitudFormset</h1>
+<p><strong>Módulo:</strong> <code>secretariador/forms/solicitudform.py</code> (líneas 136-138) · hereda de <code>forms.models.BaseInlineFormSet</code></p>
+<h2>Propósito</h2>
+<p>Formset inline de <code>ComisionadoSolicitud</code> sobre una Solicitud del flujo Chaco (<code>fk_name="comisionadosolicitud_foreign"</code>, <code>can_delete=False</code>). <code>__init__</code> sobreescrito sin agregar nada sobre la clase base — vestigial, mismo patrón que varios formsets de <code>carga</code>.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class ComisionadoSolicitudFormset(forms.models.BaseInlineFormSet):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>formset_name = ComisionadoSolicitudFormset</code> en <code>CrearSolicitud</code>/<code>UpdateSolicitud</code> (<code>FormsetViewMixin</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/ComisionadoSolicitud.md">ComisionadoSolicitud</a></li>
+<li><a href="ComisionadoSolicitudForm.md">ComisionadoSolicitudForm</a></li>
+</ul>

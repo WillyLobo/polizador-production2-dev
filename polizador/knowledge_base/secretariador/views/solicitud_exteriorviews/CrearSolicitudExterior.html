@@ -1,0 +1,14 @@
+<h1>CrearSolicitudExterior</h1>
+<p><strong>Módulo:</strong> <code>secretariador/views/solicitud_exteriorviews.py</code> (líneas 163-224) · hereda de <code>PermissionRequiredMixin, generic.CreateView</code></p>
+<h2>Propósito</h2>
+<p>Alta de Solicitud (fuera del Chaco) — sobreescribe <code>get</code>/<code>post</code> en vez de apoyarse en <code>FormsetViewMixin</code> (a diferencia de <code>solicitudviews.CrearSolicitud</code>), manejando el formset de comisionados manualmente con la misma estructura get_context_data/form_valid/form_invalid que <code>CrearIncorporacion</code>.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CrearSolicitudExterior(PermissionRequiredMixin, generic.CreateView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearSolicitudExterior</code> (<code>secretariador:crear-solicitud-exterior</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/Solicitud.md">Solicitud</a></li>
+<li><a href="../incorporacionviews/CrearIncorporacion.md">CrearIncorporacion</a> — mismo patrón de get/post manual.</li>
+</ul>

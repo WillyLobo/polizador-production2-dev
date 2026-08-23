@@ -1,0 +1,17 @@
+<h1>agentewidget</h1>
+<p><strong>Módulo:</strong> <code>personalizador/views/ajaxviews.py</code> (líneas 71-79) · hereda de <code>AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget</code></p>
+<h2>Propósito</h2>
+<p>Versión propia de <code>personalizador</code> del widget de Agente, <strong>con</strong> botón "+" de alta
+rápida (<code>AddRelatedWidgetMixin</code> → <code>personalizador:crear-agente</code>) — a propósito distinta
+de <code>carga.views.ajaxviews.agentewidget</code> (sin ese botón), que los forms de <code>carga</code> ya
+usaban antes de que existiera esta versión y siguen usando tal cual (ver el docstring de
+la clase). Mismo <code>search_fields</code> (nombres/apellidos) que la de <code>carga</code>.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class agentewidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>Directorio.directorio_autoridad_a_cargo_fk</code>, <code>Gerencia.gerencia_autoridad_a_cargo_fk</code>, <code>Direccion.direccion_autoridad_a_cargo_fk</code>, <code>Departamento.departamento_autoridad_a_cargo_fk</code>, <code>LicenciaPermiso.licenciapermiso_agente</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/Agente.md">Agente</a></li>
+</ul>

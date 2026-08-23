@@ -1,0 +1,13 @@
+<h1>_articulo_dos_inicial</h1>
+<p><strong>Módulo:</strong> <code>secretariador/views/textoactuacionviews.py</code> (líneas 16-26)</p>
+<h2>Propósito</h2>
+<p>Arma las filas iniciales del formset de Artículo Dos: siempre una fila por cada comisionado <em>actual</em> (<code>articulo_dos_default</code>, recién calculado desde los datos de hoy) — si hay texto ya guardado para ese comisionado específico (<code>comisionado_id</code>), usa el guardado; si no, el recién calculado. Así, agregar un comisionado nuevo después de haber editado el texto a mano no pierde las ediciones de los comisionados que ya estaban.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _articulo_dos_inicial(articulo_dos_default, texto_guardado):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>revisar_texto_actuacion</code> (mismo módulo, más abajo).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="revisar_texto_actuacion.md">revisar_texto_actuacion</a></li>
+</ul>

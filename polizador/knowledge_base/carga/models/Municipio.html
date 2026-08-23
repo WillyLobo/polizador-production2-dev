@@ -1,0 +1,16 @@
+<h1>Municipio</h1>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 297-313) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Tabla de referencia geográfica intermedia entre Departamento y Localidad, con un <code>Region</code> asociado (agrupación administrativa interna, no geográfica).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class Municipio(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p>Tabla de solo lectura desde la UI — <code>Obra.obra_municipio_m</code> es un <code>ManyToManyField</code> hacia acá.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="Obra.md">Obra</a></li>
+<li><a href="Departamento.md">Departamento</a></li>
+<li><a href="Localidad.md">Localidad</a></li>
+<li><a href="Region.md">Region</a></li>
+</ul>

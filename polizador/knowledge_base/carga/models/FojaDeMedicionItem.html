@@ -1,0 +1,26 @@
+<h1>FojaDeMedicionItem</h1>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 1234-1267) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>El avance real del mes (<code>fojaitem_pct_avance_mes</code>, cargado a mano) de un
+<code>PlanDeTrabajosItem</code> puntual, dentro de una Foja. <code>fojaitem_pct_acumulado</code> es el campo
+clave del sistema de certificación: se calcula en <code>save()</code> como
+<code>anterior.fojaitem_pct_acumulado + self.fojaitem_pct_avance_mes</code> (o solo
+<code>fojaitem_pct_avance_mes</code> si no hay Foja anterior) — es una <strong>copia calculada al momento
+de guardar</strong>, no un valor derivado que se recalcula solo en cada lectura. Esa decisión de
+diseño es exactamente lo que hace necesaria la señal
+<a href="../signals/recalcular_acumulado_fojas_siguientes.md">recalcular_acumulado_fojas_siguientes</a>
+(ver esa página para el detalle completo de la cascada hacia adelante que dispara este
+<code>save()</code>).</p>
+<p>El <code>UniqueConstraint</code> sobre (<code>fojaitem_foja</code>, <code>fojaitem_planitem</code>) impide cargar el mismo
+item dos veces en la misma Foja.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class FojaDeMedicionItem(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p>Ver <a href="../signals/recalcular_acumulado_fojas_siguientes.md#uso-real">recalcular_acumulado_fojas_siguientes § Uso real</a> — se guarda siempre vía el formset inline de <code>UpdateFojaDeMedicion</code>/<code>CrearFojaDeMedicion</code>, nunca suelto.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="FojaDeMedicion.md">FojaDeMedicion</a></li>
+<li><a href="../signals/recalcular_acumulado_fojas_siguientes.md">recalcular_acumulado_fojas_siguientes</a> — explica la cascada que dispara este <code>save()</code>.</li>
+<li><a href="PlanDeTrabajosEtapaItem.md">PlanDeTrabajosEtapaItem</a> — mismo patrón de cálculo, sin cascada (lado proyectado).</li>
+</ul>

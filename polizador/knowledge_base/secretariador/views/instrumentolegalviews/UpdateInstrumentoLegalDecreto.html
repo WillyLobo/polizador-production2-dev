@@ -1,0 +1,18 @@
+<h1>UpdateInstrumentoLegalDecreto</h1>
+<p><strong>Módulo:</strong> <code>secretariador/views/instrumentolegalviews.py</code> (líneas 87-103) · hereda de <code>PermissionRequiredMixin, generic.UpdateView</code></p>
+<h2>Propósito</h2>
+<p>Edición de un Decreto. 
+<code>get_context_data</code> agrega navegación "anterior/siguiente" por <code>pk - 1</code>/<code>pk + 1</code> — asume
+que los IDs son correlativos y que cada vecino existe/es del mismo tipo, sin ningún
+chequeo de que ese vecino sea realmente el instrumento "adyacente" en algún orden con
+sentido (ej. por número/año). Es una forma barata de navegación secuencial que puede
+saltar a un registro no relacionado si hay huecos en los IDs (por borrados).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class UpdateInstrumentoLegalDecreto(PermissionRequiredMixin, generic.UpdateView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>UpdateInstrumentoLegalDecreto</code> (<code>secretariador:update-decreto</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/InstrumentosLegalesDecretos.md">InstrumentosLegalesDecretos</a></li>
+</ul>

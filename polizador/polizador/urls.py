@@ -8,6 +8,8 @@ from carga.views.inspeccionviews import InspeccionHomeView
 from django.contrib.auth.decorators import login_required
 from core.views import (
     DashboardView,
+    KnowledgeBaseIndexView,
+    KnowledgeBasePageView,
     ManagementCommandRunDetailView,
     ManagementCommandRunKillView,
     ManagementCommandRunLogView,
@@ -37,6 +39,12 @@ urlpatterns = [
     path("administracion/schema/", SchemaDocsView.as_view(), name="schema_docs"),
     path("administracion/schema/<path:path>", schema_docs_asset, name="schema_docs_asset"),
     path("administracion/comandos/", ManagementCommandsView.as_view(), name="management_commands"),
+    path("administracion/conocimiento/", KnowledgeBaseIndexView.as_view(), name="knowledge_base"),
+    path(
+        "administracion/conocimiento/<path:page_path>/",
+        KnowledgeBasePageView.as_view(),
+        name="knowledge_base_page",
+    ),
     path(
         "administracion/comandos/<int:pk>/",
         ManagementCommandRunDetailView.as_view(),

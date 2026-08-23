@@ -1,0 +1,14 @@
+<h1>RepresentanteTecnicoObra</h1>
+<p><strong>Módulo:</strong> <code>carga/views/representantetecnicoviews.py</code> (líneas 50-54) · hereda de <code>PermissionRequiredMixin, generic.DetailView</code></p>
+<h2>Propósito</h2>
+<p>Ficha de detalle de RepresentanteTecnico centrada en mostrar las Obras vinculadas a esta entrada del catálogo (sin lógica propia más allá del <code>DetailView</code> — el filtrado de Obras relacionadas lo resuelve el template, no una <code>get_context_data</code> propia).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class RepresentanteTecnicoObra(PermissionRequiredMixin, generic.DetailView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>RepresentanteTecnicoObra</code> (<code>carga:representantetecnico-obra</code>), enlazada desde el listado de RepresentanteTecnico.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/RepresentanteTecnico.md">RepresentanteTecnico</a></li>
+<li><a href="../../models/Obra.md">Obra</a></li>
+</ul>

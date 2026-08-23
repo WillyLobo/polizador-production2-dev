@@ -1,0 +1,13 @@
+<h1>PlanDeTrabajosItemForm</h1>
+<p><strong>Módulo:</strong> <code>carga/forms/plandetrabajositemforms.py</code> (líneas 4-25) · hereda de <code>forms.ModelForm</code></p>
+<h2>Propósito</h2>
+<p><code>ModelForm</code> para <code>PlanDeTrabajosItem</code> (nombre, orden, % de incidencia). Su único <code>clean()</code> normaliza <code>planitem_nombre</code> a mayúsculas — consistencia de datos cargados a mano por distintos usuarios.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class PlanDeTrabajosItemForm(forms.ModelForm):
+</code></pre>
+<h2>Uso real</h2>
+<p>Form base de <code>PlanDeTrabajosItemFormset</code> (dentro de <code>PlanDeTrabajosRubroForm</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/PlanDeTrabajosItem.md">PlanDeTrabajosItem</a></li>
+</ul>

@@ -1,0 +1,13 @@
+<h1>DashboardView</h1>
+<p><strong>Módulo:</strong> <code>core/views.py</code> (líneas 31-50) · hereda de <code>SuperuserRequiredMixin, TemplateView</code></p>
+<h2>Propósito</h2>
+<p>El panel principal de <code>/administracion/dashboard/</code>: arma, por cada app trackeada (<code>core.dashboard_data.TRACKED_MODELS</code>, fuera del alcance de este manifest), un feed de cambios recientes por modelo, más resumen de logins, salud de Sentry, salud/performance de la base — toda la lógica de agregación vive en <code>dashboard_data.py</code>, esta vista solo la invoca y arma el contexto.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class DashboardView(SuperuserRequiredMixin, TemplateView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>DashboardView</code> (<code>dashboard</code>), enlazada desde el navbar ("Administracion &gt; Dashboard").</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../models/LoginEvent.md">LoginEvent</a></li>
+</ul>

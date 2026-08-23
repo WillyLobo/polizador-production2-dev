@@ -1,0 +1,18 @@
+<h1>generate_name_resoluciones</h1>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 63-71)</p>
+<h2>Propósito</h2>
+<p><strong>Código muerto retenido a propósito.</strong> Su propio docstring lo explica: existió para un
+modelo <code>ResolucionesDigitales</code> que ya no está en <code>models.py</code>, pero migraciones viejas
+todavía referencian esta función por dotted path (<code>carga.models.generate_name_resoluciones</code>)
+como valor de <code>upload_to</code> congelado en su historial. Si se borrara, Django fallaría al
+reproducir esas migraciones desde cero (<code>migrate</code> en una base nueva, o cualquier replay
+completo del historial). No tiene ningún call site vivo en el código actual — no la uses
+como referencia para un <code>FileField</code> nuevo, mirá <code>generate_name_obra_documento</code> o
+<code>generate_name_rubro_documento</code> en su lugar.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def generate_name_resoluciones(instance, filename):
+</code></pre>
+<h2>Uso real</h2>
+<p>Ninguno vivo — solo la referencia congelada en migraciones antiguas de <code>carga</code>.</p>
+<h2>Ver también</h2>
+<p><em>(sin referencias cruzadas)</em></p>

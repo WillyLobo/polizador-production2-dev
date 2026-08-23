@@ -1,0 +1,40 @@
+<h1>auto_increment_foja_numero</h1>
+<p><strong>Módulo:</strong> <code>carga/signals.py</code> (líneas 7-26) · receiver de <code>pre_save</code> sobre <code>FojaDeMedicion</code></p>
+<h2>Propósito</h2>
+<p>Asigna <code>foja_numero</code> automáticamente cuando se crea una <code>FojaDeMedicion</code> nueva, en vez de
+dejar que se cargue a mano: busca la última Foja de la misma cadena de rubro
+(<code>rubro_cadena_ids()</code>, que sigue reprogramaciones vía <code>rubro_anterior</code>) y le suma 1. Si es
+la primera Foja de la cadena, arranca en <code>rubro_foja_numero_inicial</code> (un valor cargado a
+mano en el Rubro, para poder continuar la numeración cuando hubo fojas anteriores
+registradas fuera del sistema).</p>
+<p>Las fojas legacy (<code>foja_legacy=True</code>) se saltean por completo: traen su <code>foja_numero</code> ya
+asignado a mano por el form antes de llegar a esta señal, y no deben ser tocadas — son
+justamente el mecanismo para cargar el historial previo sin que la auto-numeración lo
+pise.</p>
+<p>Por qué es <code>pre_save</code> y no una lógica en <code>save()</code>: <code>FojaDeMedicionItem</code> (ver
+<a href="recalcular_acumulado_fojas_siguientes.md">recalcular_acumulado_fojas_siguientes</a>) necesita
+que <code>foja_numero</code> ya esté asignado al momento en que sus items se guardan, y separar la
+numeración en una señal la mantiene desacoplada del resto de la lógica de <code>save()</code> del
+modelo (que no tiene override propio).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def auto_increment_foja_numero(sender, instance, **kwargs):
+</code></pre>
+<h2>Uso real</h2>
+<p>No se llama directamente. Se dispara al guardar una <code>FojaDeMedicion</code> nueva, típicamente
+desde <code>CrearFojaDeMedicion</code>:</p>
+<pre><code class="language-python"># carga/views/fojademedicionviews.py (CrearFojaDeMedicion.form_valid)
+self.object = form.save()  # pre_save -&gt; asigna foja_numero antes del INSERT
+</code></pre>
+<h2>Flujo de datos</h2>
+<ol>
+<li>Si <code>instance.foja_legacy</code> es <code>True</code> → no hace nada, se respeta el número cargado a mano.</li>
+<li>Si <code>instance.pk</code> ya existe (es una edición, no una creación) → tampoco hace nada:
+   <code>foja_numero</code> se asigna una sola vez, al crear.</li>
+<li>Si es una Foja nueva: busca <code>FojaDeMedicion.objects.filter(foja_rubro_id__in=chain_ids).order_by('-foja_numero').first()</code> dentro de la cadena de rubro, y asigna <code>last_foja.foja_numero + 1</code> (o <code>rubro_foja_numero_inicial</code> si no hay ninguna todavía).</li>
+</ol>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../models/FojaDeMedicion.md">FojaDeMedicion</a></li>
+<li><a href="recalcular_acumulado_fojas_siguientes.md">recalcular_acumulado_fojas_siguientes</a> — depende de que <code>foja_numero</code> ya esté asignado para poder ubicar la Foja "siguiente" en la cadena.</li>
+<li><a href="auto_increment_etapa_numero.md">auto_increment_etapa_numero</a> — mismo patrón aplicado a <code>PlanDeTrabajosEtapa</code>.</li>
+</ul>

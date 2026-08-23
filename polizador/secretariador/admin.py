@@ -29,6 +29,24 @@ class MontoViaticoDiarioAdmin(SimpleHistoryAdmin):
     autocomplete_fields = ["montoviaticodiario_decreto_reglamentario"]
     list_display = ["id", "montoviaticodiario_decreto_reglamentario"]
 
+class ReglasViaticoAdmin(SimpleHistoryAdmin):
+    model = ReglasViatico
+    list_display = [
+        "reglas_gabinete_cobra_viatico",
+        "reglas_autoridades_cobra_viatico_chaco",
+        "reglas_autoridades_escalafon",
+        "reglas_escalafon_unico_habilitado",
+        "reglas_escalafon_unico_valor",
+        "reglas_externos_cobra_viatico",
+        "reglas_escalafon_default_externos",
+    ]
+
+    def has_add_permission(self, request):
+        return not ReglasViatico.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
 class OrganigramaAdmin(ImportExportMixin, SimpleHistoryAdmin):
     resource_class = OrganigramaResource
     search_fields = ["organigrama_cargo", "organigrama_escalafon"]
@@ -103,6 +121,7 @@ admin.site.register(InstrumentosLegalesMemorandum, InstrumentosLegalesMemorandum
 admin.site.register(InstrumentosLegalesResoluciones, InstrumentosLegalesResolucionesAdmin)
 admin.site.register(InstrumentosLegalesDecretos, InstrumentosLegalesDecretoAdmin)
 admin.site.register(MontoViaticoDiario, MontoViaticoDiarioAdmin)
+admin.site.register(ReglasViatico, ReglasViaticoAdmin)
 admin.site.register(Organigrama, OrganigramaAdmin)
 admin.site.register(Vehiculo, VehiculoAdmin)
 admin.site.register(Solicitud, SolicitudAdmin)

@@ -1,0 +1,21 @@
+<h1>delete_comisionadosolicitud</h1>
+<p><strong>Módulo:</strong> <code>secretariador/views/delete_inlines.py</code> (líneas 15-28)</p>
+<h2>Propósito</h2>
+<p>Borra un <code>ComisionadoSolicitud</code> puntual y redirige de vuelta a la edición de su
+<code>Solicitud</code> — el mecanismo para sacar un comisionado de una Solicitud sin pasar por el
+formset completo (ej. un link de borrado inline en la tabla de comisionados).</p>
+<p><strong>Bug real detectado, no hipotético:</strong> en la rama <code>except ComisionadoSolicitud.DoesNotExist</code>,
+el código intenta <code>redirect('secretariador:update-solicitud', pk=comisionado.comisionadosolicitud_foreign.id)</code>
+— pero <code>comisionado</code> nunca se asignó en esa rama (el <code>.get()</code> que lo asignaría es
+justamente lo que falló), así que esto lanza <code>UnboundLocalError</code> en vez del <code>HttpResponseRedirect</code>
+que el código claramente intenta devolver. En la práctica, si <code>pk</code> no existe, esta vista
+rompe con un 500 en vez de mostrar el mensaje "Object Does not exist" que arma antes.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def delete_comisionadosolicitud(request, pk):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>delete_comisionadosolicitud</code> (<code>secretariador:delete-comisionadosolicitud</code> o similar — ver <code>secretariador/urls.py</code>), enlazada desde <code>UpdateSolicitud</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/ComisionadoSolicitud.md">ComisionadoSolicitud</a></li>
+</ul>

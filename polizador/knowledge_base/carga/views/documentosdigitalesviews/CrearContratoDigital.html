@@ -1,0 +1,13 @@
+<h1>CrearContratoDigital</h1>
+<p><strong>Módulo:</strong> <code>carga/views/documentosdigitalesviews.py</code> (líneas 17-40) · hereda de <code>PermissionRequiredMixin, generic.CreateView</code></p>
+<h2>Propósito</h2>
+<p>Alta de un documento PDF adjunto a un Contrato (<code>ContratosDigitales</code>). Si viene <code>?contrato=&lt;id&gt;</code>, precarga el Contrato destino.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CrearContratoDigital(PermissionRequiredMixin, generic.CreateView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearContratoDigital</code> (<code>carga:crear-contrato-digital</code>), enlazada desde la ficha de Obra/Contrato.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/ContratosDigitales.md">ContratosDigitales</a></li>
+</ul>

@@ -1,0 +1,21 @@
+<h1>_calcular_texto_solicitud</h1>
+<p><strong>Módulo:</strong> <code>secretariador/views/solicitudviews.py</code> (líneas 19-97)</p>
+<h2>Propósito</h2>
+<p>Arma el texto por defecto (VISTO/considerandos/artículos) de la resolución de una
+Solicitud dentro del Chaco, a partir de sus datos actuales — el punto de partida que se
+ofrece en <code>editar_texto_solicitud</code> y el fallback si la Solicitud todavía no tiene texto
+guardado. La redacción arma listas de agentes con género correcto ("el"/"la" según
+<code>GeneroAgente</code>), formatea el DNI con separador de miles a mano
+(<code>"{:,}".format(...).replace(...)</code>, un workaround porque <code>USE_THOUSAND_SEPARATOR</code> con
+<code>LANGUAGE_CODE=es-AR</code> no da el separador que quieren para este texto específico), y arma
+la mención del vehículo/chofer si corresponde.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _calcular_texto_solicitud(actuacion):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>_generar_solicitud_docx</code> (mismo módulo) y <code>editar_texto_solicitud</code> (mismo módulo), que la usa para precalcular los valores por defecto del formulario de revisión.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/Solicitud.md">Solicitud</a></li>
+<li><a href="_generar_solicitud_docx.md">_generar_solicitud_docx</a></li>
+</ul>

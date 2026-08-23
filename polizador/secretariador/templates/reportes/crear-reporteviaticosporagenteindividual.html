@@ -27,7 +27,7 @@
             {% if agente %}
             events: {
                 url: '/v1/api/calendario/agente-individual/',
-                extraParams: { agente: '{{agente.id}}', ano: '{{ano}}' },
+                extraParams: { agente: '{{agente.id|unlocalize}}', ano: '{{ano}}' },
             },
             {% endif %}
         });

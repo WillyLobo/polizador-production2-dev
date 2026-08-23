@@ -1,0 +1,14 @@
+<h1>CrearIncorporacion</h1>
+<p><strong>Módulo:</strong> <code>secretariador/views/incorporacionviews.py</code> (líneas 146-207) · hereda de <code>PermissionRequiredMixin, generic.CreateView</code></p>
+<h2>Propósito</h2>
+<p>Alta de Incorporación junto con su formset de <code>ComisionadoSolicitud</code> propio (<code>ComisionadoIncorporacionFormset</code>), con <code>get</code>/<code>post</code> manuales (mismo patrón que <code>CrearSolicitudExterior</code>) en vez de <code>FormsetViewMixin</code>.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CrearIncorporacion(PermissionRequiredMixin, generic.CreateView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearIncorporacion</code> (<code>secretariador:crear-incorporacion</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/Incorporacion.md">Incorporacion</a></li>
+<li><a href="../../models/ComisionadoSolicitud.md">ComisionadoSolicitud</a></li>
+</ul>

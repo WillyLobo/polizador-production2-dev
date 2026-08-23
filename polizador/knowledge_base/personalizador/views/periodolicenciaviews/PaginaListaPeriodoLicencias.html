@@ -1,0 +1,19 @@
+<h1>PaginaListaPeriodoLicencias</h1>
+<p><strong>Módulo:</strong> <code>personalizador/views/periodolicenciaviews.py</code> (líneas 52-55)</p>
+<h2>Propósito</h2>
+<p>Función vista simple: solo renderiza la página que contiene la tabla
+(<code>Lista-periodolicencias.html</code>), sin pasarle datos. La tabla se llena después vía AJAX
+contra <code>register_simple_datatable(router, PeriodoLicencia, "periodolicencias", ...)</code>
+(<code>api/views/personalizador_views.py</code>), con expansión de fila (<code>detailUrl</code>) hacia
+<a href="../../../api/views/personalizador_views/_periodolicencia_datatable_row.md">_periodolicencia_datatable_row</a>
+para listar las solicitudes hechas contra cada período.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def PaginaListaPeriodoLicencias(request):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>PaginaListaPeriodoLicencias</code> (<code>personalizador:lista-periodolicencias</code>), enlazada desde el
+navbar ("Períodos de Licencia").</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/PeriodoLicencia.md">PeriodoLicencia</a></li>
+</ul>

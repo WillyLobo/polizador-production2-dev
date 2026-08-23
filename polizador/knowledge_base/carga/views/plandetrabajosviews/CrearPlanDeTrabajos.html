@@ -1,0 +1,24 @@
+<h1>CrearPlanDeTrabajos</h1>
+<p><strong>Módulo:</strong> <code>carga/views/plandetrabajosviews.py</code> (líneas 9-72) · hereda de <code>PermissionRequiredMixin, generic.CreateView</code></p>
+<h2>Propósito</h2>
+<p>Alta de un Plan de Trabajos. Soporta clonar un Plan existente vía <code>?clonar=&lt;id&gt;</code>: además
+de crear el Plan nuevo, <code>_clonar_desde</code> copia todos los Rubros e Items del Plan origen,
+enlazando cada copia a su original vía <code>rubro_anterior</code>/<code>item_anterior</code> — es decir, un
+"clonar Plan" es en realidad el mecanismo real de <strong>reprogramación</strong> (arranca la cadena
+que <a href="../../models/PlanDeTrabajosRubro.md">PlanDeTrabajosRubro</a> describe), no una copia
+independiente.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CrearPlanDeTrabajos(PermissionRequiredMixin, generic.CreateView):
+</code></pre>
+<h2>Uso real</h2>
+<pre><code class="language-python"># carga/views/plandetrabajosviews.py:58 (_clonar_desde)
+rubro_nuevo = PlanDeTrabajosRubro.objects.create(
+    rubro_plan=self.object, rubro_nombre=rubro_origen.rubro_nombre, ...,
+    rubro_anterior=rubro_origen,
+)
+</code></pre>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/PlanDeTrabajos.md">PlanDeTrabajos</a></li>
+<li><a href="../../models/PlanDeTrabajosRubro.md">PlanDeTrabajosRubro</a></li>
+</ul>

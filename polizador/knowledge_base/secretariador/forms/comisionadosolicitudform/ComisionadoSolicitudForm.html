@@ -1,0 +1,14 @@
+<h1>ComisionadoSolicitudForm</h1>
+<p><strong>Módulo:</strong> <code>secretariador/forms/comisionadosolicitudform.py</code> (líneas 12-84) · hereda de <code>AddRelatedPermissionMixin, BaseFormMixin, forms.ModelForm</code></p>
+<h2>Propósito</h2>
+<p>Misma estructura y misma validación <code>clean()</code> que <code>ComisionadoSolicitudExteriorForm</code> (elegir exactamente uno de Agente/Externo, sin duplicar la fecha), pero sin el campo <code>comisionadosolicitud_pasaje</code> — la variante del flujo Chaco (viáticos dentro de la provincia, donde no aplica pasaje aéreo/terrestre de larga distancia). Usa <code>AddRelatedPermissionMixin</code> (de <code>carga.forms.mixins</code>, reusado entre apps) para ocultar los botones "+" de sus widgets según permisos.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class ComisionadoSolicitudForm(AddRelatedPermissionMixin, BaseFormMixin, forms.ModelForm):
+</code></pre>
+<h2>Uso real</h2>
+<p>Form base de <code>ComisionadoSolicitudFormset</code> (<code>solicitudform.py</code>) y de <code>ComisionadoIncorporacionFormset</code> (<code>incorporacionform.py</code>, sin subclase propia).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/ComisionadoSolicitud.md">ComisionadoSolicitud</a></li>
+<li><a href="ComisionadoSolicitudExteriorForm.md">ComisionadoSolicitudExteriorForm</a></li>
+</ul>

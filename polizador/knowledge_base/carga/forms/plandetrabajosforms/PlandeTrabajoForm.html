@@ -1,0 +1,14 @@
+<h1>PlandeTrabajoForm</h1>
+<p><strong>Módulo:</strong> <code>carga/forms/plandetrabajosforms.py</code> (líneas 6-26) · hereda de <code>forms.ModelForm</code></p>
+<h2>Propósito</h2>
+<p><code>ModelForm</code> estándar para <code>PlanDeTrabajos</code> (Obra, fecha de vigencia, duración en meses, Contrato vinculado opcional). El campo <code>trabajos_contrato</code> usa <code>contratowidget</code> con <code>dependent_fields</code> sobre <code>trabajos_obra</code> — solo ofrece Contratos de la Obra elegida, seteado a mano en el widget (no vía un mixin, a diferencia de <code>PlanDependentWidgetMixin</code>).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class PlandeTrabajoForm(forms.ModelForm):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearPlanDeTrabajos</code>/<code>UpdatePlanDeTrabajos</code> (<code>carga/views/plandetrabajosviews.py</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/PlanDeTrabajos.md">PlanDeTrabajos</a></li>
+<li><a href="../../views/ajaxviews/contratowidget.md">contratowidget</a></li>
+</ul>

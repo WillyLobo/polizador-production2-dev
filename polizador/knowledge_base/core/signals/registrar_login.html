@@ -1,0 +1,26 @@
+<h1>registrar_login</h1>
+<p><strong>Módulo:</strong> <code>core/signals.py</code> (líneas 15-17)</p>
+<h2>Propósito</h2>
+<p>Receiver de la señal estándar de Django <code>user_logged_in</code>: crea un <code>LoginEvent</code> en cada inicio de sesión exitoso, para poder graficar actividad de usuarios en el dashboard — el único uso de señales propio de <code>core</code> (todas las de <code>carga</code>/<code>secretariador</code> son sobre modelos de negocio; esta es sobre autenticación).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def registrar_login(sender, request, user, **kwargs):
+</code></pre>
+<h2>Uso real</h2>
+<p>Se dispara solo, en cada login exitoso (cualquier vista de <code>allauth</code> o <code>django.contrib.auth</code>) — no se llama directamente.</p>
+<h2>Flujo de datos</h2>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant U as Usuario (login)
+    participant D as django.contrib.auth / allauth
+    participant S as registrar_login
+    participant L as LoginEvent
+
+    U-&gt;&gt;D: credenciales válidas
+    D--&gt;&gt;S: user_logged_in
+    S-&gt;&gt;S: _client_ip(request)
+    S-&gt;&gt;L: LoginEvent.objects.create(user, ip_address)
+</code></pre>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../models/LoginEvent.md">LoginEvent</a></li>
+<li><a href="_client_ip.md">_client_ip</a></li>
+</ul>

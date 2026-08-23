@@ -1,0 +1,20 @@
+<h1>CrearCorteLicencia</h1>
+<p><strong>Módulo:</strong> <code>personalizador/views/cortelicenciaviews.py</code> (líneas 15-39) · hereda de <code>PermissionRequiredMixin, generic.CreateView</code></p>
+<h2>Propósito</h2>
+<p>Alta de un Corte de Licencia sobre una <code>LicenciaPermiso</code> puntual (<code>licenciapermiso_pk</code> en
+la URL, no un querystring). <code>get_initial</code> precarga la licencia interrumpida y calcula un
+valor por defecto de <code>cortelicencia_fecha_vencimiento</code>: el 30 de abril del año siguiente
+a la fecha de inicio de la licencia — un default administrativo (probablemente el
+vencimiento típico del período de licencias), editable por el usuario si corresponde otra
+fecha.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CrearCorteLicencia(PermissionRequiredMixin, generic.CreateView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearCorteLicencia</code> (<code>personalizador:crear-cortelicencia</code>), enlazada desde <code>VerLicenciaPermiso</code> cuando <code>es_licencia_anual</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/CorteLicencia.md">CorteLicencia</a></li>
+<li><a href="../../models/LicenciaPermiso.md">LicenciaPermiso</a></li>
+<li><a href="../licenciapermisoviews/VerLicenciaPermiso.md">VerLicenciaPermiso</a></li>
+</ul>

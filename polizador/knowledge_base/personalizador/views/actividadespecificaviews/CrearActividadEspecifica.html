@@ -1,0 +1,13 @@
+<h1>CrearActividadEspecifica</h1>
+<p><strong>Módulo:</strong> <code>personalizador/views/actividadespecificaviews.py</code> (líneas 21-38) · hereda de <code>PopupCreateMixin, PermissionRequiredMixin, generic.CreateView</code></p>
+<h2>Propósito</h2>
+<p>Alta de ActividadEspecifica vía <code>ModelForm</code> estándar. Usa <code>PopupCreateMixin</code> (<code>core/mixins.py</code>): si se abre en el modal de "agregar relacionado" de un widget select2 (<code>AddRelatedWidgetMixin</code>), devuelve el objeto creado como opción ya seleccionada en vez de redirigir.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CrearActividadEspecifica(PopupCreateMixin, PermissionRequiredMixin, generic.CreateView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearActividadEspecifica</code> (<code>personalizador:crear-actividadespecifica</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/ActividadEspecifica.md">ActividadEspecifica</a></li>
+</ul>

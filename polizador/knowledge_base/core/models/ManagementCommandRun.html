@@ -1,0 +1,22 @@
+<h1>ManagementCommandRun</h1>
+<p><strong>Módulo:</strong> <code>core/models.py</code> (líneas 6-75) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>El registro de una ejecución de management command disparada desde
+<code>/administracion/comandos/</code> (ver <a href="../views/ManagementCommandsView.md">ManagementCommandsView</a>).
+<code>command</code> es la <strong>clave dentro de <code>COMMAND_REGISTRY</code></strong>, no el nombre real del management
+command — el whitelist (<code>core/management_commands_registry.py</code>) es la única fuente de
+verdad sobre qué se puede ejecutar desde la web, así que este campo por sí solo no basta
+para saber qué corrió; siempre se resuelve contra el registry (ver <code>label</code>, property).</p>
+<p><code>duration</code>/<code>duration_display</code> calculan el tiempo transcurrido; mientras <code>status==RUNNING</code>,
+<code>duration</code> lo calcula contra "ahora" en cada acceso (no un valor fijo — crece en cada
+request mientras el comando sigue corriendo, ver el comentario del código).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class ManagementCommandRun(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>core.management_runner.start_run()</code> crea la instancia; <code>ManagementCommandRunDetailView</code>/<code>ManagementCommandRunLogView</code> la leen para mostrar progreso en vivo (polling).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../views/ManagementCommandsView.md">ManagementCommandsView</a></li>
+<li><a href="../views/ManagementCommandRunLogView.md">ManagementCommandRunLogView</a></li>
+</ul>

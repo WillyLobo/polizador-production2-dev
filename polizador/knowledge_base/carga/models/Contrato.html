@@ -1,0 +1,25 @@
+<h1>Contrato</h1>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 1282-1322) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>El contrato de obra (legal/administrativo) de una Obra — puede haber más de uno a lo
+largo del tiempo (<code>contrato_vigente()</code> en <code>Obra</code> toma el más reciente, mismo patrón que
+<code>plan_vigente()</code>). <code>contrato_resolucion_display</code> sigue el mismo patrón que
+<code>Obra.obra_resolucion_display</code>/<code>ConjuntoLicitado.conjunto_resolucion_display</code>.</p>
+<p>El campo con más impacto en el resto del sistema es
+<code>contrato_certificacion_por_etapas</code>: si está tildado, esta Obra <strong>no</strong> genera
+certificados PARCIAL (%mes de la Foja) — en su lugar, certifica en tramos fijos de %
+disparados cuando el avance acumulado de la Foja alcanza el umbral de cada
+<code>ContratoTramoPago</code>. Es la bifurcación central que decide si <code>certificacion.py</code> construye
+certificados PARCIAL o ETAPA para esta Obra.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class Contrato(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearContrato</code>/<code>UpdateContrato</code> (<code>carga/views/contratoviews.py</code>), con el formset inline de <code>ContratoMonto</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="Obra.md">Obra</a></li>
+<li><a href="ContratoTramoPago.md">ContratoTramoPago</a> — solo relevante cuando <code>contrato_certificacion_por_etapas=True</code>.</li>
+<li><a href="ContratoMonto.md">ContratoMonto</a></li>
+<li><a href="Certificado.md">Certificado</a> — tipos PARCIAL vs ETAPA.</li>
+</ul>

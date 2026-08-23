@@ -1,0 +1,15 @@
+<h1>EliminarLocalidad</h1>
+<p><strong>Módulo:</strong> <code>carga/views/localidadviews.py</code> (líneas 12-17) · hereda de <code>PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView</code></p>
+<h2>Propósito</h2>
+<p>Confirma y ejecuta el borrado de una Localidad, mostrando antes (vía <code>DeleteRelatedObjectsMixin</code>
+— <code>core/mixins.py</code> + <code>core/deletion.py::get_deleted_objects</code>) los objetos relacionados que
+se borrarían en cascada, para que el usuario no borre a ciegas.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class EliminarLocalidad(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
+</code></pre>
+<h2>Uso real</h2>
+<p>Enlazada desde el listado y la ficha de Localidad (botón de borrar de <code>polizador/context_processors.py::eliminarlinkimg</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/Localidad.md">Localidad</a></li>
+</ul>

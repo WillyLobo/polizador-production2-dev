@@ -21,9 +21,9 @@ admin.site.register(CustomUser, CustomUserAdmin)
 
 class AgenteAdmin(ImportExportMixin, SimpleHistoryAdmin):
     resource_class = AgenteResource
-    list_display = ["agente_nombreyapellido", "dni", "n_legajo", "categoria", "oficina"]
+    list_display = ["agente_nombreyapellido", "dni", "n_legajo", "categoria", "oficina", "agente_escalafon"]
     search_fields = ["agente_nombres", "agente_apellidos", "dni", "cuil"]
-    list_filter = ["sexo", "categoria", "agente_verificado_contra_padron", "agente_es_inpector_obra", "agente_personal_transitorio", "agente_personal_de_gabinete"]
+    list_filter = ["sexo", "categoria", "agente_verificado_contra_padron", "agente_es_inpector_obra", "agente_personal_transitorio", "agente_personal_de_gabinete", "agente_escalafon"]
     autocomplete_fields = [
         "agente_usuario",
         "sexo",
@@ -138,11 +138,21 @@ class TipoLicenciaPermisoAdmin(SimpleHistoryAdmin):
     search_fields = ["tipolicenciapermiso_nombre"]
     list_filter = ["tipolicenciapermiso_categoria", "tipolicenciapermiso_activo"]
 
+class PeriodoLicenciaAdmin(SimpleHistoryAdmin):
+    list_display = ["periodolicencia_categoria", "periodolicencia_anio", "periodolicencia_apertura", "periodolicencia_fecha_limite_solicitud", "periodolicencia_turno1_desde", "periodolicencia_turno2_hasta"]
+    list_filter = ["periodolicencia_categoria"]
+    search_fields = ["periodolicencia_anio"]
+
+class PeriodoLicenciaAgenteAdmin(SimpleHistoryAdmin):
+    list_display = ["periodolicenciaagente_agente", "periodolicenciaagente_periodo", "periodolicenciaagente_dias_correspondientes"]
+    search_fields = ["periodolicenciaagente_agente__agente_nombreyapellido"]
+    autocomplete_fields = ["periodolicenciaagente_agente", "periodolicenciaagente_periodo"]
+
 class LicenciaPermisoAdmin(SimpleHistoryAdmin):
-    list_display = ["licenciapermiso_agente", "licenciapermiso_tipo", "licenciapermiso_fecha_desde", "licenciapermiso_anulada"]
+    list_display = ["licenciapermiso_agente", "licenciapermiso_tipo", "licenciapermiso_fecha_desde", "licenciapermiso_periodo", "licenciapermiso_anulada"]
     search_fields = ["licenciapermiso_agente__agente_nombreyapellido"]
     list_filter = ["licenciapermiso_anulada", "licenciapermiso_tipo__tipolicenciapermiso_categoria"]
-    autocomplete_fields = ["licenciapermiso_agente", "licenciapermiso_tipo", "licenciapermiso_saldo_de_corte"]
+    autocomplete_fields = ["licenciapermiso_agente", "licenciapermiso_tipo", "licenciapermiso_saldo_de_corte", "licenciapermiso_periodo"]
 
 class CorteLicenciaAdmin(SimpleHistoryAdmin):
     list_display = ["cortelicencia_licencia", "cortelicencia_fecha_reintegro", "cortelicencia_dias_pendientes", "dias_restantes", "cortelicencia_fecha_vencimiento"]
@@ -171,5 +181,7 @@ admin.site.register(Departamento, DepartamentoAdmin)
 admin.site.register(RepresentanteTecnico, RepresentanteTecnicoAdmin)
 admin.site.register(ComisionadoExterno, ComisionadoExternoAdmin)
 admin.site.register(TipoLicenciaPermiso, TipoLicenciaPermisoAdmin)
+admin.site.register(PeriodoLicencia, PeriodoLicenciaAdmin)
+admin.site.register(PeriodoLicenciaAgente, PeriodoLicenciaAgenteAdmin)
 admin.site.register(LicenciaPermiso, LicenciaPermisoAdmin)
 admin.site.register(CorteLicencia, CorteLicenciaAdmin)

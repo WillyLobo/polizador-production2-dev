@@ -115,6 +115,14 @@ class FileValidator(object):
         self.content_types = content_types
 
     def __call__(self, data):
+        # Skip validation for a FieldFile that already points at a saved,
+        # unchanged upload: `.size`/`.read()` would otherwise hit remote
+        # storage (GCS) on every model full_clean(), even when this field
+        # wasn't touched in the request, which can hang the worker on a
+        # slow/unresponsive GCS connection.
+        if getattr(data, '_committed', False):
+            return data
+
         if self.max_size is not None and data.size > self.max_size:
             params = {
                 'max_size': filesizeformat(self.max_size),

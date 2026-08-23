@@ -1,0 +1,11 @@
+<h1>CargoTipo</h1>
+<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 333-344) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Catálogo de tipos de cargo (ej. "Personal Transitorio", "Contrato de Servicio", "Planta Permanente", "Gabinete" — ver el comentario en <code>Meta</code>). No tiene ningún FK visible desde otro modelo de este archivo en el subconjunto que cubre este manifest — puede consumirse desde otro lado (templates, u otra app) sin que aparezca acá.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class CargoTipo(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearCargoTipo</code>/<code>UpdateCargoTipo</code> (<code>personalizador/views/cargotipoviews.py</code>).</p>
+<h2>Ver también</h2>
+<p><em>(sin referencias cruzadas)</em></p>

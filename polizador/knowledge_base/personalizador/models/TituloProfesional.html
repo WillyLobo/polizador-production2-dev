@@ -1,0 +1,14 @@
+<h1>TituloProfesional</h1>
+<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 191-202) · hereda de <code>models.Model</code></p>
+<h2>Propósito</h2>
+<p>Catálogo de títulos profesionales (nombre completo sin abreviaturas + abreviatura + grado académico) — compartido entre <code>Agente.titulo_profesional</code> (M2M) y <code>RepresentanteTecnico.representantetecnico_profesion</code> (FK).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class TituloProfesional(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>CrearTituloProfesional</code>/<code>UpdateTituloProfesional</code> (<code>personalizador/views/tituloprofesionalviews.py</code>).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="Agente.md">Agente</a></li>
+<li><a href="RepresentanteTecnico.md">RepresentanteTecnico</a></li>
+</ul>

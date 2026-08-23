@@ -1,0 +1,33 @@
+{% load static %}
+<nav class="kb-tree small">
+  {% for app_label, modules in tree.items %}
+  <details class="mb-1" {% if app_label == current_app %}open{% endif %}>
+    <summary class="fw-semibold"><i class="bi bi-box-seam me-1"></i>{{ app_label }}</summary>
+    <div class="ms-3">
+      {% for module_key, symbols in modules.items %}
+      <details class="mb-1" {% if module_key == current_module %}open{% endif %}>
+        <summary><i class="bi bi-file-earmark-code me-1"></i>{{ module_key }}</summary>
+        <ul class="list-unstyled ms-3 mb-2">
+          {% for symbol in symbols %}
+          <li>
+            <a href="{% url 'knowledge_base_page' page_path=symbol.page_path %}"
+               class="d-inline-flex align-items-center gap-1 text-decoration-none {% if symbol.page_path == page_path %}fw-bold text-primary{% endif %}">
+              <i class="bi {% if symbol.kind == 'class' %}bi-diagram-2{% else %}bi-code-slash{% endif %}"></i>
+              <span>{{ symbol.name }}</span>
+              {% if symbol.stale %}
+              <span class="badge text-bg-warning" title="La firma/docstring cambió desde la última autoría">stale</span>
+              {% elif not symbol.authored %}
+              <span class="badge text-bg-secondary" title="Todavía sin autoría">stub</span>
+              {% else %}
+              <span class="badge text-bg-success" title="Autorada">✓</span>
+              {% endif %}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </details>
+      {% endfor %}
+    </div>
+  </details>
+  {% endfor %}
+</nav>

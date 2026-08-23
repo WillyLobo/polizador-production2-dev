@@ -1,0 +1,13 @@
+<h1>create_vehiculo</h1>
+<p><strong>Módulo:</strong> <code>api/views/secretariador_views.py</code> (líneas 523-524)</p>
+<h2>Propósito</h2>
+<p>Alta de <code>Vehiculo</code> desde <code>VehiculoCreate</code> (<code>payload.model_dump()</code> directo a <code>Vehiculo.objects.create()</code> — sin lógica de negocio propia acá, la validación vive en el schema ninja/Pydantic).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def create_vehiculo(request, payload: VehiculoCreate):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>POST /v1/api/vehiculos/</code> — response=<code>VehiculoOut</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../../secretariador/models/Vehiculo.md">Vehiculo</a></li>
+</ul>

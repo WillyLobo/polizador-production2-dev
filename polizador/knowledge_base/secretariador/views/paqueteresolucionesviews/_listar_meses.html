@@ -1,0 +1,21 @@
+<h1>_listar_meses</h1>
+<p><strong>Módulo:</strong> <code>secretariador/views/paqueteresolucionesviews.py</code> (líneas 16-67)</p>
+<h2>Propósito</h2>
+<p>Lee los subdirectorios <code>{ano}-{mes}/</code> bajo <code>DESTINO_PREFIJO</code> en el bucket de GCS (ver
+<code>secretariador/paquetes_resoluciones.py</code>, fuera del alcance de este manifest) y arma, para
+cada uno, la lista de <code>paquete-NN.zip</code>/<code>paquete-NN.pdf</code> que contiene — un mes puede tener
+uno, otro, o ambos formatos, según qué management command se haya corrido. Ignora blobs
+bajo el prefijo <code>_scratch/</code> (temporales de una corrida interrumpida). La clave de cada mes
+(<code>{ano}-{mes:02d}</code>) se arma a mano en vez de dejar que el template la formatee, porque
+<code>USE_THOUSAND_SEPARATOR</code> con <code>LANGUAGE_CODE=es-AR</code> convertiría "2026" en "2.026" al pasar
+por el filtro de localización de números, rompiendo el selector CSS del acordeón
+Bootstrap que usa esa clave como id de DOM.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _listar_meses(bucket):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>PaginaListaPaquetesResoluciones</code> (mismo módulo, más abajo).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="PaginaListaPaquetesResoluciones.md">PaginaListaPaquetesResoluciones</a></li>
+</ul>

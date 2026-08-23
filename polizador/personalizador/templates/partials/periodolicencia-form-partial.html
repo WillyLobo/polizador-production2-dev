@@ -1,0 +1,78 @@
+{% for hidden in form.hidden_fields %}
+      {{ hidden }}
+{% endfor %}
+
+{{ form.non_field_errors }}
+<div class="card mb-3">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Período de Licencia</div>
+    <div class="card-body p-2">
+        <div class="row">
+            <div class="col-md-6">
+                {{form.periodolicencia_categoria.as_field_group}}
+            </div>
+            <div class="col-md-6">
+                {{form.periodolicencia_anio.as_field_group}}
+            </div>
+        </div>
+        <div id="periodolicencia-campos-anual" class="row">
+            <div class="col-md-6">
+                {{form.periodolicencia_apertura.as_field_group}}
+            </div>
+            <div class="col-md-6">
+                {{form.periodolicencia_fecha_limite_solicitud.as_field_group}}
+            </div>
+        </div>
+        <div id="periodolicencia-campos-invierno" class="row">
+            <div class="col-md-3">
+                {{form.periodolicencia_turno1_desde.as_field_group}}
+            </div>
+            <div class="col-md-3">
+                {{form.periodolicencia_turno1_hasta.as_field_group}}
+            </div>
+            <div class="col-md-3">
+                {{form.periodolicencia_turno2_desde.as_field_group}}
+            </div>
+            <div class="col-md-3">
+                {{form.periodolicencia_turno2_hasta.as_field_group}}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+  function formatDate(y, m, d) {
+    return y + "-" + String(m).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+  }
+
+  function actualizarVisibilidad() {
+    var categoria = $("#id_periodolicencia_categoria").val();
+    $("#periodolicencia-campos-anual").toggle(categoria === "LOR_ANUAL");
+    $("#periodolicencia-campos-invierno").toggle(categoria === "LOR_INVIERNO");
+  }
+
+  // Precarga apertura/fecha_limite_solicitud (15/12/<año> y 31/03/<año+1>) para
+  // LOR_ANUAL, solo si el campo todavía está vacío -- para no pisar una edición
+  // manual ni un valor ya cargado al editar un período existente. LOR_INVIERNO no
+  // tiene fórmula fija (turnos por decreto, varían año a año): sin precarga.
+  function precargarFechas() {
+    var categoria = $("#id_periodolicencia_categoria").val();
+    var anio = parseInt($("#id_periodolicencia_anio").val(), 10);
+    if (categoria !== "LOR_ANUAL" || !anio) return;
+    if (!$("#id_periodolicencia_apertura").val()) {
+      $("#id_periodolicencia_apertura").val(formatDate(anio, 12, 15));
+    }
+    if (!$("#id_periodolicencia_fecha_limite_solicitud").val()) {
+      $("#id_periodolicencia_fecha_limite_solicitud").val(formatDate(anio + 1, 3, 31));
+    }
+  }
+
+  $(document).on("change", "#id_periodolicencia_categoria, #id_periodolicencia_anio", function() {
+    actualizarVisibilidad();
+    precargarFechas();
+  });
+  $(document).ready(function() {
+    actualizarVisibilidad();
+  });
+})();
+</script>

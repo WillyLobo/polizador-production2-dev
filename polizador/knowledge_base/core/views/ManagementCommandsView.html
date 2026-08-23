@@ -1,0 +1,19 @@
+<h1>ManagementCommandsView</h1>
+<p><strong>Módulo:</strong> <code>core/views.py</code> (líneas 117-150) · hereda de <code>SuperuserRequiredMixin, TemplateView</code></p>
+<h2>Propósito</h2>
+<p>El panel <code>/administracion/comandos/</code>: lista el <code>COMMAND_REGISTRY</code> (whitelist de comandos
+ejecutables desde la web, <code>core/management_commands_registry.py</code>), muestra el form del
+comando seleccionado (<code>?command=&lt;key&gt;</code>), y en <code>post()</code> valida que no haya ya un comando
+<code>RUNNING</code> (un solo comando a la vez — evita correr dos migraciones de datos superpuestas)
+antes de delegar en <code>core.management_runner.start_run()</code> para lanzarlo como subprocess y
+redirigir al detalle de esa corrida.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class ManagementCommandsView(SuperuserRequiredMixin, TemplateView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>ManagementCommandsView</code> (<code>management_commands</code>), enlazada desde el navbar.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../models/ManagementCommandRun.md">ManagementCommandRun</a></li>
+<li><a href="ManagementCommandRunDetailView.md">ManagementCommandRunDetailView</a></li>
+</ul>

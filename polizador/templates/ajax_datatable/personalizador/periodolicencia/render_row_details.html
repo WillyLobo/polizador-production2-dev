@@ -1,0 +1,35 @@
+<div class="card mb-3">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Solicitudes sobre este período</div>
+    <div class="card-body p-2">
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered table-hover align-middle mb-0">
+                <thead class="bg-body-tertiary">
+                    <tr>
+                        <th class="small" scope="col">Agente</th>
+                        <th class="small" scope="col">Tipo</th>
+                        <th class="small" scope="col">Fecha de la Solicitud</th>
+                        <th class="small text-end" scope="col">Días</th>
+                        <th class="small" scope="col">Anulada</th>
+                        <th class="small d-print-none" scope="col">Ver</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for licencia in object.licenciapermiso_set.all %}
+                        <tr>
+                            <td class="small">{{licencia.licenciapermiso_agente}}</td>
+                            <td class="small">{{licencia.licenciapermiso_tipo.tipolicenciapermiso_nombre}}</td>
+                            <td class="small">{{licencia.licenciapermiso_fecha_desde}}</td>
+                            <td class="small text-end">{{licencia.licenciapermiso_cantidad}}</td>
+                            <td class="small">{{licencia.licenciapermiso_anulada|yesno:"Sí,No"}}</td>
+                            <td class="small d-print-none">
+                                <a href="/personal/licencias/ver/{{licencia.id}}">{{detalleimglink|safe}}</a>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr><td class="small text-muted" colspan="6">No hay solicitudes registradas contra este período.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

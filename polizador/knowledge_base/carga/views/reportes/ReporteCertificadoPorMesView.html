@@ -1,0 +1,13 @@
+<h1>ReporteCertificadoPorMesView</h1>
+<p><strong>Módulo:</strong> <code>carga/views/reportes.py</code> (líneas 20-68) · hereda de <code>PermissionRequiredMixin, generic.ListView</code></p>
+<h2>Propósito</h2>
+<p>Reporte de Certificados filtrado por mes/año (de <code>certificado_fecha</code> o <code>certificado_fecha_carga</code>, según el toggle <code>buscarPorFechaIngreso</code>), empresa y/u obra — todos opcionales vía querystring (<code>GET.getlist</code>). Sin ningún filtro, devuelve un queryset vacío en vez de listar todo (evita mandar la tabla completa por error). <code>get_context_data</code> arma las listas de años/meses disponibles a partir de <code>.dates()</code> sobre ambos campos de fecha, para poblar los combos de filtro solo con valores que existen de verdad.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class ReporteCertificadoPorMesView(PermissionRequiredMixin, generic.ListView):
+</code></pre>
+<h2>Uso real</h2>
+<p><code>ReporteCertificadoPorMesView</code> (<code>carga:crear-reporte-certificado</code>), enlazada desde el mega-menú "Reportes" del navbar.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../models/Certificado.md">Certificado</a></li>
+</ul>
