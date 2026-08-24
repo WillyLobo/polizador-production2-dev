@@ -55,6 +55,9 @@ class ComisionadoWidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
         "agente_apellidos__icontains",
     ]
 
+    def get_queryset(self):
+        return super().get_queryset().filter(activo=True)
+
 class ComisionadoExternoWidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
     add_related_url_name = "secretariador:crear-comisionado-externo"
     search_fields = [
