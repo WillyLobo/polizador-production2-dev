@@ -30,6 +30,11 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 DEBUG = env("DEBUG")
 ALLOWED_HOSTS= env.list("ALLOWED_HOSTS")
 CSRF_TRUSTED_ORIGINS= env.list("CSRF_TRUSTED_ORIGINS")
+# En producción, nginx termina el SSL y reenvía a Gunicorn por HTTP plano
+# (via unix socket). Sin esto, Django cree que la request es insecure y el
+# chequeo de Origin del CSRF en el login (que sí llega en https) falla con
+# 403 al comparar contra "http://..." en vez de "https://...".
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECRET_KEY = env('SECRET_KEY')
 DBHOST=env("DBHOST")
 DBUSER=env("DBUSER")
