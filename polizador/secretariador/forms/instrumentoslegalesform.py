@@ -3,7 +3,7 @@ from secretariador.models import InstrumentosLegalesMemorandum, InstrumentosLega
 from carga.views.ajaxviews import (
 	localidadmultiplewidget,
 	)
-from core.widgets import DateHTMLWidget
+from core.widgets import DateHTMLWidget, CustomCheckboxInput
 from core.mixins import BaseFormMixin
 from datetime import datetime
 
@@ -63,6 +63,8 @@ class InstrumentosLegalesDecretosForm(BaseFormMixin, forms.ModelForm):
             "instrumentolegaldecretos_fecha_aprobacion",
             "instrumentolegaldecretos_descripcion",
             "instrumentolegaldecretos",
+            "instrumentolegaldecretos_establece_licencia_anual",
+            "instrumentolegaldecretos_establece_licencia_invierno",
         )
         widgets = {
             "instrumentolegaldecretos_tipo":forms.Select(attrs={
@@ -85,6 +87,12 @@ class InstrumentosLegalesDecretosForm(BaseFormMixin, forms.ModelForm):
             "instrumentolegaldecretos":forms.ClearableFileInput(attrs={
                 "class":"form-control"
             }),
+            "instrumentolegaldecretos_establece_licencia_anual":CustomCheckboxInput(attrs={
+                "class":"form-check-input"
+            }),
+            "instrumentolegaldecretos_establece_licencia_invierno":CustomCheckboxInput(attrs={
+                "class":"form-check-input"
+            }),
         }
 
     def __init__(self, *args, **kwargs):
@@ -102,7 +110,9 @@ class InstrumentosLegalesResolucionesPresidenciaForm(BaseFormMixin, forms.ModelF
             "instrumentolegalresoluciones_fecha_aprobacion",
             "instrumentolegalresoluciones_descripcion",
             "instrumentolegalresoluciones",
-            "instrumentolegalresoluciones_document"
+            "instrumentolegalresoluciones_document",
+            "instrumentolegalresoluciones_estado_escaneo",
+            "instrumentolegalresoluciones_ad_referendum",
         )
         widgets = {
             "instrumentolegalresoluciones_tipo":forms.Select(attrs={
@@ -131,6 +141,12 @@ class InstrumentosLegalesResolucionesPresidenciaForm(BaseFormMixin, forms.ModelF
                 "cols":50,
                 "readonly":"readonly"
             }),
+            "instrumentolegalresoluciones_estado_escaneo":forms.Select(attrs={
+                "class":"form-control customSelect2"
+            }),
+            "instrumentolegalresoluciones_ad_referendum":CustomCheckboxInput(attrs={
+                "class":"form-check-input"
+            }),
         }
 
     def __init__(self, *args, **kwargs):
@@ -149,7 +165,8 @@ class InstrumentosLegalesResolucionesDirectorioForm(BaseFormMixin, forms.ModelFo
             "instrumentolegalresoluciones_fecha_aprobacion",
             "instrumentolegalresoluciones_descripcion",
             "instrumentolegalresoluciones",
-            "instrumentolegalresoluciones_document"
+            "instrumentolegalresoluciones_document",
+            "instrumentolegalresoluciones_estado_escaneo",
         )
         widgets = {
             "instrumentolegalresoluciones_tipo":forms.Select(attrs={
@@ -180,6 +197,9 @@ class InstrumentosLegalesResolucionesDirectorioForm(BaseFormMixin, forms.ModelFo
                 "rows":10,
                 "cols":50,
                 "readonly":"readonly"
+            }),
+            "instrumentolegalresoluciones_estado_escaneo":forms.Select(attrs={
+                "class":"form-control customSelect2"
             }),
         }
 

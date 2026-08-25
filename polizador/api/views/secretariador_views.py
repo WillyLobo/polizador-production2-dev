@@ -334,6 +334,10 @@ def _resolucion_datatable_row(r: InstrumentosLegalesResoluciones, user) -> dict:
         acciones = f"{editarlink}{detallelink}"
     else:
         acciones = detallelink
+    estado_escaneo_tag = (
+        f"<span class='badge text-bg-{r.estado_escaneo_badge}'>"
+        f"{r.get_instrumentolegalresoluciones_estado_escaneo_display()}</span>"
+    )
     return {
         "id": r.id,
         "instrumentolegalresoluciones_tipo": r.get_instrumentolegalresoluciones_tipo_display(),
@@ -342,6 +346,7 @@ def _resolucion_datatable_row(r: InstrumentosLegalesResoluciones, user) -> dict:
         "instrumentolegalresoluciones_fecha_aprobacion": r.instrumentolegalresoluciones_fecha_aprobacion.isoformat(),
         "instrumentolegalresoluciones_descripcion": clip_value_html(r.instrumentolegalresoluciones_descripcion, 200),
         "instrumentolegalresoluciones_document": clip_value_html(r.instrumentolegalresoluciones_document or "", 200),
+        "instrumentolegalresoluciones_estado_escaneo": estado_escaneo_tag,
         "acciones": acciones,
     }
 
@@ -353,6 +358,7 @@ _RESOLUCION_ORDER_FIELDS = {
     "instrumentolegalresoluciones_ano": "instrumentolegalresoluciones_ano",
     "instrumentolegalresoluciones_fecha_aprobacion": "instrumentolegalresoluciones_fecha_aprobacion",
     "instrumentolegalresoluciones_descripcion": "instrumentolegalresoluciones_descripcion",
+    "instrumentolegalresoluciones_estado_escaneo": "instrumentolegalresoluciones_estado_escaneo",
 }
 
 _RESOLUCION_FILTER_FIELDS = {
@@ -362,6 +368,7 @@ _RESOLUCION_FILTER_FIELDS = {
     "instrumentolegalresoluciones_fecha_aprobacion": "instrumentolegalresoluciones_fecha_aprobacion",
     "instrumentolegalresoluciones_descripcion": "instrumentolegalresoluciones_descripcion__icontains",
     "instrumentolegalresoluciones_document": "instrumentolegalresoluciones_document__icontains",
+    "instrumentolegalresoluciones_estado_escaneo": "instrumentolegalresoluciones_estado_escaneo__icontains",
 }
 
 register_simple_datatable(
