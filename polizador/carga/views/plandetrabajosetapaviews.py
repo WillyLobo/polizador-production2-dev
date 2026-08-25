@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views import generic
 
-from carga.models import PlanDeTrabajosEtapa, PlanDeTrabajosEtapaItem, PlanDeTrabajosItem, PlanDeTrabajosRubro
+from carga.models import FojaDeMedicion, PlanDeTrabajosEtapa, PlanDeTrabajosEtapaItem, PlanDeTrabajosItem, PlanDeTrabajosRubro
 from carga.forms.plandetrabajosetapaforms import build_matriz_form, matriz_field_name
 
 
@@ -33,13 +33,13 @@ class PlanDeTrabajosEtapaMatriz(PermissionRequiredMixin, generic.View):
 	def _get_existentes(self, rubro):
 		return list(PlanDeTrabajosEtapa.objects.filter(etapa_rubro=rubro).order_by("etapa_numero"))
 
-	def _get_anterior_map(self, rubro, items, existentes):
-		"""La matriz edita de una sola vez todas las etapas propias del rubro (existentes
-		y nuevas), por lo que el acumulado anterior debe excluirlas: si no, la etapa
-		existente más reciente se cuenta dos veces (una via anterior_map, otra como
-		columna de la matriz)."""
-		exclude_etapa_numero = existentes[0].etapa_numero if existentes else None
-		return PlanDeTrabajosEtapa.anterior_items_map(rubro, items=items, exclude_etapa_numero=exclude_etapa_numero)
+	def _get_anterior_map(self, rubro, items):
+		"""Acumulado ya "consumido" de la incidencia de cada item, a tomar como piso de la
+		matriz. Se basa en el avance REAL (Fojas de Medición) y no en lo proyectado por
+		el rubro anterior: si un rubro reprogramado usara el acumulado proyectado del plan
+		viejo (que llega al 100% de la incidencia en su última etapa, sea cual sea el avance
+		real), no quedaría margen para proyectar ninguna etapa nueva."""
+		return FojaDeMedicion.anterior_items_map(rubro, items=items)
 
 	def _build_context(self, rubro, items, existentes, anterior_map, form):
 		total_columns = max(rubro.rubro_plan.trabajos_meses, len(existentes))
@@ -71,7 +71,7 @@ class PlanDeTrabajosEtapaMatriz(PermissionRequiredMixin, generic.View):
 		items = self._get_items(rubro)
 		existentes = self._get_existentes(rubro)
 		total_columns = max(rubro.rubro_plan.trabajos_meses, len(existentes))
-		anterior_map = self._get_anterior_map(rubro, items, existentes)
+		anterior_map = self._get_anterior_map(rubro, items)
 
 		initial = {}
 		for col, etapa in enumerate(existentes):
@@ -87,7 +87,7 @@ class PlanDeTrabajosEtapaMatriz(PermissionRequiredMixin, generic.View):
 		items = self._get_items(rubro)
 		existentes = self._get_existentes(rubro)
 		total_columns = max(rubro.rubro_plan.trabajos_meses, len(existentes))
-		anterior_map = self._get_anterior_map(rubro, items, existentes)
+		anterior_map = self._get_anterior_map(rubro, items)
 
 		form_class = build_matriz_form(items, total_columns, anterior_map)
 		form = form_class(request.POST)
