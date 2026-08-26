@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib import messages
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import ProtectedError
@@ -7,6 +9,8 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 
 from core.deletion import get_deleted_objects
+
+form_debug_logger = logging.getLogger("core.form_debug")
 
 class UserKwargsMixin:
     """Pasa el usuario actual al form principal (lo consume AddRelatedPermissionMixin en
@@ -69,6 +73,30 @@ class PopupCreateMixin:
 
 class BaseFormMixin(object):
     required_css_class = "required"
+
+class LogInvalidFormMixin:
+    """Loguea el POST crudo cuando el form (o formset, via FormsetViewMixin) no
+    valida, a logs/validation_errors.log, para poder reconstruir los pasos del
+    usuario durante debug de sesiones. Poner antes que la vista base en el MRO.
+
+    Vistas con `post()` totalmente custom (que no llaman a `self.form_invalid()`,
+    ej. CrearFojaDeMedicion) deben invocar `self._log_form_debug(form)` a mano en
+    el branch invalido en vez de depender del hook automatico."""
+
+    sensitive_fields = ()
+    """Nombres de campos a omitir del log ademas de csrfmiddlewaretoken (ej. passwords)."""
+
+    def _log_form_debug(self, form):
+        omit = {"csrfmiddlewaretoken", *self.sensitive_fields}
+        data = {k: v for k, v in self.request.POST.items() if k not in omit}
+        form_debug_logger.warning(
+            "form_invalid user=%s path=%s errors=%s data=%s",
+            self.request.user, self.request.path, form.errors.as_json(), data,
+        )
+
+    def form_invalid(self, form, *args, **kwargs):
+        self._log_form_debug(form)
+        return super().form_invalid(form, *args, **kwargs)
 
 class DeleteRelatedObjectsMixin:
     """Para DeleteView: muestra los objetos relacionados que se borrarian en

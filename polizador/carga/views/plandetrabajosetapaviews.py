@@ -11,10 +11,11 @@ from django.views import generic
 
 from carga.models import FojaDeMedicion, PlanDeTrabajosEtapa, PlanDeTrabajosEtapaItem, PlanDeTrabajosItem, PlanDeTrabajosRubro
 from carga.forms.plandetrabajosetapaforms import build_matriz_form, matriz_field_name
+from core.mixins import LogInvalidFormMixin
 
 
 @method_decorator(login_required, name="dispatch")
-class PlanDeTrabajosEtapaMatriz(PermissionRequiredMixin, generic.View):
+class PlanDeTrabajosEtapaMatriz(LogInvalidFormMixin, PermissionRequiredMixin, generic.View):
 	"""Carga/edita de una sola vez todas las Etapas Proyectadas de un Rubro de Plan de
 	Trabajos, con una grilla fila=item / columna=etapa (mes), como la planilla de origen."""
 
@@ -111,4 +112,5 @@ class PlanDeTrabajosEtapaMatriz(PermissionRequiredMixin, generic.View):
 						etapaitem.save()
 			return HttpResponseRedirect(reverse("carga:estado-obra", kwargs={"pk": rubro.rubro_plan.trabajos_obra_id}))
 
+		self._log_form_debug(form)
 		return render(request, self.template_name, self._build_context(rubro, items, existentes, anterior_map, form))

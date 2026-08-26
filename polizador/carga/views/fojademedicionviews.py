@@ -7,7 +7,7 @@ from django.views import generic
 from carga.models import FojaDeMedicion, PlanDeTrabajosItem, PlanDeTrabajosRubro
 from personalizador.models import Gerencia
 from carga.forms.fojademedicionforms import *
-from core.mixins import DeleteRelatedObjectsMixin, FormsetViewMixin
+from core.mixins import DeleteRelatedObjectsMixin, FormsetViewMixin, LogInvalidFormMixin
 
 
 def _foja_detalle_context(foja):
@@ -47,7 +47,7 @@ def _foja_detalle_context(foja):
 
 
 @method_decorator(login_required, name="dispatch")
-class CrearFojaDeMedicion(PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
+class CrearFojaDeMedicion(LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
 	permission_required = "carga.add_fojademedicion"
 	formset_name = FojaDeMedicionItemFormset
 	foto_formset_name = FojaDeMedicionFotoFormset
@@ -145,6 +145,7 @@ class CrearFojaDeMedicion(PermissionRequiredMixin, FormsetViewMixin, generic.Cre
 			foto_formset.instance = self.object
 			foto_formset.save()
 			return HttpResponseRedirect(self.get_success_url())
+		self._log_form_debug(form)
 		return self.render_to_response(self.get_context_data(form=form, formset=formset, foto_formset=foto_formset))
 
 	def _vincular_certificados_legacy(self, form):
@@ -187,7 +188,7 @@ class CrearFojaDeMedicion(PermissionRequiredMixin, FormsetViewMixin, generic.Cre
 
 
 @method_decorator(login_required, name="dispatch")
-class UpdateFojaDeMedicion(PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView):
+class UpdateFojaDeMedicion(LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView):
 	permission_required = "carga.change_fojademedicion"
 	formset_name = FojaDeMedicionItemFormset
 	foto_formset_name = FojaDeMedicionFotoFormset
@@ -233,6 +234,7 @@ class UpdateFojaDeMedicion(PermissionRequiredMixin, FormsetViewMixin, generic.Up
 			foto_formset.instance = self.object
 			foto_formset.save()
 			return HttpResponseRedirect(self.get_success_url())
+		self._log_form_debug(form)
 		return self.render_to_response(self.get_context_data(form=form, formset=formset, foto_formset=foto_formset))
 
 	def prepare_formset(self, formset):

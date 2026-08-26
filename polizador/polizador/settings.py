@@ -314,6 +314,14 @@ LOGGING = {
             'backupCount': 5,
             'formatter': 'verbose',
         },
+        'validation_errors_file': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/validation_errors.log'),
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
     },
     'loggers': {
         # Catch-all root logger
@@ -327,6 +335,14 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
             'filters': ['require_debug_true'],
+        },
+        # POST crudo de forms que no validaron, para debug de sesiones de usuario
+        # (ver LogInvalidFormMixin en core/mixins.py). propagate=False para que no
+        # duplique también en django.log via el logger root.
+        'core.form_debug': {
+            'handlers': ['validation_errors_file'],
+            'level': 'WARNING',
+            'propagate': False,
         },
     },
 }

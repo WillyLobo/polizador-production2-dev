@@ -4,9 +4,10 @@ from django.utils.decorators import method_decorator
 from django.views import generic
 from carga.models import PlanDeTrabajos, PlanDeTrabajosRubro, PlanDeTrabajosItem, Contrato
 from carga.forms.plandetrabajosforms import *
+from core.mixins import LogInvalidFormMixin
 
 @method_decorator(login_required, name="dispatch")
-class CrearPlanDeTrabajos(PermissionRequiredMixin, generic.CreateView):
+class CrearPlanDeTrabajos(LogInvalidFormMixin, PermissionRequiredMixin, generic.CreateView):
 	permission_required = "carga.add_plandetrabajos"
 
 	model = PlanDeTrabajos
@@ -72,7 +73,7 @@ class CrearPlanDeTrabajos(PermissionRequiredMixin, generic.CreateView):
 				)
 
 @method_decorator(login_required, name="dispatch")
-class UpdatePlanDeTrabajos(PermissionRequiredMixin, generic.UpdateView):
+class UpdatePlanDeTrabajos(LogInvalidFormMixin, PermissionRequiredMixin, generic.UpdateView):
 	permission_required = "carga.change_plandetrabajos"
 
 	model = PlanDeTrabajos
