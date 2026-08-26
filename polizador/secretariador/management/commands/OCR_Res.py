@@ -6,8 +6,17 @@ from PIL import Image
 from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db.models import Q
-from secretariador.models import InstrumentosLegalesResoluciones
+from secretariador.models import InstrumentosLegalesDecretos, InstrumentosLegalesMemorandum, InstrumentosLegalesResoluciones
 import time
+
+# Maps each instrument model to its field-name prefix. All three models follow the
+# convention <prefix> (FileField), <prefix>_document, <prefix>_descripcion,
+# <prefix>_fecha_aprobacion.
+INSTRUMENT_PREFIXES = {
+    InstrumentosLegalesResoluciones: "instrumentolegalresoluciones",
+    InstrumentosLegalesMemorandum: "instrumentolegalmemorandum",
+    InstrumentosLegalesDecretos: "instrumentolegaldecretos",
+}
 
 def extract_text_hybrid(file: str | bytes, lang: str = "spa", min_chars_per_page: int = 20, dpi: int = 300, psm: int = 6) -> str:
     """Extract text from a PDF (given a local path or raw file bytes), using
@@ -27,40 +36,44 @@ def extract_text_hybrid(file: str | bytes, lang: str = "spa", min_chars_per_page
 
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
-        pendientes = InstrumentosLegalesResoluciones.objects.exclude(
-            instrumentolegalresoluciones=""
-        ).filter(
-            Q(instrumentolegalresoluciones_document__isnull=True) | Q(instrumentolegalresoluciones_document="")
-        )
+        for model, prefix in INSTRUMENT_PREFIXES.items():
+            document_field = f"{prefix}_document"
+            pendientes = model.objects.exclude(**{prefix: ""}).filter(
+                Q(**{f"{document_field}__isnull": True}) | Q(**{document_field: ""})
+            )
 
-        for p in pendientes:
-            start_time = time.perf_counter()
-            local_path = os.path.join(settings.MEDIA_ROOT, p.instrumentolegalresoluciones.name)
-            self.stdout.write(f"{self.style.MIGRATE_LABEL('Procesando el archivo:')} {self.style.SQL_KEYWORD(local_path)}")
+            self.stdout.write(f"{self.style.MIGRATE_HEADING(str(model._meta.verbose_name_plural))} ({pendientes.count()} pendientes)")
+            for p in pendientes:
+                self._procesar(p, prefix)
 
-            if os.path.exists(local_path):
-                source = local_path
-            else:
-                self.stdout.write(f"{self.style.WARNING('Archivo local no encontrado, se descarga desde la nube:')} {local_path}")
-                with p.instrumentolegalresoluciones.open("rb") as f:
-                    source = f.read()
+    def _procesar(self, p, prefix):
+        start_time = time.perf_counter()
+        file_field = getattr(p, prefix)
+        local_path = os.path.join(settings.MEDIA_ROOT, file_field.name)
+        self.stdout.write(f"{self.style.MIGRATE_LABEL('Procesando el archivo:')} {self.style.SQL_KEYWORD(local_path)}")
 
-            try:
-                self.stdout.write(f"{self.style.MIGRATE_LABEL('Procesando OCR:')}")
-                p.instrumentolegalresoluciones_document = extract_text_hybrid(source)
-                p.save()
-            except Exception as e:
-                self.stdout.write(f"Error al procesar el archivo {self.style.ERROR(local_path)}: {self.style.ERROR(e)}")
-                continue
+        if os.path.exists(local_path):
+            source = local_path
+        else:
+            self.stdout.write(f"{self.style.WARNING('Archivo local no encontrado, se descarga desde la nube:')} {local_path}")
+            with file_field.open("rb") as f:
+                source = f.read()
 
-            # Console output
-            self.stdout.write(f"{self.style.SUCCESS('Archivo procesado con éxito.')}")
-            self.stdout.write(f"    ID:{p.id}")
-            self.stdout.write(f"    Resolucion de Presidencia Nº:{p.instrumentolegalresoluciones_numero}/{p.instrumentolegalresoluciones_ano}")
-            self.stdout.write(f"    Fecha de Aprobación: {p.instrumentolegalresoluciones_fecha_aprobacion}")
-            self.stdout.write(f"    Descripción: {p.instrumentolegalresoluciones_descripcion}")
-            self.stdout.write(f"    Texto Extraído: {self.style.HTTP_SUCCESS(p.instrumentolegalresoluciones_document[:100])}...(truncado)")
+        try:
+            self.stdout.write(f"{self.style.MIGRATE_LABEL('Procesando OCR:')}")
+            setattr(p, f"{prefix}_document", extract_text_hybrid(source))
+            p.save()
+        except Exception as e:
+            self.stdout.write(f"Error al procesar el archivo {self.style.ERROR(local_path)}: {self.style.ERROR(e)}")
+            return
 
-            end_time = time.perf_counter()
-            elapsed_time = end_time - start_time
-            self.stdout.write(f"Tiempo de ejecución: {elapsed_time:.6f} segundos.")
+        # Console output
+        self.stdout.write(f"{self.style.SUCCESS('Archivo procesado con éxito.')}")
+        self.stdout.write(f"    ID:{p.id}")
+        self.stdout.write(f"    Instrumento: {p}")
+        self.stdout.write(f"    Fecha de Aprobación: {getattr(p, f'{prefix}_fecha_aprobacion')}")
+        self.stdout.write(f"    Descripción: {getattr(p, f'{prefix}_descripcion')}")
+        self.stdout.write(f"    Texto Extraído: {self.style.HTTP_SUCCESS(getattr(p, f'{prefix}_document')[:100])}...(truncado)")
+
+        elapsed_time = time.perf_counter() - start_time
+        self.stdout.write(f"Tiempo de ejecución: {elapsed_time:.6f} segundos.")

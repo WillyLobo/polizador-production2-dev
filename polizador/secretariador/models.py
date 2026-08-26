@@ -258,6 +258,8 @@ class InstrumentosLegalesDecretos(models.Model):
         output_field=models.TextField(),
         db_persist=True,
     )
+    # Field related to the automatic extraction of text from the digitalized decreto.
+    instrumentolegaldecretos_document = models.TextField("Texto Extraído por OCR", null=True, blank=True)
     instrumentolegaldecretos_establece_licencia_anual = models.BooleanField(
         "Establece Licencia Anual",
         default=False,

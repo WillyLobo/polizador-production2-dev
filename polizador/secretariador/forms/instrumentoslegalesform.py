@@ -63,6 +63,7 @@ class InstrumentosLegalesDecretosForm(BaseFormMixin, forms.ModelForm):
             "instrumentolegaldecretos_fecha_aprobacion",
             "instrumentolegaldecretos_descripcion",
             "instrumentolegaldecretos",
+            "instrumentolegaldecretos_document",
             "instrumentolegaldecretos_establece_licencia_anual",
             "instrumentolegaldecretos_establece_licencia_invierno",
         )
@@ -86,6 +87,12 @@ class InstrumentosLegalesDecretosForm(BaseFormMixin, forms.ModelForm):
             }),
             "instrumentolegaldecretos":forms.ClearableFileInput(attrs={
                 "class":"form-control"
+            }),
+            "instrumentolegaldecretos_document":forms.Textarea(attrs={
+                "class":"form-control",
+                "rows":10,
+                "cols":50,
+                "readonly":"readonly"
             }),
             "instrumentolegaldecretos_establece_licencia_anual":CustomCheckboxInput(attrs={
                 "class":"form-check-input"
