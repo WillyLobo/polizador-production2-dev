@@ -3,6 +3,7 @@ from datetime import timedelta
 import requests
 from django.conf import settings
 from django.core.cache import cache
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection
 from django.db.models import Count, prefetch_related_objects
 from django.db.models.functions import TruncMonth
@@ -93,12 +94,19 @@ def changes_feed(app_label, limit=50):
         if related_fields and instances:
             prefetch_related_objects(instances, *related_fields)
         for h, instance in zip(history_rows, instances):
+            try:
+                objeto = str(instance)
+            except ObjectDoesNotExist:
+                # A related object __str__ depends on (e.g. a cascade-deleted parent) no
+                # longer exists, even though this historical row does. Typically happens
+                # for history_type "-" rows of records deleted via cascade.
+                objeto = f"{label} #{instance.pk}"
             entries.append({
                 "fecha": h.history_date,
                 "usuario": h.history_user,
                 "tipo": HISTORY_TYPE_LABELS.get(h.history_type, h.history_type),
                 "modelo": label,
-                "objeto": str(instance),
+                "objeto": objeto,
             })
     entries.sort(key=lambda e: e["fecha"], reverse=True)
     return entries[:limit]
