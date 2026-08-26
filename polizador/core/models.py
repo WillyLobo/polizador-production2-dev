@@ -113,6 +113,33 @@ class Todo(models.Model):
         return self.STATUS_BADGE.get(self.status, "secondary")
 
 
+class FormValidationError(models.Model):
+    class Meta:
+        verbose_name = "Error de validación de formulario"
+        verbose_name_plural = "Errores de validación de formularios"
+        ordering = ("-created_at",)
+        indexes = [models.Index(fields=["created_at"]), models.Index(fields=["view_name"])]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True,
+        on_delete=models.SET_NULL, related_name="form_validation_errors",
+    )
+    path = models.CharField(max_length=500)
+    view_name = models.CharField(max_length=255)
+    form_class_path = models.CharField(max_length=255, blank=True, default="")
+    """Dotted path para re-importar la clase del form con import_string. Vacio si la
+    clase es dinamica (ej. build_matriz_form) y no tiene path estable."""
+    form_errors = models.JSONField(default=dict, blank=True)
+    formsets = models.JSONField(default=list, blank=True)
+    """[{"prefix": str, "class_path": str, "errors": [...]}, ...]"""
+    raw_data = models.JSONField(default=dict, blank=True)
+    """{field_name: [valores...]} - siempre listas para soportar campos multivaluados."""
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.view_name} @ {self.created_at:%Y-%m-%d %H:%M}"
+
+
 class LoginEvent(models.Model):
     class Meta:
         verbose_name = "Inicio de sesión"

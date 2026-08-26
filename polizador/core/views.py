@@ -28,6 +28,10 @@ class SchemaDocsView(SuperuserRequiredMixin, TemplateView):
     template_name = "schema_docs/index.html"
 
 
+class FormValidationErrorListView(SuperuserRequiredMixin, TemplateView):
+    template_name = "errores_validacion/list.html"
+
+
 class DashboardView(SuperuserRequiredMixin, TemplateView):
     template_name = "dashboard/index.html"
 

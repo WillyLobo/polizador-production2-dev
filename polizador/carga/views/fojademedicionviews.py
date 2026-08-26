@@ -145,7 +145,7 @@ class CrearFojaDeMedicion(LogInvalidFormMixin, PermissionRequiredMixin, FormsetV
 			foto_formset.instance = self.object
 			foto_formset.save()
 			return HttpResponseRedirect(self.get_success_url())
-		self._log_form_debug(form)
+		self._log_form_debug(form, formset, foto_formset)
 		return self.render_to_response(self.get_context_data(form=form, formset=formset, foto_formset=foto_formset))
 
 	def _vincular_certificados_legacy(self, form):
@@ -234,7 +234,7 @@ class UpdateFojaDeMedicion(LogInvalidFormMixin, PermissionRequiredMixin, Formset
 			foto_formset.instance = self.object
 			foto_formset.save()
 			return HttpResponseRedirect(self.get_success_url())
-		self._log_form_debug(form)
+		self._log_form_debug(form, formset, foto_formset)
 		return self.render_to_response(self.get_context_data(form=form, formset=formset, foto_formset=foto_formset))
 
 	def prepare_formset(self, formset):

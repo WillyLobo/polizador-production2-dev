@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% block title %}<title>Errores de validación</title>{% endblock title%}
+
+<div class="min-vh-100">
+  <div class="card">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Errores de validación de formularios</div>
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table id="tableErroresValidacion" width="auto" class="table table-striped table-bordered align-middle mb-0">
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script language="javascript">
+
+  $(document).ready(function() {
+      var columns = [
+          { data: 'id', name: 'id', title: 'Id' },
+          { data: 'created_at', name: 'created_at', title: 'Fecha' },
+          { data: 'user', name: 'user', title: 'Usuario' },
+          { data: 'view_name', name: 'view_name', title: 'Vista' },
+          { data: 'path', name: 'path', title: 'Path' },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
+          $('#tableErroresValidacion'),
+          '/v1/api/datatables/errores-validacion/',
+          columns,
+          {
+              order: [[0, 'desc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/errores-validacion/{id}/detalle/',
+          },
+      );
+  });
+
+</script>
+
+{% endblock %}
