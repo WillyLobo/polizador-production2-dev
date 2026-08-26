@@ -167,17 +167,8 @@ register_simple_datatable(
 
 
 # --- Agente (Comisionados) datatable ---
+# Read-only: adding/changing/deleting Agentes lives under personalizador (lista-agentes).
 def _agente_comisionado_datatable_row(a: Agente, user) -> dict:
-    id_ = str(a.id)
-    editarlink = f"<a href='/viaticos/crearcomisionado/{id_}'>{editlinkimg}</a>"
-    detallelink = f"<a href=''>{detallelinkimg}</a>"
-    eliminarlink = f"<a href='/viaticos/eliminar/comisionado/{id_}'>{eliminarlinkimg}</a>"
-    if user.has_perm("personalizador.delete_agente"):
-        acciones = f"{editarlink}{detallelink}{eliminarlink}"
-    elif user.has_perm("personalizador.change_agente"):
-        acciones = f"{editarlink}{detallelink}"
-    else:
-        acciones = detallelink
     return {
         "id": a.id,
         "agente_apellidos": a.agente_apellidos,
@@ -186,7 +177,6 @@ def _agente_comisionado_datatable_row(a: Agente, user) -> dict:
         "cuil": a.cuil,
         "agente_personal_transitorio": "Sí" if a.agente_personal_transitorio else "No",
         "agente_personal_de_gabinete": "Sí" if a.agente_personal_de_gabinete else "No",
-        "acciones": acciones,
     }
 
 
