@@ -41,12 +41,36 @@ def _build_organigrama_mermaid():
 		elif p.departamento_directorio_id:
 			departamentos_by_directorio.setdefault(p.departamento_directorio_id, []).append(p)
 
-	lines = ["flowchart LR", '    ROOT(["IPDUV"])']
+	lines = ["flowchart LR"]
 
 	def departamento_lines(indent, p):
 		lines.append(f'{indent}P{p.id}["{_mermaid_label(p.departamento_nombre)}"]')
 
+	# "Vocal 1" y "Vocal 2" quedan arriba y abajo de IPDUV (en vez de a la
+	# misma altura que Presidencia) para no cruzarse con las flechas que
+	# salen de Presidencia hacia sus gerencias/direcciones. Para lograrlo se
+	# los ubica un rango antes que IPDUV (ambos con línea, sin flecha, hacia
+	# ROOT); al ser las dos únicas fuentes de esa columna, mermaid las apila
+	# verticalmente y centra IPDUV entre ellas.
+	vocales = sorted(
+		(did for did, nombre in directorios.items() if nombre.strip().lower() in ("vocal 1", "vocal 2")),
+		key=lambda did: directorios[did].strip().lower(),
+	)
+
+	if len(vocales) == 2:
+		vocal1_id, vocal2_id = vocales
+		lines.append(f'    D{vocal1_id}["{_mermaid_label(directorios[vocal1_id])}"]')
+		lines.append('    ROOT(["IPDUV"])')
+		lines.append(f'    D{vocal2_id}["{_mermaid_label(directorios[vocal2_id])}"]')
+		lines.append(f"    D{vocal1_id} --- ROOT")
+		lines.append(f"    D{vocal2_id} --- ROOT")
+	else:
+		lines.append('    ROOT(["IPDUV"])')
+		vocales = []
+
 	for did, nombre in directorios.items():
+		if did in vocales:
+			continue
 		lines.append(f'    D{did}["{_mermaid_label(nombre)}"]')
 		lines.append(f"    ROOT --> D{did}")
 
