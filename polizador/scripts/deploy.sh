@@ -29,6 +29,12 @@ sudo systemctl restart gunicorn.service
 #
 # Requiere sentry-cli instalado en el server:
 #   curl -sL https://sentry.io/get-cli/ | bash
+#
+# sentry-cli intenta auto-cargar un .env de su propio directorio de trabajo
+# con un parser más estricto que el de django-environ: rompe con valores sin
+# comillas que tengan '#' o '$' (como puede tener SECRET_KEY). Como ya
+# exportamos acá abajo lo que necesita, le decimos que no intente leerlo.
+export SENTRY_LOAD_DOTENV=0
 export $(grep -E '^SENTRY_(AUTH_TOKEN|ORG|PROJECT)=' .env | xargs)
 
 VERSION="$(git -C "$REPO_ROOT" rev-parse HEAD)"
