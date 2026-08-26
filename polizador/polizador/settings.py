@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 import environ
 import os
+import subprocess
 from pathlib import Path
 from google.oauth2 import service_account
 import sentry_sdk
@@ -58,8 +59,22 @@ SGT_PASSWORD = env("SGT_PASSWORD", default=None)
 GS_BUCKET_NAME = env("GS_BUCKET_NAME", default="polizador-production-pdf")
 
 if DEBUG == False:
+    try:
+        # El deploy es manual (git pull + reinicio de gunicorn), así que el
+        # SHA del checkout en el momento del arranque *es* la versión
+        # desplegada. Etiquetar los eventos con este release es lo que le
+        # permite a Sentry mostrar "Suspect Commits" y sugerencias al
+        # resolver un issue (ver scripts/sentry_release.sh para el paso que
+        # asocia los commits a este mismo release en Sentry).
+        SENTRY_RELEASE = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=BASE_DIR
+        ).decode().strip()
+    except Exception:
+        SENTRY_RELEASE = None
+
     sentry_sdk.init(
         dsn=SENTRY_DSN,
+        release=SENTRY_RELEASE,
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for tracing.
         traces_sample_rate=1.0,
