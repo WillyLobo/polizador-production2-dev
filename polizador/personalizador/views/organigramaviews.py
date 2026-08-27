@@ -4,12 +4,17 @@ from django.shortcuts import render
 from personalizador.models import Directorio, Gerencia, Direccion, Departamento
 
 
-def _mermaid_label(nombre):
-	return nombre.strip().replace('"', "'")
+def _mermaid_label(nombre, cuof=None, ungi=None):
+	label = nombre.strip().replace('"', "'")
+	if cuof:
+		label += f"<br/>CUOF: {cuof.strip()}"
+	if ungi:
+		label += f"<br/>UNGI: {ungi.strip()}"
+	return label
 
 
 def _build_organigrama_mermaid():
-	directorios = {d.id: d.directorio_nombre for d in Directorio.objects.all()}
+	directorios = {d.id: d for d in Directorio.objects.all()}
 	gerencias = {g.id: g for g in Gerencia.objects.all()}
 	direcciones = {r.id: r for r in Direccion.objects.select_related("direccion_gerencia", "direccion_directorio")}
 	departamentos = {
@@ -44,7 +49,9 @@ def _build_organigrama_mermaid():
 	lines = ["flowchart LR"]
 
 	def departamento_lines(indent, p):
-		lines.append(f'{indent}P{p.id}["{_mermaid_label(p.departamento_nombre)}"]')
+		lines.append(
+			f'{indent}P{p.id}["{_mermaid_label(p.departamento_nombre, p.departamento_cuof, p.departamento_ungi)}"]'
+		)
 
 	# "Vocal 1" y "Vocal 2" quedan arriba y abajo de IPDUV (en vez de a la
 	# misma altura que Presidencia) para no cruzarse con las flechas que
@@ -53,33 +60,36 @@ def _build_organigrama_mermaid():
 	# ROOT); al ser las dos únicas fuentes de esa columna, mermaid las apila
 	# verticalmente y centra IPDUV entre ellas.
 	vocales = sorted(
-		(did for did, nombre in directorios.items() if nombre.strip().lower() in ("vocal 1", "vocal 2")),
-		key=lambda did: directorios[did].strip().lower(),
+		(did for did, d in directorios.items() if d.directorio_nombre.strip().lower() in ("vocal 1", "vocal 2")),
+		key=lambda did: directorios[did].directorio_nombre.strip().lower(),
 	)
 
 	if len(vocales) == 2:
 		vocal1_id, vocal2_id = vocales
-		lines.append(f'    D{vocal1_id}["{_mermaid_label(directorios[vocal1_id])}"]')
+		d1, d2 = directorios[vocal1_id], directorios[vocal2_id]
+		lines.append(f'    D{vocal1_id}["{_mermaid_label(d1.directorio_nombre, d1.directorio_cuof, d1.directorio_ungi)}"]')
 		lines.append('    ROOT(["IPDUV"])')
-		lines.append(f'    D{vocal2_id}["{_mermaid_label(directorios[vocal2_id])}"]')
+		lines.append(f'    D{vocal2_id}["{_mermaid_label(d2.directorio_nombre, d2.directorio_cuof, d2.directorio_ungi)}"]')
 		lines.append(f"    D{vocal1_id} --- ROOT")
 		lines.append(f"    D{vocal2_id} --- ROOT")
 	else:
 		lines.append('    ROOT(["IPDUV"])')
 		vocales = []
 
-	for did, nombre in directorios.items():
+	for did, d in directorios.items():
 		if did in vocales:
 			continue
-		lines.append(f'    D{did}["{_mermaid_label(nombre)}"]')
+		lines.append(f'    D{did}["{_mermaid_label(d.directorio_nombre, d.directorio_cuof, d.directorio_ungi)}"]')
 		lines.append(f"    ROOT --> D{did}")
 
 	for did in directorios:
 		for g in gerencias_by_directorio.get(did, []):
 			lines.append(f'    subgraph SG{g.id}[" "]')
-			lines.append(f'        G{g.id}["{_mermaid_label(g.gerencia_nombre)}"]')
+			lines.append(f'        G{g.id}["{_mermaid_label(g.gerencia_nombre, g.gerencia_cuof, g.gerencia_ungi)}"]')
 			for r in direcciones_by_gerencia.get(g.id, []):
-				lines.append(f'        R{r.id}("{_mermaid_label(r.direccion_nombre)}")')
+				lines.append(
+					f'        R{r.id}("{_mermaid_label(r.direccion_nombre, r.direccion_cuof, r.direccion_ungi)}")'
+				)
 				lines.append(f"        G{g.id} --> R{r.id}")
 				for p in departamentos_by_direccion.get(r.id, []):
 					departamento_lines("        ", p)
@@ -94,7 +104,9 @@ def _build_organigrama_mermaid():
 		if directas:
 			lines.append(f'    subgraph SGD{did}["Dependencia directa"]')
 			for r in directas:
-				lines.append(f'        R{r.id}("{_mermaid_label(r.direccion_nombre)}")')
+				lines.append(
+					f'        R{r.id}("{_mermaid_label(r.direccion_nombre, r.direccion_cuof, r.direccion_ungi)}")'
+				)
 				for p in departamentos_by_direccion.get(r.id, []):
 					departamento_lines("        ", p)
 					lines.append(f"        R{r.id} --> P{p.id}")
