@@ -2,14 +2,13 @@
 symbol: datatable_agentes_filtro_denominacion
 kind: function
 module: api/views/personalizador_views.py
-lines: 793-800
-signature_hash: sha1:7c1ca319b0e0002821ade12f3e65f2c6f01cc70a
+lines: 783-790
+signature_hash: sha1:1db53bdafdaf16ec09de66dd80b4aea4e092fb3d
 authored: true
 ---
-
 # datatable_agentes_filtro_denominacion
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 793-800)
+**Módulo:** `api/views/personalizador_views.py` (líneas 783-790)
 
 ## Propósito
 

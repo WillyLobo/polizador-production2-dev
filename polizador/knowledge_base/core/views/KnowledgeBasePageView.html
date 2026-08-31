@@ -1,5 +1,5 @@
 <h1>KnowledgeBasePageView</h1>
-<p><strong>Módulo:</strong> <code>core/views.py</code> (líneas 91-114) · hereda de <code>SuperuserRequiredMixin, TemplateView</code></p>
+<p><strong>Módulo:</strong> <code>core/views.py</code> (líneas 95-118) · hereda de <code>SuperuserRequiredMixin, TemplateView</code></p>
 <h2>Propósito</h2>
 <p>La página de un símbolo puntual de la Base de Conocimiento. Resuelve <code>page_path</code> contra el manifest vía <code>resolve_page_path</code> (whitelist anti path-traversal — nunca construye un <code>Path</code> a partir del <code>page_path</code> crudo de la URL), 404 si no es conocido; si el <code>.html</code> pre-renderizado existe, lo lee y reescribe sus links (<code>_rewrite_doc_links</code>) antes de pasarlo al template.</p>
 <h2>Firma</h2>

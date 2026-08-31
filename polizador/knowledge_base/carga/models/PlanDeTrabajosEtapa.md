@@ -2,14 +2,13 @@
 symbol: PlanDeTrabajosEtapa
 kind: class
 module: carga/models.py
-lines: 1032-1114
-signature_hash: sha1:e4ebd80e77dc4460ba8cf926ab3d9be9c5580aa8
+lines: 1032-1090
+signature_hash: sha1:e2a35cec7422d45618a7a37b8fdaa81cf323d0df
 authored: true
 ---
-
 # PlanDeTrabajosEtapa
 
-**Módulo:** `carga/models.py` (líneas 1032-1114) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 1032-1090) · hereda de `models.Model`
 
 ## Propósito
 

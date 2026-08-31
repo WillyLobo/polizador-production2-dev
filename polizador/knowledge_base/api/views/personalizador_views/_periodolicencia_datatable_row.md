@@ -2,14 +2,13 @@
 symbol: _periodolicencia_datatable_row
 kind: function
 module: api/views/personalizador_views.py
-lines: 911-932
-signature_hash: sha1:7363e0fbb8e59b05f9bccb9b2a777a5b71b14d71
+lines: 902-923
+signature_hash: sha1:4b9bb8eb4b271ff7463b224bcd605eb637cb6063
 authored: true
 ---
-
 # _periodolicencia_datatable_row
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 911-932)
+**Módulo:** `api/views/personalizador_views.py` (líneas 902-923)
 
 ## Propósito
 

@@ -2,14 +2,13 @@
 symbol: create_comisionado
 kind: function
 module: api/views/secretariador_views.py
-lines: 479-480
-signature_hash: sha1:de77de85b8736b2005aa5d425a93e26d1e06235b
+lines: 486-487
+signature_hash: sha1:8db6bdac503e472101d3411566b09f4e793886e6
 authored: true
 ---
-
 # create_comisionado
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 479-480)
+**Módulo:** `api/views/secretariador_views.py` (líneas 486-487)
 
 ## Propósito
 

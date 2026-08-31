@@ -2,14 +2,13 @@
 symbol: create_incorporacion
 kind: function
 module: api/views/secretariador_views.py
-lines: 829-830
-signature_hash: sha1:3b720ccf2d35b4dd4b4f6a61b5bc53987228b5ed
+lines: 836-837
+signature_hash: sha1:c1ad8cf3d9ebe5bd91511701bf77994da146e25b
 authored: true
 ---
-
 # create_incorporacion
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 829-830)
+**Módulo:** `api/views/secretariador_views.py` (líneas 836-837)
 
 ## Propósito
 

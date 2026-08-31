@@ -2,14 +2,13 @@
 symbol: _incorporacion_datatable_row
 kind: function
 module: api/views/secretariador_views.py
-lines: 840-859
-signature_hash: sha1:3abdb26da8f6cb50a1ab82c5135351182005b7aa
+lines: 847-866
+signature_hash: sha1:1a119d2c625773dce55b5d0fa248a69c4a4bb7cb
 authored: true
 ---
-
 # _incorporacion_datatable_row
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 840-859)
+**Módulo:** `api/views/secretariador_views.py` (líneas 847-866)
 
 ## Propósito
 

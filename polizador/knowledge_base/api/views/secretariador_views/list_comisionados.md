@@ -2,14 +2,13 @@
 symbol: list_comisionados
 kind: function
 module: api/views/secretariador_views.py
-lines: 463-468
-signature_hash: sha1:f917f014fc80e0ea7a0d4eb7e52a4b4bd7deff9b
+lines: 470-475
+signature_hash: sha1:d1171409e4b7ffd8cf00e3c93ca75eb6f733f0a9
 authored: true
 ---
-
 # list_comisionados
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 463-468)
+**Módulo:** `api/views/secretariador_views.py` (líneas 470-475)
 
 ## Propósito
 

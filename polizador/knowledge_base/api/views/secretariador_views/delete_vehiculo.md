@@ -2,14 +2,13 @@
 symbol: delete_vehiculo
 kind: function
 module: api/views/secretariador_views.py
-lines: 529-531
-signature_hash: sha1:d2ef4a53afb7243053bccc73294ded7e6ea2e141
+lines: 536-538
+signature_hash: sha1:b8cd7151c0bea1a58233366c3f32780ecf9636ef
 authored: true
 ---
-
 # delete_vehiculo
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 529-531)
+**Módulo:** `api/views/secretariador_views.py` (líneas 536-538)
 
 ## Propósito
 

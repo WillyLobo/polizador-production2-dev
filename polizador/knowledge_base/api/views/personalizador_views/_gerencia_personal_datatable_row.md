@@ -2,14 +2,13 @@
 symbol: _gerencia_personal_datatable_row
 kind: function
 module: api/views/personalizador_views.py
-lines: 536-549
-signature_hash: sha1:02ba68476044ac5630657de09cd4331474a82c68
+lines: 526-539
+signature_hash: sha1:d5763074be7271130d30dae7203e88c3ce5d8672
 authored: true
 ---
-
 # _gerencia_personal_datatable_row
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 536-549)
+**Módulo:** `api/views/personalizador_views.py` (líneas 526-539)
 
 ## Propósito
 

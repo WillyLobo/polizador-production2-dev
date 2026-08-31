@@ -2,14 +2,13 @@
 symbol: calendario_eventos_semanal
 kind: function
 module: api/views/secretariador_views.py
-lines: 961-972
-signature_hash: sha1:226e6ca2d1f8bb5fe66fc0eb29de83c3122fb6a9
+lines: 968-979
+signature_hash: sha1:08f7dd0887fddba703f5c2375c2c3394560613e6
 authored: true
 ---
-
 # calendario_eventos_semanal
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 961-972)
+**Módulo:** `api/views/secretariador_views.py` (líneas 968-979)
 
 ## Propósito
 

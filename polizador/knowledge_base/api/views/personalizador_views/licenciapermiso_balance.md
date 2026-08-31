@@ -2,14 +2,13 @@
 symbol: licenciapermiso_balance
 kind: function
 module: api/views/personalizador_views.py
-lines: 954-967
-signature_hash: sha1:1d8fe3e2142261858dbe6997879d75073ffc1d6b
+lines: 945-958
+signature_hash: sha1:ea3a8a24e5e1d0124f617da0bb64c4df035a12f4
 authored: true
 ---
-
 # licenciapermiso_balance
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 954-967)
+**Módulo:** `api/views/personalizador_views.py` (líneas 945-958)
 
 ## Propósito
 

@@ -2,14 +2,13 @@
 symbol: create_organigrama
 kind: function
 module: api/views/secretariador_views.py
-lines: 500-501
-signature_hash: sha1:92f4c02a49701e5e58f5dd8b8c6d64aa95b605b4
+lines: 507-508
+signature_hash: sha1:d7bba1eead1c8925385bbb0d5361d256421c8794
 authored: true
 ---
-
 # create_organigrama
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 500-501)
+**Módulo:** `api/views/secretariador_views.py` (líneas 507-508)
 
 ## Propósito
 

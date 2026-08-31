@@ -2,14 +2,13 @@
 symbol: ComisionadoExternoWidget
 kind: class
 module: secretariador/views/ajaxviews.py
-lines: 58-63
-signature_hash: sha1:008939fe1821aa1001074f909ff3be52d93fdcb3
+lines: 61-66
+signature_hash: sha1:dfa9c6cc30ef6040e2abcad072732b7d125bfe76
 authored: true
 ---
-
 # ComisionadoExternoWidget
 
-**Módulo:** `secretariador/views/ajaxviews.py` (líneas 58-63) · hereda de `AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget`
+**Módulo:** `secretariador/views/ajaxviews.py` (líneas 61-66) · hereda de `AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget`
 
 ## Propósito
 

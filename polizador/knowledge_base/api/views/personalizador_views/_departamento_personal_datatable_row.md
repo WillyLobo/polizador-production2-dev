@@ -2,14 +2,13 @@
 symbol: _departamento_personal_datatable_row
 kind: function
 module: api/views/personalizador_views.py
-lines: 610-623
-signature_hash: sha1:78792e0a61492fef5debc149b03e91dab0fb7ca9
+lines: 600-613
+signature_hash: sha1:d38beea8e909378f073ee85d57098f7b6d122e8a
 authored: true
 ---
-
 # _departamento_personal_datatable_row
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 610-623)
+**Módulo:** `api/views/personalizador_views.py` (líneas 600-613)
 
 ## Propósito
 

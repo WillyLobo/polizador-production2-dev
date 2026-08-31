@@ -1,5 +1,5 @@
 <h1>create_solicitud</h1>
-<p><strong>Módulo:</strong> <code>api/views/secretariador_views.py</code> (líneas 602-608)</p>
+<p><strong>Módulo:</strong> <code>api/views/secretariador_views.py</code> (líneas 609-615)</p>
 <h2>Propósito</h2>
 <p>Alta de Solicitud con manejo explícito del M2M <code>solicitud_localidades</code> (mismo patrón que <code>create_obra</code>/<code>create_incorporacion</code>... salvo que acá no hay <code>_solicitud_out</code> dedicado — el M2M se saca del payload como <code>localidad_ids</code> y se asigna con <code>.set()</code> después de crear).</p>
 <h2>Firma</h2>

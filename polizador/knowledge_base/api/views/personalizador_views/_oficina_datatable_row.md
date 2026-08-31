@@ -2,14 +2,13 @@
 symbol: _oficina_datatable_row
 kind: function
 module: api/views/personalizador_views.py
-lines: 647-661
-signature_hash: sha1:e409d70aeb507d669b6c66bf384861560135a64a
+lines: 637-651
+signature_hash: sha1:0031c330bcdaeca36691db2c198590d935b6de99
 authored: true
 ---
-
 # _oficina_datatable_row
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 647-661)
+**Módulo:** `api/views/personalizador_views.py` (líneas 637-651)
 
 ## Propósito
 

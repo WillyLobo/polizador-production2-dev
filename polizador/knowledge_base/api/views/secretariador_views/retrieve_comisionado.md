@@ -2,14 +2,13 @@
 symbol: retrieve_comisionado
 kind: function
 module: api/views/secretariador_views.py
-lines: 473-474
-signature_hash: sha1:e856de0e6068ce829488c0c8a8f0d4d01310a669
+lines: 480-481
+signature_hash: sha1:dce764bf02bb5b4bdc9a98cafc80fec4043714da
 authored: true
 ---
-
 # retrieve_comisionado
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 473-474)
+**Módulo:** `api/views/secretariador_views.py` (líneas 480-481)
 
 ## Propósito
 

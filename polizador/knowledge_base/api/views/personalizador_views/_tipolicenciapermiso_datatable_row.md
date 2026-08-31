@@ -2,14 +2,13 @@
 symbol: _tipolicenciapermiso_datatable_row
 kind: function
 module: api/views/personalizador_views.py
-lines: 860-881
-signature_hash: sha1:9bfa5a40c1f6f9a7a561c870e34b8a8fd8f887ee
+lines: 850-871
+signature_hash: sha1:e0845b4f2e31f965bdae939392b996df79d40e4e
 authored: true
 ---
-
 # _tipolicenciapermiso_datatable_row
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 860-881)
+**Módulo:** `api/views/personalizador_views.py` (líneas 850-871)
 
 ## Propósito
 

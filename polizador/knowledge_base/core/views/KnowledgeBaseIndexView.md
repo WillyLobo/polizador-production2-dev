@@ -2,14 +2,13 @@
 symbol: KnowledgeBaseIndexView
 kind: class
 module: core/views.py
-lines: 78-88
-signature_hash: sha1:13c995f8e01d2e04ca027f83b2c97b2ccb4e9558
+lines: 82-92
+signature_hash: sha1:cd3c9c1627d88d193a2ad0a4a2940343a9331dba
 authored: true
 ---
-
 # KnowledgeBaseIndexView
 
-**Módulo:** `core/views.py` (líneas 78-88) · hereda de `SuperuserRequiredMixin, TemplateView`
+**Módulo:** `core/views.py` (líneas 82-92) · hereda de `SuperuserRequiredMixin, TemplateView`
 
 ## Propósito
 

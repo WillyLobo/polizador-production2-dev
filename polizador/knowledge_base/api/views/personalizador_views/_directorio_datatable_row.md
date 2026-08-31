@@ -2,14 +2,13 @@
 symbol: _directorio_datatable_row
 kind: function
 module: api/views/personalizador_views.py
-lines: 501-514
-signature_hash: sha1:8d1970eab024d2af18bc64cd0b4e79af7ec90ce7
+lines: 491-504
+signature_hash: sha1:2a1da9a67e1226f9602469c8bd1be2d784ba8597
 authored: true
 ---
-
 # _directorio_datatable_row
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 501-514)
+**Módulo:** `api/views/personalizador_views.py` (líneas 491-504)
 
 ## Propósito
 

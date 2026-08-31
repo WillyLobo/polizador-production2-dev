@@ -2,14 +2,13 @@
 symbol: _comisionadoexterno_datatable_row
 kind: function
 module: api/views/personalizador_views.py
-lines: 227-245
-signature_hash: sha1:b3735a5678e29141846d37890d5967d4d874b6c7
+lines: 217-235
+signature_hash: sha1:3e4373174067aa83cb194834a4c56721ce42381c
 authored: true
 ---
-
 # _comisionadoexterno_datatable_row
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 227-245)
+**Módulo:** `api/views/personalizador_views.py` (líneas 217-235)
 
 ## Propósito
 

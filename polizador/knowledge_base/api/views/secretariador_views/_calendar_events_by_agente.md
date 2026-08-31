@@ -2,14 +2,13 @@
 symbol: _calendar_events_by_agente
 kind: function
 module: api/views/secretariador_views.py
-lines: 916-927
-signature_hash: sha1:5ca63f806054e00bd58647f64a96e97a424433bf
+lines: 923-934
+signature_hash: sha1:f4b9411c0845077e580b471fe60fe70b9d402d7f
 authored: true
 ---
-
 # _calendar_events_by_agente
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 916-927)
+**Módulo:** `api/views/secretariador_views.py` (líneas 923-934)
 
 ## Propósito
 

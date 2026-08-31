@@ -1,6 +1,6 @@
 {
   "api": {
-    "generated_at": "2026-08-31T16:45:44.506272+00:00",
+    "generated_at": "2026-08-31T17:00:45.913395+00:00",
     "modules": {
       "views/carga_views": {
         "file": "api/views/carga_views.py",
@@ -3759,7 +3759,7 @@
             "page_path": "api/views/personalizador_views/_EdadCalculada",
             "signature": "class _EdadCalculada(Func):",
             "signature_hash": "sha1:ac3b466ab8a908921198a6a20dde1a1e9304151e",
-            "stale": true
+            "stale": false
           },
           "_actividadespecifica_datatable_row": {
             "authored": true,
@@ -3784,7 +3784,7 @@
             "page_path": "api/views/personalizador_views/_actividadespecifica_datatable_row",
             "signature": "def _actividadespecifica_datatable_row(a: ActividadEspecifica, user) -> dict:",
             "signature_hash": "sha1:f6e9c2ee10097e5bc145bc3b71f77e9264553da9",
-            "stale": true
+            "stale": false
           },
           "_agente_comisionado_datatable_row": {
             "authored": true,
@@ -3809,7 +3809,7 @@
             "page_path": "api/views/personalizador_views/_agente_comisionado_datatable_row",
             "signature": "def _agente_comisionado_datatable_row(a: Agente, user) -> dict:",
             "signature_hash": "sha1:ee66d817c80df17df19c6dc2f600e4178f6463dc",
-            "stale": true
+            "stale": false
           },
           "_agente_datatable_row": {
             "authored": true,
@@ -3834,7 +3834,7 @@
             "page_path": "api/views/personalizador_views/_agente_datatable_row",
             "signature": "def _agente_datatable_row(a: Agente, user) -> dict:",
             "signature_hash": "sha1:20df6f5327f562bd3149dd828fc18ff33896099b",
-            "stale": true
+            "stale": false
           },
           "_apartadocargo_datatable_row": {
             "authored": true,
@@ -3859,7 +3859,7 @@
             "page_path": "api/views/personalizador_views/_apartadocargo_datatable_row",
             "signature": "def _apartadocargo_datatable_row(a: ApartadoCargo, user) -> dict:",
             "signature_hash": "sha1:827713d00eb1a4840200d283973ae6f250f85d24",
-            "stale": true
+            "stale": false
           },
           "_cargotipo_datatable_row": {
             "authored": true,
@@ -3884,7 +3884,7 @@
             "page_path": "api/views/personalizador_views/_cargotipo_datatable_row",
             "signature": "def _cargotipo_datatable_row(c: CargoTipo, user) -> dict:",
             "signature_hash": "sha1:726a3346526ff72cb871dd669f040613763cef40",
-            "stale": true
+            "stale": false
           },
           "_categoria_datatable_row": {
             "authored": true,
@@ -3909,7 +3909,7 @@
             "page_path": "api/views/personalizador_views/_categoria_datatable_row",
             "signature": "def _categoria_datatable_row(c: Categoria, user) -> dict:",
             "signature_hash": "sha1:c8ea5c759293efc7187a03e82330c8eb1f9fe67d",
-            "stale": true
+            "stale": false
           },
           "_ceic_datatable_row": {
             "authored": true,
@@ -3934,7 +3934,7 @@
             "page_path": "api/views/personalizador_views/_ceic_datatable_row",
             "signature": "def _ceic_datatable_row(c: CEIC, user) -> dict:",
             "signature_hash": "sha1:d4b96c0307b9b11d6802f728975691294f643612",
-            "stale": true
+            "stale": false
           },
           "_comisionadoexterno_datatable_row": {
             "authored": true,
@@ -3959,7 +3959,7 @@
             "page_path": "api/views/personalizador_views/_comisionadoexterno_datatable_row",
             "signature": "def _comisionadoexterno_datatable_row(c: ComisionadoExterno, user) -> dict:",
             "signature_hash": "sha1:3e4373174067aa83cb194834a4c56721ce42381c",
-            "stale": true
+            "stale": false
           },
           "_denominacioncargo_datatable_row": {
             "authored": true,
@@ -3984,7 +3984,7 @@
             "page_path": "api/views/personalizador_views/_denominacioncargo_datatable_row",
             "signature": "def _denominacioncargo_datatable_row(d: DenominacionCargo, user) -> dict:",
             "signature_hash": "sha1:370e57703527a719abf90fb7e1724b1ce2e65f06",
-            "stale": true
+            "stale": false
           },
           "_departamento_personal_datatable_row": {
             "authored": true,
@@ -4009,7 +4009,7 @@
             "page_path": "api/views/personalizador_views/_departamento_personal_datatable_row",
             "signature": "def _departamento_personal_datatable_row(d: Departamento, user) -> dict:",
             "signature_hash": "sha1:d38beea8e909378f073ee85d57098f7b6d122e8a",
-            "stale": true
+            "stale": false
           },
           "_direccion_personal_datatable_row": {
             "authored": true,
@@ -4034,7 +4034,7 @@
             "page_path": "api/views/personalizador_views/_direccion_personal_datatable_row",
             "signature": "def _direccion_personal_datatable_row(d: Direccion, user) -> dict:",
             "signature_hash": "sha1:cbb58f2b3a8459419c18e4451554d6a964f28112",
-            "stale": true
+            "stale": false
           },
           "_directorio_datatable_row": {
             "authored": true,
@@ -4059,7 +4059,7 @@
             "page_path": "api/views/personalizador_views/_directorio_datatable_row",
             "signature": "def _directorio_datatable_row(d: Directorio, user) -> dict:",
             "signature_hash": "sha1:2a1da9a67e1226f9602469c8bd1be2d784ba8597",
-            "stale": true
+            "stale": false
           },
           "_formatear_antiguedad": {
             "authored": true,
@@ -4084,7 +4084,7 @@
             "page_path": "api/views/personalizador_views/_formatear_antiguedad",
             "signature": "def _formatear_antiguedad(antiguedad: dict | None) -> str:",
             "signature_hash": "sha1:2aaec4834c3ef692cc11fa7550eeaa43f607dd07",
-            "stale": true
+            "stale": false
           },
           "_generoagente_datatable_row": {
             "authored": true,
@@ -4109,7 +4109,7 @@
             "page_path": "api/views/personalizador_views/_generoagente_datatable_row",
             "signature": "def _generoagente_datatable_row(g: GeneroAgente, user) -> dict:",
             "signature_hash": "sha1:5cf14456da2fefd7f38647bd9beeaf5aac170f6b",
-            "stale": true
+            "stale": false
           },
           "_gerencia_personal_datatable_row": {
             "authored": true,
@@ -4134,7 +4134,7 @@
             "page_path": "api/views/personalizador_views/_gerencia_personal_datatable_row",
             "signature": "def _gerencia_personal_datatable_row(g: Gerencia, user) -> dict:",
             "signature_hash": "sha1:d5763074be7271130d30dae7203e88c3ce5d8672",
-            "stale": true
+            "stale": false
           },
           "_grupocargo_datatable_row": {
             "authored": true,
@@ -4159,7 +4159,7 @@
             "page_path": "api/views/personalizador_views/_grupocargo_datatable_row",
             "signature": "def _grupocargo_datatable_row(g: GrupoCargo, user) -> dict:",
             "signature_hash": "sha1:6e9b46844ab9d5245fa740cc8b38acb8b80c0e35",
-            "stale": true
+            "stale": false
           },
           "_licenciapermiso_datatable_row": {
             "authored": true,
@@ -4184,7 +4184,7 @@
             "page_path": "api/views/personalizador_views/_licenciapermiso_datatable_row",
             "signature": "def _licenciapermiso_datatable_row(s: LicenciaPermiso, user) -> dict:",
             "signature_hash": "sha1:fff66cd33372bf024ad5fbf0d0aff62a12fd7b6d",
-            "stale": true
+            "stale": false
           },
           "_oficina_datatable_row": {
             "authored": true,
@@ -4209,7 +4209,7 @@
             "page_path": "api/views/personalizador_views/_oficina_datatable_row",
             "signature": "def _oficina_datatable_row(o: Oficina, user) -> dict:",
             "signature_hash": "sha1:0031c330bcdaeca36691db2c198590d935b6de99",
-            "stale": true
+            "stale": false
           },
           "_periodolicencia_datatable_row": {
             "authored": true,
@@ -4234,7 +4234,7 @@
             "page_path": "api/views/personalizador_views/_periodolicencia_datatable_row",
             "signature": "def _periodolicencia_datatable_row(p: PeriodoLicencia, user) -> dict:",
             "signature_hash": "sha1:4b9bb8eb4b271ff7463b224bcd605eb637cb6063",
-            "stale": true
+            "stale": false
           },
           "_representantetecnico_datatable_row": {
             "authored": true,
@@ -4304,7 +4304,7 @@
             "page_path": "api/views/personalizador_views/_simple_acciones",
             "signature": "def _simple_acciones(user, delete_perm, change_perm, editarlink, eliminarlink):",
             "signature_hash": "sha1:4a1345b9335c15b3f289dbc895f680695ccee71f",
-            "stale": true
+            "stale": false
           },
           "_tipolicenciapermiso_datatable_row": {
             "authored": true,
@@ -4329,7 +4329,7 @@
             "page_path": "api/views/personalizador_views/_tipolicenciapermiso_datatable_row",
             "signature": "def _tipolicenciapermiso_datatable_row(t: TipoLicenciaPermiso, user) -> dict:",
             "signature_hash": "sha1:e0845b4f2e31f965bdae939392b996df79d40e4e",
-            "stale": true
+            "stale": false
           },
           "_tituloprofesional_datatable_row": {
             "authored": true,
@@ -4354,7 +4354,7 @@
             "page_path": "api/views/personalizador_views/_tituloprofesional_datatable_row",
             "signature": "def _tituloprofesional_datatable_row(t: TituloProfesional, user) -> dict:",
             "signature_hash": "sha1:7fc3607c3057a9d9c81738be2f8cf6231feb1631",
-            "stale": true
+            "stale": false
           },
           "create_departamento_personal": {
             "authored": true,
@@ -4442,7 +4442,7 @@
             "page_path": "api/views/personalizador_views/datatable_agentes_detalle",
             "signature": "def datatable_agentes_detalle(request, id: int):",
             "signature_hash": "sha1:45d58686408a831f445ade790d55c37838382920",
-            "stale": true
+            "stale": false
           },
           "datatable_agentes_filtro_denominacion": {
             "authored": true,
@@ -4464,7 +4464,7 @@
             "page_path": "api/views/personalizador_views/datatable_agentes_filtro_denominacion",
             "signature": "def datatable_agentes_filtro_denominacion(request):",
             "signature_hash": "sha1:1db53bdafdaf16ec09de66dd80b4aea4e092fb3d",
-            "stale": true
+            "stale": false
           },
           "delete_departamento_personal": {
             "authored": true,
@@ -4564,7 +4564,7 @@
             "page_path": "api/views/personalizador_views/licenciapermiso_balance",
             "signature": "def licenciapermiso_balance(request, agente: int, tipo: int, anio: int=None):",
             "signature_hash": "sha1:ea3a8a24e5e1d0124f617da0bb64c4df035a12f4",
-            "stale": true
+            "stale": false
           },
           "list_departamentos_personal": {
             "authored": true,
@@ -4713,7 +4713,7 @@
             "page_path": "api/views/secretariador_views/_calendar_event",
             "signature": "def _calendar_event(foreign, title, color=''):",
             "signature_hash": "sha1:c369ccd781abe976f72a86408fad2e440666159c",
-            "stale": true
+            "stale": false
           },
           "_calendar_events_by_agente": {
             "authored": true,
@@ -4743,7 +4743,7 @@
             "page_path": "api/views/secretariador_views/_calendar_events_by_agente",
             "signature": "def _calendar_events_by_agente(comisionados):",
             "signature_hash": "sha1:f4b9411c0845077e580b471fe60fe70b9d402d7f",
-            "stale": true
+            "stale": false
           },
           "_comisionado_solicitud_origin": {
             "authored": true,
@@ -4773,7 +4773,7 @@
             "page_path": "api/views/secretariador_views/_comisionado_solicitud_origin",
             "signature": "def _comisionado_solicitud_origin(comisionado):",
             "signature_hash": "sha1:0936a96cf89bedb89ad7a6a11666527ce54c8e8d",
-            "stale": true
+            "stale": false
           },
           "_decreto_datatable_row": {
             "authored": true,
@@ -4823,7 +4823,7 @@
             "page_path": "api/views/secretariador_views/_incorporacion_datatable_row",
             "signature": "def _incorporacion_datatable_row(i: Incorporacion, user) -> dict:",
             "signature_hash": "sha1:1a119d2c625773dce55b5d0fa248a69c4a4bb7cb",
-            "stale": true
+            "stale": false
           },
           "_memorandum_datatable_row": {
             "authored": true,
@@ -4873,7 +4873,7 @@
             "page_path": "api/views/secretariador_views/_resolucion_datatable_row",
             "signature": "def _resolucion_datatable_row(r: InstrumentosLegalesResoluciones, user) -> dict:",
             "signature_hash": "sha1:6b882977a6b3e440728de0165f788bbc3a28507e",
-            "stale": true
+            "stale": false
           },
           "_resolucion_directorio_datatable_row": {
             "authored": true,
@@ -4898,7 +4898,7 @@
             "page_path": "api/views/secretariador_views/_resolucion_directorio_datatable_row",
             "signature": "def _resolucion_directorio_datatable_row(r: InstrumentosLegalesResoluciones, user) -> dict:",
             "signature_hash": "sha1:7fbee839d7ae660c884a970c66f574049fe0aa19",
-            "stale": true
+            "stale": false
           },
           "_resolucion_numero_completo": {
             "authored": true,
@@ -4948,7 +4948,7 @@
             "page_path": "api/views/secretariador_views/_solicitud_datatable_row",
             "signature": "def _solicitud_datatable_row(s: Solicitud, user) -> dict:",
             "signature_hash": "sha1:d4631de90e5806affcf759a89e98add90404bd4f",
-            "stale": true
+            "stale": false
           },
           "_vehiculo_datatable_row": {
             "authored": true,
@@ -4973,7 +4973,7 @@
             "page_path": "api/views/secretariador_views/_vehiculo_datatable_row",
             "signature": "def _vehiculo_datatable_row(v: Vehiculo, user) -> dict:",
             "signature_hash": "sha1:2d2bcec47db66f65acdd3e70d58b2377f610cd76",
-            "stale": true
+            "stale": false
           },
           "calendario_eventos_agente_individual": {
             "authored": true,
@@ -4995,7 +4995,7 @@
             "page_path": "api/views/secretariador_views/calendario_eventos_agente_individual",
             "signature": "def calendario_eventos_agente_individual(request, agente: int, ano: int):",
             "signature_hash": "sha1:dca18fbb94e356a33454549f2837b94a48fca6b0",
-            "stale": true
+            "stale": false
           },
           "calendario_eventos_anual": {
             "authored": true,
@@ -5017,7 +5017,7 @@
             "page_path": "api/views/secretariador_views/calendario_eventos_anual",
             "signature": "def calendario_eventos_anual(request, ano: int):",
             "signature_hash": "sha1:c87f0594a6946163f0cc329f33e848f1fb248907",
-            "stale": true
+            "stale": false
           },
           "calendario_eventos_semanal": {
             "authored": true,
@@ -5039,7 +5039,7 @@
             "page_path": "api/views/secretariador_views/calendario_eventos_semanal",
             "signature": "def calendario_eventos_semanal(request, agente: Optional[int]=None):",
             "signature_hash": "sha1:08f7dd0887fddba703f5c2375c2c3394560613e6",
-            "stale": true
+            "stale": false
           },
           "create_comisionado": {
             "authored": true,
@@ -5061,7 +5061,7 @@
             "page_path": "api/views/secretariador_views/create_comisionado",
             "signature": "def create_comisionado(request, payload: ComisionadoCreate):",
             "signature_hash": "sha1:8db6bdac503e472101d3411566b09f4e793886e6",
-            "stale": true
+            "stale": false
           },
           "create_comisionado_solicitud": {
             "authored": true,
@@ -5083,7 +5083,7 @@
             "page_path": "api/views/secretariador_views/create_comisionado_solicitud",
             "signature": "def create_comisionado_solicitud(request, payload: ComisionadoSolicitudCreate):",
             "signature_hash": "sha1:07d58bb02e8888b74fdc0ed8769109296d789cad",
-            "stale": true
+            "stale": false
           },
           "create_decreto": {
             "authored": true,
@@ -5127,7 +5127,7 @@
             "page_path": "api/views/secretariador_views/create_incorporacion",
             "signature": "def create_incorporacion(request, payload: IncorporacionCreate):",
             "signature_hash": "sha1:c1ad8cf3d9ebe5bd91511701bf77994da146e25b",
-            "stale": true
+            "stale": false
           },
           "create_memorandum": {
             "authored": true,
@@ -5171,7 +5171,7 @@
             "page_path": "api/views/secretariador_views/create_monto_viatico",
             "signature": "def create_monto_viatico(request, payload: MontoViaticoCreate):",
             "signature_hash": "sha1:e103bfcc21b3713ce2f97c7d49e171292a9c3ea3",
-            "stale": true
+            "stale": false
           },
           "create_organigrama": {
             "authored": true,
@@ -5193,7 +5193,7 @@
             "page_path": "api/views/secretariador_views/create_organigrama",
             "signature": "def create_organigrama(request, payload: OrganigramaCreate):",
             "signature_hash": "sha1:d7bba1eead1c8925385bbb0d5361d256421c8794",
-            "stale": true
+            "stale": false
           },
           "create_resolucion": {
             "authored": true,
@@ -5259,7 +5259,7 @@
             "page_path": "api/views/secretariador_views/create_solicitud",
             "signature": "def create_solicitud(request, payload: SolicitudCreate):",
             "signature_hash": "sha1:be99d6a1e16935aa192120a66c00274e3bb11d94",
-            "stale": true
+            "stale": false
           },
           "create_vehiculo": {
             "authored": true,
@@ -5281,7 +5281,7 @@
             "page_path": "api/views/secretariador_views/create_vehiculo",
             "signature": "def create_vehiculo(request, payload: VehiculoCreate):",
             "signature_hash": "sha1:ae5b6fc4339d71d94a198de20440f230dbe229b6",
-            "stale": true
+            "stale": false
           },
           "datatable_resoluciones_filtro_ano": {
             "authored": true,
@@ -5303,7 +5303,7 @@
             "page_path": "api/views/secretariador_views/datatable_resoluciones_filtro_ano",
             "signature": "def datatable_resoluciones_filtro_ano(request):",
             "signature_hash": "sha1:2b3f5c19909fb777584240bcae6ff25a33a1afbd",
-            "stale": true
+            "stale": false
           },
           "datatable_solicitudes": {
             "authored": true,
@@ -5325,7 +5325,7 @@
             "page_path": "api/views/secretariador_views/datatable_solicitudes",
             "signature": "def datatable_solicitudes(request, draw: int=1, start: int=0, length: int=50, search: str='', order_by: str='-solicitud_actuacion_ano,-solicitud_actuacion_numero', filters: str='{}'):",
             "signature_hash": "sha1:c3e3a86388f929d413ab15be6da33ef92e59ee5a",
-            "stale": true
+            "stale": false
           },
           "datatable_solicitudes_detalle": {
             "authored": true,
@@ -5347,7 +5347,7 @@
             "page_path": "api/views/secretariador_views/datatable_solicitudes_detalle",
             "signature": "def datatable_solicitudes_detalle(request, id: int):",
             "signature_hash": "sha1:8127a74d788713ed27791308ad5742dcad5a4ba3",
-            "stale": true
+            "stale": false
           },
           "datatable_solicitudes_filtro_vehiculos": {
             "authored": true,
@@ -5369,7 +5369,7 @@
             "page_path": "api/views/secretariador_views/datatable_solicitudes_filtro_vehiculos",
             "signature": "def datatable_solicitudes_filtro_vehiculos(request):",
             "signature_hash": "sha1:4e866884be2b00852383332a96a1a83d8eec6512",
-            "stale": true
+            "stale": false
           },
           "delete_comisionado": {
             "authored": true,
@@ -5391,7 +5391,7 @@
             "page_path": "api/views/secretariador_views/delete_comisionado",
             "signature": "def delete_comisionado(request, id: int):",
             "signature_hash": "sha1:03b836d9d94efdc51d51c8a7ed61c7e2dc7fe140",
-            "stale": true
+            "stale": false
           },
           "delete_comisionado_solicitud": {
             "authored": true,
@@ -5413,7 +5413,7 @@
             "page_path": "api/views/secretariador_views/delete_comisionado_solicitud",
             "signature": "def delete_comisionado_solicitud(request, id: int):",
             "signature_hash": "sha1:eff607f1f6541227fcb3fbf409b2b00255a1bef0",
-            "stale": true
+            "stale": false
           },
           "delete_decreto": {
             "authored": true,
@@ -5463,7 +5463,7 @@
             "page_path": "api/views/secretariador_views/delete_incorporacion",
             "signature": "def delete_incorporacion(request, id: int):",
             "signature_hash": "sha1:f6d8293d4d484ea0dff1c224dc289caafbdc0334",
-            "stale": true
+            "stale": false
           },
           "delete_memorandum": {
             "authored": true,
@@ -5507,7 +5507,7 @@
             "page_path": "api/views/secretariador_views/delete_monto_viatico",
             "signature": "def delete_monto_viatico(request, id: int):",
             "signature_hash": "sha1:e25cb3b6e4b9174b1dd4e1992ccc238262b3e303",
-            "stale": true
+            "stale": false
           },
           "delete_organigrama": {
             "authored": true,
@@ -5529,7 +5529,7 @@
             "page_path": "api/views/secretariador_views/delete_organigrama",
             "signature": "def delete_organigrama(request, id: int):",
             "signature_hash": "sha1:da15d8535ae83eea971c19f94485f4aef7550c25",
-            "stale": true
+            "stale": false
           },
           "delete_resolucion": {
             "authored": true,
@@ -5601,7 +5601,7 @@
             "page_path": "api/views/secretariador_views/delete_solicitud",
             "signature": "def delete_solicitud(request, id: int):",
             "signature_hash": "sha1:4777f909f89eed09c1fe4e499881e31ce94a5903",
-            "stale": true
+            "stale": false
           },
           "delete_vehiculo": {
             "authored": true,
@@ -5629,7 +5629,7 @@
             "page_path": "api/views/secretariador_views/delete_vehiculo",
             "signature": "def delete_vehiculo(request, id: int):",
             "signature_hash": "sha1:b8cd7151c0bea1a58233366c3f32780ecf9636ef",
-            "stale": true
+            "stale": false
           },
           "list_comisionados": {
             "authored": true,
@@ -5652,7 +5652,7 @@
             "page_path": "api/views/secretariador_views/list_comisionados",
             "signature": "def list_comisionados(request, q: str=''):",
             "signature_hash": "sha1:d1171409e4b7ffd8cf00e3c93ca75eb6f733f0a9",
-            "stale": true
+            "stale": false
           },
           "list_comisionados_solicitudes": {
             "authored": true,
@@ -5675,7 +5675,7 @@
             "page_path": "api/views/secretariador_views/list_comisionados_solicitudes",
             "signature": "def list_comisionados_solicitudes(request, solicitud: str=''):",
             "signature_hash": "sha1:0a2a11d622fb7bbe0bb813076d3da2f6b0963c58",
-            "stale": true
+            "stale": false
           },
           "list_decretos": {
             "authored": true,
@@ -5721,7 +5721,7 @@
             "page_path": "api/views/secretariador_views/list_incorporaciones",
             "signature": "def list_incorporaciones(request, solicitud: str=''):",
             "signature_hash": "sha1:07da4a9c82fc935173945f919bd1bbc1a95195b6",
-            "stale": true
+            "stale": false
           },
           "list_memorandums": {
             "authored": true,
@@ -5767,7 +5767,7 @@
             "page_path": "api/views/secretariador_views/list_montos_viaticos",
             "signature": "def list_montos_viaticos(request, decreto: str=''):",
             "signature_hash": "sha1:78f354c314bd43f242ddaaa51e5ce15ee4e82083",
-            "stale": true
+            "stale": false
           },
           "list_organigramas": {
             "authored": true,
@@ -5790,7 +5790,7 @@
             "page_path": "api/views/secretariador_views/list_organigramas",
             "signature": "def list_organigramas(request):",
             "signature_hash": "sha1:a54d86ac7f30bbb026cbd82cb88999ea0b0997d1",
-            "stale": true
+            "stale": false
           },
           "list_resoluciones": {
             "authored": true,
@@ -5859,7 +5859,7 @@
             "page_path": "api/views/secretariador_views/list_solicitudes",
             "signature": "def list_solicitudes(request, provincia: str=''):",
             "signature_hash": "sha1:dd432b36061c0a04d13b5bc0dbac195dd0e6f833",
-            "stale": true
+            "stale": false
           },
           "list_vehiculos": {
             "authored": true,
@@ -5882,7 +5882,7 @@
             "page_path": "api/views/secretariador_views/list_vehiculos",
             "signature": "def list_vehiculos(request):",
             "signature_hash": "sha1:9742282197e5fe19f7c952c2e118c22bc9681d8c",
-            "stale": true
+            "stale": false
           },
           "retrieve_comisionado": {
             "authored": true,
@@ -5904,7 +5904,7 @@
             "page_path": "api/views/secretariador_views/retrieve_comisionado",
             "signature": "def retrieve_comisionado(request, id: int):",
             "signature_hash": "sha1:dce764bf02bb5b4bdc9a98cafc80fec4043714da",
-            "stale": true
+            "stale": false
           },
           "retrieve_decreto": {
             "authored": true,
@@ -5992,7 +5992,7 @@
             "page_path": "api/views/secretariador_views/retrieve_solicitud",
             "signature": "def retrieve_solicitud(request, id: int):",
             "signature_hash": "sha1:b531126ebc6575ff9ea9b66e7f98ce46afa27cbd",
-            "stale": true
+            "stale": false
           },
           "update_memorandum": {
             "authored": true,
@@ -6231,7 +6231,7 @@
     }
   },
   "carga": {
-    "generated_at": "2026-08-31T16:45:38.839133+00:00",
+    "generated_at": "2026-08-31T17:00:40.213696+00:00",
     "modules": {
       "forms/areaforms": {
         "file": "carga/forms/areaforms.py",
@@ -8310,7 +8310,7 @@
             "page_path": "carga/models/Contrato",
             "signature": "class Contrato(models.Model):",
             "signature_hash": "sha1:604de6103e2764c477c2b13eab7c9240fcad90de",
-            "stale": true
+            "stale": false
           },
           "ContratoMonto": {
             "authored": true,
@@ -8368,7 +8368,7 @@
             "page_path": "carga/models/ContratoMonto",
             "signature": "class ContratoMonto(models.Model):",
             "signature_hash": "sha1:cdd858d141f24c6a1eafdf92583e5e316c5c1276",
-            "stale": true
+            "stale": false
           },
           "ContratoRubro": {
             "authored": true,
@@ -8406,7 +8406,7 @@
             "page_path": "carga/models/ContratoRubro",
             "signature": "class ContratoRubro(models.Model):",
             "signature_hash": "sha1:eb5b97f956bc2b2ea87d23d2bb069bad514e85f7",
-            "stale": true
+            "stale": false
           },
           "ContratoTramoPago": {
             "authored": true,
@@ -8464,7 +8464,7 @@
             "page_path": "carga/models/ContratoTramoPago",
             "signature": "class ContratoTramoPago(models.Model):",
             "signature_hash": "sha1:794588260756ea3f13a489d53019e0792816c7d1",
-            "stale": true
+            "stale": false
           },
           "ContratosDigitales": {
             "authored": true,
@@ -8511,7 +8511,7 @@
             "page_path": "carga/models/ContratosDigitales",
             "signature": "class ContratosDigitales(models.Model):",
             "signature_hash": "sha1:8d3d699a4da86780625333dfc5b7f20a4635eb6b",
-            "stale": true
+            "stale": false
           },
           "Departamento": {
             "authored": true,
@@ -8767,7 +8767,7 @@
             "page_path": "carga/models/FojaDeMedicion",
             "signature": "class FojaDeMedicion(models.Model):",
             "signature_hash": "sha1:16cb80f0b6f128677bd1fe0c8b332210b573c29a",
-            "stale": true
+            "stale": false
           },
           "FojaDeMedicionFoto": {
             "authored": true,
@@ -8810,7 +8810,7 @@
             "page_path": "carga/models/FojaDeMedicionFoto",
             "signature": "class FojaDeMedicionFoto(models.Model):",
             "signature_hash": "sha1:0c27df1b1f5866f96f5d49d066e437493f381397",
-            "stale": true
+            "stale": false
           },
           "FojaDeMedicionItem": {
             "authored": true,
@@ -8878,7 +8878,7 @@
             "page_path": "carga/models/FojaDeMedicionItem",
             "signature": "class FojaDeMedicionItem(models.Model):",
             "signature_hash": "sha1:11a6c0cf2467622b2d382ce4413e15c7fc8f6b48",
-            "stale": true
+            "stale": false
           },
           "INDEC": {
             "authored": true,
@@ -8910,7 +8910,7 @@
             "page_path": "carga/models/INDEC",
             "signature": "class INDEC(models.Model):",
             "signature_hash": "sha1:5ebaa718231f4e8d835e388144cac7be4d18b949",
-            "stale": true
+            "stale": false
           },
           "Localidad": {
             "authored": true,
@@ -9572,7 +9572,7 @@
             "page_path": "carga/models/PlanDeTrabajosEtapa",
             "signature": "class PlanDeTrabajosEtapa(models.Model):",
             "signature_hash": "sha1:e2a35cec7422d45618a7a37b8fdaa81cf323d0df",
-            "stale": true
+            "stale": false
           },
           "PlanDeTrabajosEtapaItem": {
             "authored": true,
@@ -9635,7 +9635,7 @@
             "page_path": "carga/models/PlanDeTrabajosEtapaItem",
             "signature": "class PlanDeTrabajosEtapaItem(models.Model):",
             "signature_hash": "sha1:4bccfef81e05cc9b0c4431a3583e0582890b8f4e",
-            "stale": true
+            "stale": false
           },
           "PlanDeTrabajosItem": {
             "authored": true,
@@ -10300,7 +10300,7 @@
             "page_path": "carga/models/Uvi",
             "signature": "class Uvi(models.Model):",
             "signature_hash": "sha1:d87f361c3091d2682c27cb9ac912ad3a77c2d70e",
-            "stale": true
+            "stale": false
           },
           "add_months": {
             "authored": true,
@@ -13375,7 +13375,7 @@
             "page_path": "carga/views/fojademedicionviews/CrearFojaDeMedicion",
             "signature": "class CrearFojaDeMedicion(LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):",
             "signature_hash": "sha1:8ecae47e4a1ef19d4f68bc3a9878b8da4e0da516",
-            "stale": true
+            "stale": false
           },
           "DetalleFojaDeMedicion": {
             "authored": true,
@@ -13410,7 +13410,7 @@
             "page_path": "carga/views/fojademedicionviews/DetalleFojaDeMedicion",
             "signature": "class DetalleFojaDeMedicion(PermissionRequiredMixin, generic.DetailView):",
             "signature_hash": "sha1:32e7eebcf48470ff794cc148726cb75775f21d2d",
-            "stale": true
+            "stale": false
           },
           "EliminarFojaDeMedicion": {
             "authored": true,
@@ -13446,7 +13446,7 @@
             "page_path": "carga/views/fojademedicionviews/EliminarFojaDeMedicion",
             "signature": "class EliminarFojaDeMedicion(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):",
             "signature_hash": "sha1:6d339cbc3c4db0a7299368c5c06f6d6db77c39bf",
-            "stale": true
+            "stale": false
           },
           "ImprimirFojaDeMedicion": {
             "authored": true,
@@ -13481,7 +13481,7 @@
             "page_path": "carga/views/fojademedicionviews/ImprimirFojaDeMedicion",
             "signature": "class ImprimirFojaDeMedicion(PermissionRequiredMixin, generic.DetailView):",
             "signature_hash": "sha1:315111725cf7b8935d92fc940d81c4f5450a492c",
-            "stale": true
+            "stale": false
           },
           "UpdateFojaDeMedicion": {
             "authored": true,
@@ -13548,7 +13548,7 @@
             "page_path": "carga/views/fojademedicionviews/UpdateFojaDeMedicion",
             "signature": "class UpdateFojaDeMedicion(LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView):",
             "signature_hash": "sha1:416d1277a03178ba98b4be84ab6fe56c05472f38",
-            "stale": true
+            "stale": false
           },
           "_foja_detalle_context": {
             "authored": true,
@@ -14334,7 +14334,7 @@
             "page_path": "carga/views/plandetrabajosetapaviews/PlanDeTrabajosEtapaMatriz",
             "signature": "class PlanDeTrabajosEtapaMatriz(LogInvalidFormMixin, PermissionRequiredMixin, generic.View):",
             "signature_hash": "sha1:4304f710cd31f5ea83130f8944ea802e8a26c42b",
-            "stale": true
+            "stale": false
           }
         }
       },
@@ -14456,7 +14456,7 @@
             "page_path": "carga/views/plandetrabajosrubroviews/CrearPlanDeTrabajosRubro",
             "signature": "class CrearPlanDeTrabajosRubro(LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):",
             "signature_hash": "sha1:47b23a4569eeaacce3af7d8c4aeb8527af23263b",
-            "stale": true
+            "stale": false
           },
           "UpdatePlanDeTrabajosRubro": {
             "authored": true,
@@ -14543,7 +14543,7 @@
             "page_path": "carga/views/plandetrabajosrubroviews/UpdatePlanDeTrabajosRubro",
             "signature": "class UpdatePlanDeTrabajosRubro(LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView):",
             "signature_hash": "sha1:f4985cb54c1c5e449d70749df5039ad20aa85639",
-            "stale": true
+            "stale": false
           }
         }
       },
@@ -14644,7 +14644,7 @@
             "page_path": "carga/views/plandetrabajosviews/CrearPlanDeTrabajos",
             "signature": "class CrearPlanDeTrabajos(LogInvalidFormMixin, PermissionRequiredMixin, generic.CreateView):",
             "signature_hash": "sha1:7d0bd12200e192f9e97ef91cb757f7041426e9ee",
-            "stale": true
+            "stale": false
           },
           "UpdatePlanDeTrabajos": {
             "authored": true,
@@ -14680,7 +14680,7 @@
             "page_path": "carga/views/plandetrabajosviews/UpdatePlanDeTrabajos",
             "signature": "class UpdatePlanDeTrabajos(LogInvalidFormMixin, PermissionRequiredMixin, generic.UpdateView):",
             "signature_hash": "sha1:31c052bd61571c4fc285ff1dced4adc07982ab4c",
-            "stale": true
+            "stale": false
           }
         }
       },
@@ -15342,7 +15342,7 @@
             "page_path": "carga/views/reportes/CrearListaUvi",
             "signature": "class CrearListaUvi(PermissionRequiredMixin, generic.ListView):",
             "signature_hash": "sha1:978a2cb724589a3a714b2cf0105d8642eada2243",
-            "stale": true
+            "stale": false
           },
           "CrearReporteObraView": {
             "authored": true,
@@ -15454,7 +15454,7 @@
             "page_path": "carga/views/reportes/refresh_uvi_from_bcra",
             "signature": "def refresh_uvi_from_bcra(request):",
             "signature_hash": "sha1:00801f95b29882cbe09bc1094c7a679979bcda0c",
-            "stale": true
+            "stale": false
           }
         }
       },
@@ -15606,7 +15606,7 @@
     }
   },
   "core": {
-    "generated_at": "2026-08-31T16:45:36.722530+00:00",
+    "generated_at": "2026-08-31T17:00:38.109731+00:00",
     "modules": {
       "forms": {
         "file": "core/forms.py",
@@ -15801,7 +15801,7 @@
             "page_path": "core/forms/CopiarBucketDevForm",
             "signature": "class CopiarBucketDevForm(BaseCommandRunForm):",
             "signature_hash": "sha1:bcffd07f25477bb5fb4435d082ec577927df78c0",
-            "stale": true
+            "stale": false
           },
           "DryRunCheckApplyForm": {
             "authored": true,
@@ -15886,7 +15886,7 @@
             "page_path": "core/forms/EmpaquetarResolucionesMensualForm",
             "signature": "class EmpaquetarResolucionesMensualForm(BaseCommandRunForm):",
             "signature_hash": "sha1:001182f8cf73fcf1254fdcd9026d943220dac209",
-            "stale": true
+            "stale": false
           },
           "FixBucketContentTypeForm": {
             "authored": true,
@@ -15918,7 +15918,7 @@
             "page_path": "core/forms/FixBucketContentTypeForm",
             "signature": "class FixBucketContentTypeForm(BaseCommandRunForm):",
             "signature_hash": "sha1:44c8445debfa19a291573e92ee4d2df1ba3b330b",
-            "stale": true
+            "stale": false
           },
           "FixObraResolucionNumbersForm": {
             "authored": true,
@@ -15992,7 +15992,7 @@
             "page_path": "core/forms/ResaveComisionadoForm",
             "signature": "class ResaveComisionadoForm(BaseCommandRunForm):",
             "signature_hash": "sha1:43ed9c15d7b1a38c4df38d0bfdfe8c1fcfbcb3ce",
-            "stale": true
+            "stale": false
           },
           "SyncDecretosSgtForm": {
             "authored": true,
@@ -16024,7 +16024,7 @@
             "page_path": "core/forms/SyncDecretosSgtForm",
             "signature": "class SyncDecretosSgtForm(BaseCommandRunForm):",
             "signature_hash": "sha1:66e2438f70362ae388cda04d2a90876e3bbbe45e",
-            "stale": true
+            "stale": false
           },
           "SyncResolucionesSgtForm": {
             "authored": true,
@@ -16056,7 +16056,7 @@
             "page_path": "core/forms/SyncResolucionesSgtForm",
             "signature": "class SyncResolucionesSgtForm(BaseCommandRunForm):",
             "signature_hash": "sha1:5fdd42504f07126f120c0c9d5b48db0bcfbd7f0c",
-            "stale": true
+            "stale": false
           },
           "TodoForm": {
             "authored": true,
@@ -16178,7 +16178,7 @@
             "page_path": "core/models/LoginEvent",
             "signature": "class LoginEvent(models.Model):",
             "signature_hash": "sha1:444552195965df57706e1a82f589fe71a09eeadd",
-            "stale": true
+            "stale": false
           },
           "ManagementCommandRun": {
             "authored": true,
@@ -16443,7 +16443,7 @@
             "page_path": "core/views/DashboardView",
             "signature": "class DashboardView(SuperuserRequiredMixin, TemplateView):",
             "signature_hash": "sha1:8ce41238898a302b44b325cdd14179a6107dd3a9",
-            "stale": true
+            "stale": false
           },
           "FormValidationErrorListView": {
             "authored": true,
@@ -16498,7 +16498,7 @@
             "page_path": "core/views/KnowledgeBaseIndexView",
             "signature": "class KnowledgeBaseIndexView(SuperuserRequiredMixin, TemplateView):",
             "signature_hash": "sha1:cd3c9c1627d88d193a2ad0a4a2940343a9331dba",
-            "stale": true
+            "stale": false
           },
           "KnowledgeBasePageView": {
             "authored": true,
@@ -16531,7 +16531,7 @@
             "page_path": "core/views/KnowledgeBasePageView",
             "signature": "class KnowledgeBasePageView(SuperuserRequiredMixin, TemplateView):",
             "signature_hash": "sha1:e5f9bf11e9482a12f7f139823ecd39f3c92ac528",
-            "stale": true
+            "stale": false
           },
           "ManagementCommandRunDetailView": {
             "authored": true,
@@ -16553,7 +16553,7 @@
             "page_path": "core/views/ManagementCommandRunDetailView",
             "signature": "class ManagementCommandRunDetailView(SuperuserRequiredMixin, DetailView):",
             "signature_hash": "sha1:f0e9912690712d6a159a3d1e6d1654d96e1b00d0",
-            "stale": true
+            "stale": false
           },
           "ManagementCommandRunKillView": {
             "authored": true,
@@ -16586,7 +16586,7 @@
             "page_path": "core/views/ManagementCommandRunKillView",
             "signature": "class ManagementCommandRunKillView(SuperuserRequiredMixin, View):",
             "signature_hash": "sha1:4e68b14c4851fddab0009bf7a562947a5d05532e",
-            "stale": true
+            "stale": false
           },
           "ManagementCommandRunLogView": {
             "authored": true,
@@ -16619,7 +16619,7 @@
             "page_path": "core/views/ManagementCommandRunLogView",
             "signature": "class ManagementCommandRunLogView(SuperuserRequiredMixin, View):",
             "signature_hash": "sha1:66efc27f94cb87240ce724d11ee58b41e9d90ed1",
-            "stale": true
+            "stale": false
           },
           "ManagementCommandsView": {
             "authored": true,
@@ -16672,7 +16672,7 @@
             "page_path": "core/views/ManagementCommandsView",
             "signature": "class ManagementCommandsView(SuperuserRequiredMixin, TemplateView):",
             "signature_hash": "sha1:05da64c4e885c9ca69728222ac56c3ad2c8168fe",
-            "stale": true
+            "stale": false
           },
           "SchemaDocsView": {
             "authored": true,
@@ -16786,7 +16786,7 @@
             "page_path": "core/views/TodoCreateView",
             "signature": "class TodoCreateView(SuperuserRequiredMixin, CreateView):",
             "signature_hash": "sha1:c973fee5192bbaf364771cf0da19ec98533182f9",
-            "stale": true
+            "stale": false
           },
           "TodoDeleteView": {
             "authored": true,
@@ -16808,7 +16808,7 @@
             "page_path": "core/views/TodoDeleteView",
             "signature": "class TodoDeleteView(SuperuserRequiredMixin, DeleteView):",
             "signature_hash": "sha1:96b17b66cb6f093c1e1cab43a3ffde65a75a2524",
-            "stale": true
+            "stale": false
           },
           "TodoListView": {
             "authored": true,
@@ -16841,7 +16841,7 @@
             "page_path": "core/views/TodoListView",
             "signature": "class TodoListView(SuperuserRequiredMixin, ListView):",
             "signature_hash": "sha1:df31abaaa66880ed536cfad41bdf3b2a37ec6a2b",
-            "stale": true
+            "stale": false
           },
           "TodoStatusUpdateView": {
             "authored": true,
@@ -16874,7 +16874,7 @@
             "page_path": "core/views/TodoStatusUpdateView",
             "signature": "class TodoStatusUpdateView(SuperuserRequiredMixin, View):",
             "signature_hash": "sha1:988845cc843e49cf5c895f36118934824016b3dd",
-            "stale": true
+            "stale": false
           },
           "TodoUpdateView": {
             "authored": true,
@@ -16896,7 +16896,7 @@
             "page_path": "core/views/TodoUpdateView",
             "signature": "class TodoUpdateView(SuperuserRequiredMixin, UpdateView):",
             "signature_hash": "sha1:6b6b842923c9f636eff945ae198055a269ccf584",
-            "stale": true
+            "stale": false
           },
           "_rewrite_doc_links": {
             "authored": true,
@@ -16921,7 +16921,7 @@
             "page_path": "core/views/_rewrite_doc_links",
             "signature": "def _rewrite_doc_links(html: str, page_path: str) -> str:",
             "signature_hash": "sha1:13eaef14dd596c0ce2f0f435590ee0116678ea93",
-            "stale": true
+            "stale": false
           },
           "schema_docs_asset": {
             "authored": true,
@@ -16942,14 +16942,14 @@
             "page_path": "core/views/schema_docs_asset",
             "signature": "def schema_docs_asset(request, path):",
             "signature_hash": "sha1:72474c67b063d2d9dac3ebd7ea6bb79b6ce446cd",
-            "stale": true
+            "stale": false
           }
         }
       }
     }
   },
   "personalizador": {
-    "generated_at": "2026-08-31T16:45:42.506717+00:00",
+    "generated_at": "2026-08-31T17:00:43.894213+00:00",
     "modules": {
       "forms/actividadespecificaforms": {
         "file": "personalizador/forms/actividadespecificaforms.py",
@@ -22827,7 +22827,7 @@
     }
   },
   "secretariador": {
-    "generated_at": "2026-08-31T16:45:40.678885+00:00",
+    "generated_at": "2026-08-31T17:00:42.068943+00:00",
     "modules": {
       "forms/comisionadoform": {
         "file": "secretariador/forms/comisionadoform.py",
@@ -22868,7 +22868,7 @@
             "page_path": "secretariador/forms/comisionadoform/ComisionadoExternoForm",
             "signature": "class ComisionadoExternoForm(BaseFormMixin, forms.ModelForm):",
             "signature_hash": "sha1:f4dd49fb6c3d5a979bea4467cdda8790d5cf3fbb",
-            "stale": true
+            "stale": false
           }
         }
       },
@@ -23175,7 +23175,7 @@
             "page_path": "secretariador/forms/instrumentoslegalesform/InstrumentosLegalesDecretosForm",
             "signature": "class InstrumentosLegalesDecretosForm(BaseFormMixin, forms.ModelForm):",
             "signature_hash": "sha1:b56786e842c382848e615edacb983c391b38d7e5",
-            "stale": true
+            "stale": false
           },
           "InstrumentosLegalesMemorandumForm": {
             "authored": true,
@@ -23263,7 +23263,7 @@
             "page_path": "secretariador/forms/instrumentoslegalesform/InstrumentosLegalesResolucionesDirectorioForm",
             "signature": "class InstrumentosLegalesResolucionesDirectorioForm(BaseFormMixin, forms.ModelForm):",
             "signature_hash": "sha1:58aaf9683ac4d892879b79ea278c1bef5007140f",
-            "stale": true
+            "stale": false
           },
           "InstrumentosLegalesResolucionesPresidenciaForm": {
             "authored": true,
@@ -23307,7 +23307,7 @@
             "page_path": "secretariador/forms/instrumentoslegalesform/InstrumentosLegalesResolucionesPresidenciaForm",
             "signature": "class InstrumentosLegalesResolucionesPresidenciaForm(BaseFormMixin, forms.ModelForm):",
             "signature_hash": "sha1:4e3632e51b7e2c21e2b778d11ab866aa671f3f79",
-            "stale": true
+            "stale": false
           }
         }
       },
@@ -23817,7 +23817,7 @@
             "page_path": "secretariador/models/ComisionadoSolicitud",
             "signature": "class ComisionadoSolicitud(models.Model):",
             "signature_hash": "sha1:6cdb7e6c492b1ab5c06ed43bfa4eb5bcd44da878",
-            "stale": true
+            "stale": false
           },
           "ConcatOp": {
             "authored": true,
@@ -23934,7 +23934,7 @@
             "page_path": "secretariador/models/EncabezadoDocumento",
             "signature": "class EncabezadoDocumento(models.Model):",
             "signature_hash": "sha1:f1b2fda450b0cb261ed6388c5f521cc6183467e8",
-            "stale": true
+            "stale": false
           },
           "Incorporacion": {
             "authored": true,
@@ -24012,7 +24012,7 @@
             "page_path": "secretariador/models/Incorporacion",
             "signature": "class Incorporacion(models.Model):",
             "signature_hash": "sha1:8954cc927ee72af13491be1f64b9081e6ab2ca2b",
-            "stale": true
+            "stale": false
           },
           "InstrumentosLegalesDecretos": {
             "authored": true,
@@ -24080,7 +24080,7 @@
             "page_path": "secretariador/models/InstrumentosLegalesDecretos",
             "signature": "class InstrumentosLegalesDecretos(models.Model):",
             "signature_hash": "sha1:743f397647b16f832d789ab2e7f9be699dbcaaf0",
-            "stale": true
+            "stale": false
           },
           "InstrumentosLegalesMemorandum": {
             "authored": true,
@@ -24228,7 +24228,7 @@
             "page_path": "secretariador/models/InstrumentosLegalesResoluciones",
             "signature": "class InstrumentosLegalesResoluciones(models.Model):",
             "signature_hash": "sha1:fa3dc89b4e1a30e26ee83abdae07b428f2e66b1e",
-            "stale": true
+            "stale": false
           },
           "MontoViaticoDiario": {
             "authored": true,
@@ -24286,7 +24286,7 @@
             "page_path": "secretariador/models/MontoViaticoDiario",
             "signature": "class MontoViaticoDiario(models.Model):",
             "signature_hash": "sha1:8b23abf40fea8526414de14f8b3c60dae55c7305",
-            "stale": true
+            "stale": false
           },
           "Organigrama": {
             "authored": true,
@@ -24334,7 +24334,7 @@
             "page_path": "secretariador/models/Organigrama",
             "signature": "class Organigrama(models.Model):",
             "signature_hash": "sha1:593800ea065d26d022daca8a95fbe5f4efb9e7f2",
-            "stale": true
+            "stale": false
           },
           "ReglasViatico": {
             "authored": true,
@@ -24404,7 +24404,7 @@
             "page_path": "secretariador/models/ReglasViatico",
             "signature": "class ReglasViatico(models.Model):",
             "signature_hash": "sha1:43ef40538e15f86d5b583bf4d58fca51cfb8ef1d",
-            "stale": true
+            "stale": false
           },
           "Solicitud": {
             "authored": true,
@@ -24512,7 +24512,7 @@
             "page_path": "secretariador/models/Solicitud",
             "signature": "class Solicitud(models.Model):",
             "signature_hash": "sha1:f078df4241d4585a7b36dcd7b7ca36485e0d1bd4",
-            "stale": true
+            "stale": false
           },
           "Vehiculo": {
             "authored": true,
@@ -24580,7 +24580,7 @@
             "page_path": "secretariador/models/Vehiculo",
             "signature": "class Vehiculo(models.Model):",
             "signature_hash": "sha1:ccb2e923bd42c9612327a624fe3bf786d45d4e5a",
-            "stale": true
+            "stale": false
           },
           "date_validation": {
             "authored": true,
@@ -24968,7 +24968,7 @@
             "page_path": "secretariador/views/ajaxviews/ComisionadoExternoWidget",
             "signature": "class ComisionadoExternoWidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):",
             "signature_hash": "sha1:dfa9c6cc30ef6040e2abcad072732b7d125bfe76",
-            "stale": true
+            "stale": false
           },
           "ComisionadoWidget": {
             "authored": true,
@@ -25027,7 +25027,7 @@
             "page_path": "secretariador/views/ajaxviews/ComisionadoWidget",
             "signature": "class ComisionadoWidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):",
             "signature_hash": "sha1:91eafd08759779431f3888b9a76d0c1da3202ac8",
-            "stale": true
+            "stale": false
           },
           "DecretoWidget": {
             "authored": true,
@@ -25075,7 +25075,7 @@
             "page_path": "secretariador/views/ajaxviews/DecretoWidget",
             "signature": "class DecretoWidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):",
             "signature_hash": "sha1:67968df002000e2bb1a43485c776af7cd53907c0",
-            "stale": true
+            "stale": false
           },
           "LocalidadMultipleWidget": {
             "authored": true,
@@ -25226,7 +25226,7 @@
             "page_path": "secretariador/views/ajaxviews/VehiculoWidget",
             "signature": "class VehiculoWidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):",
             "signature_hash": "sha1:9802a64b555ed01b14ba14e28fd95b141322565c",
-            "stale": true
+            "stale": false
           },
           "check_resolucion": {
             "authored": true,
@@ -25321,7 +25321,7 @@
             "page_path": "secretariador/views/comisionadoviews/CrearComisionadoExterno",
             "signature": "class CrearComisionadoExterno(PopupCreateMixin, PermissionRequiredMixin, generic.CreateView):",
             "signature_hash": "sha1:71f1b482c7d573e5d0c1f81bf4bb2f6334ebe8f1",
-            "stale": true
+            "stale": false
           },
           "EliminarComisionadoExterno": {
             "authored": true,
@@ -25346,7 +25346,7 @@
             "page_path": "secretariador/views/comisionadoviews/EliminarComisionadoExterno",
             "signature": "class EliminarComisionadoExterno(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):",
             "signature_hash": "sha1:703579b6e2f736ada34034bbd61b08b6b5a557f4",
-            "stale": true
+            "stale": false
           },
           "PaginaListaComisionados": {
             "authored": true,
@@ -25368,7 +25368,7 @@
             "page_path": "secretariador/views/comisionadoviews/PaginaListaComisionados",
             "signature": "def PaginaListaComisionados(request):",
             "signature_hash": "sha1:3fd4c92c7631f574c5557e1a0a244a28aa1d383b",
-            "stale": true
+            "stale": false
           },
           "PaginaListaComisionadosExternos": {
             "authored": true,
@@ -25390,7 +25390,7 @@
             "page_path": "secretariador/views/comisionadoviews/PaginaListaComisionadosExternos",
             "signature": "def PaginaListaComisionadosExternos(request):",
             "signature_hash": "sha1:0bfe09c0d5a0ff5a93ebb09797fbe31bb584d0e7",
-            "stale": true
+            "stale": false
           },
           "UpdateComisionadoExterno": {
             "authored": true,
@@ -25414,7 +25414,7 @@
             "page_path": "secretariador/views/comisionadoviews/UpdateComisionadoExterno",
             "signature": "class UpdateComisionadoExterno(PermissionRequiredMixin, generic.UpdateView):",
             "signature_hash": "sha1:f5757886db0dca523f341c184ba6883ef60ca292",
-            "stale": true
+            "stale": false
           }
         }
       },
@@ -26689,7 +26689,7 @@
             "page_path": "secretariador/views/reportesviews/CalendarioAnual",
             "signature": "class CalendarioAnual(PermissionRequiredMixin, generic.TemplateView):",
             "signature_hash": "sha1:9909507c273305fa7629b0a12619949c0c657132",
-            "stale": true
+            "stale": false
           },
           "CalendarioSemanal": {
             "authored": true,
@@ -26724,7 +26724,7 @@
             "page_path": "secretariador/views/reportesviews/CalendarioSemanal",
             "signature": "class CalendarioSemanal(PermissionRequiredMixin, generic.TemplateView):",
             "signature_hash": "sha1:d7ca9482ae3ff2be826ec87a8e22cdb70345792e",
-            "stale": true
+            "stale": false
           },
           "CrearReporteAusenciasPorAgente": {
             "authored": true,
@@ -26759,7 +26759,7 @@
             "page_path": "secretariador/views/reportesviews/CrearReporteAusenciasPorAgente",
             "signature": "class CrearReporteAusenciasPorAgente(PermissionRequiredMixin, generic.ListView):",
             "signature_hash": "sha1:d2b3cf2961e2409af0d5ab97a0709c394816d711",
-            "stale": true
+            "stale": false
           },
           "CrearReporteComisionesDuplicadas": {
             "authored": true,
@@ -26794,7 +26794,7 @@
             "page_path": "secretariador/views/reportesviews/CrearReporteComisionesDuplicadas",
             "signature": "class CrearReporteComisionesDuplicadas(PermissionRequiredMixin, generic.ListView):",
             "signature_hash": "sha1:d350e1866d07e1f276712c610b01a81747492e7a",
-            "stale": true
+            "stale": false
           },
           "CrearReporteViaticosPorAgente": {
             "authored": true,
@@ -26864,7 +26864,7 @@
             "page_path": "secretariador/views/reportesviews/CrearReporteViaticosPorAgenteIndividual",
             "signature": "class CrearReporteViaticosPorAgenteIndividual(PermissionRequiredMixin, generic.TemplateView):",
             "signature_hash": "sha1:9062f8b8cfd60f15f5571140223dcdb518fca1e8",
-            "stale": true
+            "stale": false
           },
           "CrearReporteViaticosporArea": {
             "authored": true,
@@ -26899,7 +26899,7 @@
             "page_path": "secretariador/views/reportesviews/CrearReporteViaticosporArea",
             "signature": "class CrearReporteViaticosporArea(PermissionRequiredMixin, generic.ListView):",
             "signature_hash": "sha1:6109847d4a70539678625fa56595ee855fc52b79",
-            "stale": true
+            "stale": false
           },
           "PDFMergeTemplateView": {
             "authored": true,

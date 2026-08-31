@@ -1,5 +1,5 @@
 <h1>CrearFojaDeMedicion</h1>
-<p><strong>Módulo:</strong> <code>carga/views/fojademedicionviews.py</code> (líneas 50-186) · hereda de <code>PermissionRequiredMixin, FormsetViewMixin, generic.CreateView</code></p>
+<p><strong>Módulo:</strong> <code>carga/views/fojademedicionviews.py</code> (líneas 50-187) · hereda de <code>LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.CreateView</code></p>
 <h2>Propósito</h2>
 <p>La vista más compleja del módulo <code>fojademedicionviews</code>: sobreescribe <code>get</code>/<code>post</code> en vez
 de apoyarse en el flujo estándar de <code>CreateView</code>, porque el formset de items
@@ -15,8 +15,13 @@ Certificados elegidos en el campo <code>foja_legacy_certificados</code> (ver
 <a href="../ajaxviews/certificadolegacywidget.md">certificadolegacywidget</a>) seteándoles
 <code>certificado_foja</code> después de guardar. También setea <code>PlanDeTrabajos.trabajos_fecha_inicio</code>
 la primera vez que se carga (si el form trae ese dato y el Plan todavía no lo tiene).</p>
+<p>Por tener <code>post()</code> totalmente custom (no llama a <code>self.form_invalid()</code>), es el ejemplo
+citado en el propio docstring de <code>LogInvalidFormMixin</code> (<code>core/mixins.py</code>, fuera del
+alcance de esta base de conocimiento — no es <code>models.py</code>/<code>views.py</code>/<code>forms.py</code>) para el
+caso que necesita invocar <code>self._log_form_debug(form, formset, foto_formset)</code> a mano en
+el branch inválido — el hook automático del mixin (<code>form_invalid()</code>) nunca se dispara acá.</p>
 <h2>Firma</h2>
-<pre><code class="language-python">class CrearFojaDeMedicion(PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
+<pre><code class="language-python">class CrearFojaDeMedicion(LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
 </code></pre>
 <h2>Uso real</h2>
 <pre><code class="language-python"># carga/views/fojademedicionviews.py:140 (post)
@@ -34,4 +39,5 @@ foto_formset.save()
 <li><a href="../../models/FojaDeMedicionItem.md">FojaDeMedicionItem</a></li>
 <li><a href="../../signals/recalcular_acumulado_fojas_siguientes.md">recalcular_acumulado_fojas_siguientes</a></li>
 <li><a href="../ajaxviews/certificadolegacywidget.md">certificadolegacywidget</a></li>
+<li><a href="../../../core/models/FormValidationError.md">FormValidationError</a></li>
 </ul>

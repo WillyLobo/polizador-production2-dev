@@ -1,5 +1,5 @@
 <h1>PlanDeTrabajosEtapaMatriz</h1>
-<p><strong>Módulo:</strong> <code>carga/views/plandetrabajosetapaviews.py</code> (líneas 17-114) · hereda de <code>PermissionRequiredMixin, generic.View</code></p>
+<p><strong>Módulo:</strong> <code>carga/views/plandetrabajosetapaviews.py</code> (líneas 18-116) · hereda de <code>LogInvalidFormMixin, PermissionRequiredMixin, generic.View</code></p>
 <h2>Propósito</h2>
 <p>Carga/edita de una sola vez <strong>todas</strong> las Etapas Proyectadas de un Rubro, con una grilla
 fila=item / columna=etapa(mes) — la reproducción digital de la planilla de origen en
@@ -13,8 +13,11 @@ columna sin Etapa existente, crea una (disparando
 <a href="../../signals/auto_increment_etapa_numero.md">auto_increment_etapa_numero</a>), y para cada
 celda hace <code>get_or_create</code> + <code>save()</code> explícito del <code>PlanDeTrabajosEtapaItem</code> — ver la
 nota sobre la ausencia de cascada hacia adelante en esa página del modelo.</p>
+<p>Al ser <code>generic.View</code> puro (no <code>FormView</code>/<code>FormsetViewMixin</code>), tampoco pasa por el hook
+automático de <code>LogInvalidFormMixin</code>; el <code>post()</code> invoca <code>self._log_form_debug(form)</code> a
+mano cuando <code>build_matriz_form</code> no valida.</p>
 <h2>Firma</h2>
-<pre><code class="language-python">class PlanDeTrabajosEtapaMatriz(PermissionRequiredMixin, generic.View):
+<pre><code class="language-python">class PlanDeTrabajosEtapaMatriz(LogInvalidFormMixin, PermissionRequiredMixin, generic.View):
 </code></pre>
 <h2>Uso real</h2>
 <pre><code class="language-python"># carga/views/plandetrabajosetapaviews.py:102
@@ -27,4 +30,5 @@ etapaitem.save()
 <li><a href="../../models/PlanDeTrabajosEtapa.md">PlanDeTrabajosEtapa</a></li>
 <li><a href="../../models/PlanDeTrabajosEtapaItem.md">PlanDeTrabajosEtapaItem</a></li>
 <li><a href="../../signals/auto_increment_etapa_numero.md">auto_increment_etapa_numero</a></li>
+<li><a href="../../../core/models/FormValidationError.md">FormValidationError</a></li>
 </ul>

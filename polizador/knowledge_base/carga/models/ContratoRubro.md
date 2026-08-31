@@ -2,14 +2,13 @@
 symbol: ContratoRubro
 kind: class
 module: carga/models.py
-lines: 1374-1384
-signature_hash: sha1:85ec9d2ec8cacd3078e75b82adff08d80ba06841
+lines: 1364-1374
+signature_hash: sha1:eb5b97f956bc2b2ea87d23d2bb069bad514e85f7
 authored: true
 ---
-
 # ContratoRubro
 
-**Módulo:** `carga/models.py` (líneas 1374-1384) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 1364-1374) · hereda de `models.Model`
 
 ## Propósito
 

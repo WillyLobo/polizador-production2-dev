@@ -2,14 +2,13 @@
 symbol: create_vehiculo
 kind: function
 module: api/views/secretariador_views.py
-lines: 523-524
-signature_hash: sha1:0c0f399fdc4cf4b93eefe1c10947ff9ecdc9200c
+lines: 530-531
+signature_hash: sha1:ae5b6fc4339d71d94a198de20440f230dbe229b6
 authored: true
 ---
-
 # create_vehiculo
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 523-524)
+**Módulo:** `api/views/secretariador_views.py` (líneas 530-531)
 
 ## Propósito
 

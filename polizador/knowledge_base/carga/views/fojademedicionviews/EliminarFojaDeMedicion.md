@@ -2,14 +2,13 @@
 symbol: EliminarFojaDeMedicion
 kind: class
 module: carga/views/fojademedicionviews.py
-lines: 252-259
-signature_hash: sha1:b0de2995cece520740e001a1a67039beda3a1a31
+lines: 254-261
+signature_hash: sha1:6d339cbc3c4db0a7299368c5c06f6d6db77c39bf
 authored: true
 ---
-
 # EliminarFojaDeMedicion
 
-**Módulo:** `carga/views/fojademedicionviews.py` (líneas 252-259) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
+**Módulo:** `carga/views/fojademedicionviews.py` (líneas 254-261) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
 
 ## Propósito
 

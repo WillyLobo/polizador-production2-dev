@@ -2,14 +2,13 @@
 symbol: list_comisionados_solicitudes
 kind: function
 module: api/views/secretariador_views.py
-lines: 796-800
-signature_hash: sha1:3bae7eaf591a1e598161fd0180b102d1b3b7b4c8
+lines: 803-807
+signature_hash: sha1:0a2a11d622fb7bbe0bb813076d3da2f6b0963c58
 authored: true
 ---
-
 # list_comisionados_solicitudes
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 796-800)
+**Módulo:** `api/views/secretariador_views.py` (líneas 803-807)
 
 ## Propósito
 

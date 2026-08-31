@@ -2,14 +2,13 @@
 symbol: CalendarioSemanal
 kind: class
 module: secretariador/views/reportesviews.py
-lines: 315-331
-signature_hash: sha1:8cfbb69e6adff4df21b1fdaef023cbf9540f7a7f
+lines: 368-384
+signature_hash: sha1:d7ca9482ae3ff2be826ec87a8e22cdb70345792e
 authored: true
 ---
-
 # CalendarioSemanal
 
-**Módulo:** `secretariador/views/reportesviews.py` (líneas 315-331) · hereda de `PermissionRequiredMixin, generic.TemplateView`
+**Módulo:** `secretariador/views/reportesviews.py` (líneas 368-384) · hereda de `PermissionRequiredMixin, generic.TemplateView`
 
 ## Propósito
 

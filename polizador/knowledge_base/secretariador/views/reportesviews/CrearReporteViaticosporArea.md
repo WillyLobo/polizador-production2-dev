@@ -2,14 +2,13 @@
 symbol: CrearReporteViaticosporArea
 kind: class
 module: secretariador/views/reportesviews.py
-lines: 89-151
-signature_hash: sha1:47cc8e3fac3fef0b6332b2cbc96932e868a46ff3
+lines: 89-204
+signature_hash: sha1:6109847d4a70539678625fa56595ee855fc52b79
 authored: true
 ---
-
 # CrearReporteViaticosporArea
 
-**Módulo:** `secretariador/views/reportesviews.py` (líneas 89-151) · hereda de `PermissionRequiredMixin, generic.ListView`
+**Módulo:** `secretariador/views/reportesviews.py` (líneas 89-204) · hereda de `PermissionRequiredMixin, generic.ListView`
 
 ## Propósito
 

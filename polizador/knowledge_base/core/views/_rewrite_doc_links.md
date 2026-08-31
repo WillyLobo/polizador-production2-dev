@@ -2,14 +2,13 @@
 symbol: _rewrite_doc_links
 kind: function
 module: core/views.py
-lines: 63-75
-signature_hash: sha1:111d3146805d38b31e7e5ad21f1c09b9787364b5
+lines: 67-79
+signature_hash: sha1:13eaef14dd596c0ce2f0f435590ee0116678ea93
 authored: true
 ---
-
 # _rewrite_doc_links
 
-**Módulo:** `core/views.py` (líneas 63-75)
+**Módulo:** `core/views.py` (líneas 67-79)
 
 ## Propósito
 

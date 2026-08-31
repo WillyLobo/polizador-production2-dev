@@ -2,14 +2,13 @@
 symbol: CrearReporteViaticosPorAgenteIndividual
 kind: class
 module: secretariador/views/reportesviews.py
-lines: 293-312
-signature_hash: sha1:9706331b0c9192d502ba6568cb44c0099b60e3b2
+lines: 346-365
+signature_hash: sha1:9062f8b8cfd60f15f5571140223dcdb518fca1e8
 authored: true
 ---
-
 # CrearReporteViaticosPorAgenteIndividual
 
-**Módulo:** `secretariador/views/reportesviews.py` (líneas 293-312) · hereda de `PermissionRequiredMixin, generic.TemplateView`
+**Módulo:** `secretariador/views/reportesviews.py` (líneas 346-365) · hereda de `PermissionRequiredMixin, generic.TemplateView`
 
 ## Propósito
 

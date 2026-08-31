@@ -2,14 +2,14 @@
 symbol: CrearFojaDeMedicion
 kind: class
 module: carga/views/fojademedicionviews.py
-lines: 50-186
-signature_hash: sha1:ddcb5268930080d1f5e075fe0dbb579df762531b
+lines: 50-187
+signature_hash: sha1:8ecae47e4a1ef19d4f68bc3a9878b8da4e0da516
 authored: true
 ---
 
 # CrearFojaDeMedicion
 
-**Módulo:** `carga/views/fojademedicionviews.py` (líneas 50-186) · hereda de `PermissionRequiredMixin, FormsetViewMixin, generic.CreateView`
+**Módulo:** `carga/views/fojademedicionviews.py` (líneas 50-187) · hereda de `LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.CreateView`
 
 ## Propósito
 
@@ -29,10 +29,16 @@ Certificados elegidos en el campo `foja_legacy_certificados` (ver
 `certificado_foja` después de guardar. También setea `PlanDeTrabajos.trabajos_fecha_inicio`
 la primera vez que se carga (si el form trae ese dato y el Plan todavía no lo tiene).
 
+Por tener `post()` totalmente custom (no llama a `self.form_invalid()`), es el ejemplo
+citado en el propio docstring de `LogInvalidFormMixin` (`core/mixins.py`, fuera del
+alcance de esta base de conocimiento — no es `models.py`/`views.py`/`forms.py`) para el
+caso que necesita invocar `self._log_form_debug(form, formset, foto_formset)` a mano en
+el branch inválido — el hook automático del mixin (`form_invalid()`) nunca se dispara acá.
+
 ## Firma
 
 ```python
-class CrearFojaDeMedicion(PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
+class CrearFojaDeMedicion(LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
 ```
 
 ## Uso real
@@ -54,3 +60,4 @@ foto_formset.save()
 - [FojaDeMedicionItem](../../models/FojaDeMedicionItem.md)
 - [recalcular_acumulado_fojas_siguientes](../../signals/recalcular_acumulado_fojas_siguientes.md)
 - [certificadolegacywidget](../ajaxviews/certificadolegacywidget.md)
+- [FormValidationError](../../../core/models/FormValidationError.md)

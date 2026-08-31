@@ -2,14 +2,13 @@
 symbol: delete_comisionado_solicitud
 kind: function
 module: api/views/secretariador_views.py
-lines: 811-813
-signature_hash: sha1:ef2017d748ce3910f90ef4a05144147c1daf2ad5
+lines: 818-820
+signature_hash: sha1:eff607f1f6541227fcb3fbf409b2b00255a1bef0
 authored: true
 ---
-
 # delete_comisionado_solicitud
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 811-813)
+**Módulo:** `api/views/secretariador_views.py` (líneas 818-820)
 
 ## Propósito
 

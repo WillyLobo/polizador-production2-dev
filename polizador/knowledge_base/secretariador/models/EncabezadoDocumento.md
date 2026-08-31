@@ -2,14 +2,13 @@
 symbol: EncabezadoDocumento
 kind: class
 module: secretariador/models.py
-lines: 644-670
-signature_hash: sha1:8ef455e2f5a43efe2f5e9e0ee78ca1637aff4e52
+lines: 654-680
+signature_hash: sha1:f1b2fda450b0cb261ed6388c5f521cc6183467e8
 authored: true
 ---
-
 # EncabezadoDocumento
 
-**Módulo:** `secretariador/models.py` (líneas 644-670) · hereda de `models.Model`
+**Módulo:** `secretariador/models.py` (líneas 654-680) · hereda de `models.Model`
 
 ## Propósito
 

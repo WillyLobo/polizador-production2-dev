@@ -2,14 +2,13 @@
 symbol: _generoagente_datatable_row
 kind: function
 module: api/views/personalizador_views.py
-lines: 282-289
-signature_hash: sha1:53aa03d1eb90c0a1f77d9ab7be520e041ffda0b2
+lines: 272-279
+signature_hash: sha1:5cf14456da2fefd7f38647bd9beeaf5aac170f6b
 authored: true
 ---
-
 # _generoagente_datatable_row
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 282-289)
+**Módulo:** `api/views/personalizador_views.py` (líneas 272-279)
 
 ## Propósito
 

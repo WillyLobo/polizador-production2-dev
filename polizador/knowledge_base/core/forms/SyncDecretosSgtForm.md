@@ -2,14 +2,13 @@
 symbol: SyncDecretosSgtForm
 kind: class
 module: core/forms.py
-lines: 243-281
-signature_hash: sha1:a214a3e0f2057e79a1f82d1ae73f545e544b80d1
+lines: 250-288
+signature_hash: sha1:66e2438f70362ae388cda04d2a90876e3bbbe45e
 authored: true
 ---
-
 # SyncDecretosSgtForm
 
-**Módulo:** `core/forms.py` (líneas 243-281) · hereda de `BaseCommandRunForm`
+**Módulo:** `core/forms.py` (líneas 250-288) · hereda de `BaseCommandRunForm`
 
 ## Propósito
 

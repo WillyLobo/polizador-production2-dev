@@ -2,14 +2,13 @@
 symbol: _vehiculo_datatable_row
 kind: function
 module: api/views/secretariador_views.py
-lines: 534-553
-signature_hash: sha1:f31bcf6eaa77ed38ab7213316b193fbc5186b631
+lines: 541-560
+signature_hash: sha1:2d2bcec47db66f65acdd3e70d58b2377f610cd76
 authored: true
 ---
-
 # _vehiculo_datatable_row
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 534-553)
+**Módulo:** `api/views/secretariador_views.py` (líneas 541-560)
 
 ## Propósito
 

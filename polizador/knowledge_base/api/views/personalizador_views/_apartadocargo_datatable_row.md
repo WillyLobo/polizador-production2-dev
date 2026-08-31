@@ -2,14 +2,13 @@
 symbol: _apartadocargo_datatable_row
 kind: function
 module: api/views/personalizador_views.py
-lines: 384-391
-signature_hash: sha1:3a2afb7f70561a3d6a931a25cad92cfb141d5719
+lines: 374-381
+signature_hash: sha1:827713d00eb1a4840200d283973ae6f250f85d24
 authored: true
 ---
-
 # _apartadocargo_datatable_row
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 384-391)
+**Módulo:** `api/views/personalizador_views.py` (líneas 374-381)
 
 ## Propósito
 

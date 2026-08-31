@@ -2,14 +2,13 @@
 symbol: _formatear_antiguedad
 kind: function
 module: api/views/personalizador_views.py
-lines: 697-700
-signature_hash: sha1:b011abb2f8829e6ef0a2adef38b37c98152d8037
+lines: 687-690
+signature_hash: sha1:2aaec4834c3ef692cc11fa7550eeaa43f607dd07
 authored: true
 ---
-
 # _formatear_antiguedad
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 697-700)
+**Módulo:** `api/views/personalizador_views.py` (líneas 687-690)
 
 ## Propósito
 

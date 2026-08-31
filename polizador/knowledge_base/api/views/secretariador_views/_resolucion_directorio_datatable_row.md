@@ -2,14 +2,13 @@
 symbol: _resolucion_directorio_datatable_row
 kind: function
 module: api/views/secretariador_views.py
-lines: 393-414
-signature_hash: sha1:df00575201330518b2df065ebc4996519b997943
+lines: 400-421
+signature_hash: sha1:7fbee839d7ae660c884a970c66f574049fe0aa19
 authored: true
 ---
-
 # _resolucion_directorio_datatable_row
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 393-414)
+**Módulo:** `api/views/secretariador_views.py` (líneas 400-421)
 
 ## Propósito
 

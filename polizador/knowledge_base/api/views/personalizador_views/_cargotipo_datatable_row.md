@@ -2,14 +2,13 @@
 symbol: _cargotipo_datatable_row
 kind: function
 module: api/views/personalizador_views.py
-lines: 480-487
-signature_hash: sha1:9af0286494af3b1c1b075e96f4e7a9176a1778a8
+lines: 470-477
+signature_hash: sha1:726a3346526ff72cb871dd669f040613763cef40
 authored: true
 ---
-
 # _cargotipo_datatable_row
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 480-487)
+**Módulo:** `api/views/personalizador_views.py` (líneas 470-477)
 
 ## Propósito
 

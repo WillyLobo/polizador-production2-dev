@@ -2,14 +2,13 @@
 symbol: SyncResolucionesSgtForm
 kind: class
 module: core/forms.py
-lines: 200-240
-signature_hash: sha1:70064e2366f7f04eb5a68f6528abf4b9512de45b
+lines: 207-247
+signature_hash: sha1:5fdd42504f07126f120c0c9d5b48db0bcfbd7f0c
 authored: true
 ---
-
 # SyncResolucionesSgtForm
 
-**Módulo:** `core/forms.py` (líneas 200-240) · hereda de `BaseCommandRunForm`
+**Módulo:** `core/forms.py` (líneas 207-247) · hereda de `BaseCommandRunForm`
 
 ## Propósito
 

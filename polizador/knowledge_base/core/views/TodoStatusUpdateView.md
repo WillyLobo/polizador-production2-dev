@@ -2,14 +2,13 @@
 symbol: TodoStatusUpdateView
 kind: class
 module: core/views.py
-lines: 217-226
-signature_hash: sha1:50ebd4fd472216e4c113320ef676f365649aac03
+lines: 221-230
+signature_hash: sha1:988845cc843e49cf5c895f36118934824016b3dd
 authored: true
 ---
-
 # TodoStatusUpdateView
 
-**Módulo:** `core/views.py` (líneas 217-226) · hereda de `SuperuserRequiredMixin, View`
+**Módulo:** `core/views.py` (líneas 221-230) · hereda de `SuperuserRequiredMixin, View`
 
 ## Propósito
 

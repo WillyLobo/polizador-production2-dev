@@ -2,14 +2,13 @@
 symbol: _grupocargo_datatable_row
 kind: function
 module: api/views/personalizador_views.py
-lines: 426-433
-signature_hash: sha1:83114b587f09a7fa7b0ee36ef8f95ce1b2ab9714
+lines: 416-423
+signature_hash: sha1:6e9b46844ab9d5245fa740cc8b38acb8b80c0e35
 authored: true
 ---
-
 # _grupocargo_datatable_row
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 426-433)
+**Módulo:** `api/views/personalizador_views.py` (líneas 416-423)
 
 ## Propósito
 

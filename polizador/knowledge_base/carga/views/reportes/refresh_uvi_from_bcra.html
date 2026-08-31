@@ -1,5 +1,5 @@
 <h1>refresh_uvi_from_bcra</h1>
-<p><strong>Módulo:</strong> <code>carga/views/reportes.py</code> (líneas 189-191)</p>
+<p><strong>Módulo:</strong> <code>carga/views/reportes.py</code> (líneas 188-190)</p>
 <h2>Propósito</h2>
 <p>Dispara el management command <code>bcra_uvi</code> (sincroniza cotizaciones UVI desde la API pública del BCRA, ver <code>carga/bcra_api.py</code>/CLAUDE.md) directamente desde un request HTTP, y redirige de vuelta al listado de UVI. Nota: corre el comando <strong>síncronamente dentro del request</strong> (<code>call_command</code> sin cola de tareas) — si el BCRA responde lento, el usuario espera esa misma demora en el navegador.</p>
 <h2>Firma</h2>

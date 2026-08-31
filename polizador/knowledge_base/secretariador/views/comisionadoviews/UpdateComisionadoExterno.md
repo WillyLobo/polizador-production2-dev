@@ -2,14 +2,13 @@
 symbol: UpdateComisionadoExterno
 kind: class
 module: secretariador/views/comisionadoviews.py
-lines: 83-89
-signature_hash: sha1:9f8c69734779aca35ecd6614169853a3321aa5bb
+lines: 47-53
+signature_hash: sha1:f5757886db0dca523f341c184ba6883ef60ca292
 authored: true
 ---
-
 # UpdateComisionadoExterno
 
-**Módulo:** `secretariador/views/comisionadoviews.py` (líneas 83-89) · hereda de `PermissionRequiredMixin, generic.UpdateView`
+**Módulo:** `secretariador/views/comisionadoviews.py` (líneas 47-53) · hereda de `PermissionRequiredMixin, generic.UpdateView`
 
 ## Propósito
 

@@ -3,13 +3,13 @@ symbol: CrearPlanDeTrabajosRubro
 kind: class
 module: carga/views/plandetrabajosrubroviews.py
 lines: 12-96
-signature_hash: sha1:77bc5d7d1fdf7eb6d7b5c9d2ac308b726af8c31a
+signature_hash: sha1:47b23a4569eeaacce3af7d8c4aeb8527af23263b
 authored: true
 ---
 
 # CrearPlanDeTrabajosRubro
 
-**Módulo:** `carga/views/plandetrabajosrubroviews.py` (líneas 12-96) · hereda de `PermissionRequiredMixin, FormsetViewMixin, generic.CreateView`
+**Módulo:** `carga/views/plandetrabajosrubroviews.py` (líneas 12-96) · hereda de `LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.CreateView`
 
 ## Propósito
 
@@ -22,10 +22,15 @@ chocar con historial previo. También acota `rubro_anterior` a Rubros de la mism
 otro Plan) y `rubro_contratomonto` a los montos del Contrato vinculado al Plan (o de
 cualquier Contrato de la Obra si el Plan no tiene uno vinculado).
 
+A diferencia de `CrearFojaDeMedicion`, su `get`/`post` propios solo fijan `success_url`
+antes de delegar en `super()` (`FormsetViewMixin`), así que el hook automático de
+`LogInvalidFormMixin.form_invalid()` sí se dispara solo — no hace falta (ni hay) una
+llamada manual a `_log_form_debug`.
+
 ## Firma
 
 ```python
-class CrearPlanDeTrabajosRubro(PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
+class CrearPlanDeTrabajosRubro(LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
 ```
 
 ## Uso real
@@ -36,3 +41,4 @@ class CrearPlanDeTrabajosRubro(PermissionRequiredMixin, FormsetViewMixin, generi
 
 - [PlanDeTrabajosRubro](../../models/PlanDeTrabajosRubro.md)
 - [rubroanteriorwidget](../ajaxviews/rubroanteriorwidget.md)
+- [FormValidationError](../../../core/models/FormValidationError.md)

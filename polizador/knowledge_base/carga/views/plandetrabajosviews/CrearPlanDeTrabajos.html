@@ -1,5 +1,5 @@
 <h1>CrearPlanDeTrabajos</h1>
-<p><strong>Módulo:</strong> <code>carga/views/plandetrabajosviews.py</code> (líneas 9-72) · hereda de <code>PermissionRequiredMixin, generic.CreateView</code></p>
+<p><strong>Módulo:</strong> <code>carga/views/plandetrabajosviews.py</code> (líneas 10-73) · hereda de <code>LogInvalidFormMixin, PermissionRequiredMixin, generic.CreateView</code></p>
 <h2>Propósito</h2>
 <p>Alta de un Plan de Trabajos. Soporta clonar un Plan existente vía <code>?clonar=&lt;id&gt;</code>: además
 de crear el Plan nuevo, <code>_clonar_desde</code> copia todos los Rubros e Items del Plan origen,
@@ -7,8 +7,11 @@ enlazando cada copia a su original vía <code>rubro_anterior</code>/<code>item_a
 "clonar Plan" es en realidad el mecanismo real de <strong>reprogramación</strong> (arranca la cadena
 que <a href="../../models/PlanDeTrabajosRubro.md">PlanDeTrabajosRubro</a> describe), no una copia
 independiente.</p>
+<p>Es un <code>CreateView</code> estándar (sin <code>post()</code> propio), así que el <code>form_invalid()</code>
+automático de <code>LogInvalidFormMixin</code> alcanza para loguear un form inválido — no necesita
+invocar <code>_log_form_debug</code> a mano.</p>
 <h2>Firma</h2>
-<pre><code class="language-python">class CrearPlanDeTrabajos(PermissionRequiredMixin, generic.CreateView):
+<pre><code class="language-python">class CrearPlanDeTrabajos(LogInvalidFormMixin, PermissionRequiredMixin, generic.CreateView):
 </code></pre>
 <h2>Uso real</h2>
 <pre><code class="language-python"># carga/views/plandetrabajosviews.py:58 (_clonar_desde)
@@ -21,4 +24,5 @@ rubro_nuevo = PlanDeTrabajosRubro.objects.create(
 <ul>
 <li><a href="../../models/PlanDeTrabajos.md">PlanDeTrabajos</a></li>
 <li><a href="../../models/PlanDeTrabajosRubro.md">PlanDeTrabajosRubro</a></li>
+<li><a href="../../../core/models/FormValidationError.md">FormValidationError</a></li>
 </ul>
