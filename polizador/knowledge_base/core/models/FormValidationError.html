@@ -1,0 +1,32 @@
+<h1>FormValidationError</h1>
+<p><strong>Módulo:</strong> <code>core/models.py</code> (líneas 116-140)</p>
+<h2>Propósito</h2>
+<p>Registra el POST crudo y los errores de un formulario (o formset) que no pasó
+<code>is_valid()</code> en una vista basada en <code>LogInvalidFormMixin</code>, para poder reconstruir a mano
+qué mandó el usuario durante debug de sesiones — complementa el log a
+<code>logs/validation_errors.log</code> que hace el mismo mixin, pero queda consultable/filtrable
+desde la UI de administración.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class FormValidationError(models.Model):
+</code></pre>
+<p>Campos relevantes: <code>form_class_path</code> (dotted path para re-importar la clase del form con
+<code>import_string</code>; vacío si el form es dinámico y no tiene path estable, ej.
+<code>build_matriz_form</code>), <code>form_errors</code> (JSON de <code>form.errors</code>), <code>formsets</code> (lista de
+<code>{"prefix", "class_path", "errors"}</code> por cada formset asociado), <code>raw_data</code> (dict
+<code>{campo: [valores...]}</code>, siempre listas para soportar campos multivaluados).</p>
+<h2>Uso real</h2>
+<p>Sin candidatos de uso interno detectados por grep en <code>models.py</code>/<code>views.py</code>/<code>forms.py</code>
+(el <code>create()</code> vive en <code>core/mixins.py</code>, fuera del alcance de este grep mecánico).</p>
+<h2>Flujo de datos</h2>
+<p><code>LogInvalidFormMixin._log_form_debug</code> (core/mixins.py) crea el registro cuando un form o
+formset falla validación en una vista CBV → <code>core.form_debug.build_ficha(record)</code> lo
+humaniza para el detalle (resuelve <code>form_class_path</code> y traduce cada valor crudo según el
+tipo de campo) → listado/detalle vía la API (<code>datatable_errores_validacion*</code>) →
+<code>FormValidationErrorListView</code>. El management command <code>purgar_errores_validacion</code> borra
+los registros con más de 90 días (default) de antigüedad.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../core/views/FormValidationErrorListView.md">FormValidationErrorListView</a> — vista de administración que lista estos registros.</li>
+<li><a href="../../api/views/core_views/datatable_errores_validacion.md">datatable_errores_validacion</a> — endpoint de listado/filtro.</li>
+<li><a href="../../api/views/core_views/datatable_errores_validacion_detalle.md">datatable_errores_validacion_detalle</a> — endpoint de detalle.</li>
+</ul>

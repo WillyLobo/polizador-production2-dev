@@ -1,0 +1,21 @@
+<h1>OrganigramaView</h1>
+<p><strong>Módulo:</strong> <code>personalizador/views/organigramaviews.py</code> (líneas 151-156)</p>
+<h2>Propósito</h2>
+<p>Vista de función que sirve la página del organigrama institucional. Requiere login y el
+permiso <code>personalizador.view_directorio</code> (<code>raise_exception=True</code>, así un usuario sin
+permiso recibe 403 en vez de un redirect a login).</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def OrganigramaView(request):
+</code></pre>
+<h2>Uso real</h2>
+<p>Registrada en <code>personalizador/urls.py</code> como <code>path("organigrama/", OrganigramaView,
+name="organigrama")</code>. Sin candidatos de uso interno detectados por grep — es un endpoint,
+no una función reusada.</p>
+<h2>Flujo de datos</h2>
+<p>Delega el armado del diagrama a <code>_build_organigrama_mermaid()</code>, que devuelve
+<code>(mermaid_source, counts)</code>, y los pasa tal cual al contexto del template
+<code>organigrama.html</code> (presumiblemente renderizado del lado del cliente con mermaid.js).</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../organigramaviews/_build_organigrama_mermaid.md">_build_organigrama_mermaid</a> — arma el diagrama que esta vista sirve.</li>
+</ul>

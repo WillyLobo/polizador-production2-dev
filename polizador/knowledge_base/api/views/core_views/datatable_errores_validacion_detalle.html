@@ -1,0 +1,23 @@
+<h1>datatable_errores_validacion_detalle</h1>
+<p><strong>Módulo:</strong> <code>api/views/core_views.py</code> (líneas 61-68)</p>
+<h2>Propósito</h2>
+<p>Endpoint ninja (<code>GET /v1/api/core/datatables/errores-validacion/{id}/detalle/</code>) que
+arma el HTML del detalle expandible de un <code>FormValidationError</code> puntual, humanizando el
+POST crudo que se guardó al momento del fallo de validación. Restringido a superusers.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def datatable_errores_validacion_detalle(request, id: int):
+</code></pre>
+<h2>Uso real</h2>
+<p>Sin candidatos de uso interno detectados por grep (lo llama el JS de ajax-datatable al
+expandir una fila en <code>errores_validacion/list.html</code>, no otro código Python).</p>
+<h2>Flujo de datos</h2>
+<p><code>get_object_or_404(FormValidationError.objects.select_related("user"), id=id)</code> →
+<code>core.form_debug.build_ficha(record)</code> (resuelve la form_class original vía
+<code>import_string</code> a partir de <code>form_class_path</code> y humaniza cada valor crudo según el tipo
+de campo declarado) → <code>render_to_string</code> con el template
+<code>ajax_datatable/core/formvalidationerror/render_row_details.html</code> → <code>{"html": ...}</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../core_views/datatable_errores_validacion.md">datatable_errores_validacion</a> — endpoint de listado; este es su detalle.</li>
+<li><a href="../../../core/models/FormValidationError.md">FormValidationError</a> — modelo consultado.</li>
+</ul>

@@ -1,0 +1,29 @@
+<h1>_build_organigrama_mermaid</h1>
+<p><strong>Módulo:</strong> <code>personalizador/views/organigramaviews.py</code> (líneas 16-146)</p>
+<h2>Propósito</h2>
+<p>Arma el diagrama completo del organigrama institucional en sintaxis Mermaid
+(<code>flowchart LR</code>), recorriendo la jerarquía <code>Directorio → Gerencia → Dirección →
+Departamento</code> de <code>personalizador.models</code>, más el caso de dependencias directas de una
+Dirección o Departamento bajo un Directorio sin Gerencia intermedia.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _build_organigrama_mermaid():
+</code></pre>
+<h2>Uso real</h2>
+<p>Único caller: <code>OrganigramaView</code>, que renderiza el resultado en el template
+<code>organigrama.html</code>. Candidatos detectados automáticamente:</p>
+<ul>
+<li><code>personalizador/views/organigramaviews.py:152</code> — <code>mermaid_source, counts = _build_organigrama_mermaid()</code></li>
+</ul>
+<h2>Flujo de datos</h2>
+<p>Precarga <code>Directorio</code>/<code>Gerencia</code>/<code>Direccion</code>/<code>Departamento</code> en dicts por id (con
+<code>select_related</code> en Dirección/Departamento) para recorrer la jerarquía sin N+1. Un caso
+especial (comentado en el código) ubica "Vocal 1" y "Vocal 2" un rango antes que el nodo
+raíz <code>IPDUV</code>, sin flecha — para que Mermaid las apile verticalmente a los costados en vez
+de cruzarse con las flechas que salen de Presidencia. Cada nodo se etiquetea con
+<code>_mermaid_label</code>. Devuelve <code>(mermaid_source, counts)</code>, donde <code>counts</code> es un dict con la
+cantidad de unidades por tipo, usado en el template para mostrar totales.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../organigramaviews/_mermaid_label.md">_mermaid_label</a> — arma el texto de cada nodo.</li>
+<li><a href="../organigramaviews/OrganigramaView.md">OrganigramaView</a> — único caller.</li>
+</ul>

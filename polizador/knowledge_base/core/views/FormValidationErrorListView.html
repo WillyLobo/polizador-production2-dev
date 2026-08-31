@@ -1,0 +1,23 @@
+<h1>FormValidationErrorListView</h1>
+<p><strong>Módulo:</strong> <code>core/views.py</code> (líneas 31-32)</p>
+<h2>Propósito</h2>
+<p>Vista de administración, solo para superusers, que sirve la página con el datatable de
+errores de validación de formularios capturados por <code>LogInvalidFormMixin</code>. Sin lógica
+propia — es un <code>TemplateView</code> puro; el listado y detalle los sirve la API por AJAX.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">class FormValidationErrorListView(SuperuserRequiredMixin, TemplateView):
+</code></pre>
+<h2>Uso real</h2>
+<p>Registrada en <code>polizador/urls.py</code> como
+<code>path("administracion/errores-validacion/", FormValidationErrorListView.as_view(), name="form_validation_errors")</code>.
+Sin candidatos de uso interno detectados por grep.</p>
+<h2>Flujo de datos</h2>
+<p>Renderiza <code>errores_validacion/list.html</code>, cuyo JS (ajax-datatable) consume
+<code>datatable_errores_validacion</code> y <code>datatable_errores_validacion_detalle</code> (api app) para
+listar y expandir registros de <code>FormValidationError</code> — esta vista no toca esos datos
+directamente.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../../core/models/FormValidationError.md">FormValidationError</a> — modelo listado.</li>
+<li><a href="../../api/views/core_views/datatable_errores_validacion.md">datatable_errores_validacion</a> — endpoint que alimenta el datatable de esta vista.</li>
+</ul>
