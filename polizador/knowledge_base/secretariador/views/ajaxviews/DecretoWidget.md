@@ -2,14 +2,13 @@
 symbol: DecretoWidget
 kind: class
 module: secretariador/views/ajaxviews.py
-lines: 71-74
-signature_hash: sha1:0088c5f3349eb55b16bafa51a7ab786bccf512e3
+lines: 74-77
+signature_hash: sha1:67968df002000e2bb1a43485c776af7cd53907c0
 authored: true
 ---
-
 # DecretoWidget
 
-**Módulo:** `secretariador/views/ajaxviews.py` (líneas 71-74) · hereda de `LoginRequiredMixin, s2forms.ModelSelect2Widget`
+**Módulo:** `secretariador/views/ajaxviews.py` (líneas 74-77) · hereda de `LoginRequiredMixin, s2forms.ModelSelect2Widget`
 
 ## Propósito
 

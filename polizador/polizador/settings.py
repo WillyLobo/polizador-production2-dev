@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 import environ
 import ldap
 import os
+import subprocess
 from pathlib import Path
 from django_auth_ldap.config import LDAPSearch
 from google.oauth2 import service_account
@@ -32,6 +33,11 @@ environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 DEBUG = env("DEBUG")
 ALLOWED_HOSTS= env.list("ALLOWED_HOSTS")
 CSRF_TRUSTED_ORIGINS= env.list("CSRF_TRUSTED_ORIGINS")
+# En producción, nginx termina el SSL y reenvía a Gunicorn por HTTP plano
+# (via unix socket). Sin esto, Django cree que la request es insecure y el
+# chequeo de Origin del CSRF en el login (que sí llega en https) falla con
+# 403 al comparar contra "http://..." en vez de "https://...".
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECRET_KEY = env('SECRET_KEY')
 DBHOST=env("DBHOST")
 DBUSER=env("DBUSER")
@@ -113,8 +119,22 @@ GDU_3450_IMPORT_API_PASSWORD = env("GDU_3450_IMPORT_API_PASSWORD")
 GDU_3450_IMPORT_API_CLIENT_ID = env("GDU_3450_IMPORT_API_CLIENT_ID")
 
 if DEBUG == False:
+    try:
+        # El deploy es manual (git pull + reinicio de gunicorn), así que el
+        # SHA del checkout en el momento del arranque *es* la versión
+        # desplegada. Etiquetar los eventos con este release es lo que le
+        # permite a Sentry mostrar "Suspect Commits" y sugerencias al
+        # resolver un issue (ver scripts/sentry_release.sh para el paso que
+        # asocia los commits a este mismo release en Sentry).
+        SENTRY_RELEASE = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=BASE_DIR
+        ).decode().strip()
+    except Exception:
+        SENTRY_RELEASE = None
+
     sentry_sdk.init(
         dsn=SENTRY_DSN,
+        release=SENTRY_RELEASE,
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for tracing.
         traces_sample_rate=1.0,
@@ -356,6 +376,14 @@ LOGGING = {
             'backupCount': 5,
             'formatter': 'verbose',
         },
+        'validation_errors_file': {
+            'level': 'WARNING',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/validation_errors.log'),
+            'maxBytes': 1024 * 1024 * 5,  # 5 MB
+            'backupCount': 5,
+            'formatter': 'verbose',
+        },
     },
     'loggers': {
         # Catch-all root logger
@@ -369,6 +397,14 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
             'filters': ['require_debug_true'],
+        },
+        # POST crudo de forms que no validaron, para debug de sesiones de usuario
+        # (ver LogInvalidFormMixin en core/mixins.py). propagate=False para que no
+        # duplique también en django.log via el logger root.
+        'core.form_debug': {
+            'handlers': ['validation_errors_file'],
+            'level': 'WARNING',
+            'propagate': False,
         },
     },
 }

@@ -1,0 +1,20 @@
+{% spaceless %}
+<div class="row gx-2">
+    <div class="col-md-6">
+        <div class="small text-muted mb-1">Latitud</div>
+        <div class="row gx-2">
+            <div class="col-4">{% include widget.subwidgets.0.template_name with widget=widget.subwidgets.0 %}</div>
+            <div class="col-4">{% include widget.subwidgets.1.template_name with widget=widget.subwidgets.1 %}</div>
+            <div class="col-4">{% include widget.subwidgets.2.template_name with widget=widget.subwidgets.2 %}</div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="small text-muted mb-1">Longitud</div>
+        <div class="row gx-2">
+            <div class="col-4">{% include widget.subwidgets.3.template_name with widget=widget.subwidgets.3 %}</div>
+            <div class="col-4">{% include widget.subwidgets.4.template_name with widget=widget.subwidgets.4 %}</div>
+            <div class="col-4">{% include widget.subwidgets.5.template_name with widget=widget.subwidgets.5 %}</div>
+        </div>
+    </div>
+</div>
+{% endspaceless %}

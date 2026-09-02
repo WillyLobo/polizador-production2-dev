@@ -1,0 +1,106 @@
+<div class="row g-3 mb-3">
+
+    <div class="col-md-12">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-body-tertiary fw-semibold small">Datos del error</div>
+            <div class="card-body p-2">
+                <div class="row g-1 mb-1">
+                    <div class="col-2 text-muted small fw-semibold">Usuario</div>
+                    <div class="col-4 small">{{ record.user|default:"—" }}</div>
+                    <div class="col-2 text-muted small fw-semibold">Fecha</div>
+                    <div class="col-4 small">{{ record.created_at }}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-2 text-muted small fw-semibold">Vista</div>
+                    <div class="col-4 small">{{ record.view_name }}</div>
+                    <div class="col-2 text-muted small fw-semibold">Path</div>
+                    <div class="col-4 small">{{ record.path }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if ficha.kind == "matriz" %}
+    <div class="col-md-12">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-body-tertiary fw-semibold small">Grilla (matriz de etapas)</div>
+            <div class="card-body p-2">
+                <p class="text-muted small">Este formulario se construye dinámicamente: no se pueden resolver tipos de campo, se muestran los valores crudos agrupados por item/columna.</p>
+                <table class="table table-sm table-bordered mb-0">
+                    <thead><tr><th>Item</th><th>Columnas (col: valor)</th></tr></thead>
+                    <tbody>
+                        {% for row in ficha.rows %}
+                        <tr>
+                            <td>{{ row.item_pk }}</td>
+                            <td>
+                                {% for col, valor in row.cols %}
+                                    <span class="badge text-bg-light border me-1">col {{ col }}: {{ valor|default:"—" }}</span>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% else %}
+
+    <div class="col-md-12">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-body-tertiary fw-semibold small">Datos enviados</div>
+            <div class="card-body p-2">
+                <table class="table table-sm table-bordered mb-0">
+                    <tbody>
+                        {% for f in ficha.fields %}
+                        <tr>
+                            <td class="text-muted small fw-semibold" style="width: 30%">{{ f.label }}</td>
+                            <td class="small">{{ f.value }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% if ficha.formset_rows %}
+    <div class="col-md-12">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-body-tertiary fw-semibold small">Filas de formset</div>
+            <div class="card-body p-2">
+                {% for row in ficha.formset_rows %}
+                <div class="mb-2">
+                    <div class="fw-semibold small mb-1">{{ row.prefix }}-{{ row.index }}</div>
+                    <table class="table table-sm table-bordered mb-0">
+                        <tbody>
+                            {% for f in row.fields %}
+                            <tr>
+                                <td class="text-muted small fw-semibold" style="width: 30%">{{ f.label }}</td>
+                                <td class="small">{{ f.value }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if record.form_errors or record.formsets %}
+    <div class="col-md-12">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-body-tertiary fw-semibold small text-danger">Errores de validación</div>
+            <div class="card-body p-2 small">
+                {% if record.form_errors %}<pre class="mb-2">{{ record.form_errors }}</pre>{% endif %}
+                {% if record.formsets %}<pre class="mb-0">{{ record.formsets }}</pre>{% endif %}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% endif %}
+
+</div>

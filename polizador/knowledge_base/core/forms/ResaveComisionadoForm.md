@@ -2,14 +2,13 @@
 symbol: ResaveComisionadoForm
 kind: class
 module: core/forms.py
-lines: 153-157
-signature_hash: sha1:86669fc6637080d071d57b15d7cafd9f6f1c5caa
+lines: 160-164
+signature_hash: sha1:43ed9c15d7b1a38c4df38d0bfdfe8c1fcfbcb3ce
 authored: true
 ---
-
 # ResaveComisionadoForm
 
-**Módulo:** `core/forms.py` (líneas 153-157) · hereda de `BaseCommandRunForm`
+**Módulo:** `core/forms.py` (líneas 160-164) · hereda de `BaseCommandRunForm`
 
 ## Propósito
 

@@ -2,14 +2,13 @@
 symbol: list_solicitudes
 kind: function
 module: api/views/secretariador_views.py
-lines: 587-591
-signature_hash: sha1:d3e3daedf239a4a430a453ebfae5290df49a4e1d
+lines: 594-598
+signature_hash: sha1:dd432b36061c0a04d13b5bc0dbac195dd0e6f833
 authored: true
 ---
-
 # list_solicitudes
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 587-591)
+**Módulo:** `api/views/secretariador_views.py` (líneas 594-598)
 
 ## Propósito
 

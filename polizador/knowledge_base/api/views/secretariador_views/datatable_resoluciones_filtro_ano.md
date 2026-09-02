@@ -2,14 +2,13 @@
 symbol: datatable_resoluciones_filtro_ano
 kind: function
 module: api/views/secretariador_views.py
-lines: 382-389
-signature_hash: sha1:5e7b3567c6f73569ee1d702f82dd88920ddb7893
+lines: 389-396
+signature_hash: sha1:2b3f5c19909fb777584240bcae6ff25a33a1afbd
 authored: true
 ---
-
 # datatable_resoluciones_filtro_ano
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 382-389)
+**Módulo:** `api/views/secretariador_views.py` (líneas 389-396)
 
 ## Propósito
 

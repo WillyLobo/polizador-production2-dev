@@ -2,14 +2,13 @@
 symbol: VehiculoWidget
 kind: class
 module: secretariador/views/ajaxviews.py
-lines: 65-69
-signature_hash: sha1:3a749ac75f2de47b77bb29f5292eaa0198f072ab
+lines: 68-72
+signature_hash: sha1:9802a64b555ed01b14ba14e28fd95b141322565c
 authored: true
 ---
-
 # VehiculoWidget
 
-**Módulo:** `secretariador/views/ajaxviews.py` (líneas 65-69) · hereda de `LoginRequiredMixin, s2forms.ModelSelect2Widget`
+**Módulo:** `secretariador/views/ajaxviews.py` (líneas 68-72) · hereda de `LoginRequiredMixin, s2forms.ModelSelect2Widget`
 
 ## Propósito
 

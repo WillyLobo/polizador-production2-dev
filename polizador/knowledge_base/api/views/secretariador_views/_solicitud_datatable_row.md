@@ -2,14 +2,13 @@
 symbol: _solicitud_datatable_row
 kind: function
 module: api/views/secretariador_views.py
-lines: 648-689
-signature_hash: sha1:edc81ce7c71b2e9d1da47e2a587ec0800d167f61
+lines: 655-696
+signature_hash: sha1:d4631de90e5806affcf759a89e98add90404bd4f
 authored: true
 ---
-
 # _solicitud_datatable_row
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 648-689)
+**Módulo:** `api/views/secretariador_views.py` (líneas 655-696)
 
 ## Propósito
 

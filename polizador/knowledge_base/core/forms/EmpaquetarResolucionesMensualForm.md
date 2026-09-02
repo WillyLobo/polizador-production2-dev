@@ -2,14 +2,13 @@
 symbol: EmpaquetarResolucionesMensualForm
 kind: class
 module: core/forms.py
-lines: 160-197
-signature_hash: sha1:8a203c6bc5ac7d195a79efab4266366af6fc7f9e
+lines: 167-204
+signature_hash: sha1:001182f8cf73fcf1254fdcd9026d943220dac209
 authored: true
 ---
-
 # EmpaquetarResolucionesMensualForm
 
-**Módulo:** `core/forms.py` (líneas 160-197) · hereda de `BaseCommandRunForm`
+**Módulo:** `core/forms.py` (líneas 167-204) · hereda de `BaseCommandRunForm`
 
 ## Propósito
 

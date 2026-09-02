@@ -2,14 +2,14 @@
 symbol: CrearPlanDeTrabajos
 kind: class
 module: carga/views/plandetrabajosviews.py
-lines: 9-72
-signature_hash: sha1:037f46ef5e6f818650154d1215c06ca996ce2ab3
+lines: 10-73
+signature_hash: sha1:7d0bd12200e192f9e97ef91cb757f7041426e9ee
 authored: true
 ---
 
 # CrearPlanDeTrabajos
 
-**Módulo:** `carga/views/plandetrabajosviews.py` (líneas 9-72) · hereda de `PermissionRequiredMixin, generic.CreateView`
+**Módulo:** `carga/views/plandetrabajosviews.py` (líneas 10-73) · hereda de `LogInvalidFormMixin, PermissionRequiredMixin, generic.CreateView`
 
 ## Propósito
 
@@ -20,10 +20,14 @@ enlazando cada copia a su original vía `rubro_anterior`/`item_anterior` — es 
 que [PlanDeTrabajosRubro](../../models/PlanDeTrabajosRubro.md) describe), no una copia
 independiente.
 
+Es un `CreateView` estándar (sin `post()` propio), así que el `form_invalid()`
+automático de `LogInvalidFormMixin` alcanza para loguear un form inválido — no necesita
+invocar `_log_form_debug` a mano.
+
 ## Firma
 
 ```python
-class CrearPlanDeTrabajos(PermissionRequiredMixin, generic.CreateView):
+class CrearPlanDeTrabajos(LogInvalidFormMixin, PermissionRequiredMixin, generic.CreateView):
 ```
 
 ## Uso real
@@ -40,3 +44,4 @@ rubro_nuevo = PlanDeTrabajosRubro.objects.create(
 
 - [PlanDeTrabajos](../../models/PlanDeTrabajos.md)
 - [PlanDeTrabajosRubro](../../models/PlanDeTrabajosRubro.md)
+- [FormValidationError](../../../core/models/FormValidationError.md)

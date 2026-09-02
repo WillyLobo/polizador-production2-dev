@@ -2,14 +2,13 @@
 symbol: CrearListaUvi
 kind: class
 module: carga/views/reportes.py
-lines: 158-185
-signature_hash: sha1:3d7f457f3f047ccdbd45598c8f5793333f94efa8
+lines: 158-184
+signature_hash: sha1:978a2cb724589a3a714b2cf0105d8642eada2243
 authored: true
 ---
-
 # CrearListaUvi
 
-**Módulo:** `carga/views/reportes.py` (líneas 158-185) · hereda de `PermissionRequiredMixin, generic.ListView`
+**Módulo:** `carga/views/reportes.py` (líneas 158-184) · hereda de `PermissionRequiredMixin, generic.ListView`
 
 ## Propósito
 

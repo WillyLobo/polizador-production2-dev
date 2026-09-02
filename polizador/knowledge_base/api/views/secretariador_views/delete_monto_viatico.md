@@ -2,14 +2,13 @@
 symbol: delete_monto_viatico
 kind: function
 module: api/views/secretariador_views.py
-lines: 454-456
-signature_hash: sha1:0a762fa43ddbb8aaa03c72dc5496de0bb50b30d7
+lines: 461-463
+signature_hash: sha1:e25cb3b6e4b9174b1dd4e1992ccc238262b3e303
 authored: true
 ---
-
 # delete_monto_viatico
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 454-456)
+**Módulo:** `api/views/secretariador_views.py` (líneas 461-463)
 
 ## Propósito
 

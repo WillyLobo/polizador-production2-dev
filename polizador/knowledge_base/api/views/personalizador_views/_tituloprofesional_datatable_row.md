@@ -2,14 +2,13 @@
 symbol: _tituloprofesional_datatable_row
 kind: function
 module: api/views/personalizador_views.py
-lines: 303-316
-signature_hash: sha1:f2bc1d6014f034a26ea3d31d706f4f9d6ddfab20
+lines: 293-306
+signature_hash: sha1:7fc3607c3057a9d9c81738be2f8cf6231feb1631
 authored: true
 ---
-
 # _tituloprofesional_datatable_row
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 303-316)
+**Módulo:** `api/views/personalizador_views.py` (líneas 293-306)
 
 ## Propósito
 

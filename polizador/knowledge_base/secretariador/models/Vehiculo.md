@@ -2,14 +2,13 @@
 symbol: Vehiculo
 kind: class
 module: secretariador/models.py
-lines: 350-390
-signature_hash: sha1:38e8187a3a9d7ade6d4d5f990a8cc3567ca6bd7f
+lines: 360-400
+signature_hash: sha1:ccb2e923bd42c9612327a624fe3bf786d45d4e5a
 authored: true
 ---
-
 # Vehiculo
 
-**Módulo:** `secretariador/models.py` (líneas 350-390) · hereda de `models.Model`
+**Módulo:** `secretariador/models.py` (líneas 360-400) · hereda de `models.Model`
 
 ## Propósito
 

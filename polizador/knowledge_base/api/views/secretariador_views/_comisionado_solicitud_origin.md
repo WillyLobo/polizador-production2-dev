@@ -2,14 +2,13 @@
 symbol: _comisionado_solicitud_origin
 kind: function
 module: api/views/secretariador_views.py
-lines: 899-902
-signature_hash: sha1:eef4258e888460fc275cf5d6bbd73418c7322810
+lines: 906-909
+signature_hash: sha1:0936a96cf89bedb89ad7a6a11666527ce54c8e8d
 authored: true
 ---
-
 # _comisionado_solicitud_origin
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 899-902)
+**Módulo:** `api/views/secretariador_views.py` (líneas 906-909)
 
 ## Propósito
 

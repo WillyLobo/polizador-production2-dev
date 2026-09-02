@@ -2,14 +2,13 @@
 symbol: ComisionadoExternoForm
 kind: class
 module: secretariador/forms/comisionadoform.py
-lines: 51-86
-signature_hash: sha1:b2cec185eeff2063cdc86e2a18b265a547d3ad03
+lines: 5-40
+signature_hash: sha1:f4dd49fb6c3d5a979bea4467cdda8790d5cf3fbb
 authored: true
 ---
-
 # ComisionadoExternoForm
 
-**Módulo:** `secretariador/forms/comisionadoform.py` (líneas 51-86) · hereda de `BaseFormMixin, forms.ModelForm`
+**Módulo:** `secretariador/forms/comisionadoform.py` (líneas 5-40) · hereda de `BaseFormMixin, forms.ModelForm`
 
 ## Propósito
 

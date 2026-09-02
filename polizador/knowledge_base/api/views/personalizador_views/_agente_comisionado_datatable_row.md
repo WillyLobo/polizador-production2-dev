@@ -2,14 +2,13 @@
 symbol: _agente_comisionado_datatable_row
 kind: function
 module: api/views/personalizador_views.py
-lines: 170-190
-signature_hash: sha1:c84606bf93bf76373f21bd6bea6566b0be89b11c
+lines: 171-180
+signature_hash: sha1:ee66d817c80df17df19c6dc2f600e4178f6463dc
 authored: true
 ---
-
 # _agente_comisionado_datatable_row
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 170-190)
+**Módulo:** `api/views/personalizador_views.py` (líneas 171-180)
 
 ## Propósito
 

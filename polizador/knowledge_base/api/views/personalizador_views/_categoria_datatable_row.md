@@ -2,14 +2,13 @@
 symbol: _categoria_datatable_row
 kind: function
 module: api/views/personalizador_views.py
-lines: 339-346
-signature_hash: sha1:659f17497cc8f37d8252c2368c91a433c7e70ad1
+lines: 329-336
+signature_hash: sha1:c8ea5c759293efc7187a03e82330c8eb1f9fe67d
 authored: true
 ---
-
 # _categoria_datatable_row
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 339-346)
+**Módulo:** `api/views/personalizador_views.py` (líneas 329-336)
 
 ## Propósito
 

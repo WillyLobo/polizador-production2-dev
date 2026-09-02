@@ -2,14 +2,13 @@
 symbol: create_solicitud
 kind: function
 module: api/views/secretariador_views.py
-lines: 602-608
-signature_hash: sha1:1ce0685736d5ff96e022759237fd98b990d44209
+lines: 609-615
+signature_hash: sha1:be99d6a1e16935aa192120a66c00274e3bb11d94
 authored: true
 ---
-
 # create_solicitud
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 602-608)
+**Módulo:** `api/views/secretariador_views.py` (líneas 609-615)
 
 ## Propósito
 

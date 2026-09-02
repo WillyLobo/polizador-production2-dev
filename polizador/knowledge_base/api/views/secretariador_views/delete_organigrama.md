@@ -2,14 +2,13 @@
 symbol: delete_organigrama
 kind: function
 module: api/views/secretariador_views.py
-lines: 506-508
-signature_hash: sha1:172ad72d1e7e99eeb23185b18e44f3b4d078f917
+lines: 513-515
+signature_hash: sha1:da15d8535ae83eea971c19f94485f4aef7550c25
 authored: true
 ---
-
 # delete_organigrama
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 506-508)
+**Módulo:** `api/views/secretariador_views.py` (líneas 513-515)
 
 ## Propósito
 

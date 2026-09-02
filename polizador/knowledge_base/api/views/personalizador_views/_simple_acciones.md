@@ -2,14 +2,13 @@
 symbol: _simple_acciones
 kind: function
 module: api/views/personalizador_views.py
-lines: 273-278
-signature_hash: sha1:b2c147598b399e89b3e369de54b28a6f87199f40
+lines: 263-268
+signature_hash: sha1:4a1345b9335c15b3f289dbc895f680695ccee71f
 authored: true
 ---
-
 # _simple_acciones
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 273-278)
+**Módulo:** `api/views/personalizador_views.py` (líneas 263-268)
 
 ## Propósito
 

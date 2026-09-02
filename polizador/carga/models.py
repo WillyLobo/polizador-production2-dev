@@ -1051,30 +1051,6 @@ class PlanDeTrabajosEtapa(models.Model):
             etapa_rubro_id__in=chain_ids, etapa_numero__lt=self.etapa_numero
         ).order_by('-etapa_numero').first()
 
-    @staticmethod
-    def anterior_items_map(rubro, items=None, exclude_etapa_numero=None):
-        """Acumulado %% proyectado de cada item en la etapa anterior (misma lógica
-        que FojaDeMedicion.anterior_items_map())."""
-        chain_ids = rubro.rubro_cadena_ids()
-        qs = PlanDeTrabajosEtapa.objects.filter(etapa_rubro_id__in=chain_ids)
-        if exclude_etapa_numero is not None:
-            qs = qs.filter(etapa_numero__lt=exclude_etapa_numero)
-        etapa_anterior = qs.order_by('-etapa_numero').first()
-        if not etapa_anterior:
-            return {}
-
-        if items is None:
-            items = PlanDeTrabajosItem.objects.filter(planitem_rubro=rubro)
-
-        anterior_map = {}
-        for item in items:
-            previous_item = etapa_anterior.items.filter(
-                etapaitem_planitem_id__in=item.item_cadena_ids()
-            ).first()
-            if previous_item:
-                anterior_map[item.pk] = previous_item.etapaitem_pct_proyectado_acumulado
-        return anterior_map
-
     def save(self, *args, **kwargs):
         if not self.pk:
             # No se usa self.etapa_anterior() porque self.etapa_numero todavía no
@@ -1137,16 +1113,30 @@ class PlanDeTrabajosEtapaItem(models.Model):
     def save(self, *args, **kwargs):
         etapa_anterior = self.etapaitem_etapa.etapa_anterior()
 
-        previous_item = None
+        previous_acumulado = None
         if etapa_anterior:
-            item_chain_ids = self.etapaitem_planitem.item_cadena_ids()
-            previous_item = PlanDeTrabajosEtapaItem.objects.filter(
-                etapaitem_etapa=etapa_anterior,
-                etapaitem_planitem_id__in=item_chain_ids
-            ).first()
+            if etapa_anterior.etapa_rubro_id == self.etapaitem_etapa.etapa_rubro_id:
+                item_chain_ids = self.etapaitem_planitem.item_cadena_ids()
+                previous_item = PlanDeTrabajosEtapaItem.objects.filter(
+                    etapaitem_etapa=etapa_anterior,
+                    etapaitem_planitem_id__in=item_chain_ids
+                ).first()
+                if previous_item:
+                    previous_acumulado = previous_item.etapaitem_pct_proyectado_acumulado
+            else:
+                # etapa_anterior pertenece a un rubro predecesor (primera etapa de un
+                # rubro reprogramado): el acumulado proyectado de ese rubro viejo llega
+                # al 100% de la incidencia de cada item sin importar el avance real, así
+                # que no sirve de piso. Se usa en cambio el avance REAL (Fojas de
+                # Medición) al momento de reprogramar (misma base que valida la matriz,
+                # ver PlanDeTrabajosEtapaMatriz._get_anterior_map).
+                real_map = FojaDeMedicion.anterior_items_map(
+                    self.etapaitem_etapa.etapa_rubro, items=[self.etapaitem_planitem]
+                )
+                previous_acumulado = real_map.get(self.etapaitem_planitem_id)
 
-        if previous_item:
-            self.etapaitem_pct_proyectado_acumulado = previous_item.etapaitem_pct_proyectado_acumulado + self.etapaitem_pct_proyectado_mes
+        if previous_acumulado is not None:
+            self.etapaitem_pct_proyectado_acumulado = previous_acumulado + self.etapaitem_pct_proyectado_mes
         else:
             self.etapaitem_pct_proyectado_acumulado = self.etapaitem_pct_proyectado_mes
 

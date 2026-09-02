@@ -2,14 +2,13 @@
 symbol: list_organigramas
 kind: function
 module: api/views/secretariador_views.py
-lines: 494-495
-signature_hash: sha1:bc0bd2151f3c0558d5328f62939cb0cf4244e452
+lines: 501-502
+signature_hash: sha1:a54d86ac7f30bbb026cbd82cb88999ea0b0997d1
 authored: true
 ---
-
 # list_organigramas
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 494-495)
+**Módulo:** `api/views/secretariador_views.py` (líneas 501-502)
 
 ## Propósito
 

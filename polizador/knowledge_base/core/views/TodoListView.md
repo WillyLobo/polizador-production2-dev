@@ -2,14 +2,13 @@
 symbol: TodoListView
 kind: class
 module: core/views.py
-lines: 181-190
-signature_hash: sha1:379f3178610bc8544414b378317058b0e60dfd5e
+lines: 185-194
+signature_hash: sha1:df31abaaa66880ed536cfad41bdf3b2a37ec6a2b
 authored: true
 ---
-
 # TodoListView
 
-**Módulo:** `core/views.py` (líneas 181-190) · hereda de `SuperuserRequiredMixin, ListView`
+**Módulo:** `core/views.py` (líneas 185-194) · hereda de `SuperuserRequiredMixin, ListView`
 
 ## Propósito
 

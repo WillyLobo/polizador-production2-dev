@@ -2,14 +2,13 @@
 symbol: list_montos_viaticos
 kind: function
 module: api/views/secretariador_views.py
-lines: 439-443
-signature_hash: sha1:e969cb9ebab254498f97af0ae6c3eb70300c61dc
+lines: 446-450
+signature_hash: sha1:78f354c314bd43f242ddaaa51e5ce15ee4e82083
 authored: true
 ---
-
 # list_montos_viaticos
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 439-443)
+**Módulo:** `api/views/secretariador_views.py` (líneas 446-450)
 
 ## Propósito
 

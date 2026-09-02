@@ -1,0 +1,30 @@
+<h1>_mermaid_label</h1>
+<p><strong>Módulo:</strong> <code>personalizador/views/organigramaviews.py</code> (líneas 7-13)</p>
+<h2>Propósito</h2>
+<p>Arma el texto de un nodo del organigrama en sintaxis Mermaid: el nombre de la unidad,
+más una línea <code>&lt;br/&gt;CUOF: ...</code> y/o <code>&lt;br/&gt;UNGI: ...</code> si esos códigos están cargados.
+Escapa comillas dobles (reemplazadas por simples) para no romper la sintaxis <code>["..."]</code> de
+Mermaid al interpolar el label.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _mermaid_label(nombre, cuof=None, ungi=None):
+</code></pre>
+<h2>Uso real</h2>
+<p>Se llama una vez por cada Directorio/Gerencia/Dirección/Departamento que
+<code>_build_organigrama_mermaid</code> agrega al diagrama, pasándole los campos <code>*_nombre</code>,
+<code>*_cuof</code> y <code>*_ungi</code> del modelo correspondiente. Candidatos detectados automáticamente:</p>
+<ul>
+<li><code>personalizador/views/organigramaviews.py:53</code> — <code>f'{indent}P{p.id}["{_mermaid_label(p.departamento_nombre, p.departamento_cuof, p.departamento_ungi)}"]'</code></li>
+<li><code>personalizador/views/organigramaviews.py:70</code> — <code>lines.append(f'    D{vocal1_id}["{_mermaid_label(d1.directorio_nombre, d1.directorio_cuof, d1.directorio_ungi)}"]')</code></li>
+<li><code>personalizador/views/organigramaviews.py:72</code> — <code>lines.append(f'    D{vocal2_id}["{_mermaid_label(d2.directorio_nombre, d2.directorio_cuof, d2.directorio_ungi)}"]')</code></li>
+<li><code>personalizador/views/organigramaviews.py:82</code> — <code>lines.append(f'    D{did}["{_mermaid_label(d.directorio_nombre, d.directorio_cuof, d.directorio_ungi)}"]')</code></li>
+<li><code>personalizador/views/organigramaviews.py:88</code> — <code>lines.append(f'        G{g.id}["{_mermaid_label(g.gerencia_nombre, g.gerencia_cuof, g.gerencia_ungi)}"]')</code></li>
+</ul>
+<h2>Flujo de datos</h2>
+<p>Campos <code>*_nombre</code>/<code>*_cuof</code>/<code>*_ungi</code> de los modelos de <code>personalizador</code>
+(Directorio/Gerencia/Direccion/Departamento) → string interpolado directo en una línea
+de sintaxis Mermaid dentro de <code>_build_organigrama_mermaid</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../organigramaviews/_build_organigrama_mermaid.md">_build_organigrama_mermaid</a> — único caller, arma el diagrama completo.</li>
+<li><a href="../organigramaviews/OrganigramaView.md">OrganigramaView</a> — vista que sirve el diagrama.</li>
+</ul>

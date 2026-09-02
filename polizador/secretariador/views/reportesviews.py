@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.shortcuts import render, get_object_or_404
 from secretariador.models import *
-from personalizador.models import Agente
+from personalizador.models import Agente, Oficina
 from django.db.models import Q, FilteredRelation, Subquery, OuterRef, Sum, F, Min, Max
 from django.core.exceptions import ValidationError
 from django.views.decorators.cache import cache_page
@@ -89,7 +89,7 @@ class CrearReporteViaticosPorAgente(PermissionRequiredMixin, generic.ListView):
 class CrearReporteViaticosporArea(PermissionRequiredMixin, generic.ListView):
     permission_required = "secretariador.view_solicitud"
 
-    model = Agente
+    model = Oficina
     context_object_name = "solicitud"
     template_name = "reportes/crear-reporteviaticosporarea.html"
 
@@ -107,34 +107,66 @@ class CrearReporteViaticosporArea(PermissionRequiredMixin, generic.ListView):
             fecha_inicial = datetime.strptime(fecha_inicial, "%Y-%m-%d")
             solicitudes = ComisionadoSolicitud.objects.filter(Q(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial, fecha_final]) | Q(
                 comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__range=[fecha_inicial, fecha_final])).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
-        
-        agentes = Agente.objects.all()
-        queryset = {}
-        final_queryset = {}
-        for agente in agentes:
-            agentes_list = solicitudes.filter(comisionadosolicitud_foreign__solicitud_solicitante=agente)
-            
-            solicitudes_annotated = agentes_list.annotate(
-                dias=F("comisionadosolicitud_foreign__solicitud_cantidad_de_dias"), 
+
+        def _totales(qs):
+            return qs.annotate(
+                dias=F("comisionadosolicitud_foreign__solicitud_cantidad_de_dias"),
                 viatico=F("comisionadosolicitud_viatico_computado"),
-                pasaje=F("comisionadosolicitud_pasaje"), 
-                gastos=F("comisionadosolicitud_gastos"), 
+                pasaje=F("comisionadosolicitud_pasaje"),
+                gastos=F("comisionadosolicitud_gastos"),
                 combustible=F("comisionadosolicitud_combustible"),
                 valor_viatico=F("comisionadosolicitud_viatico_total"),
                 dia_min=F("comisionadosolicitud_foreign__solicitud_fecha_desde"),
                 dia_max=F("comisionadosolicitud_foreign__solicitud_fecha_hasta")
                 ).aggregate(
-                    cantidad_de_dias=Sum("comisionadosolicitud_foreign__solicitud_cantidad_de_dias"), 
+                    cantidad_de_dias=Sum("comisionadosolicitud_foreign__solicitud_cantidad_de_dias"),
                     viatico=Sum("comisionadosolicitud_viatico_computado"),
-                    pasaje=Sum("comisionadosolicitud_pasaje"), 
-                    gastos=Sum("comisionadosolicitud_gastos"), 
+                    pasaje=Sum("comisionadosolicitud_pasaje"),
+                    gastos=Sum("comisionadosolicitud_gastos"),
                     combustible=Sum("comisionadosolicitud_combustible"),
                     valor_viatico=Sum("comisionadosolicitud_viatico_total")
                 )
-            
+
+        # Se agrupa por el nivel mas alto cargado en la Oficina del solicitante (Gerencia; si no
+        # tiene, Direccion; si no tiene, el Directorio/Presidencia), en vez de por la Oficina exacta
+        # (que suele llegar hasta Departamento), para que el reporte quede a nivel de area/gerencia.
+        # cargo_gerencia/cargo_direccion/cargo_directorio ya vienen consistentes entre si por
+        # Oficina.clean(), asi que filtrar por uno de ellos alcanza a todas las Oficinas del grupo.
+        grupos = {}
+        for oficina in Oficina.objects.all():
+            if oficina.cargo_gerencia_id:
+                key = ("gerencia", oficina.cargo_gerencia_id)
+                label = str(oficina.cargo_gerencia)
+                filtro = {"oficina__cargo_gerencia_id": oficina.cargo_gerencia_id}
+            elif oficina.cargo_direccion_id:
+                key = ("direccion", oficina.cargo_direccion_id)
+                label = str(oficina.cargo_direccion)
+                filtro = {"oficina__cargo_direccion_id": oficina.cargo_direccion_id}
+            elif oficina.cargo_directorio_id:
+                key = ("directorio", oficina.cargo_directorio_id)
+                label = str(oficina.cargo_directorio)
+                filtro = {
+                    "oficina__cargo_directorio_id": oficina.cargo_directorio_id,
+                    "oficina__cargo_gerencia__isnull": True,
+                    "oficina__cargo_direccion__isnull": True,
+                }
+            else:
+                continue
+            grupos.setdefault(key, (label, filtro))
+
+        queryset = {}
+        final_queryset = {}
+        for label, filtro in grupos.values():
+            agentes_list = solicitudes.filter(
+                Q(**{f"comisionadosolicitud_foreign__solicitud_solicitante__{k}": v for k, v in filtro.items()}) |
+                Q(**{f"comisionadosolicitud_incorporacion_foreign__incorporacion_solicitante__{k}": v for k, v in filtro.items()})
+            )
+
+            solicitudes_annotated = _totales(agentes_list)
+
             if solicitudes_annotated["cantidad_de_dias"] is not None:
                 queryset.update({
-                        agente.agente_nombreyapellido: {
+                        label: {
                             "cantidad_de_dias": solicitudes_annotated["cantidad_de_dias"].days,
                             "viatico":          solicitudes_annotated["viatico"],
                             "pasaje":           solicitudes_annotated["pasaje"],
@@ -143,6 +175,27 @@ class CrearReporteViaticosporArea(PermissionRequiredMixin, generic.ListView):
                             "valor_viatico":    solicitudes_annotated["valor_viatico"]
                         }
                     })
+
+        # Solicitantes sin oficina cargada: se agrupan aparte para que ninguna solicitud
+        # quede fuera del reporte. El guard *_foreign__isnull=False evita que el LEFT JOIN
+        # de la rama no usada (p.ej. incorporacion en una solicitud regular) cuente como "sin oficina".
+        solicitudes_sin_area = solicitudes.filter(
+            Q(comisionadosolicitud_foreign__isnull=False, comisionadosolicitud_foreign__solicitud_solicitante__oficina__isnull=True) |
+            Q(comisionadosolicitud_incorporacion_foreign__isnull=False, comisionadosolicitud_incorporacion_foreign__incorporacion_solicitante__oficina__isnull=True)
+        )
+        solicitudes_annotadas_sin_area = _totales(solicitudes_sin_area)
+        if solicitudes_annotadas_sin_area["cantidad_de_dias"] is not None:
+            queryset.update({
+                    "Sin área cargada": {
+                        "cantidad_de_dias": solicitudes_annotadas_sin_area["cantidad_de_dias"].days,
+                        "viatico":          solicitudes_annotadas_sin_area["viatico"],
+                        "pasaje":           solicitudes_annotadas_sin_area["pasaje"],
+                        "gastos":           solicitudes_annotadas_sin_area["gastos"],
+                        "combustible":      solicitudes_annotadas_sin_area["combustible"],
+                        "valor_viatico":    solicitudes_annotadas_sin_area["valor_viatico"]
+                    }
+                })
+
         final_queryset.update({
             "comisionados": queryset,
             "fecha_inicial": fecha_inicial,

@@ -2,14 +2,13 @@
 symbol: _actividadespecifica_datatable_row
 kind: function
 module: api/views/personalizador_views.py
-lines: 447-459
-signature_hash: sha1:3d77969de838e3fb0af2fe339703403d72990ee5
+lines: 437-449
+signature_hash: sha1:f6e9c2ee10097e5bc145bc3b71f77e9264553da9
 authored: true
 ---
-
 # _actividadespecifica_datatable_row
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 447-459)
+**Módulo:** `api/views/personalizador_views.py` (líneas 437-449)
 
 ## Propósito
 

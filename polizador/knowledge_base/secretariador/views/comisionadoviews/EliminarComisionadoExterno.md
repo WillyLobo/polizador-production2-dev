@@ -2,14 +2,13 @@
 symbol: EliminarComisionadoExterno
 kind: class
 module: secretariador/views/comisionadoviews.py
-lines: 92-97
-signature_hash: sha1:c7476b92c68f8e17c35b4be57f5c7493cb584a34
+lines: 56-61
+signature_hash: sha1:703579b6e2f736ada34034bbd61b08b6b5a557f4
 authored: true
 ---
-
 # EliminarComisionadoExterno
 
-**Módulo:** `secretariador/views/comisionadoviews.py` (líneas 92-97) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
+**Módulo:** `secretariador/views/comisionadoviews.py` (líneas 56-61) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
 
 ## Propósito
 

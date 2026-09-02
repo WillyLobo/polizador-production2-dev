@@ -2,14 +2,13 @@
 symbol: InstrumentosLegalesResolucionesDirectorioForm
 kind: class
 module: secretariador/forms/instrumentoslegalesform.py
-lines: 141-189
-signature_hash: sha1:84f6243c23778a1bdec7ff65900425f04b1a5206
+lines: 164-216
+signature_hash: sha1:58aaf9683ac4d892879b79ea278c1bef5007140f
 authored: true
 ---
-
 # InstrumentosLegalesResolucionesDirectorioForm
 
-**Módulo:** `secretariador/forms/instrumentoslegalesform.py` (líneas 141-189) · hereda de `BaseFormMixin, forms.ModelForm`
+**Módulo:** `secretariador/forms/instrumentoslegalesform.py` (líneas 164-216) · hereda de `BaseFormMixin, forms.ModelForm`
 
 ## Propósito
 

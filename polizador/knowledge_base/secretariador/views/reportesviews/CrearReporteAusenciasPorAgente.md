@@ -2,14 +2,13 @@
 symbol: CrearReporteAusenciasPorAgente
 kind: class
 module: secretariador/views/reportesviews.py
-lines: 154-212
-signature_hash: sha1:3158ad280e6fe147f53ed2f468b7ddaeae0344ed
+lines: 207-265
+signature_hash: sha1:d2b3cf2961e2409af0d5ab97a0709c394816d711
 authored: true
 ---
-
 # CrearReporteAusenciasPorAgente
 
-**Módulo:** `secretariador/views/reportesviews.py` (líneas 154-212) · hereda de `PermissionRequiredMixin, generic.ListView`
+**Módulo:** `secretariador/views/reportesviews.py` (líneas 207-265) · hereda de `PermissionRequiredMixin, generic.ListView`
 
 ## Propósito
 

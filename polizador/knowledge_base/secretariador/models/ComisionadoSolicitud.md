@@ -2,14 +2,13 @@
 symbol: ComisionadoSolicitud
 kind: class
 module: secretariador/models.py
-lines: 460-603
-signature_hash: sha1:39d140cddf62c5db2dbd749256ed8dcc20692516
+lines: 470-613
+signature_hash: sha1:6cdb7e6c492b1ab5c06ed43bfa4eb5bcd44da878
 authored: true
 ---
-
 # ComisionadoSolicitud
 
-**Módulo:** `secretariador/models.py` (líneas 460-603) · hereda de `models.Model`
+**Módulo:** `secretariador/models.py` (líneas 470-613) · hereda de `models.Model`
 
 ## Propósito
 

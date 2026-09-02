@@ -24,6 +24,7 @@ from api.views.personalizador_views import router as personalizador_router
 from api.views.select2_views import router as select2_router
 from api.views.dashboard_views import router as dashboard_router
 from api.views.gdu_views import router as gdu_router
+from api.views.core_views import router as core_router
 
 api.add_router("", carga_router)
 api.add_router("", secretariador_router)
@@ -31,3 +32,4 @@ api.add_router("", personalizador_router)
 api.add_router("", select2_router)
 api.add_router("", dashboard_router)
 api.add_router("", gdu_router)
+api.add_router("", core_router)

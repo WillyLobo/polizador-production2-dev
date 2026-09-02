@@ -164,16 +164,15 @@ class CrearListaUvi(PermissionRequiredMixin, generic.ListView):
 	template_name = "reportes/crear-lista-uvi.html"
 	
 	def get_queryset(self, **kwargs):
-		if not self.request.GET:
+		fecha_final = self.request.GET.get("fecha_final")
+		fecha_inicial = self.request.GET.get("fecha_inicial")
+		if not fecha_final or not fecha_inicial:
 			fecha_final = datetime.today() + timedelta(days=10)
 			fecha_inicial = fecha_final - timedelta(days=60)
-			uvi = Uvi.objects.filter(uvi_fecha__range=[fecha_inicial, fecha_final]).order_by("-uvi_fecha")
 		else:
-			fecha_final = self.request.GET.get("fecha_final")
 			fecha_final = datetime.strptime(fecha_final, "%d/%m/%Y")
-			fecha_inicial = self.request.GET.get("fecha_inicial")
 			fecha_inicial = datetime.strptime(fecha_inicial, "%d/%m/%Y")
-			uvi = Uvi.objects.filter(uvi_fecha__range=[fecha_inicial, fecha_final]).order_by("-uvi_fecha")
+		uvi = Uvi.objects.filter(uvi_fecha__range=[fecha_inicial, fecha_final]).order_by("-uvi_fecha")
 		return uvi
 
 	def get_title(self):

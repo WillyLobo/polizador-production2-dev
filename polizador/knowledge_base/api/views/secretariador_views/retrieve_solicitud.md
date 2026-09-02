@@ -2,14 +2,13 @@
 symbol: retrieve_solicitud
 kind: function
 module: api/views/secretariador_views.py
-lines: 596-597
-signature_hash: sha1:503da61d441c24c502f20a4c002859ec0e22dac9
+lines: 603-604
+signature_hash: sha1:b531126ebc6575ff9ea9b66e7f98ce46afa27cbd
 authored: true
 ---
-
 # retrieve_solicitud
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 596-597)
+**Módulo:** `api/views/secretariador_views.py` (líneas 603-604)
 
 ## Propósito
 

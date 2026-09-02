@@ -1,5 +1,5 @@
 <h1>schema_docs_asset</h1>
-<p><strong>Módulo:</strong> <code>core/views.py</code> (líneas 54-57)</p>
+<p><strong>Módulo:</strong> <code>core/views.py</code> (líneas 58-61)</p>
 <h2>Propósito</h2>
 <p>Sirve cada archivo estático del sitio SchemaSpy (CSS/JS/imágenes/HTML de detalle de tabla) bajo <code>SCHEMA_DOCS_ROOT</code>, gateado a mano (<code>if not request.user.is_authenticated or not request.user.is_superuser: raise PermissionDenied</code> — no puede usar <code>SuperuserRequiredMixin</code> porque es una función, no una clase) y delegando en <code>django.views.static.serve</code> de Django, que ya es seguro contra path traversal.</p>
 <h2>Firma</h2>

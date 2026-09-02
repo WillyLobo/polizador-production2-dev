@@ -2,14 +2,14 @@
 symbol: PlanDeTrabajosEtapaMatriz
 kind: class
 module: carga/views/plandetrabajosetapaviews.py
-lines: 17-114
-signature_hash: sha1:c1e6466331488701ed79102ff7ddfed47727e67e
+lines: 18-116
+signature_hash: sha1:4304f710cd31f5ea83130f8944ea802e8a26c42b
 authored: true
 ---
 
 # PlanDeTrabajosEtapaMatriz
 
-**Módulo:** `carga/views/plandetrabajosetapaviews.py` (líneas 17-114) · hereda de `PermissionRequiredMixin, generic.View`
+**Módulo:** `carga/views/plandetrabajosetapaviews.py` (líneas 18-116) · hereda de `LogInvalidFormMixin, PermissionRequiredMixin, generic.View`
 
 ## Propósito
 
@@ -27,10 +27,14 @@ columna sin Etapa existente, crea una (disparando
 celda hace `get_or_create` + `save()` explícito del `PlanDeTrabajosEtapaItem` — ver la
 nota sobre la ausencia de cascada hacia adelante en esa página del modelo.
 
+Al ser `generic.View` puro (no `FormView`/`FormsetViewMixin`), tampoco pasa por el hook
+automático de `LogInvalidFormMixin`; el `post()` invoca `self._log_form_debug(form)` a
+mano cuando `build_matriz_form` no valida.
+
 ## Firma
 
 ```python
-class PlanDeTrabajosEtapaMatriz(PermissionRequiredMixin, generic.View):
+class PlanDeTrabajosEtapaMatriz(LogInvalidFormMixin, PermissionRequiredMixin, generic.View):
 ```
 
 ## Uso real
@@ -47,3 +51,4 @@ etapaitem.save()
 - [PlanDeTrabajosEtapa](../../models/PlanDeTrabajosEtapa.md)
 - [PlanDeTrabajosEtapaItem](../../models/PlanDeTrabajosEtapaItem.md)
 - [auto_increment_etapa_numero](../../signals/auto_increment_etapa_numero.md)
+- [FormValidationError](../../../core/models/FormValidationError.md)

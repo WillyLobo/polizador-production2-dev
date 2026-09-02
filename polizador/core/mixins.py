@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib import messages
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models import ProtectedError
@@ -7,6 +9,15 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 
 from core.deletion import get_deleted_objects
+from core.models import FormValidationError
+
+form_debug_logger = logging.getLogger("core.form_debug")
+
+def _dotted_path(cls):
+    """Path para re-importar `cls` con import_string. Vacio si `cls` es una clase
+    definida dinamicamente dentro de una funcion (ej. build_matriz_form en
+    carga/forms/plandetrabajosetapaforms.py), que no tiene path estable."""
+    return "" if "<locals>" in cls.__qualname__ else f"{cls.__module__}.{cls.__qualname__}"
 
 class UserKwargsMixin:
     """Pasa el usuario actual al form principal (lo consume AddRelatedPermissionMixin en
@@ -69,6 +80,46 @@ class PopupCreateMixin:
 
 class BaseFormMixin(object):
     required_css_class = "required"
+
+class LogInvalidFormMixin:
+    """Loguea el POST crudo cuando el form (o formset, via FormsetViewMixin) no
+    valida, a logs/validation_errors.log, para poder reconstruir los pasos del
+    usuario durante debug de sesiones. Poner antes que la vista base en el MRO.
+
+    Vistas con `post()` totalmente custom (que no llaman a `self.form_invalid()`,
+    ej. CrearFojaDeMedicion) deben invocar `self._log_form_debug(form)` a mano en
+    el branch invalido en vez de depender del hook automatico."""
+
+    sensitive_fields = ()
+    """Nombres de campos a omitir del log ademas de csrfmiddlewaretoken (ej. passwords)."""
+
+    def _log_form_debug(self, form, *formsets):
+        omit = {"csrfmiddlewaretoken", *self.sensitive_fields}
+        data = {k: v for k, v in self.request.POST.lists() if k not in omit}
+        form_debug_logger.warning(
+            "form_invalid user=%s path=%s errors=%s data=%s",
+            self.request.user, self.request.path, form.errors.as_json(), data,
+        )
+        FormValidationError.objects.create(
+            user=self.request.user if self.request.user.is_authenticated else None,
+            path=self.request.path,
+            view_name=_dotted_path(type(self)),
+            form_class_path=_dotted_path(type(form)),
+            form_errors=form.errors.get_json_data(),
+            formsets=[
+                {
+                    "prefix": fs.prefix,
+                    "class_path": _dotted_path(type(fs)),
+                    "errors": [e.get_json_data() for e in fs.errors],
+                }
+                for fs in formsets
+            ],
+            raw_data=data,
+        )
+
+    def form_invalid(self, form, *args, **kwargs):
+        self._log_form_debug(form, *args)
+        return super().form_invalid(form, *args, **kwargs)
 
 class DeleteRelatedObjectsMixin:
     """Para DeleteView: muestra los objetos relacionados que se borrarian en

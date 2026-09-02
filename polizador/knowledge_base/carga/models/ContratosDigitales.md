@@ -2,14 +2,13 @@
 symbol: ContratosDigitales
 kind: class
 module: carga/models.py
-lines: 1386-1397
-signature_hash: sha1:7eda4b44c084ec085a5bfc24607c193a9de13d43
+lines: 1376-1387
+signature_hash: sha1:8d3d699a4da86780625333dfc5b7f20a4635eb6b
 authored: true
 ---
-
 # ContratosDigitales
 
-**Módulo:** `carga/models.py` (líneas 1386-1397) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 1376-1387) · hereda de `models.Model`
 
 ## Propósito
 

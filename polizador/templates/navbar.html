@@ -151,7 +151,6 @@
             <li class="dropdown-item fw-bold text-muted"><small>CREAR</small></li>
             <li><a class="dropdown-item" href="{% url "secretariador:redirect-solicitud" %}"><i class="bi bi-plus-circle me-1"></i>Nueva Solicitud</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:crear-incorporacion" %}"><i class="bi bi-plus-circle me-1"></i>Incorporación</a></li>
-            <li><a class="dropdown-item" href="{% url "secretariador:crear-comisionado" %}"><i class="bi bi-person-badge me-1"></i>Nuevo Agente</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:crear-comisionado-externo" %}"><i class="bi bi-person-badge me-1"></i>Nuevo Comisionado Externo</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:crear-vehiculo" %}"><i class="bi bi-car-front me-1"></i>Vehículo</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:crear-memorandum" %}"><i class="bi bi-file-text me-1"></i>Memorándum</a></li>
@@ -314,6 +313,7 @@
             <li class="dropdown-item fw-bold text-muted"><small>Panel</small></li>
             <li><a class="dropdown-item" href="{% url 'dashboard' %}"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a></li>
             <li><a class="dropdown-item" href="{% url 'todo_list' %}"><i class="bi bi-list-check me-1"></i>Tareas pendientes</a></li>
+            <li><a class="dropdown-item" href="{% url 'form_validation_errors' %}"><i class="bi bi-bug me-1"></i>Errores de validación</a></li>
             <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="bi bi-person-gear me-1"></i>Panel de administración</a></li>
             <li><a class="dropdown-item" href="{% url 'management_commands' %}"><i class="bi bi-terminal me-1"></i>Ejecutar comandos</a></li>
             <li><a class="dropdown-item" href="{% url 'knowledge_base' %}"><i class="bi bi-book me-1"></i>Base de Conocimiento</a></li>

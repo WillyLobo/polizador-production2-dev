@@ -84,9 +84,6 @@ encabezado_patterns = [
     path("actualizar-encabezado/", ActualizarEncabezado.as_view(), name="actualizar-encabezado"),
 ]
 comisionado_patterns = [
-    path("crearcomisionado/", CrearComisionado.as_view(), name="crear-comisionado"),
-    path("crearcomisionado/<pk>", UpdateComisionado.as_view(), name="update-comisionado"),
-    path("eliminar/comisionado/<pk>", EliminarComisionado.as_view(), name="eliminar-comisionado"),
     path("crearcomisionadoexterno/", CrearComisionadoExterno.as_view(), name="crear-comisionado-externo"),
     path("crearcomisionadoexterno/<pk>", UpdateComisionadoExterno.as_view(), name="update-comisionado-externo"),
     path("eliminar/comisionadoexterno/<pk>", EliminarComisionadoExterno.as_view(), name="eliminar-comisionado-externo"),

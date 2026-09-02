@@ -2,14 +2,13 @@
 symbol: create_monto_viatico
 kind: function
 module: api/views/secretariador_views.py
-lines: 448-449
-signature_hash: sha1:a73a8b6bd65f5e5e0d7474a716e5082b911a8d05
+lines: 455-456
+signature_hash: sha1:e103bfcc21b3713ce2f97c7d49e171292a9c3ea3
 authored: true
 ---
-
 # create_monto_viatico
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 448-449)
+**Módulo:** `api/views/secretariador_views.py` (líneas 455-456)
 
 ## Propósito
 

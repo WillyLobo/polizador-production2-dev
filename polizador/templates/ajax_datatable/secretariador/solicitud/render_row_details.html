@@ -77,7 +77,6 @@
                 <th class="small" scope="col">Combustible</th>
                 <th class="small" scope="col">Pasajes</th>
                 <th class="small" scope="col">Total</th>
-                <th class="small d-print-none" scope="col">Link</th>
             </tr>
         </thead>
         <tbody>
@@ -90,7 +89,6 @@
                 <td class="small">{{agente.comisionadosolicitud_combustible}}</td>
                 <td class="small">{{agente.comisionadosolicitud_pasaje}}</td>
                 <td class="small">{{agente.viaticos_total}}</td>
-                <td class="small d-print-none"><a href="{% url 'secretariador:update-comisionado' agente.id %}">{{editimglink|safe}}</a></td>
             </tr>
             {% endfor %}
         </tbody>
@@ -103,7 +101,6 @@
                 <th class="small" id="totalCombustible{{object.id}}" scope="col"></th>
                 <th class="small" id="totalPasaje{{object.id}}" scope="col"></th>
                 <th class="small" id="totalTotal{{object.id}}" scope="col"></th>
-                <th class="small d-print-none" scope="col"></th>
             </tr>
         </tfoot>
     </table>

@@ -154,6 +154,10 @@ class InstrumentosLegalesResoluciones(models.Model):
         ("N", "Normal"),
         ("H", "Horrible"),
     )
+    ESTADO_ESCANEO_BADGE = {
+        "N": "success",
+        "H": "danger",
+    }
     ACCION = (
         ("ADJ", "Adjudicatoria"),
         ("APR", "Aprobatoria"),
@@ -221,6 +225,10 @@ class InstrumentosLegalesResoluciones(models.Model):
         elif self.instrumentolegalresoluciones_tipo == "D":
             return reverse('secretariador:update-resolucion-directorio', kwargs={"pk": str(self.id)})
 
+    @property
+    def estado_escaneo_badge(self):
+        return self.ESTADO_ESCANEO_BADGE.get(self.instrumentolegalresoluciones_estado_escaneo, "secondary")
+
 class InstrumentosLegalesDecretos(models.Model):
     class Meta:
         verbose_name = "Instrumento Legal(Decreto)"
@@ -250,6 +258,8 @@ class InstrumentosLegalesDecretos(models.Model):
         output_field=models.TextField(),
         db_persist=True,
     )
+    # Field related to the automatic extraction of text from the digitalized decreto.
+    instrumentolegaldecretos_document = models.TextField("Texto Extraído por OCR", null=True, blank=True)
     instrumentolegaldecretos_establece_licencia_anual = models.BooleanField(
         "Establece Licencia Anual",
         default=False,

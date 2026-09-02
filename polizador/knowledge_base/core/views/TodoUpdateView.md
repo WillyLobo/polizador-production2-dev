@@ -2,14 +2,13 @@
 symbol: TodoUpdateView
 kind: class
 module: core/views.py
-lines: 204-208
-signature_hash: sha1:13d22dadb2caad3850d92a9ad14d77a7750362f0
+lines: 208-212
+signature_hash: sha1:6b6b842923c9f636eff945ae198055a269ccf584
 authored: true
 ---
-
 # TodoUpdateView
 
-**Módulo:** `core/views.py` (líneas 204-208) · hereda de `SuperuserRequiredMixin, UpdateView`
+**Módulo:** `core/views.py` (líneas 208-212) · hereda de `SuperuserRequiredMixin, UpdateView`
 
 ## Propósito
 

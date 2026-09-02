@@ -2,14 +2,13 @@
 symbol: calendario_eventos_anual
 kind: function
 module: api/views/secretariador_views.py
-lines: 950-956
-signature_hash: sha1:8587ff85b03bf8c6095f167a011988288d5d2df4
+lines: 957-963
+signature_hash: sha1:c87f0594a6946163f0cc329f33e848f1fb248907
 authored: true
 ---
-
 # calendario_eventos_anual
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 950-956)
+**Módulo:** `api/views/secretariador_views.py` (líneas 957-963)
 
 ## Propósito
 

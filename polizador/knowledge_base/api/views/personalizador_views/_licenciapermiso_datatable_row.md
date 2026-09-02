@@ -2,14 +2,13 @@
 symbol: _licenciapermiso_datatable_row
 kind: function
 module: api/views/personalizador_views.py
-lines: 804-822
-signature_hash: sha1:ddf6b31ff7704ae6adb70cbdb55de3def46de007
+lines: 794-812
+signature_hash: sha1:fff66cd33372bf024ad5fbf0d0aff62a12fd7b6d
 authored: true
 ---
-
 # _licenciapermiso_datatable_row
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 804-822)
+**Módulo:** `api/views/personalizador_views.py` (líneas 794-812)
 
 ## Propósito
 

@@ -2,14 +2,13 @@
 symbol: datatable_solicitudes_filtro_vehiculos
 kind: function
 module: api/views/secretariador_views.py
-lines: 782-789
-signature_hash: sha1:52dffa2be0551991b45cb1bfafe966441e0bee10
+lines: 789-796
+signature_hash: sha1:4e866884be2b00852383332a96a1a83d8eec6512
 authored: true
 ---
-
 # datatable_solicitudes_filtro_vehiculos
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 782-789)
+**Módulo:** `api/views/secretariador_views.py` (líneas 789-796)
 
 ## Propósito
 

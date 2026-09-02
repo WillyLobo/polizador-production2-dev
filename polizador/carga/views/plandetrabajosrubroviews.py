@@ -5,11 +5,11 @@ from django.urls import reverse
 from django.views import generic
 from carga.models import PlanDeTrabajos, PlanDeTrabajosRubro, ContratoMonto, Certificado
 from carga.forms.plandetrabajosrubroforms import *
-from core.mixins import FormsetViewMixin
+from core.mixins import FormsetViewMixin, LogInvalidFormMixin
 
 
 @method_decorator(login_required, name="dispatch")
-class CrearPlanDeTrabajosRubro(PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
+class CrearPlanDeTrabajosRubro(LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
 	permission_required = "carga.add_plandetrabajosrubro"
 	formset_name = PlanDeTrabajosItemFormset
 	view_type = "create"
@@ -97,7 +97,7 @@ class CrearPlanDeTrabajosRubro(PermissionRequiredMixin, FormsetViewMixin, generi
 
 
 @method_decorator(login_required, name="dispatch")
-class UpdatePlanDeTrabajosRubro(PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView):
+class UpdatePlanDeTrabajosRubro(LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView):
 	permission_required = "carga.change_plandetrabajosrubro"
 	formset_name = PlanDeTrabajosItemFormset
 	view_type = "update"

@@ -2,14 +2,13 @@
 symbol: delete_solicitud
 kind: function
 module: api/views/secretariador_views.py
-lines: 613-615
-signature_hash: sha1:57a0846453805764f488eae2523dd706f5fc5d22
+lines: 620-622
+signature_hash: sha1:4777f909f89eed09c1fe4e499881e31ce94a5903
 authored: true
 ---
-
 # delete_solicitud
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 613-615)
+**Módulo:** `api/views/secretariador_views.py` (líneas 620-622)
 
 ## Propósito
 

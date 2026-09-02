@@ -8,6 +8,7 @@ from carga.views.inspeccionviews import InspeccionHomeView
 from django.contrib.auth.decorators import login_required
 from core.views import (
     DashboardView,
+    FormValidationErrorListView,
     KnowledgeBaseIndexView,
     KnowledgeBasePageView,
     ManagementCommandRunDetailView,
@@ -36,6 +37,7 @@ urlpatterns = [
     path("select2/", include("django_select2.urls")),
     path("home/", InspeccionHomeView.as_view(), name="home"),
     path("administracion/dashboard/", DashboardView.as_view(), name="dashboard"),
+    path("administracion/errores-validacion/", FormValidationErrorListView.as_view(), name="form_validation_errors"),
     path("administracion/schema/", SchemaDocsView.as_view(), name="schema_docs"),
     path("administracion/schema/<path:path>", schema_docs_asset, name="schema_docs_asset"),
     path("administracion/comandos/", ManagementCommandsView.as_view(), name="management_commands"),

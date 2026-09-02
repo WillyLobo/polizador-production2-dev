@@ -1,0 +1,24 @@
+<h1>_row</h1>
+<p><strong>Módulo:</strong> <code>api/views/core_views.py</code> (líneas 24-31)</p>
+<h2>Propósito</h2>
+<p>Serializa un <code>FormValidationError</code> a un dict plano para una fila del datatable de
+errores de validación: id, fecha formateada, usuario (o "—" si es anónimo), nombre corto
+de la vista (último segmento del dotted path) y path de la request.</p>
+<h2>Firma</h2>
+<pre><code class="language-python">def _row(o):
+</code></pre>
+<h2>Uso real</h2>
+<p>Usado por <code>datatable_errores_validacion</code> para armar la lista <code>data</code> de la respuesta
+paginada. Candidatos detectados automáticamente:</p>
+<ul>
+<li><code>api/views/core_views.py:55</code> — <code>"data": [_row(o) for o in page],</code></li>
+</ul>
+<h2>Flujo de datos</h2>
+<p><code>FormValidationError</code> (core.models, ya con <code>select_related("user")</code> en el queryset del
+caller) → dict de fila → lista <code>data</code> del payload JSON estilo DataTables → tabla
+ajax-datatable en <code>errores_validacion/list.html</code>.</p>
+<h2>Ver también</h2>
+<ul>
+<li><a href="../core_views/datatable_errores_validacion.md">datatable_errores_validacion</a> — único caller.</li>
+<li><a href="../../../core/models/FormValidationError.md">FormValidationError</a> — modelo serializado.</li>
+</ul>

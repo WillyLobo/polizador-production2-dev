@@ -1,13 +1,16 @@
 <h1>UpdatePlanDeTrabajos</h1>
-<p><strong>Módulo:</strong> <code>carga/views/plandetrabajosviews.py</code> (líneas 75-85) · hereda de <code>PermissionRequiredMixin, generic.UpdateView</code></p>
+<p><strong>Módulo:</strong> <code>carga/views/plandetrabajosviews.py</code> (líneas 76-86) · hereda de <code>LogInvalidFormMixin, PermissionRequiredMixin, generic.UpdateView</code></p>
 <h2>Propósito</h2>
 <p>Edición de Plan de Trabajos; acota el combo de <code>trabajos_contrato</code> a los Contratos de la misma Obra.</p>
+<p><code>UpdateView</code> estándar sin <code>post()</code> propio: el <code>form_invalid()</code> automático de
+<code>LogInvalidFormMixin</code> se encarga de loguear un form inválido.</p>
 <h2>Firma</h2>
-<pre><code class="language-python">class UpdatePlanDeTrabajos(PermissionRequiredMixin, generic.UpdateView):
+<pre><code class="language-python">class UpdatePlanDeTrabajos(LogInvalidFormMixin, PermissionRequiredMixin, generic.UpdateView):
 </code></pre>
 <h2>Uso real</h2>
 <p><code>UpdatePlanDeTrabajos</code> (<code>carga:update-plandetrabajos</code>).</p>
 <h2>Ver también</h2>
 <ul>
 <li><a href="../../models/PlanDeTrabajos.md">PlanDeTrabajos</a></li>
+<li><a href="../../../core/models/FormValidationError.md">FormValidationError</a></li>
 </ul>

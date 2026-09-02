@@ -2,14 +2,13 @@
 symbol: _denominacioncargo_datatable_row
 kind: function
 module: api/views/personalizador_views.py
-lines: 363-370
-signature_hash: sha1:008517e59b23e6ce067cb2a246d1174592ecf7fb
+lines: 353-360
+signature_hash: sha1:370e57703527a719abf90fb7e1724b1ce2e65f06
 authored: true
 ---
-
 # _denominacioncargo_datatable_row
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 363-370)
+**Módulo:** `api/views/personalizador_views.py` (líneas 353-360)
 
 ## Propósito
 

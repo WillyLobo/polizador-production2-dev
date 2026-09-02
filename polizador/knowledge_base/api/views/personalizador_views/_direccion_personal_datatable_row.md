@@ -2,14 +2,13 @@
 symbol: _direccion_personal_datatable_row
 kind: function
 module: api/views/personalizador_views.py
-lines: 573-586
-signature_hash: sha1:e21564540ae014692834c7fb1168d0794bafcd78
+lines: 563-576
+signature_hash: sha1:cbb58f2b3a8459419c18e4451554d6a964f28112
 authored: true
 ---
-
 # _direccion_personal_datatable_row
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 573-586)
+**Módulo:** `api/views/personalizador_views.py` (líneas 563-576)
 
 ## Propósito
 

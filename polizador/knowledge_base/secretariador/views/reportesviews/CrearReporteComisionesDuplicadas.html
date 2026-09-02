@@ -1,5 +1,5 @@
 <h1>CrearReporteComisionesDuplicadas</h1>
-<p><strong>Módulo:</strong> <code>secretariador/views/reportesviews.py</code> (líneas 215-290) · hereda de <code>PermissionRequiredMixin, generic.ListView</code></p>
+<p><strong>Módulo:</strong> <code>secretariador/views/reportesviews.py</code> (líneas 268-343) · hereda de <code>PermissionRequiredMixin, generic.ListView</code></p>
 <h2>Propósito</h2>
 <p>Detecta Solicitudes que comparten exactamente las mismas fechas y localidades (posible carga duplicada por error) — agrupa por la tupla <code>(fechas, localidades)</code> y reporta los grupos con más de un elemento. Recorre día por día del rango en vez de una sola query agrupada, re-consultando <code>Solicitud.objects.filter(solicitud_fecha_desde=fecha)</code> en cada iteración del loop de fechas.</p>
 <h2>Firma</h2>

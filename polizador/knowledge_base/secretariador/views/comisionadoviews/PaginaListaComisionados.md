@@ -2,14 +2,13 @@
 symbol: PaginaListaComisionados
 kind: function
 module: secretariador/views/comisionadoviews.py
-lines: 57-60
-signature_hash: sha1:0ba3e142f56f5660e0c335481f92244d2d243c18
+lines: 21-24
+signature_hash: sha1:3fd4c92c7631f574c5557e1a0a244a28aa1d383b
 authored: true
 ---
-
 # PaginaListaComisionados
 
-**Módulo:** `secretariador/views/comisionadoviews.py` (líneas 57-60)
+**Módulo:** `secretariador/views/comisionadoviews.py` (líneas 21-24)
 
 ## Propósito
 

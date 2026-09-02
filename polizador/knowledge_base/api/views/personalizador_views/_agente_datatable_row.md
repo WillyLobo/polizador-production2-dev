@@ -2,14 +2,13 @@
 symbol: _agente_datatable_row
 kind: function
 module: api/views/personalizador_views.py
-lines: 703-726
-signature_hash: sha1:318170e579f41ebae357e1d85ab0dbc7dabdb153
+lines: 693-716
+signature_hash: sha1:20df6f5327f562bd3149dd828fc18ff33896099b
 authored: true
 ---
-
 # _agente_datatable_row
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 703-726)
+**Módulo:** `api/views/personalizador_views.py` (líneas 693-716)
 
 ## Propósito
 

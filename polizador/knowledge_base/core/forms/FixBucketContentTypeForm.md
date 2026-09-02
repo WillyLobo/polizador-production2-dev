@@ -2,14 +2,13 @@
 symbol: FixBucketContentTypeForm
 kind: class
 module: core/forms.py
-lines: 128-150
-signature_hash: sha1:d1d8f30645bc6df5e7c6e4c3114819d0500982be
+lines: 135-157
+signature_hash: sha1:44c8445debfa19a291573e92ee4d2df1ba3b330b
 authored: true
 ---
-
 # FixBucketContentTypeForm
 
-**Módulo:** `core/forms.py` (líneas 128-150) · hereda de `BaseCommandRunForm`
+**Módulo:** `core/forms.py` (líneas 135-157) · hereda de `BaseCommandRunForm`
 
 ## Propósito
 

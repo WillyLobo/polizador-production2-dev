@@ -2,14 +2,13 @@
 symbol: list_incorporaciones
 kind: function
 module: api/views/secretariador_views.py
-lines: 820-824
-signature_hash: sha1:ed6d3e556ecf1ea09c12bf3f32c66cbb95e2052f
+lines: 827-831
+signature_hash: sha1:07da4a9c82fc935173945f919bd1bbc1a95195b6
 authored: true
 ---
-
 # list_incorporaciones
 
-**Módulo:** `api/views/secretariador_views.py` (líneas 820-824)
+**Módulo:** `api/views/secretariador_views.py` (líneas 827-831)
 
 ## Propósito
 

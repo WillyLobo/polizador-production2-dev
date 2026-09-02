@@ -2,14 +2,13 @@
 symbol: _ceic_datatable_row
 kind: function
 module: api/views/personalizador_views.py
-lines: 405-412
-signature_hash: sha1:cc2c0f269b3bc8765cd361185d174f7b8869c39f
+lines: 395-402
+signature_hash: sha1:d4b96c0307b9b11d6802f728975691294f643612
 authored: true
 ---
-
 # _ceic_datatable_row
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 405-412)
+**Módulo:** `api/views/personalizador_views.py` (líneas 395-402)
 
 ## Propósito
 

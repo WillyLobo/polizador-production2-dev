@@ -204,7 +204,7 @@ numba==0.67.0
     # via -r requirements.in
 numexpr==2.14.2
     # via -r requirements.in
-numpy==2.4.6
+numpy==2.2.6
     # via
     #   bottleneck
     #   db-dtypes
@@ -225,6 +225,7 @@ packaging==26.2
     #   gunicorn
     #   pandas-gbq
     #   pikepdf
+    #   pytesseract
     #   pytest
 pandas==3.0.5
     # via
@@ -237,6 +238,7 @@ pikepdf==10.11.0
 pillow==12.3.0
     # via
     #   pikepdf
+    #   pytesseract
     #   reportlab
 playwright==1.62.0
     # via -r requirements.in
@@ -292,8 +294,12 @@ pyee==13.0.1
     # via playwright
 pygments==2.20.0
     # via pytest
+pymupdf==1.26.4
+    # via -r requirements.in
 pyspnego==0.12.1
     # via smbprotocol
+pytesseract==0.3.13
+    # via -r requirements.in
 pytest==9.0.3
     # via
     #   pytest-cov

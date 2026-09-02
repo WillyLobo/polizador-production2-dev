@@ -2,14 +2,13 @@
 symbol: CrearComisionadoExterno
 kind: class
 module: secretariador/views/comisionadoviews.py
-lines: 63-80
-signature_hash: sha1:a22700b1ccab6d553e736957142da387ad84d97e
+lines: 27-44
+signature_hash: sha1:71f1b482c7d573e5d0c1f81bf4bb2f6334ebe8f1
 authored: true
 ---
-
 # CrearComisionadoExterno
 
-**Módulo:** `secretariador/views/comisionadoviews.py` (líneas 63-80) · hereda de `PopupCreateMixin, PermissionRequiredMixin, generic.CreateView`
+**Módulo:** `secretariador/views/comisionadoviews.py` (líneas 27-44) · hereda de `PopupCreateMixin, PermissionRequiredMixin, generic.CreateView`
 
 ## Propósito
 

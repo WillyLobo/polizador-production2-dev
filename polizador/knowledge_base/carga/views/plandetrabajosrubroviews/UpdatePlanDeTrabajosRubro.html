@@ -1,9 +1,12 @@
 <h1>UpdatePlanDeTrabajosRubro</h1>
-<p><strong>Módulo:</strong> <code>carga/views/plandetrabajosrubroviews.py</code> (líneas 100-148) · hereda de <code>PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView</code></p>
+<p><strong>Módulo:</strong> <code>carga/views/plandetrabajosrubroviews.py</code> (líneas 100-148) · hereda de <code>LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView</code></p>
 <h2>Propósito</h2>
 <p>Edición de un Rubro. <code>_pedir_foja_numero_inicial()</code> en edición equivale a "¿se puede seguir editando ese campo?" — solo si el Rubro todavía no tiene ninguna Foja real (no-legacy) cargada, para no romper la numeración ya materializada en la base.</p>
+<p>Igual que <code>CrearPlanDeTrabajosRubro</code>, <code>get</code>/<code>post</code> solo fijan <code>success_url</code> antes de
+delegar en <code>super()</code>, así que el registro de <code>FormValidationError</code> ante un form inválido
+lo dispara solo el hook de <code>LogInvalidFormMixin</code>, sin llamada manual.</p>
 <h2>Firma</h2>
-<pre><code class="language-python">class UpdatePlanDeTrabajosRubro(PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView):
+<pre><code class="language-python">class UpdatePlanDeTrabajosRubro(LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView):
 </code></pre>
 <h2>Uso real</h2>
 <p><code>UpdatePlanDeTrabajosRubro</code> (<code>carga:update-plandetrabajosrubro</code>).</p>
@@ -11,4 +14,5 @@
 <ul>
 <li><a href="../../models/PlanDeTrabajosRubro.md">PlanDeTrabajosRubro</a></li>
 <li><a href="CrearPlanDeTrabajosRubro.md">CrearPlanDeTrabajosRubro</a></li>
+<li><a href="../../../core/models/FormValidationError.md">FormValidationError</a></li>
 </ul>

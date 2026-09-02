@@ -2,14 +2,13 @@
 symbol: LoginEvent
 kind: class
 module: core/models.py
-lines: 116-127
-signature_hash: sha1:1f8c5a220c13784b8d3ff38efb7b221f98a9682f
+lines: 143-154
+signature_hash: sha1:444552195965df57706e1a82f589fe71a09eeadd
 authored: true
 ---
-
 # LoginEvent
 
-**Módulo:** `core/models.py` (líneas 116-127) · hereda de `models.Model`
+**Módulo:** `core/models.py` (líneas 143-154) · hereda de `models.Model`
 
 ## Propósito
 

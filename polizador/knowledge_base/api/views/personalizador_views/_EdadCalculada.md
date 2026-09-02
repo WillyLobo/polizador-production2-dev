@@ -2,14 +2,13 @@
 symbol: _EdadCalculada
 kind: class
 module: api/views/personalizador_views.py
-lines: 690-694
-signature_hash: sha1:fa9b1ed2a7cab5114ebcc4a888b2a5f9c3226ef3
+lines: 680-684
+signature_hash: sha1:ac3b466ab8a908921198a6a20dde1a1e9304151e
 authored: true
 ---
-
 # _EdadCalculada
 
-**Módulo:** `api/views/personalizador_views.py` (líneas 690-694) · hereda de `Func`
+**Módulo:** `api/views/personalizador_views.py` (líneas 680-684) · hereda de `Func`
 
 ## Propósito
 
