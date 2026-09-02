@@ -1,6 +1,6 @@
 {
   "api": {
-    "generated_at": "2026-08-31T17:00:45.913395+00:00",
+    "generated_at": "2026-09-02T13:38:18.729830+00:00",
     "modules": {
       "views/carga_views": {
         "file": "api/views/carga_views.py",
@@ -3463,6 +3463,482 @@
           }
         }
       },
+      "views/gdu_views": {
+        "file": "api/views/gdu_views.py",
+        "symbols": {
+          "_actuacion_row": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "api/views/gdu_views.py",
+                "line": 61,
+                "snippet": "row_builder=_actuacion_row,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              39,
+              46
+            ],
+            "methods": [],
+            "module": "api/views/gdu_views.py",
+            "name": "_actuacion_row",
+            "page_path": "api/views/gdu_views/_actuacion_row",
+            "signature": "def _actuacion_row(a: Actuacion, user) -> dict:",
+            "signature_hash": "sha1:245776428d7f7777e5cdea2d2aed26a1a58abf69",
+            "stale": false
+          },
+          "_adjudicacion_beneficiario_row": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "api/views/gdu_views.py",
+                "line": 413,
+                "snippet": "row_builder=_adjudicacion_beneficiario_row,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              404,
+              405
+            ],
+            "methods": [],
+            "module": "api/views/gdu_views.py",
+            "name": "_adjudicacion_beneficiario_row",
+            "page_path": "api/views/gdu_views/_adjudicacion_beneficiario_row",
+            "signature": "def _adjudicacion_beneficiario_row(a: AdjudicacionBeneficiario, user) -> dict:",
+            "signature_hash": "sha1:016b668c5e758767b4aafb2bc2c3ff08bc91d6fb",
+            "stale": false
+          },
+          "_adjudicatario3450_row": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "api/views/gdu_views.py",
+                "line": 535,
+                "snippet": "\"data\": [_adjudicatario3450_row(o) for o in page],"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              483,
+              492
+            ],
+            "methods": [],
+            "module": "api/views/gdu_views.py",
+            "name": "_adjudicatario3450_row",
+            "page_path": "api/views/gdu_views/_adjudicatario3450_row",
+            "signature": "def _adjudicatario3450_row(a: Adjudicatario3450) -> dict:",
+            "signature_hash": "sha1:0d23dd421e06c03acb9ddfd3606984eae52d377e",
+            "stale": false
+          },
+          "_barrio_row": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "api/views/gdu_views.py",
+                "line": 255,
+                "snippet": "row_builder=_barrio_row,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              239,
+              244
+            ],
+            "methods": [],
+            "module": "api/views/gdu_views.py",
+            "name": "_barrio_row",
+            "page_path": "api/views/gdu_views/_barrio_row",
+            "signature": "def _barrio_row(b: Barrio, user) -> dict:",
+            "signature_hash": "sha1:368c102af18a87d4aff9c28609cb823658a56b50",
+            "stale": false
+          },
+          "_contratacion_row": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "api/views/gdu_views.py",
+                "line": 92,
+                "snippet": "row_builder=_contratacion_row,"
+              },
+              {
+                "file": "api/views/gdu_views.py",
+                "line": 99,
+                "snippet": "row = _contratacion_row(c, user)"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              67,
+              76
+            ],
+            "methods": [],
+            "module": "api/views/gdu_views.py",
+            "name": "_contratacion_row",
+            "page_path": "api/views/gdu_views/_contratacion_row",
+            "signature": "def _contratacion_row(c: Contratacion, user) -> dict:",
+            "signature_hash": "sha1:4b729e65ae7df0e42b3c6aba89d44424fe897a80",
+            "stale": false
+          },
+          "_contratacion_sin_obra_row": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "api/views/gdu_views.py",
+                "line": 121,
+                "snippet": "row_builder=_contratacion_sin_obra_row,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              98,
+              101
+            ],
+            "methods": [],
+            "module": "api/views/gdu_views.py",
+            "name": "_contratacion_sin_obra_row",
+            "page_path": "api/views/gdu_views/_contratacion_sin_obra_row",
+            "signature": "def _contratacion_sin_obra_row(c: Contratacion, user) -> dict:",
+            "signature_hash": "sha1:083bd1050c393d99266bc21ff51501f919618a34",
+            "stale": false
+          },
+          "_expropiacion_row": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "api/views/gdu_views.py",
+                "line": 371,
+                "snippet": "row_builder=_expropiacion_row,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              347,
+              355
+            ],
+            "methods": [],
+            "module": "api/views/gdu_views.py",
+            "name": "_expropiacion_row",
+            "page_path": "api/views/gdu_views/_expropiacion_row",
+            "signature": "def _expropiacion_row(e: Expropiacion, user) -> dict:",
+            "signature_hash": "sha1:81366548e5559ec74cdf89f98f4fb826f6535a12",
+            "stale": false
+          },
+          "_intervencion_row": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "api/views/gdu_views.py",
+                "line": 218,
+                "snippet": "row_builder=_intervencion_row,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              192,
+              201
+            ],
+            "methods": [],
+            "module": "api/views/gdu_views.py",
+            "name": "_intervencion_row",
+            "page_path": "api/views/gdu_views/_intervencion_row",
+            "signature": "def _intervencion_row(i: Intervencion, user) -> dict:",
+            "signature_hash": "sha1:a43f07f86405264518409676483aad8ed8d08776",
+            "stale": false
+          },
+          "_localidad_row": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "api/views/gdu_views.py",
+                "line": 341,
+                "snippet": "row_builder=_localidad_row,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              320,
+              327
+            ],
+            "methods": [],
+            "module": "api/views/gdu_views.py",
+            "name": "_localidad_row",
+            "page_path": "api/views/gdu_views/_localidad_row",
+            "signature": "def _localidad_row(l: Localidad, user) -> dict:",
+            "signature_hash": "sha1:af550866ee0081cf24f404d60659421076663cd6",
+            "stale": false
+          },
+          "_nombre_row": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "api/views/gdu_views.py",
+                "line": 453,
+                "snippet": "row_builder=_nombre_row,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              436,
+              437
+            ],
+            "methods": [],
+            "module": "api/views/gdu_views.py",
+            "name": "_nombre_row",
+            "page_path": "api/views/gdu_views/_nombre_row",
+            "signature": "def _nombre_row(obj, user) -> dict:",
+            "signature_hash": "sha1:64d1b14822e1c604fda5cfaa60d2e174ac1f21ac",
+            "stale": false
+          },
+          "_obra_para_vincular_row": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "api/views/gdu_views.py",
+                "line": 185,
+                "snippet": "row_builder=_obra_para_vincular_row,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              154,
+              168
+            ],
+            "methods": [],
+            "module": "api/views/gdu_views.py",
+            "name": "_obra_para_vincular_row",
+            "page_path": "api/views/gdu_views/_obra_para_vincular_row",
+            "signature": "def _obra_para_vincular_row(o: Obra, user) -> dict:",
+            "signature_hash": "sha1:2c050f6a795591868c6a8a81f64b4eda02301b59",
+            "stale": false
+          },
+          "_parcela_row": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "api/views/gdu_views.py",
+                "line": 284,
+                "snippet": "row_builder=_parcela_row,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              261,
+              268
+            ],
+            "methods": [],
+            "module": "api/views/gdu_views.py",
+            "name": "_parcela_row",
+            "page_path": "api/views/gdu_views/_parcela_row",
+            "signature": "def _parcela_row(p: Parcela, user) -> dict:",
+            "signature_hash": "sha1:f16094821d98a56f519fbf24dc055a59bb7339d0",
+            "stale": false
+          },
+          "_plano_mensura_row": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "api/views/gdu_views.py",
+                "line": 398,
+                "snippet": "row_builder=_plano_mensura_row,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              377,
+              385
+            ],
+            "methods": [],
+            "module": "api/views/gdu_views.py",
+            "name": "_plano_mensura_row",
+            "page_path": "api/views/gdu_views/_plano_mensura_row",
+            "signature": "def _plano_mensura_row(p: PlanoMensura, user) -> dict:",
+            "signature_hash": "sha1:06394357f41818db23003e4ae60cc9d93ce5d1ce",
+            "stale": false
+          },
+          "_programa_row": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "api/views/gdu_views.py",
+                "line": 233,
+                "snippet": "row_builder=_programa_row,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              224,
+              225
+            ],
+            "methods": [],
+            "module": "api/views/gdu_views.py",
+            "name": "_programa_row",
+            "page_path": "api/views/gdu_views/_programa_row",
+            "signature": "def _programa_row(p: Programa, user) -> dict:",
+            "signature_hash": "sha1:cf00bcc551a8ad36bad684c23afbeed6fad69b4c",
+            "stale": false
+          },
+          "_resolucion_costos_row": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "api/views/gdu_views.py",
+                "line": 430,
+                "snippet": "row_builder=_resolucion_costos_row,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              419,
+              420
+            ],
+            "methods": [],
+            "module": "api/views/gdu_views.py",
+            "name": "_resolucion_costos_row",
+            "page_path": "api/views/gdu_views/_resolucion_costos_row",
+            "signature": "def _resolucion_costos_row(r: ResolucionCostos, user) -> dict:",
+            "signature_hash": "sha1:0ee5f5d6abce26921ec13a7d0602ac86c64d3f47",
+            "stale": false
+          },
+          "_uf_row": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "api/views/gdu_views.py",
+                "line": 314,
+                "snippet": "row_builder=_uf_row,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              290,
+              299
+            ],
+            "methods": [],
+            "module": "api/views/gdu_views.py",
+            "name": "_uf_row",
+            "page_path": "api/views/gdu_views/_uf_row",
+            "signature": "def _uf_row(u: Uf, user) -> dict:",
+            "signature_hash": "sha1:65faabaa343aaebc60739b0b0dab9cbe44a8e5ce",
+            "stale": false
+          },
+          "datatable_adjudicatarios_3450": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "router.get('/datatables/gdu-adjudicatarios-3450/', operation_id='datatable_gdu_adjudicatarios_3450_list')",
+              "decorate_view(require_model_perm(Adjudicatario3450))"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              497,
+              536
+            ],
+            "methods": [],
+            "module": "api/views/gdu_views.py",
+            "name": "datatable_adjudicatarios_3450",
+            "page_path": "api/views/gdu_views/datatable_adjudicatarios_3450",
+            "signature": "def datatable_adjudicatarios_3450(request, draw: int=1, start: int=0, length: int=50, search: str='', order_by: str='adjugisapeynom', filters: str='{}'):",
+            "signature_hash": "sha1:bbacf47f28456f5518930c464b2056e8ff496f81",
+            "stale": false
+          },
+          "datatable_gdu_contrataciones_sin_obra_detalle": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "router.get('/datatables/gdu-contrataciones-sin-obra/{id}/detalle/')",
+              "decorate_view(require_model_perm(Contratacion))"
+            ],
+            "docstring": "Fila expandida de gdu-contrataciones-sin-obra: en vez del dump genérico de\nrender_datatable_row_details, muestra la tabla anidada de gdu-obras-para-vincular\n(gdu/_contratacion_sin_obra_detail.html) para elegir y vincular la obra ahí mismo.",
+            "kind": "function",
+            "lines": [
+              142,
+              150
+            ],
+            "methods": [],
+            "module": "api/views/gdu_views.py",
+            "name": "datatable_gdu_contrataciones_sin_obra_detalle",
+            "page_path": "api/views/gdu_views/datatable_gdu_contrataciones_sin_obra_detalle",
+            "signature": "def datatable_gdu_contrataciones_sin_obra_detalle(request, id: int):",
+            "signature_hash": "sha1:48cbab885a369cd3a024b9e24dba6ad7e061bb11",
+            "stale": false
+          },
+          "datatable_gdu_contrataciones_sin_obra_filtro_programa": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "router.get('/datatables/gdu-contrataciones-sin-obra/filtro-programa/')",
+              "decorate_view(require_model_perm(Contratacion))"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              129,
+              137
+            ],
+            "methods": [],
+            "module": "api/views/gdu_views.py",
+            "name": "datatable_gdu_contrataciones_sin_obra_filtro_programa",
+            "page_path": "api/views/gdu_views/datatable_gdu_contrataciones_sin_obra_filtro_programa",
+            "signature": "def datatable_gdu_contrataciones_sin_obra_filtro_programa(request):",
+            "signature_hash": "sha1:e29474e9631da085f7168d225110cd644cebfc3f",
+            "stale": false
+          }
+        }
+      },
       "views/generics": {
         "file": "api/views/generics.py",
         "symbols": {
@@ -3708,6 +4184,11 @@
             "authored": true,
             "bases": [],
             "candidate_usages": [
+              {
+                "file": "api/views/gdu_views.py",
+                "line": 144,
+                "snippet": "render_datatable_row_details, muestra la tabla anidada de gdu-obras-para-vincular"
+              },
               {
                 "file": "api/views/generics.py",
                 "line": 179,
@@ -6231,7 +6712,7 @@
     }
   },
   "carga": {
-    "generated_at": "2026-08-31T17:00:40.213696+00:00",
+    "generated_at": "2026-09-02T13:38:12.074342+00:00",
     "modules": {
       "forms/areaforms": {
         "file": "carga/forms/areaforms.py",
@@ -6945,7 +7426,7 @@
             "candidate_usages": [
               {
                 "file": "carga/views/ajaxviews.py",
-                "line": 106,
+                "line": 107,
                 "snippet": "\"\"\"Widgets en FojaDeMedicionForm: escopean resultados AJAX a la Obra del `foja_rubro`"
               },
               {
@@ -9738,7 +10219,7 @@
               },
               {
                 "file": "carga/views/ajaxviews.py",
-                "line": 120,
+                "line": 121,
                 "snippet": "return PlanDeTrabajosRubro.objects.filter(pk=rubro_id).values_list("
               },
               {
@@ -10655,27 +11136,27 @@
             "candidate_usages": [
               {
                 "file": "carga/views/ajaxviews.py",
-                "line": 65,
+                "line": 66,
                 "snippet": "class conjuntowidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):"
               },
               {
                 "file": "carga/views/ajaxviews.py",
-                "line": 99,
+                "line": 100,
                 "snippet": "class programawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):"
               },
               {
                 "file": "carga/views/ajaxviews.py",
-                "line": 151,
+                "line": 152,
                 "snippet": "class aseguradorawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):"
               },
               {
                 "file": "carga/views/ajaxviews.py",
-                "line": 157,
+                "line": 158,
                 "snippet": "class areawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):"
               },
               {
                 "file": "carga/views/ajaxviews.py",
-                "line": 163,
+                "line": 164,
                 "snippet": "class receptorwidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):"
               }
             ],
@@ -10711,7 +11192,7 @@
             "candidate_usages": [
               {
                 "file": "carga/views/ajaxviews.py",
-                "line": 124,
+                "line": 125,
                 "snippet": "class certificadolegacywidget(FojaRubroDependentWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget):"
               }
             ],
@@ -10719,16 +11200,16 @@
             "docstring": "Widgets en FojaDeMedicionForm: escopean resultados AJAX a la Obra del `foja_rubro`\nelegido en el form, y muestran los primeros resultados al abrir sin escribir.",
             "kind": "class",
             "lines": [
-              105,
-              122
+              106,
+              123
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  111,
-                  114
+                  112,
+                  115
                 ],
                 "name": "build_attrs",
                 "signature": "def build_attrs(self, *args, **kwargs):"
@@ -10737,8 +11218,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  116,
-                  122
+                  117,
+                  123
                 ],
                 "name": "_obra_id_actual",
                 "signature": "def _obra_id_actual(self, dependent_fields):"
@@ -10748,8 +11229,8 @@
             "name": "FojaRubroDependentWidgetMixin",
             "page_path": "carga/views/ajaxviews/FojaRubroDependentWidgetMixin",
             "signature": "class FojaRubroDependentWidgetMixin:",
-            "signature_hash": "sha1:879de436012553293add675800bd9045edb4ed4f",
-            "stale": false
+            "signature_hash": "sha1:d8e98e83c57af4477dcf8bfeb0a5bf2b45451815",
+            "stale": true
           },
           "PlanDependentWidgetMixin": {
             "authored": true,
@@ -10757,12 +11238,12 @@
             "candidate_usages": [
               {
                 "file": "carga/views/ajaxviews.py",
-                "line": 82,
+                "line": 83,
                 "snippet": "class rubroanteriorwidget(PlanDependentWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):"
               },
               {
                 "file": "carga/views/ajaxviews.py",
-                "line": 226,
+                "line": 227,
                 "snippet": "class contratomontowidget(PlanDependentWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):"
               }
             ],
@@ -10808,27 +11289,27 @@
             "candidate_usages": [
               {
                 "file": "carga/views/ajaxviews.py",
-                "line": 99,
+                "line": 100,
                 "snippet": "class programawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):"
               },
               {
                 "file": "carga/views/ajaxviews.py",
-                "line": 151,
+                "line": 152,
                 "snippet": "class aseguradorawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):"
               },
               {
                 "file": "carga/views/ajaxviews.py",
-                "line": 157,
+                "line": 158,
                 "snippet": "class areawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):"
               },
               {
                 "file": "carga/views/ajaxviews.py",
-                "line": 191,
+                "line": 192,
                 "snippet": "class provinciawidget(SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):"
               },
               {
                 "file": "carga/views/ajaxviews.py",
-                "line": 196,
+                "line": 197,
                 "snippet": "class departamentomultiplewidget(SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget):"
               }
             ],
@@ -10890,16 +11371,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              139,
-              143
+              140,
+              144
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "agentemultiplewidget",
             "page_path": "carga/views/ajaxviews/agentemultiplewidget",
             "signature": "class agentemultiplewidget(LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget):",
-            "signature_hash": "sha1:289068b8457546fa20596d9360765661c23eb3c5",
-            "stale": false
+            "signature_hash": "sha1:62c46c27903747f8216935c534bd5635b1a39720",
+            "stale": true
           },
           "agentewidget": {
             "authored": true,
@@ -10912,16 +11393,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              145,
-              149
+              146,
+              150
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "agentewidget",
             "page_path": "carga/views/ajaxviews/agentewidget",
             "signature": "class agentewidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):",
-            "signature_hash": "sha1:960ef44604d8612a1c2f1d6405b14eba1b2e9740",
-            "stale": false
+            "signature_hash": "sha1:762df0c3a2d7c0f66a8d9bf241ae4f69cc7cc35a",
+            "stale": true
           },
           "areawidget": {
             "authored": true,
@@ -10947,16 +11428,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              157,
-              161
+              158,
+              162
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "areawidget",
             "page_path": "carga/views/ajaxviews/areawidget",
             "signature": "class areawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):",
-            "signature_hash": "sha1:9a5bf7772dea4232a802c56f4ba65420df7ff4c4",
-            "stale": false
+            "signature_hash": "sha1:428bfc3ce1a605353362ed2fff0eb16629f0e7e8",
+            "stale": true
           },
           "aseguradorawidget": {
             "authored": true,
@@ -10982,16 +11463,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              151,
-              155
+              152,
+              156
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "aseguradorawidget",
             "page_path": "carga/views/ajaxviews/aseguradorawidget",
             "signature": "class aseguradorawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):",
-            "signature_hash": "sha1:cdeaf42e798c8aadfe1e7af49d01dc8dd1e47bcc",
-            "stale": false
+            "signature_hash": "sha1:3165546cb947221c25f1dbcce2533d83b0e55c9c",
+            "stale": true
           },
           "certificadolegacywidget": {
             "authored": true,
@@ -11016,16 +11497,16 @@
             "docstring": "Candidatos a vincular en una Foja legacy: Certificados de la Obra del rubro elegido\nque todavía no están asociados a ninguna Foja.",
             "kind": "class",
             "lines": [
-              124,
-              137
+              125,
+              138
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  132,
-                  137
+                  133,
+                  138
                 ],
                 "name": "filter_queryset",
                 "signature": "def filter_queryset(self, request, term, queryset=None, **dependent_fields):"
@@ -11035,8 +11516,8 @@
             "name": "certificadolegacywidget",
             "page_path": "carga/views/ajaxviews/certificadolegacywidget",
             "signature": "class certificadolegacywidget(FojaRubroDependentWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget):",
-            "signature_hash": "sha1:9da06354964f6a4a3aab27f3fe9396f67d6d208c",
-            "stale": false
+            "signature_hash": "sha1:ab68486e1f926f59faf9bc1098e511b276e6ba1e",
+            "stale": true
           },
           "conjuntowidget": {
             "authored": true,
@@ -11061,16 +11542,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              65,
-              69
+              66,
+              70
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "conjuntowidget",
             "page_path": "carga/views/ajaxviews/conjuntowidget",
             "signature": "class conjuntowidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):",
-            "signature_hash": "sha1:b6c20af2003dbc1e28409336dbe6a73857f3f06a",
-            "stale": false
+            "signature_hash": "sha1:47a6603095a03ed46297edf58ffca883cbc0a58c",
+            "stale": true
           },
           "contratomontowidget": {
             "authored": true,
@@ -11095,16 +11576,16 @@
             "docstring": "Montos del contrato vinculado al plan actual (o de los contratos de su obra, si no tiene uno).",
             "kind": "class",
             "lines": [
-              226,
-              242
+              227,
+              243
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  233,
-                  242
+                  234,
+                  243
                 ],
                 "name": "filter_queryset",
                 "signature": "def filter_queryset(self, request, term, queryset=None, **dependent_fields):"
@@ -11114,8 +11595,8 @@
             "name": "contratomontowidget",
             "page_path": "carga/views/ajaxviews/contratomontowidget",
             "signature": "class contratomontowidget(PlanDependentWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):",
-            "signature_hash": "sha1:0bca1b660c1918e3b6ad53172f7437fd170a760b",
-            "stale": false
+            "signature_hash": "sha1:d868ef7c60c3145923dbeb59aefb07055acf85a4",
+            "stale": true
           },
           "contratowidget": {
             "authored": true,
@@ -11154,16 +11635,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              244,
-              248
+              245,
+              249
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "contratowidget",
             "page_path": "carga/views/ajaxviews/contratowidget",
             "signature": "class contratowidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):",
-            "signature_hash": "sha1:f5caea657dfdbb0fb53391972fb0787494513d53",
-            "stale": false
+            "signature_hash": "sha1:d3b6c3ab59ba2a4bbdcf269d95cfa5d686732503",
+            "stale": true
           },
           "departamentomultiplewidget": {
             "authored": true,
@@ -11188,16 +11669,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              196,
-              199
+              197,
+              200
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "departamentomultiplewidget",
             "page_path": "carga/views/ajaxviews/departamentomultiplewidget",
             "signature": "class departamentomultiplewidget(SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget):",
-            "signature_hash": "sha1:9ea6f0ee7b8fa397cd0bf402300dd7a09a51d1d2",
-            "stale": false
+            "signature_hash": "sha1:4aa69a42776900c35ca785385af1e46b31867bc2",
+            "stale": true
           },
           "departamentowidget": {
             "authored": true,
@@ -11222,16 +11703,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              201,
-              204
+              202,
+              205
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "departamentowidget",
             "page_path": "carga/views/ajaxviews/departamentowidget",
             "signature": "class departamentowidget(SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):",
-            "signature_hash": "sha1:f88b338fd34bbba6be80070ad7699159175cc948",
-            "stale": false
+            "signature_hash": "sha1:588eba216e606a32cc9c42459d7f403d4e23e061",
+            "stale": true
           },
           "empresawidget": {
             "authored": true,
@@ -11266,16 +11747,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              178,
-              182
+              179,
+              183
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "empresawidget",
             "page_path": "carga/views/ajaxviews/empresawidget",
             "signature": "class empresawidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):",
-            "signature_hash": "sha1:51372dd33f4d51946a838d05883c9d515670204f",
-            "stale": false
+            "signature_hash": "sha1:715a782ccee6cfd1e0da827c520d23adf0547541",
+            "stale": true
           },
           "localidadmultiplewidget": {
             "authored": true,
@@ -11299,16 +11780,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              206,
-              209
+              207,
+              210
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "localidadmultiplewidget",
             "page_path": "carga/views/ajaxviews/localidadmultiplewidget",
             "signature": "class localidadmultiplewidget(LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget):",
-            "signature_hash": "sha1:a625642367c388497d11c216ad718fa7939110fd",
-            "stale": false
+            "signature_hash": "sha1:6704b3dca3276df00826fe385fd405bc60031623",
+            "stale": true
           },
           "localidadwidget": {
             "authored": true,
@@ -11321,16 +11802,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              211,
-              214
+              212,
+              215
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "localidadwidget",
             "page_path": "carga/views/ajaxviews/localidadwidget",
             "signature": "class localidadwidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):",
-            "signature_hash": "sha1:fd297fed14e0eb7d2f792bd1c534d0deb7e54103",
-            "stale": false
+            "signature_hash": "sha1:381587785701bea2e948a62096e8783476a6c46f",
+            "stale": true
           },
           "municipiomultiplewidget": {
             "authored": true,
@@ -11355,16 +11836,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              216,
-              219
+              217,
+              220
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "municipiomultiplewidget",
             "page_path": "carga/views/ajaxviews/municipiomultiplewidget",
             "signature": "class municipiomultiplewidget(SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget):",
-            "signature_hash": "sha1:acdfb0b8d54359043c7e0199b99556dc2c4d4c77",
-            "stale": false
+            "signature_hash": "sha1:607cda2d0db4a182e5f193b8c44757df2ac1b9f9",
+            "stale": true
           },
           "municipiowidget": {
             "authored": true,
@@ -11389,16 +11870,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              221,
-              224
+              222,
+              225
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "municipiowidget",
             "page_path": "carga/views/ajaxviews/municipiowidget",
             "signature": "class municipiowidget(SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):",
-            "signature_hash": "sha1:e5fdebbd5ecca1c7d70e4e513df3fa76dd9e6fb5",
-            "stale": false
+            "signature_hash": "sha1:836f14998f12fa9e9ab31b6a40c5ff6c18473714",
+            "stale": true
           },
           "obramultiplewidget": {
             "authored": true,
@@ -11422,16 +11903,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              184,
-              189
+              185,
+              190
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "obramultiplewidget",
             "page_path": "carga/views/ajaxviews/obramultiplewidget",
             "signature": "class obramultiplewidget(LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget):",
-            "signature_hash": "sha1:061c972bed79cb9615d1262d1a7ce1f8176949e8",
-            "stale": false
+            "signature_hash": "sha1:e64d7ab21c94a933c65512b2a507ad88990f2651",
+            "stale": true
           },
           "obrawidget": {
             "authored": true,
@@ -11471,15 +11952,15 @@
             "kind": "class",
             "lines": [
               58,
-              63
+              64
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "obrawidget",
             "page_path": "carga/views/ajaxviews/obrawidget",
             "signature": "class obrawidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):",
-            "signature_hash": "sha1:0752e061da799ae6a481b78c440e173d913490e8",
-            "stale": false
+            "signature_hash": "sha1:51bf2d636d6df232bc00d0a53bce52617545c25a",
+            "stale": true
           },
           "planwidget": {
             "authored": true,
@@ -11503,16 +11984,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              71,
-              74
+              72,
+              75
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "planwidget",
             "page_path": "carga/views/ajaxviews/planwidget",
             "signature": "class planwidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):",
-            "signature_hash": "sha1:563bc77db94a9ea373b809e30f4e58a35e6e3bdc",
-            "stale": false
+            "signature_hash": "sha1:b29c37b81504f96b0cf16f1271014f033d645f18",
+            "stale": true
           },
           "polizawidget": {
             "authored": true,
@@ -11536,16 +12017,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              169,
-              176
+              170,
+              177
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "polizawidget",
             "page_path": "carga/views/ajaxviews/polizawidget",
             "signature": "class polizawidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):",
-            "signature_hash": "sha1:b065903523c4b8f218fbf005ab3216b531a140cf",
-            "stale": false
+            "signature_hash": "sha1:d362eff207c39910812d21cb1f362f442f991826",
+            "stale": true
           },
           "programawidget": {
             "authored": true,
@@ -11571,16 +12052,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              99,
-              103
+              100,
+              104
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "programawidget",
             "page_path": "carga/views/ajaxviews/programawidget",
             "signature": "class programawidget(AddRelatedWidgetMixin, SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):",
-            "signature_hash": "sha1:b0d21eabac6d9e56a2f79832452d11feb997be31",
-            "stale": false
+            "signature_hash": "sha1:53172512edb0de54746968217a048e7bc38d6fb8",
+            "stale": true
           },
           "provinciawidget": {
             "authored": true,
@@ -11594,16 +12075,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              191,
-              194
+              192,
+              195
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "provinciawidget",
             "page_path": "carga/views/ajaxviews/provinciawidget",
             "signature": "class provinciawidget(SmallCatalogWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):",
-            "signature_hash": "sha1:26b1810eca33fab2dc5549a6a2449fd2f63da14c",
-            "stale": false
+            "signature_hash": "sha1:5cf4b4e8e71bf91fff5f122bcb431073c7f9fe91",
+            "stale": true
           },
           "receptorwidget": {
             "authored": true,
@@ -11628,16 +12109,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              163,
-              167
+              164,
+              168
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "receptorwidget",
             "page_path": "carga/views/ajaxviews/receptorwidget",
             "signature": "class receptorwidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):",
-            "signature_hash": "sha1:435551f7b4a6332d6ced1c5d8ca08e803ddff45c",
-            "stale": false
+            "signature_hash": "sha1:3861988cf5dbe83dce54c0da9ac665a61c7c268e",
+            "stale": true
           },
           "rubroanteriorwidget": {
             "authored": true,
@@ -11662,16 +12143,16 @@
             "docstring": "Candidatos a 'rubro anterior': rubros de la misma obra, de un plan distinto al actual.",
             "kind": "class",
             "lines": [
-              82,
-              97
+              83,
+              98
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  89,
-                  97
+                  90,
+                  98
                 ],
                 "name": "filter_queryset",
                 "signature": "def filter_queryset(self, request, term, queryset=None, **dependent_fields):"
@@ -11681,8 +12162,8 @@
             "name": "rubroanteriorwidget",
             "page_path": "carga/views/ajaxviews/rubroanteriorwidget",
             "signature": "class rubroanteriorwidget(PlanDependentWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):",
-            "signature_hash": "sha1:3d5355daabb9804ae4403a4b61e3350f121f564a",
-            "stale": false
+            "signature_hash": "sha1:9859c2c21d6d656fe8c95fd2f9886e93cc76875b",
+            "stale": true
           },
           "rubrowidget": {
             "authored": true,
@@ -11706,16 +12187,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              76,
-              80
+              77,
+              81
             ],
             "methods": [],
             "module": "carga/views/ajaxviews.py",
             "name": "rubrowidget",
             "page_path": "carga/views/ajaxviews/rubrowidget",
             "signature": "class rubrowidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):",
-            "signature_hash": "sha1:4031d29d50dc533d6ad36f297f89435d57760049",
-            "stale": false
+            "signature_hash": "sha1:bb2c9a4a02db7ead3b5fc0e45bcea8dfc48338d0",
+            "stale": true
           }
         }
       },
@@ -13937,16 +14418,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              149,
-              162
+              155,
+              168
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  155,
-                  162
+                  161,
+                  168
                 ],
                 "name": "get_context_data",
                 "signature": "def get_context_data(self, **kwargs):"
@@ -13956,8 +14437,8 @@
             "name": "ContratosAnterioresObra",
             "page_path": "carga/views/obraviews/ContratosAnterioresObra",
             "signature": "class ContratosAnterioresObra(PermissionRequiredMixin, generic.DetailView):",
-            "signature_hash": "sha1:379a7e4372070300fdacb12e0566278a706532a5",
-            "stale": false
+            "signature_hash": "sha1:adad0b94661e250927de6e9067e65460910b2abd",
+            "stale": true
           },
           "CrearObra": {
             "authored": true,
@@ -14054,7 +14535,7 @@
             "kind": "class",
             "lines": [
               117,
-              130
+              136
             ],
             "methods": [
               {
@@ -14062,7 +14543,7 @@
                 "docstring": null,
                 "lines": [
                   123,
-                  130
+                  136
                 ],
                 "name": "get_queryset",
                 "signature": "def get_queryset(self):"
@@ -14072,8 +14553,8 @@
             "name": "EstadoObra",
             "page_path": "carga/views/obraviews/EstadoObra",
             "signature": "class EstadoObra(PermissionRequiredMixin, generic.DetailView):",
-            "signature_hash": "sha1:19243b37b7b13bec33d23270d2a04e5f9347d8f7",
-            "stale": false
+            "signature_hash": "sha1:c5baaee3dd415f8a6ac8c1bd4e3aee8ace283c97",
+            "stale": true
           },
           "PaginaListaObras": {
             "authored": true,
@@ -14086,16 +14567,16 @@
             "docstring": "Renderiza la página que contiene la tabla.\nEsta a su vez invoca (via ajax) object_datatable_view(), para rellenar el contenido de la tabla.",
             "kind": "function",
             "lines": [
-              166,
-              176
+              172,
+              182
             ],
             "methods": [],
             "module": "carga/views/obraviews.py",
             "name": "PaginaListaObras",
             "page_path": "carga/views/obraviews/PaginaListaObras",
             "signature": "def PaginaListaObras(request):",
-            "signature_hash": "sha1:768cd9aa8ca5149c7da874d037df3333ecadc37c",
-            "stale": false
+            "signature_hash": "sha1:5642833bde876b3aaf7930700d91c233d3ae4352",
+            "stale": true
           },
           "PaginaListaObrasExtendida": {
             "authored": true,
@@ -14107,16 +14588,16 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              179,
-              182
+              185,
+              188
             ],
             "methods": [],
             "module": "carga/views/obraviews.py",
             "name": "PaginaListaObrasExtendida",
             "page_path": "carga/views/obraviews/PaginaListaObrasExtendida",
             "signature": "def PaginaListaObrasExtendida(request):",
-            "signature_hash": "sha1:6328f6619ffa1e9b1c43b5c0f5c62376c995d379",
-            "stale": false
+            "signature_hash": "sha1:8309ffbbf2ed03e84384bac31b733ff3556cae70",
+            "stale": true
           },
           "PlanesAnterioresObra": {
             "authored": true,
@@ -14131,16 +14612,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              133,
-              146
+              139,
+              152
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  139,
-                  146
+                  145,
+                  152
                 ],
                 "name": "get_context_data",
                 "signature": "def get_context_data(self, **kwargs):"
@@ -14150,8 +14631,8 @@
             "name": "PlanesAnterioresObra",
             "page_path": "carga/views/obraviews/PlanesAnterioresObra",
             "signature": "class PlanesAnterioresObra(PermissionRequiredMixin, generic.DetailView):",
-            "signature_hash": "sha1:313a9903fdfe282ff426df133c5ed46e6a80aec2",
-            "stale": false
+            "signature_hash": "sha1:e8f5e53ea80547732ac5815951ed31e5572fd954",
+            "stale": true
           },
           "UpdateObra": {
             "authored": true,
@@ -14200,8 +14681,8 @@
               },
               {
                 "file": "carga/views/obraviews.py",
-                "line": 129,
-                "snippet": "Prefetch(\"obra_madre\", queryset=Obra.objects.prefetch_related(*_obra_estado_prefetch())),"
+                "line": 134,
+                "snippet": ").prefetch_related(*_obra_estado_prefetch()),"
               }
             ],
             "decorators": [],
@@ -15606,7 +16087,7 @@
     }
   },
   "core": {
-    "generated_at": "2026-08-31T17:00:38.109731+00:00",
+    "generated_at": "2026-09-02T13:38:09.778877+00:00",
     "modules": {
       "forms": {
         "file": "core/forms.py",
@@ -16949,7 +17430,7 @@
     }
   },
   "personalizador": {
-    "generated_at": "2026-08-31T17:00:43.894213+00:00",
+    "generated_at": "2026-09-02T13:38:16.313047+00:00",
     "modules": {
       "forms/actividadespecificaforms": {
         "file": "personalizador/forms/actividadespecificaforms.py",
@@ -22827,7 +23308,7 @@
     }
   },
   "secretariador": {
-    "generated_at": "2026-08-31T17:00:42.068943+00:00",
+    "generated_at": "2026-09-02T13:38:14.187855+00:00",
     "modules": {
       "forms/comisionadoform": {
         "file": "secretariador/forms/comisionadoform.py",
