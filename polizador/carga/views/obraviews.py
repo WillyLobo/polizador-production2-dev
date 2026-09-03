@@ -139,7 +139,7 @@ class PlanesAnterioresObra(PermissionRequiredMixin, generic.DetailView):
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		vigente = self.object.plan_vigente()
-		planes = self.object.plandetrabajos_set.prefetch_related("rubros__items", "rubros__fojas__foja_inspector")
+		planes = self.object.plandetrabajos_set.prefetch_related("rubros__items", "rubros__fojas__foja_inspector", "rubros__etapas__items")
 		if vigente:
 			planes = planes.exclude(pk=vigente.pk)
 		context["planes_anteriores"] = planes.order_by("-trabajos_fecha", "-pk")

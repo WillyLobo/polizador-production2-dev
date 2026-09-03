@@ -21,6 +21,11 @@
                 <div class="row g-0">
                     <div class="col border"><b>Rubro:</b></div><div class="col border">{{rubro.rubro_nombre}}</div>
                     <div class="col border"><b>Presupuesto:</b></div><div class="col border">{{rubro.rubro_presupuesto}}</div>
+                    {% if perms.carga.change_plandetrabajosetapa or perms.carga.add_plandetrabajosetapa %}
+                        <div class="col border">
+                            <a href="{% url "carga:plandetrabajosetapa-matriz" rubro.id %}">{{detalleimglink|safe}} Ver Matriz de Etapas</a>
+                        </div>
+                    {% endif %}
                     <div class="col border">
                         <table class="table table-sm table-bordered mb-0">
                             <thead>
@@ -43,32 +48,54 @@
                     </div>
                 </div>
             </div>
-            {% if rubro.fojas.all %}
+            {% with comparacion=rubro.comparacion_etapas_fojas %}
+            {% if comparacion %}
                 <div class="col">
                     <table class="table table-sm table-bordered mb-0">
                         <thead>
                             <tr>
+                                <th colspan="3" class="text-center">Proyectado (Plan de Trabajos)</th>
+                                <th colspan="4" class="text-center">Medido (Foja de Medición)</th>
+                                <th rowspan="2" class="text-center align-middle">Desfasaje<br><small class="fw-normal">(Acumulado)</small></th>
+                            </tr>
+                            <tr>
+                                <th>Etapa N°</th>
+                                <th>Mes Proyectado</th>
+                                <th>Acumulado</th>
                                 <th>Foja N°</th>
                                 <th>Período</th>
-                                <th>Avance del Mes</th>
                                 <th>Acumulado</th>
                                 <th>Inspector</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {% for foja in rubro.fojas.all %}
+                            {% for fila in comparacion %}
                             <tr>
-                                <td>{{foja.foja_numero}}</td>
-                                <td>{{foja.foja_periodo}}</td>
-                                <td>{{foja.foja_pct_avance_mes|floatformat:3}}%</td>
-                                <td>{{foja.foja_pct_acumulado|floatformat:3}}%</td>
-                                <td>{% for inspector in foja.foja_inspector.all %}{{inspector}}{% if not forloop.last %}, {% endif %}{% empty %}-{% endfor %}</td>
+                                {% if fila.etapa %}
+                                <td>{{fila.etapa.etapa_numero}}</td>
+                                <td>{{fila.etapa.etapa_fecha}}</td>
+                                <td>{{fila.etapa.etapa_pct_proyectado_acumulado|floatformat:3}}%</td>
+                                {% else %}
+                                <td colspan="3">-</td>
+                                {% endif %}
+                                {% if fila.foja %}
+                                <td>{{fila.foja.foja_numero}}</td>
+                                <td>{{fila.foja.foja_periodo}}</td>
+                                <td>{{fila.foja.foja_pct_acumulado|floatformat:3}}%</td>
+                                <td>{% for inspector in fila.foja.foja_inspector.all %}{{inspector}}{% if not forloop.last %}, {% endif %}{% empty %}-{% endfor %}</td>
+                                {% else %}
+                                <td colspan="4">-</td>
+                                {% endif %}
+                                <td class="{% if fila.desfasaje < 0 %}text-danger{% elif fila.desfasaje > 0 %}text-success{% endif %}">
+                                    {% if fila.desfasaje != None %}{{fila.desfasaje|floatformat:3}}%{% else %}-{% endif %}
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
             {% endif %}
+            {% endwith %}
         {% endfor %}
         <hr>
     {% empty %}

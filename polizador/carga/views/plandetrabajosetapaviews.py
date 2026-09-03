@@ -3,7 +3,7 @@ from decimal import Decimal
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.db import transaction
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils.decorators import method_decorator
@@ -34,6 +34,12 @@ class PlanDeTrabajosEtapaMatriz(LogInvalidFormMixin, PermissionRequiredMixin, ge
 	def _get_existentes(self, rubro):
 		return list(PlanDeTrabajosEtapa.objects.filter(etapa_rubro=rubro).order_by("etapa_numero"))
 
+	def _es_readonly(self, rubro):
+		"""Los rubros de un Plan de Trabajos que ya no es el vigente (obra reprogramada)
+		se muestran de solo lectura: reprogramar es lo que corresponde para seguir
+		cargando avance, no reabrir un plan cerrado."""
+		return not rubro.rubro_plan.es_vigente()
+
 	def _get_anterior_map(self, rubro, items):
 		"""Acumulado ya "consumido" de la incidencia de cada item, a tomar como piso de la
 		matriz. Se basa en el avance REAL (Fojas de Medición) y no en lo proyectado por
@@ -42,7 +48,7 @@ class PlanDeTrabajosEtapaMatriz(LogInvalidFormMixin, PermissionRequiredMixin, ge
 		real), no quedaría margen para proyectar ninguna etapa nueva."""
 		return FojaDeMedicion.anterior_items_map(rubro, items=items)
 
-	def _build_context(self, rubro, items, existentes, anterior_map, form):
+	def _build_context(self, rubro, items, existentes, anterior_map, form, readonly):
 		total_columns = max(rubro.rubro_plan.trabajos_meses, len(existentes))
 		columnas = [
 			{"numero": existentes[col].etapa_numero if col < len(existentes) else None,
@@ -63,6 +69,7 @@ class PlanDeTrabajosEtapaMatriz(LogInvalidFormMixin, PermissionRequiredMixin, ge
 			"columnas": columnas,
 			"total_columns": total_columns,
 			"form": form,
+			"readonly": readonly,
 			"rubro_monto_base_pesos": rubro.monto_base_pesos(),
 			"rubro_monto_base_uvi": rubro.monto_base_uvi(),
 		}
@@ -73,6 +80,7 @@ class PlanDeTrabajosEtapaMatriz(LogInvalidFormMixin, PermissionRequiredMixin, ge
 		existentes = self._get_existentes(rubro)
 		total_columns = max(rubro.rubro_plan.trabajos_meses, len(existentes))
 		anterior_map = self._get_anterior_map(rubro, items)
+		readonly = self._es_readonly(rubro)
 
 		initial = {}
 		for col, etapa in enumerate(existentes):
@@ -81,10 +89,16 @@ class PlanDeTrabajosEtapaMatriz(LogInvalidFormMixin, PermissionRequiredMixin, ge
 
 		form_class = build_matriz_form(items, total_columns, anterior_map)
 		form = form_class(initial=initial)
-		return render(request, self.template_name, self._build_context(rubro, items, existentes, anterior_map, form))
+		if readonly:
+			for field in form.fields.values():
+				field.widget.attrs["readonly"] = True
+		return render(request, self.template_name, self._build_context(rubro, items, existentes, anterior_map, form, readonly))
 
 	def post(self, request, pk):
 		rubro = self._get_rubro(pk)
+		if self._es_readonly(rubro):
+			return HttpResponseForbidden("Este Plan de Trabajos ya no está vigente: es de solo lectura.")
+
 		items = self._get_items(rubro)
 		existentes = self._get_existentes(rubro)
 		total_columns = max(rubro.rubro_plan.trabajos_meses, len(existentes))
@@ -113,4 +127,4 @@ class PlanDeTrabajosEtapaMatriz(LogInvalidFormMixin, PermissionRequiredMixin, ge
 			return HttpResponseRedirect(reverse("carga:estado-obra", kwargs={"pk": rubro.rubro_plan.trabajos_obra_id}))
 
 		self._log_form_debug(form)
-		return render(request, self.template_name, self._build_context(rubro, items, existentes, anterior_map, form))
+		return render(request, self.template_name, self._build_context(rubro, items, existentes, anterior_map, form, readonly=False))

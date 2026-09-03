@@ -987,6 +987,21 @@ class PlanDeTrabajosRubro(models.Model):
             return self.rubro_contratomonto.contratomonto_uvi
         return None
 
+    def comparacion_etapas_fojas(self):
+        """Empareja cada Etapa proyectada con la Foja de igual posición, para ver el
+        desfasaje entre lo planificado y lo medido. Si hay más Fojas que Etapas (se
+        siguió midiendo avance real más allá de los meses que preveía el plan), las
+        Fojas sobrantes se comparan contra la última Etapa en vez de quedar sin par."""
+        etapas = list(self.etapas.all())
+        fojas = list(self.fojas.all())
+        filas = []
+        for i in range(max(len(etapas), len(fojas))):
+            etapa = etapas[i] if i < len(etapas) else (etapas[-1] if etapas else None)
+            foja = fojas[i] if i < len(fojas) else None
+            desfasaje = (foja.foja_pct_acumulado() - etapa.etapa_pct_proyectado_acumulado()) if etapa and foja else None
+            filas.append({"etapa": etapa, "foja": foja, "desfasaje": desfasaje})
+        return filas
+
     def __str__(self):
         return f"{self.rubro_nombre} - {self.rubro_plan}"
 
