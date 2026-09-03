@@ -27,19 +27,22 @@
                 <tr>
                     <th>Item</th>
                     <th class="text-center">% Incidencia</th>
+                    <th class="text-center">Avance Anterior<br><small class="fw-normal">(Fojas ya medidas)</small></th>
                     {% for columna in columnas %}
                         <th class="text-center">
                             {% if columna.numero %}Etapa {{columna.numero}}<br>{{columna.fecha|date:"F-Y"}}{% else %}(nueva){% endif %}
                         </th>
                     {% endfor %}
-                    <th class="text-center">Suma</th>
+                    <th class="text-center">Suma Nueva</th>
+                    <th class="text-center">Total (Anterior + Nueva)</th>
                 </tr>
             </thead>
             <tbody>
                 {% for row in rows %}
-                    <tr>
+                    <tr data-anterior="{{row.anterior|unlocalize}}" data-incidencia="{{row.item.planitem_incidencia_pct|unlocalize}}">
                         <td>{{row.item.planitem_nombre}}</td>
                         <td class="text-center">{{row.item.planitem_incidencia_pct}}</td>
+                        <td class="text-center">{{row.anterior}}</td>
                         {% for cell in row.cells %}
                             <td class="text-center">
                                 {{cell}}
@@ -47,53 +50,54 @@
                             </td>
                         {% endfor %}
                         <td class="text-center fw-bold" id="suma-item-{{row.item.pk}}">0.000</td>
+                        <td class="text-center fw-bold" id="total-item-{{row.item.pk}}">{{row.anterior}}</td>
                     </tr>
                 {% endfor %}
             </tbody>
             <tfoot class="bg-body-tertiary fw-bold">
                 <tr>
-                    <td colspan="2">Avance Físico - Por Período</td>
+                    <td colspan="3">Avance Físico - Por Período</td>
                     {% for columna in columnas %}
                         <td class="text-center" id="total-periodo-{{forloop.counter0}}">0.000</td>
                     {% endfor %}
-                    <td></td>
+                    <td colspan="2"></td>
                 </tr>
                 <tr>
-                    <td colspan="2">Avance Físico - Acumulado</td>
+                    <td colspan="3">Avance Físico - Acumulado</td>
                     {% for columna in columnas %}
                         <td class="text-center" id="total-acumulado-{{forloop.counter0}}">0.000</td>
                     {% endfor %}
-                    <td></td>
+                    <td colspan="2"></td>
                 </tr>
                 {% if rubro_monto_base_pesos is not None %}
                 <tr>
-                    <td colspan="2">Inversiones ($) - Por Período</td>
+                    <td colspan="3">Inversiones ($) - Por Período</td>
                     {% for columna in columnas %}
                         <td class="text-center" id="inversion-pesos-periodo-{{forloop.counter0}}">-</td>
                     {% endfor %}
-                    <td></td>
+                    <td colspan="2"></td>
                 </tr>
                 <tr>
-                    <td colspan="2">Inversiones ($) - Acumulado</td>
+                    <td colspan="3">Inversiones ($) - Acumulado</td>
                     {% for columna in columnas %}
                         <td class="text-center" id="inversion-pesos-acumulado-{{forloop.counter0}}">-</td>
                     {% endfor %}
-                    <td></td>
+                    <td colspan="2"></td>
                 </tr>
                 {% if rubro_monto_base_uvi is not None %}
                 <tr>
-                    <td colspan="2">Inversiones (UVI) - Por Período</td>
+                    <td colspan="3">Inversiones (UVI) - Por Período</td>
                     {% for columna in columnas %}
                         <td class="text-center" id="inversion-uvi-periodo-{{forloop.counter0}}">-</td>
                     {% endfor %}
-                    <td></td>
+                    <td colspan="2"></td>
                 </tr>
                 <tr>
-                    <td colspan="2">Inversiones (UVI) - Acumulado</td>
+                    <td colspan="3">Inversiones (UVI) - Acumulado</td>
                     {% for columna in columnas %}
                         <td class="text-center" id="inversion-uvi-acumulado-{{forloop.counter0}}">-</td>
                     {% endfor %}
-                    <td></td>
+                    <td colspan="2"></td>
                 </tr>
                 {% endif %}
                 {% endif %}
@@ -133,6 +137,17 @@ document.addEventListener('DOMContentLoaded', function() {
         for (const itemPk in porItem) {
             const sumaCell = document.getElementById('suma-item-' + itemPk);
             if (sumaCell) sumaCell.textContent = porItem[itemPk].toFixed(3);
+
+            const totalCell = document.getElementById('total-item-' + itemPk);
+            const fila = totalCell ? totalCell.closest('tr') : null;
+            if (totalCell && fila) {
+                const anterior = parseFloat(fila.dataset.anterior) || 0;
+                const incidencia = parseFloat(fila.dataset.incidencia) || 0;
+                const total = anterior + porItem[itemPk];
+                totalCell.textContent = total.toFixed(3);
+                totalCell.classList.toggle('text-danger', total > incidencia);
+                fila.classList.toggle('table-danger', total > incidencia);
+            }
         }
 
         let acumulado = 0;
