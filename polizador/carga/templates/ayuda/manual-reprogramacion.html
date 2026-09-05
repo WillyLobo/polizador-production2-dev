@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}<title>Manual de Usuario — Reprogramación de Obra | Polizador</title>{% endblock title %}
+{% block content %}
+<div class="container my-4" style="max-width: 980px;">
+
+    <h1 class="mb-1"><i class="bi bi-question-circle me-2"></i>Manual de Usuario</h1>
+    <p class="text-muted mb-4">Cómo reprogramar el Plan de Trabajos de una obra cuando el avance real se desvía de lo proyectado, sin volver a cargar a mano lo ya medido.</p>
+
+    {# ─── Índice ─── #}
+    <div class="card mb-4">
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">Índice</div>
+        <div class="card-body p-2">
+            <ol class="small mb-0">
+                <li><a href="#conceptos">Antes de empezar: qué es reprogramar y cuándo hacerlo</a></li>
+                <li><a href="#paso1">Paso 1 — Reprogramar el Plan desde la ficha de la obra</a></li>
+                <li><a href="#paso2">Paso 2 — Completar "Duración (meses)"</a></li>
+                <li><a href="#paso3">Paso 3 — Abrir "Gestionar Etapas": el hueco se completa solo</a></li>
+                <li><a href="#paso4">Paso 4 — Proyectar los meses realmente nuevos</a></li>
+                <li><a href="#resultado">Resultado final</a></li>
+                <li><a href="#planoanterior">El plan anterior no desaparece</a></li>
+                <li><a href="#faq">Preguntas frecuentes y errores comunes</a></li>
+            </ol>
+        </div>
+    </div>
+
+    {# ─── Conceptos ─── #}
+    <div class="card mb-4" id="conceptos">
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">Antes de empezar: qué es reprogramar y cuándo hacerlo</div>
+        <div class="card-body p-3">
+            <p>Reprogramar una obra es crear un <strong>Plan de Trabajos nuevo</strong> cuando el avance real (medido en las Fojas de Medición) se desvió de lo que proyectaba el plan vigente — típicamente porque la obra se atrasó y las Etapas ya cargadas no dejan margen para seguir proyectando. "Reprogramar" <strong>no edita</strong> el plan viejo: lo deja tal cual, como historial, y arma uno nuevo a partir de él.</p>
+
+            <p>Al reprogramar, cada Rubro y cada Ítem del plan viejo se <strong>clona</strong> en el plan nuevo (mismo nombre, mismo % de incidencia), quedando vinculados al original. Las Etapas Proyectadas, en cambio, <strong>no se clonan</strong>: hay que cargarlas de nuevo, pero solo los meses que realmente faltan — el sistema resuelve automáticamente la parte que ya se sabe.</p>
+
+            <div class="alert alert-info small mb-3">
+                <i class="bi bi-info-circle me-1"></i>
+                Es habitual que se sigan cargando Fojas de Medición durante meses después de que las Etapas Proyectadas del plan viejo se terminaron (por ejemplo, un plan de 9 meses pero la obra sigue midiéndose avance real hasta el mes 13). Esos meses "de más" quedan medidos por Foja pero <strong>sin ninguna Etapa que los represente</strong>. Le llamamos el <strong>hueco</strong>: es exactamente lo que la reprogramación tiene que resolver.
+            </div>
+
+            <p class="mb-0">El plan nuevo resuelve el hueco así: al abrir la matriz de Etapas del rubro reprogramado, el sistema busca cuántas Fojas reales existen de más respecto a las Etapas que llegó a tener el plan viejo, y las ofrece como columnas <strong>ya completadas con el avance real y bloqueadas</strong> — no hay que transcribirlas a mano. Recién después de esas columnas empiezan los meses genuinamente nuevos, los que vos tenés que proyectar.</p>
+        </div>
+    </div>
+
+    {# ─── Paso 1 ─── #}
+    <div class="card mb-4" id="paso1">
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">Paso 1 — Reprogramar el Plan desde la ficha de la obra</div>
+        <div class="card-body p-3">
+            <p>En la ficha de la obra, en la sección "Plan de Trabajos y Fojas de Medición", hacé clic en <strong>"Reprogramar Plan"</strong> (al pie, junto a "+ Nuevo Rubro"). En este ejemplo, el plan vigente tiene 3 Etapas proyectadas pero ya hay 5 Fojas reales cargadas — 2 meses de avance real sin Etapa que los respalde, el hueco que se va a completar solo más adelante:</p>
+            <img src="{% static 'carga/img/ayuda/reprogramacion/01-obra-ficha-antes.png' %}" class="img-fluid border rounded" alt="Ficha de la obra con el plan vigente (3 Etapas, 5 Fojas) y el botón Reprogramar Plan">
+        </div>
+    </div>
+
+    {# ─── Paso 2 ─── #}
+    <div class="card mb-4" id="paso2">
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">Paso 2 — Completar "Duración (meses)"</div>
+        <div class="card-body p-3">
+            <p>Se abre el formulario de un Plan de Trabajos nuevo, con la Obra ya preseleccionada. El campo que más cuidado necesita es <strong>Duración (meses)</strong>: define cuántas columnas va a tener la matriz de cada Rubro reprogramado, y <strong>no es la duración total de la obra</strong>.</p>
+            <img src="{% static 'carga/img/ayuda/reprogramacion/02-reprogramar-form-completo.png' %}" class="img-fluid border rounded mb-3" alt="Formulario de reprogramación con el campo Duración (meses) completo y su ayuda contextual">
+
+            <div class="alert alert-warning small mb-0">
+                <i class="bi bi-exclamation-triangle me-1"></i>
+                Las Etapas nuevas continúan numerando desde la última Etapa del rubro anterior — no vuelven a empezar en 1. Para que la numeración llegue exactamente al plazo total de la obra, hay que restar del plazo total la cantidad de <strong>Etapas</strong> que ya tenía el plan anterior (3 en este ejemplo), <strong>no</strong> la cantidad de Fojas medidas (5): son cosas distintas, y confundirlas hace que la matriz quede corta o se pase de largo. Los meses del hueco (2, en este ejemplo) ya están incluidos en esa cuenta — no hay que sumarlos aparte.
+            </div>
+        </div>
+    </div>
+
+    {# ─── Paso 3 ─── #}
+    <div class="card mb-4" id="paso3">
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">Paso 3 — Abrir "Gestionar Etapas": el hueco se completa solo</div>
+        <div class="card-body p-3">
+            <p>Al guardar, la ficha de la obra muestra el plan nuevo con sus Rubros ya clonados, pero sin ninguna Etapa Proyectada todavía. Hacé clic en <strong>"Gestionar Etapas"</strong> sobre el rubro:</p>
+            <img src="{% static 'carga/img/ayuda/reprogramacion/03-obra-ficha-plan-nuevo-vacio.png' %}" class="img-fluid border rounded mb-3" alt="Ficha de la obra con el plan reprogramado recién creado, rubro clonado sin Etapas">
+
+            <p>La matriz se abre con las columnas del hueco ya resueltas: a la izquierda, en gris, las Fojas que ya tenían su propia Etapa en el plan viejo (columnas <strong>"Avance Anterior"</strong>, solo referencia); después, también en gris pero como celdas <strong>bloqueadas</strong> dentro de la grilla editable, las Fojas que quedaron sin Etapa — con el avance real ya cargado. Recién a la derecha de esas empiezan las columnas <strong>"(nueva)"</strong>, vacías, listas para proyectar:</p>
+            <img src="{% static 'carga/img/ayuda/reprogramacion/04-matriz-hueco-completado.png' %}" class="img-fluid border rounded" alt="Matriz de Etapas del rubro reprogramado: columnas de Fojas ya medidas de referencia, columnas del hueco completadas y bloqueadas, y columnas nuevas vacías">
+
+            <div class="alert alert-info small mb-0 mt-3">
+                <i class="bi bi-info-circle me-1"></i>
+                Nada de esto se guarda todavía con solo abrir la pantalla: las columnas del hueco recién se convierten en Etapas reales cuando hacés clic en "Guardar", junto con lo que hayas cargado en las columnas nuevas.
+            </div>
+        </div>
+    </div>
+
+    {# ─── Paso 4 ─── #}
+    <div class="card mb-4" id="paso4">
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">Paso 4 — Proyectar los meses realmente nuevos</div>
+        <div class="card-body p-3">
+            <p>Completá, para cada ítem, el % que se planea ejecutar en cada una de las columnas "(nueva)". Las mismas dos reglas de siempre aplican sobre la suma total (hueco + nuevo): no puede superar el % de Incidencia del ítem, ni el 100% entre todos los ítems en un mismo mes. La columna <strong>Total</strong> se pinta en rojo si te pasás:</p>
+            <img src="{% static 'carga/img/ayuda/reprogramacion/05-matriz-completa.png' %}" class="img-fluid border rounded" alt="Matriz de Etapas con los meses nuevos completados, totales y colores actualizados en vivo">
+        </div>
+    </div>
+
+    {# ─── Resultado ─── #}
+    <div class="card mb-4" id="resultado">
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">Resultado final</div>
+        <div class="card-body p-3">
+            <p>Al guardar, la ficha de la obra muestra el plan reprogramado con su cronograma completo — incluidas las Etapas que resolvieron el hueco, ya numeradas junto a las nuevas —, listo para seguir cargando Fojas de Medición sobre él:</p>
+            <img src="{% static 'carga/img/ayuda/reprogramacion/06-obra-ficha-plan-nuevo-completo.png' %}" class="img-fluid border rounded" alt="Ficha de la obra con el plan reprogramado completo, mostrando las Etapas del hueco y las nuevas ya numeradas en la misma cadena">
+        </div>
+    </div>
+
+    {# ─── Plan anterior ─── #}
+    <div class="card mb-4" id="planoanterior">
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">El plan anterior no desaparece</div>
+        <div class="card-body p-3">
+            <p>Desde <strong>"Ver planes anteriores"</strong> en la ficha de la obra se accede al historial completo. Cada plan viejo muestra, en una sola tabla, la Etapa proyectada y la Foja real de cada período <strong>lado a lado</strong>, con una columna de <strong>Desfasaje</strong> (en verde si el avance real superó lo proyectado, en rojo si quedó por debajo) — la forma más rápida de ver por qué hizo falta reprogramar:</p>
+            <img src="{% static 'carga/img/ayuda/reprogramacion/07-planes-anteriores-comparacion.png' %}" class="img-fluid border rounded mb-3" alt="Página de Planes Anteriores mostrando la comparación Etapa vs Foja con la columna Desfasaje">
+
+            <p>El enlace <strong>"Ver Matriz de Etapas"</strong> de esa misma tabla abre la matriz original del rubro viejo, en <strong>modo solo lectura</strong> (no se puede volver a editar un plan que ya no es el vigente):</p>
+            <img src="{% static 'carga/img/ayuda/reprogramacion/08-matriz-solo-lectura-plan-viejo.png' %}" class="img-fluid border rounded" alt="Matriz de Etapas del plan anterior en modo solo lectura, con la insignia Solo lectura - Plan no vigente">
+        </div>
+    </div>
+
+    {# ─── FAQ ─── #}
+    <div class="card mb-4" id="faq">
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">Preguntas frecuentes y errores comunes</div>
+        <div class="card-body p-3">
+            <dl class="mb-0">
+                <dt>¿Cuántos meses tengo que poner en "Duración (meses)"?</dt>
+                <dd class="mb-3">El plazo total de la obra <strong>menos la cantidad de Etapas</strong> que ya tenía el plan anterior — no la cantidad de Fojas medidas, que puede ser mayor si hubo meses sin Etapa (el hueco). Restar Fojas en vez de Etapas deja la matriz corta; no restar nada la deja pasada de largo.</dd>
+
+                <dt>La matriz ya trae columnas grises completadas que no puedo editar. ¿Es un error?</dt>
+                <dd class="mb-3">No: son los meses que se midieron por Foja pero que el plan anterior nunca llegó a proyectar como Etapa (el hueco). Se completan solos con el avance real para que no haya que transcribirlos a mano, y quedan bloqueados porque son un hecho ya medido, no algo a proyectar.</dd>
+
+                <dt>Aparece un aviso de que hay meses sin completar automáticamente porque ya se emitió un Certificado.</dt>
+                <dd class="mb-3">Es una salvaguarda: si esos meses ya se usaron para emitir un Certificado por Foja (Ley 27397), completar el hueco automáticamente podría alterar cómo se resuelve la cotización UVI de certificados futuros. En ese caso los meses se muestran solo como referencia, igual que las columnas del plan viejo, y no se puede completar el hueco desde la matriz.</dd>
+
+                <dt>¿Por qué no puedo editar la matriz de Etapas del plan anterior?</dt>
+                <dd class="mb-3">Un plan de trabajos que ya no es el vigente se muestra siempre en modo solo lectura. Para seguir cargando avance hay que hacerlo sobre el plan vigente (reprogramando de nuevo si hace falta), no reabriendo uno cerrado.</dd>
+
+                <dt>¿Se pierde algo del plan viejo al reprogramar?</dt>
+                <dd class="mb-0">No. El plan viejo queda intacto y accesible desde "Ver planes anteriores", con su comparación Etapa vs Foja y el link a su matriz en modo lectura. Reprogramar solo agrega un plan nuevo — nunca borra ni modifica el anterior.</dd>
+            </dl>
+        </div>
+    </div>
+
+</div>
+{% endblock content %}

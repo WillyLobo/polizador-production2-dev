@@ -24,18 +24,32 @@
 
     {{ form.non_field_errors }}
 
+    {% if gap_bloqueado_por_certificados %}
+        <div class="alert alert-warning py-2 small mb-2">
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            Hay meses medidos por Foja sin Etapa en el plan anterior, pero ya se emitió un
+            Certificado por Foja para esta cadena de rubros — para no alterar ese cálculo
+            no se completaron automáticamente. Se muestran solo como referencia.
+        </div>
+    {% endif %}
+
     <div class="table-responsive">
         <table class="table table-bordered table-sm align-middle">
             <thead class="table-dark">
                 <tr>
                     <th>Item</th>
                     <th class="text-center">% Incidencia</th>
+                    {% for hcol in historial_columnas %}
+                        <th class="text-center bg-secondary-subtle">Foja N° {{hcol.foja_numero}}<br>{{hcol.periodo|date:"F-Y"}}<br><small class="fw-normal">(real)</small></th>
+                    {% endfor %}
                     {% if not readonly %}
                         <th class="text-center">Avance Anterior<br><small class="fw-normal">(Fojas ya medidas)</small></th>
                     {% endif %}
                     {% for columna in columnas %}
-                        <th class="text-center">
-                            {% if columna.numero %}Etapa {{columna.numero}}<br>{{columna.fecha|date:"F-Y"}}{% else %}(nueva){% endif %}
+                        <th class="text-center{% if columna.gap %} bg-secondary-subtle{% endif %}">
+                            {% if columna.gap %}Foja N° {{columna.foja_numero}}<br>{{columna.fecha|date:"F-Y"}}<br><small class="fw-normal">(real)</small>
+                            {% elif columna.numero %}Etapa {{columna.numero}}<br>{{columna.fecha|date:"F-Y"}}
+                            {% else %}(nueva){% endif %}
                         </th>
                     {% endfor %}
                     <th class="text-center">{% if readonly %}Suma{% else %}Suma Nueva{% endif %}</th>
@@ -49,11 +63,14 @@
                     <tr data-anterior="{{row.anterior|unlocalize}}" data-incidencia="{{row.item.planitem_incidencia_pct|unlocalize}}">
                         <td>{{row.item.planitem_nombre}}</td>
                         <td class="text-center">{{row.item.planitem_incidencia_pct}}</td>
+                        {% for valor in row.historial %}
+                            <td class="text-center bg-secondary-subtle">{{valor}}</td>
+                        {% endfor %}
                         {% if not readonly %}
                             <td class="text-center">{{row.anterior}}</td>
                         {% endif %}
-                        {% for cell in row.cells %}
-                            <td class="text-center">
+                        {% for columna, cell in row.cells_columnas %}
+                            <td class="text-center{% if columna.gap %} bg-secondary-subtle{% endif %}">
                                 {{cell}}
                                 {{cell.errors}}
                             </td>
@@ -67,48 +84,48 @@
             </tbody>
             <tfoot class="bg-body-tertiary fw-bold">
                 <tr>
-                    <td colspan="{% if readonly %}2{% else %}3{% endif %}">Avance Físico - Por Período</td>
+                    <td colspan="{{fixed_colspan}}">Avance Físico - Por Período</td>
                     {% for columna in columnas %}
                         <td class="text-center" id="total-periodo-{{forloop.counter0}}">0.000</td>
                     {% endfor %}
-                    <td{% if not readonly %} colspan="2"{% endif %}></td>
+                    <td colspan="{{trailing_colspan}}"></td>
                 </tr>
                 <tr>
-                    <td colspan="{% if readonly %}2{% else %}3{% endif %}">Avance Físico - Acumulado</td>
+                    <td colspan="{{fixed_colspan}}">Avance Físico - Acumulado</td>
                     {% for columna in columnas %}
                         <td class="text-center" id="total-acumulado-{{forloop.counter0}}">0.000</td>
                     {% endfor %}
-                    <td{% if not readonly %} colspan="2"{% endif %}></td>
+                    <td colspan="{{trailing_colspan}}"></td>
                 </tr>
                 {% if rubro_monto_base_pesos is not None %}
                 <tr>
-                    <td colspan="{% if readonly %}2{% else %}3{% endif %}">Inversiones ($) - Por Período</td>
+                    <td colspan="{{fixed_colspan}}">Inversiones ($) - Por Período</td>
                     {% for columna in columnas %}
                         <td class="text-center" id="inversion-pesos-periodo-{{forloop.counter0}}">-</td>
                     {% endfor %}
-                    <td{% if not readonly %} colspan="2"{% endif %}></td>
+                    <td colspan="{{trailing_colspan}}"></td>
                 </tr>
                 <tr>
-                    <td colspan="{% if readonly %}2{% else %}3{% endif %}">Inversiones ($) - Acumulado</td>
+                    <td colspan="{{fixed_colspan}}">Inversiones ($) - Acumulado</td>
                     {% for columna in columnas %}
                         <td class="text-center" id="inversion-pesos-acumulado-{{forloop.counter0}}">-</td>
                     {% endfor %}
-                    <td{% if not readonly %} colspan="2"{% endif %}></td>
+                    <td colspan="{{trailing_colspan}}"></td>
                 </tr>
                 {% if rubro_monto_base_uvi is not None %}
                 <tr>
-                    <td colspan="{% if readonly %}2{% else %}3{% endif %}">Inversiones (UVI) - Por Período</td>
+                    <td colspan="{{fixed_colspan}}">Inversiones (UVI) - Por Período</td>
                     {% for columna in columnas %}
                         <td class="text-center" id="inversion-uvi-periodo-{{forloop.counter0}}">-</td>
                     {% endfor %}
-                    <td{% if not readonly %} colspan="2"{% endif %}></td>
+                    <td colspan="{{trailing_colspan}}"></td>
                 </tr>
                 <tr>
-                    <td colspan="{% if readonly %}2{% else %}3{% endif %}">Inversiones (UVI) - Acumulado</td>
+                    <td colspan="{{fixed_colspan}}">Inversiones (UVI) - Acumulado</td>
                     {% for columna in columnas %}
                         <td class="text-center" id="inversion-uvi-acumulado-{{forloop.counter0}}">-</td>
                     {% endfor %}
-                    <td{% if not readonly %} colspan="2"{% endif %}></td>
+                    <td colspan="{{trailing_colspan}}"></td>
                 </tr>
                 {% endif %}
                 {% endif %}

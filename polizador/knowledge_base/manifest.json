@@ -1,6 +1,6 @@
 {
   "api": {
-    "generated_at": "2026-08-31T17:00:45.913395+00:00",
+    "generated_at": "2026-09-05T12:53:50.331857+00:00",
     "modules": {
       "views/carga_views": {
         "file": "api/views/carga_views.py",
@@ -6231,7 +6231,7 @@
     }
   },
   "carga": {
-    "generated_at": "2026-08-31T17:00:40.213696+00:00",
+    "generated_at": "2026-09-05T12:53:44.735211+00:00",
     "modules": {
       "forms/areaforms": {
         "file": "carga/forms/areaforms.py",
@@ -7268,12 +7268,12 @@
               },
               {
                 "file": "carga/views/plandetrabajosetapaviews.py",
-                "line": 82,
+                "line": 177,
                 "snippet": "form_class = build_matriz_form(items, total_columns, anterior_map)"
               },
               {
                 "file": "carga/views/plandetrabajosetapaviews.py",
-                "line": 93,
+                "line": 199,
                 "snippet": "form_class = build_matriz_form(items, total_columns, anterior_map)"
               }
             ],
@@ -7303,23 +7303,23 @@
               },
               {
                 "file": "carga/views/plandetrabajosetapaviews.py",
-                "line": 56,
-                "snippet": "\"cells\": [form[matriz_field_name(item.pk, col)] for col in range(total_columns)],"
+                "line": 138,
+                "snippet": "[form[matriz_field_name(item.pk, col)] for col in range(total_columns)],"
               },
               {
                 "file": "carga/views/plandetrabajosetapaviews.py",
-                "line": 80,
+                "line": 172,
+                "snippet": "initial[matriz_field_name(item.pk, col)] = self._historial_value(foja, item)"
+              },
+              {
+                "file": "carga/views/plandetrabajosetapaviews.py",
+                "line": 175,
                 "snippet": "initial[matriz_field_name(etapaitem.etapaitem_planitem_id, col)] = etapaitem.etapaitem_pct_proyectado_mes"
               },
               {
-                "file": "carga/forms/plandetrabajosetapaforms.py",
-                "line": 20,
-                "snippet": "self.fields[matriz_field_name(item.pk, col)] = forms.DecimalField("
-              },
-              {
-                "file": "carga/forms/plandetrabajosetapaforms.py",
-                "line": 34,
-                "snippet": "return self.cleaned_data.get(matriz_field_name(item_pk, col_index)) or Decimal(\"0\")"
+                "file": "carga/views/plandetrabajosetapaviews.py",
+                "line": 181,
+                "snippet": "form.fields[matriz_field_name(item.pk, col)].widget.attrs[\"readonly\"] = True"
               }
             ],
             "decorators": [],
@@ -7969,12 +7969,12 @@
               },
               {
                 "file": "carga/models.py",
-                "line": 938,
+                "line": 948,
                 "snippet": "verbose_name=\"Rubro de Certificado\","
               },
               {
                 "file": "carga/models.py",
-                "line": 1354,
+                "line": 1382,
                 "snippet": "contratomonto_rubro = models.ForeignKey(\"CertificadoRubro\", verbose_name=\"Rubro Certificado\", on_delete=models.CASCADE)"
               }
             ],
@@ -8064,7 +8064,7 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1355,
+                "line": 1383,
                 "snippet": "contratomonto_financiamiento = models.ForeignKey(\"CertificadoFinanciamiento\", verbose_name=\"Financiamiento\", on_delete=models.CASCADE)"
               },
               {
@@ -8127,12 +8127,12 @@
               },
               {
                 "file": "carga/models.py",
-                "line": 937,
+                "line": 947,
                 "snippet": "\"CertificadoRubro\","
               },
               {
                 "file": "carga/models.py",
-                "line": 1354,
+                "line": 1382,
                 "snippet": "contratomonto_rubro = models.ForeignKey(\"CertificadoRubro\", verbose_name=\"Rubro Certificado\", on_delete=models.CASCADE)"
               }
             ],
@@ -8278,16 +8278,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1272,
-              1312
+              1300,
+              1340
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1300,
-                  1301
+                  1328,
+                  1329
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -8298,8 +8298,8 @@
                 ],
                 "docstring": null,
                 "lines": [
-                  1304,
-                  1312
+                  1332,
+                  1340
                 ],
                 "name": "contrato_resolucion_display",
                 "signature": "def contrato_resolucion_display(self):"
@@ -8309,8 +8309,8 @@
             "name": "Contrato",
             "page_path": "carga/models/Contrato",
             "signature": "class Contrato(models.Model):",
-            "signature_hash": "sha1:604de6103e2764c477c2b13eab7c9240fcad90de",
-            "stale": false
+            "signature_hash": "sha1:f591c60a4813138f369117eb67c90df34846e24f",
+            "stale": true
           },
           "ContratoMonto": {
             "authored": true,
@@ -8335,12 +8335,12 @@
               },
               {
                 "file": "carga/models.py",
-                "line": 935,
+                "line": 945,
                 "snippet": "rubro_contratomonto = models.ForeignKey(\"ContratoMonto\", verbose_name=\"Monto de Contrato\", on_delete=models.SET_NULL, null=True, blank=True, related_name=\"rubros_plan\")"
               },
               {
                 "file": "carga/models.py",
-                "line": 943,
+                "line": 953,
                 "snippet": "\"(ContratoMonto) al generar certificados desde una Foja.\","
               }
             ],
@@ -8348,16 +8348,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1347,
-              1362
+              1375,
+              1390
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1361,
-                  1362
+                  1389,
+                  1390
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -8367,8 +8367,8 @@
             "name": "ContratoMonto",
             "page_path": "carga/models/ContratoMonto",
             "signature": "class ContratoMonto(models.Model):",
-            "signature_hash": "sha1:cdd858d141f24c6a1eafdf92583e5e316c5c1276",
-            "stale": false
+            "signature_hash": "sha1:fcbb60a0b3ba7ecca4e32a40a3a1fc4db725906a",
+            "stale": true
           },
           "ContratoRubro": {
             "authored": true,
@@ -8378,7 +8378,7 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1385,
+                "line": 1413,
                 "snippet": "contratodigital_tipo = models.ForeignKey(\"ContratoRubro\", verbose_name=\"Rubro Contrato\", on_delete=models.CASCADE)"
               }
             ],
@@ -8386,16 +8386,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1364,
-              1374
+              1392,
+              1402
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1373,
-                  1374
+                  1401,
+                  1402
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -8405,8 +8405,8 @@
             "name": "ContratoRubro",
             "page_path": "carga/models/ContratoRubro",
             "signature": "class ContratoRubro(models.Model):",
-            "signature_hash": "sha1:eb5b97f956bc2b2ea87d23d2bb069bad514e85f7",
-            "stale": false
+            "signature_hash": "sha1:40836dc1d86aa673b87f90d1184d538ff4e04402",
+            "stale": true
           },
           "ContratoTramoPago": {
             "authored": true,
@@ -8421,7 +8421,7 @@
               },
               {
                 "file": "carga/models.py",
-                "line": 1296,
+                "line": 1324,
                 "snippet": "\"ContratoTramoPago).\","
               },
               {
@@ -8444,16 +8444,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1314,
-              1345
+              1342,
+              1373
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1344,
-                  1345
+                  1372,
+                  1373
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -8463,8 +8463,8 @@
             "name": "ContratoTramoPago",
             "page_path": "carga/models/ContratoTramoPago",
             "signature": "class ContratoTramoPago(models.Model):",
-            "signature_hash": "sha1:794588260756ea3f13a489d53019e0792816c7d1",
-            "stale": false
+            "signature_hash": "sha1:c5f48f9eba280a59164450660539881a392eea6f",
+            "stale": true
           },
           "ContratosDigitales": {
             "authored": true,
@@ -8502,16 +8502,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1376,
-              1387
+              1404,
+              1415
             ],
             "methods": [],
             "module": "carga/models.py",
             "name": "ContratosDigitales",
             "page_path": "carga/models/ContratosDigitales",
             "signature": "class ContratosDigitales(models.Model):",
-            "signature_hash": "sha1:8d3d699a4da86780625333dfc5b7f20a4635eb6b",
-            "stale": false
+            "signature_hash": "sha1:912c87dae1354379c3566742d86dfef1d49d818d",
+            "stale": true
           },
           "Departamento": {
             "authored": true,
@@ -8662,17 +8662,17 @@
               },
               {
                 "file": "carga/models.py",
-                "line": 1133,
+                "line": 1161,
                 "snippet": "real_map = FojaDeMedicion.anterior_items_map("
               },
               {
                 "file": "carga/models.py",
-                "line": 1232,
+                "line": 1260,
                 "snippet": "fojaitem_foja = models.ForeignKey(\"FojaDeMedicion\", verbose_name=\"Foja de Medición\", on_delete=models.CASCADE, related_name=\"items\")"
               },
               {
                 "file": "carga/models.py",
-                "line": 1265,
+                "line": 1293,
                 "snippet": "fotofoja_foja = models.ForeignKey(\"FojaDeMedicion\", verbose_name=\"Foja de Medición\", on_delete=models.CASCADE, related_name=\"fotos\")"
               },
               {
@@ -8685,16 +8685,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1145,
-              1222
+              1173,
+              1250
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1164,
-                  1168
+                  1192,
+                  1196
                 ],
                 "name": "foja_pct_avance_mes",
                 "signature": "def foja_pct_avance_mes(self):"
@@ -8703,8 +8703,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1170,
-                  1174
+                  1198,
+                  1202
                 ],
                 "name": "foja_pct_acumulado",
                 "signature": "def foja_pct_acumulado(self):"
@@ -8713,8 +8713,8 @@
                 "decorators": [],
                 "docstring": "Retorna la foja anterior, considerando también rubros de planes reprogramados.",
                 "lines": [
-                  1176,
-                  1181
+                  1204,
+                  1209
                 ],
                 "name": "foja_anterior",
                 "signature": "def foja_anterior(self):"
@@ -8723,8 +8723,8 @@
                 "decorators": [],
                 "docstring": "Retorna la foja siguiente, considerando también rubros de planes reprogramados.",
                 "lines": [
-                  1183,
-                  1188
+                  1211,
+                  1216
                 ],
                 "name": "foja_siguiente",
                 "signature": "def foja_siguiente(self):"
@@ -8735,8 +8735,8 @@
                 ],
                 "docstring": "Acumulado %% de cada item en la foja anterior (misma lógica que FojaDeMedicionItem.save()).\n\nLa foja anterior se determina por número de foja dentro de la cadena de rubros\nreprogramados, no por período: el período es solo una etiqueta y el número de\nfoja se asigna por orden de creación (ver signals.auto_increment_foja_numero).",
                 "lines": [
-                  1191,
-                  1216
+                  1219,
+                  1244
                 ],
                 "name": "anterior_items_map",
                 "signature": "def anterior_items_map(rubro, items=None, exclude_foja_numero=None):"
@@ -8745,8 +8745,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1218,
-                  1219
+                  1246,
+                  1247
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -8755,8 +8755,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1221,
-                  1222
+                  1249,
+                  1250
                 ],
                 "name": "get_absolute_url",
                 "signature": "def get_absolute_url(self):"
@@ -8766,8 +8766,8 @@
             "name": "FojaDeMedicion",
             "page_path": "carga/models/FojaDeMedicion",
             "signature": "class FojaDeMedicion(models.Model):",
-            "signature_hash": "sha1:16cb80f0b6f128677bd1fe0c8b332210b573c29a",
-            "stale": false
+            "signature_hash": "sha1:1e4d06585aadc36e7798249a0e2cf8bfe54f4e06",
+            "stale": true
           },
           "FojaDeMedicionFoto": {
             "authored": true,
@@ -8790,16 +8790,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1259,
-              1270
+              1287,
+              1298
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1269,
-                  1270
+                  1297,
+                  1298
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -8809,8 +8809,8 @@
             "name": "FojaDeMedicionFoto",
             "page_path": "carga/models/FojaDeMedicionFoto",
             "signature": "class FojaDeMedicionFoto(models.Model):",
-            "signature_hash": "sha1:0c27df1b1f5866f96f5d49d066e437493f381397",
-            "stale": false
+            "signature_hash": "sha1:124b3e356ef7331e9fd85e2735b4948f1e0e1572",
+            "stale": true
           },
           "FojaDeMedicionItem": {
             "authored": true,
@@ -8820,7 +8820,7 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1192,
+                "line": 1220,
                 "snippet": "\"\"\"Acumulado %% de cada item en la foja anterior (misma lógica que FojaDeMedicionItem.save())."
               },
               {
@@ -8848,16 +8848,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1224,
-              1257
+              1252,
+              1285
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1238,
-                  1239
+                  1266,
+                  1267
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -8866,8 +8866,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1241,
-                  1257
+                  1269,
+                  1285
                 ],
                 "name": "save",
                 "signature": "def save(self, *args, **kwargs):"
@@ -8877,8 +8877,8 @@
             "name": "FojaDeMedicionItem",
             "page_path": "carga/models/FojaDeMedicionItem",
             "signature": "class FojaDeMedicionItem(models.Model):",
-            "signature_hash": "sha1:11a6c0cf2467622b2d382ce4413e15c7fc8f6b48",
-            "stale": false
+            "signature_hash": "sha1:8adc7da55cc8382388f5a32ca704ce1298e5b73e",
+            "stale": true
           },
           "INDEC": {
             "authored": true,
@@ -8890,16 +8890,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1412,
-              1446
+              1440,
+              1474
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1445,
-                  1446
+                  1473,
+                  1474
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -8909,8 +8909,8 @@
             "name": "INDEC",
             "page_path": "carga/models/INDEC",
             "signature": "class INDEC(models.Model):",
-            "signature_hash": "sha1:5ebaa718231f4e8d835e388144cac7be4d18b949",
-            "stale": false
+            "signature_hash": "sha1:6f56f7f3f83c8d37886853f425b71281d43233d1",
+            "stale": true
           },
           "Localidad": {
             "authored": true,
@@ -9364,7 +9364,7 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 929,
+                "line": 939,
                 "snippet": "rubro_plan = models.ForeignKey(\"PlanDeTrabajos\", verbose_name=\"Plan de Trabajos\", on_delete=models.CASCADE, related_name=\"rubros\")"
               },
               {
@@ -9393,7 +9393,7 @@
             "kind": "class",
             "lines": [
               894,
-              920
+              930
             ],
             "methods": [
               {
@@ -9402,8 +9402,8 @@
                 ],
                 "docstring": "Devuelve el queryset con el plan vigente (más reciente) de cada obra.",
                 "lines": [
-                  907,
-                  911
+                  917,
+                  921
                 ],
                 "name": "vigentes",
                 "signature": "def vigentes(cls):"
@@ -9412,8 +9412,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  913,
-                  914
+                  923,
+                  924
                 ],
                 "name": "es_vigente",
                 "signature": "def es_vigente(self):"
@@ -9422,8 +9422,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  916,
-                  917
+                  926,
+                  927
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -9432,8 +9432,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  919,
-                  920
+                  929,
+                  930
                 ],
                 "name": "get_absolute_url",
                 "signature": "def get_absolute_url(self):"
@@ -9443,8 +9443,8 @@
             "name": "PlanDeTrabajos",
             "page_path": "carga/models/PlanDeTrabajos",
             "signature": "class PlanDeTrabajos(models.Model):",
-            "signature_hash": "sha1:4f05d042b12e792d78cb46c5edd7b1ff8ddd519d",
-            "stale": false
+            "signature_hash": "sha1:491000b02cdb7574fb4cc39ac55ae525b39be378",
+            "stale": true
           },
           "PlanDeTrabajosEtapa": {
             "authored": true,
@@ -9454,7 +9454,7 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1100,
+                "line": 1128,
                 "snippet": "etapaitem_etapa = models.ForeignKey(\"PlanDeTrabajosEtapa\", verbose_name=\"Etapa Proyectada\", on_delete=models.CASCADE, related_name=\"items\")"
               },
               {
@@ -9482,16 +9482,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1032,
-              1090
+              1057,
+              1118
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": "Retorna la etapa anterior, considerando también rubros de planes reprogramados.",
                 "lines": [
-                  1047,
-                  1052
+                  1072,
+                  1077
                 ],
                 "name": "etapa_anterior",
                 "signature": "def etapa_anterior(self):"
@@ -9500,8 +9500,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1054,
-                  1064
+                  1079,
+                  1092
                 ],
                 "name": "save",
                 "signature": "def save(self, *args, **kwargs):"
@@ -9510,8 +9510,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1066,
-                  1070
+                  1094,
+                  1098
                 ],
                 "name": "etapa_pct_proyectado_mes",
                 "signature": "def etapa_pct_proyectado_mes(self):"
@@ -9520,8 +9520,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1072,
-                  1076
+                  1100,
+                  1104
                 ],
                 "name": "etapa_pct_proyectado_acumulado",
                 "signature": "def etapa_pct_proyectado_acumulado(self):"
@@ -9530,8 +9530,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1078,
-                  1080
+                  1106,
+                  1108
                 ],
                 "name": "etapa_monto_pesos",
                 "signature": "def etapa_monto_pesos(self):"
@@ -9540,8 +9540,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1082,
-                  1084
+                  1110,
+                  1112
                 ],
                 "name": "etapa_monto_uvi",
                 "signature": "def etapa_monto_uvi(self):"
@@ -9550,8 +9550,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1086,
-                  1087
+                  1114,
+                  1115
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -9560,8 +9560,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1089,
-                  1090
+                  1117,
+                  1118
                 ],
                 "name": "get_absolute_url",
                 "signature": "def get_absolute_url(self):"
@@ -9571,8 +9571,8 @@
             "name": "PlanDeTrabajosEtapa",
             "page_path": "carga/models/PlanDeTrabajosEtapa",
             "signature": "class PlanDeTrabajosEtapa(models.Model):",
-            "signature_hash": "sha1:e2a35cec7422d45618a7a37b8fdaa81cf323d0df",
-            "stale": false
+            "signature_hash": "sha1:c8500159cdfe6051a15188ab4ede093e6064e677",
+            "stale": true
           },
           "PlanDeTrabajosEtapaItem": {
             "authored": true,
@@ -9583,28 +9583,38 @@
               {
                 "file": "carga/views/plandetrabajosetapaviews.py",
                 "line": 12,
-                "snippet": "from carga.models import FojaDeMedicion, PlanDeTrabajosEtapa, PlanDeTrabajosEtapaItem, PlanDeTrabajosItem, PlanDeTrabajosRubro"
+                "snippet": "from carga.models import Certificado, FojaDeMedicion, PlanDeTrabajosEtapa, PlanDeTrabajosEtapaItem, PlanDeTrabajosItem, PlanDeTrabajosRubro"
               },
               {
                 "file": "carga/views/plandetrabajosetapaviews.py",
-                "line": 107,
+                "line": 220,
                 "snippet": "etapaitem, _ = PlanDeTrabajosEtapaItem.objects.get_or_create("
+              },
+              {
+                "file": "carga/views/plandetrabajosetapaviews.py",
+                "line": 227,
+                "snippet": "# El fallback genérico de PlanDeTrabajosEtapaItem.save() calcula el"
+              },
+              {
+                "file": "carga/views/plandetrabajosetapaviews.py",
+                "line": 232,
+                "snippet": "PlanDeTrabajosEtapaItem.objects.filter(pk=etapaitem.pk).update("
               }
             ],
             "decorators": [],
             "docstring": null,
             "kind": "class",
             "lines": [
-              1092,
-              1143
+              1120,
+              1171
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1106,
-                  1108
+                  1134,
+                  1136
                 ],
                 "name": "etapaitem_monto_pesos",
                 "signature": "def etapaitem_monto_pesos(self):"
@@ -9613,8 +9623,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1110,
-                  1111
+                  1138,
+                  1139
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -9623,8 +9633,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1113,
-                  1143
+                  1141,
+                  1171
                 ],
                 "name": "save",
                 "signature": "def save(self, *args, **kwargs):"
@@ -9634,8 +9644,8 @@
             "name": "PlanDeTrabajosEtapaItem",
             "page_path": "carga/models/PlanDeTrabajosEtapaItem",
             "signature": "class PlanDeTrabajosEtapaItem(models.Model):",
-            "signature_hash": "sha1:4bccfef81e05cc9b0c4431a3583e0582890b8f4e",
-            "stale": false
+            "signature_hash": "sha1:da8b29f9fb1da0fc7dcde60f5d3a8d9c39747692",
+            "stale": true
           },
           "PlanDeTrabajosItem": {
             "authored": true,
@@ -9645,17 +9655,17 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1101,
+                "line": 1129,
                 "snippet": "etapaitem_planitem = models.ForeignKey(\"PlanDeTrabajosItem\", verbose_name=\"Item del Plan\", on_delete=models.CASCADE)"
               },
               {
                 "file": "carga/models.py",
-                "line": 1207,
+                "line": 1235,
                 "snippet": "items = PlanDeTrabajosItem.objects.filter(planitem_rubro=rubro)"
               },
               {
                 "file": "carga/models.py",
-                "line": 1233,
+                "line": 1261,
                 "snippet": "fojaitem_planitem = models.ForeignKey(\"PlanDeTrabajosItem\", verbose_name=\"Item del Plan\", on_delete=models.CASCADE)"
               },
               {
@@ -9673,16 +9683,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              996,
-              1030
+              1021,
+              1055
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": "IDs de este item y todos sus predecesores (reprogramaciones anteriores).",
                 "lines": [
-                  1010,
-                  1017
+                  1035,
+                  1042
                 ],
                 "name": "item_cadena_ids",
                 "signature": "def item_cadena_ids(self):"
@@ -9691,8 +9701,8 @@
                 "decorators": [],
                 "docstring": "IDs de este item y todos sus sucesores (reprogramaciones posteriores).",
                 "lines": [
-                  1019,
-                  1027
+                  1044,
+                  1052
                 ],
                 "name": "item_cadena_siguiente_ids",
                 "signature": "def item_cadena_siguiente_ids(self):"
@@ -9701,8 +9711,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1029,
-                  1030
+                  1054,
+                  1055
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -9712,8 +9722,8 @@
             "name": "PlanDeTrabajosItem",
             "page_path": "carga/models/PlanDeTrabajosItem",
             "signature": "class PlanDeTrabajosItem(models.Model):",
-            "signature_hash": "sha1:bbc55790ecc79dda524420ce9f1942cfd5e5be92",
-            "stale": false
+            "signature_hash": "sha1:1ba0e92e26a046776eb37d4eb5760c825392ce3e",
+            "stale": true
           },
           "PlanDeTrabajosRubro": {
             "authored": true,
@@ -9723,17 +9733,17 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1003,
+                "line": 1028,
                 "snippet": "planitem_rubro = models.ForeignKey(\"PlanDeTrabajosRubro\", verbose_name=\"Rubro de Plan de Trabajos\", on_delete=models.CASCADE, related_name=\"items\")"
               },
               {
                 "file": "carga/models.py",
-                "line": 1042,
+                "line": 1067,
                 "snippet": "etapa_rubro = models.ForeignKey(\"PlanDeTrabajosRubro\", verbose_name=\"Rubro de Plan de Trabajos\", on_delete=models.CASCADE, related_name=\"etapas\")"
               },
               {
                 "file": "carga/models.py",
-                "line": 1155,
+                "line": 1183,
                 "snippet": "foja_rubro = models.ForeignKey(\"PlanDeTrabajosRubro\", verbose_name=\"Rubro de Plan de Trabajos\", on_delete=models.CASCADE, related_name=\"fojas\")"
               },
               {
@@ -9751,16 +9761,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              922,
-              994
+              932,
+              1019
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": "IDs de este rubro y todos sus predecesores (reprogramaciones anteriores).",
                 "lines": [
-                  954,
-                  961
+                  964,
+                  971
                 ],
                 "name": "rubro_cadena_ids",
                 "signature": "def rubro_cadena_ids(self):"
@@ -9769,8 +9779,8 @@
                 "decorators": [],
                 "docstring": "IDs de este rubro y todos sus sucesores (reprogramaciones posteriores).",
                 "lines": [
-                  963,
-                  971
+                  973,
+                  981
                 ],
                 "name": "rubro_cadena_siguiente_ids",
                 "signature": "def rubro_cadena_siguiente_ids(self):"
@@ -9779,8 +9789,8 @@
                 "decorators": [],
                 "docstring": "Monto en pesos a distribuir entre las Etapas proyectadas: si hay un\nContratoMonto vinculado se usa su valor (convirtiendo UVI->pesos según su\nfecha), si no se usa el rubro_presupuesto cargado a mano.",
                 "lines": [
-                  973,
-                  983
+                  983,
+                  993
                 ],
                 "name": "monto_base_pesos",
                 "signature": "def monto_base_pesos(self):"
@@ -9789,18 +9799,28 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  985,
-                  988
+                  995,
+                  998
                 ],
                 "name": "monto_base_uvi",
                 "signature": "def monto_base_uvi(self):"
               },
               {
                 "decorators": [],
+                "docstring": "Empareja cada Etapa proyectada con la Foja de igual posición, para ver el\ndesfasaje entre lo planificado y lo medido. Si hay más Fojas que Etapas (se\nsiguió midiendo avance real más allá de los meses que preveía el plan), las\nFojas sobrantes se comparan contra la última Etapa en vez de quedar sin par.",
+                "lines": [
+                  1000,
+                  1013
+                ],
+                "name": "comparacion_etapas_fojas",
+                "signature": "def comparacion_etapas_fojas(self):"
+              },
+              {
+                "decorators": [],
                 "docstring": null,
                 "lines": [
-                  990,
-                  991
+                  1015,
+                  1016
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -9809,8 +9829,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  993,
-                  994
+                  1018,
+                  1019
                 ],
                 "name": "get_absolute_url",
                 "signature": "def get_absolute_url(self):"
@@ -9820,8 +9840,8 @@
             "name": "PlanDeTrabajosRubro",
             "page_path": "carga/models/PlanDeTrabajosRubro",
             "signature": "class PlanDeTrabajosRubro(models.Model):",
-            "signature_hash": "sha1:aa242d5cff239257d7d337c46802c13b0dc627ec",
-            "stale": false
+            "signature_hash": "sha1:f632ecbb0f93e376467e92bbd2d398902980686d",
+            "stale": true
           },
           "Poliza": {
             "authored": true,
@@ -10245,7 +10265,7 @@
               },
               {
                 "file": "carga/models.py",
-                "line": 980,
+                "line": 990,
                 "snippet": "pesos = Uvi.pesos_equivalentes(cm.contratomonto_uvi, cm.contratomonto_uvi_fecha)"
               },
               {
@@ -10268,8 +10288,8 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1389,
-              1410
+              1417,
+              1438
             ],
             "methods": [
               {
@@ -10278,8 +10298,8 @@
                 ],
                 "docstring": "Convierte un monto en UVI a pesos usando la cotización vigente a la fecha\n(o la cotización anterior más cercana si no hay un valor exacto para ese día).",
                 "lines": [
-                  1401,
-                  1407
+                  1429,
+                  1435
                 ],
                 "name": "pesos_equivalentes",
                 "signature": "def pesos_equivalentes(cls, monto_uvi, fecha):"
@@ -10288,8 +10308,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1409,
-                  1410
+                  1437,
+                  1438
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -10299,8 +10319,8 @@
             "name": "Uvi",
             "page_path": "carga/models/Uvi",
             "signature": "class Uvi(models.Model):",
-            "signature_hash": "sha1:d87f361c3091d2682c27cb9ac912ad3a77c2d70e",
-            "stale": false
+            "signature_hash": "sha1:9b922188446d37297bbfb84d68a9e4aae7aea9cb",
+            "stale": true
           },
           "add_months": {
             "authored": true,
@@ -10308,7 +10328,7 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1063,
+                "line": 1091,
                 "snippet": "self.etapa_fecha = add_months(anterior.etapa_fecha, 1) if anterior else self.etapa_rubro.rubro_plan.trabajos_fecha"
               }
             ],
@@ -10358,7 +10378,7 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1386,
+                "line": 1414,
                 "snippet": "contratodigital_archivo = models.FileField(upload_to=generate_name_contratos, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=(\"application/pdf\",))], max_length=500, null=True, blank=True)"
               }
             ],
@@ -10383,7 +10403,7 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1266,
+                "line": 1294,
                 "snippet": "fotofoja_archivo = models.FileField(verbose_name=\"Foto\", upload_to=generate_name_foja_foto, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=(\"image/jpeg\", \"image/png\"))], max_length=500)"
               }
             ],
@@ -10477,7 +10497,7 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 934,
+                "line": 944,
                 "snippet": "rubro_documento_digital = models.FileField(verbose_name=\"Documento Digital\", upload_to=generate_name_rubro_documento, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=(\"application/pdf\",))], max_length=500, null=True, blank=True)"
               }
             ],
@@ -10532,7 +10552,7 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1057,
+                "line": 1082,
                 "snippet": "# fue asignado por la señal auto_increment_etapa_numero (corre dentro"
               }
             ],
@@ -10559,7 +10579,7 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1196,
+                "line": 1224,
                 "snippet": "foja se asigna por orden de creación (ver signals.auto_increment_foja_numero)."
               }
             ],
@@ -11963,6 +11983,29 @@
             "page_path": "carga/views/ayudaviews/ManualObraPlanFojaView",
             "signature": "class ManualObraPlanFojaView(generic.TemplateView):",
             "signature_hash": "sha1:f2f29f525a78493fc596e467f78a8a34ee9a2875",
+            "stale": false
+          },
+          "ManualReprogramacionView": {
+            "authored": false,
+            "bases": [
+              "generic.TemplateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              17,
+              18
+            ],
+            "methods": [],
+            "module": "carga/views/ayudaviews.py",
+            "name": "ManualReprogramacionView",
+            "page_path": "carga/views/ayudaviews/ManualReprogramacionView",
+            "signature": "class ManualReprogramacionView(generic.TemplateView):",
+            "signature_hash": "sha1:bca94d33dba0a68a943d57ad148862d47e9ab737",
             "stale": false
           }
         }
@@ -14234,7 +14277,12 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1132,
+                "line": 1084,
+                "snippet": "# Si etapa_fecha ya viene seteada a mano (ver PlanDeTrabajosEtapaMatriz,"
+              },
+              {
+                "file": "carga/models.py",
+                "line": 1160,
                 "snippet": "# ver PlanDeTrabajosEtapaMatriz._get_anterior_map)."
               }
             ],
@@ -14245,7 +14293,7 @@
             "kind": "class",
             "lines": [
               18,
-              116
+              239
             ],
             "methods": [
               {
@@ -14290,30 +14338,90 @@
               },
               {
                 "decorators": [],
-                "docstring": "Acumulado ya \"consumido\" de la incidencia de cada item, a tomar como piso de la\nmatriz. Se basa en el avance REAL (Fojas de Medición) y no en lo proyectado por\nel rubro anterior: si un rubro reprogramado usara el acumulado proyectado del plan\nviejo (que llega al 100% de la incidencia en su última etapa, sea cual sea el avance\nreal), no quedaría margen para proyectar ninguna etapa nueva.",
+                "docstring": "Los rubros de un Plan de Trabajos que ya no es el vigente (obra reprogramada)\nse muestran de solo lectura: reprogramar es lo que corresponde para seguir\ncargando avance, no reabrir un plan cerrado.",
                 "lines": [
                   37,
-                  43
+                  41
+                ],
+                "name": "_es_readonly",
+                "signature": "def _es_readonly(self, rubro):"
+              },
+              {
+                "decorators": [],
+                "docstring": "Fojas de toda la cadena de rubros predecesores (si este rubro viene de una\nreprogramación) y cuántas Etapas propias llegó a tener esa cadena. Puede haber más\nFojas que Etapas: mediciones reales que se siguieron cargando después de que el\nplan viejo dejó de proyectar (el caso que motivó todo esto).",
+                "lines": [
+                  43,
+                  53
+                ],
+                "name": "_fojas_predecesoras",
+                "signature": "def _fojas_predecesoras(self, rubro):"
+              },
+              {
+                "decorators": [],
+                "docstring": "True si ya se generó algún Certificado vía Foja (Ley 27397) para la cadena\npredecesora. ley27397.resolver_tasas_periodo recalcula el reparto FIFO completo\ndesde la primera Foja en cada llamada; completar automáticamente el hueco de\nmeses medidos-sin-Etapa DESPUÉS de que eso ya se usó para emitir un Certificado\npodría resolver distinto hacia adelante. Sin Certificados por Foja todavía, no hay\nnada que ese relleno pueda desordenar.",
+                "lines": [
+                  55,
+                  67
+                ],
+                "name": "_certificados_ya_emitidos",
+                "signature": "def _certificados_ya_emitidos(self, rubro):"
+              },
+              {
+                "decorators": [],
+                "docstring": "Separa las Fojas de la cadena predecesora en dos grupos:\n- historial: meses que ya tienen su propia Etapa en el rubro viejo (o que, por algún\n  motivo, no se pueden completar automáticamente) — se muestran de solo lectura.\n- gap: meses medidos por Foja que quedaron sin Etapa en el plan viejo y todavía no\n  se completaron en este rubro — se ofrecen para completar en este mismo submit,\n  precargados con el avance real y bloqueados para edición.",
+                "lines": [
+                  69,
+                  88
+                ],
+                "name": "_get_historial_y_gap",
+                "signature": "def _get_historial_y_gap(self, rubro, existentes):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  90,
+                  92
+                ],
+                "name": "_historial_value",
+                "signature": "def _historial_value(self, foja, item):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  94,
+                  96
+                ],
+                "name": "_historial_acumulado",
+                "signature": "def _historial_acumulado(self, foja, item):"
+              },
+              {
+                "decorators": [],
+                "docstring": "Acumulado ya \"consumido\" de la incidencia de cada item, a tomar como piso de la\nmatriz. Se basa en el avance REAL (Fojas de Medición) y no en lo proyectado por el\nrubro anterior: si un rubro reprogramado usara el acumulado proyectado del plan\nviejo (que llega al 100% de la incidencia en su última etapa, sea cual sea el avance\nreal), no quedaría margen para proyectar ninguna etapa nueva.\n\nSi hay Fojas de historial (columnas de solo lectura, ver _get_historial_y_gap), el\npiso se corta en la última de esas — no en la última Foja de toda la cadena — porque\nlos meses posteriores ya están representados como columnas propias de la grilla (el\nhueco recién completado, o etapas ya guardadas): sumarlos dos veces duplicaría el\nacumulado.",
+                "lines": [
+                  98,
+                  113
                 ],
                 "name": "_get_anterior_map",
-                "signature": "def _get_anterior_map(self, rubro, items):"
+                "signature": "def _get_anterior_map(self, rubro, items, historial_fojas):"
               },
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  45,
-                  68
+                  115,
+                  158
                 ],
                 "name": "_build_context",
-                "signature": "def _build_context(self, rubro, items, existentes, anterior_map, form):"
+                "signature": "def _build_context(self, rubro, items, existentes, form, readonly, historial_fojas, gap_fojas, anterior_map, total_columns):"
               },
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  70,
-                  84
+                  160,
+                  186
                 ],
                 "name": "get",
                 "signature": "def get(self, request, pk):"
@@ -14322,8 +14430,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  86,
-                  116
+                  188,
+                  239
                 ],
                 "name": "post",
                 "signature": "def post(self, request, pk):"
@@ -14333,8 +14441,8 @@
             "name": "PlanDeTrabajosEtapaMatriz",
             "page_path": "carga/views/plandetrabajosetapaviews/PlanDeTrabajosEtapaMatriz",
             "signature": "class PlanDeTrabajosEtapaMatriz(LogInvalidFormMixin, PermissionRequiredMixin, generic.View):",
-            "signature_hash": "sha1:4304f710cd31f5ea83130f8944ea802e8a26c42b",
-            "stale": false
+            "signature_hash": "sha1:a4d08da6288cd2989723db1bc644c3f1837d8350",
+            "stale": true
           }
         }
       },
@@ -15606,7 +15714,7 @@
     }
   },
   "core": {
-    "generated_at": "2026-08-31T17:00:38.109731+00:00",
+    "generated_at": "2026-09-05T12:53:42.608368+00:00",
     "modules": {
       "forms": {
         "file": "core/forms.py",
@@ -16949,7 +17057,7 @@
     }
   },
   "personalizador": {
-    "generated_at": "2026-08-31T17:00:43.894213+00:00",
+    "generated_at": "2026-09-05T12:53:48.287183+00:00",
     "modules": {
       "forms/actividadespecificaforms": {
         "file": "personalizador/forms/actividadespecificaforms.py",
@@ -22827,7 +22935,7 @@
     }
   },
   "secretariador": {
-    "generated_at": "2026-08-31T17:00:42.068943+00:00",
+    "generated_at": "2026-09-05T12:53:46.518400+00:00",
     "modules": {
       "forms/comisionadoform": {
         "file": "secretariador/forms/comisionadoform.py",

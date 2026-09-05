@@ -11,3 +11,8 @@ class ManualObraPlanFojaView(generic.TemplateView):
 @method_decorator(login_required, name="dispatch")
 class ManualCertificadosView(generic.TemplateView):
     template_name = "ayuda/manual-certificados.html"
+
+
+@method_decorator(login_required, name="dispatch")
+class ManualReprogramacionView(generic.TemplateView):
+    template_name = "ayuda/manual-reprogramacion.html"
