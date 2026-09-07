@@ -898,7 +898,17 @@ class PlanDeTrabajos(models.Model):
     trabajos_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     trabajos_obra = models.ForeignKey("Obra", on_delete=models.CASCADE)
     trabajos_fecha = models.DateField("Fecha de Vigencia", default=timezone.now)
-    trabajos_meses = models.PositiveIntegerField("Duración (meses)", default=1, validators=[MinValueValidator(1)])
+    trabajos_meses = models.PositiveIntegerField(
+        "Duración (meses)", default=1, validators=[MinValueValidator(1)],
+        help_text="Cantidad de columnas (meses) que va a ofrecer la matriz de Etapas Proyectadas de "
+                   "cada Rubro de este plan. Si un Rubro viene de una reprogramación (tiene Rubro "
+                   "Anterior), NO es la duración total de la obra: las Etapas nuevas continúan "
+                   "numerando desde la última Etapa del rubro anterior, así que hay que restar la "
+                   "cantidad de Etapas que ya tenía el plan anterior (no la cantidad de Fojas "
+                   "medidas, que puede ser mayor) del plazo total. Los meses ya medidos por Foja que "
+                   "quedaron sin Etapa en el plan anterior se completan solos al abrir la matriz y "
+                   "también cuentan dentro de este número.",
+    )
     trabajos_fecha_inicio = models.DateField("Fecha de Inicio de Obra", null=True, blank=True)
     trabajos_contrato = models.ForeignKey("Contrato", verbose_name="Contrato Vinculado", on_delete=models.SET_NULL, null=True, blank=True, related_name="planes_trabajo")
     trabajos_history = HistoricalRecords()
@@ -987,6 +997,21 @@ class PlanDeTrabajosRubro(models.Model):
             return self.rubro_contratomonto.contratomonto_uvi
         return None
 
+    def comparacion_etapas_fojas(self):
+        """Empareja cada Etapa proyectada con la Foja de igual posición, para ver el
+        desfasaje entre lo planificado y lo medido. Si hay más Fojas que Etapas (se
+        siguió midiendo avance real más allá de los meses que preveía el plan), las
+        Fojas sobrantes se comparan contra la última Etapa en vez de quedar sin par."""
+        etapas = list(self.etapas.all())
+        fojas = list(self.fojas.all())
+        filas = []
+        for i in range(max(len(etapas), len(fojas))):
+            etapa = etapas[i] if i < len(etapas) else (etapas[-1] if etapas else None)
+            foja = fojas[i] if i < len(fojas) else None
+            desfasaje = (foja.foja_pct_acumulado() - etapa.etapa_pct_proyectado_acumulado()) if etapa and foja else None
+            filas.append({"etapa": etapa, "foja": foja, "desfasaje": desfasaje})
+        return filas
+
     def __str__(self):
         return f"{self.rubro_nombre} - {self.rubro_plan}"
 
@@ -1052,10 +1077,13 @@ class PlanDeTrabajosEtapa(models.Model):
         ).order_by('-etapa_numero').first()
 
     def save(self, *args, **kwargs):
-        if not self.pk:
+        if not self.pk and not self.etapa_fecha:
             # No se usa self.etapa_anterior() porque self.etapa_numero todavía no
             # fue asignado por la señal auto_increment_etapa_numero (corre dentro
             # de super().save()); se busca directamente la última etapa de la cadena.
+            # Si etapa_fecha ya viene seteada a mano (ver PlanDeTrabajosEtapaMatriz,
+            # relleno de meses medidos por Foja pero sin Etapa en el plan viejo), se
+            # respeta esa fecha en vez de continuar automáticamente la cadena.
             chain_ids = self.etapa_rubro.rubro_cadena_ids()
             anterior = PlanDeTrabajosEtapa.objects.filter(
                 etapa_rubro_id__in=chain_ids

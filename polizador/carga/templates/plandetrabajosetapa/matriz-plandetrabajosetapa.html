@@ -11,5 +11,7 @@
 {% endblock %}
 
 {% block actions %}
-  {% include "partials/form-actions.html" %}
+  {% if not readonly %}
+    {% include "partials/form-actions.html" %}
+  {% endif %}
 {% endblock %}
