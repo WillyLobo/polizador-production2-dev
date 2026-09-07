@@ -55,7 +55,7 @@ django==6.0.8
     #   django-select2
     #   django-simple-history
     #   django-storages
-django-allauth==65.19.1
+django-allauth==65.19.2
     # via -r requirements.in
 django-anymail==15.1
     # via -r requirements.in
@@ -67,7 +67,7 @@ django-environ==0.14.0
     # via -r requirements.in
 django-import-export==4.4.1
     # via -r requirements.in
-django-ninja==1.6.2
+django-ninja==1.7.0
     # via -r requirements.in
 django-redis==7.0.0
     # via -r requirements.in
@@ -93,7 +93,7 @@ fsspec==2026.7.0
     # via gcsfs
 gcsfs==2026.8.0
     # via -r requirements.in
-google-api-core[grpc]==2.34.0
+google-api-core[grpc]==2.36.0
     # via
     #   -r requirements.in
     #   google-cloud-bigquery
@@ -165,7 +165,7 @@ grpcio==1.81.0
     #   grpcio-status
 grpcio-status==1.81.0
     # via google-api-core
-gunicorn==26.0.0
+gunicorn==26.2.0
     # via -r requirements.in
 idna==3.18
     # via
@@ -210,11 +210,12 @@ odfpy==1.4.1
     # via -r requirements.in
 openpyxl==3.1.5
     # via -r requirements.in
+opentelemetry-api==1.44.0
+    # via google-api-core
 packaging==26.2
     # via
     #   db-dtypes
     #   google-cloud-bigquery
-    #   gunicorn
     #   pandas-gbq
     #   pikepdf
     #   pytesseract
@@ -223,9 +224,9 @@ pandas==3.0.5
     # via
     #   db-dtypes
     #   pandas-gbq
-pandas-gbq==0.35.1
+pandas-gbq==0.35.2
     # via -r requirements.in
-pikepdf==10.11.0
+pikepdf==10.12.0
     # via -r requirements.in
 pillow==12.3.0
     # via
@@ -281,7 +282,7 @@ pyee==13.0.1
     # via playwright
 pygments==2.20.0
     # via pytest
-pymupdf==1.26.4
+pymupdf==1.28.2
     # via -r requirements.in
 pytesseract==0.3.13
     # via -r requirements.in
@@ -321,7 +322,7 @@ requests==2.34.2
     #   requests-oauthlib
 requests-oauthlib==2.0.0
     # via google-auth-oauthlib
-sentry-sdk==2.68.0
+sentry-sdk==2.68.1
     # via -r requirements.in
 six==1.17.0
     # via python-dateutil
@@ -334,6 +335,7 @@ tablib==3.10.0
 typing-extensions==4.15.0
     # via
     #   grpcio
+    #   opentelemetry-api
     #   pydantic
     #   pydantic-core
     #   pyee
