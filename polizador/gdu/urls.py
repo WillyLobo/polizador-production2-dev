@@ -19,6 +19,14 @@ urlpatterns = [
     path("mapa/", visor.mapa, name="mapa"),
     path("mapa/viviendas.geojson", visor.geojson_viviendas, name="geojson_viviendas"),
     path("mapa/barrios.geojson", visor.geojson_barrios, name="geojson_barrios"),
+    path("mapa/expropiaciones.geojson", visor.geojson_expropiaciones, name="geojson_expropiaciones"),
+    path("mapa/viviendas-dispersas.geojson", visor.geojson_viviendas_dispersas, name="geojson_viviendas_dispersas"),
+    path("mapa/planos-mensura.geojson", visor.geojson_planos_mensura, name="geojson_planos_mensura"),
+    path("mapa/catastro-urbano.geojson", visor.geojson_catastro_urbano, name="geojson_catastro_urbano"),
+    path("mapa/para-escriturar.geojson", visor.geojson_para_escriturar, name="geojson_para_escriturar"),
+    path("mapa/buscar-localidad.json", visor.buscar_localidad, name="buscar_localidad"),
+    path("mapa/buscar-parcela.json", visor.buscar_parcela, name="buscar_parcela"),
+    path("mapa/opciones-busqueda.json", visor.opciones_busqueda, name="opciones_busqueda"),
 
     path("contrataciones/<int:contratacion_id>/vincular-obra/", vincular_obra.vincular_obra, name="vincular_obra"),
 

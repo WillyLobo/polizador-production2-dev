@@ -8,9 +8,20 @@
 <style>
   #gdu-mapa-wrap { display: flex; gap: .5rem; align-items: flex-start; }
   #gdu-map { flex: 1 1 auto; height: 75vh; min-height: 420px; border: 1px solid var(--bs-border-color); }
-  #gdu-panel { width: 300px; flex: 0 0 300px; max-height: 75vh; overflow-y: auto; }
-  #gdu-panel .card-body dt { font-size: .75rem; color: var(--bs-secondary-color); }
-  #gdu-panel .card-body dd { font-size: .85rem; margin-bottom: .4rem; }
+  #gdu-layers-sidebar {
+    width: 210px;
+    flex: 0 0 210px;
+    max-height: 75vh;
+    overflow-y: auto;
+    transition: width .15s ease, flex-basis .15s ease;
+  }
+  #gdu-layers-sidebar.collapsed { width: 2.5rem; flex: 0 0 2.5rem; overflow: hidden; }
+  #gdu-layers-sidebar.collapsed #gdu-layers-title,
+  #gdu-layers-sidebar.collapsed #gdu-layers-body { display: none; }
+  #gdu-layers-sidebar .form-check { margin-bottom: .35rem; }
+  #gdu-layers-sidebar .form-check:last-child { margin-bottom: 0; }
+  #gdu-panel-body dt { font-size: .75rem; color: var(--bs-secondary-color); }
+  #gdu-panel-body dd { font-size: .85rem; margin-bottom: .4rem; }
   .gdu-medida-tooltip {
     background: rgba(0,0,0,.75);
     color: #fff;
@@ -23,6 +34,25 @@
     background: rgba(255,193,7,.9);
     color: #000;
   }
+  .gdu-legend-swatch {
+    display: inline-block;
+    width: .7rem;
+    height: .7rem;
+    border-radius: 2px;
+    margin-right: .3rem;
+    vertical-align: middle;
+  }
+  .gdu-search { position: relative; width: 220px; }
+  .gdu-search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    max-height: 220px;
+    overflow-y: auto;
+    display: none;
+  }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/ol@9/dist/ol.js"></script>
@@ -30,6 +60,9 @@
 document.addEventListener("DOMContentLoaded", function () {
   const barriosUrl = "{% url 'gdu:geojson_barrios' %}";
   const viviendasUrl = "{% url 'gdu:geojson_viviendas' %}";
+  const buscarLocalidadUrl = "{% url 'gdu:buscar_localidad' %}";
+  const buscarParcelaUrl = "{% url 'gdu:buscar_parcela' %}";
+  const opcionesBusquedaUrl = "{% url 'gdu:opciones_busqueda' %}";
   const planoUrl = "{% url 'gdu:plano' %}";
   const estadoObraBaseUrl = "{% url 'carga:estado-obra' pk=0 %}";
   const printUrl = "{% url 'gdu:imprimir' %}";
@@ -38,18 +71,31 @@ document.addEventListener("DOMContentLoaded", function () {
   const puedeEditarNroAdjudicatario = {{ perms.gdu.editar_nro_adjudicatario|yesno:"true,false" }};
   const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
 
-  function bboxSource(baseUrl) {
+  // filtros del modal de búsqueda avanzada (Programa/Actuación/Grupo/Plan/Estado de Gestión/Ley/Municipio);
+  // se leen al vuelo en cada bboxSource "filtrable" para no tener que recrear las capas al aplicar/limpiar
+  const filtrosActivos = {};
+
+  function bboxSource(baseUrl, filtrable) {
     return new ol.source.Vector({
       format: new ol.format.GeoJSON(),
       strategy: ol.loadingstrategy.bbox,
       url: function (extent) {
-        return baseUrl + "?bbox=" + extent.join(",");
+        const params = new URLSearchParams({ bbox: extent.join(",") });
+        if (filtrable) {
+          Object.keys(filtrosActivos).forEach(function (k) {
+            if (filtrosActivos[k]) params.set(k, filtrosActivos[k]);
+          });
+        }
+        return baseUrl + "?" + params.toString();
       },
     });
   }
 
-  const barriosSource = bboxSource(barriosUrl);
-  const viviendasSource = bboxSource(viviendasUrl);
+  const capasFiltrables = []; // fuentes a refrescar cuando se aplica/limpia el modal de búsqueda avanzada
+
+  const barriosSource = bboxSource(barriosUrl, true);
+  const viviendasSource = bboxSource(viviendasUrl, true);
+  capasFiltrables.push(barriosSource, viviendasSource);
 
   const barriosLayer = new ol.layer.Vector({
     source: barriosSource,
@@ -67,6 +113,86 @@ document.addEventListener("DOMContentLoaded", function () {
     }),
     minZoom: 13,
   });
+
+  // --- Capas adicionales (permiso por capa: si el usuario no la tiene, ni se pide) ---
+
+  function capaPoligono(source, colorHex, minZoom, visible) {
+    return new ol.layer.Vector({
+      source: source,
+      style: new ol.style.Style({
+        stroke: new ol.style.Stroke({ color: colorHex, width: 1.5 }),
+        fill: new ol.style.Fill({ color: colorHex + "33" }),
+      }),
+      minZoom: minZoom || 0,
+      visible: visible === true,
+    });
+  }
+
+  function capaPuntos(source, colorHex, minZoom, visible) {
+    return new ol.layer.Vector({
+      source: source,
+      style: new ol.style.Style({
+        image: new ol.style.Circle({
+          radius: 5,
+          fill: new ol.style.Fill({ color: colorHex }),
+          stroke: new ol.style.Stroke({ color: "#fff", width: 1 }),
+        }),
+      }),
+      minZoom: minZoom || 0,
+      visible: visible === true,
+    });
+  }
+
+  const capasExtra = []; // [{ layer, source, toggleId }]
+
+  {% if perms.gdu.ver_expropiaciones %}
+  const expropiacionesSource = bboxSource("{% url 'gdu:geojson_expropiaciones' %}", true);
+  capasExtra.push({
+    layer: capaPoligono(expropiacionesSource, "#6f42c1"),
+    source: expropiacionesSource,
+    toggleId: "toggle-expropiaciones",
+  });
+  capasFiltrables.push(expropiacionesSource);
+  {% endif %}
+
+  {% if perms.gdu.ver_viviendas_dispersas %}
+  const viviendasDispersasSource = bboxSource("{% url 'gdu:geojson_viviendas_dispersas' %}", true);
+  capasExtra.push({
+    layer: capaPuntos(viviendasDispersasSource, "#20c997", 12),
+    source: viviendasDispersasSource,
+    toggleId: "toggle-viviendas-dispersas",
+  });
+  capasFiltrables.push(viviendasDispersasSource);
+  {% endif %}
+
+  {% if perms.gdu.ver_plano_mensura %}
+  const planosMensuraSource = bboxSource("{% url 'gdu:geojson_planos_mensura' %}");
+  capasExtra.push({
+    layer: capaPoligono(planosMensuraSource, "#6c757d", 13),
+    source: planosMensuraSource,
+    toggleId: "toggle-planos-mensura",
+  });
+  {% endif %}
+
+  {% if perms.gdu.ver_catastro_urbano %}
+  const catastroUrbanoSource = bboxSource("{% url 'gdu:geojson_catastro_urbano' %}", true);
+  capasExtra.push({
+    layer: capaPoligono(catastroUrbanoSource, "#495057", 14),
+    source: catastroUrbanoSource,
+    toggleId: "toggle-catastro-urbano",
+  });
+  capasFiltrables.push(catastroUrbanoSource);
+  {% endif %}
+
+  {% if perms.gdu.ver_escriturar %}
+  const paraEscriturarSource = bboxSource("{% url 'gdu:geojson_para_escriturar' %}", true);
+  capasExtra.push({
+    layer: capaPoligono(paraEscriturarSource, "#198754", 13),
+    source: paraEscriturarSource,
+    toggleId: "toggle-para-escriturar",
+  });
+  capasFiltrables.push(paraEscriturarSource);
+  {% endif %}
 
   // capa de trabajo para las mediciones (distancia/área), no se persiste en el servidor
   const measureSource = new ol.source.Vector();
@@ -92,9 +218,154 @@ document.addEventListener("DOMContentLoaded", function () {
       new ol.layer.Tile({ source: new ol.source.OSM() }),
       barriosLayer,
       viviendasLayer,
+      ...capasExtra.map((c) => c.layer),
       measureLayer,
     ],
     view: new ol.View({ center: centro, zoom: 7 }),
+  });
+
+  // --- Búsqueda de Localidad y Parcela (centra/ajusta el mapa sobre el resultado elegido) ---
+
+  function crearBuscador(inputId, resultsId, url, onSeleccion) {
+    const input = document.getElementById(inputId);
+    const resultsBox = document.getElementById(resultsId);
+    let timeoutId = null;
+    let resultadosActuales = [];
+
+    function ocultar() {
+      resultsBox.style.display = "none";
+      resultsBox.innerHTML = "";
+    }
+
+    input.addEventListener("input", function () {
+      const q = input.value.trim();
+      clearTimeout(timeoutId);
+      if (q.length < 2) {
+        ocultar();
+        return;
+      }
+      timeoutId = setTimeout(function () {
+        fetch(url + "?q=" + encodeURIComponent(q))
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            resultadosActuales = data.results || [];
+            if (!resultadosActuales.length) {
+              resultsBox.innerHTML = '<div class="list-group-item small text-muted">Sin resultados</div>';
+              resultsBox.style.display = "block";
+              return;
+            }
+            resultsBox.innerHTML = resultadosActuales.map(function (r, idx) {
+              return `<button type="button" class="list-group-item list-group-item-action small" data-idx="${idx}">${r.text}</button>`;
+            }).join("");
+            resultsBox.style.display = "block";
+          });
+      }, 300);
+    });
+
+    resultsBox.addEventListener("click", function (evt) {
+      const boton = evt.target.closest("[data-idx]");
+      if (!boton) return;
+      const resultado = resultadosActuales[Number(boton.dataset.idx)];
+      if (resultado) {
+        input.value = resultado.text;
+        onSeleccion(resultado);
+      }
+      ocultar();
+    });
+
+    document.addEventListener("click", function (evt) {
+      if (evt.target !== input && !resultsBox.contains(evt.target)) {
+        ocultar();
+      }
+    });
+  }
+
+  crearBuscador("buscar-localidad", "resultados-localidad", buscarLocalidadUrl, function (r) {
+    map.getView().animate({ center: ol.proj.fromLonLat([r.lon, r.lat]), zoom: 15, duration: 500 });
+  });
+
+  crearBuscador("buscar-parcela", "resultados-parcela", buscarParcelaUrl, function (r) {
+    map.getView().fit(r.extent, { maxZoom: 18, duration: 500, padding: [50, 50, 50, 50] });
+  });
+
+  // --- Búsqueda avanzada (modal): filtra Barrios/Viviendas/Expropiaciones/Catastro Urbano/etc.
+  // por Programa, Actuación, Grupo, Plan, Estado de Gestión, Ley de Expropiación y Municipio ---
+
+  const CAMPOS_BUSQUEDA_AVANZADA = ["programa", "actuacion", "grupo", "plan", "estado_gestion", "ley", "municipio"];
+  const badgeFiltros = document.getElementById("badge-filtros-busqueda");
+  let opcionesBusquedaCargadas = false;
+
+  function llenarSelect(selectId, valores) {
+    const select = document.getElementById(selectId);
+    if (!select) return;
+    valores.forEach(function (valor) {
+      const opt = document.createElement("option");
+      opt.value = valor;
+      opt.textContent = valor;
+      select.appendChild(opt);
+    });
+  }
+
+  const modalBusquedaAvanzadaEl = document.getElementById("modalBusquedaAvanzada");
+  if (modalBusquedaAvanzadaEl) {
+    modalBusquedaAvanzadaEl.addEventListener("show.bs.modal", function () {
+      if (opcionesBusquedaCargadas) return;
+      fetch(opcionesBusquedaUrl)
+        .then(function (r) { return r.json(); })
+        .then(function (data) {
+          llenarSelect("filtro-programa", data.programas);
+          llenarSelect("filtro-actuacion", data.actuaciones);
+          llenarSelect("filtro-grupo", data.grupos);
+          llenarSelect("filtro-plan", data.planes);
+          llenarSelect("filtro-estado_gestion", data.estados_gestion);
+          llenarSelect("filtro-ley", data.leyes);
+          llenarSelect("filtro-municipio", data.municipios);
+          opcionesBusquedaCargadas = true;
+        });
+    });
+  }
+
+  function actualizarBadgeFiltros() {
+    const activos = Object.keys(filtrosActivos).length;
+    if (badgeFiltros) {
+      badgeFiltros.textContent = activos;
+      badgeFiltros.classList.toggle("d-none", activos === 0);
+    }
+  }
+
+  function refrescarCapasFiltrables() {
+    capasFiltrables.forEach(function (source) {
+      source.refresh();
+    });
+  }
+
+  const formBusquedaAvanzada = document.getElementById("form-busqueda-avanzada");
+  if (formBusquedaAvanzada) {
+    formBusquedaAvanzada.addEventListener("submit", function (evt) {
+      evt.preventDefault();
+      CAMPOS_BUSQUEDA_AVANZADA.forEach(function (campo) {
+        const select = document.getElementById("filtro-" + campo);
+        const valor = select ? select.value : "";
+        if (valor) {
+          filtrosActivos[campo] = valor;
+        } else {
+          delete filtrosActivos[campo];
+        }
+      });
+      refrescarCapasFiltrables();
+      actualizarBadgeFiltros();
+      bootstrap.Modal.getOrCreateInstance(modalBusquedaAvanzadaEl).hide();
+    });
+  }
+
+  document.getElementById("btn-limpiar-filtros-busqueda").addEventListener("click", function () {
+    CAMPOS_BUSQUEDA_AVANZADA.forEach(function (campo) {
+      delete filtrosActivos[campo];
+      const select = document.getElementById("filtro-" + campo);
+      if (select) select.value = "";
+    });
+    refrescarCapasFiltrables();
+    actualizarBadgeFiltros();
   });
 
   document.getElementById("toggle-barrios").addEventListener("change", (e) => {
@@ -102,6 +373,20 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   document.getElementById("toggle-viviendas").addEventListener("change", (e) => {
     viviendasLayer.setVisible(e.target.checked);
+  });
+  capasExtra.forEach(function (c) {
+    document.getElementById(c.toggleId).addEventListener("change", function (e) {
+      c.layer.setVisible(e.target.checked);
+    });
+  });
+
+  // --- Colapsar/expandir la barra lateral de capas (como el nav-trigger del sitio original) ---
+
+  document.getElementById("btn-toggle-layers-sidebar").addEventListener("click", function () {
+    const sidebar = document.getElementById("gdu-layers-sidebar");
+    const icon = document.getElementById("icon-toggle-layers-sidebar");
+    const colapsado = sidebar.classList.toggle("collapsed");
+    icon.className = colapsado ? "bi bi-chevron-right" : "bi bi-chevron-left";
   });
 
   const info = document.getElementById("gdu-map-info");
@@ -118,7 +403,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const select = new ol.interaction.Select({
     features: selectedFeatures,
-    layers: [barriosLayer, viviendasLayer],
+    layers: [barriosLayer, viviendasLayer, ...capasExtra.map((c) => c.layer)],
   });
   map.addInteraction(select);
 
@@ -129,7 +414,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   dragBox.on("boxend", function () {
     const extent = dragBox.getGeometry().getExtent();
-    [barriosSource, viviendasSource].forEach(function (source) {
+    [barriosSource, viviendasSource, ...capasExtra.map((c) => c.source)].forEach(function (source) {
       source.forEachFeatureIntersectingExtent(extent, function (feature) {
         if (selectedFeatures.getArray().indexOf(feature) === -1) {
           selectedFeatures.push(feature);
@@ -196,8 +481,32 @@ document.addEventListener("DOMContentLoaded", function () {
     panelBody.innerHTML = html;
   }
 
-  selectedFeatures.on("add", renderPanel);
-  selectedFeatures.on("remove", renderPanel);
+  // el panel de detalle vive en un modal en vez de a un costado fijo: se abre solo al
+  // seleccionar algo y se cierra (limpiando la selección del mapa) al cerrarlo manualmente
+  const modalSeleccionEl = document.getElementById("modalSeleccion");
+
+  function actualizarModalSeleccion() {
+    if (selectedFeatures.getLength() > 0) {
+      bootstrap.Modal.getOrCreateInstance(modalSeleccionEl).show();
+    } else {
+      const instancia = bootstrap.Modal.getInstance(modalSeleccionEl);
+      if (instancia) instancia.hide();
+    }
+  }
+
+  selectedFeatures.on("add", function () {
+    renderPanel();
+    actualizarModalSeleccion();
+  });
+  selectedFeatures.on("remove", function () {
+    renderPanel();
+    actualizarModalSeleccion();
+  });
+  modalSeleccionEl.addEventListener("hidden.bs.modal", function () {
+    if (selectedFeatures.getLength() > 0) {
+      selectedFeatures.clear();
+    }
+  });
   renderPanel();
 
   // --- Búsqueda 3450 y edición de Nº de adjudicatario (delegado, sobrevive a los re-render) ---
@@ -412,17 +721,19 @@ document.addEventListener("DOMContentLoaded", function () {
 {% block content %}
 <div class="container-fluid">
   {% csrf_token %}
-  <h4 class="mb-3">Visor GDU</h4>
-
   <div class="mb-2 d-flex gap-3 align-items-center flex-wrap">
-    <div class="form-check form-switch">
-      <input class="form-check-input" type="checkbox" id="toggle-barrios" checked>
-      <label class="form-check-label" for="toggle-barrios">Barrios</label>
+    <div class="gdu-search">
+      <input type="text" class="form-control form-control-sm" id="buscar-localidad" placeholder="Buscar localidad..." autocomplete="off">
+      <div class="list-group gdu-search-results" id="resultados-localidad"></div>
     </div>
-    <div class="form-check form-switch">
-      <input class="form-check-input" type="checkbox" id="toggle-viviendas" checked>
-      <label class="form-check-label" for="toggle-viviendas">Viviendas</label>
+    <div class="gdu-search">
+      <input type="text" class="form-control form-control-sm" id="buscar-parcela" placeholder="Buscar parcela (nomenclatura)..." autocomplete="off">
+      <div class="list-group gdu-search-results" id="resultados-parcela"></div>
     </div>
+    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalBusquedaAvanzada">
+      <i class="bi bi-funnel"></i> Búsqueda avanzada
+      <span id="badge-filtros-busqueda" class="badge rounded-pill bg-primary d-none">0</span>
+    </button>
 
     <div class="btn-group btn-group-sm" role="group" aria-label="Modo del mapa">
       <input type="radio" class="btn-check" name="gdu-modo" id="modo-select" autocomplete="off" checked>
@@ -437,27 +748,133 @@ document.addEventListener("DOMContentLoaded", function () {
     <button type="button" class="btn btn-outline-danger btn-sm" id="btn-borrar-medicion">
       <i class="bi bi-eraser"></i> Borrar mediciones
     </button>
-    <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-limpiar-seleccion">
-      <i class="bi bi-x-circle"></i> Limpiar selección
-    </button>
-    <button type="button" class="btn btn-outline-primary btn-sm" id="btn-imprimir-ficha">
-      <i class="bi bi-printer"></i> Imprimir ficha
-    </button>
 
     <span id="gdu-map-info" class="text-muted small ms-auto"></span>
   </div>
   <p class="text-muted small mb-2">Shift+click selecciona varios elementos de a uno; Ctrl+arrastre selecciona por rectángulo.</p>
 
   <div id="gdu-mapa-wrap">
-    <div id="gdu-map"></div>
-    <div id="gdu-panel">
-      <div class="card">
-        <div class="card-header py-2 bg-light fw-semibold small">Elementos seleccionados</div>
-        <div class="card-body" id="gdu-panel-body">
-          <p class="text-muted small mb-0">Hacé click en un barrio o vivienda del mapa.</p>
+    <div id="gdu-layers-sidebar" class="card">
+      <div class="card-header py-2 bg-light d-flex align-items-center justify-content-between">
+        <span id="gdu-layers-title" class="fw-semibold small">Capas</span>
+        <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none" id="btn-toggle-layers-sidebar" title="Colapsar/expandir capas">
+          <i class="bi bi-chevron-left" id="icon-toggle-layers-sidebar"></i>
+        </button>
+      </div>
+      <div class="card-body p-2" id="gdu-layers-body">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="toggle-barrios" checked style="accent-color: #0d6efd;">
+          <label class="form-check-label" for="toggle-barrios"><span class="gdu-legend-swatch" style="background: #0d6efd;"></span>Barrios</label>
         </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="toggle-viviendas" checked style="accent-color: #dc3545;">
+          <label class="form-check-label" for="toggle-viviendas"><span class="gdu-legend-swatch" style="background: #dc3545;"></span>Viviendas</label>
+        </div>
+        {% if perms.gdu.ver_expropiaciones %}
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="toggle-expropiaciones" style="accent-color: #6f42c1;">
+          <label class="form-check-label" for="toggle-expropiaciones"><span class="gdu-legend-swatch" style="background: #6f42c1;"></span>Expropiaciones</label>
+        </div>
+        {% endif %}
+        {% if perms.gdu.ver_viviendas_dispersas %}
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="toggle-viviendas-dispersas" style="accent-color: #20c997;">
+          <label class="form-check-label" for="toggle-viviendas-dispersas"><span class="gdu-legend-swatch" style="background: #20c997;"></span>Viviendas Dispersas</label>
+        </div>
+        {% endif %}
+        {% if perms.gdu.ver_plano_mensura %}
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="toggle-planos-mensura" style="accent-color: #6c757d;">
+          <label class="form-check-label" for="toggle-planos-mensura"><span class="gdu-legend-swatch" style="background: #6c757d;"></span>Planos de Mensura</label>
+        </div>
+        {% endif %}
+        {% if perms.gdu.ver_catastro_urbano %}
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="toggle-catastro-urbano" style="accent-color: #495057;">
+          <label class="form-check-label" for="toggle-catastro-urbano"><span class="gdu-legend-swatch" style="background: #495057;"></span>Catastro Urbano</label>
+        </div>
+        {% endif %}
+        {% if perms.gdu.ver_escriturar %}
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="toggle-para-escriturar" style="accent-color: #198754;">
+          <label class="form-check-label" for="toggle-para-escriturar"><span class="gdu-legend-swatch" style="background: #198754;"></span>Para Escriturar</label>
+        </div>
+        {% endif %}
       </div>
     </div>
+    <div id="gdu-map"></div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalSeleccion" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Elementos seleccionados</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body" id="gdu-panel-body">
+        <p class="text-muted small mb-0">Hacé click en un barrio o vivienda del mapa.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-limpiar-seleccion" data-bs-dismiss="modal">
+          <i class="bi bi-x-circle"></i> Limpiar selección
+        </button>
+        <button type="button" class="btn btn-outline-primary btn-sm" id="btn-imprimir-ficha">
+          <i class="bi bi-printer"></i> Imprimir ficha
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalBusquedaAvanzada" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="form-busqueda-avanzada">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Búsqueda avanzada</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-2">
+            <div class="col-6">
+              <label class="form-label small mb-1" for="filtro-programa">Programa</label>
+              <select class="form-select form-select-sm" id="filtro-programa"><option value="">Todos</option></select>
+            </div>
+            <div class="col-6">
+              <label class="form-label small mb-1" for="filtro-actuacion">Actuación</label>
+              <select class="form-select form-select-sm" id="filtro-actuacion"><option value="">Todas</option></select>
+            </div>
+            <div class="col-6">
+              <label class="form-label small mb-1" for="filtro-grupo">Grupo</label>
+              <select class="form-select form-select-sm" id="filtro-grupo"><option value="">Todos</option></select>
+            </div>
+            <div class="col-6">
+              <label class="form-label small mb-1" for="filtro-plan">Plan</label>
+              <select class="form-select form-select-sm" id="filtro-plan"><option value="">Todos</option></select>
+            </div>
+            <div class="col-6">
+              <label class="form-label small mb-1" for="filtro-estado_gestion">Estado de Gestión (expropiación)</label>
+              <select class="form-select form-select-sm" id="filtro-estado_gestion"><option value="">Todos</option></select>
+            </div>
+            <div class="col-6">
+              <label class="form-label small mb-1" for="filtro-ley">Ley de expropiación</label>
+              <select class="form-select form-select-sm" id="filtro-ley"><option value="">Todas</option></select>
+            </div>
+            <div class="col-6">
+              <label class="form-label small mb-1" for="filtro-municipio">Municipio (catastro urbano)</label>
+              <select class="form-select form-select-sm" id="filtro-municipio"><option value="">Todos</option></select>
+            </div>
+          </div>
+          <p class="text-muted small mt-2 mb-0">Programa/Actuación/Grupo/Plan filtran Barrios, Viviendas, Viviendas Dispersas y Para Escriturar; Estado de Gestión/Ley filtran Expropiaciones; Municipio filtra Catastro Urbano.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-limpiar-filtros-busqueda">Limpiar filtros</button>
+          <button type="submit" class="btn btn-primary btn-sm">Aplicar filtros</button>
+        </div>
+      </div>
+    </form>
   </div>
 </div>
 {% endblock %}
