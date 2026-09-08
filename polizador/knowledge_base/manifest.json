@@ -1,6 +1,6 @@
 {
   "api": {
-    "generated_at": "2026-09-05T12:53:50.331857+00:00",
+    "generated_at": "2026-09-08T12:58:56.163938+00:00",
     "modules": {
       "views/carga_views": {
         "file": "api/views/carga_views.py",
@@ -6712,7 +6712,7 @@
     }
   },
   "carga": {
-    "generated_at": "2026-09-05T12:53:44.735211+00:00",
+    "generated_at": "2026-09-08T12:58:49.611440+00:00",
     "modules": {
       "forms/areaforms": {
         "file": "carga/forms/areaforms.py",
@@ -16195,7 +16195,7 @@
     }
   },
   "core": {
-    "generated_at": "2026-09-05T12:53:42.608368+00:00",
+    "generated_at": "2026-09-08T12:58:47.353868+00:00",
     "modules": {
       "forms": {
         "file": "core/forms.py",
@@ -17538,7 +17538,7 @@
     }
   },
   "personalizador": {
-    "generated_at": "2026-09-05T12:53:48.287183+00:00",
+    "generated_at": "2026-09-08T12:58:53.812979+00:00",
     "modules": {
       "forms/actividadespecificaforms": {
         "file": "personalizador/forms/actividadespecificaforms.py",
@@ -23416,7 +23416,7 @@
     }
   },
   "secretariador": {
-    "generated_at": "2026-09-05T12:53:46.518400+00:00",
+    "generated_at": "2026-09-08T12:58:51.733978+00:00",
     "modules": {
       "forms/comisionadoform": {
         "file": "secretariador/forms/comisionadoform.py",

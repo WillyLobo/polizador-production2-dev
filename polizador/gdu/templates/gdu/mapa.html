@@ -7,16 +7,17 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@9/ol.css">
 <style>
   /* base.html centra verticalmente el contenido (`justify-content-center` sobre un
-     contenedor `min-vh-100`) para páginas cortas tipo formulario; acá el visor ya ocupa
-     bastante alto (mapa a 75vh) y esa centrado deja un espacio muerto arriba del toolbar.
+     contenedor `min-vh-100`) para páginas cortas tipo formulario; acá el visor ocupa
+     toda la pantalla y ese centrado deja un espacio muerto arriba del toolbar.
      Bootstrap define sus utilidades de flex con !important, así que hace falta acá también. */
   .content { justify-content: flex-start !important; }
-  #gdu-mapa-wrap { display: flex; gap: .5rem; align-items: flex-start; }
-  #gdu-map { flex: 1 1 auto; height: 75vh; min-height: 420px; border: 1px solid var(--bs-border-color); }
+  /* la altura real se calcula en JS (ajustarAlturaMapa) para llegar hasta el borde
+     inferior de la pantalla sin importar cuántas líneas ocupe el toolbar (hace wrap) */
+  #gdu-mapa-wrap { display: flex; gap: .5rem; align-items: stretch; min-height: 420px; }
+  #gdu-map { flex: 1 1 auto; border: 1px solid var(--bs-border-color); }
   #gdu-layers-sidebar {
     width: 210px;
     flex: 0 0 210px;
-    max-height: 75vh;
     overflow-y: auto;
     transition: width .15s ease, flex-basis .15s ease;
   }
@@ -214,13 +215,33 @@ document.addEventListener("DOMContentLoaded", function () {
     }),
   });
 
+  // --- Capa base (OpenStreetMap / ESRI Satélite; excluyentes entre sí) ---
+
+  const capaBaseOsm = new ol.layer.Tile({ source: new ol.source.OSM(), visible: true });
+  const capaBaseEsri = new ol.layer.Tile({
+    source: new ol.source.XYZ({
+      url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      attributions: "Tiles © Esri — Source: Esri, Maxar, Earthstar Geographics, and the GIS User Community",
+      maxZoom: 19,
+    }),
+    visible: false,
+  });
+
+  document.querySelectorAll('input[name="gdu-capa-base"]').forEach(function (radio) {
+    radio.addEventListener("change", function () {
+      capaBaseOsm.setVisible(radio.value === "osm");
+      capaBaseEsri.setVisible(radio.value === "esri");
+    });
+  });
+
   // Centro aproximado: extensión de los barrios cargados (provincia del Chaco)
   const centro = ol.proj.fromLonLat([-60.9, -26.15]);
 
   const map = new ol.Map({
     target: "gdu-map",
     layers: [
-      new ol.layer.Tile({ source: new ol.source.OSM() }),
+      capaBaseOsm,
+      capaBaseEsri,
       barriosLayer,
       viviendasLayer,
       ...capasExtra.map((c) => c.layer),
@@ -228,6 +249,24 @@ document.addEventListener("DOMContentLoaded", function () {
     ],
     view: new ol.View({ center: centro, zoom: 7 }),
   });
+
+  // el mapa ocupa hasta el borde inferior de la pantalla, dejando el mismo margen
+  // que el padding inferior del body; se recalcula en cada resize porque el toolbar
+  // de arriba hace wrap y cambia de alto según el ancho disponible
+  function ajustarAlturaMapa() {
+    const wrap = document.getElementById("gdu-mapa-wrap");
+    const bottomPad = parseFloat(getComputedStyle(document.body).paddingBottom) || 0;
+    const disponible = window.innerHeight - wrap.getBoundingClientRect().top - bottomPad;
+    wrap.style.height = Math.max(disponible, 420) + "px";
+    map.updateSize();
+  }
+  window.addEventListener("resize", ajustarAlturaMapa);
+  ajustarAlturaMapa();
+  // recalcula cuando terminan de cargar las tipografías (bootstrap-icons): hasta entonces
+  // los botones del toolbar miden distinto y corren el borde superior del mapa
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(ajustarAlturaMapa);
+  }
 
   // --- Búsqueda de Localidad y Parcela (centra/ajusta el mapa sobre el resultado elegido) ---
 
@@ -760,13 +799,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
   <div id="gdu-mapa-wrap">
     <div id="gdu-layers-sidebar" class="card">
-      <div class="card-header py-2 bg-light d-flex align-items-center justify-content-between">
+      <div class="card-header py-2 bg-body-tertiary d-flex align-items-center justify-content-between">
         <span id="gdu-layers-title" class="fw-semibold small">Capas</span>
         <button type="button" class="btn btn-sm btn-link p-0 text-decoration-none" id="btn-toggle-layers-sidebar" title="Colapsar/expandir capas">
           <i class="bi bi-chevron-left" id="icon-toggle-layers-sidebar"></i>
         </button>
       </div>
       <div class="card-body p-2" id="gdu-layers-body">
+        <div class="small fw-semibold text-secondary mb-1">Capa base</div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="gdu-capa-base" id="capa-base-osm" value="osm" checked>
+          <label class="form-check-label" for="capa-base-osm">OpenStreetMap</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="gdu-capa-base" id="capa-base-esri" value="esri">
+          <label class="form-check-label" for="capa-base-esri">ESRI Satélite</label>
+        </div>
+        <hr class="my-2">
+        <div class="small fw-semibold text-secondary mb-1">Capas temáticas</div>
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="toggle-barrios" checked style="accent-color: #0d6efd;">
           <label class="form-check-label" for="toggle-barrios"><span class="gdu-legend-swatch" style="background: #0d6efd;"></span>Barrios</label>
