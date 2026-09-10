@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>582</width>
+    <height>328</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>false</bool>
+  </property>
+  <layout class="QFormLayout" name="formLayout_2">
+   <item row="0" column="0">
+    <widget class="QLabel" name="tipoLabel">
+     <property name="text">
+      <string>Intervención</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QgsRelationReferenceWidget" name="id_intervencion">
+     <property name="openFormButtonVisible">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="oferenteLabel">
+     <property name="toolTip">
+      <string>Nomenclatura Catastral Completa</string>
+     </property>
+     <property name="text">
+      <string>Nomenclatura</string>
+     </property>
+     <property name="buddy">
+      <cstring>nomenclatura</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="nomenclatura">
+     <property name="toolTip">
+      <string>Nomenclatura Catastral Completa</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>158</height>
+      </size>
+     </property>
+     <property name="title">
+      <string>Partes Nomenclatura:</string>
+     </property>
+     <widget class="QFrame" name="formFrame_2">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>22</y>
+        <width>282</width>
+        <height>136</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="lineWidth">
+       <number>0</number>
+      </property>
+      <layout class="QFormLayout" name="formLayout_4">
+       <item row="0" column="0">
+        <widget class="QLabel" name="aptoFSicoLabel">
+         <property name="text">
+          <string>Departamento </string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="aptoLocalizaciNLabel">
+         <property name="text">
+          <string>Secci&amp;ón</string>
+         </property>
+         <property name="buddy">
+          <cstring>secc</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="aptoDominialLabel">
+         <property name="text">
+          <string>&amp;Quinta</string>
+         </property>
+         <property name="buddy">
+          <cstring>qta</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="manzanaLabel">
+         <property name="text">
+          <string>Man&amp;zana</string>
+         </property>
+         <property name="buddy">
+          <cstring>mz</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="secc"/>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="qta"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="dpto"/>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="mz"/>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QFrame" name="formFrame_3">
+      <property name="geometry">
+       <rect>
+        <x>282</x>
+        <y>22</y>
+        <width>282</width>
+        <height>136</height>
+       </rect>
+      </property>
+      <property name="frameShape">
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="lineWidth">
+       <number>0</number>
+      </property>
+      <layout class="QFormLayout" name="formLayout_5">
+       <item row="0" column="0">
+        <widget class="QLabel" name="visitadoLabel">
+         <property name="text">
+          <string>Circunscripción</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="visitadoPorLabel">
+         <property name="text">
+          <string>Chacra</string>
+         </property>
+         <property name="buddy">
+          <cstring>ch</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLineEdit" name="ch"/>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="visitadoFechaLabel">
+         <property name="text">
+          <string>Fracción</string>
+         </property>
+         <property name="buddy">
+          <cstring>fracc</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="parcelaLabel">
+         <property name="text">
+          <string>Parce&amp;la</string>
+         </property>
+         <property name="buddy">
+          <cstring>parc</cstring>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLineEdit" name="parc"/>
+       </item>
+       <item row="2" column="1">
+        <widget class="QLineEdit" name="fracc"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="QComboBox" name="circ"/>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="objetoExpropiaciNLabel">
+     <property name="text">
+      <string>Destino</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QgsRelationReferenceWidget" name="destino">
+     <property name="openFormButtonVisible">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0" colspan="2">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="estadoDominialLabel">
+     <property name="text">
+      <string>Estado Dominial</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QComboBox" name="estado_dominial"/>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsRelationReferenceWidget</class>
+   <extends>QWidget</extends>
+   <header>qgsrelationreferencewidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>nomenclatura</tabstop>
+  <tabstop>secc</tabstop>
+  <tabstop>ch</tabstop>
+  <tabstop>qta</tabstop>
+  <tabstop>fracc</tabstop>
+  <tabstop>mz</tabstop>
+  <tabstop>parc</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>Dialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>Dialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

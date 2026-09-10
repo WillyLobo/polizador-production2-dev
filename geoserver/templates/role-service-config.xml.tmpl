@@ -1,0 +1,15 @@
+<jdbcroleservice>
+  <id>-6630b0d8:1a0871387dd:-7ff9</id>
+  <name>django</name>
+  <className>org.geoserver.security.jdbc.JDBCRoleService</className>
+  <propertyFileNameDDL>rolesddl.xml</propertyFileNameDDL>
+  <propertyFileNameDML>roles-django.dml.xml</propertyFileNameDML>
+  <jndi>false</jndi>
+  <driverClassName>org.postgresql.Driver</driverClassName>
+  <connectURL>jdbc:postgresql://__PGHOST__:__PGPORT__/__PGDATABASE__</connectURL>
+  <userName>geoserver_security</userName>
+  <password>plain:__GEOSERVER_SECURITY_DB_PASSWORD__</password>
+  <creatingTables>false</creatingTables>
+  <adminRoleName>ADMIN</adminRoleName>
+  <groupAdminRoleName>ADMIN</groupAdminRoleName>
+</jdbcroleservice>

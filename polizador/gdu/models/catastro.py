@@ -128,7 +128,7 @@ class Expropiacion(models.Model):
     asentamiento = models.BooleanField(db_comment='Indica si tiene asentamiento')
     updated_by = models.CharField(max_length=255, blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
-    gestion = models.TextField()  # This field type is a guess.
+    gestion = models.TextField(db_comment='Ipduv, Externa')  # This field type is a guess.
 
     def __str__(self):
         return f"Ley {self.nro_ley}" + (f"/{self.ano_ley}" if self.ano_ley else "")
@@ -214,9 +214,9 @@ class Uf(models.Model):
     tipo = models.ForeignKey('TipoUf', models.DO_NOTHING, db_column='tipo')
     designacion = models.CharField(max_length=255, blank=True, null=True)
     irregular = models.BooleanField(db_comment='indica si la UF tiene alguna irregularidad dominial')
-    estado_dominial = models.TextField(blank=True, null=True)  # This field type is a guess.
+    estado_dominial = models.TextField(blank=True, null=True, db_comment='Propietario, IPDUV, Estado Provincial, Privado, Verificar, Donado, Estado Nacional, Estado Municipal')  # This field type is a guess.
     nro_adjudicatario = models.BigIntegerField(blank=True, null=True)
-    tipo_id_adjudicatario = models.TextField(blank=True, null=True)  # This field type is a guess.
+    tipo_id_adjudicatario = models.TextField(blank=True, null=True, db_comment='DNI, NRO ADJUDICATARIO')  # This field type is a guess.
     fr_mat = models.CharField(max_length=255, blank=True, null=True, db_comment='Folio Real / Matrícula')
     nivel = models.IntegerField(blank=True, null=True)
 
@@ -236,7 +236,7 @@ class Uf(models.Model):
 class AdjudicacionBeneficiario(models.Model):
     nro = models.CharField(max_length=255, db_comment='nro de la resolución de adjudicación')
     ano = models.IntegerField(db_comment='año de la adjudicación')
-    tipo = models.TextField(db_comment='Tipología de adjudicación (provisoria, definitiva)')  # This field type is a guess.
+    tipo = models.TextField(db_comment='Tipología de adjudicación (Provisoria, Definitiva)')  # This field type is a guess.
     updated_by = models.CharField(max_length=255, blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
 
@@ -298,7 +298,7 @@ class Parcela(models.Model):
     destino = models.ForeignKey('DestinoParcela', models.DO_NOTHING, db_column='destino', db_comment='Indica el destino de la parcela (vivienda, reserva municipal, etc.)')
     updated_by = models.CharField(max_length=255, blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
-    estado_dominial = models.TextField(blank=True, null=True, db_comment='Estado Dominial de la Parcela, para el caso de Reservas y Espacios Verdes')  # This field type is a guess.
+    estado_dominial = models.TextField(blank=True, null=True, db_comment='Estado Dominial de la Parcela, para el caso de Reservas y Espacios Verdes (Propietario, IPDUV, Estado Provincial, Privado, Verificar, Donado, Estado Nacional, Estado Municipal)')  # This field type is a guess.
     es_ph = models.BooleanField()
 
     def __str__(self):
@@ -313,7 +313,7 @@ class Parcela(models.Model):
 class ResolucionCostos(models.Model):
     nro_largo = models.IntegerField(db_comment='Nro de Resolución')
     ano = models.IntegerField(db_comment='Año de la Resolución')
-    tipo = models.TextField(db_comment='Tipo de Resolución de Costos (Definitiva, Provisoria)')  # This field type is a guess.
+    tipo = models.TextField(db_comment='Tipo de Resolución de Costos (Provisoria, Definitiva)')  # This field type is a guess.
     updated_by = models.CharField(max_length=255, blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
     nro_corto = models.IntegerField()
@@ -378,6 +378,342 @@ class TipoUf(models.Model):
     class Meta:
         managed = False
         db_table = '"catastro"."tipo_uf"'
+
+
+class TipoEjecutor(models.Model):
+    nombre = models.CharField(max_length=255)
+    updated_by = models.CharField(max_length=255, blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        managed = False
+        db_table = '"catastro"."tipo_ejecutor"'
+        db_table_comment = 'Tipología de Ejecutores (Empresa, Cooperativa, etc)'
+
+
+class TipoDocProbatoria(models.Model):
+    nombre = models.CharField(max_length=255)
+    updated_by = models.CharField(max_length=255, blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        managed = False
+        db_table = '"catastro"."tipo_doc_probatoria"'
+
+
+class TipoGestionTierra(models.Model):
+    nombre = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        managed = False
+        db_table = '"catastro"."tipo_gestion_tierra"'
+
+
+class Inspector(models.Model):
+    nombre = models.CharField(max_length=255)
+    updated_by = models.CharField(max_length=255, blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        managed = False
+        db_table = '"catastro"."inspector"'
+        db_table_comment = 'Representa los inspectores de obras'
+
+
+class ObjetoExpropiacion(models.Model):
+    nombre = models.CharField(max_length=255)
+    updated_by = models.CharField(max_length=255, blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        managed = False
+        db_table = '"catastro"."objeto_expropiacion"'
+        db_table_comment = 'Objetivo de la expropiación (viviendas, escuela, etc...)'
+
+
+class TierraDestino(models.Model):
+    nombre = models.CharField(max_length=255)
+    updated_by = models.CharField(max_length=255, blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        managed = False
+        db_table = '"catastro"."tierra_destino"'
+
+
+class Ejecutor(models.Model):
+    tipo = models.ForeignKey('TipoEjecutor', models.DO_NOTHING, db_column='tipo', db_comment='tipo de ejecutor según tabla asociada (empresa, coop, etc.)')
+    cuit = models.CharField(max_length=11)
+    nombre = models.CharField(max_length=255)
+    direccion = models.CharField(max_length=255, blank=True, null=True)
+    id_localidad = models.ForeignKey('Localidad', models.DO_NOTHING, db_column='id_localidad', blank=True, null=True)
+    nombre_contacto = models.CharField(max_length=255, blank=True, null=True)
+    telefono_contacto = models.CharField(max_length=255, blank=True, null=True)
+    updated_by = models.CharField(max_length=255, blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        managed = False
+        db_table = '"catastro"."ejecutor"'
+        db_table_comment = 'Persona jurídica encargada de la materialización de las obras'
+
+
+class Manzana(models.Model):
+    id_intervencion = models.ForeignKey('Intervencion', models.DO_NOTHING, db_column='id_intervencion')
+    nombre = models.CharField(max_length=255, db_comment='Nombre o nro de la manzana')
+    geom = models.PolygonField(srid=22175)
+    updated_by = models.CharField(max_length=255, blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return self.nombre or f"Manzana {self.pk}"
+
+    class Meta:
+        managed = False
+        db_table = '"catastro"."manzana"'
+        db_table_comment = 'Representa el polígono de una manzana creada por una intervención.'
+
+
+class Calle(models.Model):
+    id_intervencion = models.ForeignKey('Intervencion', models.DO_NOTHING, db_column='id_intervencion')
+    nombre = models.CharField(max_length=255, blank=True, null=True, db_comment='Nombre de la calle')
+    geom = models.LineStringField(srid=22175)
+    updated_by = models.CharField(max_length=255, blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return self.nombre or f"Calle {self.pk}"
+
+    class Meta:
+        managed = False
+        db_table = '"catastro"."calle"'
+        db_table_comment = 'Representa las calles generadas (abiertas) a partir de una intervención (Línea)'
+
+
+class ParcelaExpropiada(models.Model):
+    id_expropiacion = models.ForeignKey('Expropiacion', models.DO_NOTHING, db_column='id_expropiacion')
+    nomenclatura = models.CharField(max_length=28, db_comment='Nomenclatura Catastral completa')
+    dpto = models.CharField(max_length=2, db_comment='Nomenclatura: Departamento')
+    circ = models.CharField(max_length=3, db_comment='Nomenclatura: Circunscripción')
+    secc = models.CharField(max_length=2, db_comment='Nomenclatura: Sección')
+    ch = models.CharField(max_length=4, db_comment='Nomenclatura: Chacra')
+    qta = models.CharField(max_length=4, db_comment='Nomenclatura: Quinta')
+    fracc = models.CharField(max_length=4, db_comment='Nomenclatura: Fracción')
+    mz = models.CharField(max_length=4, db_comment='Nomenclatura: Manzana')
+    parc = models.CharField(max_length=5, db_comment='Nomenclatura: Parcela')
+    propietario_actual = models.CharField(max_length=255, blank=True, null=True, db_comment='Propietario actual de la parcela, luego de la expropiación')
+    inscripcion = models.CharField(max_length=255, blank=True, null=True, db_comment='Inscripción de la parcela según Registro de la Propiedad')
+    estado_gestion = models.ForeignKey('EstadoGestionExpropiacion', models.DO_NOTHING, db_column='estado_gestion')
+    observaciones = models.TextField(blank=True, null=True)
+    geom = models.PolygonField(srid=22175, db_comment='Geometría de la parcela (Polígono)')
+    updated_by = models.CharField(max_length=255, blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+    objeto = models.ForeignKey('ObjetoExpropiacion', models.DO_NOTHING, db_column='objeto', db_comment='objetivo de la expropiación')
+    propietario_expropiado = models.CharField(max_length=255, blank=True, null=True)
+    regularizable = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.nomenclatura or f"Parcela expropiada {self.pk}"
+
+    class Meta:
+        managed = False
+        db_table = '"catastro"."parcela_expropiada"'
+        db_table_comment = 'Parcelas Expropiadas por una ley'
+
+
+class Tierra(models.Model):
+    tipo = models.TextField(db_comment='ipduv, terceros')  # This field type is a guess.
+    tipo_oferente = models.TextField(db_comment='provincia, municipio, entidad_intermedia, particular')  # This field type is a guess.
+    oferente = models.CharField(max_length=255, blank=True, null=True)
+    propietario = models.CharField(max_length=255, blank=True, null=True)
+    dpto = models.CharField(max_length=2)
+    circ = models.CharField(max_length=3)
+    secc = models.CharField(max_length=2)
+    ch = models.CharField(max_length=4)
+    qta = models.CharField(max_length=4)
+    fracc = models.CharField(max_length=4)
+    mz = models.CharField(max_length=4)
+    parc = models.CharField(max_length=5)
+    localidad = models.ForeignKey('Localidad', models.DO_NOTHING, db_column='localidad', blank=True, null=True)
+    tipo_inscripcion = models.TextField(blank=True, null=True, db_comment='folio_real, tomo_folio_finca_ano, articulo_ley')  # This field type is a guess.
+    inscripcion = models.CharField(max_length=255, blank=True, null=True)
+    tipo_doc_probatoria = models.ForeignKey('TipoDocProbatoria', models.DO_NOTHING, db_column='tipo_doc_probatoria', blank=True, null=True)
+    apto_fisico = models.BooleanField(blank=True, null=True)
+    apto_dominial = models.BooleanField(blank=True, null=True)
+    apto_localizacion = models.BooleanField(blank=True, null=True)
+    visita_campo = models.BooleanField(blank=True, null=True)
+    visita_profesional = models.CharField(max_length=255, blank=True, null=True)
+    visita_fecha = models.DateField(blank=True, null=True)
+    localizacion = models.TextField(blank=True, null=True, db_comment='central, intermedia, periferica')  # This field type is a guess.
+    superficie = models.TextField(blank=True, null=True, db_comment='0-200, 200-500, 500+')  # This field type is a guess.
+    proyecto_loteo = models.BooleanField(blank=True, null=True)
+    estado = models.TextField(blank=True, null=True, db_comment='libre, parcialmente_ocupado, ocupado')  # This field type is a guess.
+    destino = models.ForeignKey('TierraDestino', models.DO_NOTHING, db_column='destino', blank=True, null=True)
+    otro_destino = models.CharField(max_length=255, blank=True, null=True)
+    geom = models.PolygonField(srid=22175)
+    inundabilidad_solicitado = models.CharField(max_length=255, blank=True, null=True)
+    inundabilidad_respuesta = models.CharField(max_length=255, blank=True, null=True)
+    inundabilidad_resolucion = models.CharField(max_length=255, blank=True, null=True)
+    inundabilidad_observaciones = models.CharField(max_length=255, blank=True, null=True)
+    dominio_solicitado = models.CharField(max_length=255, blank=True, null=True)
+    dominio_respuesta = models.CharField(max_length=255, blank=True, null=True)
+    dominio_observaciones = models.CharField(max_length=255, blank=True, null=True)
+    municipal_solicitado = models.CharField(max_length=255, blank=True, null=True)
+    municipal_respuesta = models.CharField(max_length=255, blank=True, null=True)
+    municipal_observaciones = models.CharField(max_length=255, blank=True, null=True)
+    tasaciones_solicitado = models.CharField(max_length=255, blank=True, null=True)
+    tasaciones_respuesta = models.CharField(max_length=255, blank=True, null=True)
+    tasaciones_observaciones = models.CharField(max_length=255, blank=True, null=True)
+    tasaciones_valor = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    lyt_solicitado = models.CharField(max_length=255, blank=True, null=True)
+    lyt_respuesta = models.CharField(max_length=255, blank=True, null=True)
+    lyt_observaciones = models.CharField(max_length=255, blank=True, null=True)
+    proy_solicitado = models.CharField(max_length=255, blank=True, null=True)
+    proy_respuesta = models.CharField(max_length=255, blank=True, null=True)
+    proy_observaciones = models.CharField(max_length=255, blank=True, null=True)
+    social_solicitado = models.CharField(max_length=255, blank=True, null=True)
+    social_respuesta = models.CharField(max_length=255, blank=True, null=True)
+    social_observaciones = models.CharField(max_length=255, blank=True, null=True)
+    informe_solicitado = models.CharField(max_length=255, blank=True, null=True)
+    informe_respuesta = models.CharField(max_length=255, blank=True, null=True)
+    informe_observaciones = models.CharField(max_length=255, blank=True, null=True)
+    infraestructura_solicitado = models.CharField(max_length=255, blank=True, null=True)
+    infraestructura_respuesta = models.CharField(max_length=255, blank=True, null=True)
+    infraestructura_observaciones = models.CharField(max_length=255, blank=True, null=True)
+    updated_by = models.CharField(max_length=255, blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+    observaciones = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.propietario or f"Tierra {self.pk}"
+
+    class Meta:
+        managed = False
+        db_table = '"catastro"."tierra"'
+
+
+class PlanoMensuraTierra(models.Model):
+    idplano = models.ForeignKey('PlanoMensura', models.DO_NOTHING, db_column='idplano')
+    idtierra = models.ForeignKey('Tierra', models.DO_NOTHING, db_column='idtierra')
+    tipo = models.TextField(db_comment='perimetral, subdivision')  # This field type is a guess.
+
+    class Meta:
+        managed = False
+        db_table = '"catastro"."plano_mensura_tierra"'
+
+
+class IntervencionEjecutor(models.Model):
+    id_intervencion = models.ForeignKey('Intervencion', models.DO_NOTHING, db_column='id_intervencion')
+    id_ejecutor = models.ForeignKey('Ejecutor', models.DO_NOTHING, db_column='id_ejecutor')
+    updated_by = models.CharField(max_length=255, blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = '"catastro"."intervencion_ejecutor"'
+        db_table_comment = 'Tabla N a N entre Ejecutor e Intervención. Almacena la temporalidad de la participación de c/ejecutor'
+
+
+class IntervencionInspector(models.Model):
+    idintervencion = models.ForeignKey('Intervencion', models.DO_NOTHING, db_column='idintervencion')
+    idinspector = models.ForeignKey('Inspector', models.DO_NOTHING, db_column='idinspector')
+
+    class Meta:
+        managed = False
+        db_table = '"catastro"."intervencion_inspector"'
+
+
+class PlanoMensuraIntervencion(models.Model):
+    idplano = models.ForeignKey('PlanoMensura', models.DO_NOTHING, db_column='idplano')
+    idintervencion = models.ForeignKey('Intervencion', models.DO_NOTHING, db_column='idintervencion')
+    tipo = models.TextField(db_comment='perimetral, subdivision')  # This field type is a guess.
+
+    class Meta:
+        managed = False
+        db_table = '"catastro"."plano_mensura_intervencion"'
+
+
+class ViviendaPunto(models.Model):
+    id_intervencion = models.ForeignKey('Intervencion', models.DO_NOTHING, db_column='id_intervencion')
+    nomenclatura = models.CharField(max_length=28, blank=True, null=True, db_comment='Nomenclatura Catastral completa, de existir.')
+    dpto = models.CharField(max_length=2, blank=True, null=True)
+    circ = models.CharField(max_length=3, blank=True, null=True)
+    secc = models.CharField(max_length=2, blank=True, null=True)
+    ch = models.CharField(max_length=4, blank=True, null=True)
+    qta = models.CharField(max_length=4, blank=True, null=True)
+    fracc = models.CharField(max_length=4, blank=True, null=True)
+    mz = models.CharField(max_length=4, blank=True, null=True)
+    parc = models.CharField(max_length=5, blank=True, null=True)
+    estado_dominial = models.TextField(db_comment='Estado Dominial de la Vivienda (Cl. Foránea) (Propietario, IPDUV, Adjudicatario, Municipio)')  # This field type is a guess.
+    geom = models.PointField(srid=22175)
+    updated_by = models.CharField(max_length=255, blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+    res_costos = models.ForeignKey('ResolucionCostos', models.DO_NOTHING, db_column='res_costos', blank=True, null=True)
+    nro_adjudicatario = models.BigIntegerField(blank=True, null=True)
+    tipo_id_adjudicatario = models.TextField(blank=True, null=True, db_comment='DNI, NRO ADJUDICATARIO')  # This field type is a guess.
+    nombre = models.CharField(max_length=255, blank=True, null=True)
+    apellido = models.CharField(max_length=255, blank=True, null=True, db_comment='Apellido')
+
+    def __str__(self):
+        return f"{self.apellido}, {self.nombre}" if self.apellido else f"Vivienda {self.pk}"
+
+    class Meta:
+        managed = False
+        db_table = '"catastro"."vivienda_punto"'
+        db_table_comment = 'Representa el punto de una vivienda, especialmente para viviendas dispersas que no tienen una parcela asociada.'
+
+
+class PreAdjudicatarioDispersa(models.Model):
+    apellido = models.CharField(max_length=255)
+    nombre = models.CharField(max_length=255)
+    genero = models.CharField(max_length=255, blank=True, null=True)
+    documento = models.IntegerField(blank=True, null=True)
+    cantidad_personas = models.IntegerField(blank=True, null=True, db_comment='Cantidad de Personas que componen la familia')
+    inscripcion = models.CharField(max_length=255, blank=True, null=True, db_comment='Matricula, Tomo, Folio, Finca, Año, etc...')
+    plano_mensura = models.CharField(max_length=255, blank=True, null=True)
+    propietario = models.CharField(max_length=255, blank=True, null=True, db_comment='Nombre del Propietario')
+    apto_dominial = models.CharField(max_length=255, blank=True, null=True)
+    geom = models.PointField(srid=22175)
+    observaciones = models.TextField(blank=True, null=True)
+    latitud = models.DecimalField(max_digits=10, decimal_places=6, blank=True, null=True)
+    longitud = models.DecimalField(max_digits=10, decimal_places=6, blank=True, null=True)
+    dpto = models.CharField(max_length=2, blank=True, null=True)
+    circ = models.CharField(max_length=3, blank=True, null=True)
+    secc = models.CharField(max_length=2, blank=True, null=True)
+    ch = models.CharField(max_length=4, blank=True, null=True)
+    qta = models.CharField(max_length=4, blank=True, null=True)
+    fracc = models.CharField(max_length=4, blank=True, null=True)
+    mz = models.CharField(max_length=4, blank=True, null=True)
+    parc = models.CharField(max_length=5, blank=True, null=True)
+    nomencl = models.TextField(db_column='Nomencl', blank=True, null=True, db_comment='nomenc para etiqueta')
+
+    def __str__(self):
+        return f"{self.apellido}, {self.nombre}"
+
+    class Meta:
+        managed = False
+        db_table = '"catastro"."pre_adjudicatario_dispersa"'
 
 
 class ViviendasParaEscriturar(models.Model):

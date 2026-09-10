@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+  <comment>DML statements for the Django-backed role service (reads geoserver_auth.roles / geoserver_auth.user_roles).
+  Every query keeps the exact number of "?" placeholders that org.geoserver.security.jdbc.JDBCRoleService
+  binds for that key (verified against its source), even for queries that are structurally no-ops
+  (role/user "properties" and group support aren't modeled in Django) -- otherwise JDBCRoleService's
+  ps.setString(n, ...) throws "column index out of range" the moment any page touches that query,
+  which is how this exact file was debugged into existence. Don't drop a "?" to "simplify" a no-op query.</comment>
+
+  <entry key="roles.count">
+	select count(*) from geoserver_auth.roles
+  </entry>
+  <entry key="roles.all">
+	select name,parent from geoserver_auth.roles
+  </entry>
+  <entry key="roles.keyed">
+	select parent from geoserver_auth.roles where name = ?
+  </entry>
+  <entry key="roles.insert">
+	insert into geoserver_auth.roles (name) values (?)
+  </entry>
+  <entry key="roles.update">
+	update geoserver_auth.roles set name=name where name = ?
+  </entry>
+  <entry key="roles.parentUpdate">
+	update geoserver_auth.roles set parent = ? where name = ?
+  </entry>
+  <entry key="roles.deleteParent">
+	update geoserver_auth.roles set parent = null where parent = ?
+  </entry>
+  <entry key="roles.delete">
+	delete from geoserver_auth.roles where name = ?
+  </entry>
+  <entry key="roles.deleteAll">
+	delete from geoserver_auth.roles
+  </entry>
+
+  <entry key="roleprops.all">
+	select name as rolename, 'x' as propname, 'x' as propvalue from geoserver_auth.roles where 1=0
+  </entry>
+  <entry key="roleprops.selectForRole">
+	select 'x' as propname, 'x' as propvalue from geoserver_auth.roles where 1=0 and name = ?
+  </entry>
+  <entry key="roleprops.selectForUser">
+	select rolename, 'x' as propname, 'x' as propvalue from geoserver_auth.user_roles where 1=0 and username = ?
+  </entry>
+  <entry key="roleprops.selectForGroup">
+	select rolename, 'x' as propname, 'x' as propvalue from geoserver_auth.user_roles where 1=0 and username = ?
+  </entry>
+  <entry key="roleprops.deleteForRole">
+	delete from geoserver_auth.roles where 1=0 and name=?
+  </entry>
+  <entry key="roleprops.insert">
+	update geoserver_auth.roles set name=name where 1=0 and name=? and name=? and name=?
+  </entry>
+  <entry key="roleprops.deleteAll">
+	delete from geoserver_auth.roles where 1=0
+  </entry>
+
+  <entry key="userroles.rolesForUser">
+	select ur.rolename, r.parent from geoserver_auth.user_roles ur, geoserver_auth.roles r where r.name = ur.rolename and ur.username = ?
+  </entry>
+  <entry key="userroles.usersForRole">
+	select username from geoserver_auth.user_roles where rolename = ?
+  </entry>
+  <entry key="userroles.insert">
+	insert into geoserver_auth.user_roles(rolename,username) values (?,?)
+  </entry>
+  <entry key="userroles.delete">
+	delete from geoserver_auth.user_roles where rolename=? and username = ?
+  </entry>
+  <entry key="userroles.deleteRole">
+	delete from geoserver_auth.user_roles where rolename=?
+  </entry>
+  <entry key="userroles.deleteUser">
+	delete from geoserver_auth.user_roles where username = ?
+  </entry>
+  <entry key="userroles.deleteAll">
+	delete from geoserver_auth.user_roles
+  </entry>
+
+  <entry key="grouproles.rolesForGroup">
+	select ur.rolename, r.parent from geoserver_auth.user_roles ur, geoserver_auth.roles r where r.name = ur.rolename and 1=0 and ur.username = ?
+  </entry>
+  <entry key="grouproles.groupsForRole">
+	select username as groupname from geoserver_auth.user_roles where 1=0 and rolename = ?
+  </entry>
+  <entry key="grouproles.insert">
+	insert into geoserver_auth.user_roles(rolename,username) values (?,?)
+  </entry>
+  <entry key="grouproles.delete">
+	delete from geoserver_auth.user_roles where 1=0 and rolename=? and username=?
+  </entry>
+  <entry key="grouproles.deleteRole">
+	delete from geoserver_auth.user_roles where 1=0 and rolename=?
+  </entry>
+  <entry key="grouproles.deleteGroup">
+	delete from geoserver_auth.user_roles where 1=0 and username=?
+  </entry>
+  <entry key="grouproles.deleteAll">
+	delete from geoserver_auth.user_roles where 1=0
+  </entry>
+
+</properties>

@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="windowModality">
+   <enum>Qt::ApplicationModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>610</width>
+    <height>593</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <property name="sizeGripEnabled">
+   <bool>false</bool>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="1" column="2">
+    <widget class="QFrame" name="formFrame_3">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <layout class="QFormLayout" name="formLayout_5">
+      <item row="0" column="0">
+       <widget class="QLabel" name="visitadoLabel">
+        <property name="text">
+         <string>V&amp;isitado</string>
+        </property>
+        <property name="buddy">
+         <cstring>visitado</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="visitado"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="visitadoPorLabel">
+        <property name="text">
+         <string>Visitado Por</string>
+        </property>
+        <property name="buddy">
+         <cstring>visitado_por</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="visitado_por"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="visitadoFechaLabel">
+        <property name="text">
+         <string>Visitado Fecha</string>
+        </property>
+        <property name="buddy">
+         <cstring>visitado_fecha</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QgsDateTimeEdit" name="visitado_fecha">
+        <property name="displayFormat">
+         <string>dd/MM/yy</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="4" column="2">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2">
+    <widget class="QFrame" name="formFrame_2">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <layout class="QFormLayout" name="formLayout_4">
+      <item row="0" column="0">
+       <widget class="QLabel" name="aptoFSicoLabel">
+        <property name="text">
+         <string>Apto F&amp;ísico</string>
+        </property>
+        <property name="buddy">
+         <cstring>apto_fisico</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="apto_fisico"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="aptoLocalizaciNLabel">
+        <property name="text">
+         <string>Apto Locali&amp;zación</string>
+        </property>
+        <property name="buddy">
+         <cstring>apto_localizacion</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="apto_localizacion"/>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="aptoDominialLabel">
+        <property name="text">
+         <string>Apto Dominial</string>
+        </property>
+        <property name="buddy">
+         <cstring>apto_dominial</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="apto_dominial"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="3">
+    <layout class="QFormLayout" name="_2">
+     <item row="0" column="1">
+      <widget class="QComboBox" name="tipo"/>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="tipoLabel">
+       <property name="text">
+        <string>Origen</string>
+       </property>
+       <property name="buddy">
+        <cstring>tipo</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="oferenteLabel">
+       <property name="text">
+        <string>Oferente</string>
+       </property>
+       <property name="buddy">
+        <cstring>oferente</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="oferente"/>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="propietarioLabel">
+       <property name="text">
+        <string>Propietario</string>
+       </property>
+       <property name="buddy">
+        <cstring>propietario</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QLineEdit" name="propietario"/>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="nomCatastralLabel">
+       <property name="text">
+        <string>&amp;Nom. Catastral</string>
+       </property>
+       <property name="buddy">
+        <cstring>nomenclatura</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="1">
+      <widget class="QLineEdit" name="nomenclatura"/>
+     </item>
+     <item row="4" column="0">
+      <widget class="QLabel" name="folioRealLabel">
+       <property name="text">
+        <string>Folio Real</string>
+       </property>
+       <property name="buddy">
+        <cstring>folio_real</cstring>
+       </property>
+      </widget>
+     </item>
+     <item row="4" column="1">
+      <widget class="QLineEdit" name="folio_real"/>
+     </item>
+    </layout>
+   </item>
+   <item row="2" column="2">
+    <widget class="QFrame" name="frame">
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="2" column="0">
+       <widget class="QLabel" name="planosMensuraLabel">
+        <property name="text">
+         <string>Planos Mensura:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QToolButton" name="pmAdd">
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="icon">
+         <iconset theme="list-add">
+          <normaloff>.designer/backup</normaloff>.designer/backup</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="observacionesLabel">
+        <property name="text">
+         <string>Observaciones:</string>
+        </property>
+        <property name="buddy">
+         <cstring>observaciones</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QToolButton" name="pmDel">
+        <property name="text">
+         <string>...</string>
+        </property>
+        <property name="icon">
+         <iconset theme="list-remove">
+          <normaloff>.</normaloff>.</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="3">
+       <widget class="QListWidget" name="pm"/>
+      </item>
+      <item row="1" column="0" colspan="3">
+       <widget class="QPlainTextEdit" name="observaciones"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QFrame" name="frame">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::StyledPanel</enum>
+     </property>
+     <layout class="QFormLayout" name="formLayout_6">
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="cant_viviendas"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="cantViviendasLabel">
+        <property name="text">
+         <string>Estim. Viviendas</string>
+        </property>
+        <property name="buddy">
+         <cstring>cant_viviendas</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="superficie"/>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="superficieM2Label">
+        <property name="text">
+         <string>Superficie (m&amp;2)</string>
+        </property>
+        <property name="buddy">
+         <cstring>superficie</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="proyLoteoLabel">
+        <property name="text">
+         <string>Pro&amp;y. Loteo</string>
+        </property>
+        <property name="buddy">
+         <cstring>proy_loteo</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="proy_loteo"/>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="localizacion"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="localizacionLabel">
+        <property name="text">
+         <string>&amp;Localizacion</string>
+        </property>
+        <property name="buddy">
+         <cstring>localizacion</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="ocupadoLabel">
+        <property name="text">
+         <string>Ocupado?</string>
+        </property>
+        <property name="buddy">
+         <cstring>ocup_actual</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="1">
+       <widget class="QComboBox" name="ocup_actual"/>
+      </item>
+      <item row="5" column="0">
+       <widget class="QLabel" name="ocupadoConLabel">
+        <property name="text">
+         <string>Ocupado Con</string>
+        </property>
+        <property name="buddy">
+         <cstring>ocupado_con</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="1">
+       <widget class="QLineEdit" name="ocupado_con"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="3" column="2">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsDateTimeEdit</class>
+   <extends>QDateTimeEdit</extends>
+   <header>qgsdatetimeedit.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>tipo</tabstop>
+  <tabstop>oferente</tabstop>
+  <tabstop>propietario</tabstop>
+  <tabstop>nomenclatura</tabstop>
+  <tabstop>folio_real</tabstop>
+  <tabstop>apto_fisico</tabstop>
+  <tabstop>apto_localizacion</tabstop>
+  <tabstop>apto_dominial</tabstop>
+  <tabstop>visitado</tabstop>
+  <tabstop>visitado_por</tabstop>
+  <tabstop>visitado_fecha</tabstop>
+  <tabstop>cant_viviendas</tabstop>
+  <tabstop>superficie</tabstop>
+  <tabstop>proy_loteo</tabstop>
+  <tabstop>localizacion</tabstop>
+  <tabstop>ocup_actual</tabstop>
+  <tabstop>ocupado_con</tabstop>
+  <tabstop>observaciones</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>Dialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>Dialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

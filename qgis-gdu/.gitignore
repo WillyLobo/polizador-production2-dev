@@ -1,0 +1,4 @@
+# Salida generada por scripts/reconectar_wfs.py (URL de GeoServer específica de
+# cada entorno -- no tiene sentido versionarla, se regenera con el script).
+gdu.wfs*.qgz
+__pycache__/

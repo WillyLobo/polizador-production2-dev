@@ -1,0 +1,1308 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Dialog</class>
+ <widget class="QDialog" name="Dialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1205</width>
+    <height>639</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Dialog</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_4">
+   <item row="3" column="0">
+    <layout class="QGridLayout" name="Abajo">
+     <item row="0" column="1">
+      <layout class="QGridLayout" name="gridLayout_34">
+       <item row="1" column="0">
+        <widget class="QGroupBox" name="groupBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Social</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_32">
+          <item row="0" column="0">
+           <widget class="QLabel" name="solicitadoLabel_8">
+            <property name="text">
+             <string>Solicitado</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="social_solicitado"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="respuestaLabel_8">
+            <property name="text">
+             <string>Respuesta</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="social_respuesta"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="observacionesLabel_3">
+            <property name="text">
+             <string>Observ.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="social_observaciones"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="0" column="4">
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="formGroupBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Operativa: Infraestructura</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_31">
+          <item row="0" column="0">
+           <widget class="QLabel" name="solicitadoLabel_7">
+            <property name="text">
+             <string>Solicitado</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="infraestructura_solicitado"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="respuestaLabel_7">
+            <property name="text">
+             <string>Respuesta</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="infraestructura_respuesta"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="observacionesLabel_2">
+            <property name="text">
+             <string>Observ.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="infraestructura_observaciones"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="0" column="0">
+      <layout class="QGridLayout" name="gridLayout_31">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="formGroupBox_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Proy. y Progr.</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_28">
+          <item row="0" column="0">
+           <widget class="QLabel" name="solicitadoLabel_6">
+            <property name="text">
+             <string>Solicitado</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="proy_solicitado"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="respuestaLabel_6">
+            <property name="text">
+             <string>Respuesta</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="proy_respuesta"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="observLabel_5">
+            <property name="text">
+             <string>Observ.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="proy_observaciones"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="0" column="2">
+      <layout class="QGridLayout" name="gridLayout_7">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="formGroupBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Operativa: Informe</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_4">
+          <item row="0" column="0">
+           <widget class="QLabel" name="solicitadoLabel_9">
+            <property name="text">
+             <string>Solicitado</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="informe_solicitado"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="respuestaLabel_9">
+            <property name="text">
+             <string>Respuesta</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="informe_respuesta"/>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="observLabel_6">
+            <property name="text">
+             <string>Observ.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="informe_observaciones"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="0" column="7">
+      <layout class="QGridLayout" name="gridLayout_24">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="enabled">
+          <bool>true</bool>
+         </property>
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="sizeIncrement">
+          <size>
+           <width>9</width>
+           <height>7</height>
+          </size>
+         </property>
+         <property name="baseSize">
+          <size>
+           <width>304</width>
+           <height>100</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Planos Mensura</string>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0">
+           <widget class="QWidget" name="widget" native="true">
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <property name="leftMargin">
+              <number>0</number>
+             </property>
+             <property name="rightMargin">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QToolButton" name="pmAdd">
+               <property name="toolTip">
+                <string>Agregar Plano de Mensura</string>
+               </property>
+               <property name="text">
+                <string>+</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="pmDel">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="toolTip">
+                <string>Eliminar Seleccionado</string>
+               </property>
+               <property name="text">
+                <string> - </string>
+               </property>
+               <property name="autoRaise">
+                <bool>false</bool>
+               </property>
+               <property name="arrowType">
+                <enum>Qt::NoArrow</enum>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QListWidget" name="pm"/>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item row="0" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QFrame" name="DatosTerreno">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <layout class="QFormLayout" name="formLayout_13">
+        <item row="0" column="0" colspan="2">
+         <widget class="QLabel" name="asdasdLabel_3">
+          <property name="text">
+           <string>DATOS TERRENO</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QLabel" name="asdLabel_3">
+          <property name="text">
+           <string>Tipo</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QComboBox" name="tipo"/>
+        </item>
+        <item row="3" column="0">
+         <widget class="QLabel" name="tipoOferenteLabel_2">
+          <property name="text">
+           <string>Tipo Oferente</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QComboBox" name="tipo_oferente"/>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="oferenteLabel_2">
+          <property name="text">
+           <string>Oferente</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QLineEdit" name="oferente"/>
+        </item>
+        <item row="5" column="0">
+         <widget class="QLabel" name="propietarioLabel_2">
+          <property name="text">
+           <string>Propietario</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="1">
+         <widget class="QLineEdit" name="propietario"/>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="localidadLabel_2">
+          <property name="text">
+           <string>Localidad</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1">
+         <widget class="QgsRelationReferenceWidget" name="localidad">
+          <property name="focusPolicy">
+           <enum>Qt::TabFocus</enum>
+          </property>
+          <property name="openFormButtonVisible">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QLabel" name="tipoInscripciNLabel_2">
+          <property name="text">
+           <string>Tipo Inscripción</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="1">
+         <widget class="QComboBox" name="tipo_inscripcion"/>
+        </item>
+        <item row="9" column="0">
+         <widget class="QLabel" name="inscripciNLabel_2">
+          <property name="text">
+           <string>Inscripción</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="1">
+         <widget class="QLineEdit" name="inscripcion"/>
+        </item>
+        <item row="10" column="0">
+         <widget class="QLabel" name="docProbatoriaLabel_2">
+          <property name="text">
+           <string>Doc. Probatoria</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0" colspan="2">
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>8</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="10" column="1">
+         <widget class="QgsRelationReferenceWidget" name="tipo_doc_probatoria">
+          <property name="focusPolicy">
+           <enum>Qt::TabFocus</enum>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <layout class="QGridLayout" name="ArribaDerecha_2">
+       <item row="1" column="0">
+        <widget class="QFrame" name="gridFrame_5">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_17">
+          <item row="1" column="1">
+           <layout class="QGridLayout" name="gridLayout_18">
+            <item row="0" column="0">
+             <layout class="QFormLayout" name="formLayout_14">
+              <item row="0" column="0">
+               <widget class="QLabel" name="circLabel_3">
+                <property name="text">
+                 <string>circ</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="circ"/>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="chacraLabel_3">
+                <property name="text">
+                 <string>chacra</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLineEdit" name="ch"/>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="fraccLabel_3">
+                <property name="text">
+                 <string>fracc</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLineEdit" name="fracc"/>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="parcLabel_3">
+                <property name="text">
+                 <string>parc</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QLineEdit" name="parc"/>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="0">
+           <layout class="QGridLayout" name="gridLayout_19">
+            <item row="0" column="0">
+             <layout class="QFormLayout" name="formLayout_15">
+              <item row="0" column="0">
+               <widget class="QLabel" name="dptoLabel_2">
+                <property name="text">
+                 <string>dpto</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="dpto"/>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="seccLabel_2">
+                <property name="text">
+                 <string>secc</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLineEdit" name="secc"/>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="quintaLabel_3">
+                <property name="text">
+                 <string>quinta</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QLineEdit" name="qta"/>
+              </item>
+              <item row="3" column="0">
+               <widget class="QLabel" name="mzLabel_3">
+                <property name="text">
+                 <string>mz</string>
+                </property>
+               </widget>
+              </item>
+              <item row="3" column="1">
+               <widget class="QLineEdit" name="mz"/>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="0" colspan="2">
+           <layout class="QFormLayout" name="formLayout_16">
+            <item row="0" column="0" colspan="2">
+             <widget class="QLabel" name="labelNC_2">
+              <property name="text">
+               <string>NOMENCLATURA CATASTRAL</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QFrame" name="gridFrame_6">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_20">
+          <item row="1" column="0">
+           <layout class="QGridLayout" name="gridLayout_21">
+            <item row="0" column="0">
+             <layout class="QFormLayout" name="formLayout_17">
+              <item row="0" column="0">
+               <widget class="QLabel" name="aptoFSicoLabel_2">
+                <property name="text">
+                 <string>Apto Físico</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="apto_fisico"/>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="aptoDominialLabel_2">
+                <property name="text">
+                 <string>Apto Dominial</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QComboBox" name="apto_dominial"/>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="aptoLocalizaciNLabel_2">
+                <property name="text">
+                 <string>Apto Localización</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QComboBox" name="apto_localizacion"/>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="1" column="1">
+           <layout class="QGridLayout" name="gridLayout_22">
+            <item row="0" column="0">
+             <layout class="QFormLayout" name="formLayout_18">
+              <item row="0" column="0">
+               <widget class="QLabel" name="visitadoLabel_2">
+                <property name="text">
+                 <string>Visitado</string>
+                </property>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QComboBox" name="visita_campo"/>
+              </item>
+              <item row="1" column="0">
+               <widget class="QLabel" name="profesionalLabel_2">
+                <property name="text">
+                 <string>Profesional</string>
+                </property>
+               </widget>
+              </item>
+              <item row="1" column="1">
+               <widget class="QLineEdit" name="visita_profesional">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="fechaLabel_2">
+                <property name="text">
+                 <string>Fecha</string>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QgsDateTimeEdit" name="visita_fecha">
+                <property name="displayFormat">
+                 <string>dd/MM/yy</string>
+                </property>
+                <property name="allowNull">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item row="0" column="0" colspan="2">
+           <layout class="QFormLayout" name="formLayout_19">
+            <item row="0" column="0" colspan="2">
+             <widget class="QLabel" name="adasdLabel_2">
+              <property name="text">
+               <string>APTITUD</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <widget class="QFrame" name="Localizacion">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="frameShape">
+        <enum>QFrame::StyledPanel</enum>
+       </property>
+       <layout class="QGridLayout" name="gridLayout_23">
+        <item row="0" column="0" colspan="2">
+         <layout class="QFormLayout" name="formLayout_34">
+          <item row="5" column="0">
+           <widget class="QLabel" name="destinoLabel">
+            <property name="text">
+             <string>Destino</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1">
+           <widget class="QgsRelationReferenceWidget" name="destino">
+            <property name="focusPolicy">
+             <enum>Qt::TabFocus</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="otroDestinoLabel">
+            <property name="text">
+             <string>Otro Destino</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
+           <widget class="QLineEdit" name="otro_destino"/>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="asasdLabel_2">
+            <property name="text">
+             <string>Localización</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QComboBox" name="localizacion">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="estadoLabel_2">
+            <property name="text">
+             <string>Estado</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QComboBox" name="estado">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="asdasdLabel_4">
+            <property name="text">
+             <string>Superficie</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QComboBox" name="superficie"/>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="proyectoLoteoLabel_2">
+            <property name="text">
+             <string>Proyecto Loteo</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QComboBox" name="proyecto_loteo"/>
+          </item>
+          <item row="0" column="0" colspan="2">
+           <widget class="QLabel" name="cARACTERISTICASLabel">
+            <property name="text">
+             <string>CARACTERISTICAS</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="QLabel" name="observacionesLabel_4">
+            <property name="text">
+             <string>Observaciones</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1">
+           <widget class="QPlainTextEdit" name="observaciones"/>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="2" column="0">
+    <layout class="QGridLayout" name="Informes">
+     <item row="1" column="5">
+      <layout class="QGridLayout" name="gridLayout_27">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBox_4">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Tasaciones</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_24">
+          <item row="0" column="0">
+           <widget class="QLabel" name="solicitadoLabel_4">
+            <property name="text">
+             <string>Solicitado</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="tasaciones_solicitado">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="respuestaLabel_4">
+            <property name="text">
+             <string>Respuesta</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="tasaciones_respuesta">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="observLabel_3">
+            <property name="text">
+             <string>Observ.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="tasaciones_observaciones">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="valorLabel">
+            <property name="text">
+             <string>Valor ($)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="tasaciones_valor">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="1" column="1">
+      <layout class="QGridLayout" name="gridLayout_26">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Inundabilidad</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_23">
+          <item row="0" column="0">
+           <widget class="QLabel" name="solicitadoLabel">
+            <property name="text">
+             <string>Solicitado</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="inundabilidad_solicitado">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="respuestaLabel">
+            <property name="text">
+             <string>Respuesta</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="inundabilidad_respuesta">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="resoluciNLabel">
+            <property name="text">
+             <string>Resolución</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="inundabilidad_resolucion">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="observacionesLabel">
+            <property name="text">
+             <string>Observ.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLineEdit" name="inundabilidad_observaciones">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="1" column="2">
+      <layout class="QGridLayout" name="gridLayout_29">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Dominio</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_26">
+          <item row="0" column="0">
+           <widget class="QLabel" name="solicitadoLabel_2">
+            <property name="text">
+             <string>Solicitado</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="dominio_solicitado">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="respuestaLabel_2">
+            <property name="text">
+             <string>Respuesta</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="dominio_respuesta">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="observLabel">
+            <property name="text">
+             <string>Observ.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="dominio_observaciones">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="1" column="3">
+      <layout class="QGridLayout" name="gridLayout_30">
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBox_3">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Municipal</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_27">
+          <item row="0" column="0">
+           <widget class="QLabel" name="solicitadoLabel_3">
+            <property name="text">
+             <string>Solicitado</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="municipal_solicitado">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="respuestaLabel_3">
+            <property name="text">
+             <string>Respuesta</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="municipal_respuesta">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="observLabel_2">
+            <property name="text">
+             <string>Observ.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="municipal_observaciones">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item row="1" column="4">
+      <layout class="QGridLayout" name="gridLayout_28">
+       <item row="0" column="1">
+        <widget class="QGroupBox" name="formGroupBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Legal y Técnica</string>
+         </property>
+         <layout class="QFormLayout" name="formLayout_25">
+          <item row="0" column="0">
+           <widget class="QLabel" name="solicitadoLabel_5">
+            <property name="text">
+             <string>Solicitado</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLineEdit" name="lyt_solicitado">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="respuestaLabel_5">
+            <property name="text">
+             <string>Respuesta</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QLineEdit" name="lyt_respuesta">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="observLabel_4">
+            <property name="text">
+             <string>Observ.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLineEdit" name="lyt_observaciones">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+   <item row="4" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QgsDateTimeEdit</class>
+   <extends>QDateTimeEdit</extends>
+   <header>qgsdatetimeedit.h</header>
+  </customwidget>
+  <customwidget>
+   <class>QgsRelationReferenceWidget</class>
+   <extends>QWidget</extends>
+   <header>qgsrelationreferencewidget.h</header>
+  </customwidget>
+ </customwidgets>
+ <tabstops>
+  <tabstop>tipo</tabstop>
+  <tabstop>tipo_oferente</tabstop>
+  <tabstop>oferente</tabstop>
+  <tabstop>propietario</tabstop>
+  <tabstop>localidad</tabstop>
+  <tabstop>tipo_inscripcion</tabstop>
+  <tabstop>inscripcion</tabstop>
+  <tabstop>tipo_doc_probatoria</tabstop>
+  <tabstop>dpto</tabstop>
+  <tabstop>secc</tabstop>
+  <tabstop>qta</tabstop>
+  <tabstop>mz</tabstop>
+  <tabstop>circ</tabstop>
+  <tabstop>ch</tabstop>
+  <tabstop>fracc</tabstop>
+  <tabstop>parc</tabstop>
+  <tabstop>apto_fisico</tabstop>
+  <tabstop>apto_dominial</tabstop>
+  <tabstop>apto_localizacion</tabstop>
+  <tabstop>visita_campo</tabstop>
+  <tabstop>visita_profesional</tabstop>
+  <tabstop>visita_fecha</tabstop>
+  <tabstop>localizacion</tabstop>
+  <tabstop>estado</tabstop>
+  <tabstop>superficie</tabstop>
+  <tabstop>proyecto_loteo</tabstop>
+  <tabstop>destino</tabstop>
+  <tabstop>otro_destino</tabstop>
+  <tabstop>inundabilidad_solicitado</tabstop>
+  <tabstop>inundabilidad_respuesta</tabstop>
+  <tabstop>inundabilidad_resolucion</tabstop>
+  <tabstop>inundabilidad_observaciones</tabstop>
+  <tabstop>dominio_solicitado</tabstop>
+  <tabstop>dominio_respuesta</tabstop>
+  <tabstop>dominio_observaciones</tabstop>
+  <tabstop>municipal_solicitado</tabstop>
+  <tabstop>municipal_respuesta</tabstop>
+  <tabstop>municipal_observaciones</tabstop>
+  <tabstop>lyt_solicitado</tabstop>
+  <tabstop>lyt_respuesta</tabstop>
+  <tabstop>lyt_observaciones</tabstop>
+  <tabstop>tasaciones_solicitado</tabstop>
+  <tabstop>tasaciones_respuesta</tabstop>
+  <tabstop>tasaciones_observaciones</tabstop>
+  <tabstop>tasaciones_valor</tabstop>
+  <tabstop>proy_solicitado</tabstop>
+  <tabstop>proy_respuesta</tabstop>
+  <tabstop>proy_observaciones</tabstop>
+  <tabstop>social_solicitado</tabstop>
+  <tabstop>social_respuesta</tabstop>
+  <tabstop>social_observaciones</tabstop>
+  <tabstop>informe_solicitado</tabstop>
+  <tabstop>informe_respuesta</tabstop>
+  <tabstop>informe_observaciones</tabstop>
+  <tabstop>infraestructura_solicitado</tabstop>
+  <tabstop>infraestructura_respuesta</tabstop>
+  <tabstop>infraestructura_observaciones</tabstop>
+ </tabstops>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>Dialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>Dialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

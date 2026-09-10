@@ -1,0 +1,7 @@
+# Salida generada por deploy_geoserver.sh (SQL/XML renderizados con secretos
+# de un entorno puntual -- no tiene sentido versionarlos).
+.rendered/
+
+# Classpath de compilación temporal de plugin/build.sh (~100MB, se descarga
+# de un GeoServer corriendo en cada build, no se versiona).
+plugin/.build/
