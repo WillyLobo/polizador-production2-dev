@@ -8,6 +8,28 @@ from carga.models import Poliza, Poliza_Movimiento
 from carga.forms.polizaforms import *
 from core.mixins import DeleteRelatedObjectsMixin, UserKwargsMixin, UserFormsetKwargsMixin
 from core.mixins import FormsetViewMixin
+from personalizador.models import Agente
+
+
+def _firmante_organigrama(agente):
+	"""Cargo y unidad de un Agente segun el organigrama: su denominacion_cargo y la
+	oficina (o designacion temporal, cargo_interno, si tiene una) a la que pertenece."""
+	if not agente:
+		return None
+
+	oficina = agente.cargo_interno or agente.oficina
+	cargo = agente.denominacion_cargo.denominacion if agente.denominacion_cargo_id else ""
+	if not oficina:
+		return {"agente": agente, "cargo": cargo, "unidad": None, "unidad_padre": None}
+
+	unidad = oficina.cargo_departamento or oficina.cargo_direccion or oficina.cargo_gerencia or oficina.cargo_directorio
+	unidad_padre = oficina.cargo_gerencia if oficina.cargo_gerencia and oficina.cargo_gerencia != unidad else None
+	return {
+		"agente": agente,
+		"cargo": cargo,
+		"unidad": str(unidad) if unidad else None,
+		"unidad_padre": unidad_padre.gerencia_nombre if unidad_padre else None,
+	}
 
 @method_decorator(login_required, name="dispatch")
 class EliminarPoliza(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
@@ -124,6 +146,18 @@ class ImprimirPolizaMovimiento(PermissionRequiredMixin, generic.DetailView):
 
 	model = Poliza_Movimiento
 	template_name = "poliza/imprimir-poliza.html"
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		agente = Agente.objects.filter(agente_usuario=self.request.user).first()
+		if not agente:
+			# Todavia no todos los CustomUser tienen su Agente vinculado via
+			# agente_usuario: como respaldo, se lo ubica por nombre y apellido.
+			nombre = f"{self.request.user.first_name} {self.request.user.last_name}".strip()
+			if nombre:
+				agente = Agente.objects.filter(agente_nombreyapellido__iexact=nombre).first()
+		context["firmante"] = _firmante_organigrama(agente)
+		return context
 
 @login_required
 @permission_required("carga.view_poliza", raise_exception=True)
