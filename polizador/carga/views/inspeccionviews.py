@@ -27,12 +27,12 @@ class InspeccionHomeView(generic.ListView):
         else:
             context["fojas"] = FojaDeMedicion.objects.filter(
                 foja_inspector=agente
-            ).select_related("foja_rubro__rubro_plan__trabajos_obra").order_by("-foja_periodo")
+            ).select_related("foja_rubro__rubro_plan__trabajos_obra").prefetch_related("items").order_by("-foja_periodo")
 
         if self.request.user.groups.filter(name="certificadores").exists():
             context["fojas_sin_certificado"] = FojaDeMedicion.objects.filter(
                 certificado__isnull=True
-            ).select_related("foja_rubro__rubro_plan__trabajos_obra").order_by("-foja_periodo")
+            ).select_related("foja_rubro__rubro_plan__trabajos_obra").prefetch_related("items").order_by("-foja_periodo")
         return context
 
 
