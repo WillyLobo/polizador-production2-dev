@@ -1,6 +1,6 @@
 {
   "api": {
-    "generated_at": "2026-09-05T12:53:50.331857+00:00",
+    "generated_at": "2026-09-10T19:56:15.402018+00:00",
     "modules": {
       "views/carga_views": {
         "file": "api/views/carga_views.py",
@@ -6231,7 +6231,7 @@
     }
   },
   "carga": {
-    "generated_at": "2026-09-05T12:53:44.735211+00:00",
+    "generated_at": "2026-09-10T19:56:09.873766+00:00",
     "modules": {
       "forms/areaforms": {
         "file": "carga/forms/areaforms.py",
@@ -7583,6 +7583,16 @@
               "forms.ModelForm"
             ],
             "candidate_usages": [
+              {
+                "file": "carga/views/polizaviews.py",
+                "line": 59,
+                "snippet": "form_class = PolizaMovimientoForm"
+              },
+              {
+                "file": "carga/views/polizaviews.py",
+                "line": 88,
+                "snippet": "form_class = PolizaMovimientoForm"
+              },
               {
                 "file": "carga/forms/polizaforms.py",
                 "line": 82,
@@ -9929,18 +9939,18 @@
               },
               {
                 "file": "carga/views/polizaviews.py",
-                "line": 84,
+                "line": 86,
                 "snippet": "model = Poliza_Movimiento"
               },
               {
-                "file": "carga/forms/polizaforms.py",
-                "line": 7,
-                "snippet": "from carga.models import Poliza, Poliza_Movimiento"
+                "file": "carga/views/polizaviews.py",
+                "line": 98,
+                "snippet": "model = Poliza_Movimiento"
               },
               {
-                "file": "carga/forms/polizaforms.py",
-                "line": 60,
-                "snippet": "model = models.Poliza_Movimiento"
+                "file": "carga/views/polizaviews.py",
+                "line": 125,
+                "snippet": "model = Poliza_Movimiento"
               }
             ],
             "decorators": [],
@@ -14843,6 +14853,72 @@
             "signature_hash": "sha1:abad3099aa9336c6745088025e3c2f46ef27bfbb",
             "stale": false
           },
+          "CrearPolizaMovimiento": {
+            "authored": false,
+            "bases": [
+              "PermissionRequiredMixin",
+              "UserKwargsMixin",
+              "generic.CreateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              54,
+              79
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  63,
+                  64
+                ],
+                "name": "get_title",
+                "signature": "def get_title(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  66,
+                  71
+                ],
+                "name": "get_initial",
+                "signature": "def get_initial(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  73,
+                  76
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  78,
+                  79
+                ],
+                "name": "get_success_url",
+                "signature": "def get_success_url(self):"
+              }
+            ],
+            "module": "carga/views/polizaviews.py",
+            "name": "CrearPolizaMovimiento",
+            "page_path": "carga/views/polizaviews/CrearPolizaMovimiento",
+            "signature": "class CrearPolizaMovimiento(PermissionRequiredMixin, UserKwargsMixin, generic.CreateView):",
+            "signature_hash": "sha1:f867f109c57b1ade3bbaf75d752e06faf84e0bb5",
+            "stale": false
+          },
           "EliminarPoliza": {
             "authored": true,
             "bases": [
@@ -14882,16 +14958,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              54,
-              58
+              95,
+              99
             ],
             "methods": [],
             "module": "carga/views/polizaviews.py",
             "name": "EliminarPolizaMovimiento",
             "page_path": "carga/views/polizaviews/EliminarPolizaMovimiento",
             "signature": "class EliminarPolizaMovimiento(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):",
-            "signature_hash": "sha1:b30f17a7dadbf42fd5a8a154f2627a3628aaa68b",
-            "stale": false
+            "signature_hash": "sha1:c31f4f5deb8af16ed60a8ef84754056891ff5302",
+            "stale": true
           },
           "EstadoPoliza": {
             "authored": true,
@@ -14906,16 +14982,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              61,
-              78
+              102,
+              119
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  72,
-                  78
+                  113,
+                  119
                 ],
                 "name": "get_context_data",
                 "signature": "def get_context_data(self, **kwargs):"
@@ -14925,8 +15001,8 @@
             "name": "EstadoPoliza",
             "page_path": "carga/views/polizaviews/EstadoPoliza",
             "signature": "class EstadoPoliza(PermissionRequiredMixin, generic.DetailView):",
-            "signature_hash": "sha1:6b82c0b2747fcb2c21ee4f2e0ff1c7f64a5e87bd",
-            "stale": false
+            "signature_hash": "sha1:1d023b5a911990f13b9848cba5c7c70b70756616",
+            "stale": true
           },
           "ImprimirPolizaMovimiento": {
             "authored": true,
@@ -14941,16 +15017,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              81,
-              85
+              122,
+              126
             ],
             "methods": [],
             "module": "carga/views/polizaviews.py",
             "name": "ImprimirPolizaMovimiento",
             "page_path": "carga/views/polizaviews/ImprimirPolizaMovimiento",
             "signature": "class ImprimirPolizaMovimiento(PermissionRequiredMixin, generic.DetailView):",
-            "signature_hash": "sha1:e9a3c80abfaea708fb4b501321a1c4ad48f08195",
-            "stale": false
+            "signature_hash": "sha1:be1aa026b74cdc78e003a2b3e042710169465b89",
+            "stale": true
           },
           "PaginaListaPolizas": {
             "authored": true,
@@ -14963,16 +15039,16 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              89,
-              92
+              130,
+              133
             ],
             "methods": [],
             "module": "carga/views/polizaviews.py",
             "name": "PaginaListaPolizas",
             "page_path": "carga/views/polizaviews/PaginaListaPolizas",
             "signature": "def PaginaListaPolizas(request):",
-            "signature_hash": "sha1:41f0b4b6871cb1fa4c4ad25256d80a841501a77b",
-            "stale": false
+            "signature_hash": "sha1:7dee17c0c5d8f16aacd16db35dd2eb14be3c1f8e",
+            "stale": true
           },
           "UpdatePoliza": {
             "authored": true,
@@ -14999,6 +15075,42 @@
             "page_path": "carga/views/polizaviews/UpdatePoliza",
             "signature": "class UpdatePoliza(PermissionRequiredMixin, UserKwargsMixin, UserFormsetKwargsMixin, FormsetViewMixin, generic.UpdateView):",
             "signature_hash": "sha1:b833728011b9e0cd425015f308bcc8668cd53ca1",
+            "stale": false
+          },
+          "UpdatePolizaMovimiento": {
+            "authored": false,
+            "bases": [
+              "PermissionRequiredMixin",
+              "UserKwargsMixin",
+              "generic.UpdateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              83,
+              91
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  90,
+                  91
+                ],
+                "name": "get_success_url",
+                "signature": "def get_success_url(self):"
+              }
+            ],
+            "module": "carga/views/polizaviews.py",
+            "name": "UpdatePolizaMovimiento",
+            "page_path": "carga/views/polizaviews/UpdatePolizaMovimiento",
+            "signature": "class UpdatePolizaMovimiento(PermissionRequiredMixin, UserKwargsMixin, generic.UpdateView):",
+            "signature_hash": "sha1:2b76c617d818951d91f9075ae4bb9e72fcc4b946",
             "stale": false
           }
         }
@@ -15714,7 +15826,7 @@
     }
   },
   "core": {
-    "generated_at": "2026-09-05T12:53:42.608368+00:00",
+    "generated_at": "2026-09-10T19:56:07.768262+00:00",
     "modules": {
       "forms": {
         "file": "core/forms.py",
@@ -17057,7 +17169,7 @@
     }
   },
   "personalizador": {
-    "generated_at": "2026-09-05T12:53:48.287183+00:00",
+    "generated_at": "2026-09-10T19:56:13.439589+00:00",
     "modules": {
       "forms/actividadespecificaforms": {
         "file": "personalizador/forms/actividadespecificaforms.py",
@@ -22935,7 +23047,7 @@
     }
   },
   "secretariador": {
-    "generated_at": "2026-09-05T12:53:46.518400+00:00",
+    "generated_at": "2026-09-10T19:56:11.670200+00:00",
     "modules": {
       "forms/comisionadoform": {
         "file": "secretariador/forms/comisionadoform.py",

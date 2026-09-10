@@ -34,7 +34,7 @@
     {% endif %}
 </div>
 </div>
-{% if perms.carga.add_poliza_movimiento %}<a style="float: right" href="{% url "carga:crear-poliza-movimiento"%}">{{agregarimglink|safe}}</a>{% endif %}
+{% if perms.carga.add_poliza_movimiento %}<a style="float: right" href="{% url "carga:crear-poliza-movimiento"%}?poliza={{object.pk}}">{{agregarimglink|safe}}</a>{% endif %}
 <table class="table table-striped table-hover border border-dark">
     <thead>
         <tr>

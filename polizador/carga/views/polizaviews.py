@@ -2,7 +2,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.shortcuts import render
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views import generic
 from carga.models import Poliza, Poliza_Movimiento
 from carga.forms.polizaforms import *
@@ -49,6 +49,47 @@ class UpdatePoliza(PermissionRequiredMixin, UserKwargsMixin, UserFormsetKwargsMi
 	template_name = "poliza/update-poliza.html"
 	form_class = PolizaForm
 	success_url = reverse_lazy("carga:lista-polizas")
+
+@method_decorator(login_required, name="dispatch")
+class CrearPolizaMovimiento(PermissionRequiredMixin, UserKwargsMixin, generic.CreateView):
+	permission_required = "carga.add_poliza_movimiento"
+
+	model = Poliza_Movimiento
+	template_name = "poliza/crear-poliza-movimiento.html"
+	form_class = PolizaMovimientoForm
+
+	title = "Registrar Movimiento de Póliza"
+
+	def get_title(self):
+		return self.title
+
+	def get_initial(self):
+		initial = super().get_initial()
+		poliza_id = self.request.GET.get("poliza")
+		if poliza_id:
+			initial["poliza_movimiento_numero"] = poliza_id
+		return initial
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context["title"] = self.get_title()
+		return context
+
+	def get_success_url(self):
+		return reverse("carga:estado-poliza", kwargs={"pk": self.object.poliza_movimiento_numero_id})
+
+
+@method_decorator(login_required, name="dispatch")
+class UpdatePolizaMovimiento(PermissionRequiredMixin, UserKwargsMixin, generic.UpdateView):
+	permission_required = "carga.change_poliza_movimiento"
+
+	model = Poliza_Movimiento
+	template_name = "poliza/update-poliza-movimiento.html"
+	form_class = PolizaMovimientoForm
+
+	def get_success_url(self):
+		return reverse("carga:estado-poliza", kwargs={"pk": self.object.poliza_movimiento_numero_id})
+
 
 @method_decorator(login_required, name="dispatch")
 class EliminarPolizaMovimiento(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
