@@ -60,7 +60,9 @@ documento).
 ## 2. Variables de entorno
 
 Ver la tabla completa en `geoserver/README.md` → "Variables de entorno". En
-producción, como mínimo:
+producción, como mínimo (esto también se puede poner en un `geoserver/.env`
+en vez de hacer `export` a mano en cada sesión de shell -- `deploy_geoserver.sh`
+lo sourcea solo si existe; no se versiona, ver `geoserver/.gitignore`):
 
 ```bash
 # GeoServer / Docker

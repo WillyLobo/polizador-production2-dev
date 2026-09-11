@@ -1,3 +1,7 @@
+# Variables de entorno de deploy_geoserver.sh para un servidor de destino
+# puntual (secretos incluidos) -- ver README.md, sección "Uso".
+.env
+
 # Salida generada por deploy_geoserver.sh (SQL/XML renderizados con secretos
 # de un entorno puntual -- no tiene sentido versionarlos).
 .rendered/

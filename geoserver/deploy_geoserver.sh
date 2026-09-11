@@ -48,6 +48,20 @@ SQL_DIR="$SCRIPT_DIR/sql"
 PLUGIN_DIR="$SCRIPT_DIR/plugin"
 RENDERED_DIR="$SCRIPT_DIR/.rendered"
 
+# Si existe geoserver/.env, se carga antes que nada (mismo patrón que
+# polizador/.env, pero acá no hay django-environ leyéndolo por nosotros --
+# hay que sourcearlo a mano). No versionado (ver .gitignore): son secretos y
+# valores específicos de un servidor de destino puntual. Formato simple
+# VAR=valor por línea (sin "export", aunque tampoco molesta si lo tiene); lo
+# que defina este archivo pisa cualquier valor ya exportado en el shell para
+# esa misma variable, como con cualquier `source`.
+if [[ -f "$SCRIPT_DIR/.env" ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "$SCRIPT_DIR/.env"
+  set +a
+fi
+
 log() { echo -e "\n>>> $*"; }
 die() { echo "ERROR: $*" >&2; exit 1; }
 require_env() { local var="$1"; [[ -n "${!var:-}" ]] || die "Falta la variable de entorno $var"; }

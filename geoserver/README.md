@@ -99,6 +99,8 @@ usa Django -- ver la explicación completa más abajo, en "Pendiente".
 
 ## Uso
 
+Con `export` directo en el shell:
+
 ```bash
 export GEOSERVER_ADMIN_PASSWORD='...'
 export PGHOST=... PGDATABASE=...
@@ -110,6 +112,36 @@ export GEOSERVER_DS_PASSWORD='...' GEOSERVER_SECURITY_DB_PASSWORD='...'
 ./deploy_geoserver.sh geoserver   # contenedor + workspace/datastore/capa + seguridad
 ./deploy_geoserver.sh verify      # repite la batería de pruebas allow/deny de la Fase 2
 ```
+
+O en un archivo `geoserver/.env` (mismo patrón que `polizador/.env`, pero acá
+lo carga el propio script, no django-environ): si existe, `deploy_geoserver.sh`
+lo sourcea automáticamente antes de correr cualquier fase. No se versiona
+(ver `.gitignore`) porque son secretos y valores de un servidor de destino
+puntual.
+
+```bash
+# geoserver/.env
+GEOSERVER_ADMIN_PASSWORD='...'
+PGHOST=...
+PGDATABASE=...
+PG_SUPERUSER=postgres
+PG_SUPERUSER_PASSWORD='...'
+PG_APP_USER=...
+PG_APP_PASSWORD='...'
+GEOSERVER_DS_PASSWORD='...'
+GEOSERVER_SECURITY_DB_PASSWORD='...'
+```
+
+```bash
+./deploy_geoserver.sh postgres
+./deploy_geoserver.sh geoserver
+./deploy_geoserver.sh verify
+```
+
+Sin `export` y sin comillas alrededor de valores con espacios -- el script
+hace `source` del archivo tal cual, así que las reglas son las de bash
+normal (comillas simples para valores literales, sin `$` sin escapar salvo
+que la expansión sea intencional).
 
 `postgres` y `geoserver` se pueden correr desde máquinas distintas (por
 ejemplo, `postgres` desde donde haya acceso a la base, `geoserver` en el
