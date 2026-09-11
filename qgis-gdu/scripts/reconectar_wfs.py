@@ -48,7 +48,8 @@ def cargar_layer_config(forms_dir: Path):
 
 
 def construir_datasource_wfs(geoserver_url: str, workspace: str, layer: str, srs: str,
-                              wfs_version: str, username: str | None, password: str | None) -> str:
+                              wfs_version: str, username: str | None, password: str | None,
+                              authcfg: str | None) -> str:
     url = f"{geoserver_url.rstrip('/')}/{workspace}/wfs"
     partes = [
         "pagingEnabled='true'",
@@ -59,6 +60,20 @@ def construir_datasource_wfs(geoserver_url: str, workspace: str, layer: str, srs
         f"url='{url}'",
         f"version='{wfs_version}'",
     ]
+    if authcfg:
+        # authcfg NO es un secreto -- es el id (7 caracteres) de una config
+        # "Basic" ya guardada en el Auth Manager local de QUIEN ABRE el
+        # .qgz (Settings > Options > Authentication), con sus credenciales
+        # LDAP reales. Si ese id no existe en esa máquina, la capa queda sin
+        # autenticar (mismo resultado que no mandar nada). Ver "Rendimiento
+        # de QGIS sin credenciales embebidas" en INSTALL_PRODUCCION.md: a
+        # diferencia de username/password sueltos (que dependen del diálogo
+        # de login de Qt sobre un 401 real, y no lo cachea entre páginas de
+        # una tabla con paging), authcfg hace que QGIS mande el header
+        # Authorization en la primera request de cada página -- mismo
+        # comportamiento "rápido" que embeber la contraseña, sin dejar
+        # ningún secreto real en el .qgz.
+        partes.append(f"authcfg={authcfg}")
     if username:
         partes.append(f"username='{username}'")
     if password:
@@ -435,8 +450,17 @@ def main():
     ap.add_argument("--srs", default="EPSG:22175")
     ap.add_argument("--wfs-version", default="auto", help="'auto', '1.1.0' o '2.0.0' (default: auto)")
     ap.add_argument("--username", default=None,
-                     help="Opcional: si se omite, QGIS pide credenciales al abrir el proyecto (recomendado para no dejar contraseñas en el .qgz)")
+                     help="Opcional: si se omite (y sin --authcfg), QGIS pide credenciales al abrir el proyecto. "
+                          "Deja la contraseña real en texto plano dentro del .qgz -- para producción usar --authcfg en su lugar.")
     ap.add_argument("--password", default=None)
+    ap.add_argument("--authcfg", default=None,
+                     help="Id (7 caracteres) de una config 'Basic' ya creada en el Auth Manager de QGIS "
+                          "de la máquina que va a abrir el .qgz (Settings > Options > Authentication), con "
+                          "las credenciales LDAP reales de ese usuario. Recomendado para producción: no deja "
+                          "ningún secreto en el .qgz (el id solo no autentica nada por sí solo) y evita el "
+                          "401+reintento por página de --username/--password vacíos con mode=CHALLENGE "
+                          "(ver 'Rendimiento de QGIS sin credenciales embebidas' en INSTALL_PRODUCCION.md). "
+                          "Mutuamente excluyente con --username/--password.")
     ap.add_argument("--forms-dir", type=Path, default=QGIS_GDU_DIR / "forms")
     ap.add_argument("--force", action="store_true", help="Sobrescribir --output si ya existe")
     ap.add_argument("--solo-esta-capa", action="store_true",
@@ -457,6 +481,9 @@ def main():
     ap.add_argument("--pg-dbname", default="polizadordbdev")
     ap.add_argument("--pg-schema", default="catastro")
     args = ap.parse_args()
+
+    if args.authcfg and (args.username or args.password):
+        sys.exit("--authcfg es mutuamente excluyente con --username/--password")
 
     if args.output.exists() and not args.force:
         sys.exit(f"{args.output} ya existe (usar --force para sobrescribir)")
@@ -484,7 +511,7 @@ def main():
         for layer, layer_id in layer_ids.items():
             datasource_wfs = construir_datasource_wfs(
                 args.geoserver_url, args.workspace, layer, args.srs,
-                args.wfs_version, args.username, args.password,
+                args.wfs_version, args.username, args.password, args.authcfg,
             )
             verificar_estructura(qgs_text, layer_id)
             qgs_text, encontrado_maplayer, encontrado_layer_tree = reconectar_texto(qgs_text, layer_id, datasource_wfs)
@@ -532,8 +559,13 @@ def main():
         print(f"Recortado: quedan {len(cierre)} capa(s) en el proyecto -- {len(layer_ids)} en WFS-T "
               f"+ {len(cierre) - len(layer_ids)} de soporte en Postgres (el resto se eliminó para esta copia de prueba)")
     print(f"Escrito: {args.output}")
-    if not args.username:
-        print("Sin --username/--password: QGIS va a pedir credenciales la primera vez que abra cada capa.")
+    if args.authcfg:
+        print(f"Con authcfg='{args.authcfg}': la máquina que abra este .qgz necesita esa config 'Basic' "
+              f"ya cargada en su Auth Manager local (Settings > Options > Authentication) con las "
+              f"credenciales LDAP reales del usuario -- si no existe ahí, la capa queda sin autenticar.")
+    elif not args.username:
+        print("Sin --username/--password/--authcfg: QGIS va a pedir credenciales la primera vez que abra "
+              "cada capa (lento en tablas grandes con mode=CHALLENGE, ver INSTALL_PRODUCCION.md).")
 
 
 if __name__ == "__main__":

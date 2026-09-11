@@ -7,17 +7,30 @@ accionable; el detalle y las decisiones de diseño (por qué `CHALLENGE` y no
 dir, etc.) están en `geoserver/README.md` y `qgis-gdu/README.md` — este
 documento no los repite, los referencia.
 
-**Estado al escribir esto (2026-09-10):** todo lo de acá está validado contra
-el piloto local (`192.168.0.51`), no contra el servidor de producción real
-(todavía no definido/alcanzado). Antes de usar esto en producción, revisar la
-sección "Pendiente antes de ir a producción" al final.
+**Estado al escribir esto (2026-09-11):** todo lo de acá está validado contra
+el equivalente local (`192.168.0.51`, donde Postgres y GeoServer corren en el
+mismo host), no contra el servidor de producción real (todavía no
+definido/alcanzado, y no necesariamente colocado con Postgres). Antes de usar
+esto en producción, revisar la sección "Pendiente antes de ir a producción"
+al final.
+
+**Cambio de arquitectura (2026-09-11): ya no es un contenedor Docker.**
+GeoServer ahora se instala como servicio **nativo** (distribución "bin"
+oficial con Jetty embebido, un usuario de sistema `geoserver` dedicado, un
+unit de systemd que el propio script escribe) — se abandonó Docker porque el
+WAR de GeoServer 2.26.2 no es compatible con Tomcat 10 (el único que Ubuntu
+empaqueta hoy; ver `geoserver/README.md` para el detalle técnico). Si este
+runbook todavía menciona un contenedor en algún lado que no se haya
+actualizado, es texto viejo — el comportamiento real es el que describe
+`geoserver/README.md`.
 
 ## 0. Qué se instala
 
-- Un contenedor Docker de GeoServer 2.26.2, publicando por WFS-T las tablas
-  de `catastro.*` que ya están validadas (`localidad`, `manzana`, `calle`,
-  `vivienda_punto`, `intervencion`+sus relaciones N:N, `plano_mensura`+la
-  suya — ver lista completa en `deploy_geoserver.sh` → `GS_FEATURETYPES`).
+- GeoServer 2.26.2 como servicio **nativo** (no Docker), publicando por
+  WFS-T las tablas de `catastro.*` que ya están validadas (`localidad`,
+  `manzana`, `calle`, `vivienda_punto`, `intervencion`+sus relaciones N:N,
+  `plano_mensura`+la suya — ver lista completa en `deploy_geoserver.sh` →
+  `GS_FEATURETYPES`).
 - Un servicio de roles JDBC que lee en vivo los `Group` de Django (por
   Postgres) — la autorización (qué puede editar cada usuario) sigue
   gobernada por Django, no por GeoServer.
@@ -35,13 +48,39 @@ documento).
 
 ## 1. Prerrequisitos
 
-- Docker en el servidor que va a correr GeoServer, con salida de red hacia el
-  Postgres de producción (puede ser un servidor distinto — el script asume
-  eso por diseño, ver `geoserver/README.md`).
-- Un usuario de Postgres con privilegio `CREATE ROLE` (superusuario o
-  equivalente) para crear `geoserver_piloto`/`geoserver_security` — **nota**:
-  esos nombres de rol quedan así (heredados del piloto) salvo que se
-  rebautice el script; no implica que la base sea "de piloto".
+**Dónde corre cada fase (importante, cambió con el pase a nativo):**
+- `postgres` (el paso de `CREATE ROLE`) usa `sudo -u postgres psql` por
+  socket local (peer auth) -- **tiene que correrse en el propio servidor de
+  Postgres de producción**, con sudo habilitado hacia el usuario del sistema
+  operativo `postgres`. Confirmado que en producción, igual que en dev, el
+  rol `postgres` no tiene contraseña seteada, así que no hace falta pedirla
+  ni abrir `pg_hba.conf` a auth por TCP para un superusuario.
+- `geoserver` **tiene que correrse en la máquina que va a alojar
+  GeoServer** -- instala paquetes/usuario de sistema/unit de systemd
+  localmente con `sudo`, no hay forma de que aprovisione una máquina remota.
+  Si esa máquina es la MISMA que Postgres, `PGHOST=127.0.0.1` alcanza sin
+  tocar nada más. Si es una máquina **distinta**, `PGHOST` tiene que ser la
+  dirección real por la que esa máquina alcanza al Postgres de producción, y
+  hay que confirmar que `pg_hba.conf` en el servidor de Postgres tenga (o se
+  le agregue) una regla `host` que permita conexión TCP desde esa IP para
+  `PG_APP_USER` y para el rol `geoserver_piloto` (el datastore) -- el script
+  no gestiona `pg_hba.conf` por su cuenta.
+- `verify` solo hace `curl` contra `GEOSERVER_URL`, así que puede correr
+  desde cualquier máquina con red hacia GeoServer.
+
+**Prerrequisitos concretos:**
+- Sudo en la máquina de GeoServer para: crear el usuario de sistema
+  `geoserver`, instalar en `/opt/geoserver` (o donde apunte
+  `GEOSERVER_HOME`), y gestionar el unit de systemd.
+- **Acceso a internet saliente hacia SourceForge** desde la máquina de
+  GeoServer, al menos la primera vez (descarga
+  `geoserver-2.26.2-bin.zip`, ~113MB) -- si el servidor de producción está
+  restringido/sin salida a internet, hay que bajar ese zip por otro lado y
+  adaptar `provision_geoserver_native()` para leerlo de un path local en vez
+  de `curl`-earlo. SourceForge corta la conexión a mitad de descarga con
+  cierta frecuencia; el script ya reintenta con resume (`curl -C -
+  --retry`), pero si la máquina no tiene salida a internet directamente esto
+  no alcanza.
 - Un usuario de Postgres con privilegio para crear el schema
   `geoserver_auth` y hacer `GRANT` sobre `catastro.*` — el mismo `DBUSER`
   que usa Django (`polizador/.env`) alcanza.
@@ -54,8 +93,9 @@ documento).
 - Si se va a habilitar LDAP: las mismas credenciales de bind que ya usa
   Django (`GDU_LDAP_BIND_DN`/`GDU_LDAP_BIND_CREDENTIALS` en
   `polizador/.env`) y conectividad hacia `10.106.16.3:389`.
-- `openssl`/`curl`/`psql` disponibles en la máquina desde donde se corre el
-  script (no hace falta en el servidor de GeoServer en sí, salvo `docker`).
+- `curl`/`psql`/`unzip` disponibles en la máquina de GeoServer (`unzip` se
+  auto-instala vía `apt` si falta); `psql` además en la máquina de Postgres
+  para la fase `postgres`.
 
 ## 2. Variables de entorno
 
@@ -65,15 +105,14 @@ en vez de hacer `export` a mano en cada sesión de shell -- `deploy_geoserver.sh
 lo sourcea solo si existe; no se versiona, ver `geoserver/.gitignore`):
 
 ```bash
-# GeoServer / Docker
+# GeoServer (servicio nativo, no Docker)
 export GEOSERVER_ADMIN_PASSWORD='<contraseña nueva, no la del piloto>'
-export GEOSERVER_DATA_DIR_HOST=/opt/geoserver_data   # o la ruta real en el servidor de producción
-export GEOSERVER_URL=http://127.0.0.1:8080/geoserver # ajustar si el script corre remoto
+export GEOSERVER_DATA_DIR=/opt/geoserver_data         # o la ruta real en el servidor de producción
+export GEOSERVER_URL=http://127.0.0.1:8080/geoserver  # la fase geoserver corre local a su propia máquina, ver sección 1 -- casi siempre 127.0.0.1
 
-# Postgres de producción
-export PGHOST='<host del Postgres de producción>'
+# Postgres de producción -- correr la fase "postgres" EN este servidor (ver sección 1)
+export PGHOST='127.0.0.1'   # o la IP real si la fase "geoserver" corre en OTRA máquina, ver sección 1
 export PGDATABASE='<nombre de la base de producción>'
-export PG_SUPERUSER=postgres PG_SUPERUSER_PASSWORD='<...>'
 export PG_APP_USER='<DBUSER de polizador/.env>' PG_APP_PASSWORD='<DBPASSWORD de polizador/.env>'
 export GEOSERVER_DS_PASSWORD='<contraseña nueva para geoserver_piloto>'
 export GEOSERVER_SECURITY_DB_PASSWORD='<contraseña nueva para geoserver_security>'
@@ -82,6 +121,10 @@ export GEOSERVER_SECURITY_DB_PASSWORD='<contraseña nueva para geoserver_securit
 export LDAP_BIND_DN='IPDUV\admindeu'                  # mismo valor que GDU_LDAP_BIND_DN
 export LDAP_BIND_PASSWORD='<mismo valor que GDU_LDAP_BIND_CREDENTIALS>'
 ```
+
+**Ya no hace falta `PG_SUPERUSER`/`PG_SUPERUSER_PASSWORD`** -- el paso de
+`CREATE ROLE` usa `sudo -u postgres` local (ver sección 1), sin necesitar
+una contraseña de superusuario.
 
 **Importante — contraseñas nuevas, no las del piloto**: `GEOSERVER_DS_PASSWORD`,
 `GEOSERVER_SECURITY_DB_PASSWORD` y `GEOSERVER_ADMIN_PASSWORD` del piloto están
@@ -93,13 +136,14 @@ reusarlas en producción.
 Desde `geoserver/`, con las variables de arriba exportadas:
 
 ```bash
-./deploy_geoserver.sh postgres     # crea roles + schema geoserver_auth + GRANTs en catastro.*
-./deploy_geoserver.sh geoserver    # contenedor + workspace/datastore/capas + seguridad + plugin
+./deploy_geoserver.sh postgres     # crea roles + schema geoserver_auth + GRANTs en catastro.* -- correr en el server de Postgres
+./deploy_geoserver.sh geoserver    # instala/actualiza GeoServer nativo + workspace/datastore/capas + seguridad + plugin -- correr en el server de GeoServer
 ./deploy_geoserver.sh verify       # repite la batería de pruebas allow/deny sobre TODAS las capas de GS_FEATURETYPES
 ```
 
-(`./deploy_geoserver.sh all` corre las tres en la misma máquina, si Postgres
-y GeoServer están accesibles desde ahí.)
+(`./deploy_geoserver.sh all` corre las tres en la misma máquina -- solo
+tiene sentido si esa máquina es a la vez el servidor de Postgres y el que va
+a alojar GeoServer, ver sección 1.)
 
 `verify` tiene que terminar con `Verificación completa OK`. Si algo falla, el
 mensaje de `die` indica qué chequeo fue — ver "Verificación manual rápida" en
@@ -139,22 +183,32 @@ dar por terminada la puesta en producción:
    publicadas por WFS-T). Confirmar que no hay otro trigger o migración de
    Django que lo pise después.
 4. **El plugin jar se reinstala en cada corrida de `geoserver`**, no vive en
-   el data dir persistente (`WEB-INF/lib` no es parte del bind mount) — si
-   en algún momento se recrea el contenedor desde cero SIN pasar por
+   el data dir persistente (`WEB-INF/lib` se borra y recrea si se
+   redespliega GeoServer por un cambio de `GEOSERVER_VERSION`) — si en algún
+   momento se reinstala GeoServer desde cero SIN pasar por
    `deploy_geoserver.sh geoserver`, `updated_by` deja de completarse con el
    usuario real (el trigger cae a `current_user` = `geoserver_piloto` para
-   todos, sin romper nada, pero sin distinguir usuarios). Siempre recrear
-   el contenedor vía el script, no a mano.
+   todos, sin romper nada, pero sin distinguir usuarios). Siempre
+   reinstalar/actualizar vía el script, no a mano.
 5. **Filesystem del data dir**: la política de contraseñas de configuración
    quedó en texto plano (`plainTextPasswordEncoder`, decisión documentada en
    `geoserver/README.md`) — restringir el acceso de lectura a
-   `GEOSERVER_DATA_DIR_HOST` al usuario que corre Docker en el servidor de
+   `GEOSERVER_DATA_DIR` al usuario de sistema `geoserver` en el servidor de
    producción.
-6. **Backups**: `GEOSERVER_DATA_DIR_HOST` (config de GeoServer: workspace,
+6. **Backups**: `GEOSERVER_DATA_DIR` (config de GeoServer: workspace,
    datastore, reglas de seguridad) no tiene datos de catastro en sí (esos
    viven en Postgres, con su propio backup) pero si se pierde hay que
    rehacer el deploy desde cero — no crítico, pero conviene que quede en el
    mismo esquema de backup del servidor que el resto de la config.
+7. **Primer login de admin**: en un data dir nuevo, GeoServer genera una
+   contraseña de admin aleatoria que nunca se revela en texto plano --
+   `deploy_geoserver.sh geoserver` la rota sola a `GEOSERVER_ADMIN_PASSWORD`
+   la primera vez (ver "Bootstrap de la contraseña de admin" en
+   `geoserver/README.md`), usando un login temporal con la master password
+   generada. No requiere ninguna acción manual, pero si `geoserver` falla
+   justo en ese paso, el mensaje de error indica dónde mirar
+   (`security/masterpw.info` y `security/masterpw/default/config.xml` en el
+   data dir).
 
 ## 5. Verificación manual post-deploy
 
@@ -208,9 +262,11 @@ python3 scripts/reconectar_wfs.py \
 embeber credenciales en el `.qgz` — QGIS va a pedir usuario/contraseña la
 primera vez que abra cada capa (con `CHALLENGE` activo, ver
 `geoserver/README.md`), y esas credenciales deberían ser las mismas
-LDAP/AD de red del usuario, no una cuenta compartida. Ver la advertencia de
-rendimiento en la sección "Pendiente" más abajo antes de asumir que esto
-anda bien con tablas grandes.
+LDAP/AD de red del usuario, no una cuenta compartida. **Ojo**: así como está
+el comando de arriba, tablas grandes (~1200-2000 filas) van a andar muy
+lentas o crashear QGIS — ver la advertencia de rendimiento y la dirección
+decidida (`--authcfg`) en la sección "Pendiente" más abajo antes de repartir
+esto a un usuario real con tablas de ese tamaño.
 
 No usar `--solo-esta-capa` para un `.qgz` de uso real — esa opción existe
 solo para recortar el proyecto a un puñado de capas al probar sin acceso al
@@ -245,11 +301,33 @@ deploy de prueba, pero sí una puesta en producción real con usuarios finales:
   en Windows. Para el paquete de prueba se resolvió embebiendo credenciales
   (aceptable solo porque no se distribuye más allá del spike) — para
   producción, con credenciales reales por usuario, esto sigue sin resolverse.
-  Antes de repartir `.qgz` de producción sin credenciales embebidas a
-  usuarios con tablas grandes, hay que decidir/probar un patrón mejor (por
-  ejemplo: credenciales guardadas en el gestor de autenticación de QGIS en
-  vez de en el `.qgz`, que sí persiste sesión sin volver a pedir login en
-  cada apertura, a diferencia de un prompt puntual).
+
+  **Dirección decidida (2026-09-11), pendiente de validar en QGIS real**:
+  usar el Auth Manager de QGIS en vez de `username`/`password` embebidos.
+  `reconectar_wfs.py` ya soporta `--authcfg <id>` (mutuamente excluyente con
+  `--username`/`--password`): escribe `authcfg='<id>'` en el datasource de
+  cada capa en vez de credenciales sueltas. Ese id de 7 caracteres NO es un
+  secreto — referencia una config "Basic" que cada usuario carga **una sola
+  vez, en su propia máquina** (Settings > Options > Authentication en QGIS,
+  requiere haber seteado antes una master password para `qgis-auth.db` si
+  es la primera vez que usa el Auth Manager), con sus propias credenciales
+  LDAP/AD reales. A diferencia de dejar `username`/`password` vacíos (que
+  depende del diálogo de login de Qt sobre un 401 real, sin cachear entre
+  páginas), `authcfg` hace que QGIS mande el header `Authorization` desde la
+  primera request de cada página — mismo comportamiento rápido que embeber
+  la contraseña, sin dejar ningún secreto real en el `.qgz`.
+
+  Punto abierto para la validación: el id de la config "Basic" lo asigna
+  QGIS al crearla (no hay forma confirmada de fijarlo de antemano por
+  script), así que el orden de trabajo por usuario queda invertido respecto
+  al flujo actual de la sección 6: primero crear/confirmar la config en la
+  máquina del usuario (o leer el id si ya la tiene cargada de una entrega
+  anterior), recién después correr `reconectar_wfs.py --authcfg <ese-id>`
+  para generar SU `.qgz` — coordinación extra por usuario, pero compatible
+  con el hecho de que ya se genera un `.qgz` nombrado por usuario (ej.
+  `gdu.wfs.mazzario.qgz`), no un archivo único para todos. Falta probar de
+  punta a punta contra una tabla de ~1200-2000 filas para confirmar que
+  realmente colapsa los round-trips como se espera.
 - **`tierra`**: publicada y verificada del lado de GeoServer, pero sin
   ningún `.qgz` disponible con esa capa armada — no se puede repartir hasta
   que exista un proyecto QGIS real con "Tierra" como capa propia.

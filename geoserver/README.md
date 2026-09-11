@@ -2,23 +2,51 @@
 
 Automatiza en un servidor nuevo lo que se validó a mano en el piloto local
 (ver `/home/willy/.claude/plans/wfs-t-geoserver-qgis-gdu.md`, Fases 1 y 2):
-GeoServer en Docker publicando `gdu:localidad` vía WFS-T, con un servicio de
-roles JDBC que lee en vivo los `Group` de Django (vía Postgres) y reglas de
-Data Access Rules que usan esos roles.
+GeoServer como servicio **nativo** (distribución "bin" standalone oficial,
+Jetty 9.4 embebido, gestionado por un unit de systemd propio -- sin Docker,
+sin depender de ningún servlet container del sistema) publicando
+`gdu:localidad` vía WFS-T, con un servicio de roles JDBC que lee en vivo los
+`Group` de Django (vía Postgres) y reglas de Data Access Rules que usan esos
+roles.
 
-GeoServer y Postgres se asumen en servidores **distintos**: todo lo que toca
-Postgres se conecta siempre por TCP con usuario/contraseña, nunca asume
-`sudo -u postgres` local (a diferencia de `migrar_gdu_a_produccion.sh`, que sí
-corre en el propio servidor de base).
+**Por qué la distribución "bin" y no un WAR en Tomcat:** se probó primero
+desplegar el WAR de GeoServer en el `tomcat10` de Ubuntu y falló en
+caliente -- el WAR de GeoServer 2.26.2 está compilado contra el namespace
+viejo `javax.servlet.*` (Servlet 4), y Tomcat 10 solo trae
+`jakarta.servlet.*` (`ClassNotFoundException:
+javax.servlet.http.HttpSessionListener`, confirmado en los logs reales).
+Ubuntu ya no empaqueta `tomcat9` (el que sí matchea). La distribución "bin"
+de GeoServer trae su propio Jetty 9.4 con `javax.servlet-api-3.1.0.jar`
+embebido, así que no depende de qué servlet container tenga el sistema --
+mismo enfoque que la imagen Docker que se usaba antes (que tampoco usaba el
+Tomcat del sistema, traía el suyo propio).
+
+GeoServer corre en el **mismo servidor que Postgres**: comparte el namespace
+de red del host, así que `PGHOST` puede ser `127.0.0.1` sin necesitar reglas
+nuevas en `pg_hba.conf` (a diferencia de un GeoServer en Docker con red
+bridge, que necesitaría la IP LAN real del host para llegar a Postgres). El
+paso de la fase `postgres` que necesita superusuario (`CREATE ROLE`) corre
+como `sudo -u postgres psql` por socket local (peer auth), igual que
+`migrar_gdu_a_produccion.sh` -- porque tanto en dev como en producción el rol
+`postgres` no tiene contraseña seteada, y exigir una hubiera significado
+fijarle una y abrir `pg_hba.conf` a auth por TCP para un superusuario sin
+necesidad real. Tanto `postgres` como `geoserver` requieren correrse en ese
+mismo servidor (con sudo habilitado hacia `postgres` y hacia la
+instalación/gestión del servicio `geoserver`). El schema `geoserver_auth`
+como `PG_APP_USER` sigue conectando por TCP con usuario/contraseña, igual
+que antes.
 
 ## Qué automatiza y qué no
 
-- Automatiza: levantar el contenedor, crear roles/schema en Postgres, publicar
-  workspace/datastore/capa por REST, configurar el servicio de roles JDBC y
-  las Data Access Rules (escribiendo archivos del data dir directamente, ya
-  que la REST API de GeoServer no cubre seguridad), LDAP como proveedor de
-  autenticación (opcional, ver "Variables de entorno"), y el plugin que
-  completa `updated_by` con el usuario autenticado real (ver más abajo).
+- Automatiza: instalar/actualizar GeoServer nativo (distribución "bin"
+  oficial, un usuario de sistema dedicado, un unit de systemd propio -- sin
+  paquete apt ni Docker de por medio), crear roles/schema en Postgres,
+  publicar workspace/datastore/capa por REST, configurar el servicio de
+  roles JDBC y las Data Access Rules (escribiendo archivos del data dir
+  directamente, ya que la REST API de GeoServer no cubre seguridad), LDAP
+  como proveedor de autenticación (opcional, ver "Variables de entorno"), y
+  el plugin que completa `updated_by` con el usuario autenticado real (ver
+  más abajo).
 - Deliberadamente NO automatiza: reconectar el proyecto QGIS (Fase 3, script
   aparte en `qgis-gdu/`), ni generalizar a más capas (Fase 4, hoy solo
   `localidad`).
@@ -40,37 +68,38 @@ servicio de roles con una contraseña real y que arranque funcionando en
 cualquier servidor, sin pasos manuales por la UI.
 
 Mitigación: restringir el acceso al filesystem del data dir
-(`GEOSERVER_DATA_DIR_HOST`) al usuario que corre Docker -- quien tenga acceso
-de lectura ahí puede ver las contraseñas en texto plano. Es el mismo nivel de
-exposición que ya existía (`geoserver_piloto`/`geoserver_security` son roles
-Postgres de bajísimo privilegio, no la contraseña de un superusuario ni de
-ningún usuario real de Django/LDAP).
+(`GEOSERVER_DATA_DIR`, propiedad del usuario de sistema `geoserver`) -- quien
+tenga acceso de lectura ahí puede ver las contraseñas en texto plano. Es el
+mismo nivel de exposición que ya existía (`geoserver_piloto`/
+`geoserver_security` son roles Postgres de bajísimo privilegio, no la
+contraseña de un superusuario ni de ningún usuario real de Django/LDAP).
 
 ## Variables de entorno
 
 Ninguna tiene un default "real" para lo que es específico del servidor de
 destino o un secreto -- el script corta con un mensaje claro si falta alguna.
 
-### GeoServer / Docker (fase `geoserver`)
+### GeoServer nativo (fase `geoserver`)
 
 | Variable | Default | Descripción |
 |---|---|---|
-| `GEOSERVER_ADMIN_PASSWORD` | *(requerida)* | Contraseña del admin de GeoServer, se setea al crear el contenedor |
-| `GEOSERVER_ADMIN_USER` | `admin` | Usuario admin de GeoServer |
-| `GEOSERVER_CONTAINER_NAME` | `geoserver-gdu` | Nombre del contenedor Docker |
-| `GEOSERVER_IMAGE` | `docker.osgeo.org/geoserver:2.26.2` | Imagen (misma versión que el piloto) |
-| `GEOSERVER_HTTP_PORT` | `8080` | Puerto publicado en el host |
-| `GEOSERVER_DATA_DIR_HOST` | `/opt/geoserver_data` | Directorio del host para el bind mount del data dir |
+| `GEOSERVER_ADMIN_PASSWORD` | *(requerida)* | Contraseña deseada para el admin de GeoServer. En un data dir nuevo, el script la rota una sola vez desde la contraseña aleatoria de fábrica -- ver "Bootstrap de la contraseña de admin" más abajo |
+| `GEOSERVER_ADMIN_USER` | `admin` | Usuario admin de GeoServer -- el bootstrap de contraseña asume que es `admin` (el username que GeoServer crea solo al inicializar el data dir) |
+| `GEOSERVER_VERSION` | `2.26.2` | Versión de GeoServer a instalar (distribución "bin" oficial de SourceForge) |
+| `GEOSERVER_HTTP_PORT` | `8080` | Puerto del conector HTTP de Jetty (`jetty.http.port` en `start.ini`). Cambiarlo de 8080 hace que el script agregue `-Djetty.http.port=...` a `JAVA_OPTS` del unit de systemd -- no hay mapeo `-p` como con Docker |
+| `GEOSERVER_DATA_DIR` | `/opt/geoserver_data` | Directorio del data dir de GeoServer (antes `GEOSERVER_DATA_DIR_HOST`, era el bind mount de Docker) |
 | `GEOSERVER_URL` | `http://127.0.0.1:$GEOSERVER_HTTP_PORT/geoserver` | Base URL para las llamadas REST del propio script -- cambiar si se corre remoto |
+| `GEOSERVER_HOME` | `/opt/geoserver` | Dónde se instala la distribución "bin" de GeoServer (binarios, `start.jar`, `webapps/geoserver/`) |
+| `GEOSERVER_SERVICE_USER` | `geoserver` | Usuario de sistema dedicado que corre el proceso (el script lo crea si no existe, `--system --no-create-home`) |
+| `GEOSERVER_SYSTEMD_SERVICE` | `geoserver` | Nombre del unit de systemd (`/etc/systemd/system/$GEOSERVER_SYSTEMD_SERVICE.service`, generado por el script) |
 
 ### Postgres (fases `postgres` y `geoserver`)
 
 | Variable | Default | Descripción |
 |---|---|---|
-| `PGHOST` | *(requerida)* | Host de Postgres -- todavía sin definir, ver plan Fase 2/4 |
+| `PGHOST` | *(requerida, salvo fase `postgres`)* | Host de Postgres -- típicamente `127.0.0.1`, ya que GeoServer corre en el mismo servidor |
 | `PGPORT` | `5432` | Puerto de Postgres |
 | `PGDATABASE` | *(requerida)* | Base de datos destino |
-| `PG_SUPERUSER` / `PG_SUPERUSER_PASSWORD` | *(requeridas, solo fase `postgres`)* | Credenciales con privilegio CREATE ROLE, para crear `geoserver_piloto`/`geoserver_security` |
 | `PG_APP_USER` / `PG_APP_PASSWORD` | *(requeridas, solo fase `postgres`)* | Credenciales con privilegio para crear el schema `geoserver_auth` y hacer GRANT sobre `catastro.*` (ej. el `DBUSER` de `polizador/.env`) |
 | `GEOSERVER_DS_PASSWORD` | *(requerida)* | Contraseña a fijar/usar para el rol `geoserver_piloto` (datastore) |
 | `GEOSERVER_SECURITY_DB_PASSWORD` | *(requerida)* | Contraseña a fijar/usar para el rol `geoserver_security` (servicio de roles) |
@@ -104,12 +133,11 @@ Con `export` directo en el shell:
 ```bash
 export GEOSERVER_ADMIN_PASSWORD='...'
 export PGHOST=... PGDATABASE=...
-export PG_SUPERUSER=postgres PG_SUPERUSER_PASSWORD='...'
 export PG_APP_USER=... PG_APP_PASSWORD='...'
 export GEOSERVER_DS_PASSWORD='...' GEOSERVER_SECURITY_DB_PASSWORD='...'
 
-./deploy_geoserver.sh postgres    # roles + schema geoserver_auth en Postgres
-./deploy_geoserver.sh geoserver   # contenedor + workspace/datastore/capa + seguridad
+./deploy_geoserver.sh postgres    # roles + schema geoserver_auth en Postgres -- correr en el server de Postgres, pide sudo hacia el usuario postgres
+./deploy_geoserver.sh geoserver   # instala/actualiza GeoServer + workspace/datastore/capa + seguridad
 ./deploy_geoserver.sh verify      # repite la batería de pruebas allow/deny de la Fase 2
 ```
 
@@ -124,8 +152,6 @@ puntual.
 GEOSERVER_ADMIN_PASSWORD='...'
 PGHOST=...
 PGDATABASE=...
-PG_SUPERUSER=postgres
-PG_SUPERUSER_PASSWORD='...'
 PG_APP_USER=...
 PG_APP_PASSWORD='...'
 GEOSERVER_DS_PASSWORD='...'
@@ -143,16 +169,59 @@ hace `source` del archivo tal cual, así que las reglas son las de bash
 normal (comillas simples para valores literales, sin `$` sin escapar salvo
 que la expansión sea intencional).
 
-`postgres` y `geoserver` se pueden correr desde máquinas distintas (por
-ejemplo, `postgres` desde donde haya acceso a la base, `geoserver` en el
-servidor que corre el contenedor) -- cada fase pide solo las variables que
-necesita. `all` corre las tres fases en orden en la misma máquina.
+`postgres` corre siempre en el propio servidor de Postgres (necesita sudo
+local hacia el usuario `postgres`, ver arriba); `geoserver` se puede correr
+desde una máquina distinta (la que va a instalar/correr el servicio nativo)
+-- cada fase pide solo las variables que necesita. `all` corre las tres
+fases en orden en la misma máquina, y por lo tanto asume que esa máquina es
+también el servidor de Postgres.
 
 Todo es re-ejecutable: los roles de Postgres se crean con `ALTER ROLE` si ya
 existen, las vistas se recrean con `DROP VIEW IF EXISTS`, el workspace/
 datastore/capa se consultan antes de crear (se saltean si ya existen, o se
 actualiza el datastore si cambió algún parámetro de conexión), y los archivos
 de seguridad simplemente se sobreescriben.
+
+La fase `geoserver` necesita `sudo` real (crea el usuario de sistema
+`geoserver` si no existe, descarga y despliega la distribución "bin" de
+GeoServer en `$GEOSERVER_HOME`, escribe `$GEOSERVER_DATA_DIR` y el unit de
+systemd, y reinicia el servicio) y acceso a internet la primera vez, para
+bajar `geoserver-$GEOSERVER_VERSION-bin.zip` de SourceForge (~113MB;
+SourceForge corta la conexión a mitad de descarga con cierta frecuencia --
+el script usa `curl -C - --retry` para resumir en vez de fallar de una).
+
+## Bootstrap de la contraseña de admin
+
+A diferencia de la imagen Docker que se usaba antes (que reescribía
+`security/usergroup/default/users.xml` con `GEOSERVER_ADMIN_USER`/
+`GEOSERVER_ADMIN_PASSWORD` en cada arranque del contenedor), y a diferencia
+de versiones viejas de GeoServer (que arrancaban con `admin`/`geoserver` de
+fábrica), esta versión de GeoServer en un data dir recién inicializado
+genera una contraseña de admin **aleatoria que nunca se revela en texto
+plano en ningún lado** -- confirmado en vivo, no es una suposición. Lo único
+que sí queda legible una vez es la master password, en
+`$GEOSERVER_DATA_DIR/security/masterpw.info` (borrable después de leída).
+
+`deploy_geoserver.sh geoserver` compensa esto con un paso de bootstrap
+(`bootstrap_admin_password`, antes de `overlay_security_config`):
+1. Si `GEOSERVER_ADMIN_USER`/`GEOSERVER_ADMIN_PASSWORD` ya autentican, no
+   hace nada (caso normal en corridas siguientes).
+2. Si no, lee la master password de `security/masterpw.info` y habilita
+   temporalmente `<loginEnabled>true</loginEnabled>` en
+   `security/masterpw/default/config.xml` (viene en `false` por default --
+   sin esto, ni siquiera el usuario sintético `root` con la master password
+   correcta autentica, confirmado en vivo: daba 401 hasta habilitarlo).
+3. Reinicia GeoServer para que tome ese cambio, autentica como
+   `root:<master password>` por REST, y rota la contraseña del usuario
+   `admin` (`POST /rest/security/usergroup/user/admin`).
+4. Vuelve a dejar `loginEnabled` en `false` en el archivo -- no hace falta
+   otro restart para que surta efecto, el que ya hace
+   `overlay_security_config` a continuación lo levanta con el valor ya
+   revertido.
+
+Asume `GEOSERVER_ADMIN_USER=admin` (el username que GeoServer crea solo al
+inicializar el data dir); si se necesita otro username hay que crearlo a
+mano.
 
 ## `updated_by` por fila: plugin `gdu-updated-by-listener.jar`
 
@@ -184,13 +253,26 @@ trigger es compartido por ~30 tablas de `catastro`, así que el fix aplica a
 todas aunque hoy solo `localidad` pase por WFS-T.
 
 **Build:** el jar ya está compilado y commiteado (`plugin/gdu-updated-by-listener.jar`,
-~3KB). Si cambia la versión de GeoServer, recompilar con
-`plugin/build.sh <contenedor>` -- compila contra el classpath real de un
-GeoServer corriendo (`docker cp` de su `WEB-INF/lib`), no usa Maven porque no
-hay Maven instalado en el entorno de desarrollo donde se escribió esto por
-primera vez. `deploy_geoserver.sh` lo copia a `WEB-INF/lib` en cada corrida
-de `geoserver` (no al data dir persistente -- si el contenedor se recrea
-desde la imagen stock, `WEB-INF/lib` vuelve a como venía de fábrica).
+~3KB). Si cambia la versión de GeoServer, recompilar con `plugin/build.sh`
+(sin argumentos usa `/opt/geoserver/webapps/geoserver/WEB-INF/lib`, o pasar
+otra ruta) -- compila contra el classpath real de un GeoServer ya desplegado
+(`sudo cp` de su `WEB-INF/lib`, es del usuario de sistema `geoserver`), no
+usa Maven porque no hay Maven instalado en el entorno de desarrollo donde se
+escribió esto por primera vez. `deploy_geoserver.sh` lo copia a `WEB-INF/lib`
+en cada corrida de `geoserver` (no al data dir persistente -- si se
+redespliega desde cero por un cambio de versión, `WEB-INF/lib` vuelve a como
+venía de fábrica).
+
+`plugin/marlin.jar` (renderer JAI acelerado, ~190KB, también commiteado) no
+tiene que ver con este plugin -- lo instala `deploy_geoserver.sh` en
+`$GEOSERVER_HOME/webapps/marlin.jar` (NO dentro de `webapps/geoserver/`, así
+sobrevive un redeploy de versión) porque la imagen Docker que se usaba antes
+lo agregaba por su cuenta, y la distribución oficial de GeoServer no lo
+incluye. A diferencia del enfoque Docker (que necesitaba
+`-Xbootclasspath/a:...` + `-Dsun.java2d.renderer=...` a mano),
+`bin/startup.sh` de esta distribución ya busca `marlin*.jar` en `webapps/`
+solo y lo activa vía `--patch-module` -- no hace falta que
+`deploy_geoserver.sh` toque `JAVA_OPTS` para esto.
 
 Validado en el piloto: un `Update` que manda `updated_by=deploy_verify`
 explícitamente en el WFS-T (`phase_verify` lo hace a propósito) queda en
@@ -303,18 +385,10 @@ curl -u admin:$GEOSERVER_ADMIN_PASSWORD "$GEOSERVER_URL/gdu/ows?service=WFS&vers
   `username`/`password` embebidos (el caso recomendado, ver
   `qgis-gdu/README.md`) ya puede pedir login interactivo por capa como
   cualquier WFS protegido estándar.
-- **La imagen Docker de GeoServer resetea `security/usergroup/default/users.xml`
-  en CADA `docker restart`**: el entrypoint de `docker.osgeo.org/geoserver`
-  reconstruye ese archivo desde una plantilla propia usando
-  `GEOSERVER_ADMIN_USER`/`GEOSERVER_ADMIN_PASSWORD` en cada arranque --
-  cualquier usuario agregado a mano al servicio de usuarios XML local (como el
-  `test_localidad_viewer` de prueba) desaparece en el siguiente restart, sin
-  aviso (se ve en los logs del contenedor: `Successfully replaced
-  .../users.xml`). No afecta el diseño real -- los usuarios reales
-  autentican vía LDAP (Fase 2, pendiente), no contra este store XML local, que
-  solo existe para el `admin` de arranque -- pero si hace falta recrear un
-  usuario de prueba ahí, es más simple hacerlo por REST que por la UI:
-  `POST /rest/security/usergroup/users` con
-  `<user><userName>...</userName><password>...</password><enabled>true</enabled></user>`
-  (confirmado funcionando, y más rápido que repetir los pasos de la UI cada
-  vez que se reinicia el contenedor).
+- **Crear un usuario de prueba en el store XML local**: los usuarios reales
+  autentican vía LDAP, no contra `security/usergroup/default/users.xml` (que
+  con la instalación nativa ya persiste entre restarts, ver "Bootstrap de la
+  contraseña de admin" más arriba) -- pero si hace falta uno de prueba ahí,
+  es más simple hacerlo por REST que por la UI: `POST
+  /rest/security/usergroup/users` con
+  `<user><userName>...</userName><password>...</password><enabled>true</enabled></user>`.

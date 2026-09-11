@@ -9,22 +9,25 @@
 # entre versiones -- ver los comentarios en el .java).
 #
 # Uso:
-#   ./build.sh <nombre-contenedor-geoserver>
-#   ./build.sh geoserver-gdu
+#   ./build.sh [WEB-INF/lib de GeoServer]
+#   ./build.sh                                          # default: instalación nativa vía deploy_geoserver.sh
+#   ./build.sh /opt/geoserver/webapps/geoserver/WEB-INF/lib
 
 set -euo pipefail
 
-CONTAINER="${1:?Uso: $0 <nombre-contenedor-geoserver>}"
+WEBINF_LIB="${1:-/opt/geoserver/webapps/geoserver/WEB-INF/lib}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WORK="$SCRIPT_DIR/.build"
 
 command -v javac >/dev/null || { echo "Falta javac (paquete openjdk-17-jdk-headless o similar)"; exit 1; }
+[[ -d "$WEBINF_LIB" ]] || { echo "No existe $WEBINF_LIB -- ¿corrió ./deploy_geoserver.sh geoserver? pasar la ruta como argumento si GeoServer está en otro lado"; exit 1; }
 
 rm -rf "$WORK"
 mkdir -p "$WORK/libs" "$WORK/out"
 
-echo ">>> Copiando WEB-INF/lib de $CONTAINER (classpath de compilación)..."
-docker cp "$CONTAINER:/usr/local/tomcat/webapps/geoserver/WEB-INF/lib" "$WORK/libs_full"
+echo ">>> Copiando $WEBINF_LIB (classpath de compilación, dueño del usuario de servicio geoserver -- requiere sudo)..."
+sudo cp -r "$WEBINF_LIB" "$WORK/libs_full"
+sudo chown -R "$(id -u):$(id -g)" "$WORK/libs_full"
 
 CP="$(find "$WORK/libs_full" -name '*.jar' | tr '\n' ':')"
 
