@@ -189,7 +189,7 @@ class Poliza(models.Model):
         return f"{self.poliza_numero} - {self.poliza_aseguradora.aseguradora_nombre} - {self.poliza_obra.obra_nombre} - {self.poliza_tomador.empresa_nombre} "
 
     def get_absolute_url(self):
-        return reverse('estado-poliza', kwargs={'id': self.pk})
+        return reverse('carga:estado-poliza', kwargs={'pk': self.pk})
 
 class Poliza_Movimiento(models.Model):
     class Meta:
@@ -208,7 +208,7 @@ class Poliza_Movimiento(models.Model):
         return f"{self.poliza_movimiento_numero} - {self.poliza_movimiento_area} - ({self.poliza_movimiento_fecha})"
     
     def get_absolute_url(self):
-        return reverse('estado-poliza', kwargs={'id': self.poliza_movimiento_numero.pk})
+        return reverse('carga:estado-poliza', kwargs={'pk': self.poliza_movimiento_numero.pk})
 
 class Programa(models.Model):
     class Meta:

@@ -60,6 +60,8 @@ poliza_patterns = [
     path("eliminar/poliza/<pk>", EliminarPoliza.as_view(), name="eliminar-poliza")
 ]
 movimiento_patterns = [
+	path("crear/poliza/movimiento/", CrearPolizaMovimiento.as_view(), name="crear-poliza-movimiento"),
+	path("crear/poliza/movimiento/<pk>/editar", UpdatePolizaMovimiento.as_view(), name="update-poliza-movimiento"),
 	path("crear/poliza/movimiento/imprimir/<pk>", ImprimirPolizaMovimiento.as_view(), name="imprimir-poliza-movimiento"),
     path("eliminar/poliza/movimiento/<pk>", EliminarPolizaMovimiento.as_view(), name="eliminar-poliza-movimiento")
 ]
