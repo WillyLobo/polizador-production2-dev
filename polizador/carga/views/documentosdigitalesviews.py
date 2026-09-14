@@ -15,7 +15,7 @@ import locale
 
 @method_decorator(login_required, name="dispatch")
 class CrearContratoDigital(PermissionRequiredMixin, generic.CreateView):
-    permission_required = "carga.add_certificado"
+    permission_required = "carga.add_contratosdigitales"
 
     model = ContratosDigitales
     template_name = "digitales/crear-contratodigital.html"
@@ -41,7 +41,7 @@ class CrearContratoDigital(PermissionRequiredMixin, generic.CreateView):
 
 @method_decorator(login_required, name="dispatch")
 class UpdateContratoDigital(PermissionRequiredMixin, generic.UpdateView):
-    permission_required = "carga.change_certificado"
+    permission_required = "carga.change_contratosdigitales"
 
     model = ContratosDigitales
     template_name = "digitales/update-contratodigital.html"
@@ -50,7 +50,7 @@ class UpdateContratoDigital(PermissionRequiredMixin, generic.UpdateView):
 
 @method_decorator(login_required, name="dispatch")
 class EliminarContratoDigital(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
-    permission_required = "carga.delete_certificado"
+    permission_required = "carga.delete_contratosdigitales"
 
     model = ContratosDigitales
     template_name = "generic/confirm_delete.html"
