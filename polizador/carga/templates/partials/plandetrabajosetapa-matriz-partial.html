@@ -33,12 +33,41 @@
         </div>
     {% endif %}
 
+    <style>
+        .matriz-plan-trabajos {
+            --sticky-col2-left: 140px;
+        }
+        .matriz-plan-trabajos th.sticky-col,
+        .matriz-plan-trabajos td.sticky-col {
+            position: sticky;
+            z-index: 2;
+        }
+        .matriz-plan-trabajos thead th.sticky-col {
+            z-index: 3;
+            background-color: #212529;
+        }
+        .matriz-plan-trabajos th.sticky-col-1,
+        .matriz-plan-trabajos td.sticky-col-1 {
+            left: 0;
+        }
+        .matriz-plan-trabajos th.sticky-col-2,
+        .matriz-plan-trabajos td.sticky-col-2 {
+            left: var(--sticky-col2-left);
+            border-right: 2px solid var(--bs-border-color, #dee2e6);
+        }
+        .matriz-plan-trabajos tbody td.sticky-col {
+            background-color: var(--bs-body-bg);
+        }
+        .matriz-plan-trabajos tbody tr.table-danger td.sticky-col {
+            background-color: var(--bs-danger-bg-subtle);
+        }
+    </style>
     <div class="table-responsive">
-        <table class="table table-bordered table-sm align-middle">
+        <table class="table table-bordered table-sm align-middle matriz-plan-trabajos">
             <thead class="table-dark">
                 <tr>
-                    <th>Item</th>
-                    <th class="text-center">% Incidencia</th>
+                    <th class="sticky-col sticky-col-1">Item</th>
+                    <th class="text-center sticky-col sticky-col-2">% Incidencia</th>
                     {% for hcol in historial_columnas %}
                         <th class="text-center bg-secondary-subtle">Foja N° {{hcol.foja_numero}}<br>{{hcol.periodo|date:"F-Y"}}<br><small class="fw-normal">(real)</small></th>
                     {% endfor %}
@@ -61,8 +90,8 @@
             <tbody>
                 {% for row in rows %}
                     <tr data-anterior="{{row.anterior|unlocalize}}" data-incidencia="{{row.item.planitem_incidencia_pct|unlocalize}}">
-                        <td>{{row.item.planitem_nombre}}</td>
-                        <td class="text-center">{{row.item.planitem_incidencia_pct}}</td>
+                        <td class="sticky-col sticky-col-1">{{row.item.planitem_nombre}}</td>
+                        <td class="text-center sticky-col sticky-col-2">{{row.item.planitem_incidencia_pct}}</td>
                         {% for valor in row.historial %}
                             <td class="text-center bg-secondary-subtle">{{valor}}</td>
                         {% endfor %}
@@ -137,6 +166,17 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const tablaMatriz = document.querySelector('.matriz-plan-trabajos');
+    if (tablaMatriz) {
+        const ajustarStickyCols = function() {
+            const primeraCelda = tablaMatriz.querySelector('thead th.sticky-col-1');
+            if (!primeraCelda) return;
+            tablaMatriz.style.setProperty('--sticky-col2-left', primeraCelda.getBoundingClientRect().width + 'px');
+        };
+        ajustarStickyCols();
+        window.addEventListener('resize', ajustarStickyCols);
+    }
+
     const RUBRO_MONTO_BASE_PESOS = {% if rubro_monto_base_pesos is not None %}{{ rubro_monto_base_pesos|unlocalize }}{% else %}null{% endif %};
     const RUBRO_MONTO_BASE_UVI = {% if rubro_monto_base_uvi is not None %}{{ rubro_monto_base_uvi|unlocalize }}{% else %}null{% endif %};
     const TOTAL_COLUMNS = {{ total_columns }};
