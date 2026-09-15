@@ -120,6 +120,9 @@ class EliminarPolizaMovimiento(PermissionRequiredMixin, DeleteRelatedObjectsMixi
 	model = Poliza_Movimiento
 	template_name = "generic/confirm_delete.html"
 
+	def get_success_url(self):
+		return reverse("carga:estado-poliza", kwargs={"pk": self.object.poliza_movimiento_numero_id})
+
 @method_decorator(login_required, name="dispatch")
 class EstadoPoliza(PermissionRequiredMixin, generic.DetailView):
 	permission_required = "carga.view_poliza"
