@@ -217,7 +217,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // --- Capa base (OpenStreetMap / ESRI Satélite; excluyentes entre sí) ---
 
-  const capaBaseOsm = new ol.layer.Tile({ source: new ol.source.OSM(), visible: true });
+  // Se usan los tiles ráster de CARTO (datos de OpenStreetMap, estilo Voyager) en vez de
+  // ol.source.OSM() (que apunta directo a tile.openstreetmap.org): ese servidor bloquea
+  // tráfico que no cumple su política de uso (https://wiki.openstreetmap.org/wiki/Blocked_tiles),
+  // algo que terminó pasando acá. Desde 2026-08 CARTO exige una API key incluso para el
+  // tier gratis (GDU_CARTO_API_KEY en .env; ver https://carto.com/basemaps/apikey).
+  const cartoApiKey = "{{ carto_api_key|escapejs }}";
+  const capaBaseOsm = new ol.layer.Tile({
+    source: new ol.source.XYZ({
+      urls: ["a", "b", "c", "d"].map(
+        (s) => `https://${s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${cartoApiKey}`
+      ),
+      attributions: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>',
+      maxZoom: 20,
+    }),
+    visible: true,
+  });
   const capaBaseEsri = new ol.layer.Tile({
     source: new ol.source.XYZ({
       url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",

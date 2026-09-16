@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.gis.db.models.functions import Transform
 from django.contrib.gis.geos import Polygon
 from django.core.exceptions import PermissionDenied
+from django.conf import settings
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render
 
@@ -161,7 +162,7 @@ def mapa(request):
     # (permission_required no soporta OR entre permisos, se chequea a mano)
     if not any(request.user.has_perm(p) for p in PERMISOS_CAPAS):
         raise PermissionDenied
-    return render(request, "gdu/mapa.html")
+    return render(request, "gdu/mapa.html", {"carto_api_key": settings.GDU_CARTO_API_KEY})
 
 
 FILTROS_TEXTO_PROGRAMA_ACTUACION = {"programa": "programa", "actuacion": "actuacion"}

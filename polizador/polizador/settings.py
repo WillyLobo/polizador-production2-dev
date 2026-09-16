@@ -121,6 +121,10 @@ GDU_WFS_SRS = env("GDU_WFS_SRS", default="EPSG:22175")
 # necesariamente la misma que usa geoserver/deploy_geoserver.sh internamente.
 GDU_GEOSERVER_URL = env("GDU_GEOSERVER_URL")
 
+# Tiles base (CARTO) del visor de mapa: desde 2026-08 CARTO exige key incluso para el
+# tier gratis (https://carto.com/basemaps/apikey, 5M tiles/mes sin necesidad de cuenta).
+GDU_CARTO_API_KEY = env("GDU_CARTO_API_KEY", default=None)
+
 GDU_3450_API_BASE_URL = env("GDU_3450_API_BASE_URL")
 GDU_3450_API_USERNAME = env("GDU_3450_API_USERNAME")
 GDU_3450_API_PASSWORD = env("GDU_3450_API_PASSWORD")
