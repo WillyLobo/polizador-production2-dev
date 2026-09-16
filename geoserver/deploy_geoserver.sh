@@ -309,6 +309,19 @@ provision_geoserver_native() {
   sudo mkdir -p "$GEOSERVER_DATA_DIR"
   sudo chown -R "${GEOSERVER_SERVICE_USER}:${GEOSERVER_SERVICE_USER}" "$GEOSERVER_DATA_DIR"
 
+  # El connector HTTP de Jetty toma el puerto de esta línea de start.ini, NO
+  # de un -Djetty.http.port en JAVA_OPTS -- confirmado en vivo: con
+  # GEOSERVER_HTTP_PORT=8081 el proceso arrancaba con
+  # -Djetty.http.port=8081 en su línea de comando y aun así intentaba bindear
+  # 0.0.0.0:8080, porque start.ini trae "jetty.http.port=8080" hardcodeado y
+  # esa propiedad de archivo tiene precedencia sobre el system property
+  # homónimo en la resolución de <Property> de start.jar. Se reescribe en
+  # cada corrida (idempotente) para cubrir tanto un redeploy de versión nueva
+  # (que trae el 8080 de fábrica) como un cambio de GEOSERVER_HTTP_PORT sobre
+  # una instalación ya existente.
+  log "Fijando jetty.http.port=${GEOSERVER_HTTP_PORT} en start.ini..."
+  sudo sed -i "s/^jetty.http.port=.*/jetty.http.port=${GEOSERVER_HTTP_PORT}/" "$GEOSERVER_HOME/start.ini"
+
   write_geoserver_systemd_unit
   sudo systemctl enable "$GEOSERVER_SYSTEMD_SERVICE" >/dev/null 2>&1 || true
   sudo systemctl restart "$GEOSERVER_SYSTEMD_SERVICE"
@@ -323,9 +336,10 @@ write_geoserver_systemd_unit() {
   # bin/startup.sh (ver el propio script) ya trae hardcodeados todos los
   # --add-opens/--add-exports que la imagen Docker pasaba a mano por
   # CATALINA_OPTS, y detecta marlin.jar solo -- JAVA_OPTS acá solo necesita
-  # el heap y el flag de GeoTools que no vienen por default.
+  # el heap y el flag de GeoTools que no vienen por default. El puerto HTTP
+  # NO va acá -- un -Djetty.http.port en JAVA_OPTS no tiene efecto (ver
+  # provision_geoserver_native, que lo fija reescribiendo start.ini).
   local java_opts="-Xms256m -Xmx1g -Dorg.geotools.coverage.jaiext.enabled=true"
-  [[ "$GEOSERVER_HTTP_PORT" != "8080" ]] && java_opts="$java_opts -Djetty.http.port=${GEOSERVER_HTTP_PORT}"
 
   cat > "$RENDERED_DIR/geoserver.service" <<EOF
 [Unit]
