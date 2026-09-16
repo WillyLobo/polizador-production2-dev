@@ -29,8 +29,11 @@ actualizado, es texto viejo — el comportamiento real es el que describe
 - GeoServer 2.26.2 como servicio **nativo** (no Docker), publicando por
   WFS-T las tablas de `catastro.*` que ya están validadas (`localidad`,
   `manzana`, `calle`, `vivienda_punto`, `intervencion`+sus relaciones N:N,
-  `plano_mensura`+la suya — ver lista completa en `deploy_geoserver.sh` →
-  `GS_FEATURETYPES`).
+  `plano_mensura`+la suya, y desde 2026-09-16 también los lookups de campos
+  FK propios de `intervencion` -- `tipo_estado`, `resolucion_costos`,
+  `contratacion`, `tipo_contratacion`, `adjudicacion_beneficiario`,
+  `programa`, `actuacion`, `tipo_intervencion` — ver lista completa en
+  `deploy_geoserver.sh` → `GS_FEATURETYPES`).
 - Un servicio de roles JDBC que lee en vivo los `Group` de Django (por
   Postgres) — la autorización (qué puede editar cada usuario) sigue
   gobernada por Django, no por GeoServer.
@@ -224,6 +227,22 @@ curl -i "$GEOSERVER_URL/gdu/ows?service=WFS&version=2.0.0&request=GetFeature&typ
 
 ## 6. Generar el `.qgz` para un usuario (ej. `mazzario`)
 
+**Actualización (2026-09-16) — ya existe una alternativa self-service**: el
+propio polizador tiene una vista (`gdu:descargar_proyecto_qgis`, botón
+"Proyecto QGIS" en `/gdu/mapa/`, código en
+`polizador/gdu/services/qgis_reconnect.py`) que genera este mismo `.qgz`
+reconectado automáticamente para el usuario logueado, sin correr nada a
+mano, incluyendo tanto las capas piloto como sus capas de soporte, y con
+soporte tanto para el modo `username`-solo como `authcfg` (campo opcional en
+el modal de descarga). **Ojo, no es un reemplazo 1:1 de este flujo manual**:
+hoy esa vista poda el proyecto a solo las capas publicadas por WFS-T (pensado
+para un servidor de prueba sin ruta a la base de producción, ver el
+comentario al inicio de `qgis_reconnect.py`), mientras que el flujo manual de
+esta sección genera el `.qgz` **completo** (~180 capas, el resto apuntando a
+Postgres directo) que es lo que corresponde para un despliegue real. Usar
+este flujo manual para producción; la vista self-service es para este ciclo
+de prueba.
+
 El proyecto QGIS real (`gdu.qgz`, o el que use ese usuario) tiene ~180 capas;
 solo las listadas en `GS_FEATURETYPES` (arriba) están publicadas por WFS-T.
 `scripts/reconectar_wfs.py` reescribe **solo esas**, dejando el resto del
@@ -255,8 +274,20 @@ python3 scripts/reconectar_wfs.py \
   --layers localidad manzana calle vivienda_punto \
            intervencion inspector ejecutor intervencion_inspector intervencion_ejecutor \
            plano_mensura plano_mensura_intervencion \
+           tipo_estado resolucion_costos contratacion tipo_contratacion \
+           adjudicacion_beneficiario programa actuacion tipo_intervencion \
   --force
 ```
+
+**Importante (2026-09-16)**: a diferencia de la vista self-service (que
+calcula solo qué capas de soporte hacen falta por relación y las reconecta
+solas), acá hay que listar **a mano** cada capa que se quiera fuera de
+Postgres directo -- `reconectar_wfs.py` sin `--solo-esta-capa` no calcula el
+cierre de dependencias, solo reconecta lo que está en `--layers`. Si se omite
+alguna de las 8 capas de soporte nuevas de la lista de arriba, esa capa queda
+apuntando a la base de producción vieja (`db_gdu`@`10.106.16.118`, ver
+"Pendiente" más abajo) en vez de a GeoServer, y el combo de ese campo en
+QGIS va a intentar conectarse ahí.
 
 **Sin `--username`/`--password`** a propósito: en producción no hay que
 embeber credenciales en el `.qgz` — QGIS va a pedir usuario/contraseña la
@@ -325,9 +356,16 @@ deploy de prueba, pero sí una puesta en producción real con usuarios finales:
   anterior), recién después correr `reconectar_wfs.py --authcfg <ese-id>`
   para generar SU `.qgz` — coordinación extra por usuario, pero compatible
   con el hecho de que ya se genera un `.qgz` nombrado por usuario (ej.
-  `gdu.wfs.mazzario.qgz`), no un archivo único para todos. Falta probar de
-  punta a punta contra una tabla de ~1200-2000 filas para confirmar que
-  realmente colapsa los round-trips como se espera.
+  `gdu.wfs.mazzario.qgz`), no un archivo único para todos.
+
+  **Validado en vivo (2026-09-16)** contra QGIS Desktop real, vía la vista
+  self-service (ver sección 6): con un `authcfg` cargado de antemano en el
+  Auth Manager local, QGIS usa esa config sin pedir usuario/contraseña
+  sueltos -- confirma que el mecanismo en sí (embeber `authcfg='<id>'`,
+  QGIS resolviéndolo contra su config local) funciona de punta a punta. Lo
+  que **sigue sin confirmarse** es la mejora de rendimiento puntual en una
+  tabla de ~1200-2000 filas (el colapso de round-trips vs. el modo
+  username-solo) -- no se hizo esa medición específica todavía.
 - **`tierra`**: publicada y verificada del lado de GeoServer, pero sin
   ningún `.qgz` disponible con esa capa armada — no se puede repartir hasta
   que exista un proyecto QGIS real con "Tierra" como capa propia.

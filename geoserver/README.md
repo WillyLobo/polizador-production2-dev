@@ -48,12 +48,23 @@ que antes.
   el plugin que completa `updated_by` con el usuario autenticado real (ver
   más abajo).
 - Deliberadamente NO automatiza: reconectar el proyecto QGIS (Fase 3, script
-  aparte en `qgis-gdu/`), ni generalizar a más capas (Fase 4, hoy solo
-  `localidad`).
-- Alcance actual: una sola capa piloto (`gdu:localidad`). Sumar otra capa es
-  editar `GS_FEATURETYPE`/la sección de grants en `sql/02_provision_schema.sql`
-  y las reglas en `templates/layers.properties` -- no hace falta tocar la
-  lógica del script.
+  aparte en `qgis-gdu/`) -- aunque desde 2026-09-16 el propio Django
+  (`polizador/gdu/services/qgis_reconnect.py`, botón "Proyecto QGIS" en
+  `/gdu/mapa/`) también sabe hacerlo por su cuenta para el usuario logueado,
+  ver la nota más abajo.
+- Alcance actual: `GS_FEATURETYPES` en `deploy_geoserver.sh` (no `localidad`
+  sola desde hace rato -- ese dato quedó viejo acá). Sumar otra capa es
+  agregarla ahí + la sección de grants en `sql/02_provision_schema.sql` (si
+  necesita GRANT nuevo) + las reglas en `templates/layers.properties` -- no
+  hace falta tocar la lógica del script. **2026-09-16**: se sumaron 8 capas
+  de soporte de `intervencion` (`tipo_estado`, `resolucion_costos`,
+  `contratacion`, `tipo_contratacion`, `adjudicacion_beneficiario`,
+  `programa`, `actuacion`, `tipo_intervencion` -- lookups de sus propios
+  campos FK, con el mismo gate `GDU_ADMIN_USER` que `intervencion`). Antes se
+  servían directo por Postgres desde el `.qgz` descargable, lo que obligaba a
+  repartir una credencial de Postgres compartida (no por usuario, sin pasar
+  por las Data Access Rules de este archivo) solo para ver esos combos --
+  publicarlas acá elimina esa credencial aparte.
 
 ## Decisión importante: contraseñas de configuración en texto plano
 
@@ -104,11 +115,15 @@ destino o un secreto -- el script corta con un mensaje claro si falta alguna.
 | `GEOSERVER_DS_PASSWORD` | *(requerida)* | Contraseña a fijar/usar para el rol `geoserver_piloto` (datastore) |
 | `GEOSERVER_SECURITY_DB_PASSWORD` | *(requerida)* | Contraseña a fijar/usar para el rol `geoserver_security` (servicio de roles) |
 
-### Identificadores del workspace/capa piloto (rara vez hace falta tocarlos)
+### Identificadores del workspace/capas piloto (rara vez hace falta tocarlos)
 
 `GS_WORKSPACE=gdu`, `GS_DATASTORE=catastro`, `GS_NAMESPACE_URI=http://gdu`,
-`GS_PG_SCHEMA=catastro`, `GS_FEATURETYPE=localidad`,
-`GS_FEATURETYPE_SRS=EPSG:22175`.
+`GS_PG_SCHEMA=catastro`, `GS_FEATURETYPE_SRS=EPSG:22175`. La lista de capas a
+publicar es `GS_FEATURETYPES` (plural, separada por espacios) -- ver su
+default en `deploy_geoserver.sh` para la lista completa vigente en vez de
+duplicarla acá (se desincroniza fácil); `GS_FEATURETYPE_DEEP_TEST` marca cuál
+de esas recibe el chequeo profundo de `verify` (insert+update+delete con
+geometría), las demás solo el liviano.
 
 ### LDAP (autenticación -- opcional, fase `geoserver`)
 
