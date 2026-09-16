@@ -257,6 +257,12 @@ provision_geoserver_native() {
   log "Asegurando GeoServer $GEOSERVER_VERSION instalado nativamente (standalone, Jetty embebido)..."
 
   command -v unzip >/dev/null || sudo apt-get install -y unzip
+  # GeoServer 2.26.x corre sobre Java 17 (mínimo soportado 11, pero 17 es lo
+  # recomendado por el proyecto para esta serie) -- bin/startup.sh asume
+  # `java` en el PATH y no lo valida, así que sin esto el service arranca y
+  # sale con exit 1/FAILURE sin más pista en journalctl que "command not
+  # found". headless porque corre en un server sin entorno gráfico.
+  command -v java >/dev/null || sudo apt-get install -y openjdk-17-jre-headless
   id -u "$GEOSERVER_SERVICE_USER" >/dev/null 2>&1 || \
     sudo useradd --system --no-create-home --home-dir "$GEOSERVER_HOME" --shell /usr/sbin/nologin "$GEOSERVER_SERVICE_USER"
 
@@ -332,7 +338,13 @@ User=${GEOSERVER_SERVICE_USER}
 Group=${GEOSERVER_SERVICE_USER}
 Environment=GEOSERVER_HOME=${GEOSERVER_HOME}
 Environment=GEOSERVER_DATA_DIR=${GEOSERVER_DATA_DIR}
-Environment=JAVA_OPTS=${java_opts}
+# JAVA_OPTS entre comillas es obligatorio: systemd separa el valor de
+# Environment= en espacios y trata cada trozo como un NAME=VALUE propio,
+# descartando en silencio los que no matchean ese patron (ej.
+# "-Xmx1g" o "-Djetty.http.port=8081" solos) -- confirmado en vivo, sin
+# comillas solo el primer flag ("-Xms256m") le llegaba a java, todo lo demas
+# (heap max, flag de GeoTools, override de puerto) desaparecia sin error.
+Environment="JAVA_OPTS=${java_opts}"
 WorkingDirectory=${GEOSERVER_HOME}
 ExecStart=${GEOSERVER_HOME}/bin/startup.sh
 Restart=on-failure
