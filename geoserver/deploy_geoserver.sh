@@ -124,7 +124,17 @@ GS_PG_SCHEMA="${GS_PG_SCHEMA:-catastro}"
 # propia y sin rol Django dedicado todavía -- gate provisional GDU_ADMIN_USER
 # para lectura y escritura en templates/layers.properties (el wildcard
 # *.*.r=* de ese archivo es lectura PÚBLICA, no alcanza dejarlas sin regla).
-GS_FEATURETYPES="${GS_FEATURETYPES:-localidad manzana calle vivienda_punto intervencion inspector ejecutor intervencion_inspector intervencion_ejecutor plano_mensura plano_mensura_intervencion tierra plano_mensura_tierra}"
+# tipo_estado/resolucion_costos/contratacion/tipo_contratacion/
+# adjudicacion_beneficiario/programa/actuacion/tipo_intervencion: capas de
+# soporte de intervencion (lookups de sus propios campos FK), antes servidas
+# directo por Postgres desde el .qgz descargable (ver gdu/services/
+# qgis_reconnect.py) -- eso obligaba a repartir una credencial de Postgres
+# compartida (no por usuario, sin las Data Access Rules de este archivo) para
+# poder ver esos combos. Se publican acá para que pasen por el mismo WFS+LDAP
+# que el resto. Confirmado a mano contra la base del piloto: las 8 ya tienen
+# PK "id" y columnas updated_by/updated_at, así que no van en
+# GS_FEATURETYPES_NO_AUDIT.
+GS_FEATURETYPES="${GS_FEATURETYPES:-localidad manzana calle vivienda_punto intervencion inspector ejecutor intervencion_inspector intervencion_ejecutor plano_mensura plano_mensura_intervencion tierra plano_mensura_tierra tipo_estado resolucion_costos contratacion tipo_contratacion adjudicacion_beneficiario programa actuacion tipo_intervencion}"
 GS_FEATURETYPE_DEEP_TEST="${GS_FEATURETYPE_DEEP_TEST:-localidad}"
 GS_FEATURETYPE_SRS="${GS_FEATURETYPE_SRS:-EPSG:22175}"
 # Tablas de GS_FEATURETYPES sin columna updated_by/updated_at (tablas

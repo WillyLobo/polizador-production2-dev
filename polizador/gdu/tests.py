@@ -48,6 +48,20 @@ class DescargarProyectoQgisTest(TestCase):
         self.assertIn(f"username='{username}'", qgs_text)
         self.assertNotIn("password='", qgs_text)
 
+        # Servidor de prueba: el proyecto debe venir podado a las capas piloto
+        # (+ sus dependencias de relación) y sin quedar ninguna referencia al
+        # host de producción (10.106.16.118), ni siquiera en las copias
+        # cacheadas de <Option name="ReferencedLayerDataSource">.
+        self.assertLess(qgs_text.count("<maplayer"), 20)
+        self.assertNotIn("10.106.16.118", qgs_text)
+
+        # Las capas de soporte (lookups de intervencion) también van a WFS --
+        # nada debe quedar conectado directo a Postgres (evita repartir una
+        # credencial de Postgres compartida solo para verlas).
+        self.assertNotIn("dbname=", qgs_text)
+        self.assertIn("typename='gdu:tipo_estado'", qgs_text)
+        self.assertIn("typename='gdu:programa'", qgs_text)
+
     def _login_con_permiso(self, username):
         user = CustomUser.objects.create_user(username=username, password="x")
         user.user_permissions.add(
