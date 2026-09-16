@@ -1,6 +1,6 @@
 from django.urls import path
 
-from gdu.views import api3450, audit, csv_export, encuesta, listados, print_pdf, smb, uf, vincular_obra, visor
+from gdu.views import api3450, audit, csv_export, encuesta, listados, print_pdf, qgis_project, smb, uf, vincular_obra, visor
 
 app_name = "gdu"
 
@@ -27,6 +27,7 @@ urlpatterns = [
     path("mapa/buscar-localidad.json", visor.buscar_localidad, name="buscar_localidad"),
     path("mapa/buscar-parcela.json", visor.buscar_parcela, name="buscar_parcela"),
     path("mapa/opciones-busqueda.json", visor.opciones_busqueda, name="opciones_busqueda"),
+    path("mapa/qgis/descargar/", qgis_project.descargar_proyecto_qgis, name="descargar_proyecto_qgis"),
 
     path("contrataciones/<int:contratacion_id>/vincular-obra/", vincular_obra.vincular_obra, name="vincular_obra"),
 

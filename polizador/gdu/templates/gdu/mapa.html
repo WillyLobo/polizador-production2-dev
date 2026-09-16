@@ -793,6 +793,10 @@ document.addEventListener("DOMContentLoaded", function () {
       <i class="bi bi-eraser"></i> Borrar mediciones
     </button>
 
+    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalDescargarQgis" title="Descarga gdu.qgz reconectado a tu usuario para abrir en QGIS Desktop">
+      <i class="bi bi-download"></i> Proyecto QGIS
+    </button>
+
     <span id="gdu-map-info" class="text-muted small ms-auto"></span>
   </div>
   <p class="text-muted small mb-2">Shift+click selecciona varios elementos de a uno; Ctrl+arrastre selecciona por rectángulo.</p>
@@ -927,6 +931,34 @@ document.addEventListener("DOMContentLoaded", function () {
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-limpiar-filtros-busqueda">Limpiar filtros</button>
           <button type="submit" class="btn btn-primary btn-sm">Aplicar filtros</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal fade" id="modalDescargarQgis" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="get" action="{% url 'gdu:descargar_proyecto_qgis' %}">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Descargar proyecto QGIS</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p class="small">Descarga un .zip con el proyecto de QGIS Desktop (gdu.qgz + formularios) ya conectado a las capas de GeoServer con tu usuario.</p>
+          <label class="form-label small mb-1" for="authcfg-descarga-qgis">ID de autenticación de QGIS (opcional)</label>
+          <input type="text" class="form-control form-control-sm" id="authcfg-descarga-qgis" name="authcfg" maxlength="7" pattern="[A-Za-z0-9]{7}" placeholder="ej: a1b2c3d">
+          <p class="text-muted small mt-2 mb-0">
+            Si dejás esto vacío, QGIS te va a pedir tu contraseña de red la primera vez que abras cada capa
+            (puede ser lento en las capas más grandes, como Manzana o Calle). Para evitarlo, configurá antes
+            una credencial en QGIS: <strong>Configuración &gt; Opciones &gt; Autenticación</strong>, botón
+            <strong>+</strong>, tipo <strong>Basic</strong>, con tu usuario y contraseña de red, y pegá acá
+            el ID de 7 caracteres que QGIS le asigna.
+          </p>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-download"></i> Descargar</button>
         </div>
       </div>
     </form>
