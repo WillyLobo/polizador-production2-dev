@@ -91,3 +91,36 @@ class DescargarProyectoQgisTest(TestCase):
         response = self.client.get(self.url, {"authcfg": "no-va!"})
 
         self.assertEqual(response.status_code, 400)
+
+    def test_ldap_username_se_usa_en_vez_del_username_de_django(self):
+        self._login_con_permiso("cuentalocal")
+
+        response = self.client.get(self.url, {"ldap_username": "jperez.red"})
+
+        self.assertEqual(response.status_code, 200)
+        paquete = zipfile.ZipFile(io.BytesIO(b"".join(response.streaming_content)))
+        qgz_nombre = next(n for n in paquete.namelist() if n.endswith(".qgz"))
+        qgs_text = zipfile.ZipFile(io.BytesIO(paquete.read(qgz_nombre))).read("gdu.qgs").decode("utf-8")
+
+        self.assertIn("username='jperez.red'", qgs_text)
+        self.assertNotIn("username='cuentalocal'", qgs_text)
+
+    def test_ldap_username_se_ignora_si_hay_authcfg(self):
+        self._login_con_permiso("cuentalocal")
+
+        response = self.client.get(self.url, {"ldap_username": "jperez.red", "authcfg": "a1b2c3d"})
+
+        self.assertEqual(response.status_code, 200)
+        paquete = zipfile.ZipFile(io.BytesIO(b"".join(response.streaming_content)))
+        qgz_nombre = next(n for n in paquete.namelist() if n.endswith(".qgz"))
+        qgs_text = zipfile.ZipFile(io.BytesIO(paquete.read(qgz_nombre))).read("gdu.qgs").decode("utf-8")
+
+        self.assertIn("authcfg=a1b2c3d", qgs_text)
+        self.assertNotIn("username='jperez.red'", qgs_text)
+
+    def test_ldap_username_invalido_da_400(self):
+        self._login_con_permiso("cuentalocal")
+
+        response = self.client.get(self.url, {"ldap_username": "jper ez'"})
+
+        self.assertEqual(response.status_code, 400)

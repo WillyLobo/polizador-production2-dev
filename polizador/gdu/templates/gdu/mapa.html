@@ -962,14 +962,22 @@ document.addEventListener("DOMContentLoaded", function () {
         </div>
         <div class="modal-body">
           <p class="small">Descarga un .zip con el proyecto de QGIS Desktop (gdu.qgz + formularios) ya conectado a las capas de GeoServer con tu usuario.</p>
-          <label class="form-label small mb-1" for="authcfg-descarga-qgis">ID de autenticación de QGIS (opcional)</label>
+          <label class="form-label small mb-1" for="ldap-username-descarga-qgis">Usuario de red / LDAP (opcional)</label>
+          <input type="text" class="form-control form-control-sm" id="ldap-username-descarga-qgis" name="ldap_username" placeholder="ej: jperez">
+          <p class="text-muted small mt-2 mb-0">
+            Completá esto solo si iniciaste sesión acá con una cuenta que <strong>no</strong> es tu usuario de
+            red/LDAP (por ejemplo, una cuenta local) -- así el proyecto se conecta a GeoServer con tu usuario de
+            red real en vez del que usaste para entrar. Si iniciaste sesión con tu usuario de red, dejalo vacío.
+          </p>
+          <label class="form-label small mb-1 mt-3" for="authcfg-descarga-qgis">ID de autenticación de QGIS (opcional)</label>
           <input type="text" class="form-control form-control-sm" id="authcfg-descarga-qgis" name="authcfg" maxlength="7" pattern="[A-Za-z0-9]{7}" placeholder="ej: a1b2c3d">
           <p class="text-muted small mt-2 mb-0">
             Si dejás esto vacío, QGIS te va a pedir tu contraseña de red la primera vez que abras cada capa
             (puede ser lento en las capas más grandes, como Manzana o Calle). Para evitarlo, configurá antes
             una credencial en QGIS: <strong>Configuración &gt; Opciones &gt; Autenticación</strong>, botón
             <strong>+</strong>, tipo <strong>Basic</strong>, con tu usuario y contraseña de red, y pegá acá
-            el ID de 7 caracteres que QGIS le asigna.
+            el ID de 7 caracteres que QGIS le asigna. Si cargás esto, el campo de usuario de red de arriba
+            se ignora.
           </p>
         </div>
         <div class="modal-footer">
