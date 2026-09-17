@@ -562,14 +562,22 @@ JSON
 }
 
 configure_proxy_base_url() {
-  # proxyBaseUrl vive en /rest/settings (config global, no por workspace) --
-  # PUT acepta un body parcial, GeoServer lo mergea con el resto de global
-  # settings ya existentes (mismo comportamiento documentado que ya asumen
-  # los demás PUT de este script, ej. datastore existente en rest_provision).
+  # OJO: a diferencia de otros PUT de este script (ej. datastore existente en
+  # rest_provision), PUT /rest/settings NO mergea un body parcial -- reemplaza
+  # el objeto "settings" ENTERO por lo que se manda. Confirmado en vivo contra
+  # el piloto local: un body con solo proxyBaseUrl pisó (entre otros) charset
+  # (quedaba ausente -> null), lo que rompe TODO GetCapabilities con
+  # "IllegalArgumentException: Null charset name" (GetCapabilities.java hace
+  # Charset.forName(settings.getCharset()) sin chequear null) -- además de
+  # numDecimals, verbose y el <id> original de settings, todos silenciosamente
+  # reseteados a su default. Por eso acá: GET del settings.json actual,
+  # mergear proxyBaseUrl adentro con jq, y PUT el objeto completo de vuelta.
   [[ -n "$GEOSERVER_PROXY_BASE_URL" ]] || { log "GEOSERVER_PROXY_BASE_URL no definida -- se omite (GeoServer sigue derivando sus URLs de la conexión real)"; return; }
+  command -v jq >/dev/null || sudo apt-get install -y jq
 
-  log "Fijando proxyBaseUrl=$GEOSERVER_PROXY_BASE_URL..."
-  printf '{"global":{"settings":{"proxyBaseUrl":"%s"}}}' "$GEOSERVER_PROXY_BASE_URL" > "$RENDERED_DIR/proxy-base-url.json"
+  log "Fijando proxyBaseUrl=$GEOSERVER_PROXY_BASE_URL (merge sobre /rest/settings actual, no reemplazo)..."
+  rest_check GET "/rest/settings.json"
+  jq --arg url "$GEOSERVER_PROXY_BASE_URL" '.global.settings.proxyBaseUrl = $url' "$REST_BODY_FILE" > "$RENDERED_DIR/proxy-base-url.json"
   rest_check PUT "/rest/settings" "$RENDERED_DIR/proxy-base-url.json"
 }
 
