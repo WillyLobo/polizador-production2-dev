@@ -174,6 +174,9 @@ LDAP_SERVER_URL="${LDAP_SERVER_URL:-ldap://10.106.16.3:389/dc=ipduv,dc=gov,dc=ar
 LDAP_USER_FILTER="${LDAP_USER_FILTER:-}"
 [[ -z "$LDAP_USER_FILTER" ]] && LDAP_USER_FILTER='(sAMAccountName={0})'
 LDAP_USER_NAME_ATTRIBUTE="${LDAP_USER_NAME_ATTRIBUTE:-sAMAccountName}"
+# Patrón MessageFormat opcional, ver overlay_security_config() para su default
+# (depende de LDAP_BIND_DN, que recién ahí está garantizado no-vacío).
+LDAP_USER_FORMAT="${LDAP_USER_FORMAT:-}"
 
 mkdir -p "$RENDERED_DIR"
 
@@ -472,8 +475,29 @@ overlay_security_config() {
 
   if [[ -n "${LDAP_BIND_DN:-}" && -n "${LDAP_BIND_PASSWORD:-}" ]]; then
     log "Configurando proveedor de autenticación LDAP ($LDAP_PROVIDER_NAME)..."
+    # Patrón MessageFormat que GeoserverLdapBindAuthenticator.authenticateUsingFilter
+    # aplica al username ANTES de bindear -- a diferencia de un search-then-bind
+    # clásico (buscar el DN con la cuenta de bind, recién ahí bindear como esa
+    # DN), esta clase de GeoServer bindea DIRECTO usando el username ya
+    # formateado como principal (ctx = getContextSource().getContext(username,
+    # password)), y solo DESPUÉS busca vía userFilter. Confirmado contra el
+    # código fuente real (src/security/ldap/.../GeoserverLdapBindAuthenticator.java,
+    # y su wiring en LDAPSecurityProvider.createAuthenticationProvider) tras ver
+    # en vivo que el bind fallaba (BadCredentialsException, "Credenciales
+    # erróneas" en geoserver.log) con el username sin formatear ("globo",
+    # "mazzario") aunque ese mismo usuario+contraseña bindea sin problema por
+    # ldapsearch directo usando "IPDUV\<usuario>" -- sin userFormat, GeoServer
+    # intenta bindear con el sAMAccountName pelado como si fuera un DN válido,
+    # que este AD rechaza (ldap_bind: Invalid credentials, data 52e). Sin
+    # default no hay forma de loguearse con LDAP salvo la cuenta admin local.
+    # "{0}" es el placeholder de MessageFormat -- no se puede escribir como
+    # ${LDAP_USER_FORMAT:-IPDUV\{0}} por el mismo bug de parseo de bash que ya
+    # afecta a LDAP_USER_FILTER (ver su comentario más arriba), así que se
+    # deriva en dos pasos del dominio NT4 en LDAP_BIND_DN (ej.
+    # "IPDUV\admindeu" -> "IPDUV") en vez de hardcodear/duplicar el dominio.
+    [[ -n "$LDAP_USER_FORMAT" ]] || LDAP_USER_FORMAT="${LDAP_BIND_DN%%\\*}\\{0}"
     render_template "$TEMPLATES_DIR/ldap-auth-config.xml.tmpl" "$RENDERED_DIR/ldap-auth-config.xml" \
-      LDAP_PROVIDER_NAME LDAP_SERVER_URL LDAP_USER_FILTER LDAP_USER_NAME_ATTRIBUTE LDAP_BIND_DN LDAP_BIND_PASSWORD
+      LDAP_PROVIDER_NAME LDAP_SERVER_URL LDAP_USER_FILTER LDAP_USER_FORMAT LDAP_USER_NAME_ATTRIBUTE LDAP_BIND_DN LDAP_BIND_PASSWORD
     sudo mkdir -p "$GEOSERVER_DATA_DIR/security/auth/${LDAP_PROVIDER_NAME}"
     sudo cp "$RENDERED_DIR/ldap-auth-config.xml" "$GEOSERVER_DATA_DIR/security/auth/${LDAP_PROVIDER_NAME}/config.xml"
     EXTRA_AUTH_PROVIDERS="<string>${LDAP_PROVIDER_NAME}</string>"
