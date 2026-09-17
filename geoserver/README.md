@@ -103,6 +103,7 @@ destino o un secreto -- el script corta con un mensaje claro si falta alguna.
 | `GEOSERVER_HOME` | `/opt/geoserver` | Dónde se instala la distribución "bin" de GeoServer (binarios, `start.jar`, `webapps/geoserver/`) |
 | `GEOSERVER_SERVICE_USER` | `geoserver` | Usuario de sistema dedicado que corre el proceso (el script lo crea si no existe, `--system --no-create-home`) |
 | `GEOSERVER_SYSTEMD_SERVICE` | `geoserver` | Nombre del unit de systemd (`/etc/systemd/system/$GEOSERVER_SYSTEMD_SERVICE.service`, generado por el script) |
+| `GEOSERVER_PROXY_BASE_URL` | *(sin default, opcional)* | URL pública a embeber en las respuestas OWS (GetCapabilities, hrefs de WFS-T) en vez de la que GeoServer ve en la conexión cruda -- necesaria detrás de un reverse proxy/túnel (ej. cloudflared), donde el hostname que ve el cliente no es `127.0.0.1:8080`/la IP LAN que ve GeoServer del lado del servidor. Sin definir, no se toca nada (comportamiento por defecto, correcto para acceso directo por IP). Ej.: `https://geoserver.ipduv.example/geoserver` |
 
 ### Postgres (fases `postgres` y `geoserver`)
 

@@ -89,6 +89,17 @@ GEOSERVER_ADMIN_USER="${GEOSERVER_ADMIN_USER:-admin}"
 GEOSERVER_URL="${GEOSERVER_URL:-http://127.0.0.1:${GEOSERVER_HTTP_PORT}/geoserver}"
 PGPORT="${PGPORT:-5432}"
 
+# URL pública que GeoServer debe embeber en sus propias respuestas OWS
+# (GetCapabilities, hrefs de WFS-T, etc.) en vez de derivarla de la conexión
+# cruda que recibe -- necesario detrás de un reverse proxy/túnel (ej.
+# cloudflared), donde lo que el cliente ve (hostname público) no coincide con
+# lo que GeoServer ve del lado del servidor (127.0.0.1:8080 o la IP LAN).
+# Opcional, igual que LDAP_BIND_DN: sin definir, configure_proxy_base_url no
+# toca nada y GeoServer sigue con su comportamiento por defecto (URLs
+# derivadas de la conexión real -- correcto para acceso directo por IP LAN,
+# como en este piloto). Ej.: https://geoserver.ipduv.example/geoserver
+GEOSERVER_PROXY_BASE_URL="${GEOSERVER_PROXY_BASE_URL:-}"
+
 # GeoServer standalone (distribución "bin" oficial, Jetty 9.4 embebido) --
 # NO Tomcat. Se probó primero con el paquete apt "tomcat10" (Ubuntu ya no
 # empaqueta tomcat9) y falló en caliente: el WAR de GeoServer 2.26.2 está
@@ -550,6 +561,18 @@ JSON
   done
 }
 
+configure_proxy_base_url() {
+  # proxyBaseUrl vive en /rest/settings (config global, no por workspace) --
+  # PUT acepta un body parcial, GeoServer lo mergea con el resto de global
+  # settings ya existentes (mismo comportamiento documentado que ya asumen
+  # los demás PUT de este script, ej. datastore existente en rest_provision).
+  [[ -n "$GEOSERVER_PROXY_BASE_URL" ]] || { log "GEOSERVER_PROXY_BASE_URL no definida -- se omite (GeoServer sigue derivando sus URLs de la conexión real)"; return; }
+
+  log "Fijando proxyBaseUrl=$GEOSERVER_PROXY_BASE_URL..."
+  printf '{"global":{"settings":{"proxyBaseUrl":"%s"}}}' "$GEOSERVER_PROXY_BASE_URL" > "$RENDERED_DIR/proxy-base-url.json"
+  rest_check PUT "/rest/settings" "$RENDERED_DIR/proxy-base-url.json"
+}
+
 phase_geoserver() {
   require_env GEOSERVER_ADMIN_PASSWORD
 
@@ -558,6 +581,7 @@ phase_geoserver() {
   bootstrap_admin_password
   overlay_security_config
   rest_provision
+  configure_proxy_base_url
   log "Fase GeoServer OK"
 }
 
@@ -640,6 +664,15 @@ XML
     log "OK: LDAP autentica de verdad contra el AD (correcta -> $code_ok, incorrecta -> $code_bad)"
   else
     log "LDAP no configurado (LDAP_BIND_DN/LDAP_BIND_PASSWORD vacíos) -- se omite esa verificación"
+  fi
+
+  if [[ -n "$GEOSERVER_PROXY_BASE_URL" ]]; then
+    log "Verificando que proxyBaseUrl se refleje en las respuestas OWS..."
+    local caps; caps="$(curl -s -u "${GEOSERVER_ADMIN_USER}:${GEOSERVER_ADMIN_PASSWORD}" "${GEOSERVER_URL}/${GS_WORKSPACE}/ows?service=WFS&version=2.0.0&request=GetCapabilities")"
+    [[ "$caps" == *"${GEOSERVER_PROXY_BASE_URL}"* ]] || die "GetCapabilities no incluye proxyBaseUrl ($GEOSERVER_PROXY_BASE_URL) en sus hrefs -- revisar /rest/settings"
+    log "OK: proxyBaseUrl reflejado en GetCapabilities"
+  else
+    log "GEOSERVER_PROXY_BASE_URL no configurada -- se omite esa verificación"
   fi
 
   log "Verificación completa OK"
