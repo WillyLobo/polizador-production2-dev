@@ -577,7 +577,17 @@ configure_proxy_base_url() {
 
   log "Fijando proxyBaseUrl=$GEOSERVER_PROXY_BASE_URL (merge sobre /rest/settings actual, no reemplazo)..."
   rest_check GET "/rest/settings.json"
-  jq --arg url "$GEOSERVER_PROXY_BASE_URL" '.global.settings.proxyBaseUrl = $url' "$REST_BODY_FILE" > "$RENDERED_DIR/proxy-base-url.json"
+  # ".global.settings.charset // "UTF-8"" es autoreparador a propósito, no
+  # solo "llevar lo que ya había": la primera versión de este PUT (antes de
+  # este fix) reemplazaba el objeto entero y ya rompió charset en el server de
+  # prueba una vez (quedó ausente -> Charset.forName(null) revienta CUALQUIER
+  # GetCapabilities) -- un merge que solo preserva lo existente perpetuaría
+  # ese estado roto para siempre en vez de repararlo. Así, correr esta fase de
+  # nuevo sobre un settings.json ya dañado lo deja en UTF-8 en vez de
+  # requerir una restauración manual por REST aparte.
+  jq --arg url "$GEOSERVER_PROXY_BASE_URL" \
+    '.global.settings.proxyBaseUrl = $url | .global.settings.charset = (.global.settings.charset // "UTF-8")' \
+    "$REST_BODY_FILE" > "$RENDERED_DIR/proxy-base-url.json"
   rest_check PUT "/rest/settings" "$RENDERED_DIR/proxy-base-url.json"
 }
 
