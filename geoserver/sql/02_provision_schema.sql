@@ -72,6 +72,17 @@ GRANT USAGE, SELECT ON catastro.intervencion_id_seq, catastro.inspector_id_seq, 
 GRANT SELECT, INSERT, UPDATE, DELETE ON catastro.plano_mensura, catastro.plano_mensura_intervencion, catastro.tierra, catastro.plano_mensura_tierra TO geoserver_piloto;
 GRANT USAGE, SELECT ON catastro.plano_mensura_id_seq, catastro.plano_mensura_intervencion_id_seq, catastro.tierra_id_seq, catastro.plano_mensura_tierra_id_seq TO geoserver_piloto;
 
+-- Lookups de campos FK propios de intervencion (2026-09-16, ver GS_FEATURETYPES
+-- en deploy_geoserver.sh): sin geometría propia, mismo trigger catastro.set_updated().
+-- Bug real encontrado en vivo: agregar estas 8 tablas a GS_FEATURETYPES/
+-- layers.properties sin agregar su GRANT acá hace que GeoServer devuelva
+-- "ERROR: permission denied for table <x>" en cada GetFeature -- QGIS lo
+-- muestra como la capa colgada/sin responder al abrirla, no como un error
+-- claro (401/403), porque el pedido en sí completa rápido pero la única
+-- respuesta útil que da es la excepción, sin datos.
+GRANT SELECT, INSERT, UPDATE, DELETE ON catastro.tipo_estado, catastro.resolucion_costos, catastro.contratacion, catastro.tipo_contratacion, catastro.adjudicacion_beneficiario, catastro.programa, catastro.actuacion, catastro.tipo_intervencion TO geoserver_piloto;
+GRANT USAGE, SELECT ON catastro.tipo_estado_id_seq, catastro.resolucion_costos_id_seq, catastro.contratacion_id_seq, catastro.tipo_contratacion_id_seq, catastro.adjudicacion_beneficiario_id_seq, catastro.programa_id_seq, catastro.actuacion_id_seq, catastro.tipo_intervencion_id_seq TO geoserver_piloto;
+
 -- catastro.set_updated() es el trigger BEFORE INSERT/UPDATE compartido por
 -- las ~30 tablas de catastro (incluida localidad) que pisaba
 -- "NEW.updated_by = current_user" incondicionalmente -- current_user es

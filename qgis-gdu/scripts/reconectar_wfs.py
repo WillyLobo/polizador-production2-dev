@@ -400,6 +400,22 @@ def dejar_solo_estas_capas(qgs_text: str, layer_ids: set, requeridas_en_todas_la
         "layerorder",
     )
 
+    # <individual-layer-settings> (dentro de <snapping-settings>): un
+    # <layer-setting id="..."/> por capa con su tolerancia de snapping --
+    # mismo caso que <custom-order>/<legend>/<layerorder>, no toda capa tiene
+    # entrada acá. Encontrado en vivo (2026-09-16), investigando un reporte de
+    # "el proyecto se cuelga al abrirlo" con un recorte de 14 capas: sin esta
+    # poda quedaban ~150 <layer-setting> colgantes apuntando a capas que ya no
+    # existen en <projectlayers> -- no confirmado todavía que esto sea LA
+    # causa del cuelgue (podría ser otra cosa, ej. QGIS pidiendo credenciales
+    # capa por capa sin `authcfg`), pero es una referencia colgante real que
+    # no correspondía dejar de todos modos.
+    qgs_text = podar_seccion(
+        qgs_text, r"<individual-layer-settings\b[^>]*>", "</individual-layer-settings>",
+        r"<layer-setting\b[^>]*/>", re.compile(r'\bid="([^"]+)"'),
+        "individual-layer-settings",
+    )
+
     # Sobrevive una <relation> solo si AMBOS extremos (referencingLayer y
     # referencedLayer) están en layer_ids -- si layer_ids ya incluye el cierre
     # de dependencias (ver calcular_cierre_dependencias), esto es exactamente
