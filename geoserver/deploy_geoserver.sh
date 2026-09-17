@@ -171,8 +171,19 @@ LDAP_SERVER_URL="${LDAP_SERVER_URL:-ldap://10.106.16.3:389/dc=ipduv,dc=gov,dc=ar
 # terminan reordenando caracteres (se reprodujo aislado: da
 # "(sAMAccountName={0)}", con el ")" y el "}" invertidos). Asignación
 # explícita en dos pasos para no depender de ese parseo.
+#
+# OJO 2: es {1}, NO {0}. GeoserverLdapBindAuthenticator.authenticateUsingFilter
+# arma el filtro con new Object[] {username, originalUser} -- username en el
+# índice 0 es el YA FORMATEADO por LDAP_USER_FORMAT (ej. "IPDUV\globo"),
+# originalUser en el índice 1 es el crudo tal como lo mandó el cliente (ej.
+# "globo"). Confirmado en vivo: con {0} el filtro terminaba armando
+# "(sAMAccountName=IPDUV\globo)", que no matchea ningún atributo real de AD
+# (sAMAccountName nunca incluye el dominio) -> IncorrectResultSizeDataAccessException
+# "expected 1, actual 0" en CUALQUIER búsqueda, aun con el bind ya autenticado
+# correctamente gracias a LDAP_USER_FORMAT. {1} es el que hay que matchear
+# contra sAMAccountName.
 LDAP_USER_FILTER="${LDAP_USER_FILTER:-}"
-[[ -z "$LDAP_USER_FILTER" ]] && LDAP_USER_FILTER='(sAMAccountName={0})'
+[[ -z "$LDAP_USER_FILTER" ]] && LDAP_USER_FILTER='(sAMAccountName={1})'
 LDAP_USER_NAME_ATTRIBUTE="${LDAP_USER_NAME_ATTRIBUTE:-sAMAccountName}"
 # Patrón MessageFormat opcional, ver overlay_security_config() para su default
 # (depende de LDAP_BIND_DN, que recién ahí está garantizado no-vacío).
