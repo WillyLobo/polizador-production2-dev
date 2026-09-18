@@ -94,6 +94,36 @@ def generar_qgz_personalizado(username: str, authcfg: str | None = None) -> byte
         cierre = reconectar_wfs.calcular_cierre_dependencias(qgs_text, set(layer_ids.values()))
         capas_soporte = cierre - set(layer_ids.values())
         id_a_nombre = {v["id"]: k for k, v in config.items()}
+
+        # gdu.qgz tiene capas "bookmark" duplicadas -- ej. 'Región_10'/
+        # 'Resistencia_Norte/Sur/Este' son 4 instancias separadas de
+        # catastro.parcela, cada una pre-filtrada por departamento con su
+        # propio sql=ST_Intersects(...) y su propio <maplayer> id, pero
+        # comparten las MISMAS <relation> (mismo nombre, generado por QGIS
+        # desde el constraint real de la tabla) que la capa real 'parcela' --
+        # indistinguibles para calcular_cierre_dependencias, que las arrastra
+        # igual que a 'parcela' apenas algo se relaciona con ellas. GeoServer
+        # solo publica una capa 'parcela', no 4 típenames por departamento, así
+        # que reconectarlas todas a WFS revienta con un típename inexistente
+        # para 3 de las 4. Se reconecta solo la instancia "canónica" (su alias
+        # en layer_config.py coincide con el nombre real de la tabla); las
+        # demás se excluyen del proyecto entero (dejar_solo_estas_capas más
+        # abajo, vía `cierre`) en vez de dejarlas con su conexión Postgres
+        # vieja rota (inalcanzable igual, y confunde con un ícono de capa
+        # rota permanente).
+        capas_por_tabla: dict[tuple[str, str] | None, list[str]] = {}
+        for lid in capas_soporte:
+            capas_por_tabla.setdefault(reconectar_wfs.tabla_postgres_de(qgs_text, lid), []).append(lid)
+        capas_duplicadas = set()
+        for tabla, lids in capas_por_tabla.items():
+            if tabla is None or len(lids) == 1:
+                continue
+            canonica = next((l for l in lids if id_a_nombre.get(l) == tabla[1]), sorted(lids)[0])
+            capas_duplicadas.update(l for l in lids if l != canonica)
+        if capas_duplicadas:
+            cierre -= capas_duplicadas
+            capas_soporte -= capas_duplicadas
+
         for lid in capas_soporte:
             nombre = id_a_nombre.get(lid, lid)
             datasource_wfs = reconectar_wfs.construir_datasource_wfs(

@@ -98,6 +98,29 @@ def bloque_maplayer(qgs_text: str, layer_id: str) -> tuple[int, int, str]:
     return start, end, qgs_text[start:end]
 
 
+TABLA_RE = re.compile(r'table="([^"]*)"\.\"([^"]*)"')
+
+
+def tabla_postgres_de(qgs_text: str, layer_id: str) -> tuple[str, str] | None:
+    """(schema, tabla) de la conexión Postgres ACTUAL (sin reconectar) de
+    layer_id, o None si no es Postgres o no matchea. Sirve para detectar
+    capas "bookmark" duplicadas -- ej. gdu.qgz tiene 4 instancias de
+    catastro.parcela como capas separadas ('Región_10', 'Resistencia_Norte/
+    Sur/Este'), cada una pre-filtrada con su propio sql=ST_Intersects(...)
+    a un departamento distinto, cada una con su PROPIO id de <maplayer> y
+    sus propias <relation> (mismo nombre de relación repetido, generado por
+    QGIS a partir del constraint real de la tabla, no del alias de la capa)
+    -- indistinguibles de una capa de soporte real para
+    calcular_cierre_dependencias, que las arrastra igual si algo se
+    relaciona con ellas."""
+    _, _, block = bloque_maplayer(qgs_text, layer_id)
+    m = re.search(r"<datasource>(.*?)</datasource>", block, re.S)
+    if not m:
+        return None
+    tabla = TABLA_RE.search(m.group(1))
+    return (tabla.group(1), tabla.group(2)) if tabla else None
+
+
 def relaciones_por_capa(qgs_text: str) -> dict:
     """referencingLayer -> {referencedLayer, ...}, desde la sección global
     <relations> del proyecto.
@@ -130,13 +153,31 @@ def relaciones_por_capa(qgs_text: str) -> dict:
 def calcular_cierre_dependencias(qgs_text: str, layer_ids: set) -> set:
     """BFS sobre relaciones_por_capa, partiendo de layer_ids, hasta el cierre
     transitivo completo (ej. si A depende de B y B depende de C, el cierre
-    incluye A, B y C)."""
+    incluye A, B y C).
+
+    Camina las relaciones en AMBOS sentidos, no solo referencingLayer ->
+    referencedLayer -- confirmado en vivo (QGIS 3.10 y 3.44, KeyError /
+    access violation al abrir el formulario de 'intervencion') que una tabla
+    intermedia N:N (ej. plano_mensura_intervencion) es siempre la
+    referencingLayer de SUS DOS relaciones (tiene las dos FK), con sus
+    "padres" (intervencion, plano_mensura) como referencedLayer -- caminar
+    solo hacia adelante desde los padres (que sí están en GDU_WFS_LAYERS)
+    nunca encuentra la intermedia, porque ninguna relación la tiene como
+    key. layer_config.py referencia esa intermedia por id fijo desde el
+    formulario de 'intervencion' (forms/nn.py) sin importar la dirección de
+    la FK, así que el cierre necesita el grafo no dirigido completo."""
     relaciones = relaciones_por_capa(qgs_text)
+    inversas: dict[str, set[str]] = {}
+    for referencing, referenceds in relaciones.items():
+        for referenced in referenceds:
+            inversas.setdefault(referenced, set()).add(referencing)
+
     cierre = set(layer_ids)
     por_visitar = list(layer_ids)
     while por_visitar:
         lid = por_visitar.pop()
-        for dep in relaciones.get(lid, ()):
+        vecinos = relaciones.get(lid, set()) | inversas.get(lid, set())
+        for dep in vecinos:
             if dep not in cierre:
                 cierre.add(dep)
                 por_visitar.append(dep)

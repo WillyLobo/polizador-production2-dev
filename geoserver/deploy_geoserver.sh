@@ -145,14 +145,28 @@ GS_PG_SCHEMA="${GS_PG_SCHEMA:-catastro}"
 # que el resto. Confirmado a mano contra la base del piloto: las 8 ya tienen
 # PK "id" y columnas updated_by/updated_at, así que no van en
 # GS_FEATURETYPES_NO_AUDIT.
-GS_FEATURETYPES="${GS_FEATURETYPES:-localidad manzana calle vivienda_punto intervencion inspector ejecutor intervencion_inspector intervencion_ejecutor plano_mensura plano_mensura_intervencion tierra plano_mensura_tierra tipo_estado resolucion_costos contratacion tipo_contratacion adjudicacion_beneficiario programa actuacion tipo_intervencion}"
+#
+# barrio/destino_parcela/estado_gestion_expropiacion/expropiacion/
+# objeto_expropiacion/parcela/parcela_expropiada/tipo_ejecutor/tipo_uf/uf:
+# descubiertas recién al corregir calcular_cierre_dependencias en
+# reconectar_wfs.py (BFS bidireccional -- ver su docstring) -- eran
+# dependencias reales del formulario de intervencion/plano_mensura que la
+# versión anterior (solo referencingLayer -> referencedLayer) nunca
+# encontraba, así que jamás se habían publicado. Confirmado contra
+# polizadordbdev (réplica de producción) que las 10 ya existen en el schema
+# catastro con PK "id" antes de agregarlas acá. Mismo gate provisional
+# GDU_ADMIN_USER que el resto (sin rol Django propio todavía -- se define
+# cuando el flujo de carga de datos esté resuelto).
+GS_FEATURETYPES="${GS_FEATURETYPES:-localidad manzana calle vivienda_punto intervencion inspector ejecutor intervencion_inspector intervencion_ejecutor plano_mensura plano_mensura_intervencion tierra plano_mensura_tierra tipo_estado resolucion_costos contratacion tipo_contratacion adjudicacion_beneficiario programa actuacion tipo_intervencion barrio destino_parcela estado_gestion_expropiacion expropiacion objeto_expropiacion parcela parcela_expropiada tipo_ejecutor tipo_uf uf}"
 GS_FEATURETYPE_DEEP_TEST="${GS_FEATURETYPE_DEEP_TEST:-localidad}"
 GS_FEATURETYPE_SRS="${GS_FEATURETYPE_SRS:-EPSG:22175}"
 # Tablas de GS_FEATURETYPES sin columna updated_by/updated_at (tablas
 # intermedias N:N puras, ej. intervencion_inspector: solo 2 FKs + id) -- para
 # estas, phase_verify salta la aserción de updated_by en el chequeo liviano
-# (no aplica) y se queda solo con "oculta para anónimo".
-GS_FEATURETYPES_NO_AUDIT="${GS_FEATURETYPES_NO_AUDIT:-intervencion_inspector plano_mensura_intervencion plano_mensura_tierra}"
+# (no aplica) y se queda solo con "oculta para anónimo". estado_gestion_expropiacion
+# y tipo_uf (tablas de lookup simples, solo id+nombre) tampoco tienen esas
+# columnas -- confirmado contra polizadordbdev.
+GS_FEATURETYPES_NO_AUDIT="${GS_FEATURETYPES_NO_AUDIT:-intervencion_inspector plano_mensura_intervencion plano_mensura_tierra estado_gestion_expropiacion tipo_uf}"
 
 # LDAP (autenticación -- NO autorización, eso lo sigue resolviendo el servicio
 # de roles JDBC por username, sin cambios). Opcional: si no se define

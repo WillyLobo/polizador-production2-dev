@@ -83,6 +83,17 @@ GRANT USAGE, SELECT ON catastro.plano_mensura_id_seq, catastro.plano_mensura_int
 GRANT SELECT, INSERT, UPDATE, DELETE ON catastro.tipo_estado, catastro.resolucion_costos, catastro.contratacion, catastro.tipo_contratacion, catastro.adjudicacion_beneficiario, catastro.programa, catastro.actuacion, catastro.tipo_intervencion TO geoserver_piloto;
 GRANT USAGE, SELECT ON catastro.tipo_estado_id_seq, catastro.resolucion_costos_id_seq, catastro.contratacion_id_seq, catastro.tipo_contratacion_id_seq, catastro.adjudicacion_beneficiario_id_seq, catastro.programa_id_seq, catastro.actuacion_id_seq, catastro.tipo_intervencion_id_seq TO geoserver_piloto;
 
+-- Descubiertas al corregir calcular_cierre_dependencias en reconectar_wfs.py
+-- (BFS por relaciones bidireccional -- la versión anterior solo caminaba
+-- referencingLayer -> referencedLayer, y una tabla intermedia como
+-- plano_mensura_intervencion siempre es la referencingLayer de SUS relaciones,
+-- nunca la referencedLayer, así que ese cierre nunca las encontraba desde
+-- intervencion/plano_mensura). Estas 10 sí son dependencias reales de esos
+-- formularios (lookups de campos FK + parcela/uf/expropiación), confirmado
+-- contra polizadordbdev (réplica de producción) que ya existen en catastro.
+GRANT SELECT, INSERT, UPDATE, DELETE ON catastro.barrio, catastro.destino_parcela, catastro.estado_gestion_expropiacion, catastro.expropiacion, catastro.objeto_expropiacion, catastro.parcela, catastro.parcela_expropiada, catastro.tipo_ejecutor, catastro.tipo_uf, catastro.uf TO geoserver_piloto;
+GRANT USAGE, SELECT ON catastro.barrio_id_seq, catastro.destino_parcela_id_seq, catastro.estado_gestion_expropiacion_id_seq, catastro.expropiacion_id_seq, catastro.objeto_expropiacion_id_seq, catastro.parcela_id_seq, catastro.parcela_expropiada_id_seq, catastro.tipo_ejecutor_id_seq, catastro.tipo_uf_id_seq, catastro.uf_id_seq TO geoserver_piloto;
+
 -- catastro.set_updated() es el trigger BEFORE INSERT/UPDATE compartido por
 -- las ~30 tablas de catastro (incluida localidad) que pisaba
 -- "NEW.updated_by = current_user" incondicionalmente -- current_user es
