@@ -640,6 +640,26 @@ configure_proxy_base_url() {
   rest_check PUT "/rest/settings" "$RENDERED_DIR/proxy-base-url.json"
 }
 
+configure_logging_verbosity() {
+  # Global Settings "verbose": cuando queda en true (se vio en vivo así en el
+  # piloto -- probablemente de alguna sesión de debug manual por la UI que
+  # nunca se revirtió) GeoServer vuelca el objeto de request completo a
+  # geoserver.log en CADA WFS/WMS request (ej. cada Update de QGIS con sus
+  # property/value), no solo en errores -- ruido considerable con uso real.
+  # Default acá a "false" (producción); GEOSERVER_VERBOSE_LOGGING=true para
+  # reactivarlo puntualmente en una corrida de debug sin tocar el script.
+  # Mismo motivo que configure_proxy_base_url para el patrón GET+merge+PUT:
+  # PUT /rest/settings reemplaza el objeto "settings" entero, no lo mergea.
+  local verbose="${GEOSERVER_VERBOSE_LOGGING:-false}"
+  command -v jq >/dev/null || sudo apt-get install -y jq
+  log "Fijando verbose=$verbose en Global Settings (logging de request completo -- merge sobre /rest/settings actual, no reemplazo)..."
+  rest_check GET "/rest/settings.json"
+  jq --argjson verbose "$verbose" \
+    '.global.settings.verbose = $verbose | .global.settings.charset = (.global.settings.charset // "UTF-8")' \
+    "$REST_BODY_FILE" > "$RENDERED_DIR/logging-verbosity.json"
+  rest_check PUT "/rest/settings" "$RENDERED_DIR/logging-verbosity.json"
+}
+
 phase_geoserver() {
   require_env GEOSERVER_ADMIN_PASSWORD
 
@@ -649,6 +669,7 @@ phase_geoserver() {
   overlay_security_config
   rest_provision
   configure_proxy_base_url
+  configure_logging_verbosity
   log "Fase GeoServer OK"
 }
 
