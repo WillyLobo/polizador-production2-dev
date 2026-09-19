@@ -38,6 +38,14 @@
         </div>
         <div class="row g-2 mb-3">
           <div class="col-md-4">
+            <label class="form-label small fw-semibold mb-1" for="inputGroupSelectInspector">Inspector</label>
+            <select name="inspector" class="customSelect2" id="inputGroupSelectInspector" style="width:100%;" multiple>
+                {% for inspector in selected_inspectores %}
+                <option value="{{ inspector.id|unlocalize }}" selected>{{ inspector }}</option>
+                {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4">
             <label class="form-label small fw-semibold mb-1" for="inputGroupSelectRubro">Rubro</label>
             <select name="rubro" class="customSelect2" id="inputGroupSelectRubro" style="width:100%;" multiple>
                 <option value="0" {% if "0" in rubro_ids %}selected{% endif %}>Todos</option>
@@ -199,5 +207,6 @@
 {% include "partials/select2-script-partial.html" with id_field="inputGroupSelectLocalidad" url="/v1/api/select2_localidad/" %}
 {% include "partials/select2-script-partial.html" with id_field="inputGroupSelectEmpresa" url="/v1/api/select2_empresa/" %}
 {% include "partials/select2-script-partial.html" with id_field="inputGroupSelectPrograma" url="/v1/api/select2_programa/" %}
+{% include "partials/select2-script-partial.html" with id_field="inputGroupSelectInspector" url="/v1/api/select2_comisionado/" %}
 
 {%endblock content%}
