@@ -50,6 +50,23 @@ GRANT SELECT ON geoserver_auth.roles, geoserver_auth.user_roles TO geoserver_sec
 -- nueva, agregar acá su GRANT (tabla + secuencia) y sumar sus reglas en
 -- templates/layers.properties.
 GRANT USAGE ON SCHEMA catastro TO geoserver_piloto;
+
+-- geoserver_piloto no traía 'catastro' en su search_path (default de Postgres:
+-- "$user", public) -- invisible mientras las tablas/triggers publicados solo
+-- se referenciaban a sí mismos (ej. catastro.set_updated(), que solo toca
+-- NEW.*, sin FROM/UPDATE a otras tablas). Reventó en vivo al publicar 'uf'
+-- (QGIS: WFS-T Update -> "Error occured updating features" -> Postgres:
+-- 'relation "uf" does not exist', Where: PL/pgSQL function
+-- catastro.set_es_ph() line 36): ese trigger (AFTER STATEMENT, heredado tal
+-- cual del dump de Hasura, anterior a todo este tooling) hace
+-- "FROM uf"/"UPDATE parcela" SIN calificar el schema, así que dependía de que
+-- quien lo llamara tuviera catastro en su search_path -- cierto para el rol
+-- que lo usaba antes (la app original), falso para geoserver_piloto. Fijado a
+-- nivel de rol (no parcheando cada función legada una por una) porque el dump
+-- puede tener más triggers con el mismo patrón sobre tablas todavía no
+-- publicadas por WFS-T.
+ALTER ROLE geoserver_piloto SET search_path = catastro, public;
+
 GRANT SELECT, INSERT, UPDATE, DELETE ON catastro.localidad, catastro.manzana, catastro.calle, catastro.vivienda_punto TO geoserver_piloto;
 GRANT USAGE, SELECT ON catastro.localidad_id_seq, catastro.manzana_id_seq, catastro.calle_id_seq, catastro.vivienda_punto_id_seq TO geoserver_piloto;
 
