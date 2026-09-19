@@ -29,6 +29,16 @@
     <p class="poliza-e-p"><b>Compulsa: </b>{{object.poliza_obra.get_obra_licitacion_tipo_display}} N°{{object.poliza_obra.obra_licitacion_numero}}/{{object.poliza_obra.obra_licitacion_ano}}</p>
     <p class="poliza-e-p"><b>Monto Contrato(Pesos): </b>${{object.poliza_obra.obra_contrato_total_pesos}}</p>
     <p class="poliza-e-p"><b>Monto Contrato(UVI): </b>{{object.poliza_obra.obra_contrato_total_uvi}}</p>
+    <p class="poliza-e-p"><b>Contrato: </b>{{object.poliza_contrato|default:"—"}}</p>
+    <p class="poliza-e-p"><b>Financiamiento: </b>{{object.get_poliza_financiamiento_display|default:"—"}}</p>
+    {% with base_pesos=object.monto_contrato_base sugerido_pesos=object.monto_a_cubrir_sugerido %}
+    {% if sugerido_pesos is not None %}
+    <p class="poliza-e-p"><b>Monto de Contrato (financiamiento, Pesos): </b>${{base_pesos}}</p>
+    <p class="poliza-e-p"><b>Monto sugerido a cubrir (Pesos): </b>${{sugerido_pesos}}</p>
+    {% else %}
+    <p class="poliza-e-p text-muted"><b>Monto sugerido a cubrir: </b>no disponible (Póliza sin Contrato/Financiamiento cargado).</p>
+    {% endif %}
+    {% endwith %}
     {% if object.poliza_digital %}
     <a href="{{object.poliza_digital.url}}">Descargar poliza{{pdfimglink|safe}}</a>
     {% endif %}

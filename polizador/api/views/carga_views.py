@@ -1,5 +1,6 @@
 # carga app API views
 import json
+from decimal import Decimal
 from typing import List
 
 from django.db.models import Q
@@ -44,7 +45,7 @@ from api.schemas.carga_schemas import (
     ContratosDigitalesOut, ContratosDigitalesCreate, ContratosDigitalesUpdate,
     UviOut, UviCreate, UviUpdate,
     INDECOut, INDECCreate, INDECUpdate,
-    PolizaOut, PolizaCreate, PolizaUpdate,
+    PolizaOut, PolizaCreate, PolizaUpdate, GarantiaSugeridaOut,
     PolizaMovimientoOut, PolizaMovimientoCreate, PolizaMovimientoUpdate,
 )
 from carga.models import (
@@ -1622,6 +1623,26 @@ def update_contrato(request, id: int, payload: ContratoUpdate):
 def delete_contrato(request, id: int):
     deleted, _ = Contrato.objects.filter(id=id).delete()
     return {"deleted": bool(deleted)}
+
+
+@router.get("/contrato/{id}/monto-garantia/", response=GarantiaSugeridaOut)
+@decorate_view(require_model_perm(Contrato))
+def monto_garantia_sugerido(request, id: int, financiamiento: str, concepto: str, anticipo_pct: Decimal = Decimal("0")):
+    """Monto de contrato (por financiamiento) y monto sugerido a cubrir por una garantía
+    (Poliza) de ese Contrato/concepto — sólo referencia, para el preview en vivo del
+    formulario de alta de Póliza antes de guardar."""
+    contrato = get_object_or_404(Contrato, id=id)
+    monto_contrato_pesos = contrato.monto_total(financiamiento, "pesos")
+    monto_contrato_uvi = contrato.monto_total(financiamiento, "uvi")
+    return {
+        "contrato_id": contrato.id,
+        "financiamiento": financiamiento,
+        "concepto": concepto,
+        "monto_contrato_pesos": monto_contrato_pesos,
+        "monto_contrato_uvi": monto_contrato_uvi,
+        "monto_a_cubrir_pesos": Poliza.calcular_monto_a_cubrir(concepto, monto_contrato_pesos, anticipo_pct),
+        "monto_a_cubrir_uvi": Poliza.calcular_monto_a_cubrir(concepto, monto_contrato_uvi, anticipo_pct),
+    }
 
 
 # --- ContratoMonto ---

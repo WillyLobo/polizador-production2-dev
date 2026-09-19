@@ -15,14 +15,29 @@
         <div class="form-group">
             {{form.poliza_obra.as_field_group}}
         </div>
+        <div class="form-group">
+            {{form.poliza_contrato.as_field_group}}
+        </div>
         <div class="row">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 {{form.poliza_concepto.as_field_group}}
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
+                {{form.poliza_financiamiento.as_field_group}}
+            </div>
+            <div class="col-md-3" id="poliza-anticipo-pct-wrap">
+                {{form.poliza_anticipo_pct.as_field_group}}
+            </div>
+            <div class="col-md-3">
                 {{form.poliza_numero.as_field_group}}
             </div>
-            <div class="col-md-4">
+        </div>
+        <div class="alert alert-info py-2 small" id="garantia-sugerida-box">
+            <strong>Monto sugerido a cubrir por la garantía (referencia, no se autocompleta):</strong>
+            <div id="garantia-sugerida-texto">Complete Obra, Contrato, Financiamiento y Concepto.</div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
                 {{form.poliza_fecha.as_field_group}}
             </div>
         </div>

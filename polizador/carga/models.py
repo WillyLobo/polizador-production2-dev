@@ -157,19 +157,26 @@ class Empresa(models.Model):
     def get_absolute_url(self):
         return reverse('update-empresa', kwargs={'id': self.pk})
 
+FINANCIAMIENTO = (
+    ("N", "Nación"),
+    ("P", "Provincia"),
+    ("T", "Terceros"),
+)
+
 class Poliza(models.Model):
     CONCEPTO = (
         ("C", "Garantía de Ejecución de Contrato"),
         ("F", "Garantía de Sustitución de Fondo de Reparo"),
         ("A", "Garantía de Anticipo Financiero")
     )
+    GARANTIA_PCT_FIJO = Decimal("5")
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["poliza_fecha", "poliza_numero", "poliza_aseguradora","poliza_tomador"], name="poliza-constraint")]
         verbose_name = "Póliza"
         verbose_name_plural = "Pólizas"
         ordering = ["poliza_fecha"]
-    
+
     poliza_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     poliza_fecha = models.DateField("Fecha")
     poliza_expediente = models.CharField("Expediente", max_length=18)
@@ -180,16 +187,71 @@ class Poliza(models.Model):
     poliza_aseguradora = models.ForeignKey("Aseguradora", verbose_name="Aseguradora", on_delete=models.CASCADE)
     poliza_tomador = models.ForeignKey("Empresa", verbose_name="Tomador", on_delete=models.CASCADE)
     poliza_obra = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.CASCADE)
+    poliza_contrato = models.ForeignKey(
+        "Contrato",
+        verbose_name="Contrato",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        help_text="Contrato de la Obra sobre el que se calcula el monto de garantía sugerido.",
+    )
+    poliza_financiamiento = models.CharField("Financiamiento", max_length=1, choices=FINANCIAMIENTO, null=True, blank=True)
+    poliza_anticipo_pct = models.DecimalField(
+        "% de Anticipo",
+        max_digits=6,
+        decimal_places=3,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="Sólo aplica al concepto 'Garantía de Anticipo Financiero' (A): % de anticipo "
+                  "que va a tener el certificado, usado para sugerir el monto a cubrir.",
+    )
     poliza_monto_pesos = models.DecimalField("Monto Sustituido en Pesos", max_digits=15, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)])
     poliza_monto_uvi = models.DecimalField("Monto Sustituido en UVI", max_digits=15, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)])
     poliza_digital = models.FileField(verbose_name="Póliza Digital", upload_to=generate_name_polizas, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], max_length=500, null=True, blank=True)
     poliza_history = HistoricalRecords()
-    
+
     def __str__(self):
         return f"{self.poliza_numero} - {self.poliza_aseguradora.aseguradora_nombre} - {self.poliza_obra.obra_nombre} - {self.poliza_tomador.empresa_nombre} "
 
     def get_absolute_url(self):
         return reverse('carga:estado-poliza', kwargs={'pk': self.pk})
+
+    def clean(self):
+        if self.poliza_contrato_id and self.poliza_obra_id and self.poliza_contrato.contrato_obra_id != self.poliza_obra_id:
+            raise ValidationError("El Contrato seleccionado no pertenece a la Obra de la Póliza.")
+        if self.poliza_concepto == "A":
+            if not self.poliza_anticipo_pct:
+                raise ValidationError(
+                    "El concepto 'Garantía de Anticipo Financiero' requiere cargar el % de Anticipo."
+                )
+        else:
+            self.poliza_anticipo_pct = None
+
+    @classmethod
+    def calcular_monto_a_cubrir(cls, concepto, monto_contrato, anticipo_pct=None):
+        """Monto de referencia a cubrir por la garantía, en la misma unidad que
+        `monto_contrato` (llamar una vez en pesos y otra en UVI si se necesitan ambos).
+        Puramente informativo: no autocompleta poliza_monto_pesos/poliza_monto_uvi."""
+        if concepto in ("C", "F"):
+            return (monto_contrato * cls.GARANTIA_PCT_FIJO / Decimal("100")).quantize(Decimal("0.01"))
+        if concepto == "A":
+            pct = anticipo_pct or Decimal("0")
+            return (monto_contrato * pct / Decimal("100")).quantize(Decimal("0.01"))
+        return Decimal("0")
+
+    def monto_contrato_base(self, moneda="pesos"):
+        """None si la Póliza (legacy o incompleta) no tiene Contrato/Financiamiento
+        cargados: en ese caso no hay base sobre la que sugerir nada."""
+        if not self.poliza_contrato_id or not self.poliza_financiamiento:
+            return None
+        return self.poliza_contrato.monto_total(self.poliza_financiamiento, moneda)
+
+    def monto_a_cubrir_sugerido(self, moneda="pesos"):
+        base = self.monto_contrato_base(moneda)
+        if base is None:
+            return None
+        return self.calcular_monto_a_cubrir(self.poliza_concepto, base, self.poliza_anticipo_pct)
 
 class Poliza_Movimiento(models.Model):
     class Meta:
@@ -1338,6 +1400,17 @@ class Contrato(models.Model):
                 f"-{self.contrato_resolucion_jurisdiccion}-{self.contrato_resolucion_acta}"
             )
         return self.contrato_resolucion or "—"
+
+    def monto_total(self, financiamiento_codigo, moneda="pesos"):
+        """Suma de todos los ContratoMonto de este Contrato para `financiamiento_codigo`
+        (todos los rubros que financia), en la unidad `moneda` ("pesos" o "uvi"). Misma
+        base que usa certificacion.py para Certificados de Etapa (ver
+        certificacion._monto_contrato_total, que delega acá) y que usa Poliza para el
+        monto de garantía sugerido."""
+        campo = "contratomonto_uvi" if moneda == "uvi" else "contratomonto_pesos"
+        return self.contratomonto_set.filter(
+            contratomonto_financiamiento__certificadofinanciamiento_nombre_corto=financiamiento_codigo,
+        ).aggregate(total=Sum(campo))["total"] or Decimal("0")
 
 class ContratoTramoPago(models.Model):
     class Meta:

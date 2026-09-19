@@ -2,6 +2,7 @@
 from ninja import Schema
 from uuid import UUID
 from datetime import date
+from decimal import Decimal
 from typing import Optional
 
 
@@ -578,6 +579,9 @@ class PolizaOut(Schema):
     poliza_aseguradora_id: int
     poliza_tomador_id: int
     poliza_obra_id: int
+    poliza_contrato_id: Optional[int] = None
+    poliza_financiamiento: Optional[str] = None
+    poliza_anticipo_pct: Optional[Decimal] = None
 
 class PolizaCreate(Schema):
     poliza_fecha: date
@@ -588,6 +592,9 @@ class PolizaCreate(Schema):
     poliza_aseguradora_id: int
     poliza_tomador_id: int
     poliza_obra_id: int
+    poliza_contrato_id: Optional[int] = None
+    poliza_financiamiento: Optional[str] = None
+    poliza_anticipo_pct: Optional[Decimal] = None
 
 class PolizaUpdate(Schema):
     poliza_fecha: Optional[date] = None
@@ -598,6 +605,19 @@ class PolizaUpdate(Schema):
     poliza_aseguradora_id: Optional[int] = None
     poliza_tomador_id: Optional[int] = None
     poliza_obra_id: Optional[int] = None
+    poliza_contrato_id: Optional[int] = None
+    poliza_financiamiento: Optional[str] = None
+    poliza_anticipo_pct: Optional[Decimal] = None
+
+# === Garantía sugerida (Poliza) ===
+class GarantiaSugeridaOut(Schema):
+    contrato_id: int
+    financiamiento: str
+    concepto: str
+    monto_contrato_pesos: Decimal
+    monto_contrato_uvi: Decimal
+    monto_a_cubrir_pesos: Decimal
+    monto_a_cubrir_uvi: Decimal
 
 # === Poliza_Movimiento ===
 class PolizaMovimientoOut(Schema):
