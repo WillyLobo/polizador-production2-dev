@@ -86,6 +86,13 @@ class FojaDeMedicionForm(forms.ModelForm):
 	def clean(self):
 		cleaned_data = super().clean()
 		if not cleaned_data.get("foja_legacy"):
+			foja_rubro = cleaned_data.get("foja_rubro")
+			if foja_rubro and not self.instance.pk and not foja_rubro.etapas.exists():
+				self.add_error(
+					"foja_rubro",
+					"Este Rubro no tiene Etapas Proyectadas cargadas en su Plan de Trabajos. "
+					"Cargá las etapas antes de registrar una Foja de Medición.",
+				)
 			return cleaned_data
 
 		foja_rubro = cleaned_data.get("foja_rubro")

@@ -389,6 +389,31 @@ class FojaDeMedicionNumeracionTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn("foja_numero_manual", form.errors)
 
+    def _form_data_no_legacy(self):
+        return {
+            "foja_rubro": self.rubro.pk,
+            "foja_periodo": "2026-01-01",
+            "foja_fecha": "2026-01-01",
+        }
+
+    def test_form_rechaza_foja_real_si_el_rubro_no_tiene_etapas(self):
+        form = FojaDeMedicionForm(data=self._form_data_no_legacy())
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("foja_rubro", form.errors)
+
+    def test_form_acepta_foja_real_si_el_rubro_tiene_etapas(self):
+        PlanDeTrabajosEtapa.objects.create(etapa_rubro=self.rubro)
+
+        form = FojaDeMedicionForm(data=self._form_data_no_legacy())
+
+        self.assertTrue(form.is_valid(), form.errors)
+
+    def test_form_acepta_foja_legacy_aunque_el_rubro_no_tenga_etapas(self):
+        form = FojaDeMedicionForm(data=self._form_data(2))
+
+        self.assertNotIn("foja_rubro", form.errors)
+
 
 class FojaDeMedicionAcumuladoCascadaTests(TestCase):
     """Bug real (Obra 1242): al corregir el % de una Foja ya cargada, las Fojas
