@@ -105,7 +105,7 @@
     {% endif %}
 
     {% if object.corte.dias_restantes > 0 %}
-    <a href="{% url 'personalizador:crear-licenciapermiso' %}?saldo_de_corte={{ object.corte.id }}" class="btn btn-sm btn-outline-primary mt-2">
+    <a href="{% url 'personalizador:crear-licenciapermiso' %}?saldo_de_corte={{ object.corte.id|stringformat:"s" }}" class="btn btn-sm btn-outline-primary mt-2">
       <i class="bi bi-plus-circle me-1"></i>Usar Saldo
     </a>
     {% endif %}

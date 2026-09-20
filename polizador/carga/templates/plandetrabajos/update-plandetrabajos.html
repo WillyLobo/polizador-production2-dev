@@ -53,7 +53,7 @@
           </tbody>
         </table>
       </div>
-      <a href="{% url "carga:crear-plandetrabajosrubro" %}?plan={{ object.id }}" class="btn btn-success btn-sm">Agregar Rubro</a>
+      <a href="{% url "carga:crear-plandetrabajosrubro" %}?plan={{ object.id|stringformat:"s" }}" class="btn btn-success btn-sm">Agregar Rubro</a>
     </div>
   </div>
 </form>
