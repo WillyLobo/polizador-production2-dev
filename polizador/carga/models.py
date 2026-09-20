@@ -46,6 +46,13 @@ def generate_name_polizas(instance, filename):
     name = os.path.join(directorio, anio, mes, filename)
     return name
 
+def generate_name_poliza_documento(instance, filename):
+    directorio = "documentos_poliza/"
+    extension = "pdf"
+    filename = f"{instance.polizadocumento_uuid}.{extension}"
+    name = os.path.join(directorio, filename)
+    return name
+
 def generate_name_contratos(instance, filename):
     directorio = "contratos_obra/"
     extension = "pdf"
@@ -271,6 +278,21 @@ class Poliza_Movimiento(models.Model):
     
     def get_absolute_url(self):
         return reverse('carga:estado-poliza', kwargs={'pk': self.poliza_movimiento_numero.pk})
+
+class PolizaDocumento(models.Model):
+    class Meta:
+        verbose_name = "Documento de Póliza"
+        verbose_name_plural = "Documentos de Póliza"
+        ordering = ["id"]
+
+    polizadocumento_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    polizadocumento_poliza = models.ForeignKey("Poliza", verbose_name="Póliza", on_delete=models.CASCADE, related_name="documentos_poliza")
+    polizadocumento_descripcion = models.CharField("Descripción", max_length=200, help_text="Ej: Anexo N°1, Adenda de cobertura, etc.")
+    polizadocumento_archivo = models.FileField(verbose_name="Archivo", upload_to=generate_name_poliza_documento, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], max_length=500)
+    polizadocumento_history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.polizadocumento_descripcion} - {self.polizadocumento_poliza}"
 
 class Programa(models.Model):
     class Meta:

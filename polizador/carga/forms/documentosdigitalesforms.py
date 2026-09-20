@@ -1,6 +1,6 @@
 from django import forms
 from carga import models
-from carga.views.ajaxviews import contratowidget, obrawidget
+from carga.views.ajaxviews import contratowidget, obrawidget, polizawidget
 
 class ContratoDigitalForm(forms.ModelForm):
     required_css_class = "required"
@@ -34,4 +34,20 @@ class ObraDocumentoForm(forms.ModelForm):
             "obradocumento_obra": obrawidget(attrs={"class":"form-control customSelect2"}),
             "obradocumento_descripcion":forms.TextInput(attrs={"class":"form-control"}),
             "obradocumento_archivo":forms.ClearableFileInput(attrs={"class":"form-control"}),
+        }
+
+class PolizaDocumentoForm(forms.ModelForm):
+    required_css_class = "required"
+
+    class Meta:
+        model = models.PolizaDocumento
+        fields = (
+            "polizadocumento_poliza",
+            "polizadocumento_descripcion",
+            "polizadocumento_archivo",
+        )
+        widgets = {
+            "polizadocumento_poliza": polizawidget(attrs={"class":"form-control customSelect2"}),
+            "polizadocumento_descripcion":forms.TextInput(attrs={"class":"form-control"}),
+            "polizadocumento_archivo":forms.ClearableFileInput(attrs={"class":"form-control"}),
         }

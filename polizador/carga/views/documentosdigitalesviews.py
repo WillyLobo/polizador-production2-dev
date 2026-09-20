@@ -3,10 +3,10 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
 from django.shortcuts import render
 from django.template import loader, TemplateDoesNotExist
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.views import generic
-from carga.models import ContratosDigitales, ObraDocumento
+from carga.models import ContratosDigitales, ObraDocumento, PolizaDocumento
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg
 from carga.forms.documentosdigitalesforms import *
 from core.mixins import DeleteRelatedObjectsMixin
@@ -98,6 +98,55 @@ class EliminarObraDocumento(PermissionRequiredMixin, DeleteRelatedObjectsMixin, 
     model = ObraDocumento
     template_name = "generic/confirm_delete.html"
     success_url = reverse_lazy("carga:lista-obras")
+
+@method_decorator(login_required, name="dispatch")
+class CrearPolizaDocumento(PermissionRequiredMixin, generic.CreateView):
+    permission_required = "carga.add_polizadocumento"
+
+    model = PolizaDocumento
+    template_name = "digitales/crear-polizadocumento.html"
+    form_class = PolizaDocumentoForm
+
+    title = "Cargar Documento de Póliza"
+
+    def get_title(self):
+        return self.title
+
+    def get_initial(self):
+        initial = super().get_initial()
+        poliza_id = self.request.GET.get("poliza")
+        if poliza_id:
+            initial["polizadocumento_poliza"] = poliza_id
+        return initial
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = self.get_title()
+        return context
+
+    def get_success_url(self):
+        return reverse("carga:estado-poliza", kwargs={"pk": self.object.polizadocumento_poliza_id})
+
+@method_decorator(login_required, name="dispatch")
+class UpdatePolizaDocumento(PermissionRequiredMixin, generic.UpdateView):
+    permission_required = "carga.change_polizadocumento"
+
+    model = PolizaDocumento
+    template_name = "digitales/update-polizadocumento.html"
+    form_class = PolizaDocumentoForm
+
+    def get_success_url(self):
+        return reverse("carga:estado-poliza", kwargs={"pk": self.object.polizadocumento_poliza_id})
+
+@method_decorator(login_required, name="dispatch")
+class EliminarPolizaDocumento(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
+    permission_required = "carga.delete_polizadocumento"
+
+    model = PolizaDocumento
+    template_name = "generic/confirm_delete.html"
+
+    def get_success_url(self):
+        return reverse("carga:estado-poliza", kwargs={"pk": self.object.polizadocumento_poliza_id})
 
 # @login_required
 # def PaginaListaCertificados(request):

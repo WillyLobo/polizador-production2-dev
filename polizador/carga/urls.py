@@ -163,6 +163,9 @@ documentos_digitales = [
     path("digitales/crear-obra-documento/", CrearObraDocumento.as_view(), name="crear-obra-documento"),
     path("digitales/crear-obra-documento/<pk>", UpdateObraDocumento.as_view(), name="update-obra-documento"),
     path("eliminar/digital/obra-documento/<pk>", EliminarObraDocumento.as_view(), name="eliminar-obra-documento"),
+    path("digitales/crear-poliza-documento/", CrearPolizaDocumento.as_view(), name="crear-poliza-documento"),
+    path("digitales/crear-poliza-documento/<pk>", UpdatePolizaDocumento.as_view(), name="update-poliza-documento"),
+    path("eliminar/digital/poliza-documento/<pk>", EliminarPolizaDocumento.as_view(), name="eliminar-poliza-documento"),
 ]
 ajax = [
 	# Obras
