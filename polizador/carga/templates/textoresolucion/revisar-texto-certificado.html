@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block content %}
+{% block title %}<title>Texto de resolución — Certificado {{ certificado.certificado_expediente }}</title>{% endblock title %}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <div>
+    <h5 class="mb-0">Texto de la resolución</h5>
+    <div class="text-muted small">
+      Certificado {{ certificado.certificado_expediente }} — {{ obra.obra_nombre }}
+    </div>
+  </div>
+</div>
+
+{% if error %}
+  <div class="alert alert-danger py-2 small">{{ error }}</div>
+{% endif %}
+
+{% if faltantes %}
+  <div class="alert alert-warning py-2 small">
+    <strong>Faltan datos:</strong> {{ faltantes|join:", " }}.
+    Mientras falte algo no se puede generar el documento: completá el dato en el
+    certificado o en la obra, o corregí el texto acá abajo.
+  </div>
+{% endif %}
+
+<div class="alert alert-light border py-2 small d-flex justify-content-between align-items-center">
+  <span>
+    {% if es_snapshot %}
+      Este texto fue editado a mano. Los cambios posteriores en la plantilla no se
+      reflejan hasta que lo restaures.
+    {% else %}
+      Texto resuelto a partir de la plantilla
+      {% if plantilla %}<strong>{{ plantilla.textoresolucion_nombre }}</strong>{% endif %}.
+      Lo que edites acá queda guardado sólo para este certificado.
+    {% endif %}
+  </span>
+  {% if es_snapshot %}
+    <form method="POST" action="{% url 'carga:restaurar-texto-resolucion-certificado' certificado.pk %}" class="ms-2">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-counterclockwise me-1"></i>Restaurar desde la plantilla
+      </button>
+    </form>
+  {% endif %}
+</div>
+
+<form id="mainForm" method="POST">
+  {% csrf_token %}
+  {{ formset.management_form }}
+
+  <div class="card mb-3">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Cuerpo</div>
+    <div class="card-body p-2">
+      <p class="text-muted small">
+        El formato final (negritas, sangrías, numeración de artículos) lo pone el
+        documento base — acá se edita sólo el contenido.
+      </p>
+      {% for bloque in formset %}
+        {% for hidden in bloque.hidden_fields %}{{ hidden }}{% endfor %}
+        <div class="form-group mb-3">
+          <label class="form-label small text-muted">
+            {% if bloque.clase.value == "visto" %}VISTO
+            {% elif bloque.clase.value == "articulo" %}{{ bloque.label.value|default:"Artículo" }}
+            {% elif bloque.clase.value == "resuelve" %}Fórmula «EL PRESIDENTE ... RESUELVE:» (texto fijo)
+            {% elif bloque.clase.value == "bloque" %}Encabezado
+            {% else %}Considerando
+            {% endif %}
+          </label>
+          {% if bloque.clase.value == "resuelve" %}
+            <div class="border rounded p-2 bg-body-tertiary small text-center">
+              <strong>EL PRESIDENTE DEL INSTITUTO PROVINCIAL DE DESARROLLO URBANO Y VIVIENDA<br>RESUELVE:</strong>
+            </div>
+          {% else %}
+            {{ bloque.texto.as_field_group }}
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</form>
+{% endblock %}
+
+{% block actions %}
+<nav class="form-actions-bar py-2 d-print-none">
+  <div class="container-fluid d-flex flex-wrap gap-2 justify-content-end">
+    <a href="{{ certificado.get_absolute_url }}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>Volver al certificado
+    </a>
+    <button type="submit" form="mainForm" name="accion" value="guardar" class="btn btn-sm btn-outline-primary">
+      <i class="bi bi-check2 me-1"></i>Guardar y volver
+    </button>
+    <button type="submit" form="mainForm" name="accion" value="generar" class="btn btn-sm btn-primary">
+      <i class="bi bi-file-earmark-word me-1"></i>Generar documento (.docx)
+    </button>
+  </div>
+</nav>
+{% endblock %}

@@ -878,6 +878,16 @@ class Certificado(models.Model):
                    "convertir este certificado a pesos. No es fuente de verdad: certificados "
                    "futuros siempre recalculan recorriendo el historial real.",
     )
+    certificado_texto_resolucion = models.JSONField(
+        "Texto de la Resolución",
+        null=True,
+        blank=True,
+        editable=False,
+        help_text="Snapshot del texto de la resolución YA RENDERIDO a partir de la plantilla de "
+                  "TextoResolucionCertificado y retocado a mano desde la web. Si está vacío, se "
+                  "vuelve a resolver desde la plantilla. Guarda además de qué plantilla (y de qué "
+                  "versión de esa plantilla) salió, para poder auditarlo después.",
+    )
     certificado_history = HistoricalRecords(excluded_fields=['certificado_monto_cobrar', "certificado_monto_cobrar_uvi"])
 
     def certificado_fondoreparo_monto_pesos(self):
@@ -938,7 +948,91 @@ class Certificado(models.Model):
         return f"{self.certificado_obra} - {self.certificado_expediente} - Rubro: {self.certificado_rubro_db} - Financiamiento: {self.get_certificado_financiamiento_display()} - Ant. N°{self.certificado_rubro_anticipo} - Ob. N°{self.certificado_rubro_obra} - Dev. N°{self.certificado_rubro_devanticipo}"
     
     def get_absolute_url(self):
-        return reverse('update-certificado', kwargs={'id': self.pk})
+        return reverse("carga:detalle-certificado", kwargs={"pk": self.pk})
+
+
+class TextoResolucionCertificado(models.Model):
+    """Texto base, en Jinja, de la resolución que aprueba un certificado.
+
+    El articulado de una resolución de certificado no es uno solo: cambia según el
+    Programa, según de dónde salga la plata (Nación/Provincia/Terceros) y según qué
+    se esté certificando (un anticipo no dice lo mismo que un avance de obra). Esas
+    combinaciones las conoce el área, no el desarrollador, así que el texto vive acá
+    y no en el código -- a diferencia de las resoluciones de viáticos, cuyo texto
+    está hardcodeado en `secretariador/docx_texto.py`.
+
+    `textoresolucion_tipo` vacío es el comodín: el texto genérico del programa para
+    ese financiamiento, que se usa cuando no hay uno específico para el tipo del
+    certificado (ver `para_certificado`). Se usa `""` y no NULL a propósito: en
+    Postgres dos NULL no colisionan, así que con NULL la UniqueConstraint dejaría
+    cargar comodines duplicados.
+    """
+
+    class Meta:
+        verbose_name = "Texto de Resolución de Certificado"
+        verbose_name_plural = "Textos de Resolución de Certificados"
+        ordering = ["textoresolucion_programa", "textoresolucion_financiamiento", "textoresolucion_tipo"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["textoresolucion_programa", "textoresolucion_financiamiento", "textoresolucion_tipo"],
+                name="textoresolucion-alcance-unico",
+            )
+        ]
+
+    # LEGACY son los certificados históricos sin clasificar: no se les redacta una
+    # resolución nueva, así que no se ofrece como alcance.
+    TIPO = tuple((codigo, etiqueta) for codigo, etiqueta in Certificado.TIPO if codigo != "LEGACY")
+
+    textoresolucion_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    textoresolucion_nombre = models.CharField("Nombre", max_length=200, help_text="Cómo identificar este texto en el listado. Ej. 'Techo Digno - Nación - Parcial'.")
+    textoresolucion_programa = models.ForeignKey("Programa", verbose_name="Programa", on_delete=models.PROTECT)
+    textoresolucion_financiamiento = models.CharField("Financiamiento", max_length=1, choices=FINANCIAMIENTO)
+    textoresolucion_tipo = models.CharField(
+        "Tipo de Certificado",
+        max_length=15,
+        choices=TIPO,
+        blank=True,
+        default="",
+        help_text="Vacío = sirve para cualquier tipo de certificado de este programa y financiamiento.",
+    )
+    textoresolucion_bloques = models.JSONField(
+        "Bloques",
+        default=list,
+        blank=True,
+        help_text="Lista de bloques {clase, label, texto}, donde `texto` es una plantilla Jinja.",
+    )
+    textoresolucion_history = HistoricalRecords()
+
+    def __str__(self):
+        return self.textoresolucion_nombre
+
+    @property
+    def alcance(self):
+        tipo = self.get_textoresolucion_tipo_display() if self.textoresolucion_tipo else "Cualquier tipo"
+        return f"{self.textoresolucion_programa} · {self.get_textoresolucion_financiamiento_display()} · {tipo}"
+
+    @classmethod
+    def para_certificado(cls, certificado):
+        """El texto base que le corresponde a `certificado`, o None si no hay ninguno.
+
+        Gana el que coincide exactamente con el tipo; si no existe, cae al comodín
+        (`textoresolucion_tipo=""`) del mismo programa y financiamiento. Se resuelve
+        en una sola query."""
+        if not certificado.certificado_obra_id:
+            return None
+        return (
+            cls.objects.filter(
+                textoresolucion_programa=certificado.certificado_obra.obra_programa_id,
+                textoresolucion_financiamiento=certificado.certificado_financiamiento,
+                textoresolucion_tipo__in=[certificado.certificado_tipo, ""],
+            )
+            .order_by(models.Case(models.When(textoresolucion_tipo="", then=1), default=0))
+            .first()
+        )
+
+    def get_absolute_url(self):
+        return reverse("carga:update-texto-resolucion", kwargs={"pk": self.pk})
+
 
 class ConjuntoLicitado(models.Model):
     class Meta:

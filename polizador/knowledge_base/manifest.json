@@ -1,6 +1,6 @@
 {
   "api": {
-    "generated_at": "2026-09-20T15:51:46.325636+00:00",
+    "generated_at": "2026-09-20T21:50:36.374247+00:00",
     "modules": {
       "views/carga_views": {
         "file": "api/views/carga_views.py",
@@ -6253,7 +6253,7 @@
     }
   },
   "carga": {
-    "generated_at": "2026-09-20T15:51:40.692912+00:00",
+    "generated_at": "2026-09-20T21:50:30.600351+00:00",
     "modules": {
       "forms/areaforms": {
         "file": "carga/forms/areaforms.py",
@@ -6340,7 +6340,7 @@
             "candidate_usages": [
               {
                 "file": "carga/views/certificadoviews.py",
-                "line": 287,
+                "line": 130,
                 "snippet": "form_class = CertificadoAnticipoForm"
               }
             ],
@@ -6378,12 +6378,12 @@
             "candidate_usages": [
               {
                 "file": "carga/views/certificadoviews.py",
-                "line": 197,
+                "line": 40,
                 "snippet": "form_class = CertificadoForm"
               },
               {
                 "file": "carga/views/certificadoviews.py",
-                "line": 359,
+                "line": 202,
                 "snippet": "form_class = CertificadoForm"
               }
             ],
@@ -6410,7 +6410,7 @@
             "candidate_usages": [
               {
                 "file": "carga/views/certificadoviews.py",
-                "line": 321,
+                "line": 164,
                 "snippet": "form_class = CertificadoHechoConsumadoForm"
               }
             ],
@@ -6474,12 +6474,12 @@
             "candidate_usages": [
               {
                 "file": "carga/views/certificadoviews.py",
-                "line": 236,
+                "line": 79,
                 "snippet": "form = GenerarCertificadosDesdeFojaForm()"
               },
               {
                 "file": "carga/views/certificadoviews.py",
-                "line": 241,
+                "line": 84,
                 "snippet": "form = GenerarCertificadosDesdeFojaForm(request.POST)"
               }
             ],
@@ -7882,6 +7882,246 @@
           }
         }
       },
+      "forms/textoresolucionforms": {
+        "file": "carga/forms/textoresolucionforms.py",
+        "symbols": {
+          "BaseBloqueFormSet": {
+            "authored": false,
+            "bases": [
+              "forms.BaseFormSet"
+            ],
+            "candidate_usages": [
+              {
+                "file": "carga/forms/textoresolucionforms.py",
+                "line": 103,
+                "snippet": "BloqueFormSet = forms.formset_factory(BloqueForm, formset=BaseBloqueFormSet, extra=0, can_delete=True)"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              80,
+              100
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  81,
+                  86
+                ],
+                "name": "clean",
+                "signature": "def clean(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": "Los bloques que se guardan: los que el usuario no marcó para borrar.",
+                "lines": [
+                  88,
+                  100
+                ],
+                "name": "bloques_validos",
+                "signature": "def bloques_validos(self):"
+              }
+            ],
+            "module": "carga/forms/textoresolucionforms.py",
+            "name": "BaseBloqueFormSet",
+            "page_path": "carga/forms/textoresolucionforms/BaseBloqueFormSet",
+            "signature": "class BaseBloqueFormSet(forms.BaseFormSet):",
+            "signature_hash": "sha1:a960a133b6a531a593ef4c5cf5323fe51f5a92fe",
+            "stale": false
+          },
+          "BaseBloqueTextoFormSet": {
+            "authored": false,
+            "bases": [
+              "forms.BaseFormSet"
+            ],
+            "candidate_usages": [
+              {
+                "file": "carga/forms/textoresolucionforms.py",
+                "line": 166,
+                "snippet": "BloqueTextoFormSet = forms.formset_factory(BloqueTextoForm, formset=BaseBloqueTextoFormSet, extra=0)"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              153,
+              163
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  154,
+                  163
+                ],
+                "name": "bloques",
+                "signature": "def bloques(self):"
+              }
+            ],
+            "module": "carga/forms/textoresolucionforms.py",
+            "name": "BaseBloqueTextoFormSet",
+            "page_path": "carga/forms/textoresolucionforms/BaseBloqueTextoFormSet",
+            "signature": "class BaseBloqueTextoFormSet(forms.BaseFormSet):",
+            "signature_hash": "sha1:cd477a51a3ee8c9eacf71611e8b4a2202cedf0b2",
+            "stale": false
+          },
+          "BloqueForm": {
+            "authored": false,
+            "bases": [
+              "forms.Form"
+            ],
+            "candidate_usages": [
+              {
+                "file": "carga/forms/textoresolucionforms.py",
+                "line": 103,
+                "snippet": "BloqueFormSet = forms.formset_factory(BloqueForm, formset=BaseBloqueFormSet, extra=0, can_delete=True)"
+              },
+              {
+                "file": "carga/forms/textoresolucionforms.py",
+                "line": 139,
+                "snippet": "A diferencia de `BloqueForm`, acá el texto es final, no una plantilla: no se"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Un bloque del cuerpo de la resolución.\n\n`texto` es fuente Jinja, no texto final: se valida que compile, pero no se\nrenderiza acá (para eso hace falta un certificado de muestra).",
+            "kind": "class",
+            "lines": [
+              42,
+              77
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  61,
+                  69
+                ],
+                "name": "clean_texto",
+                "signature": "def clean_texto(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  71,
+                  77
+                ],
+                "name": "clean",
+                "signature": "def clean(self):"
+              }
+            ],
+            "module": "carga/forms/textoresolucionforms.py",
+            "name": "BloqueForm",
+            "page_path": "carga/forms/textoresolucionforms/BloqueForm",
+            "signature": "class BloqueForm(forms.Form):",
+            "signature_hash": "sha1:0e72515d54761636acd63715ffde341de64c6619",
+            "stale": false
+          },
+          "BloqueTextoForm": {
+            "authored": false,
+            "bases": [
+              "forms.Form"
+            ],
+            "candidate_usages": [
+              {
+                "file": "carga/forms/textoresolucionforms.py",
+                "line": 166,
+                "snippet": "BloqueTextoFormSet = forms.formset_factory(BloqueTextoForm, formset=BaseBloqueTextoFormSet, extra=0)"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Un bloque del texto YA RESUELTO de un certificado concreto.\n\nA diferencia de `BloqueForm`, acá el texto es final, no una plantilla: no se\ncompila como Jinja (unas llaves sueltas en el texto de una resolución son\nllaves, no un error) y la clase no se puede cambiar — la estructura del\ndocumento la fija la plantilla, acá se retoca la redacción.",
+            "kind": "class",
+            "lines": [
+              136,
+              150
+            ],
+            "methods": [],
+            "module": "carga/forms/textoresolucionforms.py",
+            "name": "BloqueTextoForm",
+            "page_path": "carga/forms/textoresolucionforms/BloqueTextoForm",
+            "signature": "class BloqueTextoForm(forms.Form):",
+            "signature_hash": "sha1:21c48099212411cdb8d788bfa5767628b8e8fb53",
+            "stale": false
+          },
+          "CertificadoMuestraForm": {
+            "authored": false,
+            "bases": [
+              "forms.Form"
+            ],
+            "candidate_usages": [
+              {
+                "file": "carga/views/textoresolucionviews.py",
+                "line": 14,
+                "snippet": "CertificadoMuestraForm,"
+              },
+              {
+                "file": "carga/views/textoresolucionviews.py",
+                "line": 66,
+                "snippet": "muestra = CertificadoMuestraForm(initial={\"certificado\": request.GET.get(\"certificado\") or None})"
+              },
+              {
+                "file": "carga/views/textoresolucionviews.py",
+                "line": 75,
+                "snippet": "muestra = CertificadoMuestraForm(request.POST)"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Elige contra qué certificado se previsualiza la plantilla.\n\nHace falta porque la plantilla se edita a nivel de alcance (programa,\nfinanciamiento, tipo), donde no hay ningún certificado del que sacar valores.",
+            "kind": "class",
+            "lines": [
+              106,
+              118
+            ],
+            "methods": [],
+            "module": "carga/forms/textoresolucionforms.py",
+            "name": "CertificadoMuestraForm",
+            "page_path": "carga/forms/textoresolucionforms/CertificadoMuestraForm",
+            "signature": "class CertificadoMuestraForm(forms.Form):",
+            "signature_hash": "sha1:d4d3216b6d127355abb92b171319651f795c7277",
+            "stale": false
+          },
+          "TextoResolucionForm": {
+            "authored": false,
+            "bases": [
+              "forms.ModelForm"
+            ],
+            "candidate_usages": [
+              {
+                "file": "carga/views/textoresolucionviews.py",
+                "line": 15,
+                "snippet": "TextoResolucionForm,"
+              },
+              {
+                "file": "carga/views/textoresolucionviews.py",
+                "line": 53,
+                "snippet": "form_class = TextoResolucionForm"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              23,
+              39
+            ],
+            "methods": [],
+            "module": "carga/forms/textoresolucionforms.py",
+            "name": "TextoResolucionForm",
+            "page_path": "carga/forms/textoresolucionforms/TextoResolucionForm",
+            "signature": "class TextoResolucionForm(forms.ModelForm):",
+            "signature_hash": "sha1:649b59531bbaf1f8f709bba41d9e377bc91f16ac",
+            "stale": false
+          }
+        }
+      },
       "models": {
         "file": "carga/models.py",
         "symbols": {
@@ -8044,13 +8284,13 @@
               },
               {
                 "file": "carga/models.py",
-                "line": 1032,
-                "snippet": "verbose_name=\"Rubro de Certificado\","
+                "line": 972,
+                "snippet": "verbose_name = \"Texto de Resolución de Certificado\""
               },
               {
                 "file": "carga/models.py",
-                "line": 1477,
-                "snippet": "contratomonto_rubro = models.ForeignKey(\"CertificadoRubro\", verbose_name=\"Rubro Certificado\", on_delete=models.CASCADE)"
+                "line": 984,
+                "snippet": "TIPO = tuple((codigo, etiqueta) for codigo, etiqueta in Certificado.TIPO if codigo != \"LEGACY\")"
               }
             ],
             "decorators": [],
@@ -8058,15 +8298,15 @@
             "kind": "class",
             "lines": [
               710,
-              941
+              951
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  883,
-                  886
+                  893,
+                  896
                 ],
                 "name": "certificado_fondoreparo_monto_pesos",
                 "signature": "def certificado_fondoreparo_monto_pesos(self):"
@@ -8075,8 +8315,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  888,
-                  891
+                  898,
+                  901
                 ],
                 "name": "certificado_fondoreparo_monto_uvi",
                 "signature": "def certificado_fondoreparo_monto_uvi(self):"
@@ -8087,8 +8327,8 @@
                 ],
                 "docstring": "% \"principal\" de este certificado para listados genéricos que no distinguen\ntipo: el % de Anticipo si es un Anticipo (pool, no rubro puntual), si no el % Mes\n(PARCIAL/HECHO_CONSUMADO, rubro puntual).",
                 "lines": [
-                  894,
-                  902
+                  904,
+                  912
                 ],
                 "name": "certificado_pct_principal",
                 "signature": "def certificado_pct_principal(self):"
@@ -8097,8 +8337,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  904,
-                  935
+                  914,
+                  945
                 ],
                 "name": "clean",
                 "signature": "def clean(self):"
@@ -8107,8 +8347,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  937,
-                  938
+                  947,
+                  948
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -8117,8 +8357,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  940,
-                  941
+                  950,
+                  951
                 ],
                 "name": "get_absolute_url",
                 "signature": "def get_absolute_url(self):"
@@ -8128,7 +8368,7 @@
             "name": "Certificado",
             "page_path": "carga/models/Certificado",
             "signature": "class Certificado(models.Model):",
-            "signature_hash": "sha1:5e6719564f3c5153bd17b4a79ff9164df5532b15",
+            "signature_hash": "sha1:61de054c4ae6c6451f289674084a3bbf4f26410e",
             "stale": true
           },
           "CertificadoFinanciamiento": {
@@ -8139,18 +8379,8 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1478,
+                "line": 1572,
                 "snippet": "contratomonto_financiamiento = models.ForeignKey(\"CertificadoFinanciamiento\", verbose_name=\"Financiamiento\", on_delete=models.CASCADE)"
-              },
-              {
-                "file": "carga/views/certificadoviews.py",
-                "line": 23,
-                "snippet": "from carga.models import Certificado, CertificadoFinanciamiento, ContratoMonto, FojaDeMedicion, PlanDeTrabajosEtapa, Uvi"
-              },
-              {
-                "file": "carga/views/certificadoviews.py",
-                "line": 84,
-                "snippet": "financiamiento = CertificadoFinanciamiento.objects.filter("
               }
             ],
             "decorators": [],
@@ -8202,12 +8432,12 @@
               },
               {
                 "file": "carga/models.py",
-                "line": 1031,
+                "line": 1125,
                 "snippet": "\"CertificadoRubro\","
               },
               {
                 "file": "carga/models.py",
-                "line": 1477,
+                "line": 1571,
                 "snippet": "contratomonto_rubro = models.ForeignKey(\"CertificadoRubro\", verbose_name=\"Rubro Certificado\", on_delete=models.CASCADE)"
               }
             ],
@@ -8273,16 +8503,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              943,
-              976
+              1037,
+              1070
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  961,
-                  962
+                  1055,
+                  1056
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -8293,8 +8523,8 @@
                 ],
                 "docstring": null,
                 "lines": [
-                  965,
-                  973
+                  1059,
+                  1067
                 ],
                 "name": "conjunto_resolucion_display",
                 "signature": "def conjunto_resolucion_display(self):"
@@ -8303,8 +8533,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  975,
-                  976
+                  1069,
+                  1070
                 ],
                 "name": "get_absolute_url",
                 "signature": "def get_absolute_url(self):"
@@ -8314,7 +8544,7 @@
             "name": "ConjuntoLicitado",
             "page_path": "carga/models/ConjuntoLicitado",
             "signature": "class ConjuntoLicitado(models.Model):",
-            "signature_hash": "sha1:27e8dad7578b82ab61d99240cc1a174d0ab04b30",
+            "signature_hash": "sha1:c2038132c3cb8cf06f6b03a3423f57abe0f70096",
             "stale": true
           },
           "Contrato": {
@@ -8353,16 +8583,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1384,
-              1435
+              1478,
+              1529
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1412,
-                  1413
+                  1506,
+                  1507
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -8373,8 +8603,8 @@
                 ],
                 "docstring": null,
                 "lines": [
-                  1416,
-                  1424
+                  1510,
+                  1518
                 ],
                 "name": "contrato_resolucion_display",
                 "signature": "def contrato_resolucion_display(self):"
@@ -8383,8 +8613,8 @@
                 "decorators": [],
                 "docstring": "Suma de todos los ContratoMonto de este Contrato para `financiamiento_codigo`\n(todos los rubros que financia), en la unidad `moneda` (\"pesos\" o \"uvi\"). Misma\nbase que usa certificacion.py para Certificados de Etapa (ver\ncertificacion._monto_contrato_total, que delega acá) y que usa Poliza para el\nmonto de garantía sugerido.",
                 "lines": [
-                  1426,
-                  1435
+                  1520,
+                  1529
                 ],
                 "name": "monto_total",
                 "signature": "def monto_total(self, financiamiento_codigo, moneda='pesos'):"
@@ -8394,7 +8624,7 @@
             "name": "Contrato",
             "page_path": "carga/models/Contrato",
             "signature": "class Contrato(models.Model):",
-            "signature_hash": "sha1:f35b820a3b9c3db0911b1a76c737ea2d660cca5a",
+            "signature_hash": "sha1:56ae1337c4dffbc48264a0b07f06deac606a2deb",
             "stale": true
           },
           "ContratoMonto": {
@@ -8420,12 +8650,12 @@
               },
               {
                 "file": "carga/models.py",
-                "line": 1029,
+                "line": 1123,
                 "snippet": "rubro_contratomonto = models.ForeignKey(\"ContratoMonto\", verbose_name=\"Monto de Contrato\", on_delete=models.SET_NULL, null=True, blank=True, related_name=\"rubros_plan\")"
               },
               {
                 "file": "carga/models.py",
-                "line": 1037,
+                "line": 1131,
                 "snippet": "\"(ContratoMonto) al generar certificados desde una Foja.\","
               }
             ],
@@ -8433,16 +8663,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1470,
-              1485
+              1564,
+              1579
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1484,
-                  1485
+                  1578,
+                  1579
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -8452,7 +8682,7 @@
             "name": "ContratoMonto",
             "page_path": "carga/models/ContratoMonto",
             "signature": "class ContratoMonto(models.Model):",
-            "signature_hash": "sha1:0c372d7808b85679992ce0851a89f22f682404e2",
+            "signature_hash": "sha1:83b2965b5cbbdcb3e3ab2f2b4d977abf33e2c2a1",
             "stale": true
           },
           "ContratoRubro": {
@@ -8463,7 +8693,7 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1508,
+                "line": 1602,
                 "snippet": "contratodigital_tipo = models.ForeignKey(\"ContratoRubro\", verbose_name=\"Rubro Contrato\", on_delete=models.CASCADE)"
               }
             ],
@@ -8471,16 +8701,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1487,
-              1497
+              1581,
+              1591
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1496,
-                  1497
+                  1590,
+                  1591
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -8490,7 +8720,7 @@
             "name": "ContratoRubro",
             "page_path": "carga/models/ContratoRubro",
             "signature": "class ContratoRubro(models.Model):",
-            "signature_hash": "sha1:a02ebbfb116a513c1b3a71d38f119a7e1cb68a0e",
+            "signature_hash": "sha1:a24034071d5cb5f4b958a47439d0205cf19fdb8b",
             "stale": true
           },
           "ContratoTramoPago": {
@@ -8506,13 +8736,13 @@
               },
               {
                 "file": "carga/models.py",
-                "line": 1408,
+                "line": 1502,
                 "snippet": "\"ContratoTramoPago).\","
               },
               {
                 "file": "carga/signals.py",
                 "line": 3,
-                "snippet": "from .models import FojaDeMedicion, FojaDeMedicionItem, PlanDeTrabajosEtapa, ContratoMonto, ContratoTramoPago"
+                "snippet": "from .models import Certificado, FojaDeMedicion, FojaDeMedicionItem, PlanDeTrabajosEtapa, ContratoMonto, ContratoTramoPago"
               },
               {
                 "file": "carga/signals.py",
@@ -8529,16 +8759,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1437,
-              1468
+              1531,
+              1562
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1467,
-                  1468
+                  1561,
+                  1562
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -8548,7 +8778,7 @@
             "name": "ContratoTramoPago",
             "page_path": "carga/models/ContratoTramoPago",
             "signature": "class ContratoTramoPago(models.Model):",
-            "signature_hash": "sha1:1ebd1f0c9c0f633f6f629b8749fa6a242a47cc66",
+            "signature_hash": "sha1:77f67766142ee0d938b9edecce1d7d4fff992279",
             "stale": true
           },
           "ContratosDigitales": {
@@ -8587,15 +8817,15 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1499,
-              1510
+              1593,
+              1604
             ],
             "methods": [],
             "module": "carga/models.py",
             "name": "ContratosDigitales",
             "page_path": "carga/models/ContratosDigitales",
             "signature": "class ContratosDigitales(models.Model):",
-            "signature_hash": "sha1:e3833991c158b491618ef6e56a87a10d318f72f7",
+            "signature_hash": "sha1:4bd38abb17b383679bc88bf8d8ed8d22bb5cbbc6",
             "stale": true
           },
           "Departamento": {
@@ -8625,9 +8855,9 @@
                 "snippet": "obra_departamento_m = models.ManyToManyField(\"Departamento\", related_name=\"obra_departamento\", verbose_name=\"Departamento\", blank=True)"
               },
               {
-                "file": "carga/views/certificadoviews.py",
-                "line": 24,
-                "snippet": "from personalizador.models import Departamento, Direccion, Directorio, Gerencia"
+                "file": "carga/views/departamentoviews.py",
+                "line": 7,
+                "snippet": "from carga.models import Departamento"
               }
             ],
             "decorators": [],
@@ -8747,39 +8977,39 @@
               },
               {
                 "file": "carga/models.py",
-                "line": 1245,
+                "line": 1339,
                 "snippet": "real_map = FojaDeMedicion.anterior_items_map("
               },
               {
                 "file": "carga/models.py",
-                "line": 1344,
+                "line": 1438,
                 "snippet": "fojaitem_foja = models.ForeignKey(\"FojaDeMedicion\", verbose_name=\"Foja de Medición\", on_delete=models.CASCADE, related_name=\"items\")"
               },
               {
                 "file": "carga/models.py",
-                "line": 1377,
+                "line": 1471,
                 "snippet": "fotofoja_foja = models.ForeignKey(\"FojaDeMedicion\", verbose_name=\"Foja de Medición\", on_delete=models.CASCADE, related_name=\"fotos\")"
               },
               {
                 "file": "carga/signals.py",
                 "line": 3,
-                "snippet": "from .models import FojaDeMedicion, FojaDeMedicionItem, PlanDeTrabajosEtapa, ContratoMonto, ContratoTramoPago"
+                "snippet": "from .models import Certificado, FojaDeMedicion, FojaDeMedicionItem, PlanDeTrabajosEtapa, ContratoMonto, ContratoTramoPago"
               }
             ],
             "decorators": [],
             "docstring": null,
             "kind": "class",
             "lines": [
-              1257,
-              1334
+              1351,
+              1428
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1276,
-                  1280
+                  1370,
+                  1374
                 ],
                 "name": "foja_pct_avance_mes",
                 "signature": "def foja_pct_avance_mes(self):"
@@ -8788,8 +9018,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1282,
-                  1286
+                  1376,
+                  1380
                 ],
                 "name": "foja_pct_acumulado",
                 "signature": "def foja_pct_acumulado(self):"
@@ -8798,8 +9028,8 @@
                 "decorators": [],
                 "docstring": "Retorna la foja anterior, considerando también rubros de planes reprogramados.",
                 "lines": [
-                  1288,
-                  1293
+                  1382,
+                  1387
                 ],
                 "name": "foja_anterior",
                 "signature": "def foja_anterior(self):"
@@ -8808,8 +9038,8 @@
                 "decorators": [],
                 "docstring": "Retorna la foja siguiente, considerando también rubros de planes reprogramados.",
                 "lines": [
-                  1295,
-                  1300
+                  1389,
+                  1394
                 ],
                 "name": "foja_siguiente",
                 "signature": "def foja_siguiente(self):"
@@ -8820,8 +9050,8 @@
                 ],
                 "docstring": "Acumulado %% de cada item en la foja anterior (misma lógica que FojaDeMedicionItem.save()).\n\nLa foja anterior se determina por número de foja dentro de la cadena de rubros\nreprogramados, no por período: el período es solo una etiqueta y el número de\nfoja se asigna por orden de creación (ver signals.auto_increment_foja_numero).",
                 "lines": [
-                  1303,
-                  1328
+                  1397,
+                  1422
                 ],
                 "name": "anterior_items_map",
                 "signature": "def anterior_items_map(rubro, items=None, exclude_foja_numero=None):"
@@ -8830,8 +9060,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1330,
-                  1331
+                  1424,
+                  1425
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -8840,8 +9070,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1333,
-                  1334
+                  1427,
+                  1428
                 ],
                 "name": "get_absolute_url",
                 "signature": "def get_absolute_url(self):"
@@ -8851,7 +9081,7 @@
             "name": "FojaDeMedicion",
             "page_path": "carga/models/FojaDeMedicion",
             "signature": "class FojaDeMedicion(models.Model):",
-            "signature_hash": "sha1:74e7ddef9906ea4cd5d77a994a701460960f05ab",
+            "signature_hash": "sha1:2a6232fdb31e127dccc30b24f29a9a3009e53a34",
             "stale": true
           },
           "FojaDeMedicionFoto": {
@@ -8875,16 +9105,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1371,
-              1382
+              1465,
+              1476
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1381,
-                  1382
+                  1475,
+                  1476
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -8894,7 +9124,7 @@
             "name": "FojaDeMedicionFoto",
             "page_path": "carga/models/FojaDeMedicionFoto",
             "signature": "class FojaDeMedicionFoto(models.Model):",
-            "signature_hash": "sha1:aba54977bc4a5cc28b304e5e083d49c6460e18af",
+            "signature_hash": "sha1:fbb179ced00c2539ad736a1a82a715a00efa0c6a",
             "stale": true
           },
           "FojaDeMedicionItem": {
@@ -8905,13 +9135,13 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1304,
+                "line": 1398,
                 "snippet": "\"\"\"Acumulado %% de cada item en la foja anterior (misma lógica que FojaDeMedicionItem.save())."
               },
               {
                 "file": "carga/signals.py",
                 "line": 3,
-                "snippet": "from .models import FojaDeMedicion, FojaDeMedicionItem, PlanDeTrabajosEtapa, ContratoMonto, ContratoTramoPago"
+                "snippet": "from .models import Certificado, FojaDeMedicion, FojaDeMedicionItem, PlanDeTrabajosEtapa, ContratoMonto, ContratoTramoPago"
               },
               {
                 "file": "carga/signals.py",
@@ -8933,16 +9163,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1336,
-              1369
+              1430,
+              1463
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1350,
-                  1351
+                  1444,
+                  1445
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -8951,8 +9181,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1353,
-                  1369
+                  1447,
+                  1463
                 ],
                 "name": "save",
                 "signature": "def save(self, *args, **kwargs):"
@@ -8962,7 +9192,7 @@
             "name": "FojaDeMedicionItem",
             "page_path": "carga/models/FojaDeMedicionItem",
             "signature": "class FojaDeMedicionItem(models.Model):",
-            "signature_hash": "sha1:cc6b268d2494cb56b21a723b6c4e08f92044aa69",
+            "signature_hash": "sha1:1d036bec4e24af1ef7ad3cc0d3e8440084f3e62a",
             "stale": true
           },
           "INDEC": {
@@ -8975,16 +9205,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1535,
-              1569
+              1629,
+              1663
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1568,
-                  1569
+                  1662,
+                  1663
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -8994,7 +9224,7 @@
             "name": "INDEC",
             "page_path": "carga/models/INDEC",
             "signature": "class INDEC(models.Model):",
-            "signature_hash": "sha1:1be2bf465ba3e68239169bf55287359d06e5de14",
+            "signature_hash": "sha1:c83db0342fbf2c3047e39f0dde160faed717ce95",
             "stale": true
           },
           "Localidad": {
@@ -9449,7 +9679,7 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1023,
+                "line": 1117,
                 "snippet": "rubro_plan = models.ForeignKey(\"PlanDeTrabajos\", verbose_name=\"Plan de Trabajos\", on_delete=models.CASCADE, related_name=\"rubros\")"
               },
               {
@@ -9477,8 +9707,8 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              978,
-              1014
+              1072,
+              1108
             ],
             "methods": [
               {
@@ -9487,8 +9717,8 @@
                 ],
                 "docstring": "Devuelve el queryset con el plan vigente (más reciente) de cada obra.",
                 "lines": [
-                  1001,
-                  1005
+                  1095,
+                  1099
                 ],
                 "name": "vigentes",
                 "signature": "def vigentes(cls):"
@@ -9497,8 +9727,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1007,
-                  1008
+                  1101,
+                  1102
                 ],
                 "name": "es_vigente",
                 "signature": "def es_vigente(self):"
@@ -9507,8 +9737,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1010,
-                  1011
+                  1104,
+                  1105
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -9517,8 +9747,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1013,
-                  1014
+                  1107,
+                  1108
                 ],
                 "name": "get_absolute_url",
                 "signature": "def get_absolute_url(self):"
@@ -9528,7 +9758,7 @@
             "name": "PlanDeTrabajos",
             "page_path": "carga/models/PlanDeTrabajos",
             "signature": "class PlanDeTrabajos(models.Model):",
-            "signature_hash": "sha1:e535d09158f90c3a065ed654a4470de60bc6701c",
+            "signature_hash": "sha1:59605006ea55dad34bb4d23b114befe71942ba46",
             "stale": true
           },
           "PlanDeTrabajosEtapa": {
@@ -9539,13 +9769,13 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1212,
+                "line": 1306,
                 "snippet": "etapaitem_etapa = models.ForeignKey(\"PlanDeTrabajosEtapa\", verbose_name=\"Etapa Proyectada\", on_delete=models.CASCADE, related_name=\"items\")"
               },
               {
                 "file": "carga/signals.py",
                 "line": 3,
-                "snippet": "from .models import FojaDeMedicion, FojaDeMedicionItem, PlanDeTrabajosEtapa, ContratoMonto, ContratoTramoPago"
+                "snippet": "from .models import Certificado, FojaDeMedicion, FojaDeMedicionItem, PlanDeTrabajosEtapa, ContratoMonto, ContratoTramoPago"
               },
               {
                 "file": "carga/signals.py",
@@ -9558,25 +9788,25 @@
                 "snippet": "last_etapa = PlanDeTrabajosEtapa.objects.filter("
               },
               {
-                "file": "carga/views/certificadoviews.py",
-                "line": 23,
-                "snippet": "from carga.models import Certificado, CertificadoFinanciamiento, ContratoMonto, FojaDeMedicion, PlanDeTrabajosEtapa, Uvi"
+                "file": "carga/views/plandetrabajosetapaviews.py",
+                "line": 12,
+                "snippet": "from carga.models import Certificado, FojaDeMedicion, PlanDeTrabajosEtapa, PlanDeTrabajosEtapaItem, PlanDeTrabajosItem, PlanDeTrabajosRubro"
               }
             ],
             "decorators": [],
             "docstring": null,
             "kind": "class",
             "lines": [
-              1141,
-              1202
+              1235,
+              1296
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": "Retorna la etapa anterior, considerando también rubros de planes reprogramados.",
                 "lines": [
-                  1156,
-                  1161
+                  1250,
+                  1255
                 ],
                 "name": "etapa_anterior",
                 "signature": "def etapa_anterior(self):"
@@ -9585,8 +9815,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1163,
-                  1176
+                  1257,
+                  1270
                 ],
                 "name": "save",
                 "signature": "def save(self, *args, **kwargs):"
@@ -9595,8 +9825,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1178,
-                  1182
+                  1272,
+                  1276
                 ],
                 "name": "etapa_pct_proyectado_mes",
                 "signature": "def etapa_pct_proyectado_mes(self):"
@@ -9605,8 +9835,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1184,
-                  1188
+                  1278,
+                  1282
                 ],
                 "name": "etapa_pct_proyectado_acumulado",
                 "signature": "def etapa_pct_proyectado_acumulado(self):"
@@ -9615,8 +9845,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1190,
-                  1192
+                  1284,
+                  1286
                 ],
                 "name": "etapa_monto_pesos",
                 "signature": "def etapa_monto_pesos(self):"
@@ -9625,8 +9855,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1194,
-                  1196
+                  1288,
+                  1290
                 ],
                 "name": "etapa_monto_uvi",
                 "signature": "def etapa_monto_uvi(self):"
@@ -9635,8 +9865,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1198,
-                  1199
+                  1292,
+                  1293
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -9645,8 +9875,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1201,
-                  1202
+                  1295,
+                  1296
                 ],
                 "name": "get_absolute_url",
                 "signature": "def get_absolute_url(self):"
@@ -9656,7 +9886,7 @@
             "name": "PlanDeTrabajosEtapa",
             "page_path": "carga/models/PlanDeTrabajosEtapa",
             "signature": "class PlanDeTrabajosEtapa(models.Model):",
-            "signature_hash": "sha1:861983027b2c6a1f7460615aca064ec9d59a96fe",
+            "signature_hash": "sha1:241cc87c06aa9f0709172d778f561fa543267043",
             "stale": true
           },
           "PlanDeTrabajosEtapaItem": {
@@ -9690,16 +9920,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1204,
-              1255
+              1298,
+              1349
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1218,
-                  1220
+                  1312,
+                  1314
                 ],
                 "name": "etapaitem_monto_pesos",
                 "signature": "def etapaitem_monto_pesos(self):"
@@ -9708,8 +9938,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1222,
-                  1223
+                  1316,
+                  1317
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -9718,8 +9948,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1225,
-                  1255
+                  1319,
+                  1349
                 ],
                 "name": "save",
                 "signature": "def save(self, *args, **kwargs):"
@@ -9729,7 +9959,7 @@
             "name": "PlanDeTrabajosEtapaItem",
             "page_path": "carga/models/PlanDeTrabajosEtapaItem",
             "signature": "class PlanDeTrabajosEtapaItem(models.Model):",
-            "signature_hash": "sha1:d84a3c2568fb9b12ea169a91f2705915ae45c2a7",
+            "signature_hash": "sha1:f3ae8899c2c898945fc23a6a6305480f0308497a",
             "stale": true
           },
           "PlanDeTrabajosItem": {
@@ -9740,17 +9970,17 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1213,
+                "line": 1307,
                 "snippet": "etapaitem_planitem = models.ForeignKey(\"PlanDeTrabajosItem\", verbose_name=\"Item del Plan\", on_delete=models.CASCADE)"
               },
               {
                 "file": "carga/models.py",
-                "line": 1319,
+                "line": 1413,
                 "snippet": "items = PlanDeTrabajosItem.objects.filter(planitem_rubro=rubro)"
               },
               {
                 "file": "carga/models.py",
-                "line": 1345,
+                "line": 1439,
                 "snippet": "fojaitem_planitem = models.ForeignKey(\"PlanDeTrabajosItem\", verbose_name=\"Item del Plan\", on_delete=models.CASCADE)"
               },
               {
@@ -9768,16 +9998,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1105,
-              1139
+              1199,
+              1233
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": "IDs de este item y todos sus predecesores (reprogramaciones anteriores).",
                 "lines": [
-                  1119,
-                  1126
+                  1213,
+                  1220
                 ],
                 "name": "item_cadena_ids",
                 "signature": "def item_cadena_ids(self):"
@@ -9786,8 +10016,8 @@
                 "decorators": [],
                 "docstring": "IDs de este item y todos sus sucesores (reprogramaciones posteriores).",
                 "lines": [
-                  1128,
-                  1136
+                  1222,
+                  1230
                 ],
                 "name": "item_cadena_siguiente_ids",
                 "signature": "def item_cadena_siguiente_ids(self):"
@@ -9796,8 +10026,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1138,
-                  1139
+                  1232,
+                  1233
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -9807,7 +10037,7 @@
             "name": "PlanDeTrabajosItem",
             "page_path": "carga/models/PlanDeTrabajosItem",
             "signature": "class PlanDeTrabajosItem(models.Model):",
-            "signature_hash": "sha1:4c06af2b8fe355fa4b4b9af383a2f6eb53c48971",
+            "signature_hash": "sha1:5e2004a0074a548c6e76a486f957d63673d2ef55",
             "stale": true
           },
           "PlanDeTrabajosRubro": {
@@ -9818,17 +10048,17 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1112,
+                "line": 1206,
                 "snippet": "planitem_rubro = models.ForeignKey(\"PlanDeTrabajosRubro\", verbose_name=\"Rubro de Plan de Trabajos\", on_delete=models.CASCADE, related_name=\"items\")"
               },
               {
                 "file": "carga/models.py",
-                "line": 1151,
+                "line": 1245,
                 "snippet": "etapa_rubro = models.ForeignKey(\"PlanDeTrabajosRubro\", verbose_name=\"Rubro de Plan de Trabajos\", on_delete=models.CASCADE, related_name=\"etapas\")"
               },
               {
                 "file": "carga/models.py",
-                "line": 1267,
+                "line": 1361,
                 "snippet": "foja_rubro = models.ForeignKey(\"PlanDeTrabajosRubro\", verbose_name=\"Rubro de Plan de Trabajos\", on_delete=models.CASCADE, related_name=\"fojas\")"
               },
               {
@@ -9846,16 +10076,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              1016,
-              1103
+              1110,
+              1197
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": "IDs de este rubro y todos sus predecesores (reprogramaciones anteriores).",
                 "lines": [
-                  1048,
-                  1055
+                  1142,
+                  1149
                 ],
                 "name": "rubro_cadena_ids",
                 "signature": "def rubro_cadena_ids(self):"
@@ -9864,8 +10094,8 @@
                 "decorators": [],
                 "docstring": "IDs de este rubro y todos sus sucesores (reprogramaciones posteriores).",
                 "lines": [
-                  1057,
-                  1065
+                  1151,
+                  1159
                 ],
                 "name": "rubro_cadena_siguiente_ids",
                 "signature": "def rubro_cadena_siguiente_ids(self):"
@@ -9874,8 +10104,8 @@
                 "decorators": [],
                 "docstring": "Monto en pesos a distribuir entre las Etapas proyectadas: si hay un\nContratoMonto vinculado se usa su valor (convirtiendo UVI->pesos según su\nfecha), si no se usa el rubro_presupuesto cargado a mano.",
                 "lines": [
-                  1067,
-                  1077
+                  1161,
+                  1171
                 ],
                 "name": "monto_base_pesos",
                 "signature": "def monto_base_pesos(self):"
@@ -9884,8 +10114,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1079,
-                  1082
+                  1173,
+                  1176
                 ],
                 "name": "monto_base_uvi",
                 "signature": "def monto_base_uvi(self):"
@@ -9894,8 +10124,8 @@
                 "decorators": [],
                 "docstring": "Empareja cada Etapa proyectada con la Foja de igual posición, para ver el\ndesfasaje entre lo planificado y lo medido. Si hay más Fojas que Etapas (se\nsiguió midiendo avance real más allá de los meses que preveía el plan), las\nFojas sobrantes se comparan contra la última Etapa en vez de quedar sin par.",
                 "lines": [
-                  1084,
-                  1097
+                  1178,
+                  1191
                 ],
                 "name": "comparacion_etapas_fojas",
                 "signature": "def comparacion_etapas_fojas(self):"
@@ -9904,8 +10134,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1099,
-                  1100
+                  1193,
+                  1194
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -9914,8 +10144,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1102,
-                  1103
+                  1196,
+                  1197
                 ],
                 "name": "get_absolute_url",
                 "signature": "def get_absolute_url(self):"
@@ -9925,7 +10155,7 @@
             "name": "PlanDeTrabajosRubro",
             "page_path": "carga/models/PlanDeTrabajosRubro",
             "signature": "class PlanDeTrabajosRubro(models.Model):",
-            "signature_hash": "sha1:e7ca738d97883911a8f51a52a7078bfde3f3a208",
+            "signature_hash": "sha1:16003b64712a194ea58e46e3bacc98dd693bc4b2",
             "stale": true
           },
           "Poliza": {
@@ -9946,7 +10176,7 @@
               },
               {
                 "file": "carga/models.py",
-                "line": 1430,
+                "line": 1524,
                 "snippet": "certificacion._monto_contrato_total, que delega acá) y que usa Poliza para el"
               },
               {
@@ -10176,6 +10406,16 @@
                 "snippet": "obra_programa = models.ForeignKey(\"Programa\", verbose_name=\"Programa\", on_delete=models.CASCADE)"
               },
               {
+                "file": "carga/models.py",
+                "line": 958,
+                "snippet": "Programa, según de dónde salga la plata (Nación/Provincia/Terceros) y según qué"
+              },
+              {
+                "file": "carga/models.py",
+                "line": 988,
+                "snippet": "textoresolucion_programa = models.ForeignKey(\"Programa\", verbose_name=\"Programa\", on_delete=models.PROTECT)"
+              },
+              {
                 "file": "carga/views/programaviews.py",
                 "line": 7,
                 "snippet": "from carga.models import Programa"
@@ -10184,16 +10424,6 @@
                 "file": "carga/views/programaviews.py",
                 "line": 15,
                 "snippet": "model = Programa"
-              },
-              {
-                "file": "carga/views/programaviews.py",
-                "line": 24,
-                "snippet": "model = Programa"
-              },
-              {
-                "file": "carga/views/programaviews.py",
-                "line": 30,
-                "snippet": "title = \"Crear Programa\""
               }
             ],
             "decorators": [],
@@ -10278,6 +10508,11 @@
                 "file": "carga/models.py",
                 "line": 718,
                 "snippet": "(\"P\", \"Provincia\"),"
+              },
+              {
+                "file": "carga/models.py",
+                "line": 958,
+                "snippet": "Programa, según de dónde salga la plata (Nación/Provincia/Terceros) y según qué"
               }
             ],
             "decorators": [],
@@ -10442,6 +10677,98 @@
             "signature_hash": "sha1:fbb1863ae56b5e8351475337603384857600c59a",
             "stale": true
           },
+          "TextoResolucionCertificado": {
+            "authored": false,
+            "bases": [
+              "models.Model"
+            ],
+            "candidate_usages": [
+              {
+                "file": "carga/models.py",
+                "line": 887,
+                "snippet": "\"TextoResolucionCertificado y retocado a mano desde la web. Si está vacío, se \""
+              },
+              {
+                "file": "carga/views/textoresolucionviews.py",
+                "line": 17,
+                "snippet": "from carga.models import Certificado, TextoResolucionCertificado"
+              },
+              {
+                "file": "carga/views/textoresolucionviews.py",
+                "line": 54,
+                "snippet": "model = TextoResolucionCertificado"
+              },
+              {
+                "file": "carga/views/textoresolucionviews.py",
+                "line": 147,
+                "snippet": "model = TextoResolucionCertificado"
+              },
+              {
+                "file": "carga/views/textoresolucionviews.py",
+                "line": 158,
+                "snippet": "model = TextoResolucionCertificado"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Texto base, en Jinja, de la resolución que aprueba un certificado.\n\nEl articulado de una resolución de certificado no es uno solo: cambia según el\nPrograma, según de dónde salga la plata (Nación/Provincia/Terceros) y según qué\nse esté certificando (un anticipo no dice lo mismo que un avance de obra). Esas\ncombinaciones las conoce el área, no el desarrollador, así que el texto vive acá\ny no en el código -- a diferencia de las resoluciones de viáticos, cuyo texto\nestá hardcodeado en `secretariador/docx_texto.py`.\n\n`textoresolucion_tipo` vacío es el comodín: el texto genérico del programa para\nese financiamiento, que se usa cuando no hay uno específico para el tipo del\ncertificado (ver `para_certificado`). Se usa `\"\"` y no NULL a propósito: en\nPostgres dos NULL no colisionan, así que con NULL la UniqueConstraint dejaría\ncargar comodines duplicados.",
+            "kind": "class",
+            "lines": [
+              954,
+              1034
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  1006,
+                  1007
+                ],
+                "name": "__str__",
+                "signature": "def __str__(self):"
+              },
+              {
+                "decorators": [
+                  "property"
+                ],
+                "docstring": null,
+                "lines": [
+                  1010,
+                  1012
+                ],
+                "name": "alcance",
+                "signature": "def alcance(self):"
+              },
+              {
+                "decorators": [
+                  "classmethod"
+                ],
+                "docstring": "El texto base que le corresponde a `certificado`, o None si no hay ninguno.\n\nGana el que coincide exactamente con el tipo; si no existe, cae al comodín\n(`textoresolucion_tipo=\"\"`) del mismo programa y financiamiento. Se resuelve\nen una sola query.",
+                "lines": [
+                  1015,
+                  1031
+                ],
+                "name": "para_certificado",
+                "signature": "def para_certificado(cls, certificado):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  1033,
+                  1034
+                ],
+                "name": "get_absolute_url",
+                "signature": "def get_absolute_url(self):"
+              }
+            ],
+            "module": "carga/models.py",
+            "name": "TextoResolucionCertificado",
+            "page_path": "carga/models/TextoResolucionCertificado",
+            "signature": "class TextoResolucionCertificado(models.Model):",
+            "signature_hash": "sha1:105644957e2aa11d65f429bbf5d433aa5d16470a",
+            "stale": false
+          },
           "Uvi": {
             "authored": true,
             "bases": [
@@ -10455,31 +10782,31 @@
               },
               {
                 "file": "carga/models.py",
-                "line": 1074,
+                "line": 1168,
                 "snippet": "pesos = Uvi.pesos_equivalentes(cm.contratomonto_uvi, cm.contratomonto_uvi_fecha)"
               },
               {
-                "file": "carga/views/certificadoviews.py",
-                "line": 23,
-                "snippet": "from carga.models import Certificado, CertificadoFinanciamiento, ContratoMonto, FojaDeMedicion, PlanDeTrabajosEtapa, Uvi"
+                "file": "carga/views/documentosdigitalesviews.py",
+                "line": 179,
+                "snippet": "# \t\t{\"name\": \"certificado_monto_cobrar_uvi\", \"title\":\"Monto Uvi\", \"searchable\":False},"
               },
               {
-                "file": "carga/views/certificadoviews.py",
-                "line": 60,
-                "snippet": "monto_basico_pesos = Uvi.pesos_equivalentes(monto_basico_uvi, certificado.certificado_fecha)"
+                "file": "carga/views/reportes.py",
+                "line": 8,
+                "snippet": "from carga.models import Certificado, Obra, Localidad, Empresa, Programa, CertificadoRubro, Uvi"
               },
               {
-                "file": "carga/views/certificadoviews.py",
-                "line": 61,
-                "snippet": "monto_total_pesos = Uvi.pesos_equivalentes(monto_total_uvi, certificado.certificado_fecha)"
+                "file": "carga/views/reportes.py",
+                "line": 167,
+                "snippet": "model = Uvi"
               }
             ],
             "decorators": [],
             "docstring": null,
             "kind": "class",
             "lines": [
-              1512,
-              1533
+              1606,
+              1627
             ],
             "methods": [
               {
@@ -10488,8 +10815,8 @@
                 ],
                 "docstring": "Convierte un monto en UVI a pesos usando la cotización vigente a la fecha\n(o la cotización anterior más cercana si no hay un valor exacto para ese día).",
                 "lines": [
-                  1524,
-                  1530
+                  1618,
+                  1624
                 ],
                 "name": "pesos_equivalentes",
                 "signature": "def pesos_equivalentes(cls, monto_uvi, fecha):"
@@ -10498,8 +10825,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  1532,
-                  1533
+                  1626,
+                  1627
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -10509,7 +10836,7 @@
             "name": "Uvi",
             "page_path": "carga/models/Uvi",
             "signature": "class Uvi(models.Model):",
-            "signature_hash": "sha1:104dd7e3237c0012ed6b3a9e481990d0b9e301c3",
+            "signature_hash": "sha1:e6964a560454d659d4159ae559a2e859af0e4937",
             "stale": true
           },
           "add_months": {
@@ -10518,7 +10845,7 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1175,
+                "line": 1269,
                 "snippet": "self.etapa_fecha = add_months(anterior.etapa_fecha, 1) if anterior else self.etapa_rubro.rubro_plan.trabajos_fecha"
               }
             ],
@@ -10568,7 +10895,7 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1509,
+                "line": 1603,
                 "snippet": "contratodigital_archivo = models.FileField(upload_to=generate_name_contratos, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=(\"application/pdf\",))], max_length=500, null=True, blank=True)"
               }
             ],
@@ -10593,7 +10920,7 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1378,
+                "line": 1472,
                 "snippet": "fotofoja_archivo = models.FileField(verbose_name=\"Foto\", upload_to=generate_name_foja_foto, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=(\"image/jpeg\", \"image/png\"))], max_length=500)"
               }
             ],
@@ -10712,7 +11039,7 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1028,
+                "line": 1122,
                 "snippet": "rubro_documento_digital = models.FileField(verbose_name=\"Documento Digital\", upload_to=generate_name_rubro_documento, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=(\"application/pdf\",))], max_length=500, null=True, blank=True)"
               }
             ],
@@ -10767,7 +11094,7 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1166,
+                "line": 1260,
                 "snippet": "# fue asignado por la señal auto_increment_etapa_numero (corre dentro"
               }
             ],
@@ -10794,7 +11121,7 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1308,
+                "line": 1402,
                 "snippet": "foja se asigna por orden de creación (ver signals.auto_increment_foja_numero)."
               }
             ],
@@ -10834,6 +11161,27 @@
             "page_path": "carga/signals/auto_increment_tramo_numero",
             "signature": "def auto_increment_tramo_numero(sender, instance, **kwargs):",
             "signature_hash": "sha1:648b0515628bbd7b73c107cbdb5ba1668e95c773",
+            "stale": false
+          },
+          "invalidar_texto_resolucion_por_cambio_de_datos": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "receiver(pre_save, sender=Certificado)"
+            ],
+            "docstring": "`certificado_texto_resolucion` es un snapshot del texto de la resolución ya\nresuelto y retocado a mano. Si después cambian los datos que ese texto describe,\nel snapshot queda mintiendo y la pantalla de revisión lo seguiría mostrando tal\ncual. Lo anulamos acá para forzar que se vuelva a resolver desde la plantilla.\n\nSe usa `.update()` y no `instance.save()` / mutar `instance`:\n\n- mutar `instance` no alcanza porque Django arma `update_fields` antes de\n  emitir esta señal, así que el cambio no se escribiría;\n- un `save()` acá adentro reentraría en la señal y, sobre todo, escribiría una\n  segunda fila en `certificado_history` por cada edición.\n\n`.update()` no toca los GeneratedField con db_persist, que la base recalcula sola.",
+            "kind": "function",
+            "lines": [
+              103,
+              127
+            ],
+            "methods": [],
+            "module": "carga/signals.py",
+            "name": "invalidar_texto_resolucion_por_cambio_de_datos",
+            "page_path": "carga/signals/invalidar_texto_resolucion_por_cambio_de_datos",
+            "signature": "def invalidar_texto_resolucion_por_cambio_de_datos(sender, instance, **kwargs):",
+            "signature_hash": "sha1:7fa20a2d8c706bcf14932282f51df68e8bd59146",
             "stale": false
           },
           "recalcular_acumulado_fojas_siguientes": {
@@ -11271,6 +11619,39 @@
             "page_path": "carga/views/ajaxviews/certificadolegacywidget",
             "signature": "class certificadolegacywidget(FojaRubroDependentWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget):",
             "signature_hash": "sha1:9da06354964f6a4a3aab27f3fe9396f67d6d208c",
+            "stale": false
+          },
+          "certificadomuestrawidget": {
+            "authored": false,
+            "bases": [
+              "LoginRequiredMixin",
+              "s2forms.ModelSelect2Widget"
+            ],
+            "candidate_usages": [
+              {
+                "file": "carga/forms/textoresolucionforms.py",
+                "line": 6,
+                "snippet": "from carga.views.ajaxviews import certificadomuestrawidget, programawidget"
+              },
+              {
+                "file": "carga/forms/textoresolucionforms.py",
+                "line": 116,
+                "snippet": "widget=certificadomuestrawidget(attrs={\"class\": \"form-control customSelect2\", \"data-placeholder\": \"Buscar por expediente u obra...\"}),"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Certificado contra el que se previsualiza una plantilla de texto de\nresolución (ver carga/forms/textoresolucionforms.py). No filtra por el alcance\nde la plantilla a propósito: sirve para probar el texto contra cualquier\ncertificado, incluso uno de otro programa, mientras se lo está redactando.",
+            "kind": "class",
+            "lines": [
+              250,
+              259
+            ],
+            "methods": [],
+            "module": "carga/views/ajaxviews.py",
+            "name": "certificadomuestrawidget",
+            "page_path": "carga/views/ajaxviews/certificadomuestrawidget",
+            "signature": "class certificadomuestrawidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):",
+            "signature_hash": "sha1:8c203ff3341ba740281092e3fa80a4e066b7972f",
             "stale": false
           },
           "conjuntowidget": {
@@ -11810,6 +12191,16 @@
                 "file": "carga/forms/obraforms.py",
                 "line": 100,
                 "snippet": "\"obra_programa\": programawidget(attrs={"
+              },
+              {
+                "file": "carga/forms/textoresolucionforms.py",
+                "line": 6,
+                "snippet": "from carga.views.ajaxviews import certificadomuestrawidget, programawidget"
+              },
+              {
+                "file": "carga/forms/textoresolucionforms.py",
+                "line": 36,
+                "snippet": "\"textoresolucion_programa\": programawidget(attrs={\"class\": \"form-control customSelect2\"}),"
               }
             ],
             "decorators": [],
@@ -12232,6 +12623,40 @@
             "signature": "class ManualReprogramacionView(generic.TemplateView):",
             "signature_hash": "sha1:bca94d33dba0a68a943d57ad148862d47e9ab737",
             "stale": false
+          },
+          "ManualTextosResolucionView": {
+            "authored": false,
+            "bases": [
+              "generic.TemplateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              22,
+              33
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  25,
+                  33
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, **kwargs):"
+              }
+            ],
+            "module": "carga/views/ayudaviews.py",
+            "name": "ManualTextosResolucionView",
+            "page_path": "carga/views/ayudaviews/ManualTextosResolucionView",
+            "signature": "class ManualTextosResolucionView(generic.TemplateView):",
+            "signature_hash": "sha1:a447139f3a24fe1c49ee20affc5e2c7350f6a54d",
+            "stale": false
           }
         }
       },
@@ -12251,16 +12676,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              192,
-              226
+              35,
+              69
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  202,
-                  203
+                  45,
+                  46
                 ],
                 "name": "get_title",
                 "signature": "def get_title(self):"
@@ -12269,8 +12694,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  205,
-                  208
+                  48,
+                  51
                 ],
                 "name": "get_context_data",
                 "signature": "def get_context_data(self, **kwargs):"
@@ -12279,8 +12704,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  210,
-                  220
+                  53,
+                  63
                 ],
                 "name": "get_initial",
                 "signature": "def get_initial(self):"
@@ -12289,8 +12714,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  222,
-                  226
+                  65,
+                  69
                 ],
                 "name": "form_valid",
                 "signature": "def form_valid(self, form):"
@@ -12300,8 +12725,8 @@
             "name": "CrearCertificado",
             "page_path": "carga/views/certificadoviews/CrearCertificado",
             "signature": "class CrearCertificado(PermissionRequiredMixin, generic.CreateView):",
-            "signature_hash": "sha1:8f1e456bdced07d9c9b6322a6141953754da7b0b",
-            "stale": false
+            "signature_hash": "sha1:226e6fd716082425ad695d8168e99bf58d813eee",
+            "stale": true
           },
           "CrearCertificadoAnticipo": {
             "authored": true,
@@ -12312,7 +12737,7 @@
             "candidate_usages": [
               {
                 "file": "carga/views/certificadoviews.py",
-                "line": 325,
+                "line": 168,
                 "snippet": "# Ver comentario análogo en CrearCertificadoAnticipo.get_form_kwargs."
               }
             ],
@@ -12322,16 +12747,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              282,
-              312
+              125,
+              155
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  290,
-                  297
+                  133,
+                  140
                 ],
                 "name": "get_form_kwargs",
                 "signature": "def get_form_kwargs(self):"
@@ -12340,8 +12765,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  299,
-                  312
+                  142,
+                  155
                 ],
                 "name": "form_valid",
                 "signature": "def form_valid(self, form):"
@@ -12351,8 +12776,8 @@
             "name": "CrearCertificadoAnticipo",
             "page_path": "carga/views/certificadoviews/CrearCertificadoAnticipo",
             "signature": "class CrearCertificadoAnticipo(PermissionRequiredMixin, generic.CreateView):",
-            "signature_hash": "sha1:7592dc00d0285d85dda7cb0c74e4638550b585cf",
-            "stale": false
+            "signature_hash": "sha1:81973b93c7672095cff5c8c5d7b7f57b5f2e4d1c",
+            "stale": true
           },
           "CrearCertificadoHechoConsumado": {
             "authored": true,
@@ -12367,16 +12792,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              316,
-              344
+              159,
+              187
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  324,
-                  328
+                  167,
+                  171
                 ],
                 "name": "get_form_kwargs",
                 "signature": "def get_form_kwargs(self):"
@@ -12385,8 +12810,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  330,
-                  344
+                  173,
+                  187
                 ],
                 "name": "form_valid",
                 "signature": "def form_valid(self, form):"
@@ -12396,8 +12821,8 @@
             "name": "CrearCertificadoHechoConsumado",
             "page_path": "carga/views/certificadoviews/CrearCertificadoHechoConsumado",
             "signature": "class CrearCertificadoHechoConsumado(PermissionRequiredMixin, generic.CreateView):",
-            "signature_hash": "sha1:17f5a410f8e5303260970a8bb204ebcbc3193161",
-            "stale": false
+            "signature_hash": "sha1:2f1d807d7e451df367897120dbba8dbd1332dc72",
+            "stale": true
           },
           "DetalleCertificado": {
             "authored": true,
@@ -12412,16 +12837,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              369,
-              378
+              212,
+              221
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  375,
-                  378
+                  218,
+                  221
                 ],
                 "name": "get_context_data",
                 "signature": "def get_context_data(self, **kwargs):"
@@ -12431,8 +12856,8 @@
             "name": "DetalleCertificado",
             "page_path": "carga/views/certificadoviews/DetalleCertificado",
             "signature": "class DetalleCertificado(PermissionRequiredMixin, generic.DetailView):",
-            "signature_hash": "sha1:e2714317e6a738c7fe250f0044f4bdc8cea0f4c4",
-            "stale": false
+            "signature_hash": "sha1:592f83f5275c01661bce1dc77e88109bdf0b86d3",
+            "stale": true
           },
           "EliminarCertificado": {
             "authored": true,
@@ -12448,16 +12873,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              183,
-              188
+              26,
+              31
             ],
             "methods": [],
             "module": "carga/views/certificadoviews.py",
             "name": "EliminarCertificado",
             "page_path": "carga/views/certificadoviews/EliminarCertificado",
             "signature": "class EliminarCertificado(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):",
-            "signature_hash": "sha1:0324e7ec8b37b081d562921c9b9f4d2416e27757",
-            "stale": false
+            "signature_hash": "sha1:bd66ad5075f9b3a60b696845706d9a26ec6f4eed",
+            "stale": true
           },
           "GenerarCertificadosDesdeFoja": {
             "authored": true,
@@ -12472,16 +12897,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              230,
-              278
+              73,
+              121
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  234,
-                  237
+                  77,
+                  80
                 ],
                 "name": "get",
                 "signature": "def get(self, request, pk):"
@@ -12490,8 +12915,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  239,
-                  278
+                  82,
+                  121
                 ],
                 "name": "post",
                 "signature": "def post(self, request, pk):"
@@ -12501,8 +12926,8 @@
             "name": "GenerarCertificadosDesdeFoja",
             "page_path": "carga/views/certificadoviews/GenerarCertificadosDesdeFoja",
             "signature": "class GenerarCertificadosDesdeFoja(PermissionRequiredMixin, generic.View):",
-            "signature_hash": "sha1:7f81cb086103b9943a3ec9d3895a2aa286f0af02",
-            "stale": false
+            "signature_hash": "sha1:73b7c3ae2bb1fe8aa175746fe49b8bdebca35c96",
+            "stale": true
           },
           "ImprimirCertificado": {
             "authored": true,
@@ -12517,16 +12942,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              382,
-              392
+              225,
+              235
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  388,
-                  392
+                  231,
+                  235
                 ],
                 "name": "get_context_data",
                 "signature": "def get_context_data(self, **kwargs):"
@@ -12536,8 +12961,8 @@
             "name": "ImprimirCertificado",
             "page_path": "carga/views/certificadoviews/ImprimirCertificado",
             "signature": "class ImprimirCertificado(PermissionRequiredMixin, generic.DetailView):",
-            "signature_hash": "sha1:cb6a1831c157ad6116cc543414adb6f5b3a37188",
-            "stale": false
+            "signature_hash": "sha1:e6095a4dca041249c15c867bc3575fa275799470",
+            "stale": true
           },
           "NuevoCertificadoMenu": {
             "authored": true,
@@ -12552,16 +12977,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              348,
-              350
+              191,
+              193
             ],
             "methods": [],
             "module": "carga/views/certificadoviews.py",
             "name": "NuevoCertificadoMenu",
             "page_path": "carga/views/certificadoviews/NuevoCertificadoMenu",
             "signature": "class NuevoCertificadoMenu(PermissionRequiredMixin, generic.TemplateView):",
-            "signature_hash": "sha1:4ca8ebfe08727ee9526f1247df2086e63748627f",
-            "stale": false
+            "signature_hash": "sha1:73821904a962d89ed2d1455f6a9321689ec385e7",
+            "stale": true
           },
           "PaginaListaCertificados": {
             "authored": true,
@@ -12580,16 +13005,16 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              396,
-              399
+              239,
+              242
             ],
             "methods": [],
             "module": "carga/views/certificadoviews.py",
             "name": "PaginaListaCertificados",
             "page_path": "carga/views/certificadoviews/PaginaListaCertificados",
             "signature": "def PaginaListaCertificados(request):",
-            "signature_hash": "sha1:cc023534d8180ae14b9fb978a98cce3eb708df05",
-            "stale": false
+            "signature_hash": "sha1:c6505e7e4821126e860e36cf826810a632f171c1",
+            "stale": true
           },
           "UpdateCertificado": {
             "authored": true,
@@ -12604,16 +13029,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              354,
-              365
+              197,
+              208
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  362,
-                  365
+                  205,
+                  208
                 ],
                 "name": "form_valid",
                 "signature": "def form_valid(self, form):"
@@ -12623,63 +13048,8 @@
             "name": "UpdateCertificado",
             "page_path": "carga/views/certificadoviews/UpdateCertificado",
             "signature": "class UpdateCertificado(PermissionRequiredMixin, generic.UpdateView):",
-            "signature_hash": "sha1:78f4ba143e7751cd30899f1f5b61b60edef73979",
-            "stale": false
-          },
-          "_certificado_detalle_context": {
-            "authored": true,
-            "bases": [],
-            "candidate_usages": [
-              {
-                "file": "carga/views/certificadoviews.py",
-                "line": 377,
-                "snippet": "ctx.update(_certificado_detalle_context(self.object))"
-              },
-              {
-                "file": "carga/views/certificadoviews.py",
-                "line": 390,
-                "snippet": "ctx.update(_certificado_detalle_context(self.object))"
-              }
-            ],
-            "decorators": [],
-            "docstring": null,
-            "kind": "function",
-            "lines": [
-              82,
-              180
-            ],
-            "methods": [],
-            "module": "carga/views/certificadoviews.py",
-            "name": "_certificado_detalle_context",
-            "page_path": "carga/views/certificadoviews/_certificado_detalle_context",
-            "signature": "def _certificado_detalle_context(certificado):",
-            "signature_hash": "sha1:b0f00805287e16bfc91b1eebad57c15879e7d77a",
-            "stale": false
-          },
-          "_desglose_items_certificado": {
-            "authored": true,
-            "bases": [],
-            "candidate_usages": [
-              {
-                "file": "carga/views/certificadoviews.py",
-                "line": 167,
-                "snippet": "\"desglose_items\": _desglose_items_certificado(certificado, contratomonto_rubro),"
-              }
-            ],
-            "decorators": [],
-            "docstring": "Costo por ítem de la Foja de origen de `certificado`: cada fila es un\nFojaDeMedicionItem con su % de incidencia dentro del rubro (fijo, del plan de\ntrabajos) y su avance anterior/mes/acumulado, valorizado contra el\nContratoMonto del rubro+financiamiento de este certificado. Sin Foja de origen\n(Anticipo, Hecho Consumado, legacy) no hay ítems que desglosar.",
-            "kind": "function",
-            "lines": [
-              29,
-              79
-            ],
-            "methods": [],
-            "module": "carga/views/certificadoviews.py",
-            "name": "_desglose_items_certificado",
-            "page_path": "carga/views/certificadoviews/_desglose_items_certificado",
-            "signature": "def _desglose_items_certificado(certificado, contratomonto_rubro):",
-            "signature_hash": "sha1:852c3f802d1a014773a3cd9c9f9eb41b22775f21",
-            "stale": false
+            "signature_hash": "sha1:8d224af3537bceab96389b872c7445efd2fc4fe6",
+            "stale": true
           }
         }
       },
@@ -14638,12 +15008,12 @@
             "candidate_usages": [
               {
                 "file": "carga/models.py",
-                "line": 1168,
+                "line": 1262,
                 "snippet": "# Si etapa_fecha ya viene seteada a mano (ver PlanDeTrabajosEtapaMatriz,"
               },
               {
                 "file": "carga/models.py",
-                "line": 1244,
+                "line": 1338,
                 "snippet": "# ver PlanDeTrabajosEtapaMatriz._get_anterior_map)."
               }
             ],
@@ -16220,11 +16590,395 @@
             "stale": false
           }
         }
+      },
+      "views/textoresolucionviews": {
+        "file": "carga/views/textoresolucionviews.py",
+        "symbols": {
+          "CrearTextoResolucion": {
+            "authored": false,
+            "bases": [
+              "TextoResolucionEditorMixin",
+              "PermissionRequiredMixin",
+              "generic.CreateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              123,
+              130
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  128,
+                  130
+                ],
+                "name": "bloques_iniciales",
+                "signature": "def bloques_iniciales(self):"
+              }
+            ],
+            "module": "carga/views/textoresolucionviews.py",
+            "name": "CrearTextoResolucion",
+            "page_path": "carga/views/textoresolucionviews/CrearTextoResolucion",
+            "signature": "class CrearTextoResolucion(TextoResolucionEditorMixin, PermissionRequiredMixin, generic.CreateView):",
+            "signature_hash": "sha1:0d876bd85924280cb0439e34799a76e23129ea87",
+            "stale": false
+          },
+          "EliminarTextoResolucion": {
+            "authored": false,
+            "bases": [
+              "PermissionRequiredMixin",
+              "DeleteRelatedObjectsMixin",
+              "generic.DeleteView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              144,
+              149
+            ],
+            "methods": [],
+            "module": "carga/views/textoresolucionviews.py",
+            "name": "EliminarTextoResolucion",
+            "page_path": "carga/views/textoresolucionviews/EliminarTextoResolucion",
+            "signature": "class EliminarTextoResolucion(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):",
+            "signature_hash": "sha1:ed20111a7dba4ea657ce126e8685c5d1cbd40470",
+            "stale": false
+          },
+          "ListaTextosResolucion": {
+            "authored": false,
+            "bases": [
+              "PermissionRequiredMixin",
+              "generic.ListView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": "Listado simple: es un catálogo de unas pocas decenas de filas, no justifica\nel ida y vuelta de datatables que usan las listas grandes del sistema.",
+            "kind": "class",
+            "lines": [
+              153,
+              163
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  162,
+                  163
+                ],
+                "name": "get_queryset",
+                "signature": "def get_queryset(self):"
+              }
+            ],
+            "module": "carga/views/textoresolucionviews.py",
+            "name": "ListaTextosResolucion",
+            "page_path": "carga/views/textoresolucionviews/ListaTextosResolucion",
+            "signature": "class ListaTextosResolucion(PermissionRequiredMixin, generic.ListView):",
+            "signature_hash": "sha1:2feb9bd4cfd395580e2db4bd84e08783ca377dd6",
+            "stale": false
+          },
+          "TextoResolucionEditorMixin": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "carga/views/textoresolucionviews.py",
+                "line": 123,
+                "snippet": "class CrearTextoResolucion(TextoResolucionEditorMixin, PermissionRequiredMixin, generic.CreateView):"
+              },
+              {
+                "file": "carga/views/textoresolucionviews.py",
+                "line": 134,
+                "snippet": "class UpdateTextoResolucion(TextoResolucionEditorMixin, PermissionRequiredMixin, generic.UpdateView):"
+              }
+            ],
+            "decorators": [],
+            "docstring": "GET/POST del editor de plantillas: form de alcance + formset de bloques +\npanel de vista previa contra un certificado de muestra.\n\nLa vista previa se hace con un POST normal (`accion=previsualizar`) que\nre-renderiza la página. Es el mismo ida y vuelta que usa el resto del sistema,\nse testea con `self.client.post`, y evita estrenar htmx (que está cargado en\nbase.html pero no lo usa ninguna plantilla todavía, así que no hay patrón de\nCSRF establecido).",
+            "kind": "class",
+            "lines": [
+              42,
+              119
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  60,
+                  61
+                ],
+                "name": "bloques_iniciales",
+                "signature": "def bloques_iniciales(self):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  63,
+                  69
+                ],
+                "name": "get",
+                "signature": "def get(self, request, *args, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  71,
+                  98
+                ],
+                "name": "post",
+                "signature": "def post(self, request, *args, **kwargs):"
+              },
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  100,
+                  119
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, **kwargs):"
+              }
+            ],
+            "module": "carga/views/textoresolucionviews.py",
+            "name": "TextoResolucionEditorMixin",
+            "page_path": "carga/views/textoresolucionviews/TextoResolucionEditorMixin",
+            "signature": "class TextoResolucionEditorMixin:",
+            "signature_hash": "sha1:84d02fbefebc513d92b0287b6c6eb0e007c34eae",
+            "stale": false
+          },
+          "UpdateTextoResolucion": {
+            "authored": false,
+            "bases": [
+              "TextoResolucionEditorMixin",
+              "PermissionRequiredMixin",
+              "generic.UpdateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [
+              "method_decorator(login_required, name='dispatch')"
+            ],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              134,
+              140
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  139,
+                  140
+                ],
+                "name": "bloques_iniciales",
+                "signature": "def bloques_iniciales(self):"
+              }
+            ],
+            "module": "carga/views/textoresolucionviews.py",
+            "name": "UpdateTextoResolucion",
+            "page_path": "carga/views/textoresolucionviews/UpdateTextoResolucion",
+            "signature": "class UpdateTextoResolucion(TextoResolucionEditorMixin, PermissionRequiredMixin, generic.UpdateView):",
+            "signature_hash": "sha1:c6c7c0a595cba133f9cb0fefd4682ea387b46af1",
+            "stale": false
+          },
+          "_history_id": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "carga/views/textoresolucionviews.py",
+                "line": 222,
+                "snippet": "\"textoresolucion_history_id\": _history_id(plantilla),"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Id de la fila histórica vigente de `plantilla`, para poder auditar después\ncon qué versión del texto base se emitió una resolución.",
+            "kind": "function",
+            "lines": [
+              243,
+              249
+            ],
+            "methods": [],
+            "module": "carga/views/textoresolucionviews.py",
+            "name": "_history_id",
+            "page_path": "carga/views/textoresolucionviews/_history_id",
+            "signature": "def _history_id(plantilla):",
+            "signature_hash": "sha1:67b2d0d07dd31310664a2b3d5a2e1ef4113534d1",
+            "stale": false
+          },
+          "_previsualizar": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "carga/views/textoresolucionviews.py",
+                "line": 107,
+                "snippet": "preview, faltantes, error = _previsualizar(bloques, certificado)"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Renderiza `bloques` contra `certificado` para el panel de vista previa.\n\nDevuelve `(bloques_renderizados, faltantes, error)`. Nunca lanza: el editor\ntiene que poder mostrar el problema al lado del texto, no un 500.",
+            "kind": "function",
+            "lines": [
+              25,
+              39
+            ],
+            "methods": [],
+            "module": "carga/views/textoresolucionviews.py",
+            "name": "_previsualizar",
+            "page_path": "carga/views/textoresolucionviews/_previsualizar",
+            "signature": "def _previsualizar(bloques, certificado):",
+            "signature_hash": "sha1:76211a5baa3759e4f7024aa50f3477ad1c2c6855",
+            "stale": false
+          },
+          "_sin_plantilla": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "carga/views/textoresolucionviews.py",
+                "line": 215,
+                "snippet": "return _sin_plantilla(request, certificado)"
+              },
+              {
+                "file": "carga/views/textoresolucionviews.py",
+                "line": 258,
+                "snippet": "return _sin_plantilla(request, certificado)"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Pantalla de 'no hay texto base para este alcance', con el link para crearlo\nya apuntando al certificado como muestra. No es un 404: el certificado existe,\nlo que falta es la plantilla.",
+            "kind": "function",
+            "lines": [
+              194,
+              201
+            ],
+            "methods": [],
+            "module": "carga/views/textoresolucionviews.py",
+            "name": "_sin_plantilla",
+            "page_path": "carga/views/textoresolucionviews/_sin_plantilla",
+            "signature": "def _sin_plantilla(request, certificado):",
+            "signature_hash": "sha1:62b10fa8f217716b99477db157488fccf614659d",
+            "stale": false
+          },
+          "_texto_certificado": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "carga/views/textoresolucionviews.py",
+                "line": 213,
+                "snippet": "bloques, faltantes, plantilla, error = _texto_certificado(certificado)"
+              },
+              {
+                "file": "carga/views/textoresolucionviews.py",
+                "line": 256,
+                "snippet": "bloques, faltantes, plantilla, error = _texto_certificado(certificado)"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Bloques a mostrar/emitir para `certificado`, junto con las variables que\nquedaron sin resolver.\n\nSi el certificado ya tiene un snapshot editado a mano se usa ese tal cual (ya\nestá renderizado); si no, se resuelve la plantilla del alcance contra los datos\nactuales. Devuelve `(bloques, faltantes, plantilla, error)`; `plantilla` es None\ncuando no hay ningún texto base cargado para el alcance del certificado.",
+            "kind": "function",
+            "lines": [
+              170,
+              191
+            ],
+            "methods": [],
+            "module": "carga/views/textoresolucionviews.py",
+            "name": "_texto_certificado",
+            "page_path": "carga/views/textoresolucionviews/_texto_certificado",
+            "signature": "def _texto_certificado(certificado):",
+            "signature_hash": "sha1:530eae304f0d215c31d3b9cdcdc4beb49f67b0f5",
+            "stale": false
+          },
+          "editar_texto_resolucion_certificado": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('carga.change_certificado', raise_exception=True)"
+            ],
+            "docstring": "Revisión del texto ya resuelto, antes de emitir el .docx.\n\nEspeja `revisar_texto_actuacion` de viáticos: lo que se guarda es el texto\nfinal, no la plantilla, y queda anotado de qué plantilla (y de qué versión de\nesa plantilla) salió.",
+            "kind": "function",
+            "lines": [
+              206,
+              240
+            ],
+            "methods": [],
+            "module": "carga/views/textoresolucionviews.py",
+            "name": "editar_texto_resolucion_certificado",
+            "page_path": "carga/views/textoresolucionviews/editar_texto_resolucion_certificado",
+            "signature": "def editar_texto_resolucion_certificado(request, pk):",
+            "signature_hash": "sha1:3e86f16864b1db6d18648283895dff9a15d3e071",
+            "stale": false
+          },
+          "resolucion_certificado_docx": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('carga.view_certificado', raise_exception=True)"
+            ],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              254,
+              281
+            ],
+            "methods": [],
+            "module": "carga/views/textoresolucionviews.py",
+            "name": "resolucion_certificado_docx",
+            "page_path": "carga/views/textoresolucionviews/resolucion_certificado_docx",
+            "signature": "def resolucion_certificado_docx(request, pk):",
+            "signature_hash": "sha1:247d1a7a290edf1c4b0109673f614f266c5af178",
+            "stale": false
+          },
+          "restaurar_texto_resolucion_certificado": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [],
+            "decorators": [
+              "login_required",
+              "permission_required('carga.change_certificado', raise_exception=True)"
+            ],
+            "docstring": "Descarta el snapshot editado a mano y vuelve a resolver desde la plantilla.",
+            "kind": "function",
+            "lines": [
+              286,
+              292
+            ],
+            "methods": [],
+            "module": "carga/views/textoresolucionviews.py",
+            "name": "restaurar_texto_resolucion_certificado",
+            "page_path": "carga/views/textoresolucionviews/restaurar_texto_resolucion_certificado",
+            "signature": "def restaurar_texto_resolucion_certificado(request, pk):",
+            "signature_hash": "sha1:87a1661a32b06866a97eb4f63d6d376c9f972330",
+            "stale": false
+          }
+        }
       }
     }
   },
   "core": {
-    "generated_at": "2026-09-20T15:51:38.501168+00:00",
+    "generated_at": "2026-09-20T21:50:28.298713+00:00",
     "modules": {
       "forms": {
         "file": "core/forms.py",
@@ -17567,7 +18321,7 @@
     }
   },
   "personalizador": {
-    "generated_at": "2026-09-20T15:51:44.318573+00:00",
+    "generated_at": "2026-09-20T21:50:34.340837+00:00",
     "modules": {
       "forms/actividadespecificaforms": {
         "file": "personalizador/forms/actividadespecificaforms.py",
@@ -23445,7 +24199,7 @@
     }
   },
   "secretariador": {
-    "generated_at": "2026-09-20T15:51:42.522399+00:00",
+    "generated_at": "2026-09-20T21:50:32.520816+00:00",
     "modules": {
       "forms/comisionadoform": {
         "file": "secretariador/forms/comisionadoform.py",

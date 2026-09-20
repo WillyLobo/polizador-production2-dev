@@ -30,6 +30,9 @@
     <a href="{% url 'carga:update-certificado' object.pk %}" class="btn btn-sm btn-outline-secondary">
       <i class="bi bi-pencil"></i> Editar
     </a>
+    <a href="{% url 'carga:editar-texto-resolucion-certificado' object.pk %}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-file-earmark-word"></i> Resolución
+    </a>
     {% endif %}
     <button onclick="window.print()" class="btn btn-sm btn-outline-secondary">
       <i class="bi bi-printer"></i> Imprimir / PDF

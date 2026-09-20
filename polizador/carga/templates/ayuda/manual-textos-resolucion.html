@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block title %}<title>Manual de Usuario — Textos de Resolución | Polizador</title>{% endblock title %}
+{% block content %}
+<div class="container my-4" style="max-width: 980px;">
+
+    <h1 class="mb-1"><i class="bi bi-question-circle me-2"></i>Textos de Resolución</h1>
+    <p class="text-muted mb-4">
+        Cómo cargar el texto base de las resoluciones que aprueban certificados de obra,
+        y cómo generar el documento de un certificado concreto.
+    </p>
+
+    <div class="card mb-4">
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">Índice</div>
+        <div class="card-body p-2">
+            <ol class="small mb-0">
+                <li><a href="#idea">La idea: una plantilla por alcance</a></li>
+                <li><a href="#alcance">Cómo se elige el texto de cada certificado</a></li>
+                <li><a href="#bloques">Los bloques del cuerpo</a></li>
+                <li><a href="#variables">Variables disponibles</a></li>
+                <li><a href="#filtros">Filtros de formato</a></li>
+                <li><a href="#generar">Generar la resolución de un certificado</a></li>
+                <li><a href="#faq">Errores comunes</a></li>
+            </ol>
+        </div>
+    </div>
+
+    {# ─── 1 ─── #}
+    <h2 id="idea" class="h5 mt-4">1. La idea: una plantilla por alcance</h2>
+    <p class="small">
+        El texto de una resolución de certificado es casi siempre el mismo, salvo por los
+        datos que cambian: la obra, la empresa, el monto, el período. En lugar de reescribirlo
+        cada vez, se carga <strong>una vez</strong> un texto base con huecos, y el sistema
+        completa los huecos con los datos de cada certificado.
+    </p>
+    <p class="small">
+        Los huecos se escriben entre llaves dobles. Por ejemplo, este texto base:
+    </p>
+    <pre class="small bg-body-tertiary border rounded p-2">Que la Empresa {% templatetag openvariable %} empresa.nombre {% templatetag closevariable %} certificó {% templatetag openvariable %} certificado.monto_pesos|pesos {% templatetag closevariable %};</pre>
+    <p class="small">sale así en el documento:</p>
+    <pre class="small bg-body-tertiary border rounded p-2">Que la Empresa Constructora Sur SRL certificó $1.500.000,00;</pre>
+
+    {# ─── 2 ─── #}
+    <h2 id="alcance" class="h5 mt-4">2. Cómo se elige el texto de cada certificado</h2>
+    <p class="small">
+        Cada texto se carga para un <strong>alcance</strong>: un Programa, un financiamiento
+        (Nación / Provincia / Terceros) y un tipo de certificado. Cuando se pide la resolución
+        de un certificado, el sistema busca en este orden:
+    </p>
+    <ol class="small">
+        <li>El texto de ese Programa, ese financiamiento y <em>ese tipo exacto</em>.</li>
+        <li>Si no existe, el de ese Programa y financiamiento con el <strong>tipo vacío</strong>
+            (el «comodín»: sirve para cualquier tipo).</li>
+        <li>Si tampoco existe, avisa que falta cargar el texto y ofrece crearlo.</li>
+    </ol>
+    <div class="alert alert-light border py-2 small">
+        Conviene cargar un comodín por Programa y financiamiento, y agregar textos por tipo
+        sólo donde el articulado realmente cambia — típicamente los <em>Anticipos</em>, que no
+        dicen lo mismo que un avance de obra.
+    </div>
+
+    {# ─── 3 ─── #}
+    <h2 id="bloques" class="h5 mt-4">3. Los bloques del cuerpo</h2>
+    <p class="small">
+        El cuerpo se arma con bloques, y el tipo de cada bloque decide su formato en el
+        documento final:
+    </p>
+    <div class="table-responsive">
+        <table class="table table-sm">
+            <thead><tr><th>Tipo</th><th>Qué hace</th></tr></thead>
+            <tbody>
+                <tr><td>VISTO</td><td>Párrafo que arranca con «VISTO: » en negrita.</td></tr>
+                <tr><td>Encabezado en negrita</td><td>Todo el párrafo en negrita: «CONSIDERANDO:», «Por ello;».</td></tr>
+                <tr><td>Considerando</td><td>Párrafo justificado con sangría de primera línea.</td></tr>
+                <tr><td>Fórmula «EL PRESIDENTE … RESUELVE:»</td><td>Texto fijo centrado. El bloque marca dónde va; no se edita.</td></tr>
+                <tr><td>Artículo</td><td>Párrafo que arranca con «Artículo Nº: » en negrita.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="alert alert-light border py-2 small">
+        <strong>Los artículos se numeran solos</strong> según su posición: si agregás uno en el
+        medio, los de abajo se renumeran. Dejá la etiqueta vacía salvo que necesites algo
+        distinto (por ejemplo «Artículo 1º y 2º:» o «De forma:»).
+    </div>
+
+    {# ─── 4 ─── #}
+    <h2 id="variables" class="h5 mt-4">4. Variables disponibles</h2>
+    <p class="small">
+        En el editor están en el panel de la derecha: hacés clic y se insertan donde tengas el
+        cursor. Ésta es la lista completa.
+    </p>
+    {% for grupo, items in variables %}
+        <h3 class="h6 mt-3">{{ grupo }}</h3>
+        <div class="table-responsive">
+            <table class="table table-sm">
+                <tbody>
+                    {% for expresion, descripcion in items %}
+                        <tr>
+                            <td style="width: 18rem;"><code class="small">{{ expresion }}</code></td>
+                            <td class="small">{{ descripcion }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endfor %}
+
+    {# ─── 5 ─── #}
+    <h2 id="filtros" class="h5 mt-4">5. Filtros de formato</h2>
+    <p class="small">
+        Un filtro se agrega con una barra después de la variable
+        (<code class="small">{% templatetag openvariable %} certificado.monto_pesos|pesos {% templatetag closevariable %}</code>)
+        y cambia cómo se escribe el valor.
+    </p>
+    <div class="table-responsive">
+        <table class="table table-sm">
+            <tbody>
+                {% for filtro, descripcion in filtros_doc %}
+                    <tr>
+                        <td style="width: 10rem;"><code class="small">{{ filtro }}</code></td>
+                        <td class="small">{{ descripcion }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {# ─── 6 ─── #}
+    <h2 id="generar" class="h5 mt-4">6. Generar la resolución de un certificado</h2>
+    <ol class="small">
+        <li>Entrá a la ficha del certificado y tocá <strong>Resolución</strong>.</li>
+        <li>Se muestra el texto ya resuelto, con los datos de ese certificado puestos.</li>
+        <li>Podés retocar la redacción: lo que edites queda guardado <em>sólo para ese
+            certificado</em>, no cambia la plantilla.</li>
+        <li><strong>Generar documento (.docx)</strong> descarga el archivo, armado sobre el
+            membrete institucional vigente.</li>
+    </ol>
+    <div class="alert alert-light border py-2 small">
+        Si después cambian los datos del certificado (el monto, el expediente, el período), el
+        texto retocado se descarta solo y se vuelve a resolver desde la plantilla: así no queda
+        una resolución diciendo un monto que ya no es.
+    </div>
+
+    {# ─── 7 ─── #}
+    <h2 id="faq" class="h5 mt-4">7. Errores comunes</h2>
+    <dl class="small">
+        <dt>«Faltan datos: obra.nomber»</dt>
+        <dd class="mb-2">
+            El nombre de la variable está mal escrito, o el dato no está cargado. Mientras falte
+            algo <strong>no se puede generar el documento</strong>: una resolución se firma, y es
+            peor que salga con un hueco a que no salga. Usá la paleta en vez de escribir la
+            variable a mano.
+        </dd>
+        <dt>«Error de sintaxis en la línea 1»</dt>
+        <dd class="mb-2">
+            Faltó cerrar unas llaves. Revisá que cada <code class="small">{% templatetag openvariable %}</code>
+            tenga su <code class="small">{% templatetag closevariable %}</code>.
+        </dd>
+        <dt>«No hay ningún documento base cargado»</dt>
+        <dd class="mb-2">
+            Falta subir el membrete institucional. Se sube desde
+            <em>Viáticos → Actualizar Encabezado</em>, y es el mismo que usan las resoluciones
+            de viáticos.
+        </dd>
+        <dt>«No hay ningún texto de resolución cargado»</dt>
+        <dd class="mb-2">
+            No hay plantilla para el Programa, financiamiento y tipo de ese certificado. La
+            pantalla te dice cuál es el alcance que falta y te lleva a cargarlo.
+        </dd>
+    </dl>
+</div>
+{% endblock %}

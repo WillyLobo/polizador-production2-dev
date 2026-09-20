@@ -1,12 +1,16 @@
+import io
 from datetime import date
 from decimal import Decimal
 
+from docx import Document
+
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.db.utils import IntegrityError
 from django.test import TestCase
 from django.urls import reverse
 
-from carga import certificacion, ley27397
+from carga import certificacion, ley27397, resolucion_docx, resolucion_texto
 from carga.certificacion import construir_certificados_desde_foja, generar_certificados_desde_foja
 from carga.forms.fojademedicionforms import FojaDeMedicionForm
 from carga.forms.contratotramopagoforms import ContratoTramoPagoFormset
@@ -27,6 +31,7 @@ from carga.models import (
     PlanDeTrabajosItem,
     PlanDeTrabajosRubro,
     Programa,
+    TextoResolucionCertificado,
     Uvi,
 )
 
@@ -1533,3 +1538,600 @@ class CertificadoEtapaTests(TestCase):
         self.assertEqual(resumen["etapa"]["total_pct"], Decimal("30.00"))
         # Fondo de Reparo (5% default) también debe reflejar el monto del certificado ETAPA.
         self.assertEqual(resumen["fondo_reparo"]["total"], Decimal("2250.00"))
+
+
+class ResolucionTextoFiltrosTests(TestCase):
+    """Los filtros se aplican sobre datos que pueden venir nulos (montos UVI de una
+    obra financiada sólo en pesos, períodos sin cargar). Ninguno puede tirar una
+    excepción: si lo hiciera, rompería la ficha del certificado."""
+
+    def test_moneda_y_pesos_usan_separadores_es_ar(self):
+        assert resolucion_texto.filtro_moneda(Decimal("1234567.8")) == "1.234.567,80"
+        assert resolucion_texto.filtro_pesos(Decimal("1234567.8")) == "$1.234.567,80"
+
+    def test_pct_agrega_el_simbolo(self):
+        assert resolucion_texto.filtro_pct(Decimal("12.3456")) == "12,35 %"
+
+    def test_letras_escribe_el_importe(self):
+        assert resolucion_texto.filtro_letras(Decimal("1234.50")).startswith("Pesos mil doscientos treinta y cuatro")
+
+    def test_fecha_en_formato_local(self):
+        assert resolucion_texto.filtro_fecha(date(2026, 3, 9)) == "09/03/2026"
+
+    def test_cuit_agrega_guiones(self):
+        assert resolucion_texto.filtro_cuit("20123456789") == "20-12345678-9"
+
+    def test_cuit_incompleto_se_devuelve_tal_cual(self):
+        # A diferencia del filtro de numletras, que inventaría un "00-00000000-0":
+        # en un texto que se firma es peor un CUIT falso que uno evidentemente incompleto.
+        assert resolucion_texto.filtro_cuit("123") == "123"
+
+    def test_ninguno_falla_con_none_ni_con_basura(self):
+        for filtro in (resolucion_texto.filtro_moneda, resolucion_texto.filtro_pesos,
+                       resolucion_texto.filtro_letras, resolucion_texto.filtro_fecha,
+                       resolucion_texto.filtro_pct, resolucion_texto.filtro_cuit):
+            assert filtro(None) == ""
+            filtro("no es un número")
+
+    def test_cero_no_se_confunde_con_vacio(self):
+        assert resolucion_texto.filtro_pesos(Decimal("0")) == "$0,00"
+
+
+class ResolucionTextoRenderTests(TestCase):
+    def test_renderiza_con_filtros(self):
+        texto, faltantes = resolucion_texto.render_bloque(
+            "Por {{ c.monto|pesos }}.", {"c": {"monto": Decimal("1000")}}
+        )
+        assert texto == "Por $1.000,00."
+        assert faltantes == set()
+
+    def test_variable_inexistente_deja_marcador_y_se_reporta(self):
+        texto, faltantes = resolucion_texto.render_bloque("Obra {{ obra.nombre }}", {})
+        assert "«falta: obra»" in texto
+        assert faltantes == {"obra"}
+
+    def test_cadena_larga_de_atributos_no_explota(self):
+        # ChainableUndefined: {{ obra.a.b }} tiene que degradar, no lanzar.
+        texto, faltantes = resolucion_texto.render_bloque("{{ obra.a.b }}", {})
+        assert "«falta:" in texto
+        assert faltantes
+
+    def test_error_de_sintaxis_es_error_de_dominio(self):
+        with self.assertRaises(resolucion_texto.TextoResolucionError):
+            resolucion_texto.render_bloque("{% if x %}sin cerrar", {})
+
+    def test_compilar_bloque_detecta_sintaxis_invalida(self):
+        with self.assertRaises(resolucion_texto.TextoResolucionError):
+            resolucion_texto.compilar_bloque("{{ sin cerrar")
+        # Un bloque válido no lanza.
+        resolucion_texto.compilar_bloque("{{ certificado.expediente }}")
+
+    def test_el_sandbox_bloquea_llamar_metodos_peligrosos(self):
+        """La amenaza realista no es `__class__` (Jinja ya lo bloquea) sino invocar
+        un método del objeto. El contexto son dicts proyectados, no modelos, así que
+        `delete` ni siquiera existe, e invocarlo es un error de dominio -- no un
+        marcador de "falta", porque no es un dato que se pueda completar."""
+        with self.assertRaises(resolucion_texto.TextoResolucionError):
+            resolucion_texto.render_bloque("{{ obra.delete() }}", {"obra": {"nombre": "X"}})
+
+    def test_el_sandbox_bloquea_los_atributos_internos(self):
+        texto, _ = resolucion_texto.render_bloque("{{ obra.__class__ }}", {"obra": {"nombre": "X"}})
+        assert "«falta: __class__»" in texto
+
+    def test_render_bloques_conserva_clase_y_label(self):
+        bloques = [{"clase": "articulo", "label": "", "texto": "Monto {{ m|pesos }}"}]
+        resueltos, _ = resolucion_texto.render_bloques(bloques, {"m": Decimal("5")})
+        assert resueltos == [{"clase": "articulo", "label": "", "texto": "Monto $5,00"}]
+
+
+class ResolucionDocxTests(TestCase):
+    def _base_docx(self):
+        """Documento base en memoria. No se usa `secretariador/media/*.docx` como
+        fixture: esos traen cuerpo con tags de docxtpl, no son un encabezado de
+        cuerpo vacío como el que sube EncabezadoDocumento."""
+        base = io.BytesIO()
+        Document().save(base)
+        base.seek(0)
+        return base
+
+    def test_numera_los_articulos_por_posicion(self):
+        bloques = [
+            {"clase": "considerando", "texto": "Que..."},
+            {"clase": "articulo", "texto": "Uno"},
+            {"clase": "articulo", "texto": "Dos"},
+        ]
+        etiquetas = [b["label"] for b in resolucion_docx.numerar_articulos(bloques) if b["clase"] == "articulo"]
+        assert etiquetas == ["Artículo 1º: ", "Artículo 2º: "]
+
+    def test_respeta_la_etiqueta_manual(self):
+        bloques = [
+            {"clase": "articulo", "label": "", "texto": "Uno"},
+            {"clase": "articulo", "label": "De forma: ", "texto": "Regístrese"},
+        ]
+        etiquetas = [b["label"] for b in resolucion_docx.numerar_articulos(bloques)]
+        assert etiquetas == ["Artículo 1º: ", "De forma: "]
+
+    def test_arma_el_documento_con_el_orden_y_las_negritas(self):
+        bloques = [
+            {"clase": "visto", "texto": "El Expediente N° 1."},
+            {"clase": "bloque", "texto": "CONSIDERANDO:"},
+            {"clase": "considerando", "texto": "Que corresponde;"},
+            {"clase": "resuelve", "texto": ""},
+            {"clase": "articulo", "texto": "Apruébase."},
+        ]
+        salida = resolucion_docx.build_resolucion_desde_bloques(self._base_docx(), bloques)
+        parrafos = [p for p in Document(salida).paragraphs if p.text.strip()]
+        textos = [p.text for p in parrafos]
+
+        assert textos[0] == "VISTO: El Expediente N° 1."
+        assert textos[1] == "CONSIDERANDO:"
+        assert textos[2] == "Que corresponde;"
+        assert "EL PRESIDENTE" in textos[3]
+        assert textos[4] == "RESUELVE:"
+        assert textos[5] == "Artículo 1º: Apruébase."
+        # El considerando va sin negrita; los encabezados y la etiqueta del artículo sí.
+        assert parrafos[2].runs[0].bold is False
+        assert parrafos[1].runs[0].bold is True
+        assert parrafos[5].runs[0].bold is True
+
+    def test_clase_desconocida_es_error_explicito(self):
+        with self.assertRaises(resolucion_docx.ResolucionDocxError):
+            resolucion_docx.build_resolucion_desde_bloques(self._base_docx(), [{"clase": "inventada", "texto": "x"}])
+
+
+class TextoResolucionAlcanceTests(TestCase):
+    """Resolución del texto base que le toca a un certificado: gana el que coincide
+    con el tipo exacto; si no hay, cae al comodín del programa y financiamiento."""
+
+    def setUp(self):
+        empresa = Empresa.objects.create(empresa_nombre="Empresa Test")
+        self.programa = Programa.objects.create(programa_nombre="Programa Test")
+        self.otro_programa = Programa.objects.create(programa_nombre="Otro Programa")
+        self.obra = Obra.objects.create(
+            obra_nombre="Obra Test", obra_empresa=empresa, obra_programa=self.programa, obra_expediente="EXP-TR"
+        )
+        self.rubro = CertificadoRubro.objects.create(
+            certificadorubro_nombre="Vivienda", certificadorubro_nombre_corto="V"
+        )
+
+    def _texto(self, programa=None, financiamiento="N", tipo="", nombre="Texto"):
+        return TextoResolucionCertificado.objects.create(
+            textoresolucion_nombre=nombre,
+            textoresolucion_programa=programa or self.programa,
+            textoresolucion_financiamiento=financiamiento,
+            textoresolucion_tipo=tipo,
+            textoresolucion_bloques=[{"clase": "considerando", "label": "", "texto": nombre}],
+        )
+
+    def _certificado(self, tipo="PARCIAL", financiamiento="N"):
+        return Certificado(
+            certificado_obra=self.obra,
+            certificado_tipo=tipo,
+            certificado_financiamiento=financiamiento,
+            certificado_rubro_db=self.rubro,
+            certificado_expediente="EXP",
+            certificado_fecha=date(2026, 6, 1),
+        )
+
+    def test_gana_el_tipo_exacto_sobre_el_comodin(self):
+        self._texto(tipo="", nombre="Comodín")
+        exacto = self._texto(tipo="PARCIAL", nombre="Parcial")
+
+        assert TextoResolucionCertificado.para_certificado(self._certificado()) == exacto
+
+    def test_cae_al_comodin_cuando_no_hay_texto_para_el_tipo(self):
+        comodin = self._texto(tipo="", nombre="Comodín")
+        self._texto(tipo="ANTICIPO", nombre="Anticipo")
+
+        assert TextoResolucionCertificado.para_certificado(self._certificado(tipo="PARCIAL")) == comodin
+
+    def test_sin_texto_para_el_alcance_devuelve_none(self):
+        self._texto(financiamiento="P", tipo="")
+
+        assert TextoResolucionCertificado.para_certificado(self._certificado(financiamiento="N")) is None
+
+    def test_no_cruza_programas(self):
+        self._texto(programa=self.otro_programa, tipo="")
+
+        assert TextoResolucionCertificado.para_certificado(self._certificado()) is None
+
+    def test_no_se_pueden_duplicar_dos_textos_para_el_mismo_alcance(self):
+        self._texto(tipo="PARCIAL")
+        with self.assertRaises(IntegrityError):
+            self._texto(tipo="PARCIAL", nombre="Duplicado")
+
+    def test_el_comodin_tambien_es_unico(self):
+        # El centinela es "" y no NULL justamente para que la constraint lo dedupe:
+        # con NULL, Postgres dejaría cargar comodines repetidos.
+        self._texto(tipo="")
+        with self.assertRaises(IntegrityError):
+            self._texto(tipo="", nombre="Comodín duplicado")
+
+
+class InvalidarTextoResolucionTests(TestCase):
+    def setUp(self):
+        empresa = Empresa.objects.create(empresa_nombre="Empresa Test")
+        programa = Programa.objects.create(programa_nombre="Programa Test")
+        obra = Obra.objects.create(
+            obra_nombre="Obra Test", obra_empresa=empresa, obra_programa=programa, obra_expediente="EXP-INV"
+        )
+        rubro = CertificadoRubro.objects.create(
+            certificadorubro_nombre="Vivienda", certificadorubro_nombre_corto="V"
+        )
+        self.certificado = Certificado.objects.create(
+            certificado_obra=obra,
+            certificado_tipo="LEGACY",
+            certificado_financiamiento="N",
+            certificado_rubro_db=rubro,
+            certificado_expediente="EXP-1",
+            certificado_fecha=date(2026, 6, 1),
+            certificado_monto_pesos=Decimal("1000"),
+            certificado_texto_resolucion={"bloques": [{"clase": "considerando", "label": "", "texto": "Texto"}]},
+        )
+
+    def _recargar(self):
+        return Certificado.objects.get(pk=self.certificado.pk)
+
+    def test_cambiar_un_campo_que_el_texto_describe_lo_invalida(self):
+        self.certificado.certificado_monto_pesos = Decimal("2000")
+        self.certificado.save()
+
+        assert self._recargar().certificado_texto_resolucion is None
+
+    def test_cambiar_un_campo_ajeno_al_texto_no_lo_invalida(self):
+        self.certificado.certificado_fecha_carga = date(2026, 7, 1)
+        self.certificado.save()
+
+        assert self._recargar().certificado_texto_resolucion is not None
+
+    def test_la_instancia_en_memoria_queda_sincronizada(self):
+        self.certificado.certificado_expediente = "EXP-2"
+        self.certificado.save()
+
+        assert self.certificado.certificado_texto_resolucion is None
+
+    def test_no_agrega_una_fila_historica_extra(self):
+        """La invalidación usa .update() justamente para no escribir en
+        certificado_history: una edición tiene que dejar una sola fila, no dos."""
+        antes = self.certificado.certificado_history.count()
+
+        self.certificado.certificado_monto_pesos = Decimal("3000")
+        self.certificado.save()
+
+        assert self.certificado.certificado_history.count() == antes + 1
+
+    def test_sin_snapshot_no_hace_nada(self):
+        Certificado.objects.filter(pk=self.certificado.pk).update(certificado_texto_resolucion=None)
+        certificado = self._recargar()
+        certificado.certificado_monto_pesos = Decimal("4000")
+        certificado.save()
+
+        assert self._recargar().certificado_monto_pesos == Decimal("4000")
+
+
+class TextoResolucionVistasTests(TestCase):
+    def setUp(self):
+        empresa = Empresa.objects.create(empresa_nombre="Constructora Sur SRL", empresa_cuit="20123456789")
+        self.programa = Programa.objects.create(programa_nombre="Techo Digno")
+        self.obra = Obra.objects.create(
+            obra_nombre="50 Viviendas en Resistencia", obra_empresa=empresa,
+            obra_programa=self.programa, obra_expediente="EXP-OBRA",
+        )
+        self.rubro = CertificadoRubro.objects.create(
+            certificadorubro_nombre="Vivienda", certificadorubro_nombre_corto="V"
+        )
+        CertificadoFinanciamiento.objects.create(
+            certificadofinanciamiento_nombre="Nación", certificadofinanciamiento_nombre_corto="N"
+        )
+        self.certificado = Certificado.objects.create(
+            certificado_obra=self.obra,
+            certificado_tipo="PARCIAL",
+            certificado_financiamiento="N",
+            certificado_rubro_db=self.rubro,
+            certificado_expediente="EXP-CERT",
+            certificado_periodo="Marzo 2026",
+            certificado_fecha=date(2026, 3, 31),
+            certificado_monto_pesos=Decimal("1500000"),
+        )
+        self.superuser = get_user_model().objects.create_superuser(username="admin", password="testpass123")
+        self.sin_permisos = get_user_model().objects.create_user(username="pepe", password="testpass123")
+
+    def _texto(self, tipo="PARCIAL", bloques=None):
+        return TextoResolucionCertificado.objects.create(
+            textoresolucion_nombre="Techo Digno - Nación - Parcial",
+            textoresolucion_programa=self.programa,
+            textoresolucion_financiamiento="N",
+            textoresolucion_tipo=tipo,
+            textoresolucion_bloques=bloques or [
+                {"clase": "visto", "label": "", "texto": "El Expediente N° {{ certificado.expediente }};"},
+                {"clase": "considerando", "label": "", "texto": "Que la Empresa {{ empresa.nombre }} certificó {{ certificado.monto_pesos|pesos }};"},
+                {"clase": "resuelve", "label": "", "texto": ""},
+                {"clase": "articulo", "label": "", "texto": "Apruébase por {{ certificado.monto_pesos|pesos }}."},
+            ],
+        )
+
+    # -- permisos --------------------------------------------------------- #
+
+    def test_anonimo_es_redirigido_al_login(self):
+        for url in (reverse("carga:lista-textos-resolucion"),
+                    reverse("carga:crear-texto-resolucion"),
+                    reverse("carga:editar-texto-resolucion-certificado", kwargs={"pk": self.certificado.pk})):
+            assert self.client.get(url).status_code == 302
+
+    def test_usuario_sin_permisos_recibe_403(self):
+        self.client.force_login(self.sin_permisos)
+        for url in (reverse("carga:lista-textos-resolucion"),
+                    reverse("carga:crear-texto-resolucion"),
+                    reverse("carga:editar-texto-resolucion-certificado", kwargs={"pk": self.certificado.pk})):
+            assert self.client.get(url).status_code == 403
+
+    def test_superuser_accede(self):
+        self._texto()
+        self.client.force_login(self.superuser)
+        assert self.client.get(reverse("carga:lista-textos-resolucion")).status_code == 200
+        assert self.client.get(reverse("carga:crear-texto-resolucion")).status_code == 200
+
+    # -- CRUD de la plantilla --------------------------------------------- #
+
+    def _post_plantilla(self, textos, accion="guardar", extra=None):
+        datos = {
+            "textoresolucion_nombre": "Techo Digno - Nación",
+            "textoresolucion_programa": self.programa.pk,
+            "textoresolucion_financiamiento": "N",
+            "textoresolucion_tipo": "",
+            "bloques-TOTAL_FORMS": str(len(textos)),
+            "bloques-INITIAL_FORMS": "0",
+            "bloques-MIN_NUM_FORMS": "0",
+            "bloques-MAX_NUM_FORMS": "1000",
+            "accion": accion,
+        }
+        for i, (clase, texto) in enumerate(textos):
+            datos[f"bloques-{i}-clase"] = clase
+            datos[f"bloques-{i}-label"] = ""
+            datos[f"bloques-{i}-texto"] = texto
+        datos.update(extra or {})
+        return self.client.post(reverse("carga:crear-texto-resolucion"), datos)
+
+    def test_guardar_crea_la_plantilla_con_sus_bloques(self):
+        self.client.force_login(self.superuser)
+        response = self._post_plantilla([("visto", "El Expediente {{ certificado.expediente }};")])
+
+        assert response.status_code == 302
+        texto = TextoResolucionCertificado.objects.get()
+        assert texto.textoresolucion_bloques == [
+            {"clase": "visto", "label": "", "texto": "El Expediente {{ certificado.expediente }};"}
+        ]
+
+    def test_jinja_invalido_no_se_guarda(self):
+        """Sin esta validación, un `{%` suelto rompería la ficha de todos los
+        certificados del alcance."""
+        self.client.force_login(self.superuser)
+        response = self._post_plantilla([("considerando", "{% if x %}sin cerrar")])
+
+        assert response.status_code == 200
+        assert not TextoResolucionCertificado.objects.exists()
+        assert "Error de sintaxis" in response.content.decode()
+
+    def test_un_bloque_que_necesita_texto_no_puede_ir_vacio(self):
+        self.client.force_login(self.superuser)
+        response = self._post_plantilla([("considerando", "")])
+
+        assert response.status_code == 200
+        assert not TextoResolucionCertificado.objects.exists()
+
+    def test_la_formula_resuelve_no_necesita_texto(self):
+        self.client.force_login(self.superuser)
+        response = self._post_plantilla([("resuelve", "")])
+
+        assert response.status_code == 302
+        assert TextoResolucionCertificado.objects.get().textoresolucion_bloques == [
+            {"clase": "resuelve", "label": "", "texto": ""}
+        ]
+
+    def test_la_vista_previa_renderiza_contra_el_certificado_elegido(self):
+        self.client.force_login(self.superuser)
+        response = self._post_plantilla(
+            [("considerando", "Que {{ empresa.nombre }} certificó {{ certificado.monto_pesos|pesos }};")],
+            accion="previsualizar",
+            extra={"certificado": str(self.certificado.pk)},
+        )
+
+        assert response.status_code == 200
+        cuerpo = response.content.decode()
+        assert "Constructora Sur SRL" in cuerpo
+        assert "$1.500.000,00" in cuerpo
+        # Previsualizar no guarda.
+        assert not TextoResolucionCertificado.objects.exists()
+
+    def test_la_vista_previa_avisa_que_faltan_datos(self):
+        self.client.force_login(self.superuser)
+        response = self._post_plantilla(
+            [("considerando", "Que {{ inexistente.campo }};")],
+            accion="previsualizar",
+            extra={"certificado": str(self.certificado.pk)},
+        )
+
+        assert "Faltan datos" in response.content.decode()
+
+    # -- flujo por certificado -------------------------------------------- #
+
+    def test_sin_plantilla_ofrece_crearla_en_vez_de_404(self):
+        self.client.force_login(self.superuser)
+        response = self.client.get(
+            reverse("carga:editar-texto-resolucion-certificado", kwargs={"pk": self.certificado.pk})
+        )
+
+        assert response.status_code == 409
+        assert "No hay ningún texto de resolución cargado" in response.content.decode()
+
+    def test_muestra_el_texto_resuelto_desde_la_plantilla(self):
+        self._texto()
+        self.client.force_login(self.superuser)
+        response = self.client.get(
+            reverse("carga:editar-texto-resolucion-certificado", kwargs={"pk": self.certificado.pk})
+        )
+
+        assert response.status_code == 200
+        cuerpo = response.content.decode()
+        assert "El Expediente N° EXP-CERT;" in cuerpo
+        assert "$1.500.000,00" in cuerpo
+
+    def test_guardar_deja_el_snapshot_con_su_procedencia(self):
+        plantilla = self._texto()
+        self.client.force_login(self.superuser)
+        url = reverse("carga:editar-texto-resolucion-certificado", kwargs={"pk": self.certificado.pk})
+
+        response = self.client.post(url, {
+            "bloques-TOTAL_FORMS": "1",
+            "bloques-INITIAL_FORMS": "0",
+            "bloques-MIN_NUM_FORMS": "0",
+            "bloques-MAX_NUM_FORMS": "1000",
+            "bloques-0-clase": "considerando",
+            "bloques-0-label": "",
+            "bloques-0-texto": "Texto retocado a mano;",
+            "accion": "guardar",
+        })
+
+        assert response.status_code == 302
+        snapshot = Certificado.objects.get(pk=self.certificado.pk).certificado_texto_resolucion
+        assert snapshot["bloques"] == [{"clase": "considerando", "label": "", "texto": "Texto retocado a mano;"}]
+        assert snapshot["textoresolucion_id"] == plantilla.pk
+        assert snapshot["textoresolucion_history_id"] is not None
+
+    def test_el_snapshot_gana_sobre_la_plantilla(self):
+        self._texto()
+        Certificado.objects.filter(pk=self.certificado.pk).update(
+            certificado_texto_resolucion={"bloques": [{"clase": "considerando", "label": "", "texto": "Snapshot;"}]}
+        )
+        self.client.force_login(self.superuser)
+        response = self.client.get(
+            reverse("carga:editar-texto-resolucion-certificado", kwargs={"pk": self.certificado.pk})
+        )
+
+        cuerpo = response.content.decode()
+        assert "Snapshot;" in cuerpo
+        assert "El Expediente N° EXP-CERT;" not in cuerpo
+
+    def test_restaurar_borra_el_snapshot(self):
+        self._texto()
+        Certificado.objects.filter(pk=self.certificado.pk).update(
+            certificado_texto_resolucion={"bloques": [{"clase": "considerando", "label": "", "texto": "Snapshot;"}]}
+        )
+        self.client.force_login(self.superuser)
+
+        self.client.post(
+            reverse("carga:restaurar-texto-resolucion-certificado", kwargs={"pk": self.certificado.pk})
+        )
+
+        assert Certificado.objects.get(pk=self.certificado.pk).certificado_texto_resolucion is None
+
+    # -- generación del documento ----------------------------------------- #
+
+    def _cargar_encabezado(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from secretariador.models import EncabezadoDocumento
+
+        base = io.BytesIO()
+        Document().save(base)
+        base.seek(0)
+        return EncabezadoDocumento.objects.create(
+            encabezadodocumento_archivo=SimpleUploadedFile("encabezado.docx", base.read())
+        )
+
+    def test_genera_el_docx(self):
+        self._texto()
+        self._cargar_encabezado()
+        self.client.force_login(self.superuser)
+
+        response = self.client.get(
+            reverse("carga:resolucion-certificado-docx", kwargs={"pk": self.certificado.pk})
+        )
+
+        assert response.status_code == 200
+        assert response["Content-Type"] == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        assert "EXP-CERT" in response["Content-Disposition"]
+        textos = [p.text for p in Document(io.BytesIO(response.content)).paragraphs if p.text.strip()]
+        assert "VISTO: El Expediente N° EXP-CERT;" in textos
+        assert "Artículo 1º: Apruébase por $1.500.000,00." in textos
+
+    def test_no_genera_el_docx_si_faltan_datos(self):
+        """Una resolución se firma: emitirla con «falta: ...» adentro es peor que
+        no emitirla."""
+        self._texto(bloques=[{"clase": "considerando", "label": "", "texto": "Que {{ inexistente.campo }};"}])
+        self._cargar_encabezado()
+        self.client.force_login(self.superuser)
+
+        response = self.client.get(
+            reverse("carga:resolucion-certificado-docx", kwargs={"pk": self.certificado.pk})
+        )
+
+        assert response.status_code == 302
+        assert "texto-resolucion" in response["Location"]
+
+    def test_sin_encabezado_cargado_avisa_en_vez_de_reventar(self):
+        self._texto()
+        self.client.force_login(self.superuser)
+
+        response = self.client.get(
+            reverse("carga:resolucion-certificado-docx", kwargs={"pk": self.certificado.pk})
+        )
+
+        assert response.status_code == 500
+        assert "documento base" in response.content.decode()
+
+
+class ManualTextosResolucionTests(TestCase):
+    def test_lista_el_catalogo_de_variables(self):
+        """El manual se arma desde el mismo catálogo que la paleta del editor: si
+        alguien agrega una variable, aparece acá sin tocar el HTML."""
+        user = get_user_model().objects.create_user(username="lector", password="testpass123")
+        self.client.force_login(user)
+
+        response = self.client.get(reverse("carga:ayuda-textos-resolucion"))
+
+        assert response.status_code == 200
+        cuerpo = response.content.decode()
+        assert "certificado.monto_pesos|pesos" in cuerpo
+        assert "firmantes.gerente.nombre_completo" in cuerpo
+
+
+class ContextoCertificadoVaciosTests(TestCase):
+    """Un dato sin cargar tiene que reportarse como faltante, no renderizarse como
+    cadena vacía: de lo contrario la resolución sale diciendo "del período ," y
+    nadie se entera hasta que está firmada."""
+
+    def test_descarta_las_claves_sin_valor(self):
+        limpio = resolucion_texto._sin_vacios({
+            "con_valor": "x", "nulo": None, "vacio": "", "cero": Decimal("0"),
+            "anidado": {"nulo": None, "con_valor": "y"},
+        })
+
+        assert limpio == {"con_valor": "x", "cero": Decimal("0"), "anidado": {"con_valor": "y"}}
+
+    def test_el_cero_no_se_descarta(self):
+        # Un monto de 0 es un dato cargado, no un dato faltante.
+        assert resolucion_texto._sin_vacios({"monto": Decimal("0")}) == {"monto": Decimal("0")}
+
+    def test_un_campo_nulo_del_certificado_se_reporta_como_faltante(self):
+        empresa = Empresa.objects.create(empresa_nombre="Empresa Test")
+        programa = Programa.objects.create(programa_nombre="Programa Test")
+        obra = Obra.objects.create(
+            obra_nombre="Obra Test", obra_empresa=empresa, obra_programa=programa, obra_expediente="EXP-V"
+        )
+        rubro = CertificadoRubro.objects.create(
+            certificadorubro_nombre="Vivienda", certificadorubro_nombre_corto="V"
+        )
+        CertificadoFinanciamiento.objects.create(
+            certificadofinanciamiento_nombre="Nación", certificadofinanciamiento_nombre_corto="N"
+        )
+        certificado = Certificado.objects.create(
+            certificado_obra=obra, certificado_tipo="PARCIAL", certificado_financiamiento="N",
+            certificado_rubro_db=rubro, certificado_expediente="EXP-C",
+            certificado_periodo=None, certificado_fecha=date(2026, 3, 31),
+        )
+
+        contexto = resolucion_texto.contexto_certificado(certificado)
+        texto, faltantes = resolucion_texto.render_bloque("del período {{ certificado.periodo }};", contexto)
+
+        assert "«falta:" in texto
+        assert faltantes == {"periodo"}
