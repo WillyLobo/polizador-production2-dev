@@ -47,7 +47,7 @@ Config comes from a `.env` file in `polizador/` (read via `django-environ`), not
 
 **Autocomplete widgets use `django-select2`.** Widget classes subclass `s2forms.ModelSelect2Widget` (see `carga/views/ajaxviews.py`), are wrapped in `LoginRequiredMixin`, and results are cached via the dedicated `"select2"` cache backend (`SELECT2_CACHE_BACKEND`, backed by `REDIS_URL`). Some widgets are dependency-aware (`dependent_fields`) — they scope results based on a sibling form field's currently selected value (see `PlanDependentWidgetMixin`).
 
-**The `api` app is django-ninja, not DRF.** Routes are registered by importing view modules for their side effects in `api/router.py` (`api/views/{carga,secretariador,personalizador,select2}_views.py`). Auth/permission checks are plain decorators in `api/permissions.py` (`require_auth`, `require_staff`, `get_optional_perms(*perms)`, `get_group_perms(*groups)`) raising `ninja.errors.AuthenticationError`/`AuthorizationError`, not DRF permission classes.
+**The `api` app is django-ninja, not DRF.** Routes are registered by importing view modules for their side effects in `api/router.py` (`api/views/{carga,secretariador,personalizador,select2}_views.py`). Auth/permission checks are plain decorators in `api/permissions.py` (`require_auth`, `require_model_perm(model)`, `get_optional_perms(*perms)`, `require_superuser`) raising `ninja.errors.AuthenticationError`/`AuthorizationError`, not DRF permission classes.
 
 **Document generation** uses `docxtpl` (Jinja2-in-docx) against static templates in `secretariador/media/*.docx` (`solicitud_template.docx`, `solicitud_exterior.docx`, `solicitud_incorporacion.docx`) — see `secretariador/views/solicitudviews.py`, `solicitud_exteriorviews.py`, `incorporacionviews.py`.
 

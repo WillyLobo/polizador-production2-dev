@@ -12,7 +12,7 @@ authored: true
 
 ## Propósito
 
-Listado paginado (`PerPagePagination`) de `ComisionadoSolicitud`, gateado por `require_model_perm(ComisionadoSolicitud)` (permiso `view_<modelo>`). Con `?solicitud=` para acotar. Requiere además el grupo `dirgral_usuarios`. Sin `retrieve`/`update`.
+Listado paginado (`PerPagePagination`) de `ComisionadoSolicitud`, gateado por `require_model_perm(ComisionadoSolicitud)` (permiso `view_<modelo>`). Con `?solicitud=` para acotar. El gate por grupo `dirgral_usuarios` se quitó: `view_comisionadosolicitud` cubría exactamente al mismo conjunto de usuarios (ver `verificar_permisos_ui`). Sin `retrieve`/`update`.
 
 ## Firma
 

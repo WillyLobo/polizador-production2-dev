@@ -1,7 +1,7 @@
 <h1>list_comisionados_solicitudes</h1>
 <p><strong>Módulo:</strong> <code>api/views/secretariador_views.py</code> (líneas 803-807)</p>
 <h2>Propósito</h2>
-<p>Listado paginado (<code>PerPagePagination</code>) de <code>ComisionadoSolicitud</code>, gateado por <code>require_model_perm(ComisionadoSolicitud)</code> (permiso <code>view_&lt;modelo&gt;</code>). Con <code>?solicitud=</code> para acotar. Requiere además el grupo <code>dirgral_usuarios</code>. Sin <code>retrieve</code>/<code>update</code>.</p>
+<p>Listado paginado (<code>PerPagePagination</code>) de <code>ComisionadoSolicitud</code>, gateado por <code>require_model_perm(ComisionadoSolicitud)</code> (permiso <code>view_&lt;modelo&gt;</code>). Con <code>?solicitud=</code> para acotar. El gate por grupo <code>dirgral_usuarios</code> se quitó: <code>view_comisionadosolicitud</code> cubría exactamente al mismo conjunto de usuarios (ver <code>verificar_permisos_ui</code>). Sin <code>retrieve</code>/<code>update</code>.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def list_comisionados_solicitudes(request, solicitud: str=''):
 </code></pre>

@@ -13,7 +13,7 @@ from ninja.pagination import paginate
 
 from polizador.vars import editlinkimg, detallelinkimg, eliminarlinkimg
 
-from api.permissions import get_group_perms, require_model_perm
+from api.permissions import require_model_perm
 from api.views.generics import (
     PerPagePagination,
     clip_value_html,
@@ -1261,7 +1261,7 @@ def delete_financiamiento(request, id: int):
 
 # --- Certificado ---
 @router.get("/certificados/", response=List[CertificadoOut])
-@decorate_view(require_model_perm(Certificado), get_group_perms("gciaoperativa_usuarios"))
+@decorate_view(require_model_perm(Certificado))
 @paginate(PerPagePagination)
 def list_certificados(request, obra: str = ""):
     qs = Certificado.objects.select_related("certificado_obra").all().order_by("-certificado_fecha")

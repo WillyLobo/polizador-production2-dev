@@ -3,7 +3,7 @@
 {% load static %}
 {% block content %}
 
-{% if "gciaoperativa_usuarios" not in groups and "dirgral_usuarios" not in group and "rrhh_usuarios" not in groups %}
+{% if not perms.carga.view_obra and not perms.secretariador.view_comisionadosolicitud and not perms.personalizador.add_agente %}
 <div class="flex-grow-1 bg-body d-flex flex-column justify-content-center">
         <div class="flex-grow-0 flex-shrink-0 container">
             <div class="row justify-content-md-center">
@@ -18,10 +18,10 @@
         </div>
     </div>
 {% endif %}
-{% if "inspeccion" in groups %}
+{% if perms.carga.change_fojademedicion %}
     {% include "inspeccion-index.html" %}
 {% endif %}
-{% if "certificadores" in groups %}
+{% if perms.carga.add_certificado %}
     {% include "certificadores-index.html" %}
 {% endif %}
 {% endblock content %}
