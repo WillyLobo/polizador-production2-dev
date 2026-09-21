@@ -10,7 +10,7 @@ from ninja import Router
 from ninja.decorators import decorate_view
 from ninja.pagination import paginate
 
-from api.permissions import get_group_perms, require_model_perm
+from api.permissions import require_model_perm
 from api.views.generics import (
     PerPagePagination,
     clip_value_html,
@@ -798,7 +798,7 @@ def datatable_solicitudes_filtro_vehiculos(request):
 
 # --- ComisionadoSolicitud ---
 @router.get("/comisionados-solicitudes/", response=List[ComisionadoSolicitudOut])
-@decorate_view(get_group_perms("dirgral_usuarios"), require_model_perm(ComisionadoSolicitud))
+@decorate_view(require_model_perm(ComisionadoSolicitud))
 @paginate(PerPagePagination)
 def list_comisionados_solicitudes(request, solicitud: str = ""):
     qs = ComisionadoSolicitud.objects.select_related("comisionadosolicitud_nombre", "comisionadosolicitud_externo").all().order_by("-id")

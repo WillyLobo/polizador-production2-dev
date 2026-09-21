@@ -17,7 +17,7 @@
     <div class="collapse navbar-collapse" id="navContent">
       <ul class="navbar-nav nav-items me-auto">
         <!-- Obras -->
-        {% if "gciaoperativa_usuarios" in groups or request.user.is_superuser %}
+        {% if perms.carga.view_obra %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-building me-1"></i>Obras
@@ -67,7 +67,7 @@
         {% endif %}
 
         <!-- Localidades -->
-        {% if "localidades_todos_los_usuarios" in groups or request.user.is_superuser %}
+        {% if perms.carga.view_localidad %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-geo-alt me-1"></i>Localidades
@@ -90,7 +90,7 @@
         {% endif %}
 
         <!-- Personal -->
-        {% if "rrhh_usuarios" in groups or request.user.is_superuser %}
+        {% if perms.personalizador.add_agente %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-people me-1"></i>RRHH
@@ -142,7 +142,7 @@
         {% endif %}
 
         <!-- Viáticos -->
-        {% if "dirgral_usuarios" in groups or request.user.is_superuser %}
+        {% if perms.secretariador.view_comisionadosolicitud %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-car-front me-1"></i>Viáticos
@@ -175,7 +175,7 @@
         {% endif %}
 
 		<!-- Herramientas -->
-        {% if "gciaoperativa_usuarios" in groups or "dirgral_usuarios" in groups or "rrhh_usuarios" in groups or request.user.is_superuser %}
+        {% if perms.carga.view_obra or perms.secretariador.view_comisionadosolicitud or perms.personalizador.add_agente %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-briefcase me-1"></i>Herramientas
@@ -190,14 +190,14 @@
         </li>
         {% endif %}
         <!-- Reportes (Mega-menu justificado por la cantidad de links) -->
-        {% if "gciaoperativa_usuarios" in groups or "dirgral_usuarios" in groups or request.user.is_superuser %}
+        {% if perms.carga.view_obra or perms.secretariador.view_comisionadosolicitud %}
         <li class="nav-item dropdown position-static">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-bar-chart me-1"></i>Reportes
           </a>
           <div class="dropdown-menu p-4 w-75">
             <div class="row g-3">
-              {% if "gciaoperativa_usuarios" in groups or request.user.is_superuser %}
+              {% if perms.carga.view_obra %}
               <div class="col-sm-6 col-md-4 col-lg-3">
                 <div class="card h-full card-hover">
                   <div class="card-body py-2">
@@ -217,7 +217,7 @@
                 </div>
               </div>
               {% endif %}
-              {% if "dirgral_usuarios" in groups or request.user.is_superuser %}
+              {% if perms.secretariador.view_comisionadosolicitud %}
               <div class="col-sm-6 col-md-4 col-lg-3">
                 <div class="card h-full card-hover">
                   <div class="card-body py-2">

@@ -72,16 +72,3 @@ def require_superuser(func):
         return func(request, *args, **kwargs)
 
     return wrapper
-
-
-def get_group_perms(*groups):
-    def decorator(func):
-        @wraps(func)
-        def wrapper(request, *args, **kwargs):
-            if not request.user.groups.filter(name__in=groups).exists():
-                return JsonResponse({"detail": "Group access required"}, status=403)
-            return func(request, *args, **kwargs)
-
-        return wrapper
-
-    return decorator

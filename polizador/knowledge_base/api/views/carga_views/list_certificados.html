@@ -1,7 +1,7 @@
 <h1>list_certificados</h1>
 <p><strong>Módulo:</strong> <code>api/views/carga_views.py</code> (líneas 1265-1269)</p>
 <h2>Propósito</h2>
-<p>Listado paginado (<code>PerPagePagination</code>) de <code>Certificado</code>, gateado por <code>require_model_perm(Certificado)</code> (permiso <code>view_&lt;modelo&gt;</code>). Con <code>?obra=</code> para acotar a una Obra. Requiere además el grupo <code>gciaoperativa_usuarios</code> (<code>get_group_perms</code>), no solo el permiso de modelo.</p>
+<p>Listado paginado (<code>PerPagePagination</code>) de <code>Certificado</code>, gateado por <code>require_model_perm(Certificado)</code> (permiso <code>view_&lt;modelo&gt;</code>). Con <code>?obra=</code> para acotar a una Obra. El gate por grupo <code>gciaoperativa_usuarios</code> se quitó: <code>view_certificado</code> cubría exactamente al mismo conjunto de usuarios (ver <code>verificar_permisos_ui</code>).</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def list_certificados(request, obra: str=''):
 </code></pre>
