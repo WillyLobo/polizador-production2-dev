@@ -26,6 +26,7 @@ from django.core.management.base import BaseCommand, CommandError
 from ldap.filter import escape_filter_chars
 
 from core import ldap_ad
+from core.models import LoginEvent
 
 ANR = "(&(objectCategory=person)(objectClass=user)(anr={}))"
 
@@ -76,6 +77,13 @@ class Command(BaseCommand):
         self.stdout.write(f"  sin match                : {len(sin_match)}")
         ya = sum(1 for u in activos if u.ad_username)
         self.stdout.write(f"  con ad_username cargado  : {ya}/{len(activos)}  (vinculacion self-service)")
+        # Condicion para el paso siguiente: a un usuario solo se le retira la
+        # contrasena local despues de haberlo VISTO entrar por LDAP.
+        vistos = (
+            LoginEvent.objects.filter(backend__endswith="LDAPBackend", user__in=activos)
+            .values_list("user_id", flat=True).distinct().count()
+        )
+        self.stdout.write(f"  ya entraron por LDAP     : {vistos}/{len(activos)}  (listos para set_unusable_password)")
         if sin_match:
             self.stdout.write("")
             self.stdout.write("Sin match por username: " + ", ".join(u.username for u in sin_match))

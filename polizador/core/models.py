@@ -149,6 +149,19 @@ class LoginEvent(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="login_events")
     timestamp = models.DateTimeField(auto_now_add=True)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
+    # Ruta del backend que autentico (django.contrib.auth la deja en
+    # user.backend antes de emitir user_logged_in). Se guarda la ruta entera y
+    # no un booleano "fue por LDAP" porque cuesta lo mismo y dice mas.
+    #
+    # Para que sirve: el plan es retirarle la contrasena local a cada usuario
+    # (set_unusable_password) recien DESPUES de haberlo visto entrar por LDAP al
+    # menos una vez. Sin este dato, ese "haberlo visto" no tiene con que
+    # probarse. Vacio en las filas anteriores a que existiera el campo.
+    backend = models.CharField("Backend de autenticación", max_length=200, blank=True, default="")
+
+    @property
+    def por_ldap(self):
+        return self.backend.endswith("LDAPBackend")
 
     def __str__(self):
         return f"{self.user} @ {self.timestamp:%Y-%m-%d %H:%M}"
