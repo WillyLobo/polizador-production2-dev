@@ -6,6 +6,7 @@ from django.contrib.auth import views as auth_views
 from django.views.generic.base import TemplateView
 from carga.views.inspeccionviews import InspeccionHomeView
 from django.contrib.auth.decorators import login_required
+from core.views_vincular_ad import SinCuentaRedView, VincularADView
 from core.views import (
     DashboardView,
     FormValidationErrorListView,
@@ -35,6 +36,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("select2/", include("django_select2.urls")),
     path("home/", InspeccionHomeView.as_view(), name="home"),
+    path("cuenta/vincular-red/", VincularADView.as_view(), name="vincular_ad"),
+    path("cuenta/sin-cuenta-red/", SinCuentaRedView.as_view(), name="vincular_ad_sin_cuenta"),
     path("administracion/dashboard/", DashboardView.as_view(), name="dashboard"),
     path("administracion/errores-validacion/", FormValidationErrorListView.as_view(), name="form_validation_errors"),
     path("administracion/schema/", SchemaDocsView.as_view(), name="schema_docs"),

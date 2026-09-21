@@ -8,14 +8,26 @@ from personalizador.resources import *
 
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
-    list_display = ['username', 'email', 'usuario_dni']
+    list_display = ['username', 'email', 'usuario_dni', 'ad_username', 'ad_sin_cuenta_red']
+    # Para encontrar rapido a quien falta vincular y a quien declaro no tener
+    # cuenta de red (esos son los que hay que revisar a mano).
+    list_filter = UserAdmin.list_filter + ('ad_sin_cuenta_red',)
 
     fieldsets = UserAdmin.fieldsets + (
         (None, {'fields': ('usuario_dni',)}),
+        ('Cuenta de red (AD)', {
+            'fields': ('ad_username', 'ad_vinculado_en', 'ad_sin_cuenta_red'),
+            'description': (
+                'Normalmente lo completa el propio usuario desde /cuenta/vincular-red/, '
+                'probando sus credenciales contra el directorio del IPDUV. Editarlo a mano '
+                'saltea esa verificación: sólo para casos que no se pueden resolver solos.'
+            ),
+        }),
     )
     add_fieldsets = UserAdmin.add_fieldsets + (
         (None, {'fields': ('usuario_dni',)}),
     )
+    readonly_fields = ('ad_vinculado_en',)
 
 admin.site.register(CustomUser, CustomUserAdmin)
 
