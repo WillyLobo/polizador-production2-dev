@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Vincular cuenta de red{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <h4 class="card-title mb-3">
+            <i class="bi bi-person-badge me-2"></i>Vinculá tu cuenta de red
+          </h4>
+          <p class="text-body-secondary">
+            Polizador va a pasar a usar las credenciales del IPDUV. Para que tu
+            cuenta siga funcionando, ingresá una vez el usuario y la contraseña
+            con los que entrás a tu computadora del instituto.
+          </p>
+          <p class="text-body-secondary small">
+            Tu contraseña no se guarda: sólo se usa para confirmar, contra el
+            directorio del IPDUV, que esa cuenta es tuya.
+          </p>
+
+          {% if form.non_field_errors %}
+            <div class="alert alert-danger py-2">
+              {% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}
+            </div>
+          {% endif %}
+
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="mb-3">
+              <label class="form-label" for="{{ form.ad_username.id_for_label }}">{{ form.ad_username.label }}</label>
+              <input type="text" name="{{ form.ad_username.html_name }}" id="{{ form.ad_username.id_for_label }}"
+                     value="{{ form.ad_username.value|default:'' }}"
+                     class="form-control{% if form.ad_username.errors %} is-invalid{% endif %}" autofocus>
+              <div class="form-text">{{ form.ad_username.help_text }}</div>
+              {% for error in form.ad_username.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+            <div class="mb-3">
+              <label class="form-label" for="{{ form.ad_password.id_for_label }}">{{ form.ad_password.label }}</label>
+              <input type="password" name="{{ form.ad_password.html_name }}" id="{{ form.ad_password.id_for_label }}"
+                     class="form-control{% if form.ad_password.errors %} is-invalid{% endif %}">
+              {% for error in form.ad_password.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Vincular</button>
+          </form>
+
+          <hr class="my-4">
+          <form method="post" action="{% url 'vincular_ad_sin_cuenta' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-link btn-sm text-body-secondary p-0">
+              No tengo cuenta de red del IPDUV
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

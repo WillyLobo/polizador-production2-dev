@@ -1,6 +1,6 @@
 {
   "api": {
-    "generated_at": "2026-09-20T21:50:36.374247+00:00",
+    "generated_at": "2026-09-21T17:02:05.118102+00:00",
     "modules": {
       "views/carga_views": {
         "file": "api/views/carga_views.py",
@@ -1819,7 +1819,7 @@
             "candidate_usages": [],
             "decorators": [
               "router.get('/certificados/', response=List[CertificadoOut])",
-              "decorate_view(require_model_perm(Certificado), get_group_perms('gciaoperativa_usuarios'))",
+              "decorate_view(require_model_perm(Certificado))",
               "paginate(PerPagePagination)"
             ],
             "docstring": null,
@@ -5682,7 +5682,7 @@
             "candidate_usages": [],
             "decorators": [
               "router.get('/comisionados-solicitudes/', response=List[ComisionadoSolicitudOut])",
-              "decorate_view(get_group_perms('dirgral_usuarios'), require_model_perm(ComisionadoSolicitud))",
+              "decorate_view(require_model_perm(ComisionadoSolicitud))",
               "paginate(PerPagePagination)"
             ],
             "docstring": null,
@@ -6253,7 +6253,7 @@
     }
   },
   "carga": {
-    "generated_at": "2026-09-20T21:50:30.600351+00:00",
+    "generated_at": "2026-09-21T17:01:59.413079+00:00",
     "modules": {
       "forms/areaforms": {
         "file": "carga/forms/areaforms.py",
@@ -16978,7 +16978,7 @@
     }
   },
   "core": {
-    "generated_at": "2026-09-20T21:50:28.298713+00:00",
+    "generated_at": "2026-09-21T17:01:57.099957+00:00",
     "modules": {
       "forms": {
         "file": "core/forms.py",
@@ -18321,7 +18321,7 @@
     }
   },
   "personalizador": {
-    "generated_at": "2026-09-20T21:50:34.340837+00:00",
+    "generated_at": "2026-09-21T17:02:03.087447+00:00",
     "modules": {
       "forms/actividadespecificaforms": {
         "file": "personalizador/forms/actividadespecificaforms.py",
@@ -24199,7 +24199,7 @@
     }
   },
   "secretariador": {
-    "generated_at": "2026-09-20T21:50:32.520816+00:00",
+    "generated_at": "2026-09-21T17:02:01.271476+00:00",
     "modules": {
       "forms/comisionadoform": {
         "file": "secretariador/forms/comisionadoform.py",

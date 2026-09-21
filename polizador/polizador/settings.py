@@ -131,6 +131,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "allauth.account.middleware.AccountMiddleware",
+    "core.middleware_vincular_ad.VincularADMiddleware",
 ]
 
 ROOT_URLCONF = 'polizador.urls'
@@ -208,6 +209,12 @@ ACCOUNT_SIGNUP_FIELDS = ['username*', 'first_name', 'last_name', 'email', 'passw
 # el panel de Django, que es donde ademas se asignan los grupos. Ver
 # core/adapters.py para el porque completo.
 ACCOUNT_ADAPTER = 'core.adapters.PolizadorAccountAdapter'
+
+# Si esta en True, un usuario sin ad_username y que no haya declarado no tener
+# cuenta de red es redirigido a /cuenta/vincular-red/ al navegar. Arranca
+# apagado: se prende cuando se anuncia el cambio, y se puede volver a apagar
+# si el AD queda fuera de servicio. Ver core/middleware_vincular_ad.py.
+AD_VINCULACION_OBLIGATORIA = env.bool("AD_VINCULACION_OBLIGATORIA", default=False)
 
 AUTH_PASSWORD_VALIDATORS = [
     {
