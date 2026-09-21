@@ -199,9 +199,15 @@ DATABASES = {
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_USER_MODEL = 'personalizador.CustomUser'  # Format: 'app_label.ModelName'
+# Inertes mientras ACCOUNT_ADAPTER mantenga cerrado el alta: describen el
+# formulario de signup, que ya no se sirve. Se dejan para no tener que
+# reconstruirlos si alguna vez se reabre.
 ACCOUNT_FORMS = {'signup': 'personalizador.forms.customuserform.CustomUserForm'}
 ACCOUNT_SIGNUP_FIELDS = ['username*', 'first_name', 'last_name', 'email', 'password1*', 'password2*']
-# ACCOUNT_ADAPTER = 'secretariador.adapters.InactiveSignupAdapter'
+# Cierra /accounts/signup/: las cuentas las da de alta un administrador desde
+# el panel de Django, que es donde ademas se asignan los grupos. Ver
+# core/adapters.py para el porque completo.
+ACCOUNT_ADAPTER = 'core.adapters.PolizadorAccountAdapter'
 
 AUTH_PASSWORD_VALIDATORS = [
     {
