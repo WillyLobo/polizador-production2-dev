@@ -11,7 +11,7 @@ from core.deletion import get_deleted_objects
 from django.contrib import messages
 
 @login_required
-@permission_required('secretariador.delete_comisionadosolicitud')
+@permission_required('secretariador.delete_comisionadosolicitud', raise_exception=True)
 def delete_comisionadosolicitud(request, pk):
     try:
         comisionado = ComisionadoSolicitud.objects.get(id=pk)
@@ -28,7 +28,7 @@ def delete_comisionadosolicitud(request, pk):
     return redirect('secretariador:update-solicitud', pk=comisionado.comisionadosolicitud_foreign.id)
 
 @login_required
-@permission_required('secretariador.delete_comisionadosolicitud')
+@permission_required('secretariador.delete_comisionadosolicitud', raise_exception=True)
 def delete_incorporacion_comisionadosolicitud(request, pk):
     try:
         comisionado = ComisionadoSolicitud.objects.get(id=pk)

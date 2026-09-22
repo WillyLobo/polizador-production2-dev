@@ -1,6 +1,6 @@
 {
   "api": {
-    "generated_at": "2026-09-22T13:42:07.601444+00:00",
+    "generated_at": "2026-09-22T14:44:28.664517+00:00",
     "modules": {
       "views/carga_views": {
         "file": "api/views/carga_views.py",
@@ -6253,7 +6253,7 @@
     }
   },
   "carga": {
-    "generated_at": "2026-09-22T13:42:01.830228+00:00",
+    "generated_at": "2026-09-22T14:44:22.868967+00:00",
     "modules": {
       "forms/areaforms": {
         "file": "carga/forms/areaforms.py",
@@ -16978,7 +16978,7 @@
     }
   },
   "core": {
-    "generated_at": "2026-09-22T13:41:59.497703+00:00",
+    "generated_at": "2026-09-22T14:44:20.523768+00:00",
     "modules": {
       "forms": {
         "file": "core/forms.py",
@@ -18333,7 +18333,7 @@
     }
   },
   "personalizador": {
-    "generated_at": "2026-09-22T13:42:05.566651+00:00",
+    "generated_at": "2026-09-22T14:44:26.602324+00:00",
     "modules": {
       "forms/actividadespecificaforms": {
         "file": "personalizador/forms/actividadespecificaforms.py",
@@ -24224,7 +24224,7 @@
     }
   },
   "secretariador": {
-    "generated_at": "2026-09-22T13:42:03.719945+00:00",
+    "generated_at": "2026-09-22T14:44:24.758403+00:00",
     "modules": {
       "forms/comisionadoform": {
         "file": "secretariador/forms/comisionadoform.py",
@@ -26631,7 +26631,7 @@
             "candidate_usages": [],
             "decorators": [
               "login_required",
-              "permission_required('secretariador.add_solicitud', login_url='/')"
+              "permission_required('secretariador.add_solicitud', raise_exception=True)"
             ],
             "docstring": null,
             "kind": "function",
@@ -26653,7 +26653,7 @@
             "candidate_usages": [],
             "decorators": [
               "login_required",
-              "permission_required('secretariador.add_solicitud', login_url='/')"
+              "permission_required('secretariador.add_solicitud', raise_exception=True)"
             ],
             "docstring": null,
             "kind": "function",
@@ -26825,17 +26825,17 @@
               {
                 "file": "secretariador/views/delete_inlines.py",
                 "line": 14,
-                "snippet": "@permission_required('secretariador.delete_comisionadosolicitud')"
+                "snippet": "@permission_required('secretariador.delete_comisionadosolicitud', raise_exception=True)"
               },
               {
                 "file": "secretariador/views/delete_inlines.py",
                 "line": 31,
-                "snippet": "@permission_required('secretariador.delete_comisionadosolicitud')"
+                "snippet": "@permission_required('secretariador.delete_comisionadosolicitud', raise_exception=True)"
               }
             ],
             "decorators": [
               "login_required",
-              "permission_required('secretariador.delete_comisionadosolicitud')"
+              "permission_required('secretariador.delete_comisionadosolicitud', raise_exception=True)"
             ],
             "docstring": null,
             "kind": "function",
@@ -26857,7 +26857,7 @@
             "candidate_usages": [],
             "decorators": [
               "login_required",
-              "permission_required('secretariador.delete_comisionadosolicitud')"
+              "permission_required('secretariador.delete_comisionadosolicitud', raise_exception=True)"
             ],
             "docstring": null,
             "kind": "function",
