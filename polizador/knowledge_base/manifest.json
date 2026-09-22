@@ -1,6 +1,6 @@
 {
   "api": {
-    "generated_at": "2026-09-21T22:44:01.236947+00:00",
+    "generated_at": "2026-09-22T13:42:07.601444+00:00",
     "modules": {
       "views/carga_views": {
         "file": "api/views/carga_views.py",
@@ -6253,7 +6253,7 @@
     }
   },
   "carga": {
-    "generated_at": "2026-09-21T22:43:55.486265+00:00",
+    "generated_at": "2026-09-22T13:42:01.830228+00:00",
     "modules": {
       "forms/areaforms": {
         "file": "carga/forms/areaforms.py",
@@ -16978,7 +16978,7 @@
     }
   },
   "core": {
-    "generated_at": "2026-09-21T22:43:53.170838+00:00",
+    "generated_at": "2026-09-22T13:41:59.497703+00:00",
     "modules": {
       "forms": {
         "file": "core/forms.py",
@@ -18333,7 +18333,7 @@
     }
   },
   "personalizador": {
-    "generated_at": "2026-09-21T22:43:59.196739+00:00",
+    "generated_at": "2026-09-22T13:42:05.566651+00:00",
     "modules": {
       "forms/actividadespecificaforms": {
         "file": "personalizador/forms/actividadespecificaforms.py",
@@ -19140,7 +19140,7 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 123,
+                "line": 138,
                 "snippet": "actividad_especifica = models.ForeignKey(\"ActividadEspecifica\", on_delete=models.CASCADE, blank=True, null=True)"
               },
               {
@@ -19168,16 +19168,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              282,
-              292
+              297,
+              307
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  291,
-                  292
+                  306,
+                  307
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -19187,7 +19187,7 @@
             "name": "ActividadEspecifica",
             "page_path": "personalizador/models/ActividadEspecifica",
             "signature": "class ActividadEspecifica(models.Model):",
-            "signature_hash": "sha1:0c5fbe2ac78f4da3f8ca3e030afc53ae18aab45c",
+            "signature_hash": "sha1:4810411723588c2657026b532df21385a6cda57f",
             "stale": true
           },
           "Agente": {
@@ -19198,27 +19198,27 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 377,
+                "line": 392,
                 "snippet": "directorio_autoridad_a_cargo_fk = models.ForeignKey(\"Agente\", on_delete=models.CASCADE, null=True, blank=True)"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 394,
+                "line": 409,
                 "snippet": "gerencia_autoridad_a_cargo_fk = models.ForeignKey(\"Agente\", on_delete=models.CASCADE, null=True, blank=True)"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 413,
+                "line": 428,
                 "snippet": "direccion_autoridad_a_cargo_fk = models.ForeignKey(\"Agente\", on_delete=models.CASCADE, null=True, blank=True)"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 433,
+                "line": 448,
                 "snippet": "departamento_autoridad_a_cargo_fk = models.ForeignKey(\"Agente\", on_delete=models.CASCADE, null=True, blank=True)"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 466,
+                "line": 481,
                 "snippet": "ser un empleado (personalizador.Agente) — no debe aparecer en reportes de"
               }
             ],
@@ -19226,8 +19226,8 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              59,
-              201
+              74,
+              216
             ],
             "methods": [
               {
@@ -19236,8 +19236,8 @@
                 ],
                 "docstring": null,
                 "lines": [
-                  167,
-                  170
+                  182,
+                  185
                 ],
                 "name": "edad",
                 "signature": "def edad(self):"
@@ -19248,8 +19248,8 @@
                 ],
                 "docstring": "Antigüedad total: años/meses/días desde fecha_ingreso hasta hoy, más los\nreconocidos por aportes_ley_resolucion y aportes_anses. Convención de cómputo\nde aportes: 30 días = 1 mes, 12 meses = 1 año.",
                 "lines": [
-                  173,
-                  190
+                  188,
+                  205
                 ],
                 "name": "antiguedad",
                 "signature": "def antiguedad(self):"
@@ -19258,8 +19258,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  192,
-                  196
+                  207,
+                  211
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -19268,8 +19268,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  198,
-                  201
+                  213,
+                  216
                 ],
                 "name": "save",
                 "signature": "def save(self, *args, **kwargs):"
@@ -19279,7 +19279,7 @@
             "name": "Agente",
             "page_path": "personalizador/models/Agente",
             "signature": "class Agente(models.Model):",
-            "signature_hash": "sha1:6478c77336cfcadf2e0932f1d9922dd37e4a1eab",
+            "signature_hash": "sha1:9a361b5aba1e6bf85dc0ce69e5b809e440c90fa8",
             "stale": true
           },
           "ApartadoCargo": {
@@ -19290,7 +19290,7 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 119,
+                "line": 134,
                 "snippet": "apartado = models.ForeignKey(\"ApartadoCargo\", on_delete=models.CASCADE, blank=True, null=True)"
               },
               {
@@ -19318,16 +19318,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              250,
-              259
+              265,
+              274
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  258,
-                  259
+                  273,
+                  274
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -19337,7 +19337,7 @@
             "name": "ApartadoCargo",
             "page_path": "personalizador/models/ApartadoCargo",
             "signature": "class ApartadoCargo(models.Model):",
-            "signature_hash": "sha1:5f34213080fe5e8ce75b89445029d4048b29e8a1",
+            "signature_hash": "sha1:5c9dadb799400d9812cd2336a3b543a8689ae303",
             "stale": true
           },
           "CEIC": {
@@ -19348,7 +19348,7 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 120,
+                "line": 135,
                 "snippet": "ceic = models.ForeignKey(\"CEIC\", on_delete=models.CASCADE, blank=True, null=True)"
               },
               {
@@ -19376,16 +19376,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              261,
-              270
+              276,
+              285
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  269,
-                  270
+                  284,
+                  285
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -19395,7 +19395,7 @@
             "name": "CEIC",
             "page_path": "personalizador/models/CEIC",
             "signature": "class CEIC(models.Model):",
-            "signature_hash": "sha1:2150a278fbb3e275a7459e35dd241002b2fc28e4",
+            "signature_hash": "sha1:e8f7bf9f9771f2f5dffd6a56a1ae491e3f9113c1",
             "stale": true
           },
           "CargoTipo": {
@@ -19434,16 +19434,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              356,
-              367
+              371,
+              382
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  366,
-                  367
+                  381,
+                  382
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -19453,7 +19453,7 @@
             "name": "CargoTipo",
             "page_path": "personalizador/models/CargoTipo",
             "signature": "class CargoTipo(models.Model):",
-            "signature_hash": "sha1:7cce533840ffccde4b799db2a2a75614e7a9f1a0",
+            "signature_hash": "sha1:7ccb4b5d2f95bed550a99fb3633a8ba919b782a4",
             "stale": true
           },
           "Categoria": {
@@ -19464,7 +19464,7 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 106,
+                "line": 121,
                 "snippet": "categoria = models.ForeignKey(\"Categoria\", on_delete=models.CASCADE, blank=True, null=True)"
               },
               {
@@ -19492,16 +19492,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              227,
-              237
+              242,
+              252
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  236,
-                  237
+                  251,
+                  252
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -19511,7 +19511,7 @@
             "name": "Categoria",
             "page_path": "personalizador/models/Categoria",
             "signature": "class Categoria(models.Model):",
-            "signature_hash": "sha1:d622351c2d7ac8bcb9870c62a137587679c267c0",
+            "signature_hash": "sha1:f4bc8c27b6620e6538777e4b8050e167a190620d",
             "stale": true
           },
           "ComisionadoExterno": {
@@ -19524,16 +19524,16 @@
             "docstring": "Persona externa al Instituto (de otro organismo, contratada puntualmente,\netc.) que puede ser comisionada a viajar en una Solicitud de viáticos, sin\nser un empleado (personalizador.Agente) — no debe aparecer en reportes de\nRRHH/organigrama/nómina. Expone los mismos nombres de atributo que Agente\npara el subconjunto de datos que necesita el circuito de viáticos\n(secretariador.ComisionadoSolicitud.persona).",
             "kind": "class",
             "lines": [
-              463,
-              496
+              478,
+              511
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  490,
-                  491
+                  505,
+                  506
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -19542,8 +19542,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  493,
-                  496
+                  508,
+                  511
                 ],
                 "name": "save",
                 "signature": "def save(self, *args, **kwargs):"
@@ -19553,7 +19553,7 @@
             "name": "ComisionadoExterno",
             "page_path": "personalizador/models/ComisionadoExterno",
             "signature": "class ComisionadoExterno(models.Model):",
-            "signature_hash": "sha1:6c5656cb1b730ead48bb4c25dfd3f1f20337bffc",
+            "signature_hash": "sha1:c5f398aadee1b4b66feda71d59b084366cd65ff8",
             "stale": true
           },
           "ConcatOp": {
@@ -19564,22 +19564,22 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 69,
+                "line": 84,
                 "snippet": "expression=ConcatOp(models.F(\"agente_nombres\"), models.Value(\" \"), models.F(\"agente_apellidos\")),"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 74,
+                "line": 89,
                 "snippet": "expression=ConcatOp(models.F(\"agente_apellidos\"), models.Value(\", \"), models.F(\"agente_nombres\")),"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 478,
+                "line": 493,
                 "snippet": "expression=ConcatOp(models.F(\"agente_nombres\"), models.Value(\" \"), models.F(\"agente_apellidos\")),"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 801,
+                "line": 816,
                 "snippet": "expression=ConcatOp('cortelicencia_nota_jurisdiccion', models.Value(\"-\"), 'cortelicencia_nota_numero', models.Value(\"-\"), 'cortelicencia_nota_ano'),"
               }
             ],
@@ -19606,17 +19606,17 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 670,
+                "line": 685,
                 "snippet": "\"CorteLicencia\", verbose_name=\"Usa saldo de corte\", related_name=\"usos_saldo\","
               },
               {
                 "file": "personalizador/models.py",
-                "line": 753,
+                "line": 768,
                 "snippet": "cortes_pendientes = CorteLicencia.objects.filter("
               },
               {
                 "file": "personalizador/models.py",
-                "line": 770,
+                "line": 785,
                 "snippet": "\"\"\"Genera el nombre de archivo para el adjunto (nota) de un CorteLicencia.\"\"\""
               },
               {
@@ -19634,16 +19634,16 @@
             "docstring": "Interrupción de una Licencia Anual (Ordinaria o de Invierno) ya otorgada:\nel agente se reintegra a sus tareas por necesidades del organismo antes de agotar\nlos días, y el saldo pendiente queda disponible para usarse después (total o\nfraccionado, ver `LicenciaPermiso.licenciapermiso_saldo_de_corte`) hasta la fecha\nde vencimiento.",
             "kind": "class",
             "lines": [
-              776,
-              852
+              791,
+              867
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  813,
-                  836
+                  828,
+                  851
                 ],
                 "name": "clean",
                 "signature": "def clean(self):"
@@ -19654,8 +19654,8 @@
                 ],
                 "docstring": null,
                 "lines": [
-                  839,
-                  841
+                  854,
+                  856
                 ],
                 "name": "dias_usados_saldo",
                 "signature": "def dias_usados_saldo(self):"
@@ -19666,8 +19666,8 @@
                 ],
                 "docstring": null,
                 "lines": [
-                  844,
-                  845
+                  859,
+                  860
                 ],
                 "name": "dias_restantes",
                 "signature": "def dias_restantes(self):"
@@ -19678,8 +19678,8 @@
                 ],
                 "docstring": null,
                 "lines": [
-                  848,
-                  849
+                  863,
+                  864
                 ],
                 "name": "vencido",
                 "signature": "def vencido(self):"
@@ -19688,8 +19688,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  851,
-                  852
+                  866,
+                  867
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -19699,7 +19699,7 @@
             "name": "CorteLicencia",
             "page_path": "personalizador/models/CorteLicencia",
             "signature": "class CorteLicencia(models.Model):",
-            "signature_hash": "sha1:5a70cb676fe20815e55c4bc86650654a7cec4294",
+            "signature_hash": "sha1:c3d2b93490b19f9059e2b2850f5fcb5f4b154134",
             "stale": true
           },
           "CustomUser": {
@@ -19710,7 +19710,7 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 65,
+                "line": 80,
                 "snippet": "agente_usuario = models.OneToOneField(CustomUser, on_delete=models.CASCADE, blank=True, null=True)"
               },
               {
@@ -19729,14 +19729,27 @@
             "kind": "class",
             "lines": [
               24,
-              57
+              72
             ],
-            "methods": [],
+            "methods": [
+              {
+                "decorators": [
+                  "property"
+                ],
+                "docstring": "El usuario ya no tiene contrasena local: su unica via de entrada es la\ncuenta de red. Es el estado en el que lo deja\n\"manage.py retirar_password_local\".\n\nTener ad_username no alcanza: durante la transicion mucha gente esta\nvinculada y todavia conserva su contrasena de polizador, y a esa gente el\ncambio de contrasena le tiene que seguir funcionando como siempre. Lo que\nhay que bloquear es volver a abrir la puerta local despues de haberla\ncerrado, porque eso anularia el sentido de cerrarla: que desactivar a\nalguien en el AD le quite el acceso.",
+                "lines": [
+                  60,
+                  72
+                ],
+                "name": "solo_ldap",
+                "signature": "def solo_ldap(self):"
+              }
+            ],
             "module": "personalizador/models.py",
             "name": "CustomUser",
             "page_path": "personalizador/models/CustomUser",
             "signature": "class CustomUser(AbstractUser):",
-            "signature_hash": "sha1:63933d5d135f34e48f34705de29c7aa9aef465a5",
+            "signature_hash": "sha1:fe1c2e921a31bd84ddb1e169afe2676dd0e053c5",
             "stale": true
           },
           "DenominacionCargo": {
@@ -19747,7 +19760,7 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 107,
+                "line": 122,
                 "snippet": "denominacion_cargo = models.ForeignKey(\"DenominacionCargo\", related_name=\"agente_denominacion_cargo\", on_delete=models.CASCADE, blank=True, null=True)"
               },
               {
@@ -19775,16 +19788,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              239,
-              248
+              254,
+              263
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  247,
-                  248
+                  262,
+                  263
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -19794,7 +19807,7 @@
             "name": "DenominacionCargo",
             "page_path": "personalizador/models/DenominacionCargo",
             "signature": "class DenominacionCargo(models.Model):",
-            "signature_hash": "sha1:0e4e5ddf87e68de5d3466145930ceb1de1f0bcfa",
+            "signature_hash": "sha1:71a81277d5372f3b40b84ef9ce063f5010998c83",
             "stale": true
           },
           "Departamento": {
@@ -19805,12 +19818,12 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 302,
+                "line": 317,
                 "snippet": "cargo_departamento = models.ForeignKey(\"Departamento\", on_delete=models.CASCADE, blank=True, null=True)"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 315,
+                "line": 330,
                 "snippet": "\"\"\"Una Oficina es un nodo del arbol Directorio > Gerencia > Direccion > Departamento:"
               },
               {
@@ -19833,16 +19846,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              423,
-              441
+              438,
+              456
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  440,
-                  441
+                  455,
+                  456
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -19852,7 +19865,7 @@
             "name": "Departamento",
             "page_path": "personalizador/models/Departamento",
             "signature": "class Departamento(models.Model):",
-            "signature_hash": "sha1:1e1ecc357fcddbc54868698663f727712934a9c7",
+            "signature_hash": "sha1:d78884597814d3c74df8c8371632bed8784dfa1e",
             "stale": true
           },
           "DevolucionHorasPermiso": {
@@ -19876,16 +19889,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              854,
-              868
+              869,
+              883
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  867,
-                  868
+                  882,
+                  883
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -19895,7 +19908,7 @@
             "name": "DevolucionHorasPermiso",
             "page_path": "personalizador/models/DevolucionHorasPermiso",
             "signature": "class DevolucionHorasPermiso(models.Model):",
-            "signature_hash": "sha1:e911e17334b3995fed749b53a254ca9f6493f1ed",
+            "signature_hash": "sha1:a5295c35205d498cf97ddcc2cad10dd44458582a",
             "stale": true
           },
           "Direccion": {
@@ -19906,22 +19919,22 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 301,
+                "line": 316,
                 "snippet": "cargo_direccion = models.ForeignKey(\"Direccion\", on_delete=models.CASCADE, blank=True, null=True)"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 315,
+                "line": 330,
                 "snippet": "\"\"\"Una Oficina es un nodo del arbol Directorio > Gerencia > Direccion > Departamento:"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 319,
+                "line": 334,
                 "snippet": "entre si (ej. una Direccion que en realidad depende de otra Gerencia).\"\"\""
               },
               {
                 "file": "personalizador/models.py",
-                "line": 430,
+                "line": 445,
                 "snippet": "departamento_direccion = models.ForeignKey(\"Direccion\", on_delete=models.CASCADE, null=True, blank=True)"
               },
               {
@@ -19934,16 +19947,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              404,
-              421
+              419,
+              436
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  420,
-                  421
+                  435,
+                  436
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -19953,7 +19966,7 @@
             "name": "Direccion",
             "page_path": "personalizador/models/Direccion",
             "signature": "class Direccion(models.Model):",
-            "signature_hash": "sha1:7c4934b0d27ee386579aec0fec86e04a6564772a",
+            "signature_hash": "sha1:19a8379b4a6a797f37bbf6d42ddc0cf5038fb4d5",
             "stale": true
           },
           "Directorio": {
@@ -19964,27 +19977,27 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 161,
+                "line": 176,
                 "snippet": "agente_escalafon = models.PositiveSmallIntegerField(\"Escalafón\", choices=ESCALAFON_CHOICES, default=2, help_text=\"Escalafón (I-IV) usado para calcular el viático diario. Las autoridades del Directorio usan el escalafón configurado en Reglas de Cálculo de Viáticos, independientemente de este valor.\")"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 299,
+                "line": 314,
                 "snippet": "cargo_directorio = models.ForeignKey(\"Directorio\", on_delete=models.CASCADE, blank=True, null=True)"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 315,
+                "line": 330,
                 "snippet": "\"\"\"Una Oficina es un nodo del arbol Directorio > Gerencia > Direccion > Departamento:"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 391,
+                "line": 406,
                 "snippet": "gerencia_directorio = models.ForeignKey(\"Directorio\", on_delete=models.CASCADE)"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 409,
+                "line": 424,
                 "snippet": "direccion_directorio = models.ForeignKey(\"Directorio\", on_delete=models.CASCADE, null=True, blank=True)"
               }
             ],
@@ -19992,16 +20005,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              369,
-              384
+              384,
+              399
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  383,
-                  384
+                  398,
+                  399
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -20011,7 +20024,7 @@
             "name": "Directorio",
             "page_path": "personalizador/models/Directorio",
             "signature": "class Directorio(models.Model):",
-            "signature_hash": "sha1:5116a1f7f2b2562c5640fb7ee310f4fcfb406901",
+            "signature_hash": "sha1:14500bed0bf4fa3b40baf8a0f6205c0a68183b8e",
             "stale": true
           },
           "GeneroAgente": {
@@ -20027,12 +20040,12 @@
               },
               {
                 "file": "personalizador/models.py",
-                "line": 80,
+                "line": 95,
                 "snippet": "sexo = models.ForeignKey(\"GeneroAgente\", on_delete=models.CASCADE)"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 483,
+                "line": 498,
                 "snippet": "sexo = models.ForeignKey(\"GeneroAgente\", on_delete=models.CASCADE)"
               },
               {
@@ -20050,16 +20063,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              203,
-              212
+              218,
+              227
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  211,
-                  212
+                  226,
+                  227
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -20069,7 +20082,7 @@
             "name": "GeneroAgente",
             "page_path": "personalizador/models/GeneroAgente",
             "signature": "class GeneroAgente(models.Model):",
-            "signature_hash": "sha1:5f6109cb23f38e7482bb0ba5b6c8df47edf6aff4",
+            "signature_hash": "sha1:ed8a7c5406ec12d15e1e0d9b4b28ecc6f9d085d6",
             "stale": true
           },
           "Gerencia": {
@@ -20080,27 +20093,27 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 300,
+                "line": 315,
                 "snippet": "cargo_gerencia = models.ForeignKey(\"Gerencia\", on_delete=models.CASCADE, blank=True, null=True)"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 315,
+                "line": 330,
                 "snippet": "\"\"\"Una Oficina es un nodo del arbol Directorio > Gerencia > Direccion > Departamento:"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 319,
+                "line": 334,
                 "snippet": "entre si (ej. una Direccion que en realidad depende de otra Gerencia).\"\"\""
               },
               {
                 "file": "personalizador/models.py",
-                "line": 410,
+                "line": 425,
                 "snippet": "direccion_gerencia = models.ForeignKey(\"Gerencia\", on_delete=models.CASCADE, null=True, blank=True)"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 429,
+                "line": 444,
                 "snippet": "departamento_gerencia = models.ForeignKey(\"Gerencia\", on_delete=models.CASCADE, null=True, blank=True)"
               }
             ],
@@ -20108,16 +20121,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              386,
-              402
+              401,
+              417
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  401,
-                  402
+                  416,
+                  417
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -20127,7 +20140,7 @@
             "name": "Gerencia",
             "page_path": "personalizador/models/Gerencia",
             "signature": "class Gerencia(models.Model):",
-            "signature_hash": "sha1:d651b165ff3772adde1621a0533cd8b92a540d3a",
+            "signature_hash": "sha1:6ce6310a984eafd700e320af988fc1248658b374",
             "stale": true
           },
           "GrupoCargo": {
@@ -20138,7 +20151,7 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 121,
+                "line": 136,
                 "snippet": "grupo = models.ForeignKey(\"GrupoCargo\", on_delete=models.CASCADE, blank=True, null=True)"
               },
               {
@@ -20166,16 +20179,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              272,
-              281
+              287,
+              296
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  280,
-                  281
+                  295,
+                  296
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -20185,7 +20198,7 @@
             "name": "GrupoCargo",
             "page_path": "personalizador/models/GrupoCargo",
             "signature": "class GrupoCargo(models.Model):",
-            "signature_hash": "sha1:ae5595f8eed242f2efdb873de11e293f2a3c8b88",
+            "signature_hash": "sha1:ec13fe769ade82c288c3d9a7084ef1e3b6b1eda7",
             "stale": true
           },
           "LicenciaPermiso": {
@@ -20196,22 +20209,22 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 500,
+                "line": 515,
                 "snippet": "LicenciaPermiso.\"\"\""
               },
               {
                 "file": "personalizador/models.py",
-                "line": 780,
+                "line": 795,
                 "snippet": "fraccionado, ver `LicenciaPermiso.licenciapermiso_saldo_de_corte`) hasta la fecha"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 787,
+                "line": 802,
                 "snippet": "\"LicenciaPermiso\", verbose_name=\"Licencia interrumpida\","
               },
               {
                 "file": "personalizador/models.py",
-                "line": 860,
+                "line": 875,
                 "snippet": "devolucionhoras_licencia = models.ForeignKey(\"LicenciaPermiso\", verbose_name=\"Licencia/Permiso\", on_delete=models.CASCADE, related_name=\"devolucionhoras_set\")"
               },
               {
@@ -20224,16 +20237,16 @@
             "docstring": "Registro administrativo de una licencia/permiso ya otorgado a un agente (no hay\nflujo de solicitud/aprobación: se carga el hecho consumado, respaldado o no por un\ninstrumento legal formal).",
             "kind": "class",
             "lines": [
-              652,
-              767
+              667,
+              782
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  690,
-                  764
+                  705,
+                  779
                 ],
                 "name": "clean",
                 "signature": "def clean(self):"
@@ -20242,8 +20255,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  766,
-                  767
+                  781,
+                  782
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -20253,7 +20266,7 @@
             "name": "LicenciaPermiso",
             "page_path": "personalizador/models/LicenciaPermiso",
             "signature": "class LicenciaPermiso(models.Model):",
-            "signature_hash": "sha1:fc37c988ec2c2bb1e8cddf2f3c752b1d9248b05c",
+            "signature_hash": "sha1:8301aed76f7da528d4c5f62186f8e81d4d569fd9",
             "stale": true
           },
           "Oficina": {
@@ -20264,17 +20277,17 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 109,
+                "line": 124,
                 "snippet": "\"Oficina\", verbose_name=\"Designación Temporal\", related_name=\"agente_designacion_temporal\","
               },
               {
                 "file": "personalizador/models.py",
-                "line": 111,
+                "line": 126,
                 "snippet": "help_text=\"Oficina a la que el agente esta designado transitoriamente, distinta de su oficina habitual.\","
               },
               {
                 "file": "personalizador/models.py",
-                "line": 124,
+                "line": 139,
                 "snippet": "oficina = models.ForeignKey(\"Oficina\", on_delete=models.CASCADE, blank=True, null=True)"
               },
               {
@@ -20292,16 +20305,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              294,
-              354
+              309,
+              369
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  306,
-                  312
+                  321,
+                  327
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -20310,8 +20323,8 @@
                 "decorators": [],
                 "docstring": "Una Oficina es un nodo del arbol Directorio > Gerencia > Direccion > Departamento:\nse ubica en el nivel mas profundo que se le asigne (cargo_departamento, si no\ncargo_direccion, si no cargo_gerencia) y los niveles superiores se derivan de ese\nnodo en vez de elegirse por separado, para que no puedan quedar inconsistentes\nentre si (ej. una Direccion que en realidad depende de otra Gerencia).",
                 "lines": [
-                  314,
-                  354
+                  329,
+                  369
                 ],
                 "name": "clean",
                 "signature": "def clean(self):"
@@ -20321,7 +20334,7 @@
             "name": "Oficina",
             "page_path": "personalizador/models/Oficina",
             "signature": "class Oficina(models.Model):",
-            "signature_hash": "sha1:1538aad6887ceaa647021955f9807b1e3f0acad5",
+            "signature_hash": "sha1:071e1f060f3e860ba19db12b0703c4306da25c9b",
             "stale": true
           },
           "PeriodoLicencia": {
@@ -20332,17 +20345,17 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 573,
+                "line": 588,
                 "snippet": "PeriodoLicencia LOR_ANUAL dado, la primera vez que se necesita (ver"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 588,
+                "line": 603,
                 "snippet": "periodolicenciaagente_periodo = models.ForeignKey(\"PeriodoLicencia\", verbose_name=\"Período\", on_delete=models.CASCADE)"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 675,
+                "line": 690,
                 "snippet": "\"PeriodoLicencia\", verbose_name=\"Período de Licencia\","
               },
               {
@@ -20360,16 +20373,16 @@
             "docstring": "Ancla explícita de año calendario para los 3 tipos \"año-vencido\" de Licencia\nAnual (Art. 7, Art. 10 y Anual de Invierno, Ley 645-A). Reemplaza la inferencia\nimplícita de año que antes vivía en personalizador.licencias (via fecha_desde.year\n+/- corrimientos hardcodeados). Art. 7 y Art. 10 comparten el mismo período de un\naño dado (categoria LOR_ANUAL): Art. 10 no tiene cupo propio, adelanta días del\nmismo cupo de Art. 7. Anual de Invierno usa su propia categoría, con su propia\nestructura de fechas (2 turnos fijos por decreto, sin apertura/límite de estilo\nLOR_ANUAL).",
             "kind": "class",
             "lines": [
-              506,
-              568
+              521,
+              583
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  550,
-                  565
+                  565,
+                  580
                 ],
                 "name": "clean",
                 "signature": "def clean(self):"
@@ -20378,8 +20391,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  567,
-                  568
+                  582,
+                  583
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -20389,7 +20402,7 @@
             "name": "PeriodoLicencia",
             "page_path": "personalizador/models/PeriodoLicencia",
             "signature": "class PeriodoLicencia(models.Model):",
-            "signature_hash": "sha1:73e7550fe30d5b6612a718a95608648c56f7969b",
+            "signature_hash": "sha1:b90d20c75ea47a920c9da3dedb4d9a10b06ed94d",
             "stale": true
           },
           "PeriodoLicenciaAgente": {
@@ -20402,16 +20415,16 @@
             "docstring": "Cupo (días correspondientes por antigüedad) congelado para un agente en un\nPeriodoLicencia LOR_ANUAL dado, la primera vez que se necesita (ver\npersonalizador.licencias.get_or_create_periodo_agente). Evita que una corrección\nposterior de Agente.fecha_ingreso altere retroactivamente balances de períodos ya\notorgados. No se usa para LOR_INVIERNO (esa licencia no tiene cupo por antigüedad).",
             "kind": "class",
             "lines": [
-              571,
-              597
+              586,
+              612
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  596,
-                  597
+                  611,
+                  612
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -20421,7 +20434,7 @@
             "name": "PeriodoLicenciaAgente",
             "page_path": "personalizador/models/PeriodoLicenciaAgente",
             "signature": "class PeriodoLicenciaAgente(models.Model):",
-            "signature_hash": "sha1:51f16f38c9601128503c7d050cbd1408c29682ce",
+            "signature_hash": "sha1:1d943cc83423f0884ffa7ae5643a4d8730bd7b2b",
             "stale": true
           },
           "RepresentanteTecnico": {
@@ -20434,16 +20447,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              443,
-              461
+              458,
+              476
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  460,
-                  461
+                  475,
+                  476
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -20453,7 +20466,7 @@
             "name": "RepresentanteTecnico",
             "page_path": "personalizador/models/RepresentanteTecnico",
             "signature": "class RepresentanteTecnico(models.Model):",
-            "signature_hash": "sha1:c563bdf4693b7f689380ceb6ad13e83b9d16a155",
+            "signature_hash": "sha1:6d7c2048542268db8c9d67982df5faba203ade13",
             "stale": true
           },
           "TipoLicenciaPermiso": {
@@ -20464,7 +20477,7 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 662,
+                "line": 677,
                 "snippet": "licenciapermiso_tipo = models.ForeignKey(\"TipoLicenciaPermiso\", verbose_name=\"Tipo\", on_delete=models.CASCADE)"
               },
               {
@@ -20492,16 +20505,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              600,
-              650
+              615,
+              665
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  649,
-                  650
+                  664,
+                  665
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -20511,7 +20524,7 @@
             "name": "TipoLicenciaPermiso",
             "page_path": "personalizador/models/TipoLicenciaPermiso",
             "signature": "class TipoLicenciaPermiso(models.Model):",
-            "signature_hash": "sha1:f7fed4a5818435efe683eb2e9b768afeb88e70e4",
+            "signature_hash": "sha1:704c71c9057e1c50551dbac1a3bd7b27a27e07b3",
             "stale": true
           },
           "TituloProfesional": {
@@ -20522,12 +20535,12 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 84,
+                "line": 99,
                 "snippet": "titulo_profesional = models.ManyToManyField(\"TituloProfesional\", blank=True)"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 455,
+                "line": 470,
                 "snippet": "representantetecnico_profesion = models.ForeignKey(\"TituloProfesional\", on_delete=models.CASCADE)"
               },
               {
@@ -20550,16 +20563,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              214,
-              225
+              229,
+              240
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  224,
-                  225
+                  239,
+                  240
                 ],
                 "name": "__str__",
                 "signature": "def __str__(self):"
@@ -20569,7 +20582,7 @@
             "name": "TituloProfesional",
             "page_path": "personalizador/models/TituloProfesional",
             "signature": "class TituloProfesional(models.Model):",
-            "signature_hash": "sha1:af17f7322e221a1a41c58a2a65da43f6e504cedf",
+            "signature_hash": "sha1:51c381d52f6a08a46179affb88606e1b03ec052c",
             "stale": true
           },
           "abreviatura_default_por_sexo": {
@@ -20578,12 +20591,12 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 200,
+                "line": 215,
                 "snippet": "self.abreviatura = abreviatura_default_por_sexo(self.sexo)"
               },
               {
                 "file": "personalizador/models.py",
-                "line": 495,
+                "line": 510,
                 "snippet": "self.abreviatura = abreviatura_default_por_sexo(self.sexo)"
               }
             ],
@@ -20608,7 +20621,7 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 806,
+                "line": 821,
                 "snippet": "\"Adjunto (nota)\", upload_to=generate_name_cortelicencia, max_length=500,"
               }
             ],
@@ -20616,15 +20629,15 @@
             "docstring": "Genera el nombre de archivo para el adjunto (nota) de un CorteLicencia.",
             "kind": "function",
             "lines": [
-              769,
-              774
+              784,
+              789
             ],
             "methods": [],
             "module": "personalizador/models.py",
             "name": "generate_name_cortelicencia",
             "page_path": "personalizador/models/generate_name_cortelicencia",
             "signature": "def generate_name_cortelicencia(instance, filename):",
-            "signature_hash": "sha1:ec2b2e6c850f66a6b8f78422f3dc23d84352d602",
+            "signature_hash": "sha1:c3f6c207e79d5bf40c654b7a6d6240e7bb25710f",
             "stale": true
           },
           "generate_name_licenciapermiso": {
@@ -20633,7 +20646,7 @@
             "candidate_usages": [
               {
                 "file": "personalizador/models.py",
-                "line": 683,
+                "line": 698,
                 "snippet": "\"Adjunto (certificado/comunicación)\", upload_to=generate_name_licenciapermiso, max_length=500,"
               }
             ],
@@ -20641,15 +20654,15 @@
             "docstring": "Genera el nombre de archivo para el adjunto (certificado/comunicación) de una\nLicenciaPermiso.",
             "kind": "function",
             "lines": [
-              498,
-              504
+              513,
+              519
             ],
             "methods": [],
             "module": "personalizador/models.py",
             "name": "generate_name_licenciapermiso",
             "page_path": "personalizador/models/generate_name_licenciapermiso",
             "signature": "def generate_name_licenciapermiso(instance, filename):",
-            "signature_hash": "sha1:0bd0b70bdae6774697ac74a1c66151c03cffb83f",
+            "signature_hash": "sha1:46bf34b9b557227094afacc844f60895d02218ee",
             "stale": true
           }
         }
@@ -24211,7 +24224,7 @@
     }
   },
   "secretariador": {
-    "generated_at": "2026-09-21T22:43:57.354653+00:00",
+    "generated_at": "2026-09-22T13:42:03.719945+00:00",
     "modules": {
       "forms/comisionadoform": {
         "file": "secretariador/forms/comisionadoform.py",

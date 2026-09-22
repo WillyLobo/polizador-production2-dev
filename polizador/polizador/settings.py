@@ -212,8 +212,11 @@ if LDAP_CONFIGURADO:
     # (CI, una portatil fuera de la red) cada intento fallido se come el timeout
     # de 10 segundos de AUTH_LDAP_CONNECTION_OPTIONS. Los tests no pueden
     # depender de que el AD este a mano.
+    # Se nombra aparte para que los tests puedan verificar CUAL backend se usa
+    # sin depender de que este registrado (durante los tests no lo esta).
+    LDAP_BACKEND = 'core.ldap_backend.PolizadorLDAPBackend'
     if not TESTING:
-        AUTHENTICATION_BACKENDS.append('django_auth_ldap.backend.LDAPBackend')
+        AUTHENTICATION_BACKENDS.append(LDAP_BACKEND)
 
     AUTH_LDAP_SERVER_URI = GDU_LDAP_SERVER_URL
     AUTH_LDAP_BIND_DN = GDU_LDAP_BIND_DN
@@ -251,10 +254,22 @@ if LDAP_CONFIGURADO:
     # el AD es la fuente de verdad para los nombres, se agregan aca.
     AUTH_LDAP_USER_ATTR_MAP = {"ad_username": "sAMAccountName"}
 
-    # No crea cuentas: quien no tenga ya un CustomUser con su ad_username
-    # cargado no entra por LDAP (sigue entrando con su contrasena local). El AD
-    # es de toda la institucion, no solo de quienes usan polizador.
-    AUTH_LDAP_NO_NEW_USERS = True
+    # Cualquiera con cuenta en el AD del IPDUV puede entrar, aunque no tenga
+    # CustomUser todavia: se le crea uno al vuelo, SIN grupos y por lo tanto sin
+    # ningun permiso. Asignarselos es trabajo de un superusuario desde el panel.
+    #
+    # El alta la hace core/ldap_backend.PolizadorLDAPBackend, no django-auth-ldap
+    # por su cuenta: hay dos cosas que resolver antes de guardar (el username
+    # quedaria vacio, y las 16 cuentas cuyo username ya coincide con el de red
+    # se duplicarian). El porque completo esta en ese modulo.
+    #
+    # OJO con lo que ve una cuenta asi: los ~57 widgets de select2 de
+    # carga/views/ajaxviews.py y personalizador/views/ajaxviews.py estan detras
+    # de LoginRequiredMixin y nada mas, asi que cualquiera que pueda entrar puede
+    # consultar esos autocompletados (obras, agentes, empresas, localidades...).
+    # Antes eso alcanzaba a 29 personas revisadas; ahora alcanza a toda la
+    # institucion. Si eso no es aceptable, hay que ponerles un permiso.
+    AUTH_LDAP_NO_NEW_USERS = False
     AUTH_LDAP_ALWAYS_UPDATE_USER = True
 
     # Sin timeouts, una conexion a un AD caido puede colgar el login mucho mas

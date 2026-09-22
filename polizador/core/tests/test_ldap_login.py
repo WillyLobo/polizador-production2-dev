@@ -22,7 +22,7 @@ class ConfiguracionLDAPTest(TestCase):
         polizador. El orden es la garantia de que nadie pierde acceso."""
         backends = settings.AUTHENTICATION_BACKENDS
         assert backends[0] == "django.contrib.auth.backends.ModelBackend"
-        ldap_backend = "django_auth_ldap.backend.LDAPBackend"
+        ldap_backend = getattr(settings, "LDAP_BACKEND", "core.ldap_backend.PolizadorLDAPBackend")
         if ldap_backend in backends:
             assert backends.index(ldap_backend) > 0
 
@@ -37,10 +37,18 @@ class ConfiguracionLDAPTest(TestCase):
         assert campo in settings.AUTH_LDAP_USER_ATTR_MAP
         assert settings.AUTH_LDAP_USER_ATTR_MAP[campo] == "sAMAccountName"
 
-    def test_no_se_crean_usuarios_desde_el_ad(self):
+    def test_el_alta_automatica_usa_el_backend_propio(self):
+        """La politica es que cualquiera con cuenta en el AD pueda entrar (sin
+        permisos). Eso exige las dos cosas juntas: permitir el alta Y que la
+        haga PolizadorLDAPBackend. Con el backend de fabrica, NO_NEW_USERS=False
+        guarda al usuario nuevo con username vacio -- el segundo revienta contra
+        la restriccion unica -- y duplica las cuentas de quienes ya existen en
+        polizador con ese mismo username. Ver core/ldap_backend.py."""
         if not getattr(settings, "LDAP_CONFIGURADO", False):
             self.skipTest("LDAP no configurado en este entorno")
-        assert settings.AUTH_LDAP_NO_NEW_USERS is True
+        assert settings.AUTH_LDAP_NO_NEW_USERS is False
+        assert settings.LDAP_BACKEND == "core.ldap_backend.PolizadorLDAPBackend"
+        assert "django_auth_ldap.backend.LDAPBackend" not in settings.AUTHENTICATION_BACKENDS
 
     def test_no_se_pisan_los_nombres_con_los_del_ad(self):
         """Mapear first_name/last_name haria que el primer login por LDAP
