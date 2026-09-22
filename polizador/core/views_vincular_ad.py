@@ -28,7 +28,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import FormView, View
+from django.views.generic import FormView, TemplateView, View
 
 from core import ldap_ad
 
@@ -139,3 +139,35 @@ class SinCuentaRedView(LoginRequiredMixin, View):
             "sistemas va a revisar tu caso.",
         )
         return redirect("/home/")
+
+
+class PasswordSetBloqueadoView(LoginRequiredMixin, TemplateView):
+    """Reemplaza /accounts/password/set/ para quien ya entra solo por LDAP.
+
+    allauth manda a esa pagina a cualquiera sin contrasena utilizable que abra
+    "cambiar contraseña" (PasswordChangeView redirige a account_set_password), y
+    ahi SetPasswordForm no pide la contrasena anterior -- con razon, porque la
+    pensaron para cuentas de login social, que nunca tuvieron una. El efecto
+    para nosotros es que un usuario al que se le retiro la contrasena local se
+    pone otra en dos clics, y vuelve a existir una via de entrada que no pasa por
+    el AD. Eso anula el sentido de haberla retirado: desactivar a alguien en el
+    AD dejaria de quitarle el acceso.
+
+    A quien todavia conserva contrasena local no se lo toca: la vista de allauth
+    sigue atendiendolo igual que siempre.
+    """
+
+    template_name = "vincular_ad/password_ldap.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        if not (request.user.is_authenticated and request.user.solo_ldap):
+            from allauth.account.views import password_set
+
+            return password_set(request, *args, **kwargs)
+        return super().dispatch(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        # Un POST a esta URL es alguien que mando el formulario de allauth (una
+        # pestaña vieja, o el navegador reenviando). Se le muestra la misma
+        # explicacion en vez del 405 que daria TemplateView por si solo.
+        return self.get(request, *args, **kwargs)

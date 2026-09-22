@@ -21,3 +21,25 @@ from allauth.account.adapter import DefaultAccountAdapter
 class PolizadorAccountAdapter(DefaultAccountAdapter):
     def is_open_for_signup(self, request):
         return False
+
+    def send_password_reset_mail(self, user, email, context):
+        """A quien ya entra solo por LDAP no se le manda un link para ponerse una
+        contrasena local: se le explica que su contrasena es la de red.
+
+        Sin esto, allauth le manda el link igual -- filter_users_by_email() no
+        mira has_usable_password() -- y seguirlo le devuelve una contrasena local
+        funcionando. Eso anula el sentido de habersela retirado: la idea es que
+        desactivar a alguien en el AD le quite el acceso, y una contrasena local
+        nueva sobrevive a esa baja.
+
+        Se manda igual un correo (otro), para no cambiar lo que ve quien pide el
+        reset: allauth responde siempre lo mismo pida lo que pida, justamente
+        para no revelar que cuentas existen. Si acá no se mandara nada, quien
+        tiene cuenta de red veria "te mandamos un mail" y no le llegaria nunca.
+
+        El hook existe para esto; su propio docstring en allauth sugiere
+        engancharse acá y mirar has_usable_password.
+        """
+        if getattr(user, "solo_ldap", False):
+            return self.send_mail("account/email/password_reset_ldap", email, context)
+        return super().send_password_reset_mail(user, email, context)

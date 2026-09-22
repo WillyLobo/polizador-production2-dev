@@ -56,6 +56,21 @@ class CustomUser(AbstractUser):
 
     usuario_history = HistoricalRecords()
 
+    @property
+    def solo_ldap(self):
+        """El usuario ya no tiene contrasena local: su unica via de entrada es la
+        cuenta de red. Es el estado en el que lo deja
+        "manage.py retirar_password_local".
+
+        Tener ad_username no alcanza: durante la transicion mucha gente esta
+        vinculada y todavia conserva su contrasena de polizador, y a esa gente el
+        cambio de contrasena le tiene que seguir funcionando como siempre. Lo que
+        hay que bloquear es volver a abrir la puerta local despues de haberla
+        cerrado, porque eso anularia el sentido de cerrarla: que desactivar a
+        alguien en el AD le quite el acceso.
+        """
+        return bool(self.ad_username) and not self.has_usable_password()
+
 class Agente(models.Model):
     class Meta:
         verbose_name = "Agente"
