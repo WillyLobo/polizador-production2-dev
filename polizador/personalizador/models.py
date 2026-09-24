@@ -2,6 +2,7 @@ import os
 from django.db import models
 from django.core.exceptions import ValidationError
 from simple_history.models import HistoricalRecords
+from core.history import M2MHistoricalRecords
 from django.core.validators import MinValueValidator
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
@@ -54,7 +55,7 @@ class CustomUser(AbstractUser):
     # en vez de insistirle en cada login.
     ad_sin_cuenta_red = models.BooleanField("Declara no tener cuenta de red", default=False)
 
-    usuario_history = HistoricalRecords()
+    usuario_history = M2MHistoricalRecords(m2m_fields=["groups", "user_permissions"])
 
     @property
     def solo_ldap(self):
@@ -176,7 +177,7 @@ class Agente(models.Model):
     agente_escalafon = models.PositiveSmallIntegerField("Escalafón", choices=ESCALAFON_CHOICES, default=2, help_text="Escalafón (I-IV) usado para calcular el viático diario. Las autoridades del Directorio usan el escalafón configurado en Reglas de Cálculo de Viáticos, independientemente de este valor.")
     # Otros
     agente_uuid = models.UUIDField(default=compat.uuid7, editable=False)
-    agente_history = HistoricalRecords()
+    agente_history = M2MHistoricalRecords(m2m_fields=[titulo_profesional])
 
     @property
     def edad(self):

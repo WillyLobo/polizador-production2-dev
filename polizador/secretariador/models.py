@@ -1,5 +1,6 @@
 from django.db import models
 from simple_history.models import HistoricalRecords
+from core.history import M2MHistoricalRecords
 from django.core.validators import MinValueValidator
 from core.validators import FileValidator
 from datetime import datetime, timedelta
@@ -442,7 +443,7 @@ class Solicitud(models.Model):
     solicitud_anulada = models.BooleanField("Anulada", default=False, help_text="Si la solicitud se encuentra anulada, no se registra en los reportes.")
     solicitud_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     solicitud_texto_actuacion = models.JSONField("Texto de la Resolución", null=True, blank=True, help_text="Texto de los considerandos y artículos editado desde la web para la generación del documento. Si está vacío, se genera automáticamente.")
-    solicitud_history = HistoricalRecords()
+    solicitud_history = M2MHistoricalRecords(m2m_fields=[solicitud_localidades])
     
     def solicitud_fechas(self):
         fechas = [self.solicitud_fecha_desde+timedelta(days=x) for x in range((self.solicitud_fecha_hasta-self.solicitud_fecha_desde).days+1)]

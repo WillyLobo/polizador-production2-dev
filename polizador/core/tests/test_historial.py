@@ -84,3 +84,60 @@ class HistorialSidebarTagTest(TestCase):
     def test_no_se_muestra_para_modelos_sin_historial_ni_sin_objeto(self):
         assert self._render(self.admin, Group.objects.create(name="g")) == ""
         assert self._render(self.admin, None) == ""
+
+
+class HistorialM2MTest(TestCase):
+    def setUp(self):
+        self.admin = UserModel.objects.create_superuser(username="admin_user", password="pass1234!")
+        self.target = UserModel.objects.create_user(username="target", password="pass1234!")
+        self.editores = Group.objects.create(name="Editores")
+        self.otros = Group.objects.create(name="Otros")
+
+    def _cambios(self):
+        from core.history import build_timeline, sources_for
+
+        timeline = build_timeline(sources_for(self.target))
+        return [
+            (e["tipo"], c["campo"], c["antes"], c["despues"])
+            for g in timeline["grupos"] for e in g["entradas"] for c in e["cambios"]
+        ]
+
+    def test_registra_altas_y_bajas_de_relaciones(self):
+        self.target.groups.add(self.editores)
+        self.target.groups.add(self.otros)
+        self.target.groups.remove(self.editores)
+
+        cambios = self._cambios()
+
+        assert ("Modificado", "grupos", "—", "Editores") in cambios
+        assert ("Modificado", "grupos", "Editores", "Editores, Otros") in cambios
+        assert ("Modificado", "grupos", "Editores, Otros", "Otros") in cambios
+
+    def test_la_foto_inicial_evita_que_lo_previo_aparezca_como_agregado(self):
+        from django.apps import apps
+        from core.history import m2m_baseline
+
+        # Como quedaron las relaciones cargadas antes de activar m2m_fields: sin foto.
+        self.target.skip_history_when_saving = True
+        self.target.groups.add(self.editores)
+        del self.target.skip_history_when_saving
+        forward, _ = m2m_baseline("personalizador", "customuser", "HistoricalCustomUser", ["groups", "user_permissions"])
+        forward(apps, None)
+
+        self.target.groups.add(self.otros)
+        cambios = self._cambios()
+
+        assert ("Registro inicial", "grupos", "(sin registro)", "Editores") in cambios
+        assert ("Modificado", "grupos", "Editores", "Editores, Otros") in cambios
+        assert not any(c[2] == "—" for c in cambios)
+
+    def test_cambio_desde_el_lado_inverso(self):
+        self.editores.user_set.add(self.target)
+
+        assert ("Modificado", "grupos", "—", "Editores") in self._cambios()
+
+    def test_clear_desde_el_lado_inverso(self):
+        self.target.groups.add(self.editores)
+        self.editores.user_set.clear()
+
+        assert ("Modificado", "grupos", "Editores", "—") in self._cambios()

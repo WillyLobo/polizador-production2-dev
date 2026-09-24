@@ -6,6 +6,7 @@ from django.db import models
 from django.contrib.gis.db import models as gis_models
 from django.urls import reverse
 from simple_history.models import HistoricalRecords
+from core.history import M2MHistoricalRecords
 from django.db.models import Sum, F, FloatField, Max, Q, OuterRef, Subquery
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
@@ -471,7 +472,10 @@ class Obra(models.Model):
     )
     obra_principal = models.ManyToManyField("Obra", related_name="obra_madre", verbose_name="Obra Madre", blank=True)
     obra_georeferencia = gis_models.PointField("Georeferencia", geography=True, srid=4326, blank=True, null=True)
-    obra_history = HistoricalRecords(excluded_fields=['obra_contrato_total_pesos', "obra_contrato_total_uvi"])
+    obra_history = M2MHistoricalRecords(
+        excluded_fields=['obra_contrato_total_pesos', "obra_contrato_total_uvi"],
+        m2m_fields=[obra_departamento_m, obra_municipio_m, obra_localidad_m, obra_inspector, obra_representantetecnico, obra_principal],
+    )
 
     def compulsa(self):
         if self.obra_licitacion_numero == 0 or self.obra_licitacion_numero is None:
@@ -1365,7 +1369,7 @@ class FojaDeMedicion(models.Model):
     foja_fecha = models.DateField("Fecha de Medición", default=timezone.now)
     foja_inspector = models.ManyToManyField("personalizador.Agente", related_name="foja_inspector", verbose_name="Inspector", blank=True)
     foja_observaciones = models.TextField("Observaciones", blank=True, null=True)
-    foja_history = HistoricalRecords()
+    foja_history = M2MHistoricalRecords(m2m_fields=[foja_inspector])
 
     def foja_pct_avance_mes(self):
         total = 0
