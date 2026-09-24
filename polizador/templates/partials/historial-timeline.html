@@ -1,0 +1,49 @@
+{% if not grupos %}
+  <p class="text-body-secondary">No hay cambios registrados.</p>
+{% else %}
+  {% if modelos|length > 1 %}
+  <div class="d-flex flex-wrap gap-1 mb-3">
+    {% for modelo, cantidad in modelos %}
+      <button type="button" class="btn btn-sm btn-outline-secondary active" aria-pressed="true" data-historial-filtro="{{ modelo }}">
+        {{ modelo }} <span class="badge text-bg-secondary">{{ cantidad }}</span>
+      </button>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if truncado %}
+    <div class="alert alert-info py-1 small">Se muestran los últimos {{ limite }} cambios.</div>
+  {% endif %}
+
+  {% for grupo in grupos %}
+    <section class="historial-grupo mb-3">
+      <div class="small fw-semibold d-flex justify-content-between">
+        <span><i class="bi bi-person"></i> {% firstof grupo.usuario.get_full_name grupo.usuario.username "Sistema" %}</span>
+        <span class="text-body-secondary" title="{{ grupo.fecha|date:'d/m/Y H:i:s' }}">{{ grupo.fecha|date:"d/m/Y H:i" }}</span>
+      </div>
+      {% with total=grupo.entradas|length %}
+      {% if total > 5 %}<details class="ms-2"><summary class="small text-body-secondary">{{ total }} cambios: {{ grupo.resumen }}</summary>{% endif %}
+      <ul class="list-unstyled ms-2 ps-2 border-start mt-1 mb-0">
+        {% for e in grupo.entradas %}
+          <li class="historial-entrada py-1" data-modelo="{{ e.modelo }}">
+            <span class="badge text-bg-{{ e.color }}">{{ e.tipo }}</span>
+            <span class="small text-body-secondary">{{ e.modelo }}</span>
+            <div class="small">{{ e.objeto }}</div>
+            {% if e.cambios %}
+              <table class="table table-sm small mb-0 historial-cambios">
+                {% for c in e.cambios %}
+                  <tr>
+                    <th>{{ c.campo|capfirst }}</th>
+                    <td><del class="text-danger">{{ c.antes|truncatechars:120 }}</del> → <span class="text-success">{{ c.despues|truncatechars:120 }}</span></td>
+                  </tr>
+                {% endfor %}
+              </table>
+            {% endif %}
+          </li>
+        {% endfor %}
+      </ul>
+      {% if total > 5 %}</details>{% endif %}
+      {% endwith %}
+    </section>
+  {% endfor %}
+{% endif %}

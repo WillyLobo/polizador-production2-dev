@@ -2135,3 +2135,92 @@ class ContextoCertificadoVaciosTests(TestCase):
 
         assert "«falta:" in texto
         assert faltantes == {"periodo"}
+
+
+class HistorialPlanDeTrabajosTests(TestCase):
+    def setUp(self):
+        empresa = Empresa.objects.create(empresa_nombre="Empresa Test")
+        programa = Programa.objects.create(programa_nombre="Programa Test")
+        obra = Obra.objects.create(
+            obra_nombre="Obra Test", obra_empresa=empresa, obra_programa=programa, obra_expediente="EXP-H"
+        )
+        self.plan = PlanDeTrabajos.objects.create(trabajos_obra=obra, trabajos_fecha=date(2026, 1, 1))
+        self.rubro = PlanDeTrabajosRubro.objects.create(
+            rubro_plan=self.plan, rubro_nombre="Vivienda", rubro_presupuesto=Decimal("1000")
+        )
+        self.item = PlanDeTrabajosItem.objects.create(
+            planitem_rubro=self.rubro, planitem_nombre="Mampostería", planitem_incidencia_pct=Decimal("100")
+        )
+        self.user = get_user_model().objects.create_superuser(
+            username="editor", password="testpass123", first_name="Ana", last_name="Gómez"
+        )
+        self.url = reverse(
+            "historial", kwargs={"app_label": "carga", "model_name": "plandetrabajos", "pk": self.plan.pk}
+        )
+
+    def test_muestra_el_diff_y_quien_hizo_el_cambio(self):
+        self.rubro.rubro_presupuesto = Decimal("1500")
+        self.rubro._history_user = self.user
+        self.rubro.save()
+        self.client.force_login(self.user)
+
+        response = self.client.get(self.url)
+
+        self.assertContains(response, "Ana Gómez")
+        self.assertContains(response, "Presupuesto")
+        self.assertContains(response, "1000.00")
+        self.assertContains(response, "1500")
+
+    def test_incluye_hijos_eliminados(self):
+        self.item.delete()
+        self.client.force_login(self.user)
+
+        response = self.client.get(self.url)
+
+        self.assertContains(response, "Eliminado")
+        self.assertContains(response, "Mampostería · Vivienda")
+
+    def test_omite_guardados_sin_cambios(self):
+        from carga.history import plandetrabajos_sources
+        from core.history import build_timeline
+
+        self.rubro.save()
+        timeline = build_timeline(plandetrabajos_sources(self.plan))
+        tipos = [e["tipo"] for g in timeline["grupos"] for e in g["entradas"]]
+
+        self.assertNotIn("Modificado", tipos)
+
+    def test_la_pagina_del_plan_muestra_la_pestana_una_sola_vez(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("carga:update-plandetrabajos", kwargs={"pk": self.plan.pk}))
+
+        self.assertContains(response, 'id="historialSidebar"', count=1)
+        self.assertContains(response, self.url)
+
+    def test_obra_con_excluded_fields_no_rompe_el_historial(self):
+        obra = self.plan.trabajos_obra
+        obra.obra_nombre = "Obra Renombrada"
+        obra.save()
+        self.client.force_login(self.user)
+
+        response = self.client.get(
+            reverse("historial", kwargs={"app_label": "carga", "model_name": "obra", "pk": obra.pk})
+        )
+
+        self.assertContains(response, "Obra Renombrada")
+
+    def test_la_matriz_de_etapas_muestra_el_historial_del_plan(self):
+        self.client.force_login(self.user)
+
+        response = self.client.get(reverse("carga:plandetrabajosetapa-matriz", kwargs={"pk": self.rubro.pk}))
+
+        self.assertContains(response, self.url)
+
+    def test_sin_permiso_da_403(self):
+        sin_permiso = get_user_model().objects.create_user(username="nadie", password="testpass123")
+        self.client.force_login(sin_permiso)
+
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 403)

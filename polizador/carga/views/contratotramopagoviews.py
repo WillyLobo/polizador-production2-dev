@@ -26,7 +26,7 @@ class GestionarTramosContrato(PermissionRequiredMixin, generic.View):
 	def get(self, request, pk):
 		contrato = get_object_or_404(Contrato, pk=pk)
 		formset = ContratoTramoPagoFormset(instance=contrato)
-		return render(request, self.template_name, {"contrato": contrato, "formset": formset})
+		return render(request, self.template_name, {"contrato": contrato, "formset": formset, "historial_object": contrato})
 
 	def post(self, request, pk):
 		contrato = get_object_or_404(Contrato, pk=pk)
@@ -40,6 +40,6 @@ class GestionarTramosContrato(PermissionRequiredMixin, generic.View):
 					request,
 					"No se puede eliminar un tramo que ya tiene un Certificado de Etapa generado.",
 				)
-				return render(request, self.template_name, {"contrato": contrato, "formset": formset})
+				return render(request, self.template_name, {"contrato": contrato, "formset": formset, "historial_object": contrato})
 			return redirect(reverse("carga:update-contrato", kwargs={"pk": contrato.pk}))
-		return render(request, self.template_name, {"contrato": contrato, "formset": formset})
+		return render(request, self.template_name, {"contrato": contrato, "formset": formset, "historial_object": contrato})

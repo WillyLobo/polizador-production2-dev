@@ -1,0 +1,72 @@
+{% comment %}
+Pestaña fija en el borde derecho que abre el historial de cambios (simple_history) del objeto.
+La renderiza el tag {% historial_sidebar %} de base.html (core/templatetags/historial.py).
+{% endcomment %}
+<style>
+  .historial-tab {
+    position: fixed; right: 0; top: 50%; z-index: 1040;
+    transform: translateY(-50%);
+    writing-mode: vertical-rl;
+    border-top-right-radius: 0; border-bottom-right-radius: 0;
+    padding: .75rem .35rem;
+  }
+  #historialSidebar { --bs-offcanvas-width: min(520px, 100vw); }
+  #historialSidebar .historial-cambios th { font-weight: 500; white-space: nowrap; width: 1%; }
+  #historialSidebar .historial-cambios td { word-break: break-word; }
+</style>
+
+<button type="button" class="btn btn-secondary btn-sm shadow historial-tab"
+        data-bs-toggle="offcanvas" data-bs-target="#historialSidebar" aria-controls="historialSidebar">
+  <i class="bi bi-clock-history"></i> Historial
+</button>
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="historialSidebar" aria-labelledby="historialSidebarLabel"
+     data-url="{{ historial_url }}">
+  <div class="offcanvas-header border-bottom">
+    <h5 class="offcanvas-title" id="historialSidebarLabel"><i class="bi bi-clock-history"></i> Historial de cambios</h5>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+  </div>
+  <div class="offcanvas-body" id="historialSidebarBody">
+    <div class="text-center text-body-secondary py-5">
+      <div class="spinner-border spinner-border-sm" role="status"></div> Cargando…
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    const sidebar = document.getElementById("historialSidebar");
+    const body = document.getElementById("historialSidebarBody");
+    let cargado = false;
+
+    sidebar.addEventListener("show.bs.offcanvas", function () {
+      if (cargado) return;
+      cargado = true;
+      fetch(sidebar.dataset.url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+        .then(r => r.ok ? r.text() : Promise.reject(r.status))
+        .then(html => { body.innerHTML = html; })
+        .catch(status => {
+          cargado = false;
+          body.innerHTML = '<div class="alert alert-danger">' +
+            (status === 403 ? "No tiene permiso para ver el historial." : "No se pudo cargar el historial.") +
+            "</div>";
+        });
+    });
+
+    body.addEventListener("click", function (ev) {
+      const chip = ev.target.closest("[data-historial-filtro]");
+      if (!chip) return;
+      chip.classList.toggle("active");
+      chip.setAttribute("aria-pressed", chip.classList.contains("active"));
+      const visibles = new Set(
+        [...body.querySelectorAll("[data-historial-filtro].active")].map(b => b.dataset.historialFiltro)
+      );
+      body.querySelectorAll(".historial-entrada").forEach(e => {
+        e.hidden = !visibles.has(e.dataset.modelo);
+      });
+      body.querySelectorAll(".historial-grupo").forEach(g => {
+        g.hidden = !g.querySelector(".historial-entrada:not([hidden])");
+      });
+    });
+  })();
+</script>

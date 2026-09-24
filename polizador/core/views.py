@@ -1,9 +1,10 @@
 import posixpath
 import re
 
+from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.core.exceptions import PermissionDenied
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
@@ -15,6 +16,7 @@ from django.conf import settings
 
 from core import dashboard_data, knowledge_base, management_runner
 from core.forms import TodoForm
+from core.history import build_timeline, can_view_history, history_manager, sources_for
 from core.management_commands_registry import COMMAND_REGISTRY
 from core.models import ManagementCommandRun, Todo
 
@@ -22,6 +24,27 @@ from core.models import ManagementCommandRun, Todo
 class SuperuserRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
     def test_func(self):
         return self.request.user.is_superuser
+
+
+class HistorialView(LoginRequiredMixin, TemplateView):
+    template_name = "partials/historial-timeline.html"
+
+    def get_context_data(self, **kwargs):
+        try:
+            model = apps.get_model(self.kwargs["app_label"], self.kwargs["model_name"])
+        except LookupError:
+            raise Http404
+        if history_manager(model) is None:
+            raise Http404
+        if not can_view_history(self.request.user, model):
+            raise PermissionDenied
+        try:
+            obj = get_object_or_404(model, pk=self.kwargs["pk"])
+        except (ValueError, ValidationError):
+            raise Http404
+        context = super().get_context_data(**kwargs)
+        context.update(build_timeline(sources_for(obj)))
+        return context
 
 
 class SchemaDocsView(SuperuserRequiredMixin, TemplateView):

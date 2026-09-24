@@ -10,6 +10,7 @@ from core.views_vincular_ad import PasswordSetBloqueadoView, SinCuentaRedView, V
 from core.views import (
     DashboardView,
     FormValidationErrorListView,
+    HistorialView,
     KnowledgeBaseIndexView,
     KnowledgeBasePageView,
     ManagementCommandRunDetailView,
@@ -41,6 +42,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("select2/", include("django_select2.urls")),
     path("home/", InspeccionHomeView.as_view(), name="home"),
+    path("historial/<str:app_label>/<str:model_name>/<str:pk>/", HistorialView.as_view(), name="historial"),
     path("cuenta/vincular-red/", VincularADView.as_view(), name="vincular_ad"),
     path("cuenta/sin-cuenta-red/", SinCuentaRedView.as_view(), name="vincular_ad_sin_cuenta"),
     path("administracion/dashboard/", DashboardView.as_view(), name="dashboard"),
