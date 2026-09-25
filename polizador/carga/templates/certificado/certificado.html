@@ -173,6 +173,13 @@
         <td class="dato">{{ object.certificado_fondoreparo_monto_uvi|floatformat:2 }}</td>
         <td class="dato">{{ object.certificado_fondoreparo_monto_pesos|floatformat:2 }}</td>
       </tr>
+      {% if object.certificado_aplica_retencion_adobe %}
+      <tr>
+        <td class="concepto">RETENCIÓN LADRILLOS DE ADOBE (Decreto 654/2015, {{ object.RETENCION_ADOBE_PCT|floatformat:1 }}‰)</td>
+        <td class="dato">{{ object.certificado_retencion_adobe_monto_uvi|floatformat:2 }}</td>
+        <td class="dato">{{ object.certificado_retencion_adobe_monto_pesos|floatformat:2 }}</td>
+      </tr>
+      {% endif %}
       <tr>
         <td class="concepto">IMPORTE A ABONARSE</td>
         <td class="dato">{{ object.certificado_monto_cobrar_uvi|floatformat:2 }}</td>

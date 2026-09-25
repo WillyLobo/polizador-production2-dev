@@ -2224,3 +2224,122 @@ class HistorialPlanDeTrabajosTests(TestCase):
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 403)
+
+
+class RetencionAdobeTests(TestCase):
+    """Decreto 654/2015: tres por mil sobre el valor bruto de los certificados de obras que
+    usan ladrillos de adobe como insumo. Se decide por el rubro del certificado (Vivienda),
+    no por un dato de la Obra, para cubrir también los certificados legacy.
+
+    A diferencia del Fondo de Reparo, el decreto no exceptúa a los certificados de
+    Anticipo -- por eso hay un test explícito que lo confirma en vez de asumirlo."""
+
+    def setUp(self):
+        empresa = Empresa.objects.create(empresa_nombre="Empresa Test")
+        programa = Programa.objects.create(programa_nombre="Programa Test")
+        self.rubro_vivienda = CertificadoRubro.objects.create(
+            certificadorubro_nombre="Vivienda", certificadorubro_nombre_corto="V"
+        )
+        self.rubro_infraestructura = CertificadoRubro.objects.create(
+            certificadorubro_nombre="Infraestructura Frentista", certificadorubro_nombre_corto="F"
+        )
+        self.obra = Obra.objects.create(
+            obra_nombre="Obra Test", obra_empresa=empresa, obra_programa=programa, obra_expediente="EXP-ADOBE",
+        )
+
+    def _certificado(self, rubro, tipo="PARCIAL", **kwargs):
+        defaults = {
+            "certificado_obra": self.obra,
+            "certificado_tipo": tipo,
+            "certificado_financiamiento": "N",
+            "certificado_rubro_db": rubro,
+            "certificado_expediente": "EXP",
+            "certificado_fecha": date(2026, 6, 1),
+            "certificado_monto_pesos": Decimal("100000"),
+            "certificado_monto_uvi": Decimal("1000"),
+        }
+        defaults.update(kwargs)
+        return Certificado(**defaults)
+
+    def test_aplica_a_los_certificados_de_rubro_vivienda(self):
+        certificado = self._certificado(self.rubro_vivienda)
+
+        self.assertTrue(certificado.certificado_aplica_retencion_adobe)
+        # tres por mil de 100.000 = 300; de 1.000 UVI = 3.
+        self.assertEqual(certificado.certificado_retencion_adobe_monto_pesos(), Decimal("300"))
+        self.assertEqual(certificado.certificado_retencion_adobe_monto_uvi(), Decimal("3"))
+
+    def test_no_aplica_a_otros_rubros(self):
+        certificado = self._certificado(self.rubro_infraestructura)
+
+        self.assertFalse(certificado.certificado_aplica_retencion_adobe)
+        self.assertEqual(certificado.certificado_retencion_adobe_monto_pesos(), Decimal("0"))
+        self.assertEqual(certificado.certificado_retencion_adobe_monto_uvi(), Decimal("0"))
+
+    def test_cubre_los_certificados_legacy(self):
+        certificado = self._certificado(self.rubro_vivienda, tipo="LEGACY")
+
+        self.assertEqual(certificado.certificado_retencion_adobe_monto_pesos(), Decimal("300"))
+
+    def test_se_aplica_tambien_a_certificados_de_anticipo(self):
+        """El decreto habla del "valor bruto de los certificados" sin exceptuar ningún
+        tipo -- a propósito, esto NO replica la exclusión de Fondo de Reparo para ANTICIPO."""
+        certificado = self._certificado(self.rubro_vivienda, tipo="ANTICIPO")
+
+        self.assertEqual(certificado.certificado_retencion_adobe_monto_pesos(), Decimal("300"))
+
+    def test_monto_certificado_nulo_no_rompe_el_calculo(self):
+        certificado = self._certificado(self.rubro_vivienda, certificado_monto_pesos=None, certificado_monto_uvi=None)
+
+        self.assertEqual(certificado.certificado_retencion_adobe_monto_pesos(), Decimal("0"))
+        self.assertEqual(certificado.certificado_retencion_adobe_monto_uvi(), Decimal("0"))
+
+
+class RetencionAdobeContextoTextoTests(TestCase):
+    """La retención tiene que estar disponible como variable para armar el texto de la
+    resolución (el pedido original: "tener como dato a la hora de generar los textos")."""
+
+    def setUp(self):
+        empresa = Empresa.objects.create(empresa_nombre="Empresa Test")
+        programa = Programa.objects.create(programa_nombre="Programa Test")
+        self.rubro_vivienda = CertificadoRubro.objects.create(certificadorubro_nombre="Vivienda", certificadorubro_nombre_corto="V")
+        self.rubro_infraestructura = CertificadoRubro.objects.create(certificadorubro_nombre="Infraestructura Frentista", certificadorubro_nombre_corto="F")
+        CertificadoFinanciamiento.objects.create(certificadofinanciamiento_nombre="Nación", certificadofinanciamiento_nombre_corto="N")
+        self.obra = Obra.objects.create(
+            obra_nombre="Obra Test", obra_empresa=empresa, obra_programa=programa, obra_expediente="EXP-CTX",
+        )
+
+    def _certificado(self, rubro):
+        return Certificado.objects.create(
+            certificado_obra=self.obra, certificado_tipo="PARCIAL", certificado_financiamiento="N",
+            certificado_rubro_db=rubro, certificado_expediente="EXP-1", certificado_fecha=date(2026, 6, 1),
+            certificado_monto_pesos=Decimal("100000"),
+        )
+
+    def test_el_contexto_trae_la_retencion(self):
+        contexto = resolucion_texto.contexto_certificado(self._certificado(self.rubro_vivienda))
+
+        self.assertIs(contexto["certificado"]["aplica_retencion_adobe"], True)
+        self.assertEqual(contexto["certificado"]["retencion_adobe_pesos"], Decimal("300"))
+
+    def test_se_puede_condicionar_un_bloque_con_la_variable_booleana(self):
+        contexto = resolucion_texto.contexto_certificado(self._certificado(self.rubro_vivienda))
+        texto, faltantes = resolucion_texto.render_bloque(
+            "{% if certificado.aplica_retencion_adobe %}"
+            "Que corresponde retener {{ certificado.retencion_adobe_pesos|pesos }} en concepto del "
+            "Decreto 654/2015.{% endif %}",
+            contexto,
+        )
+
+        self.assertEqual(texto, "Que corresponde retener $300,00 en concepto del Decreto 654/2015.")
+        self.assertEqual(faltantes, set())
+
+    def test_en_otro_rubro_el_cero_no_se_reporta_como_dato_faltante(self):
+        """Fuera de Vivienda la retención es 0 -- un valor real, no un dato sin cargar --
+        así que no debe aparecer en `faltantes` ni bloquear la generación del .docx."""
+        contexto = resolucion_texto.contexto_certificado(self._certificado(self.rubro_infraestructura))
+        texto, faltantes = resolucion_texto.render_bloque("{{ certificado.retencion_adobe_pesos|pesos }}", contexto)
+
+        self.assertIs(contexto["certificado"]["aplica_retencion_adobe"], False)
+        self.assertEqual(texto, "$0,00")
+        self.assertEqual(faltantes, set())

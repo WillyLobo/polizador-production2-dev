@@ -904,6 +904,27 @@ class Certificado(models.Model):
             return Decimal("0")
         return (self.certificado_monto_uvi or Decimal("0")) * self.certificado_fondoreparo_pct / Decimal("100")
 
+    # Decreto 654/2015: retención del tres por mil (inciso c) del Artículo 10 de la Ley) sobre el
+    # valor bruto de los certificados de obras que usan ladrillos de adobe como insumo. Los ladrillos
+    # son insumo del rubro Vivienda, así que se decide por el rubro del certificado y no por un dato
+    # de la Obra: cubre también los certificados legacy sin tener que marcar obra por obra. A
+    # diferencia del Fondo de Reparo, el decreto no distingue por certificado_tipo (ANTICIPO incluido).
+    RETENCION_ADOBE_PCT = Decimal("0.3")  # tres por mil = 0.3%
+
+    @property
+    def certificado_aplica_retencion_adobe(self):
+        return self.certificado_rubro_db.certificadorubro_nombre_corto == "V"
+
+    def certificado_retencion_adobe_monto_pesos(self):
+        if not self.certificado_aplica_retencion_adobe:
+            return Decimal("0")
+        return (self.certificado_monto_pesos or Decimal("0")) * self.RETENCION_ADOBE_PCT / Decimal("100")
+
+    def certificado_retencion_adobe_monto_uvi(self):
+        if not self.certificado_aplica_retencion_adobe:
+            return Decimal("0")
+        return (self.certificado_monto_uvi or Decimal("0")) * self.RETENCION_ADOBE_PCT / Decimal("100")
+
     @property
     def certificado_pct_principal(self):
         """% "principal" de este certificado para listados genéricos que no distinguen

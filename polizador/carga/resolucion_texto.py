@@ -279,6 +279,12 @@ def _certificado(certificado):
         "fondoreparo_pct": certificado.certificado_fondoreparo_pct,
         "fondoreparo_pesos": certificado.certificado_fondoreparo_monto_pesos(),
         "fondoreparo_uvi": certificado.certificado_fondoreparo_monto_uvi(),
+        # Decreto 654/2015 -- ver Certificado.certificado_aplica_retencion_adobe. "aplica" es un bool
+        # explícito (no se pisa con _sin_vacios) para poder condicionar el considerando entero con
+        # {% if certificado.aplica_retencion_adobe %} en vez de mostrar un monto en $0,00.
+        "aplica_retencion_adobe": certificado.certificado_aplica_retencion_adobe,
+        "retencion_adobe_pesos": certificado.certificado_retencion_adobe_monto_pesos(),
+        "retencion_adobe_uvi": certificado.certificado_retencion_adobe_monto_uvi(),
         "mes_pct": certificado.certificado_mes_pct,
         "anterior_pct": certificado.certificado_ante_pct,
         "acumulado_pct": certificado.certificado_acum_pct,
@@ -385,6 +391,10 @@ VARIABLES = [
         ("certificado.monto_cobrar_pesos|pesos", "Monto a cobrar en pesos"),
         ("certificado.fondoreparo_pct|pct", "Porcentaje de fondo de reparo"),
         ("certificado.fondoreparo_pesos|pesos", "Fondo de reparo en pesos"),
+        ("certificado.aplica_retencion_adobe", "True si el certificado es de rubro Vivienda (retención del Decreto 654/2015)"),
+        ("certificado.retencion_adobe_pesos|pesos", "Retención del tres por mil (Decreto 654/2015) en pesos"),
+        ("certificado.retencion_adobe_pesos|letras", "Retención del tres por mil, escrita en letras"),
+        ("certificado.retencion_adobe_uvi|moneda", "Retención del tres por mil en UVI"),
         ("certificado.descuento_anticipo_pesos|pesos", "Descuento de anticipo en pesos"),
         ("certificado.mes_pct|pct", "Avance del mes"),
         ("certificado.acumulado_pct|pct", "Avance acumulado"),
