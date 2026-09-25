@@ -285,8 +285,11 @@ CACHES = {
     'default': env.cache(),
     "select2": env.cache_url("REDIS_URL"),
 }
+# django-select2 no tiene setting de timeout: guarda cada widget con el TIMEOUT
+# del backend. Si no se fija aca queda en 300s (el `default_timeout` del
+# REDIS_URL va a OPTIONS y se ignora) y los widgets mueren a los 5 minutos.
+CACHES["select2"]["TIMEOUT"] = 60 * 60 * 24 * 1 # 1 day
 SELECT2_CACHE_BACKEND = "select2"
-SELECT2_CACHE_TIMEOUT = 60 * 60 * 24 * 1 # 1 day
 SELECT2_THEME = "bootstrap-5"
 WSGI_APPLICATION = 'polizador.wsgi.application'
 
