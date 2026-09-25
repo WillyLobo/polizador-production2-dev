@@ -1,7 +1,13 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}<title>GDU - Visor de Mapa</title>{% endblock %}
+{% block title %}<title>GDU - Visor de Mapa</title>
+{% comment %} La key de Google (Map Tiles API) está restringida por referrer, pero SecurityMiddleware
+manda `Referrer-Policy: same-origin` y el navegador no manda Referer a tile.googleapis.com
+(Google responde 403 API_KEY_HTTP_REFERRER_BLOCKED). Solo en esta página se manda el
+origen (sin path ni query) a otros sitios; el meta pisa al header. {% endcomment %}
+<meta name="referrer" content="strict-origin-when-cross-origin">
+{% endblock %}
 
 {% block style %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@9/ol.css">
