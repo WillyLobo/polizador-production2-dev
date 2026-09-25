@@ -48,6 +48,15 @@
     margin-right: .3rem;
     vertical-align: middle;
   }
+  /* logo exigido por las condiciones de Google mientras se ve una capa base de Google */
+  #gdu-google-logo {
+    display: none;
+    position: absolute;
+    bottom: .5rem;
+    left: .5rem;
+    height: 18px;
+    pointer-events: none;
+  }
   .gdu-search { position: relative; width: 220px; }
   .gdu-search-results {
     position: absolute;
@@ -215,7 +224,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }),
   });
 
-  // --- Capa base (OpenStreetMap / ESRI Satélite; excluyentes entre sí) ---
+  // --- Capa base (CARTO / ESRI Satélite / Google; excluyentes entre sí) ---
 
   // Se usan los tiles ráster de CARTO (datos de OpenStreetMap, estilo Voyager) en vez de
   // ol.source.OSM() (que apunta directo a tile.openstreetmap.org): ese servidor bloquea
@@ -223,7 +232,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // algo que terminó pasando acá. Desde 2026-08 CARTO exige una API key incluso para el
   // tier gratis (GDU_CARTO_API_KEY en .env; ver https://carto.com/basemaps/apikey).
   const cartoApiKey = "{{ carto_api_key|escapejs }}";
-  const capaBaseOsm = new ol.layer.Tile({
+  const capaBaseCarto = new ol.layer.Tile({
     source: new ol.source.XYZ({
       urls: ["a", "b", "c", "d"].map(
         (s) => `https://${s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${cartoApiKey}`
@@ -242,10 +251,58 @@ document.addEventListener("DOMContentLoaded", function () {
     visible: false,
   });
 
+  const capasBase = { carto: capaBaseCarto, esri: capaBaseEsri };
+
+  // Google (Map Tiles API): ol.source.Google pide un token de sesión a Google apenas se
+  // construye, así que la fuente se crea recién la primera vez que se elige la capa y
+  // abrir el visor no consume nada. El cupo diario del proyecto es chico (ver
+  // GDU_GOOGLE_MAPS_API_KEY en settings.py): cuando se agota, Google rechaza los tiles
+  // y se avisa en la barra lateral. Las condiciones de Google exigen mostrar su logo
+  // sobre el mapa mientras la capa está visible, y no combinarla con otra capa base.
+  const googleApiKey = "{{ google_maps_api_key|default_if_none:''|escapejs }}";
+  const opcionesGoogle = {
+    google: { mapType: "roadmap", scale: "scaleFactor2x", highDpi: true },
+    // layerRoadmap superpone calles y nombres a la imagen satelital (híbrido)
+    "google-sat": { mapType: "satellite", layerTypes: ["layerRoadmap"] },
+  };
+  const logoGoogle = document.createElement("img");
+  logoGoogle.id = "gdu-google-logo";
+  logoGoogle.alt = "Google";
+  if (googleApiKey) {
+    Object.keys(opcionesGoogle).forEach(function (valor) {
+      capasBase[valor] = new ol.layer.Tile({ visible: false });
+    });
+  }
+
+  function avisarErrorGoogle() {
+    document.getElementById("capa-base-google-error").classList.remove("d-none");
+  }
+
+  function crearSourceGoogle(opciones) {
+    // language/region cambian nombres y límites que muestra Google (default: en-US / US)
+    const source = new ol.source.Google(Object.assign(
+      { key: googleApiKey, language: "es-AR", region: "AR" }, opciones
+    ));
+    source.on("tileloaderror", avisarErrorGoogle);
+    source.on("change", function () {
+      if (source.getState() === "error") avisarErrorGoogle();
+    });
+    return source;
+  }
+
   document.querySelectorAll('input[name="gdu-capa-base"]').forEach(function (radio) {
     radio.addEventListener("change", function () {
-      capaBaseOsm.setVisible(radio.value === "osm");
-      capaBaseEsri.setVisible(radio.value === "esri");
+      const elegida = radio.value;
+      if (opcionesGoogle[elegida] && !capasBase[elegida].getSource()) {
+        capasBase[elegida].setSource(crearSourceGoogle(opcionesGoogle[elegida]));
+      }
+      Object.entries(capasBase).forEach(function ([valor, capa]) {
+        capa.setVisible(valor === elegida);
+      });
+      logoGoogle.style.display = opcionesGoogle[elegida] ? "block" : "none";
+      logoGoogle.src = elegida === "google-sat"
+        ? "https://developers.google.com/static/maps/documentation/images/google_on_non_white.png"
+        : "https://developers.google.com/static/maps/documentation/images/google_on_white.png";
     });
   });
 
@@ -255,8 +312,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const map = new ol.Map({
     target: "gdu-map",
     layers: [
-      capaBaseOsm,
-      capaBaseEsri,
+      ...Object.values(capasBase),
       barriosLayer,
       viviendasLayer,
       ...capasExtra.map((c) => c.layer),
@@ -264,6 +320,9 @@ document.addEventListener("DOMContentLoaded", function () {
     ],
     view: new ol.View({ center: centro, zoom: 7 }),
   });
+  if (googleApiKey) {
+    map.addControl(new ol.control.Control({ element: logoGoogle }));
+  }
 
   // el mapa ocupa hasta el borde inferior de la pantalla, dejando el mismo margen
   // que el padding inferior del body; se recalcula en cada resize porque el toolbar
@@ -827,13 +886,26 @@ document.addEventListener("DOMContentLoaded", function () {
       <div class="card-body p-2" id="gdu-layers-body">
         <div class="small fw-semibold text-secondary mb-1">Capa base</div>
         <div class="form-check">
-          <input class="form-check-input" type="radio" name="gdu-capa-base" id="capa-base-osm" value="osm" checked>
-          <label class="form-check-label" for="capa-base-osm">OpenStreetMap</label>
+          <input class="form-check-input" type="radio" name="gdu-capa-base" id="capa-base-carto" value="carto" checked>
+          <label class="form-check-label" for="capa-base-carto">CARTO</label>
         </div>
         <div class="form-check">
           <input class="form-check-input" type="radio" name="gdu-capa-base" id="capa-base-esri" value="esri">
           <label class="form-check-label" for="capa-base-esri">ESRI Satélite</label>
         </div>
+        {% if google_maps_api_key %}
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="gdu-capa-base" id="capa-base-google" value="google">
+          <label class="form-check-label" for="capa-base-google">Google Mapa</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="radio" name="gdu-capa-base" id="capa-base-google-sat" value="google-sat">
+          <label class="form-check-label" for="capa-base-google-sat">Google Satélite</label>
+        </div>
+        <div class="small text-danger d-none" id="capa-base-google-error">
+          Google no respondió (puede haberse agotado el cupo diario). Probá con CARTO o ESRI.
+        </div>
+        {% endif %}
         <hr class="my-2">
         <div class="small fw-semibold text-secondary mb-1">Capas temáticas</div>
         <div class="form-check">

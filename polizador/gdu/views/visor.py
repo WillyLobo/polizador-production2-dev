@@ -162,7 +162,10 @@ def mapa(request):
     # (permission_required no soporta OR entre permisos, se chequea a mano)
     if not any(request.user.has_perm(p) for p in PERMISOS_CAPAS):
         raise PermissionDenied
-    return render(request, "gdu/mapa.html", {"carto_api_key": settings.GDU_CARTO_API_KEY})
+    return render(request, "gdu/mapa.html", {
+        "carto_api_key": settings.GDU_CARTO_API_KEY,
+        "google_maps_api_key": settings.GDU_GOOGLE_MAPS_API_KEY,
+    })
 
 
 FILTROS_TEXTO_PROGRAMA_ACTUACION = {"programa": "programa", "actuacion": "actuacion"}

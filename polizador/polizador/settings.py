@@ -130,6 +130,12 @@ GDU_GEOSERVER_URL = env("GDU_GEOSERVER_URL")
 # Tiles base (CARTO) del visor de mapa: desde 2026-08 CARTO exige key incluso para el
 # tier gratis (https://carto.com/basemaps/apikey, 5M tiles/mes sin necesidad de cuenta).
 GDU_CARTO_API_KEY = env("GDU_CARTO_API_KEY", default=None)
+# Capas base de Google (Map Tiles API) del visor. La key viaja al navegador, así que en
+# Cloud Console tiene que estar restringida por referrer y a la Map Tiles API. El proyecto
+# polizador-production tiene un cupo de 3200 tiles 2D/día para no salir del tier gratis
+# (100k/mes); al agotarse, las capas de Google quedan en blanco hasta el día siguiente.
+# Sin key, el visor no ofrece las capas de Google.
+GDU_GOOGLE_MAPS_API_KEY = env("GDU_GOOGLE_MAPS_API_KEY", default=None)
 
 GDU_3450_API_BASE_URL = env("GDU_3450_API_BASE_URL")
 GDU_3450_API_USERNAME = env("GDU_3450_API_USERNAME")
