@@ -561,12 +561,9 @@ def _monto_contrato_total(contrato, financiamiento_codigo, moneda):
     """Suma de todos los ContratoMonto de `contrato` para `financiamiento_codigo` (todos
     los rubros que financia), en la unidad `moneda`. Base de los tramos de pago por etapas,
     que son un esquema a nivel de Contrato completo, no de un Rubro puntual (a diferencia
-    de `_monto_contrato_rubro`)."""
-    campo = "contratomonto_uvi" if moneda == "uvi" else "contratomonto_pesos"
-    return ContratoMonto.objects.filter(
-        contratomonto_contrato=contrato,
-        contratomonto_financiamiento__certificadofinanciamiento_nombre_corto=financiamiento_codigo,
-    ).aggregate(total=Sum(campo))["total"] or Decimal("0")
+    de `_monto_contrato_rubro`). Delega en Contrato.monto_total (también usado por
+    Poliza para el monto de garantía sugerido) para no duplicar la agregación."""
+    return contrato.monto_total(financiamiento_codigo, moneda)
 
 
 def calcular_monto_etapa(certificado):

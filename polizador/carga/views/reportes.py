@@ -6,6 +6,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.shortcuts import render, redirect
 from carga.models import Certificado, Obra, Localidad, Empresa, Programa, CertificadoRubro, Uvi
+from personalizador.models import Agente
 from django.db.models import Q, FilteredRelation, Subquery, Sum, F
 from django.core.exceptions import ValidationError
 from django.core.management import call_command
@@ -81,6 +82,7 @@ class CrearReporteObraView(PermissionRequiredMixin, generic.ListView):
 		localidad_ids = self.request.GET.getlist("localidad")
 		programa_ids = self.request.GET.getlist("programa")
 		empresa_ids = self.request.GET.getlist("empresa")
+		inspector_ids = self.request.GET.getlist("inspector")
 		pctavance = self.request.GET.get("pctavance")
 		tipodefiltro = self.request.GET.get("tipodefiltro")
 		rubro_ids = self.request.GET.getlist("rubro")
@@ -104,6 +106,9 @@ class CrearReporteObraView(PermissionRequiredMixin, generic.ListView):
 			for p in programa_ids:
 				programa_q |= Q(obra_programa__id=p)
 			qs = qs.filter(programa_q)
+
+		if inspector_ids:
+			qs = qs.filter(obra_inspector__id__in=inspector_ids).distinct()
 
 		if tipodefiltro and pctavance:
 			try:
@@ -148,6 +153,7 @@ class CrearReporteObraView(PermissionRequiredMixin, generic.ListView):
 		context["selected_localidades"] = Localidad.objects.filter(id__in=self.request.GET.getlist("localidad"))
 		context["selected_empresas"] = Empresa.objects.filter(id__in=self.request.GET.getlist("empresa"))
 		context["selected_programas"] = Programa.objects.filter(id__in=self.request.GET.getlist("programa"))
+		context["selected_inspectores"] = Agente.objects.filter(id__in=self.request.GET.getlist("inspector"))
 		context["rubro_ids"] = self.request.GET.getlist("rubro") or ["0"]
 		context["financiamiento"] = self.request.GET.get("financiamiento") or "1"
 		context["tipodefiltro"] = self.request.GET.get("tipodefiltro") or "3"

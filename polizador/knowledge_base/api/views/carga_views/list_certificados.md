@@ -13,7 +13,7 @@ authored: true
 
 ## Propósito
 
-Listado paginado (`PerPagePagination`) de `Certificado`, gateado por `require_model_perm(Certificado)` (permiso `view_<modelo>`). Con `?obra=` para acotar a una Obra. Requiere además el grupo `gciaoperativa_usuarios` (`get_group_perms`), no solo el permiso de modelo.
+Listado paginado (`PerPagePagination`) de `Certificado`, gateado por `require_model_perm(Certificado)` (permiso `view_<modelo>`). Con `?obra=` para acotar a una Obra. El gate por grupo `gciaoperativa_usuarios` se quitó: `view_certificado` cubría exactamente al mismo conjunto de usuarios (ver `verificar_permisos_ui`).
 
 ## Firma
 

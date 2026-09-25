@@ -247,3 +247,14 @@ class contratowidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
         "contrato_descripcion__icontains",
         "contrato_obra__obra_nombre__icontains",
     ]
+
+class certificadomuestrawidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
+    """Certificado contra el que se previsualiza una plantilla de texto de
+    resolución (ver carga/forms/textoresolucionforms.py). No filtra por el alcance
+    de la plantilla a propósito: sirve para probar el texto contra cualquier
+    certificado, incluso uno de otro programa, mientras se lo está redactando."""
+    search_fields = [
+        "certificado_expediente__icontains",
+        "certificado_obra__obra_nombre__icontains",
+    ]
+    max_results = 10

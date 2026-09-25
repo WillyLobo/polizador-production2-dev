@@ -7,3 +7,4 @@ class CargaConfig(AppConfig):
 
     def ready(self):
         import carga.signals
+        import carga.history

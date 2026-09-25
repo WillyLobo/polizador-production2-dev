@@ -25,7 +25,7 @@ class EmpresaAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	resource_class = resources.EmpresaResource
 	search_fields = ["empresa_nombre", "empresa_cuit"]
 class PolizaAdmin(ImportExportMixin, SimpleHistoryAdmin):
-	autocomplete_fields = ["poliza_aseguradora", "poliza_tomador", "poliza_obra"]
+	autocomplete_fields = ["poliza_aseguradora", "poliza_tomador", "poliza_obra", "poliza_contrato"]
 	search_fields = ["poliza_numero", "poliza_expediente", "poliza_aseguradora__aseguradora_nombre", "poliza_tomador__empresa_nombre", "poliza_obra__obra_nombre"]
 	list_display = ["id", "poliza_numero", "poliza_fecha", "poliza_concepto", "poliza_aseguradora", "poliza_tomador", "poliza_obra"]
 	list_filter = ["poliza_concepto", "poliza_aseguradora"]

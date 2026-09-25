@@ -13,6 +13,7 @@ import environ
 import ldap
 import os
 import subprocess
+import sys
 from pathlib import Path
 from django_auth_ldap.config import LDAPSearch
 from google.oauth2 import service_account
@@ -28,6 +29,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Take environment variables from .env file
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
+
+# Los tests leen el mismo .env que el servidor de desarrollo, asi que hay cosas
+# que tienen que apagarse explicitamente cuando corre la suite -- ver LDAP y
+# AD_VINCULACION_OBLIGATORIA mas abajo.
+TESTING = "test" in sys.argv
 
 # "Secret" Variables.
 DEBUG = env("DEBUG")
@@ -209,6 +215,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     "allauth.account.middleware.AccountMiddleware",
+    "core.middleware_vincular_ad.VincularADMiddleware",
 ]
 
 ROOT_URLCONF = 'polizador.urls'
@@ -245,19 +252,121 @@ SCHEMA_DOCS_ROOT = BASE_DIR / "templates" / "schema_docs"
 # core.views.KnowledgeBaseIndexView / KnowledgeBasePageView. Ver knowledge_base/README.md.
 KNOWLEDGE_BASE_ROOT = BASE_DIR / "knowledge_base"
 
+# --- Active Directory del IPDUV (django-auth-ldap) ---
+# Todo opcional: sin estas variables la app arranca igual y el backend de LDAP
+# simplemente no se agrega. Eso permite desplegar este cambio antes de tocar el
+# .env del servidor, y que corran los tests y los entornos de desarrollo que no
+# tienen alcance al AD.
+GDU_LDAP_SERVER_URL = env("GDU_LDAP_SERVER_URL", default=None)
+GDU_LDAP_BIND_DN = env("GDU_LDAP_BIND_DN", default=None)
+GDU_LDAP_BIND_CREDENTIALS = env("GDU_LDAP_BIND_CREDENTIALS", default=None)
+GDU_LDAP_SEARCH_BASE = env("GDU_LDAP_SEARCH_BASE", default=None)
+GDU_LDAP_SEARCH_FILTER = env("GDU_LDAP_SEARCH_FILTER", default="(sAMAccountName={{username}})")
+
+LDAP_CONFIGURADO = all([
+    GDU_LDAP_SERVER_URL, GDU_LDAP_BIND_DN, GDU_LDAP_BIND_CREDENTIALS, GDU_LDAP_SEARCH_BASE,
+])
+
 AUTHENTICATION_BACKENDS = [
+    # Primero el backend local, siempre: quien todavia no vinculo su cuenta de
+    # red (o no tiene) sigue entrando con su usuario y contrasena de polizador.
+    # LDAP se consulta despues, y solo para quien ya tiene ad_username.
     'django.contrib.auth.backends.ModelBackend',
     'django_auth_ldap.backend.LDAPBackend',
     # `allauth` specific authentication methods, such as login by email
     'allauth.account.auth_backends.AuthenticationBackend',
 
 ]
+
+if LDAP_CONFIGURADO:
+    # Durante los tests se definen los AUTH_LDAP_* (para poder verificar la
+    # configuracion) pero NO se registra el backend. Con el backend puesto, cada
+    # authenticate() que ModelBackend rechaza -- una contrasena incorrecta a
+    # proposito, pan de todos los dias en los tests -- cae en LDAPBackend y sale
+    # a la red contra el AD real. Medido desde esta maquina, dentro de la red y
+    # con el AD respondiendo, eso cuesta ~0,4s por intento fallido: molesto pero
+    # tolerable. El problema es afuera de esa condicion ideal: sin alcance al AD
+    # (CI, una portatil fuera de la red) cada intento fallido se come el timeout
+    # de 10 segundos de AUTH_LDAP_CONNECTION_OPTIONS. Los tests no pueden
+    # depender de que el AD este a mano.
+    # Se nombra aparte para que los tests puedan verificar CUAL backend se usa
+    # sin depender de que este registrado (durante los tests no lo esta).
+    LDAP_BACKEND = 'core.ldap_backend.PolizadorLDAPBackend'
+    if not TESTING:
+        AUTHENTICATION_BACKENDS.append(LDAP_BACKEND)
+
+    AUTH_LDAP_SERVER_URI = GDU_LDAP_SERVER_URL
+    AUTH_LDAP_BIND_DN = GDU_LDAP_BIND_DN
+    AUTH_LDAP_BIND_PASSWORD = GDU_LDAP_BIND_CREDENTIALS
+    AUTH_LDAP_USER_SEARCH = LDAPSearch(
+        GDU_LDAP_SEARCH_BASE,
+        ldap.SCOPE_SUBTREE,
+        # El .env trae el placeholder al estilo del ldapauth de Node
+        # ("{{username}}"); django-auth-ldap espera "%(user)s". Se convierte aca
+        # para no tener el mismo filtro escrito en dos formatos.
+        GDU_LDAP_SEARCH_FILTER.replace("{{username}}", "%(user)s"),
+    )
+
+    # LA linea que hace que esto funcione con los usernames que hay. Sin esto,
+    # django-auth-ldap busca al CustomUser por "username__iexact = lo tipeado",
+    # y de 29 usuarios activos solo 16 tienen el username igual a su cuenta de
+    # red -- el resto son apodos ("Fali", "Rocco26") o direcciones de correo.
+    # Con USER_QUERY_FIELD busca por CustomUser.ad_username, que es el
+    # sAMAccountName que cada usuario confirmo el mismo desde
+    # /cuenta/vincular-red/. El username de polizador deja de importar para
+    # autenticar, asi que nadie tiene que ser renombrado.
+    #
+    # OJO: este lookup es EXACTO, no __iexact (ver _get_or_create_user en
+    # django_auth_ldap/backend.py), pero eso no es problema porque ad_username
+    # no lo tipea nadie: lo escribe la vista de vinculacion con lo que devolvio
+    # el AD.
+    AUTH_LDAP_USER_QUERY_FIELD = "ad_username"
+    # USER_QUERY_FIELD se resuelve contra este mapa, asi que el campo tiene que
+    # estar si o si aca.
+    #
+    # A proposito NO se mapean first_name/last_name/email: en polizador esos
+    # nombres estan curados y no siempre coinciden con los del AD ("Guillermo
+    # Eduardo Lobo Cecchini" vs "Guillermo Lobo Cechini"), y mapearlos haria que
+    # el primer login por LDAP los pise sin aviso. Si alguna vez se decide que
+    # el AD es la fuente de verdad para los nombres, se agregan aca.
+    AUTH_LDAP_USER_ATTR_MAP = {"ad_username": "sAMAccountName"}
+
+    # Cualquiera con cuenta en el AD del IPDUV puede entrar, aunque no tenga
+    # CustomUser todavia: se le crea uno al vuelo, SIN grupos y por lo tanto sin
+    # ningun permiso. Asignarselos es trabajo de un superusuario desde el panel.
+    #
+    # El alta la hace core/ldap_backend.PolizadorLDAPBackend, no django-auth-ldap
+    # por su cuenta: hay dos cosas que resolver antes de guardar (el username
+    # quedaria vacio, y las 16 cuentas cuyo username ya coincide con el de red
+    # se duplicarian). El porque completo esta en ese modulo.
+    #
+    # OJO con lo que ve una cuenta asi: los ~57 widgets de select2 de
+    # carga/views/ajaxviews.py y personalizador/views/ajaxviews.py estan detras
+    # de LoginRequiredMixin y nada mas, asi que cualquiera que pueda entrar puede
+    # consultar esos autocompletados (obras, agentes, empresas, localidades...).
+    # Antes eso alcanzaba a 29 personas revisadas; ahora alcanza a toda la
+    # institucion. Si eso no es aceptable, hay que ponerles un permiso.
+    AUTH_LDAP_NO_NEW_USERS = False
+    AUTH_LDAP_ALWAYS_UPDATE_USER = True
+
+    # Sin timeouts, una conexion a un AD caido puede colgar el login mucho mas
+    # de un minuto (problema conocido de python-ldap contra Active Directory).
+    # OPT_REFERRALS=0 evita el otro problema tipico de AD: referrals que
+    # python-ldap no sigue bien.
+    AUTH_LDAP_CONNECTION_OPTIONS = {
+        ldap.OPT_REFERRALS: 0,
+        ldap.OPT_NETWORK_TIMEOUT: 10,
+        ldap.OPT_TIMEOUT: 10,
+    }
 CACHES = {
     'default': env.cache(),
     "select2": env.cache_url("REDIS_URL"),
 }
+# django-select2 no tiene setting de timeout: guarda cada widget con el TIMEOUT
+# del backend. Si no se fija aca queda en 300s (el `default_timeout` del
+# REDIS_URL va a OPTIONS y se ignora) y los widgets mueren a los 5 minutos.
+CACHES["select2"]["TIMEOUT"] = 60 * 60 * 24 * 1 # 1 day
 SELECT2_CACHE_BACKEND = "select2"
-SELECT2_CACHE_TIMEOUT = 60 * 60 * 24 * 1 # 1 day
 SELECT2_THEME = "bootstrap-5"
 WSGI_APPLICATION = 'polizador.wsgi.application'
 
@@ -278,9 +387,27 @@ DATABASES = {
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
 
 AUTH_USER_MODEL = 'personalizador.CustomUser'  # Format: 'app_label.ModelName'
+# Inertes mientras ACCOUNT_ADAPTER mantenga cerrado el alta: describen el
+# formulario de signup, que ya no se sirve. Se dejan para no tener que
+# reconstruirlos si alguna vez se reabre.
 ACCOUNT_FORMS = {'signup': 'personalizador.forms.customuserform.CustomUserForm'}
 ACCOUNT_SIGNUP_FIELDS = ['username*', 'first_name', 'last_name', 'email', 'password1*', 'password2*']
-# ACCOUNT_ADAPTER = 'secretariador.adapters.InactiveSignupAdapter'
+# Cierra /accounts/signup/: las cuentas las da de alta un administrador desde
+# el panel de Django, que es donde ademas se asignan los grupos. Ver
+# core/adapters.py para el porque completo.
+ACCOUNT_ADAPTER = 'core.adapters.PolizadorAccountAdapter'
+
+# Si esta en True, un usuario sin ad_username y que no haya declarado no tener
+# cuenta de red es redirigido a /cuenta/vincular-red/ al navegar. Arranca
+# apagado: se prende cuando se anuncia el cambio, y se puede volver a apagar
+# si el AD queda fuera de servicio. Ver core/middleware_vincular_ad.py.
+#
+# Se ignora mientras corren los tests (ver TESTING mas arriba): prender el flag
+# en el .env para probar la vinculacion a mano hacia fallar 36 tests de vistas
+# de otras apps, que crean usuarios sin ad_username y recibian el redirect en
+# vez de la pagina. Los tests del propio middleware la prenden con
+# @override_settings.
+AD_VINCULACION_OBLIGATORIA = env.bool("AD_VINCULACION_OBLIGATORIA", default=False) and not TESTING
 
 AUTH_PASSWORD_VALIDATORS = [
     {

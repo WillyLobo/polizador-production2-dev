@@ -23,6 +23,7 @@ from carga.views.fojademedicionviews import *
 from carga.views.plandetrabajosetapaviews import *
 from carga.views.ayudaviews import *
 from carga.views.representantetecnicoviews import *
+from carga.views.textoresolucionviews import *
 
 app_name = "carga"
 
@@ -145,10 +146,20 @@ fojademedicion_patterns = [
 plandetrabajosetapa_patterns = [
     path("crear/plandetrabajosetapa/<int:pk>/", PlanDeTrabajosEtapaMatriz.as_view(), name="plandetrabajosetapa-matriz"),
 ]
+textoresolucion_patterns = [
+    path("crear/texto-resolucion/", CrearTextoResolucion.as_view(), name="crear-texto-resolucion"),
+    path("crear/texto-resolucion/<pk>", UpdateTextoResolucion.as_view(), name="update-texto-resolucion"),
+    path("eliminar/texto-resolucion/<pk>", EliminarTextoResolucion.as_view(), name="eliminar-texto-resolucion"),
+    path("listas/textos-resolucion", ListaTextosResolucion.as_view(), name="lista-textos-resolucion"),
+    path("crear/certificado/detalle/<pk>/texto-resolucion", editar_texto_resolucion_certificado, name="editar-texto-resolucion-certificado"),
+    path("crear/certificado/detalle/<pk>/texto-resolucion/restaurar", restaurar_texto_resolucion_certificado, name="restaurar-texto-resolucion-certificado"),
+    path("crear/certificado/detalle/<pk>/resolucion.docx", resolucion_certificado_docx, name="resolucion-certificado-docx"),
+]
 ayuda_patterns = [
     path("ayuda/plan-de-trabajos-fojas/", ManualObraPlanFojaView.as_view(), name="ayuda-plan-fojas"),
     path("ayuda/certificados/", ManualCertificadosView.as_view(), name="ayuda-certificados"),
     path("ayuda/reprogramacion/", ManualReprogramacionView.as_view(), name="ayuda-reprogramacion"),
+    path("ayuda/textos-resolucion/", ManualTextosResolucionView.as_view(), name="ayuda-textos-resolucion"),
 ]
 reporte_patterns = [
     path("reporte/crear-reporte-mes/", ReporteCertificadoPorMesView.as_view(), name="crear-reporte-certificado"),
@@ -163,6 +174,9 @@ documentos_digitales = [
     path("digitales/crear-obra-documento/", CrearObraDocumento.as_view(), name="crear-obra-documento"),
     path("digitales/crear-obra-documento/<pk>", UpdateObraDocumento.as_view(), name="update-obra-documento"),
     path("eliminar/digital/obra-documento/<pk>", EliminarObraDocumento.as_view(), name="eliminar-obra-documento"),
+    path("digitales/crear-poliza-documento/", CrearPolizaDocumento.as_view(), name="crear-poliza-documento"),
+    path("digitales/crear-poliza-documento/<pk>", UpdatePolizaDocumento.as_view(), name="update-poliza-documento"),
+    path("eliminar/digital/poliza-documento/<pk>", EliminarPolizaDocumento.as_view(), name="eliminar-poliza-documento"),
 ]
 ajax = [
 	# Obras
@@ -216,6 +230,7 @@ urlpatterns += localidad_patterns
 urlpatterns += departamento_patterns
 urlpatterns += region_patterns
 urlpatterns += empresa_patterns
+urlpatterns += textoresolucion_patterns
 urlpatterns += certificado_patterns
 urlpatterns += poliza_patterns
 urlpatterns += movimiento_patterns

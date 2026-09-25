@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+{% block title %}<title>Sin texto de resolución — Certificado {{ certificado.certificado_expediente }}</title>{% endblock title %}
+
+<div class="card mb-3">
+  <div class="card-header py-2 bg-body-tertiary fw-semibold small">Falta el texto base</div>
+  <div class="card-body p-2">
+    <p class="mb-2">
+      No hay ningún texto de resolución cargado para el alcance de este certificado:
+    </p>
+    <ul class="small">
+      <li><strong>Programa:</strong> {{ obra.obra_programa }}</li>
+      <li><strong>Financiamiento:</strong> {{ certificado.get_certificado_financiamiento_display }}</li>
+      <li><strong>Tipo:</strong> {{ certificado.get_certificado_tipo_display }}</li>
+    </ul>
+    <p class="text-muted small">
+      Se busca primero un texto para ese tipo exacto y, si no existe, el texto genérico
+      del mismo programa y financiamiento (el que tiene el tipo vacío).
+    </p>
+  </div>
+</div>
+{% endblock %}
+
+{% block actions %}
+<nav class="form-actions-bar py-2 d-print-none">
+  <div class="container-fluid d-flex flex-wrap gap-2 justify-content-end">
+    <a href="{{ certificado.get_absolute_url }}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>Volver al certificado
+    </a>
+    {% if perms.carga.view_textoresolucioncertificado %}
+      <a href="{% url 'carga:lista-textos-resolucion' %}" class="btn btn-sm btn-outline-primary">
+        <i class="bi bi-list me-1"></i>Ver textos cargados
+      </a>
+    {% endif %}
+    {% if perms.carga.add_textoresolucioncertificado %}
+      <a href="{% url 'carga:crear-texto-resolucion' %}?certificado={{ certificado.pk|stringformat:"s" }}" class="btn btn-sm btn-primary">
+        <i class="bi bi-plus-circle me-1"></i>Cargar el texto
+      </a>
+    {% endif %}
+  </div>
+</nav>
+{% endblock %}

@@ -2,6 +2,7 @@ import os
 from django.db import models
 from django.core.exceptions import ValidationError
 from simple_history.models import HistoricalRecords
+from core.history import M2MHistoricalRecords
 from django.core.validators import MinValueValidator
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
@@ -31,7 +32,45 @@ class CustomUser(AbstractUser):
          null=True,
          blank=True
          )
-    usuario_history = HistoricalRecords()
+    # --- Vinculo con el Active Directory del IPDUV ---
+    # El username de polizador casi nunca coincide con la cuenta de red: de 29
+    # usuarios activos, 13 tienen apodos ("Fali", "Rocco26") o hasta direcciones
+    # personales de correo (ver "manage.py auditar_usuarios_ad"). En vez de
+    # adivinar el mapeo o renombrar a la gente, cada usuario vincula su propia
+    # cuenta desde core/views_vincular_ad.py: entra como siempre y escribe sus
+    # credenciales de red, y el bind contra el AD prueba que las dos identidades
+    # son suyas. Aca se guarda el sAMAccountName que devolvio el AD, no lo que
+    # el usuario tipeo.
+    #
+    # unique con null=True (no blank=""): Postgres permite muchos NULL bajo una
+    # restriccion unica pero un solo "", asi que con cadena vacia el segundo
+    # usuario sin vincular reventaria.
+    ad_username = models.CharField(
+        "Usuario de red (AD)", max_length=150, unique=True, null=True, blank=True,
+        help_text="sAMAccountName confirmado contra el Active Directory del IPDUV.",
+    )
+    ad_vinculado_en = models.DateTimeField("Vinculado el", null=True, blank=True)
+    # Salida para quien no tiene cuenta de red: sin esto la vinculacion seria un
+    # muro para esa gente. Marca al usuario para que un administrador lo revise,
+    # en vez de insistirle en cada login.
+    ad_sin_cuenta_red = models.BooleanField("Declara no tener cuenta de red", default=False)
+
+    usuario_history = M2MHistoricalRecords(m2m_fields=["groups", "user_permissions"])
+
+    @property
+    def solo_ldap(self):
+        """El usuario ya no tiene contrasena local: su unica via de entrada es la
+        cuenta de red. Es el estado en el que lo deja
+        "manage.py retirar_password_local".
+
+        Tener ad_username no alcanza: durante la transicion mucha gente esta
+        vinculada y todavia conserva su contrasena de polizador, y a esa gente el
+        cambio de contrasena le tiene que seguir funcionando como siempre. Lo que
+        hay que bloquear es volver a abrir la puerta local despues de haberla
+        cerrado, porque eso anularia el sentido de cerrarla: que desactivar a
+        alguien en el AD le quite el acceso.
+        """
+        return bool(self.ad_username) and not self.has_usable_password()
 
 class Agente(models.Model):
     class Meta:
@@ -138,7 +177,7 @@ class Agente(models.Model):
     agente_escalafon = models.PositiveSmallIntegerField("Escalafón", choices=ESCALAFON_CHOICES, default=2, help_text="Escalafón (I-IV) usado para calcular el viático diario. Las autoridades del Directorio usan el escalafón configurado en Reglas de Cálculo de Viáticos, independientemente de este valor.")
     # Otros
     agente_uuid = models.UUIDField(default=compat.uuid7, editable=False)
-    agente_history = HistoricalRecords()
+    agente_history = M2MHistoricalRecords(m2m_fields=[titulo_profesional])
 
     @property
     def edad(self):

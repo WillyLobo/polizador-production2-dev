@@ -6,6 +6,7 @@ from django.db import models
 from django.contrib.gis.db import models as gis_models
 from django.urls import reverse
 from simple_history.models import HistoricalRecords
+from core.history import M2MHistoricalRecords
 from django.db.models import Sum, F, FloatField, Max, Q, OuterRef, Subquery
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.core.exceptions import ValidationError
@@ -44,6 +45,13 @@ def generate_name_polizas(instance, filename):
     extension = "pdf"
     filename = f"{instance.poliza_uuid}_{instance.poliza_expediente}.{extension}"
     name = os.path.join(directorio, anio, mes, filename)
+    return name
+
+def generate_name_poliza_documento(instance, filename):
+    directorio = "documentos_poliza/"
+    extension = "pdf"
+    filename = f"{instance.polizadocumento_uuid}.{extension}"
+    name = os.path.join(directorio, filename)
     return name
 
 def generate_name_contratos(instance, filename):
@@ -157,19 +165,26 @@ class Empresa(models.Model):
     def get_absolute_url(self):
         return reverse('update-empresa', kwargs={'id': self.pk})
 
+FINANCIAMIENTO = (
+    ("N", "Nación"),
+    ("P", "Provincia"),
+    ("T", "Terceros"),
+)
+
 class Poliza(models.Model):
     CONCEPTO = (
         ("C", "Garantía de Ejecución de Contrato"),
         ("F", "Garantía de Sustitución de Fondo de Reparo"),
         ("A", "Garantía de Anticipo Financiero")
     )
+    GARANTIA_PCT_FIJO = Decimal("5")
 
     class Meta:
         constraints = [models.UniqueConstraint(fields=["poliza_fecha", "poliza_numero", "poliza_aseguradora","poliza_tomador"], name="poliza-constraint")]
         verbose_name = "Póliza"
         verbose_name_plural = "Pólizas"
         ordering = ["poliza_fecha"]
-    
+
     poliza_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     poliza_fecha = models.DateField("Fecha")
     poliza_expediente = models.CharField("Expediente", max_length=18)
@@ -180,16 +195,71 @@ class Poliza(models.Model):
     poliza_aseguradora = models.ForeignKey("Aseguradora", verbose_name="Aseguradora", on_delete=models.CASCADE)
     poliza_tomador = models.ForeignKey("Empresa", verbose_name="Tomador", on_delete=models.CASCADE)
     poliza_obra = models.ForeignKey("Obra", verbose_name="Obra", on_delete=models.CASCADE)
+    poliza_contrato = models.ForeignKey(
+        "Contrato",
+        verbose_name="Contrato",
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        help_text="Contrato de la Obra sobre el que se calcula el monto de garantía sugerido.",
+    )
+    poliza_financiamiento = models.CharField("Financiamiento", max_length=1, choices=FINANCIAMIENTO, null=True, blank=True)
+    poliza_anticipo_pct = models.DecimalField(
+        "% de Anticipo",
+        max_digits=6,
+        decimal_places=3,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(0), MaxValueValidator(100)],
+        help_text="Sólo aplica al concepto 'Garantía de Anticipo Financiero' (A): % de anticipo "
+                  "que va a tener el certificado, usado para sugerir el monto a cubrir.",
+    )
     poliza_monto_pesos = models.DecimalField("Monto Sustituido en Pesos", max_digits=15, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)])
     poliza_monto_uvi = models.DecimalField("Monto Sustituido en UVI", max_digits=15, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)])
     poliza_digital = models.FileField(verbose_name="Póliza Digital", upload_to=generate_name_polizas, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], max_length=500, null=True, blank=True)
     poliza_history = HistoricalRecords()
-    
+
     def __str__(self):
         return f"{self.poliza_numero} - {self.poliza_aseguradora.aseguradora_nombre} - {self.poliza_obra.obra_nombre} - {self.poliza_tomador.empresa_nombre} "
 
     def get_absolute_url(self):
         return reverse('carga:estado-poliza', kwargs={'pk': self.pk})
+
+    def clean(self):
+        if self.poliza_contrato_id and self.poliza_obra_id and self.poliza_contrato.contrato_obra_id != self.poliza_obra_id:
+            raise ValidationError("El Contrato seleccionado no pertenece a la Obra de la Póliza.")
+        if self.poliza_concepto == "A":
+            if not self.poliza_anticipo_pct:
+                raise ValidationError(
+                    "El concepto 'Garantía de Anticipo Financiero' requiere cargar el % de Anticipo."
+                )
+        else:
+            self.poliza_anticipo_pct = None
+
+    @classmethod
+    def calcular_monto_a_cubrir(cls, concepto, monto_contrato, anticipo_pct=None):
+        """Monto de referencia a cubrir por la garantía, en la misma unidad que
+        `monto_contrato` (llamar una vez en pesos y otra en UVI si se necesitan ambos).
+        Puramente informativo: no autocompleta poliza_monto_pesos/poliza_monto_uvi."""
+        if concepto in ("C", "F"):
+            return (monto_contrato * cls.GARANTIA_PCT_FIJO / Decimal("100")).quantize(Decimal("0.01"))
+        if concepto == "A":
+            pct = anticipo_pct or Decimal("0")
+            return (monto_contrato * pct / Decimal("100")).quantize(Decimal("0.01"))
+        return Decimal("0")
+
+    def monto_contrato_base(self, moneda="pesos"):
+        """None si la Póliza (legacy o incompleta) no tiene Contrato/Financiamiento
+        cargados: en ese caso no hay base sobre la que sugerir nada."""
+        if not self.poliza_contrato_id or not self.poliza_financiamiento:
+            return None
+        return self.poliza_contrato.monto_total(self.poliza_financiamiento, moneda)
+
+    def monto_a_cubrir_sugerido(self, moneda="pesos"):
+        base = self.monto_contrato_base(moneda)
+        if base is None:
+            return None
+        return self.calcular_monto_a_cubrir(self.poliza_concepto, base, self.poliza_anticipo_pct)
 
 class Poliza_Movimiento(models.Model):
     class Meta:
@@ -209,6 +279,21 @@ class Poliza_Movimiento(models.Model):
     
     def get_absolute_url(self):
         return reverse('carga:estado-poliza', kwargs={'pk': self.poliza_movimiento_numero.pk})
+
+class PolizaDocumento(models.Model):
+    class Meta:
+        verbose_name = "Documento de Póliza"
+        verbose_name_plural = "Documentos de Póliza"
+        ordering = ["id"]
+
+    polizadocumento_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    polizadocumento_poliza = models.ForeignKey("Poliza", verbose_name="Póliza", on_delete=models.CASCADE, related_name="documentos_poliza")
+    polizadocumento_descripcion = models.CharField("Descripción", max_length=200, help_text="Ej: Anexo N°1, Adenda de cobertura, etc.")
+    polizadocumento_archivo = models.FileField(verbose_name="Archivo", upload_to=generate_name_poliza_documento, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], max_length=500)
+    polizadocumento_history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.polizadocumento_descripcion} - {self.polizadocumento_poliza}"
 
 class Programa(models.Model):
     class Meta:
@@ -387,7 +472,10 @@ class Obra(models.Model):
     )
     obra_principal = models.ManyToManyField("Obra", related_name="obra_madre", verbose_name="Obra Madre", blank=True)
     obra_georeferencia = gis_models.PointField("Georeferencia", geography=True, srid=4326, blank=True, null=True)
-    obra_history = HistoricalRecords(excluded_fields=['obra_contrato_total_pesos', "obra_contrato_total_uvi"])
+    obra_history = M2MHistoricalRecords(
+        excluded_fields=['obra_contrato_total_pesos', "obra_contrato_total_uvi"],
+        m2m_fields=[obra_departamento_m, obra_municipio_m, obra_localidad_m, obra_inspector, obra_representantetecnico, obra_principal],
+    )
 
     def compulsa(self):
         if self.obra_licitacion_numero == 0 or self.obra_licitacion_numero is None:
@@ -794,6 +882,16 @@ class Certificado(models.Model):
                    "convertir este certificado a pesos. No es fuente de verdad: certificados "
                    "futuros siempre recalculan recorriendo el historial real.",
     )
+    certificado_texto_resolucion = models.JSONField(
+        "Texto de la Resolución",
+        null=True,
+        blank=True,
+        editable=False,
+        help_text="Snapshot del texto de la resolución YA RENDERIDO a partir de la plantilla de "
+                  "TextoResolucionCertificado y retocado a mano desde la web. Si está vacío, se "
+                  "vuelve a resolver desde la plantilla. Guarda además de qué plantilla (y de qué "
+                  "versión de esa plantilla) salió, para poder auditarlo después.",
+    )
     certificado_history = HistoricalRecords(excluded_fields=['certificado_monto_cobrar', "certificado_monto_cobrar_uvi"])
 
     def certificado_fondoreparo_monto_pesos(self):
@@ -805,6 +903,27 @@ class Certificado(models.Model):
         if self.certificado_tipo == "ANTICIPO":
             return Decimal("0")
         return (self.certificado_monto_uvi or Decimal("0")) * self.certificado_fondoreparo_pct / Decimal("100")
+
+    # Decreto 654/2015: retención del tres por mil (inciso c) del Artículo 10 de la Ley) sobre el
+    # valor bruto de los certificados de obras que usan ladrillos de adobe como insumo. Los ladrillos
+    # son insumo del rubro Vivienda, así que se decide por el rubro del certificado y no por un dato
+    # de la Obra: cubre también los certificados legacy sin tener que marcar obra por obra. A
+    # diferencia del Fondo de Reparo, el decreto no distingue por certificado_tipo (ANTICIPO incluido).
+    RETENCION_ADOBE_PCT = Decimal("0.3")  # tres por mil = 0.3%
+
+    @property
+    def certificado_aplica_retencion_adobe(self):
+        return self.certificado_rubro_db.certificadorubro_nombre_corto == "V"
+
+    def certificado_retencion_adobe_monto_pesos(self):
+        if not self.certificado_aplica_retencion_adobe:
+            return Decimal("0")
+        return (self.certificado_monto_pesos or Decimal("0")) * self.RETENCION_ADOBE_PCT / Decimal("100")
+
+    def certificado_retencion_adobe_monto_uvi(self):
+        if not self.certificado_aplica_retencion_adobe:
+            return Decimal("0")
+        return (self.certificado_monto_uvi or Decimal("0")) * self.RETENCION_ADOBE_PCT / Decimal("100")
 
     @property
     def certificado_pct_principal(self):
@@ -854,7 +973,91 @@ class Certificado(models.Model):
         return f"{self.certificado_obra} - {self.certificado_expediente} - Rubro: {self.certificado_rubro_db} - Financiamiento: {self.get_certificado_financiamiento_display()} - Ant. N°{self.certificado_rubro_anticipo} - Ob. N°{self.certificado_rubro_obra} - Dev. N°{self.certificado_rubro_devanticipo}"
     
     def get_absolute_url(self):
-        return reverse('update-certificado', kwargs={'id': self.pk})
+        return reverse("carga:detalle-certificado", kwargs={"pk": self.pk})
+
+
+class TextoResolucionCertificado(models.Model):
+    """Texto base, en Jinja, de la resolución que aprueba un certificado.
+
+    El articulado de una resolución de certificado no es uno solo: cambia según el
+    Programa, según de dónde salga la plata (Nación/Provincia/Terceros) y según qué
+    se esté certificando (un anticipo no dice lo mismo que un avance de obra). Esas
+    combinaciones las conoce el área, no el desarrollador, así que el texto vive acá
+    y no en el código -- a diferencia de las resoluciones de viáticos, cuyo texto
+    está hardcodeado en `secretariador/docx_texto.py`.
+
+    `textoresolucion_tipo` vacío es el comodín: el texto genérico del programa para
+    ese financiamiento, que se usa cuando no hay uno específico para el tipo del
+    certificado (ver `para_certificado`). Se usa `""` y no NULL a propósito: en
+    Postgres dos NULL no colisionan, así que con NULL la UniqueConstraint dejaría
+    cargar comodines duplicados.
+    """
+
+    class Meta:
+        verbose_name = "Texto de Resolución de Certificado"
+        verbose_name_plural = "Textos de Resolución de Certificados"
+        ordering = ["textoresolucion_programa", "textoresolucion_financiamiento", "textoresolucion_tipo"]
+        constraints = [
+            models.UniqueConstraint(
+                fields=["textoresolucion_programa", "textoresolucion_financiamiento", "textoresolucion_tipo"],
+                name="textoresolucion-alcance-unico",
+            )
+        ]
+
+    # LEGACY son los certificados históricos sin clasificar: no se les redacta una
+    # resolución nueva, así que no se ofrece como alcance.
+    TIPO = tuple((codigo, etiqueta) for codigo, etiqueta in Certificado.TIPO if codigo != "LEGACY")
+
+    textoresolucion_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    textoresolucion_nombre = models.CharField("Nombre", max_length=200, help_text="Cómo identificar este texto en el listado. Ej. 'Techo Digno - Nación - Parcial'.")
+    textoresolucion_programa = models.ForeignKey("Programa", verbose_name="Programa", on_delete=models.PROTECT)
+    textoresolucion_financiamiento = models.CharField("Financiamiento", max_length=1, choices=FINANCIAMIENTO)
+    textoresolucion_tipo = models.CharField(
+        "Tipo de Certificado",
+        max_length=15,
+        choices=TIPO,
+        blank=True,
+        default="",
+        help_text="Vacío = sirve para cualquier tipo de certificado de este programa y financiamiento.",
+    )
+    textoresolucion_bloques = models.JSONField(
+        "Bloques",
+        default=list,
+        blank=True,
+        help_text="Lista de bloques {clase, label, texto}, donde `texto` es una plantilla Jinja.",
+    )
+    textoresolucion_history = HistoricalRecords()
+
+    def __str__(self):
+        return self.textoresolucion_nombre
+
+    @property
+    def alcance(self):
+        tipo = self.get_textoresolucion_tipo_display() if self.textoresolucion_tipo else "Cualquier tipo"
+        return f"{self.textoresolucion_programa} · {self.get_textoresolucion_financiamiento_display()} · {tipo}"
+
+    @classmethod
+    def para_certificado(cls, certificado):
+        """El texto base que le corresponde a `certificado`, o None si no hay ninguno.
+
+        Gana el que coincide exactamente con el tipo; si no existe, cae al comodín
+        (`textoresolucion_tipo=""`) del mismo programa y financiamiento. Se resuelve
+        en una sola query."""
+        if not certificado.certificado_obra_id:
+            return None
+        return (
+            cls.objects.filter(
+                textoresolucion_programa=certificado.certificado_obra.obra_programa_id,
+                textoresolucion_financiamiento=certificado.certificado_financiamiento,
+                textoresolucion_tipo__in=[certificado.certificado_tipo, ""],
+            )
+            .order_by(models.Case(models.When(textoresolucion_tipo="", then=1), default=0))
+            .first()
+        )
+
+    def get_absolute_url(self):
+        return reverse("carga:update-texto-resolucion", kwargs={"pk": self.pk})
+
 
 class ConjuntoLicitado(models.Model):
     class Meta:
@@ -1187,7 +1390,7 @@ class FojaDeMedicion(models.Model):
     foja_fecha = models.DateField("Fecha de Medición", default=timezone.now)
     foja_inspector = models.ManyToManyField("personalizador.Agente", related_name="foja_inspector", verbose_name="Inspector", blank=True)
     foja_observaciones = models.TextField("Observaciones", blank=True, null=True)
-    foja_history = HistoricalRecords()
+    foja_history = M2MHistoricalRecords(m2m_fields=[foja_inspector])
 
     def foja_pct_avance_mes(self):
         total = 0
@@ -1338,6 +1541,17 @@ class Contrato(models.Model):
                 f"-{self.contrato_resolucion_jurisdiccion}-{self.contrato_resolucion_acta}"
             )
         return self.contrato_resolucion or "—"
+
+    def monto_total(self, financiamiento_codigo, moneda="pesos"):
+        """Suma de todos los ContratoMonto de este Contrato para `financiamiento_codigo`
+        (todos los rubros que financia), en la unidad `moneda` ("pesos" o "uvi"). Misma
+        base que usa certificacion.py para Certificados de Etapa (ver
+        certificacion._monto_contrato_total, que delega acá) y que usa Poliza para el
+        monto de garantía sugerido."""
+        campo = "contratomonto_uvi" if moneda == "uvi" else "contratomonto_pesos"
+        return self.contratomonto_set.filter(
+            contratomonto_financiamiento__certificadofinanciamiento_nombre_corto=financiamiento_codigo,
+        ).aggregate(total=Sum(campo))["total"] or Decimal("0")
 
 class ContratoTramoPago(models.Model):
     class Meta:

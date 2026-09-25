@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block content %}
 {% block title %}<title>{{title}}</title>{% endblock title %}
 
@@ -9,6 +10,7 @@
   {% include "partials/polizamovimiento-form-partial.html" %}
 </form>
 {{ form.media.js }}
+<script src="{% static 'carga/js/poliza-garantia-calc.js' %}"></script>
 
 <script>
 $(document).on('click', '#addForm', function() {

@@ -7,3 +7,4 @@ class SecretariadorConfig(AppConfig):
 
     def ready(self):
         import secretariador.signals
+        import secretariador.history

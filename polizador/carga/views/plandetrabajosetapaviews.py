@@ -155,6 +155,7 @@ class PlanDeTrabajosEtapaMatriz(LogInvalidFormMixin, PermissionRequiredMixin, ge
 			"readonly": readonly,
 			"rubro_monto_base_pesos": rubro.monto_base_pesos(),
 			"rubro_monto_base_uvi": rubro.monto_base_uvi(),
+			"historial_object": rubro.rubro_plan,
 		}
 
 	def get(self, request, pk):

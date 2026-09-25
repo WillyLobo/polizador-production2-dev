@@ -9,14 +9,14 @@ from django.http import JsonResponse
 from carga.views.ajaxviews import AddRelatedWidgetMixin
 
 @login_required
-@permission_required("secretariador.add_solicitud", login_url="/")
+@permission_required("secretariador.add_solicitud", raise_exception=True)
 def get_agentes(request):
     q = request.GET.get("q")
     agentes = Agente.objects.filter(agente_nombreyapellido__icontains=q).values("id", text=models.F("agente_nombreyapellido"))
     return JsonResponse({'results':list(agentes)},safe=False)
 
 @login_required
-@permission_required("secretariador.add_solicitud", login_url="/")
+@permission_required("secretariador.add_solicitud", raise_exception=True)
 def check_resolucion(request):
     # Usage: $HOST/viaticos/ajax/check_resolucion/?instrumentolegalresoluciones_numero=1000&instrumentolegalresoluciones_ano=2025
     ano = request.POST.get("instrumentolegalresoluciones_ano")

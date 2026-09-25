@@ -39,7 +39,7 @@
                                         {% with vigente=obra.plan_vigente %}
                                             {% if vigente %}
                                                 {% for rubro in vigente.rubros.all %}
-                                                    <br><a href="{% url "carga:crear-fojademedicion" %}?rubro={{rubro.id}}">Nueva Foja - {{rubro.rubro_nombre}}</a>
+                                                    <br><a href="{% url "carga:crear-fojademedicion" %}?rubro={{ rubro.id|stringformat:"s" }}">Nueva Foja - {{rubro.rubro_nombre}}</a>
                                                 {% endfor %}
                                             {% endif %}
                                         {% endwith %}

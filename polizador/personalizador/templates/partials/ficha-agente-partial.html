@@ -210,7 +210,7 @@
         <span>Licencias y Permisos — Balance {{anio}}</span>
         <div class="d-flex gap-2">
             {% if perms.personalizador.add_licenciapermiso %}
-            <a href="{% url "personalizador:crear-licenciapermiso" %}?agente={{object.id}}" class="btn btn-sm btn-outline-primary">+ Registrar Licencia</a>
+            <a href="{% url "personalizador:crear-licenciapermiso" %}?agente={{ object.id|stringformat:"s" }}" class="btn btn-sm btn-outline-primary">+ Registrar Licencia</a>
             {% endif %}
             <a href="{% url "personalizador:control-licencias-agente" object.id %}" class="btn btn-sm btn-outline-secondary">Ver control completo</a>
         </div>

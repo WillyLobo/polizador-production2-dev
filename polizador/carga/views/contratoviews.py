@@ -10,7 +10,7 @@ from core.mixins import DeleteRelatedObjectsMixin, FormsetViewMixin
 
 @method_decorator(login_required, name="dispatch")
 class CrearContrato(PermissionRequiredMixin, FormsetViewMixin, generic.CreateView):
-	permission_required = "carga.add_certificado"
+	permission_required = "carga.add_contrato"
 	formset_name = ContratoMontoFormset
 	view_type = "create"
 	
@@ -32,7 +32,7 @@ class CrearContrato(PermissionRequiredMixin, FormsetViewMixin, generic.CreateVie
 
 @method_decorator(login_required, name="dispatch")
 class UpdateContrato(PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView):
-	permission_required = "carga.add_certificado"
+	permission_required = "carga.change_contrato"
 	formset_name = ContratoMontoFormset
 	view_type = "update"
 	

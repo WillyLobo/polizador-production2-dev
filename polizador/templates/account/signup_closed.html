@@ -2,13 +2,18 @@
 {% load i18n %}
 {% load allauth %}
 {% block head_title %}
-    {% trans "Sign Up Closed" %}
+    Alta de cuentas cerrada
 {% endblock head_title %}
 {% block content %}
     {% element h1 %}
-        {% trans "Sign Up Closed" %}
+        Alta de cuentas cerrada
     {% endelement %}
     {% element p %}
-        {% trans "We are sorry, but the sign up is currently closed." %}
+        Las cuentas de Polizador las crea un administrador. Si necesitás acceso,
+        comunicate con el área de sistemas del IPDUV indicando tu nombre completo
+        y el sector en el que trabajás.
+    {% endelement %}
+    {% element p %}
+        Si ya tenés una cuenta, <a href="{% url 'account_login' %}">iniciá sesión</a>.
     {% endelement %}
 {% endblock content %}

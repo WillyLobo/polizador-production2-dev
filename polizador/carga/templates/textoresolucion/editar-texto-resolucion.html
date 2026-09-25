@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+{% block content %}
+{% block title %}<title>{{ title }}</title>{% endblock title %}
+
+{{ form.media.css }}
+<form id="mainForm" method="POST">
+  {% csrf_token %}
+
+  <div class="card mb-3">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Alcance</div>
+    <div class="card-body p-2">
+      <p class="text-muted small">
+        Este texto se va a usar en los certificados de este Programa, con este
+        financiamiento y de este tipo. Dejá el tipo vacío para que sirva como texto
+        genérico del programa, cuando no haya uno específico para el tipo del certificado.
+      </p>
+      {{ form.non_field_errors }}
+      <div class="row">
+        <div class="col-md-6 pb-1">{{ form.textoresolucion_nombre.as_field_group }}</div>
+        <div class="col-md-6 pb-1">{{ form.textoresolucion_programa.as_field_group }}</div>
+        <div class="col-md-6 pb-1">{{ form.textoresolucion_financiamiento.as_field_group }}</div>
+        <div class="col-md-6 pb-1">{{ form.textoresolucion_tipo.as_field_group }}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-8">
+      <div class="card mb-3">
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">Cuerpo de la resolución</div>
+        <div class="card-body p-2">
+          <p class="text-muted small">
+            Los artículos se numeran solos según su posición: dejá la etiqueta vacía salvo
+            que necesites algo distinto de «Artículo Nº:». El formato (negritas, sangrías,
+            márgenes) lo pone el documento base — acá se edita sólo el contenido.
+          </p>
+          {{ formset.management_form }}
+          {{ formset.non_form_errors }}
+          <div id="bloques-form">
+            {% for bloque in formset %}
+              <div class="border rounded p-2 mb-2 bloque-fila">
+                {% for hidden in bloque.hidden_fields %}{{ hidden }}{% endfor %}
+                <div class="row">
+                  <div class="col-md-5 pb-1">{{ bloque.clase.as_field_group }}</div>
+                  <div class="col-md-4 pb-1">{{ bloque.label.as_field_group }}</div>
+                  <div class="col-md-3 pb-1 d-flex align-items-end justify-content-end">
+                    {{ bloque.DELETE.as_field_group }}
+                  </div>
+                  <div class="col-12">{{ bloque.texto.as_field_group }}</div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card mb-3">
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">Variables disponibles</div>
+        <div class="card-body p-2" style="max-height: 22rem; overflow-y: auto;">
+          <p class="text-muted small mb-2">
+            Hacé clic para insertar en el bloque donde tengas el cursor.
+          </p>
+          <div class="accordion accordion-flush" id="paletaVariables">
+            {% for grupo, items in variables %}
+              <div class="accordion-item">
+                <h2 class="accordion-header">
+                  <button class="accordion-button collapsed py-2 small" type="button"
+                          data-bs-toggle="collapse" data-bs-target="#grupo{{ forloop.counter }}">
+                    {{ grupo }}
+                  </button>
+                </h2>
+                <div id="grupo{{ forloop.counter }}" class="accordion-collapse collapse"
+                     data-bs-parent="#paletaVariables">
+                  <div class="accordion-body p-2">
+                    {% for expresion, descripcion in items %}
+                      <button type="button" class="btn btn-sm btn-outline-secondary d-block w-100 text-start mb-1 insertar-variable"
+                              data-expresion="{{ expresion }}" title="{{ descripcion }}">
+                        <code class="small">{{ expresion }}</code>
+                        <span class="d-block text-muted" style="font-size: .75rem;">{{ descripcion }}</span>
+                      </button>
+                    {% endfor %}
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+          <hr class="my-2">
+          <p class="fw-semibold small mb-1">Filtros de formato</p>
+          {% for filtro, descripcion in filtros_doc %}
+            <div class="small text-muted"><code>{{ filtro }}</code> — {{ descripcion }}</div>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="card mb-3">
+        <div class="card-header py-2 bg-body-tertiary fw-semibold small">Vista previa</div>
+        <div class="card-body p-2">
+          {{ muestra.certificado.as_field_group }}
+
+          {% if preview_error %}
+            <div class="alert alert-danger py-2 small mt-2 mb-0">{{ preview_error }}</div>
+          {% endif %}
+
+          {% if preview_faltantes %}
+            <div class="alert alert-warning py-2 small mt-2 mb-0">
+              <strong>Faltan datos:</strong> {{ preview_faltantes|join:", " }}.
+              Revisá el nombre de la variable o cargá el dato en el certificado.
+            </div>
+          {% endif %}
+
+          {% if preview %}
+            <div class="border rounded p-2 mt-2 bg-body-tertiary" style="max-height: 24rem; overflow-y: auto;">
+              {% for bloque in preview %}
+                {% if bloque.clase == "visto" %}
+                  <p class="small mb-2"><strong>VISTO: </strong>{{ bloque.texto }}</p>
+                {% elif bloque.clase == "bloque" %}
+                  <p class="small mb-2"><strong>{{ bloque.texto }}</strong></p>
+                {% elif bloque.clase == "resuelve" %}
+                  <p class="small text-center mb-2">
+                    <strong>EL PRESIDENTE DEL INSTITUTO PROVINCIAL DE DESARROLLO URBANO Y VIVIENDA<br>RESUELVE:</strong>
+                  </p>
+                {% elif bloque.clase == "articulo" %}
+                  <p class="small mb-2"><strong>{{ bloque.label }}</strong>{{ bloque.texto }}</p>
+                {% else %}
+                  <p class="small mb-2" style="text-indent: 2em;">{{ bloque.texto }}</p>
+                {% endif %}
+              {% endfor %}
+            </div>
+          {% elif not preview_error %}
+            <p class="text-muted small mt-2 mb-0">
+              Elegí un certificado y tocá «Vista previa» para ver el texto resuelto.
+            </p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# Molde para agregar bloques nuevos: __prefix__ se reemplaza por el índice real. #}
+  <div id="empty_form" class="d-none">
+    <div class="border rounded p-2 mb-2 bloque-fila">
+      <div class="row">
+        <div class="col-md-5 pb-1">{{ formset.empty_form.clase.as_field_group }}</div>
+        <div class="col-md-4 pb-1">{{ formset.empty_form.label.as_field_group }}</div>
+        <div class="col-md-3 pb-1 d-flex align-items-end justify-content-end">
+          {{ formset.empty_form.DELETE.as_field_group }}
+        </div>
+        <div class="col-12">{{ formset.empty_form.texto.as_field_group }}</div>
+      </div>
+    </div>
+  </div>
+</form>
+{{ form.media.js }}
+
+<script>
+// Ultimo textarea de bloque que tuvo el foco: destino de la paleta de variables.
+let ultimoTextarea = null;
+$(document).on('focus', '.bloque-texto', function () { ultimoTextarea = this; });
+
+$(document).on('click', '.insertar-variable', function () {
+  // {% templatetag openvariable %} / closevariable: emitir llaves literales sin
+  // que las tome el motor de plantillas de Django.
+  const ABRE = '{% templatetag openvariable %}', CIERRA = '{% templatetag closevariable %}';
+  const expresion = ABRE + ' ' + $(this).data('expresion') + ' ' + CIERRA;
+  const destino = ultimoTextarea || document.querySelector('.bloque-texto');
+  if (!destino) { return; }
+  const inicio = destino.selectionStart, fin = destino.selectionEnd;
+  destino.value = destino.value.slice(0, inicio) + expresion + destino.value.slice(fin);
+  destino.focus();
+  destino.selectionStart = destino.selectionEnd = inicio + expresion.length;
+  ultimoTextarea = destino;
+});
+
+$(document).on('click', '#addForm', function () {
+  $(".customSelect2").select2("destroy");
+  const idx = $('#id_{{ formset.prefix }}-TOTAL_FORMS').val();
+  $('#bloques-form').append($('#empty_form').html().replace(/__prefix__/g, idx));
+  $('#id_{{ formset.prefix }}-TOTAL_FORMS').val(parseInt(idx) + 1);
+  $(".customSelect2").select2({ theme: 'bootstrap-5' });
+  $(".customSelect2").djangoSelect2();
+  $('html, body').animate({ scrollTop: $('html, body').height() }, 'slow');
+});
+</script>
+{% endblock %}
+
+{% block actions %}
+<nav class="form-actions-bar py-2 d-print-none">
+  <div class="container-fluid d-flex flex-wrap gap-2 justify-content-end">
+    <button type="button" id="addForm" class="btn btn-sm btn-outline-success">
+      <i class="bi bi-plus-circle me-1"></i>Agregar bloque
+    </button>
+    <a href="{% url 'carga:lista-textos-resolucion' %}" class="btn btn-sm btn-outline-secondary">
+      <i class="bi bi-arrow-left me-1"></i>Volver
+    </a>
+    <button type="submit" form="mainForm" name="accion" value="previsualizar" class="btn btn-sm btn-outline-primary">
+      <i class="bi bi-eye me-1"></i>Vista previa
+    </button>
+    <button type="submit" form="mainForm" name="accion" value="guardar" class="btn btn-sm btn-primary">
+      <i class="bi bi-check2 me-1"></i>Guardar
+    </button>
+  </div>
+</nav>
+{% endblock %}

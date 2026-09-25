@@ -6,9 +6,11 @@ from django.contrib.auth import views as auth_views
 from django.views.generic.base import TemplateView
 from carga.views.inspeccionviews import InspeccionHomeView
 from django.contrib.auth.decorators import login_required
+from core.views_vincular_ad import PasswordSetBloqueadoView, SinCuentaRedView, VincularADView
 from core.views import (
     DashboardView,
     FormValidationErrorListView,
+    HistorialView,
     KnowledgeBaseIndexView,
     KnowledgeBasePageView,
     ManagementCommandRunDetailView,
@@ -26,6 +28,11 @@ from core.views import (
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="index.html")),
+    # Antes del include de allauth: Django resuelve en orden, asi que esta
+    # sombrea a account_set_password para los usuarios que ya entran solo
+    # por LDAP (ver PasswordSetBloqueadoView). Para el resto delega en la
+    # vista original de allauth.
+    path("accounts/password/set/", PasswordSetBloqueadoView.as_view(), name="account_set_password"),
     path("accounts/", include('allauth.urls')),
     path("obra/", include("carga.urls")),
     path("viaticos/", include("secretariador.urls")),
@@ -36,6 +43,9 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("select2/", include("django_select2.urls")),
     path("home/", InspeccionHomeView.as_view(), name="home"),
+    path("historial/<str:app_label>/<str:model_name>/<str:pk>/", HistorialView.as_view(), name="historial"),
+    path("cuenta/vincular-red/", VincularADView.as_view(), name="vincular_ad"),
+    path("cuenta/sin-cuenta-red/", SinCuentaRedView.as_view(), name="vincular_ad_sin_cuenta"),
     path("administracion/dashboard/", DashboardView.as_view(), name="dashboard"),
     path("administracion/errores-validacion/", FormValidationErrorListView.as_view(), name="form_validation_errors"),
     path("administracion/schema/", SchemaDocsView.as_view(), name="schema_docs"),

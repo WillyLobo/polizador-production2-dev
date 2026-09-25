@@ -6,16 +6,50 @@ from django.contrib.auth.admin import UserAdmin
 from personalizador.models import *
 from personalizador.resources import *
 
+class SinGruposFilter(admin.SimpleListFilter):
+    """Filtro para encontrar las altas automaticas por LDAP.
+
+    Un usuario que entro por LDAP sin tener CustomUser queda creado sin ningun
+    grupo, y por lo tanto sin ningun permiso: no ve nada util hasta que alguien
+    se lo asigne. Ese "alguien" tiene que poder encontrarlo, y sin este filtro
+    la unica forma seria mirar la lista entera de a uno.
+    """
+    title = "grupos asignados"
+    parameter_name = "sin_grupos"
+
+    def lookups(self, request, model_admin):
+        return [("si", "Sin grupos (alta automática pendiente de permisos)"), ("no", "Con grupos")]
+
+    def queryset(self, request, queryset):
+        if self.value() == "si":
+            return queryset.filter(groups__isnull=True)
+        if self.value() == "no":
+            return queryset.filter(groups__isnull=False).distinct()
+        return queryset
+
+
 class CustomUserAdmin(UserAdmin):
     model = CustomUser
-    list_display = ['username', 'email', 'usuario_dni']
+    list_display = ['username', 'email', 'usuario_dni', 'ad_username', 'ad_sin_cuenta_red', 'date_joined']
+    # Para encontrar rapido a quien falta vincular y a quien declaro no tener
+    # cuenta de red (esos son los que hay que revisar a mano).
+    list_filter = UserAdmin.list_filter + ('ad_sin_cuenta_red', SinGruposFilter)
 
     fieldsets = UserAdmin.fieldsets + (
         (None, {'fields': ('usuario_dni',)}),
+        ('Cuenta de red (AD)', {
+            'fields': ('ad_username', 'ad_vinculado_en', 'ad_sin_cuenta_red'),
+            'description': (
+                'Normalmente lo completa el propio usuario desde /cuenta/vincular-red/, '
+                'probando sus credenciales contra el directorio del IPDUV. Editarlo a mano '
+                'saltea esa verificación: sólo para casos que no se pueden resolver solos.'
+            ),
+        }),
     )
     add_fieldsets = UserAdmin.add_fieldsets + (
         (None, {'fields': ('usuario_dni',)}),
     )
+    readonly_fields = ('ad_vinculado_en',)
 
 admin.site.register(CustomUser, CustomUserAdmin)
 

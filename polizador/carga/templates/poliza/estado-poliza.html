@@ -29,12 +29,62 @@
     <p class="poliza-e-p"><b>Compulsa: </b>{{object.poliza_obra.get_obra_licitacion_tipo_display}} N°{{object.poliza_obra.obra_licitacion_numero}}/{{object.poliza_obra.obra_licitacion_ano}}</p>
     <p class="poliza-e-p"><b>Monto Contrato(Pesos): </b>${{object.poliza_obra.obra_contrato_total_pesos}}</p>
     <p class="poliza-e-p"><b>Monto Contrato(UVI): </b>{{object.poliza_obra.obra_contrato_total_uvi}}</p>
+    <p class="poliza-e-p"><b>Contrato: </b>{{object.poliza_contrato|default:"—"}}</p>
+    <p class="poliza-e-p"><b>Financiamiento: </b>{{object.get_poliza_financiamiento_display|default:"—"}}</p>
+    {% with base_pesos=object.monto_contrato_base sugerido_pesos=object.monto_a_cubrir_sugerido %}
+    {% if sugerido_pesos is not None %}
+    <p class="poliza-e-p"><b>Monto de Contrato (financiamiento, Pesos): </b>${{base_pesos}}</p>
+    <p class="poliza-e-p"><b>Monto sugerido a cubrir (Pesos): </b>${{sugerido_pesos}}</p>
+    {% else %}
+    <p class="poliza-e-p text-muted"><b>Monto sugerido a cubrir: </b>no disponible (Póliza sin Contrato/Financiamiento cargado).</p>
+    {% endif %}
+    {% endwith %}
     {% if object.poliza_digital %}
     <a href="{{object.poliza_digital.url}}">Descargar poliza{{pdfimglink|safe}}</a>
     {% endif %}
 </div>
 </div>
-{% if perms.carga.add_poliza_movimiento %}<a style="float: right" href="{% url "carga:crear-poliza-movimiento"%}?poliza={{object.pk}}">{{agregarimglink|safe}}</a>{% endif %}
+
+{% with documentos_poliza=object.documentos_poliza.all %}
+{% if documentos_poliza or perms.carga.add_polizadocumento %}
+<div class="card mb-3">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Documentación Adicional (Anexos/Adendas)</div>
+    <div class="card-body p-2">
+        {% if documentos_poliza %}
+        <table class="table table-sm table-bordered table-hover mb-2">
+            <thead class="bg-body-tertiary">
+                <tr><th class="small">Descripción</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for documento in documentos_poliza %}
+                <tr>
+                    <td class="small">
+                        {% if documento.polizadocumento_archivo %}
+                        <a href="{{documento.polizadocumento_archivo.url}}" target="_blank">{{documento.polizadocumento_descripcion}}</a>
+                        {% else %}
+                        {{documento.polizadocumento_descripcion}}
+                        {% endif %}
+                    </td>
+                    <td class="small text-end">
+                        {% if perms.carga.change_polizadocumento %}<a href="{% url "carga:update-poliza-documento" documento.id %}">{{editimglink|safe}}</a>{% endif %}
+                        {% if perms.carga.delete_polizadocumento %}<a href="{% url "carga:eliminar-poliza-documento" documento.id %}">{{eliminarimglink|safe}}</a>{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="small text-muted fst-italic">Sin documentos adicionales cargados.</p>
+        {% endif %}
+        {% if perms.carga.add_polizadocumento %}
+        <a href="{% url "carga:crear-poliza-documento" %}?poliza={{object.id|safe}}" class="btn btn-sm btn-outline-primary">+ Nuevo Documento</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endwith %}
+
+{% if perms.carga.add_poliza_movimiento %}<a style="float: right" href="{% url "carga:crear-poliza-movimiento"%}?poliza={{ object.pk|stringformat:"s" }}">{{agregarimglink|safe}}</a>{% endif %}
 <table class="table table-striped table-hover border border-dark">
     <thead>
         <tr>
