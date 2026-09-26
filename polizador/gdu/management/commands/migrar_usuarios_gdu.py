@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
 
-from gdu.models import Role, Rolemapping, UsuarioMigrado, VisualizadorUser
+from gdu.models import Role, Rolemapping, VisualizadorUser
 from personalizador.models import Agente
 
 
@@ -38,10 +38,13 @@ class Command(BaseCommand):
     """
     Migra la autenticación heredada de hasura (visualizador.user/role/rolemapping)
     a settings.AUTH_USER_MODEL + Django Groups/Permissions. Idempotente (se puede
-    re-correr sin duplicar nada). Las contraseñas NO se copian: los usuarios
-    migrados autentican contra LDAP, no contra el hasher de Django.
+    re-correr sin duplicar nada). Las contraseñas NO se copian: las cuentas nuevas
+    quedan con contraseña inutilizable y entran solo por LDAP. En el primer login,
+    core.ldap_backend.PolizadorLDAPBackend adopta la cuenta por username y le
+    completa ad_username.
     Si el username ya existe en el sistema (choca con un CustomUser real de
-    polizador), se reutiliza esa cuenta en vez de crear una duplicada.
+    polizador), se reutiliza esa cuenta en vez de crear una duplicada. El vínculo
+    visualizador.user -> CustomUser es siempre username__iexact, no se persiste.
     """
     help = "Migra usuarios/roles de visualizador.* (hasura) a CustomUser + Groups/Permissions"
 
@@ -89,6 +92,7 @@ class Command(BaseCommand):
             grupo_por_role_id[role.id] = grupo
 
         creados = reutilizados = 0
+        migrados_por_vu_id = {}
         for vu in VisualizadorUser.objects.select_related("area"):
             usuario = User.objects.filter(username__iexact=vu.username).first()
             reutilizado = usuario is not None
@@ -103,23 +107,17 @@ class Command(BaseCommand):
                     is_active=bool(vu.activo),
                     date_joined=date_joined,
                 )
+                # Sin esto la contraseña queda en "", que Django considera usable:
+                # el usuario no sería solo_ldap y el reset por mail le abriría la
+                # puerta a una contraseña local.
+                usuario.set_unusable_password()
                 usuario.save()
 
-            UsuarioMigrado.objects.update_or_create(
-                visualizador_user_id=vu.id,
-                defaults={
-                    "usuario": usuario,
-                    "area_nombre": vu.area.nombre if vu.area_id else "",
-                    "cuenta_reutilizada": reutilizado,
-                },
-            )
+            migrados_por_vu_id[vu.id] = usuario
             reutilizados += reutilizado
             creados += not reutilizado
 
         asignaciones = 0
-        migrados_por_vu_id = {
-            m.visualizador_user_id: m.usuario for m in UsuarioMigrado.objects.select_related("usuario")
-        }
         for rm in Rolemapping.objects.all():
             grupo = grupo_por_role_id.get(rm.role_id)
             usuario = migrados_por_vu_id.get(rm.user_id)
@@ -134,10 +132,11 @@ class Command(BaseCommand):
         ))
 
         self.reportar_match_agente(
+            migrados_por_vu_id,
             options["csv_sin_match"], options["csv_correcciones"], options["completar_match_agente"],
         )
 
-    def reportar_match_agente(self, csv_sin_match, csv_correcciones=None, completar=False):
+    def reportar_match_agente(self, migrados_por_vu_id, csv_sin_match, csv_correcciones=None, completar=False):
         """
         Prueba exploratoria: vu.nombre trae nombre y apellido juntos en un solo campo
         y con orden de palabras variable (ej. "Juan Carlos Perez Gomez"), con máximo
@@ -149,7 +148,7 @@ class Command(BaseCommand):
         el username: por convención es la primera letra del nombre + el apellido
         completo pegado (ej. "rcastro" = R. + Castro). Solo informa por stdout, no
         persiste nada — sirve para evaluar qué tan bien funciona el match antes de
-        decidir si conviene usarlo para vincular usuario_migrado <-> Agente.
+        decidir si conviene usarlo para vincular el usuario migrado <-> Agente.
         """
         agentes = [
             (a.id, normalizar(a.agente_nombres), normalizar(a.agente_apellidos))
@@ -157,9 +156,6 @@ class Command(BaseCommand):
         ]
         ids_agente_validos = {aid for aid, _, _ in agentes}
         correcciones = self._leer_csv_correcciones(csv_correcciones, ids_agente_validos) if csv_correcciones else {}
-        migrados_por_vu_id = {
-            m.visualizador_user_id: m.usuario for m in UsuarioMigrado.objects.select_related("usuario")
-        }
 
         unicos = ambiguos = sin_match = corregidos = vinculados = 0
         a_revisar = []
@@ -178,7 +174,7 @@ class Command(BaseCommand):
                 unicos += 1
                 if completar:
                     agente_id = next(iter(candidatos_ids))
-                    vinculados += self._vincular_agente(vu, agente_id, migrados_por_vu_id.get(vu.id))
+                    vinculados += self._vincular_agente(vu, agente_id, migrados_por_vu_id[vu.id])
             elif cantidad == 0:
                 sin_match += 1
                 a_revisar.append(f"'{vu.nombre}' (username={vu.username}): sin candidatos")
@@ -211,13 +207,6 @@ class Command(BaseCommand):
         existente hacia otro usuario (podría ser un dato cargado a mano en
         personalizador que no tenga que ver con esta migración).
         """
-        if usuario is None:
-            self.stderr.write(self.style.WARNING(
-                f"'{vu.username}': no tiene UsuarioMigrado, se omite (correr sin --csv-correcciones "
-                "primero para migrar usuarios)."
-            ))
-            return 0
-
         agente = Agente.objects.get(id=agente_id)
         if agente.agente_usuario_id == usuario.id:
             return 0

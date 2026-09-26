@@ -66,49 +66,6 @@ SGT_USERNAME = env("SGT_USERNAME", default=None)
 SGT_PASSWORD = env("SGT_PASSWORD", default=None)
 GS_BUCKET_NAME = env("GS_BUCKET_NAME", default="polizador-production-pdf")
 
-GDU_LDAP_SERVER_URL = env("GDU_LDAP_SERVER_URL")
-GDU_LDAP_BIND_DN = env("GDU_LDAP_BIND_DN")
-GDU_LDAP_BIND_CREDENTIALS = env("GDU_LDAP_BIND_CREDENTIALS")
-GDU_LDAP_SEARCH_BASE = env("GDU_LDAP_SEARCH_BASE")
-GDU_LDAP_SEARCH_FILTER = env("GDU_LDAP_SEARCH_FILTER")
-
-# django-auth-ldap: mismo servidor/credenciales que usaba hasura/config/passport.js
-# (passport-ldapauth) para el login real de GDU contra Active Directory. El login
-# local por contraseña (visualizador.user.password) nunca se usó de verdad en el
-# sistema original — solo LDAP — así que esto reemplaza esa autenticación real.
-AUTH_LDAP_SERVER_URI = GDU_LDAP_SERVER_URL
-AUTH_LDAP_BIND_DN = GDU_LDAP_BIND_DN
-AUTH_LDAP_BIND_PASSWORD = GDU_LDAP_BIND_CREDENTIALS
-AUTH_LDAP_USER_SEARCH = LDAPSearch(
-    GDU_LDAP_SEARCH_BASE,
-    ldap.SCOPE_SUBTREE,
-    # GDU_LDAP_SEARCH_FILTER trae el placeholder al estilo del ldapauth-fork de Node
-    # ("{{username}}"); django-auth-ldap espera "%(user)s" — se convierte acá para
-    # no duplicar el filtro en dos formatos distintos.
-    GDU_LDAP_SEARCH_FILTER.replace("{{username}}", "%(user)s"),
-)
-# Sin esto, una conexión a un LDAP inalcanzable/caído puede colgarse mucho más
-# de un minuto (problema conocido de python-ldap contra Active Directory) en vez
-# de fallar rápido. OPT_REFERRALS=0 evita otro problema típico de AD (referrals
-# que python-ldap no sigue bien por defecto).
-AUTH_LDAP_CONNECTION_OPTIONS = {
-    ldap.OPT_REFERRALS: 0,
-    ldap.OPT_NETWORK_TIMEOUT: 10,
-    ldap.OPT_TIMEOUT: 10,
-}
-
-# No crea cuentas nuevas: solo puede loguearse por LDAP quien ya tenga un
-# CustomUser existente en polizador (los migrados de GDU + los que ya había).
-# El LDAP es de toda la institución, no solo de GDU, así que esto evita que
-# cualquier empleado del IPDUV consiga acceso automático a polizador.
-AUTH_LDAP_NO_NEW_USERS = True
-AUTH_LDAP_ALWAYS_UPDATE_USER = True
-AUTH_LDAP_USER_ATTR_MAP = {
-    "first_name": "givenName",
-    "last_name": "sn",
-    "email": "mail",
-}
-
 GDU_SMB_SHARE = env("GDU_SMB_SHARE")
 GDU_SMB_DOMAIN = env("GDU_SMB_DOMAIN")
 GDU_SMB_USERNAME = env("GDU_SMB_USERNAME")
@@ -278,7 +235,6 @@ AUTHENTICATION_BACKENDS = [
     # red (o no tiene) sigue entrando con su usuario y contrasena de polizador.
     # LDAP se consulta despues, y solo para quien ya tiene ad_username.
     'django.contrib.auth.backends.ModelBackend',
-    'django_auth_ldap.backend.LDAPBackend',
     # `allauth` specific authentication methods, such as login by email
     'allauth.account.auth_backends.AuthenticationBackend',
 
