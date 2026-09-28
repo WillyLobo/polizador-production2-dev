@@ -231,6 +231,59 @@
         {% empty %}
         <p class="small text-muted fst-italic mb-0">Sin contratos registrados.</p>
         {% endfor %}
+
+        {% if perms.carga.view_poliza %}
+        {% with polizas=object.poliza_set.all %}
+        <div class="card mt-3">
+            <div class="card-header py-2 bg-body-tertiary fw-semibold small">Pólizas</div>
+            <div class="card-body p-2">
+                {% if polizas %}
+                <div class="table-responsive">
+                <table class="table table-sm table-bordered table-hover mb-2">
+                    <thead class="bg-body-tertiary">
+                        <tr>
+                            <th class="small">N° Póliza</th>
+                            <th class="small">Concepto</th>
+                            <th class="small">Aseguradora</th>
+                            <th class="small">Contrato</th>
+                            <th class="small">Financiamiento</th>
+                            <th class="small">Asegurado Pesos</th>
+                            <th class="small">Asegurado UVI</th>
+                            <th class="small">Sugerido a Cubrir</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for poliza in polizas %}
+                        <tr>
+                            <td class="small">{{poliza.poliza_numero}}</td>
+                            <td class="small">{{poliza.get_poliza_concepto_display}}</td>
+                            <td class="small">{{poliza.poliza_aseguradora}}</td>
+                            <td class="small">{% if poliza.poliza_contrato %}{{poliza.poliza_contrato.contrato_fecha}}{% if poliza.poliza_contrato.contrato_descripcion %} — {{poliza.poliza_contrato.contrato_descripcion}}{% endif %}{% else %}—{% endif %}</td>
+                            <td class="small">{{poliza.get_poliza_financiamiento_display|default:"—"}}</td>
+                            <td class="small">${{poliza.poliza_monto_pesos}}</td>
+                            <td class="small">{{poliza.poliza_monto_uvi}}</td>
+                            <td class="small">{% with sugerido=poliza.monto_a_cubrir_sugerido %}{% if sugerido is not None %}${{sugerido}}{% else %}—{% endif %}{% endwith %}</td>
+                            <td class="small text-end text-nowrap">
+                                {% if poliza.poliza_digital %}<a href="{{poliza.poliza_digital.url}}" target="_blank">{{pdfimglink|safe}}</a>{% endif %}
+                                <a href="{% url "carga:estado-poliza" poliza.id %}">{{detalleimglink|safe}}</a>
+                                {% if perms.carga.change_poliza %}<a href="{% url "carga:update-poliza" poliza.id %}">{{editimglink|safe}}</a>{% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+                {% else %}
+                <p class="small text-muted fst-italic">Sin pólizas cargadas.</p>
+                {% endif %}
+                {% if perms.carga.add_poliza %}
+                <a href="{% url "carga:crear-poliza" %}" class="btn btn-sm btn-outline-primary">+ Nueva Póliza</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endwith %}
+        {% endif %}
     </div>
 </div>
 
