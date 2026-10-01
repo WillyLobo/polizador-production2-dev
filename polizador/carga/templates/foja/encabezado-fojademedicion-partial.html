@@ -49,7 +49,8 @@
       <p class="datos-lbl"><span class="lbl">CERTIFICADO N°:</span> {{ object.foja_numero }}</p>
       <p class="datos-lbl"><span class="lbl">FECHA DE MEDICIÓN:</span> {{ object.foja_fecha|date:"d/m/Y" }}</p>
       <p class="datos-lbl"><span class="lbl">MES Y AÑO CERTIFICADO:</span> {{ object.foja_periodo|date:"F Y"|capfirst }}</p>
-      <p class="datos-lbl"><span class="lbl">FECHA INICIO:</span> {% if plan.trabajos_fecha_inicio %}{{ plan.trabajos_fecha_inicio|date:"d/m/Y" }}{% else %}—{% endif %}</p>
+      <p class="datos-lbl"><span class="lbl">FECHA INICIO:</span> {{ obra.obra_fecha_inicio|date:"d/m/Y"|default:"—" }}</p>
+      {% if plan.trabajos_fecha_inicio %}<p class="datos-lbl"><span class="lbl">FECHA REINICIO:</span> {{ plan.trabajos_fecha_inicio|date:"d/m/Y" }}</p>{% endif %}
       <p class="datos-lbl"><span class="lbl">PLAZO OBRA:</span> {{ obra.obra_plazo|default:"—" }}</p>
       <p class="datos-lbl"><span class="lbl">COMPULSA:</span> {{ obra.compulsa|default:"—" }}</p>
       <p class="datos-lbl"><span class="lbl">NOMENCLATURA CATASTRAL:</span> {{ obra.obra_nomenclatura }}</p>

@@ -447,6 +447,11 @@ class Obra(models.Model):
     obra_nomenclatura_plano = models.CharField("Número de Plano", max_length=10, blank=True, null=True)
     obra_fecha_entrega = models.DateField("Fecha de Entrega de la Obra", blank=True, null=True)
     obra_fecha_contrato = models.DateField("Fecha de Firma de Contrato", blank=True, null=True)
+    obra_fecha_inicio = models.DateField(
+        "Fecha de Inicio de Obra", blank=True, null=True,
+        help_text="Fecha de firma del Acta de Inicio. Es única por obra: los reinicios por "
+                   "reprogramación se registran en cada Plan de Trabajos.",
+    )
     obra_expediente_costo = models.CharField("Expediente de Costos", max_length=18, blank=True, null=True)
     obra_inspector = models.ManyToManyField("personalizador.Agente", related_name="obra_inspector", verbose_name="Inspector", blank=True)
     obra_representantetecnico = models.ManyToManyField("personalizador.RepresentanteTecnico", related_name="obra_representantetecnico", verbose_name="Representante Técnico", blank=True)
@@ -1112,7 +1117,8 @@ class PlanDeTrabajos(models.Model):
                    "quedaron sin Etapa en el plan anterior se completan solos al abrir la matriz y "
                    "también cuentan dentro de este número.",
     )
-    trabajos_fecha_inicio = models.DateField("Fecha de Inicio de Obra", null=True, blank=True)
+    # Sólo el reinicio de una reprogramación: el inicio original es Obra.obra_fecha_inicio.
+    trabajos_fecha_inicio = models.DateField("Fecha de Reinicio de Obra", null=True, blank=True)
     trabajos_contrato = models.ForeignKey("Contrato", verbose_name="Contrato Vinculado", on_delete=models.SET_NULL, null=True, blank=True, related_name="planes_trabajo")
     trabajos_history = HistoricalRecords()
 

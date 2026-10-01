@@ -69,6 +69,10 @@
                     <div class="col-7 small">{{object.obra_fecha_contrato}}</div>
                 </div>
                 <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Fecha de Inicio</div>
+                    <div class="col-7 small">{{object.obra_fecha_inicio|default_if_none:"—"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
                     <div class="col-5 text-muted small fw-semibold">Nomenclatura Catastral</div>
                     <div class="col-7 small">{{object.obra_nomenclatura|default_if_none:"—"}}</div>
                 </div>

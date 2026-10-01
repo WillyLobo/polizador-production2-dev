@@ -20,7 +20,7 @@
       <p class="datos-lbl"><span class="lbl">FUENTE DE FINANCIAMIENTO:</span> {{ object.get_certificado_financiamiento_display }}</p>
       <p class="datos-lbl"><span class="lbl">SISTEMA DE CONTRATO:</span> AJUSTE ALZADO</p>
       <p class="datos-lbl"><span class="lbl">MES BASICO DE CONTRATO:</span> {{ obra.obra_fecha_contrato|date:"d/m/Y"|default:"—" }}</p>
-      <p class="datos-lbl"><span class="lbl">FECHA DE INICIO/REINICIO:</span> {% if plan.trabajos_fecha_inicio %}{{ plan.trabajos_fecha_inicio|date:"d/m/Y" }}{% else %}—{% endif %}</p>
+      <p class="datos-lbl"><span class="lbl">FECHA DE INICIO/REINICIO:</span> {% if plan.trabajos_fecha_inicio %}{{ plan.trabajos_fecha_inicio|date:"d/m/Y" }}{% else %}{{ obra.obra_fecha_inicio|date:"d/m/Y"|default:"—" }}{% endif %}</p>
       <p class="datos-lbl"><span class="lbl">PLAZO DE EJECUCION:</span> {{ obra.obra_plazo|default:"—" }}</p>
       {% if uvi_fecha_calculo %}
       <p class="datos-lbl"><span class="lbl">FECHA INDICE UVI:</span> {{ uvi_fecha_calculo|date:"d/m/Y" }}</p>

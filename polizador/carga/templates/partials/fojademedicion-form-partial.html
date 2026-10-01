@@ -4,12 +4,27 @@
 
 {{ form.non_field_errors }}
 
+{% if form.obra_fecha_inicio %}
+<div class="card mb-3 border-warning">
+    <div class="card-header py-2 bg-warning small">{{ form.obra_fecha_inicio.label }}</div>
+    <div class="card-body p-2">
+        <div class="alert alert-warning mb-2" role="alert">
+            La obra todavía no tiene fecha de inicio. Ingresá la fecha de firma del Acta de Inicio: se guarda en la obra y se pide una sola vez.
+        </div>
+        <div class="form-group">
+            {{ form.obra_fecha_inicio.errors }}
+            {{ form.obra_fecha_inicio }}
+        </div>
+    </div>
+</div>
+{% endif %}
+
 {% if form.trabajos_fecha_inicio %}
 <div class="card mb-3 border-warning">
     <div class="card-header py-2 bg-warning small">{{ form.trabajos_fecha_inicio.label }}</div>
     <div class="card-body p-2">
         <div class="alert alert-warning mb-2" role="alert">
-            Esta es la primera foja del plan. La fecha ingresada se usará como referencia para el cálculo de valores en pesos a partir de UVI.
+            Esta es la primera foja del plan reprogramado. Ingresá la fecha del acta de reinicio.
         </div>
         <div class="form-group">
             {{ form.trabajos_fecha_inicio.errors }}

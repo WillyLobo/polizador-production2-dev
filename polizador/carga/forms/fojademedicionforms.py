@@ -71,17 +71,22 @@ class FojaDeMedicionForm(forms.ModelForm):
 		if self.instance.pk and self.instance.foja_legacy:
 			self.initial["foja_numero_manual"] = self.instance.foja_numero
 
-		if rubro is not None and not rubro.rubro_plan.trabajos_fecha_inicio:
-			label = (
-				"Fecha de Reinicio de Obra"
-				if rubro.rubro_anterior_id
-				else "Fecha de Inicio de Obra"
-			)
-			self.fields["trabajos_fecha_inicio"] = forms.DateField(
-				label=label,
-				required=True,
-				widget=DateHTMLWidget(attrs={"type": "date", "class": "form-control"}),
-			)
+		if rubro is not None:
+			plan = rubro.rubro_plan
+			# El inicio (Acta de Inicio) es único por obra; el reinicio se pide una vez por
+			# cada plan reprogramado.
+			if not plan.trabajos_obra.obra_fecha_inicio:
+				self.fields["obra_fecha_inicio"] = forms.DateField(
+					label="Fecha de Inicio de Obra",
+					required=True,
+					widget=DateHTMLWidget(attrs={"type": "date", "class": "form-control"}),
+				)
+			if rubro.rubro_anterior_id and not plan.trabajos_fecha_inicio:
+				self.fields["trabajos_fecha_inicio"] = forms.DateField(
+					label="Fecha de Reinicio de Obra",
+					required=True,
+					widget=DateHTMLWidget(attrs={"type": "date", "class": "form-control"}),
+				)
 
 	def clean(self):
 		cleaned_data = super().clean()
