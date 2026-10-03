@@ -89,7 +89,7 @@
 
   <div style="display:flex; border:1px solid var(--line);">
     <div style="flex:1; border:1px solid var(--line); padding:1mm 2mm;"><b>RESUMEN DE LA CERTIFICACION DEL MES</b></div>
-    <div style="flex:1; border:1px solid var(--line); padding:1mm 2mm;"><b>PERIODO:</b> {{ object.certificado_fecha|date:"F-Y"|capfirst }}</div>
+    <div style="flex:1; border:1px solid var(--line); padding:1mm 2mm;"><b>PERIODO:</b> {{ object.certificado_periodo_fecha|date:"F-Y"|capfirst }}</div>
   </div>
 
   <table class="tabla-resumen">
@@ -128,7 +128,7 @@
 <section class="hoja">
   {% include "certificado/encabezado-certificado-partial.html" %}
 
-  <div class="subtitulo">{% if object.certificado_tipo == "ETAPA" %}CERTIFICADO DE ETAPA{% else %}CERTIFICADO DE OBRA{% endif %} — PERIODO: {{ object.certificado_fecha|date:"F-Y"|capfirst }}</div>
+  <div class="subtitulo">{% if object.certificado_tipo == "ETAPA" %}CERTIFICADO DE ETAPA{% else %}CERTIFICADO DE OBRA{% endif %} — PERIODO: {{ object.certificado_periodo_fecha|date:"F-Y"|capfirst }}</div>
 
   <table class="tabla-avance" style="margin-bottom:5mm;">
     <thead>

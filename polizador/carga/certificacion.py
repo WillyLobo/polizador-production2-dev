@@ -55,6 +55,12 @@ def _serializar_tramos(tramos):
     ]
 
 
+def _periodo_foja(foja):
+    """certificado_periodo en el mismo formato "MM/AAAA" que los certificados legacy: el
+    mes medido por la Foja, no el de emisión del certificado."""
+    return foja.foja_periodo.strftime("%m/%Y")
+
+
 def _validar_plan_vigente(foja):
     if not foja.foja_rubro.rubro_plan.es_vigente():
         raise ValidationError(
@@ -642,6 +648,7 @@ def _construir_certificados_etapa(
                 certificado_rubro_db=rubro_certificado,
                 certificado_rubro_obra=tramo.tramo_numero,
                 certificado_expediente=certificado_expediente,
+                certificado_periodo=_periodo_foja(foja),
                 certificado_fecha=certificado_fecha,
                 certificado_mes_pct=mes_pct,
                 certificado_ante_pct=ante_pct,
@@ -705,6 +712,7 @@ def construir_certificados_desde_foja(
             certificado_rubro_db=contratomonto.contratomonto_rubro,
             certificado_rubro_obra=siguiente_numero(obra, financiamiento, "PARCIAL"),
             certificado_expediente=certificado_expediente,
+            certificado_periodo=_periodo_foja(foja),
             certificado_fecha=certificado_fecha,
             certificado_mes_pct=mes_pct,
             certificado_ante_pct=ante_pct,

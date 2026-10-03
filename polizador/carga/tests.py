@@ -599,6 +599,16 @@ class GenerarCertificadosDesdeFojaTests(TestCase):
         self.assertEqual(certificado.certificado_tipo, "PARCIAL")
         self.assertEqual(certificado.certificado_foja_id, foja.pk)
 
+    def test_periodo_es_el_de_la_foja_no_el_de_emision(self):
+        nacion = self._crear_financiamiento()
+        self._crear_contratomonto(nacion, pesos=Decimal("1000"))
+        foja = self._crear_foja(date(2026, 9, 30), "10")
+
+        certificado = generar_certificados_desde_foja(foja, "EXP", date(2026, 10, 2))[0]
+
+        self.assertEqual(certificado.certificado_periodo, "09/2026")
+        self.assertEqual(certificado.certificado_periodo_fecha, date(2026, 9, 30))
+
 
 class ResumenCertificacionMensualTests(TestCase):
     """certificacion.resumen_certificacion_mensual: cortes mes/anterior/total y

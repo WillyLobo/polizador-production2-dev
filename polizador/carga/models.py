@@ -931,6 +931,15 @@ class Certificado(models.Model):
         return (self.certificado_monto_uvi or Decimal("0")) * self.RETENCION_ADOBE_PCT / Decimal("100")
 
     @property
+    def certificado_periodo_fecha(self):
+        """Mes que certifica este certificado: el período de su Foja de Medición si sale de
+        una (PARCIAL/ETAPA), no la fecha de emisión — una foja de septiembre se certifica
+        en octubre. Sin Foja (ANTICIPO/HECHO_CONSUMADO) cae a certificado_fecha."""
+        if self.certificado_foja_id:
+            return self.certificado_foja.foja_periodo
+        return self.certificado_fecha
+
+    @property
     def certificado_pct_principal(self):
         """% "principal" de este certificado para listados genéricos que no distinguen
         tipo: el % de Anticipo si es un Anticipo (pool, no rubro puntual), si no el % Mes
