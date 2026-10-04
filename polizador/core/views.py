@@ -115,6 +115,19 @@ class KnowledgeBaseIndexView(SuperuserRequiredMixin, TemplateView):
         return context
 
 
+class KnowledgeBaseSearchView(SuperuserRequiredMixin, TemplateView):
+    template_name = "knowledge_base/search.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        query = self.request.GET.get("q", "").strip()
+        results, total = knowledge_base.search(query) if query else ([], 0)
+        context["query"] = query
+        context["results"] = results
+        context["total_results"] = total
+        return context
+
+
 class KnowledgeBasePageView(SuperuserRequiredMixin, TemplateView):
     template_name = "knowledge_base/page.html"
 

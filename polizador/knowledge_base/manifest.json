@@ -1,6 +1,6 @@
 {
   "api": {
-    "generated_at": "2026-10-04T12:42:21.565595+00:00",
+    "generated_at": "2026-10-04T13:08:39.169585+00:00",
     "modules": {
       "views/carga_views": {
         "file": "api/views/carga_views.py",
@@ -6253,7 +6253,7 @@
     }
   },
   "carga": {
-    "generated_at": "2026-10-04T12:42:15.752156+00:00",
+    "generated_at": "2026-10-04T13:08:33.463729+00:00",
     "modules": {
       "forms/areaforms": {
         "file": "carga/forms/areaforms.py",
@@ -17106,7 +17106,7 @@
     }
   },
   "core": {
-    "generated_at": "2026-10-04T12:42:13.280546+00:00",
+    "generated_at": "2026-10-04T13:08:31.092455+00:00",
     "modules": {
       "forms": {
         "file": "core/forms.py",
@@ -17571,17 +17571,17 @@
               },
               {
                 "file": "core/views.py",
-                "line": 215,
+                "line": 228,
                 "snippet": "context[\"form\"] = TodoForm()"
               },
               {
                 "file": "core/views.py",
-                "line": 222,
+                "line": 235,
                 "snippet": "form_class = TodoForm"
               },
               {
                 "file": "core/views.py",
-                "line": 233,
+                "line": 246,
                 "snippet": "form_class = TodoForm"
               }
             ],
@@ -17705,22 +17705,22 @@
               },
               {
                 "file": "core/views.py",
-                "line": 159,
+                "line": 172,
                 "snippet": "context[\"recent_runs\"] = ManagementCommandRun.objects.select_related(\"started_by\")[:20]"
               },
               {
                 "file": "core/views.py",
-                "line": 168,
+                "line": 181,
                 "snippet": "if ManagementCommandRun.objects.filter(status=ManagementCommandRun.Status.RUNNING).exists():"
               },
               {
                 "file": "core/views.py",
-                "line": 181,
+                "line": 194,
                 "snippet": "model = ManagementCommandRun"
               },
               {
                 "file": "core/views.py",
-                "line": 188,
+                "line": 201,
                 "snippet": "run = get_object_or_404(ManagementCommandRun, pk=pk)"
               }
             ],
@@ -17811,22 +17811,22 @@
               },
               {
                 "file": "core/views.py",
-                "line": 209,
+                "line": 222,
                 "snippet": "model = Todo"
               },
               {
                 "file": "core/views.py",
-                "line": 216,
+                "line": 229,
                 "snippet": "context[\"status_choices\"] = Todo.Status.choices"
               },
               {
                 "file": "core/views.py",
-                "line": 221,
+                "line": 234,
                 "snippet": "model = Todo"
               },
               {
                 "file": "core/views.py",
-                "line": 232,
+                "line": 245,
                 "snippet": "model = Todo"
               }
             ],
@@ -18056,16 +18056,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              118,
-              141
+              131,
+              154
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  121,
-                  141
+                  134,
+                  154
                 ],
                 "name": "get_context_data",
                 "signature": "def get_context_data(self, **kwargs):"
@@ -18075,7 +18075,40 @@
             "name": "KnowledgeBasePageView",
             "page_path": "core/views/KnowledgeBasePageView",
             "signature": "class KnowledgeBasePageView(SuperuserRequiredMixin, TemplateView):",
-            "signature_hash": "sha1:0eb26fd4f430c698d08e6d2ef3f6178a71830451",
+            "signature_hash": "sha1:59b651c5232a15918e3d4eb6cc094958e83f9cf7",
+            "stale": true
+          },
+          "KnowledgeBaseSearchView": {
+            "authored": false,
+            "bases": [
+              "SuperuserRequiredMixin",
+              "TemplateView"
+            ],
+            "candidate_usages": [],
+            "decorators": [],
+            "docstring": null,
+            "kind": "class",
+            "lines": [
+              118,
+              128
+            ],
+            "methods": [
+              {
+                "decorators": [],
+                "docstring": null,
+                "lines": [
+                  121,
+                  128
+                ],
+                "name": "get_context_data",
+                "signature": "def get_context_data(self, **kwargs):"
+              }
+            ],
+            "module": "core/views.py",
+            "name": "KnowledgeBaseSearchView",
+            "page_path": "core/views/KnowledgeBaseSearchView",
+            "signature": "class KnowledgeBaseSearchView(SuperuserRequiredMixin, TemplateView):",
+            "signature_hash": "sha1:c733b9bd61d28af00c2d35f1dd7ebd0838094203",
             "stale": false
           },
           "ManagementCommandRunDetailView": {
@@ -18089,16 +18122,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              180,
-              183
+              193,
+              196
             ],
             "methods": [],
             "module": "core/views.py",
             "name": "ManagementCommandRunDetailView",
             "page_path": "core/views/ManagementCommandRunDetailView",
             "signature": "class ManagementCommandRunDetailView(SuperuserRequiredMixin, DetailView):",
-            "signature_hash": "sha1:65267d55fb765afdc862dcc748d3817b19131ed5",
-            "stale": false
+            "signature_hash": "sha1:ab80f25a771ef3a4bede5b82a19654d116dfdc61",
+            "stale": true
           },
           "ManagementCommandRunKillView": {
             "authored": true,
@@ -18111,16 +18144,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              201,
-              205
+              214,
+              218
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  202,
-                  205
+                  215,
+                  218
                 ],
                 "name": "post",
                 "signature": "def post(self, request, pk):"
@@ -18130,8 +18163,8 @@
             "name": "ManagementCommandRunKillView",
             "page_path": "core/views/ManagementCommandRunKillView",
             "signature": "class ManagementCommandRunKillView(SuperuserRequiredMixin, View):",
-            "signature_hash": "sha1:b311a90bb6c6cf0689ebcbe25690d061621a01d3",
-            "stale": false
+            "signature_hash": "sha1:c0f1ddc06cf34a49d72001f2d7a6ecd91f03608e",
+            "stale": true
           },
           "ManagementCommandRunLogView": {
             "authored": true,
@@ -18144,16 +18177,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              186,
-              198
+              199,
+              211
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  187,
-                  198
+                  200,
+                  211
                 ],
                 "name": "get",
                 "signature": "def get(self, request, pk):"
@@ -18163,8 +18196,8 @@
             "name": "ManagementCommandRunLogView",
             "page_path": "core/views/ManagementCommandRunLogView",
             "signature": "class ManagementCommandRunLogView(SuperuserRequiredMixin, View):",
-            "signature_hash": "sha1:032b8c0d9119ccf9473f3199a90f9196742e9a22",
-            "stale": false
+            "signature_hash": "sha1:d88d680c17c82c39c9066ff8846ace83b51e0db3",
+            "stale": true
           },
           "ManagementCommandsView": {
             "authored": true,
@@ -18177,16 +18210,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              144,
-              177
+              157,
+              190
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  147,
-                  149
+                  160,
+                  162
                 ],
                 "name": "get_selected",
                 "signature": "def get_selected(self):"
@@ -18195,8 +18228,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  151,
-                  160
+                  164,
+                  173
                 ],
                 "name": "get_context_data",
                 "signature": "def get_context_data(self, **kwargs):"
@@ -18205,8 +18238,8 @@
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  162,
-                  177
+                  175,
+                  190
                 ],
                 "name": "post",
                 "signature": "def post(self, request, *args, **kwargs):"
@@ -18216,8 +18249,8 @@
             "name": "ManagementCommandsView",
             "page_path": "core/views/ManagementCommandsView",
             "signature": "class ManagementCommandsView(SuperuserRequiredMixin, TemplateView):",
-            "signature_hash": "sha1:eed12018f449a152094f80ba44d8492b03ae2bf2",
-            "stale": false
+            "signature_hash": "sha1:6e1eae2a03b8301fd97c80870518f8880a1e0171",
+            "stale": true
           },
           "SchemaDocsView": {
             "authored": true,
@@ -18271,7 +18304,7 @@
               {
                 "file": "core/views.py",
                 "line": 118,
-                "snippet": "class KnowledgeBasePageView(SuperuserRequiredMixin, TemplateView):"
+                "snippet": "class KnowledgeBaseSearchView(SuperuserRequiredMixin, TemplateView):"
               }
             ],
             "decorators": [],
@@ -18311,16 +18344,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              220,
-              228
+              233,
+              241
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  226,
-                  228
+                  239,
+                  241
                 ],
                 "name": "form_valid",
                 "signature": "def form_valid(self, form):"
@@ -18330,8 +18363,8 @@
             "name": "TodoCreateView",
             "page_path": "core/views/TodoCreateView",
             "signature": "class TodoCreateView(SuperuserRequiredMixin, CreateView):",
-            "signature_hash": "sha1:dd60026c3178beb115190bd2b0e70ad79a3223fc",
-            "stale": false
+            "signature_hash": "sha1:cb567911d280cb775ff7d08614e90789fe54283c",
+            "stale": true
           },
           "TodoDeleteView": {
             "authored": true,
@@ -18344,16 +18377,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              238,
-              241
+              251,
+              254
             ],
             "methods": [],
             "module": "core/views.py",
             "name": "TodoDeleteView",
             "page_path": "core/views/TodoDeleteView",
             "signature": "class TodoDeleteView(SuperuserRequiredMixin, DeleteView):",
-            "signature_hash": "sha1:3ef1b976839d3b379e2da332b74b7c4d60f7c995",
-            "stale": false
+            "signature_hash": "sha1:c2345d94f8d2810a8a83a73d671005c143f5497f",
+            "stale": true
           },
           "TodoListView": {
             "authored": true,
@@ -18366,16 +18399,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              208,
-              217
+              221,
+              230
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  213,
-                  217
+                  226,
+                  230
                 ],
                 "name": "get_context_data",
                 "signature": "def get_context_data(self, **kwargs):"
@@ -18385,8 +18418,8 @@
             "name": "TodoListView",
             "page_path": "core/views/TodoListView",
             "signature": "class TodoListView(SuperuserRequiredMixin, ListView):",
-            "signature_hash": "sha1:ed488a374df82b8f77fc5ab2cf3279b36c96bba9",
-            "stale": false
+            "signature_hash": "sha1:029f762385304a6383002479dc2b6f378d79850f",
+            "stale": true
           },
           "TodoStatusUpdateView": {
             "authored": true,
@@ -18399,16 +18432,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              244,
-              253
+              257,
+              266
             ],
             "methods": [
               {
                 "decorators": [],
                 "docstring": null,
                 "lines": [
-                  245,
-                  253
+                  258,
+                  266
                 ],
                 "name": "post",
                 "signature": "def post(self, request, pk):"
@@ -18418,8 +18451,8 @@
             "name": "TodoStatusUpdateView",
             "page_path": "core/views/TodoStatusUpdateView",
             "signature": "class TodoStatusUpdateView(SuperuserRequiredMixin, View):",
-            "signature_hash": "sha1:b7120d3003b0444e9e2e019a32d34858f3cb60cc",
-            "stale": false
+            "signature_hash": "sha1:cda04d485be79e4eb31208eedbbe9067f6008e96",
+            "stale": true
           },
           "TodoUpdateView": {
             "authored": true,
@@ -18432,16 +18465,16 @@
             "docstring": null,
             "kind": "class",
             "lines": [
-              231,
-              235
+              244,
+              248
             ],
             "methods": [],
             "module": "core/views.py",
             "name": "TodoUpdateView",
             "page_path": "core/views/TodoUpdateView",
             "signature": "class TodoUpdateView(SuperuserRequiredMixin, UpdateView):",
-            "signature_hash": "sha1:340b28aee364d5a1f183ad1f391f87a2c17e1364",
-            "stale": false
+            "signature_hash": "sha1:6a9520d9fa4cc9e2a5b21d35ab082c4919325194",
+            "stale": true
           },
           "_rewrite_doc_links": {
             "authored": true,
@@ -18449,7 +18482,7 @@
             "candidate_usages": [
               {
                 "file": "core/views.py",
-                "line": 131,
+                "line": 144,
                 "snippet": "content_html = _rewrite_doc_links(html_file.read_text(encoding=\"utf-8\"), page_path)"
               }
             ],
@@ -18494,7 +18527,7 @@
     }
   },
   "personalizador": {
-    "generated_at": "2026-10-04T12:42:19.498045+00:00",
+    "generated_at": "2026-10-04T13:08:37.146316+00:00",
     "modules": {
       "forms/actividadespecificaforms": {
         "file": "personalizador/forms/actividadespecificaforms.py",
@@ -24385,7 +24418,7 @@
     }
   },
   "secretariador": {
-    "generated_at": "2026-10-04T12:42:17.642140+00:00",
+    "generated_at": "2026-10-04T13:08:35.329382+00:00",
     "modules": {
       "forms/comisionadoform": {
         "file": "secretariador/forms/comisionadoform.py",

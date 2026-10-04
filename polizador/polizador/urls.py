@@ -13,6 +13,7 @@ from core.views import (
     HistorialView,
     KnowledgeBaseIndexView,
     KnowledgeBasePageView,
+    KnowledgeBaseSearchView,
     ManagementCommandRunDetailView,
     ManagementCommandRunKillView,
     ManagementCommandRunLogView,
@@ -51,6 +52,8 @@ urlpatterns = [
     path("administracion/schema/<path:path>", schema_docs_asset, name="schema_docs_asset"),
     path("administracion/comandos/", ManagementCommandsView.as_view(), name="management_commands"),
     path("administracion/conocimiento/", KnowledgeBaseIndexView.as_view(), name="knowledge_base"),
+    # Antes que el <path:page_path> de abajo, que si no se la come.
+    path("administracion/conocimiento/buscar/", KnowledgeBaseSearchView.as_view(), name="knowledge_base_search"),
     path(
         "administracion/conocimiento/<path:page_path>/",
         KnowledgeBasePageView.as_view(),

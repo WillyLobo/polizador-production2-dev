@@ -101,3 +101,87 @@ class KnowledgeBaseViewsTest(TestCase):
         self.client.login(username="admin_user", password="pass1234!")
         resp = self.client.get("/")
         assert 'href="/administracion/conocimiento/"' in resp.content.decode()
+
+
+class KnowledgeBaseSearchTest(TestCase):
+    """Búsqueda de `/administracion/conocimiento/buscar/`: permisos, orden por relevancia
+    (nombre antes que prosa), insensible a tildes/mayúsculas, AND entre palabras y
+    escapado del fragmento resaltado."""
+
+    URL = "/administracion/conocimiento/buscar/"
+
+    def setUp(self):
+        tmp_dir = Path(self.enterContext(tempfile.TemporaryDirectory()))
+        app_dir = tmp_dir / "kb_sample_app"
+        app_dir.mkdir()
+        (app_dir / "models.py").write_text(FIXTURE_SOURCE, encoding="utf-8")
+        self.enterContext(self.settings(BASE_DIR=tmp_dir, KNOWLEDGE_BASE_ROOT=tmp_dir / "knowledge_base"))
+
+        call_command("kb_extract", "kb_sample_app", "--render")
+
+        self._author("kb_sample_app/models/Widget", (
+            "# Widget\n\n**Módulo:** `models.py`\n\n## Propósito\n\n"
+            "Garantía de la Póliza que cubre al widget. No ejecuta <script>alert(1)</script>.\n"
+        ))
+        self._author("kb_sample_app/models/crear_widget", (
+            "# crear_widget\n\n## Propósito\n\nCrea un Widget nuevo.\n"
+        ))
+
+        self.client = Client()
+        UserModel.objects.create_user(username="plain_user", password="pass1234!")
+        UserModel.objects.create_superuser(username="admin_user", password="pass1234!")
+
+    def _author(self, page_path, body):
+        md_file = kb.markdown_path(page_path)
+        front, _ = kb.parse_front_matter(md_file.read_text(encoding="utf-8"))
+        front["authored"] = "true"
+        md_file.write_text(kb.render_front_matter(front) + "\n" + body, encoding="utf-8")
+
+    def _search(self, query):
+        self.client.login(username="admin_user", password="pass1234!")
+        return self.client.get(self.URL, {"q": query})
+
+    def test_only_superuser(self):
+        assert self.client.get(self.URL, {"q": "widget"}).status_code == 302
+        self.client.login(username="plain_user", password="pass1234!")
+        assert self.client.get(self.URL, {"q": "widget"}).status_code == 403
+
+    def test_exact_name_ranks_before_partial_name(self):
+        resp = self._search("widget")
+        assert resp.status_code == 200
+        names = [r["name"] for r in resp.context["results"]]
+        assert names == ["Widget", "crear_widget"]
+
+    def test_accent_and_case_insensitive_with_highlight(self):
+        resp = self._search("POLIZA garantia")
+        names = [r["name"] for r in resp.context["results"]]
+        assert names == ["Widget"]
+        body = resp.content.decode()
+        assert "<mark>Póliza</mark>" in body
+        assert "<mark>Garantía</mark>" in body
+
+    def test_all_words_must_match(self):
+        resp = self._search("widget inexistente")
+        assert resp.context["results"] == []
+        assert "No hay páginas" in resp.content.decode()
+
+    def test_stopwords_do_not_have_to_match(self):
+        # "de"/"la" no están en crear_widget: si contaran para el AND, quedaría afuera.
+        names = [r["name"] for r in self._search("widget de la").context["results"]]
+        assert names == ["Widget", "crear_widget"]
+
+    def test_snippet_is_escaped(self):
+        resp = self._search("alert")
+        body = resp.content.decode()
+        assert "<script>alert(1)</script>" not in body
+        assert "&lt;script&gt;<mark>alert</mark>(1)" in body
+
+    def test_empty_query_shows_help_without_results(self):
+        resp = self._search("   ")
+        assert resp.status_code == 200
+        assert resp.context["results"] == []
+
+    def test_index_and_page_include_search_box(self):
+        self.client.login(username="admin_user", password="pass1234!")
+        for url in ("/administracion/conocimiento/", "/administracion/conocimiento/kb_sample_app/models/Widget/"):
+            assert f'action="{self.URL}"' in self.client.get(url).content.decode()
