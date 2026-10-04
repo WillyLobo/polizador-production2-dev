@@ -2351,6 +2351,41 @@ class RetencionAdobeTests(TestCase):
         self.assertEqual(certificado.certificado_retencion_adobe_monto_uvi(), Decimal("0"))
 
 
+class ImporteAbonarTests(TestCase):
+    """Importe a abonarse: bruto - descuento de anticipo - Fondo de Reparo (sobre el bruto).
+    certificado_monto_cobrar, en cambio, no descuenta el Fondo de Reparo."""
+
+    def setUp(self):
+        empresa = Empresa.objects.create(empresa_nombre="Empresa Test")
+        programa = Programa.objects.create(programa_nombre="Programa Test")
+        self.rubro = CertificadoRubro.objects.create(
+            certificadorubro_nombre="Infraestructura", certificadorubro_nombre_corto="I"
+        )
+        self.obra = Obra.objects.create(
+            obra_nombre="Obra Test", obra_empresa=empresa, obra_programa=programa, obra_expediente="EXP-ABONAR",
+        )
+
+    def test_descuenta_anticipo_y_fondo_de_reparo_sobre_el_bruto(self):
+        # Valores del certificado 16128: bruto 47.169,97 UVI, anticipo 20%, FR 5%.
+        certificado = Certificado.objects.create(
+            certificado_obra=self.obra,
+            certificado_tipo="LEGACY",
+            certificado_financiamiento="P",
+            certificado_rubro_db=self.rubro,
+            certificado_expediente="EXP",
+            certificado_monto_uvi=Decimal("47169.97"),
+            certificado_monto_pesos=Decimal("67521446.40"),
+            certificado_descuento_anticipo_uvi=Decimal("9433.99"),
+            certificado_descuento_anticipo_pesos=Decimal("14734005.58"),
+        )
+        certificado.refresh_from_db()
+
+        # FR = 5% del bruto (2.358,50 UVI / 3.376.072,32 $), no del neto de anticipo.
+        self.assertEqual(certificado.certificado_importe_abonar_uvi(), Decimal("35377.48"))
+        self.assertEqual(certificado.certificado_importe_abonar_pesos(), Decimal("49411368.50"))
+        self.assertEqual(certificado.certificado_monto_cobrar_uvi, Decimal("37735.98"))
+
+
 class RetencionAdobeContextoTextoTests(TestCase):
     """La retención tiene que estar disponible como variable para armar el texto de la
     resolución (el pedido original: "tener como dato a la hora de generar los textos")."""

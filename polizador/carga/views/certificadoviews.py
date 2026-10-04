@@ -102,17 +102,7 @@ class GenerarCertificadosDesdeFoja(PermissionRequiredMixin, generic.View):
 			form.add_error(None, str(e))
 			return render(request, self.template_name, context)
 
-		filas = [
-			{
-				"certificado": certificado,
-				"monto_cobrar_pesos": (
-					certificado.certificado_monto_pesos
-					- (certificado.certificado_devolucion_monto or 0)
-					- (certificado.certificado_descuento_anticipo_pesos or 0)
-				),
-			}
-			for certificado in certificados
-		]
+		filas = [{"certificado": certificado} for certificado in certificados]
 		context.update({
 			"preview": True,
 			"filas": filas,

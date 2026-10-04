@@ -1,5 +1,5 @@
 from datetime import datetime
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal
 from django.utils import timezone
 from wsgiref.validate import validator
 from django.db import models
@@ -908,6 +908,28 @@ class Certificado(models.Model):
         if self.certificado_tipo == "ANTICIPO":
             return Decimal("0")
         return (self.certificado_monto_uvi or Decimal("0")) * self.certificado_fondoreparo_pct / Decimal("100")
+
+    # "Importe a abonarse" del certificado: neto de devolución/descuento de anticipo Y de
+    # Fondo de Reparo. No es certificado_monto_cobrar: ese GeneratedField no descuenta el
+    # Fondo de Reparo porque se usa como monto certificado (acumulados y saldo de la obra,
+    # reportes, legacy), y el Fondo de Reparo se retiene pero sigue siendo obra certificada.
+    # Se calcula desde los campos (no desde el GeneratedField) para que también sirva en
+    # certificados todavía sin guardar (previsualización de generación desde Foja).
+    def certificado_importe_abonar_pesos(self):
+        neto = (
+            (self.certificado_monto_pesos or Decimal("0"))
+            - (self.certificado_devolucion_monto or Decimal("0"))
+            - (self.certificado_descuento_anticipo_pesos or Decimal("0"))
+        )
+        return neto - self.certificado_fondoreparo_monto_pesos().quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+    def certificado_importe_abonar_uvi(self):
+        neto = (
+            (self.certificado_monto_uvi or Decimal("0"))
+            - (self.certificado_devolucion_monto_uvi or Decimal("0"))
+            - (self.certificado_descuento_anticipo_uvi or Decimal("0"))
+        )
+        return neto - self.certificado_fondoreparo_monto_uvi().quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
     # Decreto 654/2015: retención del tres por mil (inciso c) del Artículo 10 de la Ley) sobre el
     # valor bruto de los certificados de obras que usan ladrillos de adobe como insumo. Los ladrillos
