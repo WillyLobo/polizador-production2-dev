@@ -1043,6 +1043,8 @@ class AnticipoTests(TestCase):
         self.obra.refresh_from_db()
         Uvi.objects.create(uvi_fecha=date(2025, 12, 15), uvi_valor=Decimal("100"))
         Uvi.objects.create(uvi_fecha=date(2026, 2, 1), uvi_valor=Decimal("150"))
+        # Fin de mes del período de los certificados: cotización de la Devolución de Anticipo.
+        Uvi.objects.create(uvi_fecha=date(2026, 2, 28), uvi_valor=Decimal("160"))
 
     def _crear_certificado(self, **kwargs):
         defaults = {
@@ -1201,6 +1203,47 @@ class AnticipoTests(TestCase):
         self.assertEqual(cert.certificado_descuento_anticipo_uvi, Decimal("30.00"))
         self.assertEqual(cert.certificado_descuento_anticipo_pct, Decimal("3.000"))
 
+    def test_descuento_en_pesos_usa_la_cotizacion_de_fin_de_mes_aunque_el_bruto_este_congelado(self):
+        # Anticipo cobrado a 150 $/UVI; bruto congelado (Ley 27397, atraso) a la pactada de 100.
+        self._crear_certificado(
+            certificado_tipo="ANTICIPO", certificado_monto_uvi=Decimal("1000"), certificado_monto_pesos=Decimal("150000")
+        ).save()
+        cert = self._crear_certificado(
+            certificado_tipo="PARCIAL", certificado_monto_uvi=Decimal("2000"), certificado_monto_pesos=Decimal("200000")
+        )
+
+        certificacion.aplicar_descuento_anticipo(cert)
+
+        # tasa = 1000 / 10000 = 0.1 -> 200 UVI, valorizados a 160 (fin de feb), no a 100 ni a 150.
+        self.assertEqual(cert.certificado_descuento_anticipo_uvi, Decimal("200.00"))
+        self.assertEqual(cert.certificado_descuento_anticipo_pesos, Decimal("32000.00"))
+        self.assertEqual(cert.certificado_descuento_anticipo_pct, Decimal("10.000"))
+
+    def test_descuento_sin_cotizacion_de_fin_de_mes_lanza_validation_error(self):
+        self._crear_certificado(
+            certificado_tipo="ANTICIPO", certificado_monto_uvi=Decimal("1000"), certificado_monto_pesos=Decimal("150000")
+        ).save()
+        cert = self._crear_certificado(
+            certificado_tipo="PARCIAL", certificado_fecha=date(2026, 3, 5), certificado_monto_uvi=Decimal("2000")
+        )
+
+        with self.assertRaises(ValidationError):
+            certificacion.aplicar_descuento_anticipo(cert)
+
+    def test_financiamiento_sin_uvi_descuenta_sobre_el_pool_en_pesos(self):
+        self._crear_certificado(
+            certificado_tipo="ANTICIPO", certificado_financiamiento="P", certificado_monto_pesos=Decimal("50000")
+        ).save()
+        cert = self._crear_certificado(
+            certificado_tipo="PARCIAL", certificado_financiamiento="P", certificado_monto_pesos=Decimal("20000")
+        )
+
+        certificacion.aplicar_descuento_anticipo(cert)
+
+        # tasa = 50000 / 200000 = 0.25 -> 5000; no necesita cotización UVI.
+        self.assertEqual(cert.certificado_descuento_anticipo_pesos, Decimal("5000.00"))
+        self.assertEqual(cert.certificado_descuento_anticipo_uvi, Decimal("0"))
+
     def test_rechaza_anticipo_que_supere_el_30_por_ciento_pendiente(self):
         with self.assertRaises(ValidationError):
             certificacion.validar_anticipo_nuevo(self.obra, "N", Decimal("35"))
@@ -1252,6 +1295,7 @@ class HechoConsumadoTests(TestCase):
         Uvi.objects.create(uvi_fecha=date(2025, 12, 15), uvi_valor=Decimal("100"))
         # Cotización de "hoy" muy distinta a la pactada, para poder distinguir cuál se usó.
         Uvi.objects.create(uvi_fecha=date(2026, 6, 1), uvi_valor=Decimal("500"))
+        Uvi.objects.create(uvi_fecha=date(2026, 6, 30), uvi_valor=Decimal("520"))
 
     def _crear_certificado(self, **kwargs):
         defaults = {
@@ -1310,6 +1354,8 @@ class HechoConsumadoTests(TestCase):
 
         # saldo pendiente = 1000, saldo a certificar = 10000 -> tasa 0.1 -> descuento = 1000*0.1=100.
         self.assertEqual(certificado.certificado_descuento_anticipo_uvi, Decimal("100.00"))
+        # Sin Foja, el período es el mes de certificado_fecha: fin de junio (520), no 500.
+        self.assertEqual(certificado.certificado_descuento_anticipo_pesos, Decimal("52000.00"))
 
 
 class ContratoTramoPagoTests(TestCase):

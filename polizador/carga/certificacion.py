@@ -215,36 +215,66 @@ def _tasa_descuento(saldo_pendiente, saldo_a_certificar):
     return min(saldo_pendiente / saldo_a_certificar, Decimal("1"))
 
 
+def _cotizacion_devolucion_anticipo(certificado):
+    """Cotización UVI->$ de la Devolución de Anticipo: la del último día del mes del período
+    del certificado (el de su Foja, o el de certificado_fecha si no tiene), SIEMPRE — aunque
+    el bruto haya quedado congelado en una cotización anterior por atraso (Ley 27397). En
+    obras UVI el monto de contrato en pesos no significa nada (cambia todos los meses), así
+    que el anticipo se recupera en UVI y se valoriza al mes que se certifica."""
+    try:
+        return ley27397.cotizacion_fin_de_mes(certificado.certificado_periodo_fecha)
+    except ley27397.CotizacionFaltanteError as e:
+        raise ValidationError(
+            f"{e} No se puede valorizar en pesos la Devolución de Anticipo de este certificado."
+        )
+
+
 def aplicar_descuento_anticipo(certificado):
     """Calcula el descuento de anticipo de `certificado` (PARCIAL o HECHO_CONSUMADO) y lo
     asigna in-place, sobre el monto bruto ya resuelto (Ley 27397 u hecho consumado). El
     anticipo se amortiza dinámicamente: la tasa de descuento de cada certificado es
     saldo_pendiente_de_anticipos / saldo_a_certificar_de_ese_financiamiento, recalculada en
-    cada certificado nuevo. Un certificado ANTICIPO nunca se descuenta a sí mismo. De paso
-    deja un snapshot neto en certificado_anticipo_saldo_pct: saldo pendiente de anticipo, en
-    % del pool, inmediatamente después de este descuento (ver también calcular_monto_anticipo,
-    que lo setea del lado de los ANTICIPO que otorgan)."""
+    cada certificado nuevo. Un certificado ANTICIPO nunca se descuenta a sí mismo.
+
+    Si el financiamiento tiene componente UVI, el pool se lleva sólo en UVI y el descuento
+    en pesos es descuento_uvi * cotización de fin de mes del período
+    (_cotizacion_devolucion_anticipo): un pool paralelo en pesos mezclaría cotizaciones de
+    distintas fechas (anticipo, contrato, cada certificado). Sin componente UVI, el pool se
+    lleva en pesos.
+
+    De paso deja un snapshot neto en certificado_anticipo_saldo_pct: saldo pendiente de
+    anticipo, en % del pool, inmediatamente después de este descuento (ver también
+    calcular_monto_anticipo, que lo setea del lado de los ANTICIPO que otorgan)."""
     obra = certificado.certificado_obra
     financiamiento = certificado.certificado_financiamiento
     excluir_pk = certificado.pk
 
     saldo_pendiente_pesos = _saldo_pendiente_anticipo(obra, financiamiento, "pesos", excluir_pk)
     saldo_pendiente_uvi = _saldo_pendiente_anticipo(obra, financiamiento, "uvi", excluir_pk)
-    saldo_a_certificar_pesos = _saldo_a_certificar(obra, financiamiento, "pesos", excluir_pk)
-    saldo_a_certificar_uvi = _saldo_a_certificar(obra, financiamiento, "uvi", excluir_pk)
 
     monto_bruto_pesos = certificado.certificado_monto_pesos or Decimal("0")
     monto_bruto_uvi = certificado.certificado_monto_uvi or Decimal("0")
 
-    tasa_pesos = _tasa_descuento(saldo_pendiente_pesos, saldo_a_certificar_pesos)
-    tasa_uvi = _tasa_descuento(saldo_pendiente_uvi, saldo_a_certificar_uvi)
-
-    certificado.certificado_descuento_anticipo_pesos = _redondear_pesos(
-        min(monto_bruto_pesos * tasa_pesos, max(saldo_pendiente_pesos, Decimal("0")))
-    )
-    certificado.certificado_descuento_anticipo_uvi = _redondear_pesos(
-        min(monto_bruto_uvi * tasa_uvi, max(saldo_pendiente_uvi, Decimal("0")))
-    )
+    if monto_bruto_uvi:
+        saldo_a_certificar_uvi = _saldo_a_certificar(obra, financiamiento, "uvi", excluir_pk)
+        tasa_uvi = _tasa_descuento(saldo_pendiente_uvi, saldo_a_certificar_uvi)
+        certificado.certificado_descuento_anticipo_uvi = _redondear_pesos(
+            min(monto_bruto_uvi * tasa_uvi, max(saldo_pendiente_uvi, Decimal("0")))
+        )
+        certificado.certificado_descuento_anticipo_pesos = (
+            _redondear_pesos(
+                certificado.certificado_descuento_anticipo_uvi * _cotizacion_devolucion_anticipo(certificado)
+            )
+            if certificado.certificado_descuento_anticipo_uvi
+            else Decimal("0")
+        )
+    else:
+        saldo_a_certificar_pesos = _saldo_a_certificar(obra, financiamiento, "pesos", excluir_pk)
+        tasa_pesos = _tasa_descuento(saldo_pendiente_pesos, saldo_a_certificar_pesos)
+        certificado.certificado_descuento_anticipo_pesos = _redondear_pesos(
+            min(monto_bruto_pesos * tasa_pesos, max(saldo_pendiente_pesos, Decimal("0")))
+        )
+        certificado.certificado_descuento_anticipo_uvi = Decimal("0")
 
     # % efectivo (post-tope) del monto bruto que efectivamente se retuvo, en la misma
     # moneda "real" del certificado (UVI si el financiamiento tiene componente UVI, si no
