@@ -983,6 +983,15 @@ class ContratoMontoEntreObrasTests(TestCase):
         # algo derivado de 999999 (el ContratoMonto de la obra ajena).
         self.assertEqual(total_pesos, Decimal("110000"))
 
+    def test_redondea_el_monto_uvi_del_tramo_antes_de_pasarlo_a_pesos(self):
+        # Caso del certificado 16128: 25% de 188679.86 UVI = 47169.965 -> 47169.97 UVI,
+        # y recién ahí * 1431.45 = 67521453.5565 (sin redondear: 67521446.39...).
+        self.assertEqual(ley27397.tramo_monto_uvi(Decimal("25"), Decimal("188679.86")), Decimal("47169.97"))
+        self.assertEqual(
+            ley27397.tramo_monto_uvi(Decimal("25"), Decimal("188679.86")) * Decimal("1431.45"),
+            Decimal("67521453.5565"),
+        )
+
 
 class Ley27397IntegrationTests(Ley27397TestsBase):
     def test_financiamiento_sin_uvi_no_aplica_ley27397(self):

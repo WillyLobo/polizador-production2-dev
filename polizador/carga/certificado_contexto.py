@@ -17,7 +17,7 @@ from datetime import date
 from decimal import Decimal
 
 from carga.certificacion import fecha_cotizacion_devolucion_anticipo, resumen_certificacion_mensual
-from carga.ley27397 import _contratomonto_de_rubro
+from carga.ley27397 import _contratomonto_de_rubro, tramo_monto_uvi
 from carga.models import CertificadoFinanciamiento, ContratoMonto, FojaDeMedicion, PlanDeTrabajosEtapa, Uvi
 from personalizador.models import Departamento, Direccion, Directorio, Gerencia
 
@@ -115,7 +115,7 @@ def _certificado_detalle_context(certificado):
         etapa = PlanDeTrabajosEtapa.objects.filter(pk=tramo["etapa_id"]).select_related("etapa_rubro").first()
         contratomonto_lote = _contratomonto_de_rubro(etapa.etapa_rubro, financiamiento) if etapa and financiamiento else None
         if contratomonto_lote:
-            monto_uvi_tramo = Decimal(tramo["pct"]) / Decimal("100") * contratomonto_lote.contratomonto_uvi
+            monto_uvi_tramo = tramo_monto_uvi(Decimal(tramo["pct"]), contratomonto_lote.contratomonto_uvi)
             monto_pesos_tramo = monto_uvi_tramo * Decimal(tramo["tasa_valor"])
         else:
             monto_uvi_tramo = monto_pesos_tramo = None
