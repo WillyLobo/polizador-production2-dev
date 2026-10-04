@@ -2,14 +2,14 @@
 symbol: list_aseguradoras
 kind: function
 module: api/views/carga_views.py
-lines: 160-161
-signature_hash: sha1:0f6064b0fa8245fdfd545f216583a650dc3e8d26
+lines: 161-162
+signature_hash: sha1:ee19b24f9bbcbf0ee26ab6106a91ccbaae111ff2
 authored: true
 ---
 
 # list_aseguradoras
 
-**Módulo:** `api/views/carga_views.py` (líneas 160-161)
+**Módulo:** `api/views/carga_views.py` (líneas 161-162)
 
 ## Propósito
 

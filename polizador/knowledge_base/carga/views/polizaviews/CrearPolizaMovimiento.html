@@ -1,14 +1,19 @@
 <h1>CrearPolizaMovimiento</h1>
-<p><strong>Módulo:</strong> <code>carga/views/polizaviews.py</code> (líneas 54-79)</p>
+<p><strong>Módulo:</strong> <code>carga/views/polizaviews.py</code> (líneas 76-101) · hereda de <code>PermissionRequiredMixin, UserKwargsMixin, generic.CreateView</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Registra un movimiento (entrega de la póliza física a un receptor/área, con fecha) sobre una Póliza <strong>ya existente</strong>.
+Antes sólo había el primer movimiento, cargado como formset dentro del alta de la Póliza.
+Con <code>?poliza=&lt;id&gt;</code> precarga <code>poliza_movimiento_numero</code> (la FK a la Póliza). Usa
+<code>UserKwargsMixin</code> porque <code>PolizaMovimientoForm</code> recibe al usuario. Exige
+<code>carga.add_poliza_movimiento</code> y vuelve a la ficha de la Póliza.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class CrearPolizaMovimiento(PermissionRequiredMixin, UserKwargsMixin, generic.CreateView):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>carga:crear-poliza-movimiento</code> (<code>crear/poliza/movimiento/?poliza=&lt;pk&gt;</code>), desde la ficha de la Póliza.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/Poliza_Movimiento.md">Poliza_Movimiento</a></li>
+<li><a href="UpdatePolizaMovimiento.md">UpdatePolizaMovimiento</a></li>
+<li><a href="EliminarPolizaMovimiento.md">EliminarPolizaMovimiento</a></li>
+</ul>

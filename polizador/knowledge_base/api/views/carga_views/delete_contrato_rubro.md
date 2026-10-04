@@ -2,14 +2,14 @@
 symbol: delete_contrato_rubro
 kind: function
 module: api/views/carga_views.py
-lines: 1687-1689
-signature_hash: sha1:121cec32764f36f4481fde6ad6346c769352a7a4
+lines: 1708-1710
+signature_hash: sha1:6da54f7c8dc5b72b80663647f98a8101f31b66b7
 authored: true
 ---
 
 # delete_contrato_rubro
 
-**Módulo:** `api/views/carga_views.py` (líneas 1687-1689)
+**Módulo:** `api/views/carga_views.py` (líneas 1708-1710)
 
 ## Propósito
 

@@ -2,14 +2,14 @@
 symbol: Localidad
 kind: class
 module: carga/models.py
-lines: 275-295
-signature_hash: sha1:b95602f1a215c0db7af8a892f2d7718dee9ee574
+lines: 360-380
+signature_hash: sha1:a801da8a8cb5534dc277fdc64132672a9e88afcb
 authored: true
 ---
 
 # Localidad
 
-**Módulo:** `carga/models.py` (líneas 275-295) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 360-380) · hereda de `models.Model`
 
 ## Propósito
 

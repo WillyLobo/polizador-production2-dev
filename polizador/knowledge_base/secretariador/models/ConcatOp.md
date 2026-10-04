@@ -2,14 +2,14 @@
 symbol: ConcatOp
 kind: class
 module: secretariador/models.py
-lines: 74-78
-signature_hash: sha1:225a344487f7e94fcaf0e38abd23c4f2dd235671
+lines: 75-79
+signature_hash: sha1:f19b6718c76e324ee02b099eb653e33a202ef148
 authored: true
 ---
 
 # ConcatOp
 
-**Módulo:** `secretariador/models.py` (líneas 74-78) · hereda de `models.Func`
+**Módulo:** `secretariador/models.py` (líneas 75-79) · hereda de `models.Func`
 
 ## Propósito
 

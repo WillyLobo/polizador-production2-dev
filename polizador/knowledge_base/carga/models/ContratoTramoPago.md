@@ -2,13 +2,13 @@
 symbol: ContratoTramoPago
 kind: class
 module: carga/models.py
-lines: 1314-1345
-signature_hash: sha1:794588260756ea3f13a489d53019e0792816c7d1
+lines: 1593-1624
+signature_hash: sha1:8f53b1648589d40ce3271549d5235272d4def394
 authored: true
 ---
 # ContratoTramoPago
 
-**Módulo:** `carga/models.py` (líneas 1314-1345) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 1593-1624) · hereda de `models.Model`
 
 ## Propósito
 

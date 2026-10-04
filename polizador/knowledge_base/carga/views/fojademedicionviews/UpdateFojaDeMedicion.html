@@ -1,5 +1,5 @@
 <h1>UpdateFojaDeMedicion</h1>
-<p><strong>Módulo:</strong> <code>carga/views/fojademedicionviews.py</code> (líneas 191-250) · hereda de <code>LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView</code></p>
+<p><strong>Módulo:</strong> <code>carga/views/fojademedicionviews.py</code> (líneas 194-253) · hereda de <code>LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView</code></p>
 <h2>Propósito</h2>
 <p>Mismo patrón <code>get</code>/<code>post</code> manual que <code>CrearFojaDeMedicion</code> (formset de items + formset de fotos), sin la parte de precarga por querystring ni de vinculación legacy (una Foja ya creada ya tiene su rubro fijo). <code>prepare_formset</code> repuebla el <code>%</code> anterior de cada fila al reconstruir el formset, tanto al mostrarlo (<code>get</code>) como al re-renderizarlo con errores (<code>post</code>).</p>
 <p>Igual que <code>CrearFojaDeMedicion</code>, su <code>post()</code> es totalmente custom y por eso invoca

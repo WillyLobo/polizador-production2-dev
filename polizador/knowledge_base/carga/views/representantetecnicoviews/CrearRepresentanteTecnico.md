@@ -27,4 +27,4 @@ class CrearRepresentanteTecnico(PermissionRequiredMixin, generic.CreateView):
 
 ## Ver también
 
-- [RepresentanteTecnico](../../models/RepresentanteTecnico.md)
+- [RepresentanteTecnico](../../../personalizador/models/RepresentanteTecnico.md)

@@ -27,5 +27,5 @@ class RepresentanteTecnicoObra(PermissionRequiredMixin, generic.DetailView):
 
 ## Ver también
 
-- [RepresentanteTecnico](../../models/RepresentanteTecnico.md)
+- [RepresentanteTecnico](../../../personalizador/models/RepresentanteTecnico.md)
 - [Obra](../../models/Obra.md)

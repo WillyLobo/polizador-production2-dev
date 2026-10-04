@@ -2,14 +2,14 @@
 symbol: list_certificados
 kind: function
 module: api/views/carga_views.py
-lines: 1265-1269
-signature_hash: sha1:bc9d3e88b80a5031836e6809ea96051cc501ddfc
+lines: 1266-1270
+signature_hash: sha1:32b2cccbfcaae7450d6421e5f00fe47ff71df655
 authored: true
 ---
 
 # list_certificados
 
-**Módulo:** `api/views/carga_views.py` (líneas 1265-1269)
+**Módulo:** `api/views/carga_views.py` (líneas 1266-1270)
 
 ## Propósito
 

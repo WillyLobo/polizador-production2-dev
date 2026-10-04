@@ -2,14 +2,14 @@
 symbol: create_financiamiento
 kind: function
 module: api/views/carga_views.py
-lines: 1240-1241
-signature_hash: sha1:96da67bdd3b10be5a70a199c99c14fd5fe8c425c
+lines: 1241-1242
+signature_hash: sha1:c33419c1ccc0b68d29574f59dc941d164889e10f
 authored: true
 ---
 
 # create_financiamiento
 
-**Módulo:** `api/views/carga_views.py` (líneas 1240-1241)
+**Módulo:** `api/views/carga_views.py` (líneas 1241-1242)
 
 ## Propósito
 

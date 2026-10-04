@@ -1,7 +1,8 @@
 <h1>UpdateContratoDigital</h1>
-<p><strong>Módulo:</strong> <code>carga/views/documentosdigitalesviews.py</code> (líneas 43-49) · hereda de <code>PermissionRequiredMixin, generic.UpdateView</code></p>
+<p><strong>Módulo:</strong> <code>carga/views/documentosdigitalesviews.py</code> (líneas 45-53) · hereda de <code>PermissionRequiredMixin, generic.UpdateView</code></p>
 <h2>Propósito</h2>
 <p>Edición de un <code>ContratosDigitales</code> ya cargado.</p>
+<p>Exige el permiso propio del modelo (<code>carga.change_contratosdigitales</code>; antes pedía por error el de <code>certificado</code>). Al terminar vuelve a la ficha de la Obra del Contrato (<code>carga:estado-obra</code>), no a un listado.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class UpdateContratoDigital(PermissionRequiredMixin, generic.UpdateView):
 </code></pre>

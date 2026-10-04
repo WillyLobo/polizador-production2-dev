@@ -2,14 +2,14 @@
 symbol: latest_uvi
 kind: function
 module: api/views/carga_views.py
-lines: 1733-1737
-signature_hash: sha1:87c79f365afa594e4faa419f06806824a4c04392
+lines: 1754-1758
+signature_hash: sha1:2120ee2a6b38f2cf52552a3ba93059e83a21108f
 authored: true
 ---
 
 # latest_uvi
 
-**Módulo:** `api/views/carga_views.py` (líneas 1733-1737)
+**Módulo:** `api/views/carga_views.py` (líneas 1754-1758)
 
 ## Propósito
 

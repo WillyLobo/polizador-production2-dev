@@ -2,14 +2,14 @@
 symbol: SchemaDocsView
 kind: class
 module: core/views.py
-lines: 27-28
-signature_hash: sha1:5e2c591386531d1b67b807b84538cf0ee66c798a
+lines: 50-51
+signature_hash: sha1:dfca1252476818b4e174111fad83630379047b78
 authored: true
 ---
 
 # SchemaDocsView
 
-**Módulo:** `core/views.py` (líneas 27-28) · hereda de `SuperuserRequiredMixin, TemplateView`
+**Módulo:** `core/views.py` (líneas 50-51) · hereda de `SuperuserRequiredMixin, TemplateView`
 
 ## Propósito
 

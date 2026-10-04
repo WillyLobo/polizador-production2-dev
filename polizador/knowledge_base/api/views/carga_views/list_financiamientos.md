@@ -2,14 +2,14 @@
 symbol: list_financiamientos
 kind: function
 module: api/views/carga_views.py
-lines: 1228-1229
-signature_hash: sha1:e278b8fb502f11c7dade80dcfac5e3c02a2e5efa
+lines: 1229-1230
+signature_hash: sha1:753709d603eeb7b95779b1141a250b5c5f595663
 authored: true
 ---
 
 # list_financiamientos
 
-**Módulo:** `api/views/carga_views.py` (líneas 1228-1229)
+**Módulo:** `api/views/carga_views.py` (líneas 1229-1230)
 
 ## Propósito
 

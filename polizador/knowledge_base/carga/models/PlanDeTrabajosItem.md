@@ -2,14 +2,14 @@
 symbol: PlanDeTrabajosItem
 kind: class
 module: carga/models.py
-lines: 996-1030
-signature_hash: sha1:bbc55790ecc79dda524420ce9f1942cfd5e5be92
+lines: 1261-1295
+signature_hash: sha1:eb921c24ab82ece6a149cc24994e1b168079c52e
 authored: true
 ---
 
 # PlanDeTrabajosItem
 
-**Módulo:** `carga/models.py` (líneas 996-1030) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 1261-1295) · hereda de `models.Model`
 
 ## Propósito
 

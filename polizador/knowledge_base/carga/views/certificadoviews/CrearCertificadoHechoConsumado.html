@@ -1,5 +1,5 @@
 <h1>CrearCertificadoHechoConsumado</h1>
-<p><strong>Módulo:</strong> <code>carga/views/certificadoviews.py</code> (líneas 316-344) · hereda de <code>PermissionRequiredMixin, generic.CreateView</code></p>
+<p><strong>Módulo:</strong> <code>carga/views/certificadoviews.py</code> (líneas 149-177) · hereda de <code>PermissionRequiredMixin, generic.CreateView</code></p>
 <h2>Propósito</h2>
 <p>Mismo patrón que <code>CrearCertificadoAnticipo</code> pero para tipo HECHO_CONSUMADO: fuerza el tipo en <code>get_form_kwargs</code>, calcula <code>certificado_rubro_obra</code> correlativo, y delega en <code>certificacion.calcular_monto_hecho_consumado</code> + <code>certificacion.aplicar_descuento_anticipo</code> (un Hecho Consumado también puede tener descuento de anticipo pendiente aplicado).</p>
 <h2>Firma</h2>

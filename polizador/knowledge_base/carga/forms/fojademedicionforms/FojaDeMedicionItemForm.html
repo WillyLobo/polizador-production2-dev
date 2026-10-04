@@ -1,5 +1,5 @@
 <h1>FojaDeMedicionItemForm</h1>
-<p><strong>Módulo:</strong> <code>carga/forms/fojademedicionforms.py</code> (líneas 126-150) · hereda de <code>forms.ModelForm</code></p>
+<p><strong>Módulo:</strong> <code>carga/forms/fojademedicionforms.py</code> (líneas 138-162) · hereda de <code>forms.ModelForm</code></p>
 <h2>Propósito</h2>
 <p><code>ModelForm</code> para <code>FojaDeMedicionItem</code>, con dos campos de solo lectura agregados (<code>fojaitem_pct_anterior</code>, <code>fojaitem_pct_acumulado</code>) puramente informativos — <code>disabled=True</code>, nunca se envían ni se usan para calcular nada; el acumulado real siempre lo calcula <code>FojaDeMedicionItem.save()</code>, este campo solo lo <em>muestra</em> en la grilla mientras se edita.</p>
 <h2>Firma</h2>

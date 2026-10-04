@@ -2,18 +2,18 @@
 symbol: CrearReporteObraView
 kind: class
 module: carga/views/reportes.py
-lines: 71-155
-signature_hash: sha1:165f2da1dfbb15f9c67c592db7d17f7834dedc32
+lines: 72-161
+signature_hash: sha1:347a4f5bc02bef20ed7a7fdd830c4be8ee57fab5
 authored: true
 ---
 
 # CrearReporteObraView
 
-**Módulo:** `carga/views/reportes.py` (líneas 71-155) · hereda de `PermissionRequiredMixin, generic.ListView`
+**Módulo:** `carga/views/reportes.py` (líneas 72-161) · hereda de `PermissionRequiredMixin, generic.ListView`
 
 ## Propósito
 
-Reporte de Obras con filtros combinables (localidad, empresa, programa, rubro certificado, financiamiento, y un filtro de % de avance con comparador =/</> vía `tipodefiltro`). También sin filtros devuelve vacío. `get_context_data` calcula a mano (no en la query) el acumulado en pesos/UVI y el saldo de cada Obra listada, iterando sus Certificados — con muchas Obras en el resultado esto es N+1 real, aunque mitigado por el `prefetch_related('certificado_set')` del queryset.
+Reporte de Obras con filtros combinables (localidad, empresa, programa, inspector, rubro certificado, financiamiento, y un filtro de % de avance con comparador =/</> vía `tipodefiltro`). También sin filtros devuelve vacío. `get_context_data` calcula a mano (no en la query) el acumulado en pesos/UVI y el saldo de cada Obra listada, iterando sus Certificados — con muchas Obras en el resultado esto es N+1 real, aunque mitigado por el `prefetch_related('certificado_set')` del queryset.
 
 ## Firma
 
@@ -28,3 +28,5 @@ class CrearReporteObraView(PermissionRequiredMixin, generic.ListView):
 ## Ver también
 
 - [Obra](../../models/Obra.md)
+
+- [Agente](../../../personalizador/models/Agente.md) — filtro por inspector (`obra_inspector`).

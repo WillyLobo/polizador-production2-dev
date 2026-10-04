@@ -2,20 +2,22 @@
 symbol: EliminarContratoDigital
 kind: class
 module: carga/views/documentosdigitalesviews.py
-lines: 52-57
-signature_hash: sha1:dea8949435227242b751e6973d58d79e3c539fec
+lines: 56-63
+signature_hash: sha1:296132719857b3e0052aab7d38c791ba1e78bb69
 authored: true
 ---
 
 # EliminarContratoDigital
 
-**Módulo:** `carga/views/documentosdigitalesviews.py` (líneas 52-57) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
+**Módulo:** `carga/views/documentosdigitalesviews.py` (líneas 56-63) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
 
 ## Propósito
 
 Confirma y ejecuta el borrado de un ContratosDigitales, mostrando antes (vía `DeleteRelatedObjectsMixin`
 — `core/mixins.py` + `core/deletion.py::get_deleted_objects`) los objetos relacionados que
 se borrarían en cascada, para que el usuario no borre a ciegas.
+
+Exige el permiso propio del modelo (`carga.delete_contratosdigitales`; antes pedía por error el de `certificado`). Al terminar vuelve a la ficha de la Obra del Contrato (`carga:estado-obra`), no a un listado.
 
 ## Firma
 

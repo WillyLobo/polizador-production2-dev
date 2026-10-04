@@ -2,14 +2,14 @@
 symbol: update_empresa
 kind: function
 module: api/views/carga_views.py
-lines: 246-251
-signature_hash: sha1:6b8ce7d6c373eac470e2beae4c2961ecec077123
+lines: 247-252
+signature_hash: sha1:e3bf7f0851e1e7185184eeccdb11a02042bbf9a6
 authored: true
 ---
 
 # update_empresa
 
-**Módulo:** `api/views/carga_views.py` (líneas 246-251)
+**Módulo:** `api/views/carga_views.py` (líneas 247-252)
 
 ## Propósito
 

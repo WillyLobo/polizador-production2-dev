@@ -2,18 +2,19 @@
 symbol: UpdatePolizaMovimiento
 kind: class
 module: carga/views/polizaviews.py
-lines: 83-91
-signature_hash: sha1:2b76c617d818951d91f9075ae4bb9e72fcc4b946
-authored: false
+lines: 105-113
+signature_hash: sha1:5ccc1563b971d4ce66a1a2b53512142ba86683b8
+authored: true
 ---
 
 # UpdatePolizaMovimiento
 
-**Módulo:** `carga/views/polizaviews.py` (líneas 83-91)
+**Módulo:** `carga/views/polizaviews.py` (líneas 105-113) · hereda de `PermissionRequiredMixin, UserKwargsMixin, generic.UpdateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Edición de un `Poliza_Movimiento` puntual, fuera del formset de la Póliza. Exige
+`carga.change_poliza_movimiento` y vuelve a la ficha de la Póliza.
 
 ## Firma
 
@@ -23,14 +24,9 @@ class UpdatePolizaMovimiento(PermissionRequiredMixin, UserKwargsMixin, generic.U
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`carga:update-poliza-movimiento` (`crear/poliza/movimiento/<pk>/editar`).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Poliza_Movimiento](../../models/Poliza_Movimiento.md)
+- [CrearPolizaMovimiento](CrearPolizaMovimiento.md)

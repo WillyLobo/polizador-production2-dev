@@ -4,16 +4,19 @@ kind: class
 module: carga/forms/textoresolucionforms.py
 lines: 23-39
 signature_hash: sha1:649b59531bbaf1f8f709bba41d9e377bc91f16ac
-authored: false
+authored: true
 ---
 
 # TextoResolucionForm
 
-**Módulo:** `carga/forms/textoresolucionforms.py` (líneas 23-39)
+**Módulo:** `carga/forms/textoresolucionforms.py` (líneas 23-39) · hereda de `forms.ModelForm`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Form del **alcance** de una plantilla: nombre, programa (`programawidget`),
+financiamiento y tipo de certificado (vacío = comodín). Los bloques no pasan por acá: van en
+`BloqueFormSet` y la vista los asigna a `textoresolucion_bloques` antes de guardar. La
+unicidad del alcance la valida la `UniqueConstraint` del modelo.
 
 ## Firma
 
@@ -23,15 +26,9 @@ class TextoResolucionForm(forms.ModelForm):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/textoresolucionviews.py:15` — `TextoResolucionForm,`
-- `carga/views/textoresolucionviews.py:53` — `form_class = TextoResolucionForm`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`form_class` de [TextoResolucionEditorMixin](../../views/textoresolucionviews/TextoResolucionEditorMixin.md).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [TextoResolucionCertificado](../../models/TextoResolucionCertificado.md)
+- [BloqueForm](BloqueForm.md)

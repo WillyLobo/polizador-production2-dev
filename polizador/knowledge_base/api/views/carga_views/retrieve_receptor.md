@@ -2,14 +2,14 @@
 symbol: retrieve_receptor
 kind: function
 module: api/views/carga_views.py
-lines: 92-93
-signature_hash: sha1:9dbb5777bcf79a4ced47e576c79c9eed57d03c1d
+lines: 93-94
+signature_hash: sha1:d2c24e32179e15b4ca320bd193596a14518336b3
 authored: true
 ---
 
 # retrieve_receptor
 
-**Módulo:** `api/views/carga_views.py` (líneas 92-93)
+**Módulo:** `api/views/carga_views.py` (líneas 93-94)
 
 ## Propósito
 

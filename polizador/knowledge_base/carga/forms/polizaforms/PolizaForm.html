@@ -1,7 +1,8 @@
 <h1>PolizaForm</h1>
-<p><strong>Módulo:</strong> <code>carga/forms/polizaforms.py</code> (líneas 16-54) · hereda de <code>AddRelatedPermissionMixin, forms.ModelForm</code></p>
+<p><strong>Módulo:</strong> <code>carga/forms/polizaforms.py</code> (líneas 16-64) · hereda de <code>AddRelatedPermissionMixin, forms.ModelForm</code></p>
 <h2>Propósito</h2>
-<p><code>ModelForm</code> para Poliza, con <code>AddRelatedPermissionMixin</code> (varios de sus campos — aseguradora, tomador — usan <code>AddRelatedWidgetMixin</code> para alta rápida). Sin <code>clean()</code> propio.</p>
+<p><code>ModelForm</code> para Poliza, con <code>AddRelatedPermissionMixin</code> (varios de sus campos — aseguradora, tomador — usan <code>AddRelatedWidgetMixin</code> para alta rápida). Sin <code>clean()</code> propio: la validación vive en <code>Poliza.clean()</code>. Los choices de concepto se toman del modelo (<code>Poliza.CONCEPTO</code>), ya no de una copia local en el form.</p>
+<p>Agrega los campos que alimentan el monto de garantía sugerido: <code>poliza_contrato</code> usa <code>contratowidget</code> dependiente de <code>poliza_obra</code> (sólo ofrece Contratos de esa Obra), más <code>poliza_financiamiento</code> y <code>poliza_anticipo_pct</code>. <code>__init__</code> marca <code>poliza_contrato</code> y <code>poliza_financiamiento</code> como obligatorios en el form, aunque en el modelo sean <code>null=True</code> por las pólizas legacy. Así toda póliza nueva o editada queda con base para calcular el sugerido.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class PolizaForm(AddRelatedPermissionMixin, forms.ModelForm):
 </code></pre>
@@ -10,5 +11,10 @@
 <h2>Ver también</h2>
 <ul>
 <li><a href="../../models/Poliza.md">Poliza</a></li>
-<li><a href="AddRelatedPermissionMixin.md">AddRelatedPermissionMixin</a></li>
+<li>
+<p><a href="../mixins/AddRelatedPermissionMixin.md">AddRelatedPermissionMixin</a></p>
+</li>
+<li>
+<p><a href="../../../api/views/carga_views/monto_garantia_sugerido.md">monto_garantia_sugerido</a> — el form lo consulta en vivo.</p>
+</li>
 </ul>

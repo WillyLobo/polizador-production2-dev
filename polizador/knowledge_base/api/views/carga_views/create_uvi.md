@@ -2,14 +2,14 @@
 symbol: create_uvi
 kind: function
 module: api/views/carga_views.py
-lines: 1742-1743
-signature_hash: sha1:82d3abbfadb545cfdcc54b6a592d99122c7419ec
+lines: 1763-1764
+signature_hash: sha1:8eccacdfe37bd34be8d7c001ba2a0c19ead21df2
 authored: true
 ---
 
 # create_uvi
 
-**Módulo:** `api/views/carga_views.py` (líneas 1742-1743)
+**Módulo:** `api/views/carga_views.py` (líneas 1763-1764)
 
 ## Propósito
 

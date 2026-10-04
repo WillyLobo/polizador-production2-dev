@@ -2,14 +2,14 @@
 symbol: update_contrato
 kind: function
 module: api/views/carga_views.py
-lines: 1612-1617
-signature_hash: sha1:749d9aad008078137baddee6913360f9097aa555
+lines: 1613-1618
+signature_hash: sha1:2066fbf159ee43f837587af2d168ae2319fe1bf5
 authored: true
 ---
 
 # update_contrato
 
-**Módulo:** `api/views/carga_views.py` (líneas 1612-1617)
+**Módulo:** `api/views/carga_views.py` (líneas 1613-1618)
 
 ## Propósito
 

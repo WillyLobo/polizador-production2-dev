@@ -1,14 +1,44 @@
 <h1>invalidar_texto_resolucion_por_cambio_de_datos</h1>
 <p><strong>Módulo:</strong> <code>carga/signals.py</code> (líneas 103-127)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>pre_save</code> de <code>Certificado</code>. <code>certificado_texto_resolucion</code> es un snapshot del texto de la
+resolución ya resuelto y retocado a mano. Si después cambia alguno de los datos que ese
+texto describe (<code>CAMPOS_TEXTO_RESOLUCION</code>: obra, tipo, financiamiento, rubro, número,
+expediente, período, fecha, montos, devolución, % de fondo de reparo, % mes/anterior/
+acumulado/anticipo/etapa), el snapshot quedaría desactualizado y la pantalla de revisión lo
+seguiría mostrando igual. La señal lee los valores guardados y, si alguno difiere, anula el
+snapshot para que se vuelva a resolver desde la plantilla.</p>
+<p>Usa <code>Certificado.objects.filter(pk=...).update(...)</code> y no un <code>save()</code> ni sólo mutar
+<code>instance</code>:
+- Django arma <code>update_fields</code> antes de emitir <code>pre_save</code>, así que mutar <code>instance</code> no
+  alcanza para que se escriba (igual se muta, para que el objeto en memoria quede
+  coherente).
+- Un <code>save()</code> adentro reentraría en la señal y dejaría una segunda fila en
+  <code>certificado_history</code> por cada edición.</p>
+<p><code>.update()</code> no toca los <code>GeneratedField</code> con <code>db_persist</code>: esos los recalcula la base. En
+altas (<code>instance.pk</code> vacío) y en certificados sin snapshot no hace nada.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def invalidar_texto_resolucion_por_cambio_de_datos(sender, instance, **kwargs):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
+<p>Se dispara sola en cada <code>Certificado.save()</code> (form de edición, regeneración desde Foja, etc.). No se llama directamente.</p>
 <h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<pre><code class="language-mermaid">sequenceDiagram
+    participant V as Vista (UpdateCertificado, ...)
+    participant C as Certificado.save()
+    participant S as invalidar_texto_resolucion_por_cambio_de_datos
+    participant DB as DB
+    V-&gt;&gt;C: save()
+    C--&gt;&gt;S: pre_save
+    S-&gt;&gt;DB: values(snapshot, *CAMPOS_TEXTO_RESOLUCION)
+    alt hay snapshot y cambió algún campo
+        S-&gt;&gt;DB: update(certificado_texto_resolucion=None)
+    end
+    C-&gt;&gt;DB: UPDATE certificado
+</code></pre>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../models/Certificado.md">Certificado</a></li>
+<li><a href="../views/textoresolucionviews/editar_texto_resolucion_certificado.md">editar_texto_resolucion_certificado</a></li>
+<li><a href="../views/textoresolucionviews/restaurar_texto_resolucion_certificado.md">restaurar_texto_resolucion_certificado</a> — el mismo descarte, pero a pedido del usuario.</li>
+</ul>

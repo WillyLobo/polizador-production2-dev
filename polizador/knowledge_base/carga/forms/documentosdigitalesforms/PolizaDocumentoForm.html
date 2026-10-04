@@ -1,17 +1,16 @@
 <h1>PolizaDocumentoForm</h1>
-<p><strong>Módulo:</strong> <code>carga/forms/documentosdigitalesforms.py</code> (líneas 39-53)</p>
+<p><strong>Módulo:</strong> <code>carga/forms/documentosdigitalesforms.py</code> (líneas 39-53) · hereda de <code>forms.ModelForm</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>ModelForm</code> de <a href="../../models/PolizaDocumento.md">PolizaDocumento</a>: Póliza (<code>polizawidget</code>,
+Select2), descripción y archivo. Sin <code>clean()</code> propio: la validación de PDF y tamaño está
+en el <code>FileValidator</code> del campo del modelo.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class PolizaDocumentoForm(forms.ModelForm):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/documentosdigitalesviews.py:108</code> — <code>form_class = PolizaDocumentoForm</code></li>
-<li><code>carga/views/documentosdigitalesviews.py:136</code> — <code>form_class = PolizaDocumentoForm</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>CrearPolizaDocumento</code>/<code>UpdatePolizaDocumento</code> (<code>carga/views/documentosdigitalesviews.py</code>).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/PolizaDocumento.md">PolizaDocumento</a></li>
+<li><a href="../../views/documentosdigitalesviews/CrearPolizaDocumento.md">CrearPolizaDocumento</a></li>
+</ul>

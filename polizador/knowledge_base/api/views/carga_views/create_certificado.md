@@ -2,14 +2,14 @@
 symbol: create_certificado
 kind: function
 module: api/views/carga_views.py
-lines: 1280-1281
-signature_hash: sha1:16334b59cc914d83ba3f1cb4b7a9e17e4d4b64f2
+lines: 1281-1282
+signature_hash: sha1:9959797ca223234263697fe825b3dbd9be3d6bd2
 authored: true
 ---
 
 # create_certificado
 
-**Módulo:** `api/views/carga_views.py` (líneas 1280-1281)
+**Módulo:** `api/views/carga_views.py` (líneas 1281-1282)
 
 ## Propósito
 

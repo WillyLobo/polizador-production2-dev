@@ -2,14 +2,14 @@
 symbol: list_programas
 kind: function
 module: api/views/carga_views.py
-lines: 305-306
-signature_hash: sha1:a5ffab111729ba7d37ce76549bf857469071db15
+lines: 306-307
+signature_hash: sha1:d58d77e1fe5b7570ff873ea52f63bcc6fd0ae3ae
 authored: true
 ---
 
 # list_programas
 
-**Módulo:** `api/views/carga_views.py` (líneas 305-306)
+**Módulo:** `api/views/carga_views.py` (líneas 306-307)
 
 ## Propósito
 

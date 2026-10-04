@@ -35,4 +35,4 @@ class certificadolegacywidget(FojaRubroDependentWidgetMixin, LoginRequiredMixin,
 
 - [FojaDeMedicion](../../models/FojaDeMedicion.md)
 - [Certificado](../../models/Certificado.md)
-- [CrearFojaDeMedicion](CrearFojaDeMedicion.md)
+- [CrearFojaDeMedicion](../fojademedicionviews/CrearFojaDeMedicion.md)

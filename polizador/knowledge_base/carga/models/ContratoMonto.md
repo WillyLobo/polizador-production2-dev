@@ -2,13 +2,13 @@
 symbol: ContratoMonto
 kind: class
 module: carga/models.py
-lines: 1347-1362
-signature_hash: sha1:cdd858d141f24c6a1eafdf92583e5e316c5c1276
+lines: 1626-1641
+signature_hash: sha1:f803d43acf152ff0c0bdbb628fed00acd85af69e
 authored: true
 ---
 # ContratoMonto
 
-**Módulo:** `carga/models.py` (líneas 1347-1362) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 1626-1641) · hereda de `models.Model`
 
 ## Propósito
 

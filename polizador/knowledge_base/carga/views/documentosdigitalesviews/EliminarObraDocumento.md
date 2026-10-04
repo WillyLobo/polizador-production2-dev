@@ -2,20 +2,22 @@
 symbol: EliminarObraDocumento
 kind: class
 module: carga/views/documentosdigitalesviews.py
-lines: 95-100
-signature_hash: sha1:5f9c57396c93b7a9a882ad7741bd0980d44c725a
+lines: 105-112
+signature_hash: sha1:c2e6c97833580cf4d73ea6ac6057193f742923b4
 authored: true
 ---
 
 # EliminarObraDocumento
 
-**Módulo:** `carga/views/documentosdigitalesviews.py` (líneas 95-100) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
+**Módulo:** `carga/views/documentosdigitalesviews.py` (líneas 105-112) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
 
 ## Propósito
 
 Confirma y ejecuta el borrado de un ObraDocumento, mostrando antes (vía `DeleteRelatedObjectsMixin`
 — `core/mixins.py` + `core/deletion.py::get_deleted_objects`) los objetos relacionados que
 se borrarían en cascada, para que el usuario no borre a ciegas.
+
+Exige `carga.delete_obradocumento`. Al terminar vuelve a la ficha de la Obra (`carga:estado-obra`), no a un listado.
 
 ## Firma
 

@@ -2,14 +2,14 @@
 symbol: create_indec
 kind: function
 module: api/views/carga_views.py
-lines: 1782-1783
-signature_hash: sha1:f0a426a349ab565e6306552659d4e8e9b21ee180
+lines: 1803-1804
+signature_hash: sha1:d7fd61128c7e0b138dfe05e7f20471cb68a7b739
 authored: true
 ---
 
 # create_indec
 
-**Módulo:** `api/views/carga_views.py` (líneas 1782-1783)
+**Módulo:** `api/views/carga_views.py` (líneas 1803-1804)
 
 ## Propósito
 

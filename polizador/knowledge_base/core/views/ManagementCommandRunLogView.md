@@ -2,13 +2,13 @@
 symbol: ManagementCommandRunLogView
 kind: class
 module: core/views.py
-lines: 163-175
-signature_hash: sha1:66efc27f94cb87240ce724d11ee58b41e9d90ed1
+lines: 186-198
+signature_hash: sha1:032b8c0d9119ccf9473f3199a90f9196742e9a22
 authored: true
 ---
 # ManagementCommandRunLogView
 
-**Módulo:** `core/views.py` (líneas 163-175) · hereda de `SuperuserRequiredMixin, View`
+**Módulo:** `core/views.py` (líneas 186-198) · hereda de `SuperuserRequiredMixin, View`
 
 ## Propósito
 

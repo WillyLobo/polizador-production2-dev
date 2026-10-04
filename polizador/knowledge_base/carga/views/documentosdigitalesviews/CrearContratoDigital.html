@@ -1,7 +1,8 @@
 <h1>CrearContratoDigital</h1>
-<p><strong>Módulo:</strong> <code>carga/views/documentosdigitalesviews.py</code> (líneas 17-40) · hereda de <code>PermissionRequiredMixin, generic.CreateView</code></p>
+<p><strong>Módulo:</strong> <code>carga/views/documentosdigitalesviews.py</code> (líneas 17-42) · hereda de <code>PermissionRequiredMixin, generic.CreateView</code></p>
 <h2>Propósito</h2>
 <p>Alta de un documento PDF adjunto a un Contrato (<code>ContratosDigitales</code>). Si viene <code>?contrato=&lt;id&gt;</code>, precarga el Contrato destino.</p>
+<p>Exige el permiso propio del modelo (<code>carga.add_contratosdigitales</code>; antes pedía por error el de <code>certificado</code>). Al terminar vuelve a la ficha de la Obra del Contrato (<code>carga:estado-obra</code>), no a un listado.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class CrearContratoDigital(PermissionRequiredMixin, generic.CreateView):
 </code></pre>

@@ -2,14 +2,14 @@
 symbol: PolizaMovimientoFormset
 kind: class
 module: carga/forms/polizaforms.py
-lines: 75-77
-signature_hash: sha1:530425ae99c5f3bf395762e3e642558e22c219ae
+lines: 85-87
+signature_hash: sha1:38c528a27ee8b67f278b2532bbbe90d581296d0f
 authored: true
 ---
 
 # PolizaMovimientoFormset
 
-**Módulo:** `carga/forms/polizaforms.py` (líneas 75-77) · hereda de `forms.models.BaseInlineFormSet`
+**Módulo:** `carga/forms/polizaforms.py` (líneas 85-87) · hereda de `forms.models.BaseInlineFormSet`
 
 ## Propósito
 

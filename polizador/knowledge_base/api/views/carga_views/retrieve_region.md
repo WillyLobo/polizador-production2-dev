@@ -2,14 +2,14 @@
 symbol: retrieve_region
 kind: function
 module: api/views/carga_views.py
-lines: 408-409
-signature_hash: sha1:e04af9789f8a7b86d167ff6fe318d27ca954ed21
+lines: 409-410
+signature_hash: sha1:9c5c825c3b700225a5732cd4b091949f1d3a043a
 authored: true
 ---
 
 # retrieve_region
 
-**Módulo:** `api/views/carga_views.py` (líneas 408-409)
+**Módulo:** `api/views/carga_views.py` (líneas 409-410)
 
 ## Propósito
 

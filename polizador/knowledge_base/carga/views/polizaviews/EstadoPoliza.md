@@ -2,14 +2,14 @@
 symbol: EstadoPoliza
 kind: class
 module: carga/views/polizaviews.py
-lines: 61-78
-signature_hash: sha1:6b82c0b2747fcb2c21ee4f2e0ff1c7f64a5e87bd
+lines: 127-144
+signature_hash: sha1:7d1fe90aa146151990acc3c7845338a42d1b4e4d
 authored: true
 ---
 
 # EstadoPoliza
 
-**Módulo:** `carga/views/polizaviews.py` (líneas 61-78) · hereda de `PermissionRequiredMixin, generic.DetailView`
+**Módulo:** `carga/views/polizaviews.py` (líneas 127-144) · hereda de `PermissionRequiredMixin, generic.DetailView`
 
 ## Propósito
 

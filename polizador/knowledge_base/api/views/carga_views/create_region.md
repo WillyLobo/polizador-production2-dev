@@ -2,14 +2,14 @@
 symbol: create_region
 kind: function
 module: api/views/carga_views.py
-lines: 414-415
-signature_hash: sha1:48b266a6187b434b07ceeb2d22e1d0058b868860
+lines: 415-416
+signature_hash: sha1:3ff8abf682fac94d7433d9bfcff736dc26e9bb76
 authored: true
 ---
 
 # create_region
 
-**Módulo:** `api/views/carga_views.py` (líneas 414-415)
+**Módulo:** `api/views/carga_views.py` (líneas 415-416)
 
 ## Propósito
 

@@ -2,14 +2,14 @@
 symbol: delete_certificado
 kind: function
 module: api/views/carga_views.py
-lines: 1296-1298
-signature_hash: sha1:4e9fe627930b8cf8b97aa8eb98ada2ed9decf005
+lines: 1297-1299
+signature_hash: sha1:9c931b92de9e4ddd2f0cde2b127a115cfa7a6ae7
 authored: true
 ---
 
 # delete_certificado
 
-**Módulo:** `api/views/carga_views.py` (líneas 1296-1298)
+**Módulo:** `api/views/carga_views.py` (líneas 1297-1299)
 
 ## Propósito
 

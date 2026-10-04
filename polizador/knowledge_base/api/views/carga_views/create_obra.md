@@ -2,14 +2,14 @@
 symbol: create_obra
 kind: function
 module: api/views/carga_views.py
-lines: 774-788
-signature_hash: sha1:0cd4b2d5094dd2c876e38882a6e7e9a1760ab6f8
+lines: 775-789
+signature_hash: sha1:2b98f95d18da3fe550dac294fd4c40885f336ea3
 authored: true
 ---
 
 # create_obra
 
-**Módulo:** `api/views/carga_views.py` (líneas 774-788)
+**Módulo:** `api/views/carga_views.py` (líneas 775-789)
 
 ## Propósito
 

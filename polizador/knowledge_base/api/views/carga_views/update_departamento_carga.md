@@ -2,14 +2,14 @@
 symbol: update_departamento_carga
 kind: function
 module: api/views/carga_views.py
-lines: 481-486
-signature_hash: sha1:2877373060f43b6544530639e4ad18ed6291ed83
+lines: 482-487
+signature_hash: sha1:d3458a1fe21404e16373cd2b7ca54da0fc20ff92
 authored: true
 ---
 
 # update_departamento_carga
 
-**Módulo:** `api/views/carga_views.py` (líneas 481-486)
+**Módulo:** `api/views/carga_views.py` (líneas 482-487)
 
 ## Propósito
 

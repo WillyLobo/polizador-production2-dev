@@ -2,14 +2,14 @@
 symbol: Region
 kind: class
 module: carga/models.py
-lines: 243-256
-signature_hash: sha1:581812bfda15800658e0a518d8419f04973d671a
+lines: 328-341
+signature_hash: sha1:fa09606baf4974412e2ecc89f2645f3584c6c6ef
 authored: true
 ---
 
 # Region
 
-**Módulo:** `carga/models.py` (líneas 243-256) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 328-341) · hereda de `models.Model`
 
 ## Propósito
 

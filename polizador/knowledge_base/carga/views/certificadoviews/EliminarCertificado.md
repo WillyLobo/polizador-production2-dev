@@ -2,14 +2,14 @@
 symbol: EliminarCertificado
 kind: class
 module: carga/views/certificadoviews.py
-lines: 183-188
-signature_hash: sha1:0324e7ec8b37b081d562921c9b9f4d2416e27757
+lines: 26-31
+signature_hash: sha1:bd66ad5075f9b3a60b696845706d9a26ec6f4eed
 authored: true
 ---
 
 # EliminarCertificado
 
-**Módulo:** `carga/views/certificadoviews.py` (líneas 183-188) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
+**Módulo:** `carga/views/certificadoviews.py` (líneas 26-31) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
 
 ## Propósito
 

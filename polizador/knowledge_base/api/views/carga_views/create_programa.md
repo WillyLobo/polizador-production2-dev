@@ -2,14 +2,14 @@
 symbol: create_programa
 kind: function
 module: api/views/carga_views.py
-lines: 317-318
-signature_hash: sha1:424e5d98be1787fdf007b7f998acc17dd07a6bc6
+lines: 318-319
+signature_hash: sha1:1d8fe6fb5f4871f014b2f317adfd9527732794ce
 authored: true
 ---
 
 # create_programa
 
-**Módulo:** `api/views/carga_views.py` (líneas 317-318)
+**Módulo:** `api/views/carga_views.py` (líneas 318-319)
 
 ## Propósito
 

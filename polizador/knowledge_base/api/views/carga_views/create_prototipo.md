@@ -2,14 +2,14 @@
 symbol: create_prototipo
 kind: function
 module: api/views/carga_views.py
-lines: 1166-1167
-signature_hash: sha1:adbf52e89a47b57ed91adf036ba88dbc9fe77e38
+lines: 1167-1168
+signature_hash: sha1:caacd16d5f917f82ac4bee45f4263e59090f97af
 authored: true
 ---
 
 # create_prototipo
 
-**Módulo:** `api/views/carga_views.py` (líneas 1166-1167)
+**Módulo:** `api/views/carga_views.py` (líneas 1167-1168)
 
 ## Propósito
 

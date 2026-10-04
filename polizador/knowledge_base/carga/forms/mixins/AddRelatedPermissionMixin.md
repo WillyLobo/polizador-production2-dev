@@ -36,5 +36,5 @@ class AddRelatedPermissionMixin:
 ## Ver también
 
 - [AddRelatedWidgetMixin](../../views/ajaxviews/AddRelatedWidgetMixin.md)
-- [PolizaForm](PolizaForm.md)
-- [ObraForm](ObraForm.md)
+- [PolizaForm](../polizaforms/PolizaForm.md)
+- [ObraForm](../obraforms/ObraForm.md)

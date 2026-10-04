@@ -2,14 +2,14 @@
 symbol: create_receptor
 kind: function
 module: api/views/carga_views.py
-lines: 98-99
-signature_hash: sha1:5e34440f30edeaa1dd68cab02386287039d7b4d5
+lines: 99-100
+signature_hash: sha1:e87ad45b36c1228fc541f99dfb2aa05df8300455
 authored: true
 ---
 
 # create_receptor
 
-**Módulo:** `api/views/carga_views.py` (líneas 98-99)
+**Módulo:** `api/views/carga_views.py` (líneas 99-100)
 
 ## Propósito
 

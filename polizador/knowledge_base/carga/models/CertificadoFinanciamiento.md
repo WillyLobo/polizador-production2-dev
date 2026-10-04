@@ -2,14 +2,14 @@
 symbol: CertificadoFinanciamiento
 kind: class
 module: carga/models.py
-lines: 613-624
-signature_hash: sha1:eb304ac3d1a3cc450eea5fd1b359197f42b09d4d
+lines: 706-717
+signature_hash: sha1:7d48486e329e8e4ea5fc19920b918f7f714ef8cf
 authored: true
 ---
 
 # CertificadoFinanciamiento
 
-**Módulo:** `carga/models.py` (líneas 613-624) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 706-717) · hereda de `models.Model`
 
 ## Propósito
 

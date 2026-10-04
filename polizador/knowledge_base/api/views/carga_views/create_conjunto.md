@@ -2,14 +2,14 @@
 symbol: create_conjunto
 kind: function
 module: api/views/carga_views.py
-lines: 1486-1487
-signature_hash: sha1:72f70cf7d0b8415596c7b1725d0a80c4e7a8afeb
+lines: 1487-1488
+signature_hash: sha1:8e7f4d96035f920b4f22542fb50f71237e0c9736
 authored: true
 ---
 
 # create_conjunto
 
-**Módulo:** `api/views/carga_views.py` (líneas 1486-1487)
+**Módulo:** `api/views/carga_views.py` (líneas 1487-1488)
 
 ## Propósito
 

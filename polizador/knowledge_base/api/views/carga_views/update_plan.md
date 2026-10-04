@@ -2,14 +2,14 @@
 symbol: update_plan
 kind: function
 module: api/views/carga_views.py
-lines: 1572-1577
-signature_hash: sha1:4eeff28133552142742e40813cb57a62abc7d3ff
+lines: 1573-1578
+signature_hash: sha1:e082caba9e14c1c4c393b7e199f5d4ff55b9d0a9
 authored: true
 ---
 
 # update_plan
 
-**Módulo:** `api/views/carga_views.py` (líneas 1572-1577)
+**Módulo:** `api/views/carga_views.py` (líneas 1573-1578)
 
 ## Propósito
 

@@ -2,13 +2,13 @@
 symbol: Uvi
 kind: class
 module: carga/models.py
-lines: 1389-1410
-signature_hash: sha1:d87f361c3091d2682c27cb9ac912ad3a77c2d70e
+lines: 1668-1689
+signature_hash: sha1:4ca5bbac94ab0f0c5f66e3c78ebf3f4367cc3238
 authored: true
 ---
 # Uvi
 
-**Módulo:** `carga/models.py` (líneas 1389-1410) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 1668-1689) · hereda de `models.Model`
 
 ## Propósito
 

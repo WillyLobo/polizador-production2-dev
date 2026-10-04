@@ -27,4 +27,4 @@ class SyncDecretosSgtForm(BaseCommandRunForm):
 ## Ver también
 
 - [SyncResolucionesSgtForm](SyncResolucionesSgtForm.md)
-- [InstrumentosLegalesDecretos](../../../secretariador/models/InstrumentosLegalesDecretos.md)
+- [InstrumentosLegalesDecretos](../../secretariador/models/InstrumentosLegalesDecretos.md)

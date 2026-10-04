@@ -2,14 +2,14 @@
 symbol: FojaDeMedicionItemForm
 kind: class
 module: carga/forms/fojademedicionforms.py
-lines: 126-150
-signature_hash: sha1:abd0212185d5139bfff6d24a7500fdbd23625c59
+lines: 138-162
+signature_hash: sha1:414f10fa126980bb7e377359a5c81c0bd658338c
 authored: true
 ---
 
 # FojaDeMedicionItemForm
 
-**Módulo:** `carga/forms/fojademedicionforms.py` (líneas 126-150) · hereda de `forms.ModelForm`
+**Módulo:** `carga/forms/fojademedicionforms.py` (líneas 138-162) · hereda de `forms.ModelForm`
 
 ## Propósito
 

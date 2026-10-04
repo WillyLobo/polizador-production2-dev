@@ -2,14 +2,14 @@
 symbol: create_provincia
 kind: function
 module: api/views/carga_views.py
-lines: 377-378
-signature_hash: sha1:2c0ac5dab9aa13dfd3a0e74eecb5a5fd2cb07e1c
+lines: 378-379
+signature_hash: sha1:fb6f41161af503c22c6c5eb08816c131b5b3692e
 authored: true
 ---
 
 # create_provincia
 
-**Módulo:** `api/views/carga_views.py` (líneas 377-378)
+**Módulo:** `api/views/carga_views.py` (líneas 378-379)
 
 ## Propósito
 

@@ -2,14 +2,14 @@
 symbol: Area
 kind: class
 module: carga/models.py
-lines: 103-117
-signature_hash: sha1:39dc53cc3d5be8027ae84f64985b0acee5134e7b
+lines: 111-125
+signature_hash: sha1:61f302b826768fe63072c4c34d8ca838deecb408
 authored: true
 ---
 
 # Area
 
-**Módulo:** `carga/models.py` (líneas 103-117) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 111-125) · hereda de `models.Model`
 
 ## Propósito
 

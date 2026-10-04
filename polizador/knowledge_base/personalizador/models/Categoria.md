@@ -2,14 +2,14 @@
 symbol: Categoria
 kind: class
 module: personalizador/models.py
-lines: 204-214
-signature_hash: sha1:dc8751ebbd07aef9156cb2fa32d479dde71c1586
+lines: 243-253
+signature_hash: sha1:5aa8d74d4d02200f3e6d62b09e1dc46451d62cdf
 authored: true
 ---
 
 # Categoria
 
-**Módulo:** `personalizador/models.py` (líneas 204-214) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 243-253) · hereda de `models.Model`
 
 ## Propósito
 

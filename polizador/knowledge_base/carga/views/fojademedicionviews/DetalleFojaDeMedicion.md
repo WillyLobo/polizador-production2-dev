@@ -2,13 +2,13 @@
 symbol: DetalleFojaDeMedicion
 kind: class
 module: carga/views/fojademedicionviews.py
-lines: 265-273
-signature_hash: sha1:32e7eebcf48470ff794cc148726cb75775f21d2d
+lines: 268-276
+signature_hash: sha1:490414939f927e89342a1ff7f6c390026e8707b5
 authored: true
 ---
 # DetalleFojaDeMedicion
 
-**Módulo:** `carga/views/fojademedicionviews.py` (líneas 265-273) · hereda de `PermissionRequiredMixin, generic.DetailView`
+**Módulo:** `carga/views/fojademedicionviews.py` (líneas 268-276) · hereda de `PermissionRequiredMixin, generic.DetailView`
 
 ## Propósito
 

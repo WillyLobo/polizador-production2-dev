@@ -2,13 +2,13 @@
 symbol: ManagementCommandRunKillView
 kind: class
 module: core/views.py
-lines: 178-182
-signature_hash: sha1:4e68b14c4851fddab0009bf7a562947a5d05532e
+lines: 201-205
+signature_hash: sha1:b311a90bb6c6cf0689ebcbe25690d061621a01d3
 authored: true
 ---
 # ManagementCommandRunKillView
 
-**Módulo:** `core/views.py` (líneas 178-182) · hereda de `SuperuserRequiredMixin, View`
+**Módulo:** `core/views.py` (líneas 201-205) · hereda de `SuperuserRequiredMixin, View`
 
 ## Propósito
 

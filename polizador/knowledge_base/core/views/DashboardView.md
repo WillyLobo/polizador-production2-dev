@@ -2,13 +2,13 @@
 symbol: DashboardView
 kind: class
 module: core/views.py
-lines: 35-54
-signature_hash: sha1:8ce41238898a302b44b325cdd14179a6107dd3a9
+lines: 58-77
+signature_hash: sha1:4617b057572a2506887015ab00effa4fb7df34a5
 authored: true
 ---
 # DashboardView
 
-**Módulo:** `core/views.py` (líneas 35-54) · hereda de `SuperuserRequiredMixin, TemplateView`
+**Módulo:** `core/views.py` (líneas 58-77) · hereda de `SuperuserRequiredMixin, TemplateView`
 
 ## Propósito
 

@@ -32,4 +32,4 @@ class SolicitudExteriorForm(BaseFormMixin, forms.ModelForm):
 ## Ver también
 
 - [Solicitud](../../models/Solicitud.md)
-- [SolicitudForm](SolicitudForm.md) — la variante Chaco.
+- [SolicitudForm](../solicitudform/SolicitudForm.md) — la variante Chaco.

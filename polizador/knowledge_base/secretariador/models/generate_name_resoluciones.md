@@ -2,14 +2,14 @@
 symbol: generate_name_resoluciones
 kind: function
 module: secretariador/models.py
-lines: 32-49
-signature_hash: sha1:9d310800c5aedcfa18bd19ba0bbffe2c68beda04
+lines: 33-50
+signature_hash: sha1:0e3651b5c41fe1583c1e88064e63279865c67bd2
 authored: true
 ---
 
 # generate_name_resoluciones
 
-**Módulo:** `secretariador/models.py` (líneas 32-49)
+**Módulo:** `secretariador/models.py` (líneas 33-50)
 
 ## Propósito
 

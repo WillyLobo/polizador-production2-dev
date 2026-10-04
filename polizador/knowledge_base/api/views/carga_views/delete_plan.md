@@ -2,14 +2,14 @@
 symbol: delete_plan
 kind: function
 module: api/views/carga_views.py
-lines: 1582-1584
-signature_hash: sha1:d8c307c2e11dde557d3e36342d0b25c9bdeaef93
+lines: 1583-1585
+signature_hash: sha1:21c746c2132bb6fa5edf24a619b03de3c719860a
 authored: true
 ---
 
 # delete_plan
 
-**Módulo:** `api/views/carga_views.py` (líneas 1582-1584)
+**Módulo:** `api/views/carga_views.py` (líneas 1583-1585)
 
 ## Propósito
 

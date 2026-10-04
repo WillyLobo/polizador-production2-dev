@@ -2,14 +2,14 @@
 symbol: create_aseguradora
 kind: function
 module: api/views/carga_views.py
-lines: 172-173
-signature_hash: sha1:0f5ae82847750a2627ce5e0e5152c0f884eddd66
+lines: 173-174
+signature_hash: sha1:884562166908c106ecc5ba213fddef78b25e3e9f
 authored: true
 ---
 
 # create_aseguradora
 
-**Módulo:** `api/views/carga_views.py` (líneas 172-173)
+**Módulo:** `api/views/carga_views.py` (líneas 173-174)
 
 ## Propósito
 

@@ -2,13 +2,13 @@
 symbol: TodoDeleteView
 kind: class
 module: core/views.py
-lines: 215-218
-signature_hash: sha1:96b17b66cb6f093c1e1cab43a3ffde65a75a2524
+lines: 238-241
+signature_hash: sha1:3ef1b976839d3b379e2da332b74b7c4d60f7c995
 authored: true
 ---
 # TodoDeleteView
 
-**Módulo:** `core/views.py` (líneas 215-218) · hereda de `SuperuserRequiredMixin, DeleteView`
+**Módulo:** `core/views.py` (líneas 238-241) · hereda de `SuperuserRequiredMixin, DeleteView`
 
 ## Propósito
 

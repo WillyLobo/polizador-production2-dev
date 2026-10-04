@@ -2,14 +2,14 @@
 symbol: create_movimiento
 kind: function
 module: api/views/carga_views.py
-lines: 1926-1927
-signature_hash: sha1:5d746dd1ef1dd044e10f8085bd6cf18b416f8634
+lines: 1947-1948
+signature_hash: sha1:1053ed3a50f9e054d0d0ff2396bba144d23ce86f
 authored: true
 ---
 
 # create_movimiento
 
-**Módulo:** `api/views/carga_views.py` (líneas 1926-1927)
+**Módulo:** `api/views/carga_views.py` (líneas 1947-1948)
 
 ## Propósito
 

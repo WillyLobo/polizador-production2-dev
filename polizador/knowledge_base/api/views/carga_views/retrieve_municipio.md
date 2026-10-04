@@ -2,14 +2,14 @@
 symbol: retrieve_municipio
 kind: function
 module: api/views/carga_views.py
-lines: 532-533
-signature_hash: sha1:d471b2646bdeae2da9e5446c69146f7adc68925a
+lines: 533-534
+signature_hash: sha1:18223a6b8d8c02ae8214923f8e6fac2e05387204
 authored: true
 ---
 
 # retrieve_municipio
 
-**Módulo:** `api/views/carga_views.py` (líneas 532-533)
+**Módulo:** `api/views/carga_views.py` (líneas 533-534)
 
 ## Propósito
 

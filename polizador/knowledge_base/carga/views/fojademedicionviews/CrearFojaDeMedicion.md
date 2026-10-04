@@ -2,14 +2,14 @@
 symbol: CrearFojaDeMedicion
 kind: class
 module: carga/views/fojademedicionviews.py
-lines: 50-187
-signature_hash: sha1:8ecae47e4a1ef19d4f68bc3a9878b8da4e0da516
+lines: 50-190
+signature_hash: sha1:4b2a105d123d0dc88e714cc8a77eb898adaf5487
 authored: true
 ---
 
 # CrearFojaDeMedicion
 
-**Módulo:** `carga/views/fojademedicionviews.py` (líneas 50-187) · hereda de `LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.CreateView`
+**Módulo:** `carga/views/fojademedicionviews.py` (líneas 50-190) · hereda de `LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.CreateView`
 
 ## Propósito
 
@@ -26,8 +26,10 @@ Además del formset de items, maneja un segundo formset independiente de fotos
 (`FojaDeMedicionFotoFormset`) y, si la Foja resulta ser `foja_legacy`, vincula los
 Certificados elegidos en el campo `foja_legacy_certificados` (ver
 [certificadolegacywidget](../ajaxviews/certificadolegacywidget.md)) seteándoles
-`certificado_foja` después de guardar. También setea `PlanDeTrabajos.trabajos_fecha_inicio`
-la primera vez que se carga (si el form trae ese dato y el Plan todavía no lo tiene).
+`certificado_foja` después de guardar. `_save_fecha_inicio()` guarda dos fechas distintas, y cada una sólo si todavía estaba
+vacía: `obra_fecha_inicio` (el Acta de Inicio, en la **Obra**, pedida en la primera Foja de
+una obra sin esa fecha) y `trabajos_fecha_inicio` (el reinicio de una reprogramación, en el
+**Plan**).
 
 Por tener `post()` totalmente custom (no llama a `self.form_invalid()`), es el ejemplo
 citado en el propio docstring de `LogInvalidFormMixin` (`core/mixins.py`, fuera del
@@ -61,3 +63,6 @@ foto_formset.save()
 - [recalcular_acumulado_fojas_siguientes](../../signals/recalcular_acumulado_fojas_siguientes.md)
 - [certificadolegacywidget](../ajaxviews/certificadolegacywidget.md)
 - [FormValidationError](../../../core/models/FormValidationError.md)
+
+- [Obra](../../models/Obra.md) — `obra_fecha_inicio`.
+- [FojaDeMedicionForm](../../forms/fojademedicionforms/FojaDeMedicionForm.md)

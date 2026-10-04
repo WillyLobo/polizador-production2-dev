@@ -2,13 +2,13 @@
 symbol: Organigrama
 kind: class
 module: secretariador/models.py
-lines: 347-358
-signature_hash: sha1:593800ea065d26d022daca8a95fbe5f4efb9e7f2
+lines: 348-359
+signature_hash: sha1:4c9b26424149b12d34b4c1c503a7cf59138b2dbb
 authored: true
 ---
 # Organigrama
 
-**Módulo:** `secretariador/models.py` (líneas 347-358) · hereda de `models.Model`
+**Módulo:** `secretariador/models.py` (líneas 348-359) · hereda de `models.Model`
 
 ## Propósito
 

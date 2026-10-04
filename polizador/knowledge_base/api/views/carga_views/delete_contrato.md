@@ -2,14 +2,14 @@
 symbol: delete_contrato
 kind: function
 module: api/views/carga_views.py
-lines: 1622-1624
-signature_hash: sha1:b9c72c9d7fd539c0712be8bfb25058053f94e2b3
+lines: 1623-1625
+signature_hash: sha1:c0a545af02620ca0108d5ddfbc3d1a8df75340a1
 authored: true
 ---
 
 # delete_contrato
 
-**Módulo:** `api/views/carga_views.py` (líneas 1622-1624)
+**Módulo:** `api/views/carga_views.py` (líneas 1623-1625)
 
 ## Propósito
 

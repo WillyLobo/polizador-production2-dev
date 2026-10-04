@@ -2,14 +2,14 @@
 symbol: DevolucionHorasPermiso
 kind: class
 module: personalizador/models.py
-lines: 831-845
-signature_hash: sha1:f6d8e331f88fdcf3b37c7f9f7d9c4817a8a3d78e
+lines: 870-884
+signature_hash: sha1:ab23e551e659867ca030f3e9ce3e43a22d7f33c9
 authored: true
 ---
 
 # DevolucionHorasPermiso
 
-**Módulo:** `personalizador/models.py` (líneas 831-845) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 870-884) · hereda de `models.Model`
 
 ## Propósito
 

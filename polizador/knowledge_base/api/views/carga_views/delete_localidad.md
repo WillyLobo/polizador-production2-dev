@@ -2,14 +2,14 @@
 symbol: delete_localidad
 kind: function
 module: api/views/carga_views.py
-lines: 637-639
-signature_hash: sha1:7732f51c4b0aa480d3eefa2cbf4b874ee6afb4c8
+lines: 638-640
+signature_hash: sha1:c965f6c66da34307b035d68d6b689dc193f1923c
 authored: true
 ---
 
 # delete_localidad
 
-**Módulo:** `api/views/carga_views.py` (líneas 637-639)
+**Módulo:** `api/views/carga_views.py` (líneas 638-640)
 
 ## Propósito
 

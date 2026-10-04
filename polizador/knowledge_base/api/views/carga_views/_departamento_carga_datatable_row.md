@@ -2,14 +2,14 @@
 symbol: _departamento_carga_datatable_row
 kind: function
 module: api/views/carga_views.py
-lines: 496-507
-signature_hash: sha1:3edcc778d454bcfde96821bba80f32fc1fca24c0
+lines: 497-508
+signature_hash: sha1:4e0e7a4605901cb6c01d57b6db49f1a1de8df695
 authored: true
 ---
 
 # _departamento_carga_datatable_row
 
-**Módulo:** `api/views/carga_views.py` (líneas 496-507)
+**Módulo:** `api/views/carga_views.py` (líneas 497-508)
 
 ## Propósito
 

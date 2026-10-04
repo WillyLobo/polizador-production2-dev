@@ -2,14 +2,14 @@
 symbol: BaseFojaDeMedicionItemFormset
 kind: class
 module: carga/forms/fojademedicionforms.py
-lines: 152-206
-signature_hash: sha1:99f8edbbcd813dd24379aeacd6321f8fc54a74e0
+lines: 164-218
+signature_hash: sha1:e156302169dbb1c9d344336bc0e95af61dbdd2b5
 authored: true
 ---
 
 # BaseFojaDeMedicionItemFormset
 
-**Módulo:** `carga/forms/fojademedicionforms.py` (líneas 152-206) · hereda de `BaseInlineFormSet`
+**Módulo:** `carga/forms/fojademedicionforms.py` (líneas 164-218) · hereda de `BaseInlineFormSet`
 
 ## Propósito
 

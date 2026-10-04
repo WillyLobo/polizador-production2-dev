@@ -1,14 +1,17 @@
 <h1>restaurar_texto_resolucion_certificado</h1>
 <p><strong>Módulo:</strong> <code>carga/views/textoresolucionviews.py</code> (líneas 286-292)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Descarta el snapshot editado a mano de un Certificado (<code>certificado_texto_resolucion=None</code>)
+para que el texto se vuelva a resolver desde la plantilla vigente. Sólo actúa por POST, usa
+<code>.update()</code> (para no dejar una fila de historial ni disparar señales del modelo) y siempre
+vuelve a la pantalla de revisión. Exige <code>carga.change_certificado</code>.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def restaurar_texto_resolucion_certificado(request, pk):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>carga:restaurar-texto-resolucion-certificado</code>, botón "Restaurar desde la plantilla" de la pantalla de revisión cuando se está viendo un snapshot.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="editar_texto_resolucion_certificado.md">editar_texto_resolucion_certificado</a></li>
+<li><a href="../../signals/invalidar_texto_resolucion_por_cambio_de_datos.md">invalidar_texto_resolucion_por_cambio_de_datos</a> — el descarte automático cuando cambian los datos.</li>
+</ul>

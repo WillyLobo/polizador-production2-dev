@@ -2,14 +2,14 @@
 symbol: update_localidad
 kind: function
 module: api/views/carga_views.py
-lines: 627-632
-signature_hash: sha1:90d217742e260deb3c34da11bbed26f6e5fed332
+lines: 628-633
+signature_hash: sha1:dbfabca5178f7c3aaefa62771920d8ac16e2f99a
 authored: true
 ---
 
 # update_localidad
 
-**Módulo:** `api/views/carga_views.py` (líneas 627-632)
+**Módulo:** `api/views/carga_views.py` (líneas 628-633)
 
 ## Propósito
 

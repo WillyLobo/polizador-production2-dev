@@ -2,14 +2,14 @@
 symbol: Programa
 kind: class
 module: carga/models.py
-lines: 213-227
-signature_hash: sha1:596422f29fba99dc532fa4a67bfb113afbe27043
+lines: 298-312
+signature_hash: sha1:0f36e5c4e57e20b0589871cca2023b23d6cbe68a
 authored: true
 ---
 
 # Programa
 
-**Módulo:** `carga/models.py` (líneas 213-227) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 298-312) · hereda de `models.Model`
 
 ## Propósito
 

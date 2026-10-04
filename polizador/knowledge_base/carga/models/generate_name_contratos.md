@@ -2,14 +2,14 @@
 symbol: generate_name_contratos
 kind: function
 module: carga/models.py
-lines: 49-54
-signature_hash: sha1:cd53b1b801e86883e6590322dcc3d39a7489ed76
+lines: 57-62
+signature_hash: sha1:f10350fe2aa540412f728ccb4acebedffc9ea5dc
 authored: true
 ---
 
 # generate_name_contratos
 
-**Módulo:** `carga/models.py` (líneas 49-54)
+**Módulo:** `carga/models.py` (líneas 57-62)
 
 ## Propósito
 

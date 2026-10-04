@@ -2,14 +2,14 @@
 symbol: delete_prototipo
 kind: function
 module: api/views/carga_views.py
-lines: 1182-1184
-signature_hash: sha1:6e29f74459157563f0c0160d44626b65628a267c
+lines: 1183-1185
+signature_hash: sha1:51c599a818e0e6170b676464512482df48f094b9
 authored: true
 ---
 
 # delete_prototipo
 
-**Módulo:** `api/views/carga_views.py` (líneas 1182-1184)
+**Módulo:** `api/views/carga_views.py` (líneas 1183-1185)
 
 ## Propósito
 

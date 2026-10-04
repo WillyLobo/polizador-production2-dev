@@ -2,14 +2,14 @@
 symbol: ImprimirCertificado
 kind: class
 module: carga/views/certificadoviews.py
-lines: 382-392
-signature_hash: sha1:cb6a1831c157ad6116cc543414adb6f5b3a37188
+lines: 215-225
+signature_hash: sha1:0bb50748c462532fbeeb1d91b22172d26e3103bb
 authored: true
 ---
 
 # ImprimirCertificado
 
-**Módulo:** `carga/views/certificadoviews.py` (líneas 382-392) · hereda de `PermissionRequiredMixin, generic.DetailView`
+**Módulo:** `carga/views/certificadoviews.py` (líneas 215-225) · hereda de `PermissionRequiredMixin, generic.DetailView`
 
 ## Propósito
 

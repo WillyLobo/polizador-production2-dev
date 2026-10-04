@@ -2,14 +2,14 @@
 symbol: delete_obra
 kind: function
 module: api/views/carga_views.py
-lines: 813-815
-signature_hash: sha1:0ab9fbe962b41b38a0013908eabae8b80120a4b3
+lines: 814-816
+signature_hash: sha1:8a8d2105b5f2af3a7c8cd5f5187ab49ad54c13f3
 authored: true
 ---
 
 # delete_obra
 
-**Módulo:** `api/views/carga_views.py` (líneas 813-815)
+**Módulo:** `api/views/carga_views.py` (líneas 814-816)
 
 ## Propósito
 

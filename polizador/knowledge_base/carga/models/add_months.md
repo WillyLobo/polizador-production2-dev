@@ -2,14 +2,14 @@
 symbol: add_months
 kind: function
 module: carga/models.py
-lines: 21-27
-signature_hash: sha1:d642ba65d92c2e7dde1a80f755a31c9bde8cc675
+lines: 22-28
+signature_hash: sha1:3a7c86a2c7222f1841dc6f95c391e55debac01e6
 authored: true
 ---
 
 # add_months
 
-**Módulo:** `carga/models.py` (líneas 21-27)
+**Módulo:** `carga/models.py` (líneas 22-28)
 
 ## Propósito
 

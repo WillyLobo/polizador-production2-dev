@@ -2,14 +2,14 @@
 symbol: update_municipio
 kind: function
 module: api/views/carga_views.py
-lines: 544-549
-signature_hash: sha1:36789697a632647109187a209ce2d87d1e74a34e
+lines: 545-550
+signature_hash: sha1:fc0cd53dcd08f3ac374a819b10f5ff1b12303d9b
 authored: true
 ---
 
 # update_municipio
 
-**Módulo:** `api/views/carga_views.py` (líneas 544-549)
+**Módulo:** `api/views/carga_views.py` (líneas 545-550)
 
 ## Propósito
 

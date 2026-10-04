@@ -2,14 +2,14 @@
 symbol: CargoTipo
 kind: class
 module: personalizador/models.py
-lines: 333-344
-signature_hash: sha1:feb714b4d084f9202d6fd02f22bc0d3d1ab8a502
+lines: 372-383
+signature_hash: sha1:1c8d46c16ae3673c21b1120f11b8265652f9b4d6
 authored: true
 ---
 
 # CargoTipo
 
-**Módulo:** `personalizador/models.py` (líneas 333-344) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 372-383) · hereda de `models.Model`
 
 ## Propósito
 

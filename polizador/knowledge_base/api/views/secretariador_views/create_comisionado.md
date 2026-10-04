@@ -26,4 +26,4 @@ def create_comisionado(request, payload: ComisionadoCreate):
 
 ## Ver también
 
-- [Agente](../../../secretariador/models/Agente.md)
+- [Agente](../../../personalizador/models/Agente.md)

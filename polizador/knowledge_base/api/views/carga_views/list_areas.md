@@ -2,14 +2,14 @@
 symbol: list_areas
 kind: function
 module: api/views/carga_views.py
-lines: 123-124
-signature_hash: sha1:11847fa3662146dcafc1b765c6aed06d772225dd
+lines: 124-125
+signature_hash: sha1:a96697ea41dc83ca4e270d334dc329cfba69ded8
 authored: true
 ---
 
 # list_areas
 
-**Módulo:** `api/views/carga_views.py` (líneas 123-124)
+**Módulo:** `api/views/carga_views.py` (líneas 124-125)
 
 ## Propósito
 

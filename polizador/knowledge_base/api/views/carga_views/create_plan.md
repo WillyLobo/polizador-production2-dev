@@ -2,14 +2,14 @@
 symbol: create_plan
 kind: function
 module: api/views/carga_views.py
-lines: 1566-1567
-signature_hash: sha1:88ff7b1e512914f9c868fbc3aa03619605b9b6ee
+lines: 1567-1568
+signature_hash: sha1:608e5805684bba40385d3df3236d329dba3123ec
 authored: true
 ---
 
 # create_plan
 
-**Módulo:** `api/views/carga_views.py` (líneas 1566-1567)
+**Módulo:** `api/views/carga_views.py` (líneas 1567-1568)
 
 ## Propósito
 

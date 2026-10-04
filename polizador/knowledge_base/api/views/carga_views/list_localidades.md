@@ -2,14 +2,14 @@
 symbol: list_localidades
 kind: function
 module: api/views/carga_views.py
-lines: 606-610
-signature_hash: sha1:c3d9cd7ca89543e0582ba4c3999aff8f4295ce4d
+lines: 607-611
+signature_hash: sha1:9bdbccadaa8745b49f14f8d228903380dd296a3b
 authored: true
 ---
 
 # list_localidades
 
-**Módulo:** `api/views/carga_views.py` (líneas 606-610)
+**Módulo:** `api/views/carga_views.py` (líneas 607-611)
 
 ## Propósito
 

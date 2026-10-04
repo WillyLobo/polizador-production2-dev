@@ -2,13 +2,13 @@
 symbol: refresh_uvi_from_bcra
 kind: function
 module: carga/views/reportes.py
-lines: 188-190
-signature_hash: sha1:00801f95b29882cbe09bc1094c7a679979bcda0c
+lines: 194-196
+signature_hash: sha1:3d9fe8b9e18ba170ec43a626f67336324329f201
 authored: true
 ---
 # refresh_uvi_from_bcra
 
-**Módulo:** `carga/views/reportes.py` (líneas 188-190)
+**Módulo:** `carga/views/reportes.py` (líneas 194-196)
 
 ## Propósito
 

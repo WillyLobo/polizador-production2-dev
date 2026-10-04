@@ -2,14 +2,14 @@
 symbol: list_rubros
 kind: function
 module: api/views/carga_views.py
-lines: 1191-1192
-signature_hash: sha1:c570db7fd02fed07ed640b4abfdbc746642af252
+lines: 1192-1193
+signature_hash: sha1:2f82b6ead91df26555e34aea66f694b5609fa2c8
 authored: true
 ---
 
 # list_rubros
 
-**Módulo:** `api/views/carga_views.py` (líneas 1191-1192)
+**Módulo:** `api/views/carga_views.py` (líneas 1192-1193)
 
 ## Propósito
 

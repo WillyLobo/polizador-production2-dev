@@ -1,16 +1,19 @@
 <h1>generate_name_poliza_documento</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 49-54)</p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 50-55)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>upload_to</code> de <code>PolizaDocumento.polizadocumento_archivo</code>. Guarda cada archivo como
+<code>documentos_poliza/&lt;polizadocumento_uuid&gt;.pdf</code> e ignora el nombre original: así no hay
+colisiones ni nombres con caracteres raros en GCS/<code>MEDIA_ROOT</code>. Es el mismo patrón que los
+demás <code>generate_name_*</code> del módulo. La extensión es siempre <code>pdf</code>, cosa que el
+<code>FileValidator</code> del campo ya garantiza.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def generate_name_poliza_documento(instance, filename):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/models.py:291</code> — <code>polizadocumento_archivo = models.FileField(verbose_name="Archivo", upload_to=generate_name_poliza_documento, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], max_length=500)</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<pre><code class="language-python"># carga/models.py (PolizaDocumento)
+polizadocumento_archivo = models.FileField(verbose_name=&quot;Archivo&quot;, upload_to=generate_name_poliza_documento, ...)
+</code></pre>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="PolizaDocumento.md">PolizaDocumento</a></li>
+</ul>

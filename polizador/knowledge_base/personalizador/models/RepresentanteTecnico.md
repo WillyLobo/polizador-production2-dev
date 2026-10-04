@@ -2,14 +2,14 @@
 symbol: RepresentanteTecnico
 kind: class
 module: personalizador/models.py
-lines: 420-438
-signature_hash: sha1:401f5a0bb00d7eea7c37e33c1dcca9a6ce0cc081
+lines: 459-477
+signature_hash: sha1:e430a9ff84160378b99d6e9b6f8b43754779e8ac
 authored: true
 ---
 
 # RepresentanteTecnico
 
-**Módulo:** `personalizador/models.py` (líneas 420-438) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 459-477) · hereda de `models.Model`
 
 ## Propósito
 

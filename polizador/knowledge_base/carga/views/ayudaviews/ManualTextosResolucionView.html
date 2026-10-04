@@ -1,14 +1,18 @@
 <h1>ManualTextosResolucionView</h1>
-<p><strong>Módulo:</strong> <code>carga/views/ayudaviews.py</code> (líneas 22-33)</p>
+<p><strong>Módulo:</strong> <code>carga/views/ayudaviews.py</code> (líneas 22-33) · hereda de <code>generic.TemplateView</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Manual de los textos de resolución de certificados (<code>ayuda/manual-textos-resolucion.html</code>).
+A diferencia de las otras páginas de ayuda, no es del todo estática: inyecta <code>VARIABLES</code> y
+<code>FILTROS_DOC</code> de <code>carga/resolucion_texto.py</code>, el mismo catálogo que alimenta la paleta del
+editor. Así la tabla de variables y filtros del manual no se desactualiza cuando se agrega
+una. El import está dentro del método para no cargar Jinja al importar el módulo de vistas.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class ManualTextosResolucionView(generic.TemplateView):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>carga:ayuda-textos-resolucion</code> (<code>ayuda/textos-resolucion/</code>), enlazada desde el menú de ayuda del navbar (<code>templates/navbar.html</code>).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../textoresolucionviews/TextoResolucionEditorMixin.md">TextoResolucionEditorMixin</a></li>
+<li><a href="../../models/TextoResolucionCertificado.md">TextoResolucionCertificado</a></li>
+</ul>

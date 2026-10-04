@@ -2,13 +2,13 @@
 symbol: InstrumentosLegalesResoluciones
 kind: class
 module: secretariador/models.py
-lines: 137-230
-signature_hash: sha1:fa3dc89b4e1a30e26ee83abdae07b428f2e66b1e
+lines: 138-231
+signature_hash: sha1:be4e1105c02d9b74a6a3041577e5f37834c74e07
 authored: true
 ---
 # InstrumentosLegalesResoluciones
 
-**Módulo:** `secretariador/models.py` (líneas 137-230) · hereda de `models.Model`
+**Módulo:** `secretariador/models.py` (líneas 138-231) · hereda de `models.Model`
 
 ## Propósito
 

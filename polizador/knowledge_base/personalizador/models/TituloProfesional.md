@@ -2,14 +2,14 @@
 symbol: TituloProfesional
 kind: class
 module: personalizador/models.py
-lines: 191-202
-signature_hash: sha1:ea7eb00d6ffbf5a1ab4e898d026b92ed9887deaa
+lines: 230-241
+signature_hash: sha1:ab4dae04f021004f6e0a8a02d7036d3e2ede6a91
 authored: true
 ---
 
 # TituloProfesional
 
-**Módulo:** `personalizador/models.py` (líneas 191-202) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 230-241) · hereda de `models.Model`
 
 ## Propósito
 

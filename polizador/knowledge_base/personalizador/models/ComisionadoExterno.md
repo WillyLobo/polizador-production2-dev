@@ -2,14 +2,14 @@
 symbol: ComisionadoExterno
 kind: class
 module: personalizador/models.py
-lines: 440-473
-signature_hash: sha1:d4b3149e29b5203dd2eda7c0724b70649fcc171a
+lines: 479-512
+signature_hash: sha1:a504a6cb5bc9747900784aace2eae6bae3411691
 authored: true
 ---
 
 # ComisionadoExterno
 
-**Módulo:** `personalizador/models.py` (líneas 440-473) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 479-512) · hereda de `models.Model`
 
 ## Propósito
 

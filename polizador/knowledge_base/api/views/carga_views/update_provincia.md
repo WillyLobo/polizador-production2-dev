@@ -2,14 +2,14 @@
 symbol: update_provincia
 kind: function
 module: api/views/carga_views.py
-lines: 383-388
-signature_hash: sha1:3d10b02964b3f1aa5e96ef506101bd7a3d8b1598
+lines: 384-389
+signature_hash: sha1:957c39349c3c02f0aac53be35875d7d7b0d31d57
 authored: true
 ---
 
 # update_provincia
 
-**Módulo:** `api/views/carga_views.py` (líneas 383-388)
+**Módulo:** `api/views/carga_views.py` (líneas 384-389)
 
 ## Propósito
 

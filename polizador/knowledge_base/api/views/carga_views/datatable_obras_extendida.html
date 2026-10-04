@@ -1,5 +1,5 @@
 <h1>datatable_obras_extendida</h1>
-<p><strong>Módulo:</strong> <code>api/views/carga_views.py</code> (líneas 1073-1120)</p>
+<p><strong>Módulo:</strong> <code>api/views/carga_views.py</code> (líneas 1074-1121)</p>
 <h2>Propósito</h2>
 <p>Mismo patrón que <code>datatable_obras</code> pero para el listado extendido (~30 columnas, más <code>prefetch_related</code> de M2M). Los filtros que apuntan a un M2M (<code>obra_departamento_m</code>/<code>obra_municipio_m</code>/<code>obra_localidad_m</code>/<code>obra_principal</code>) fuerzan <code>.distinct()</code> para no duplicar filas por cada match del M2M.</p>
 <h2>Firma</h2>

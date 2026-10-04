@@ -2,13 +2,13 @@
 symbol: TodoCreateView
 kind: class
 module: core/views.py
-lines: 197-205
-signature_hash: sha1:c973fee5192bbaf364771cf0da19ec98533182f9
+lines: 220-228
+signature_hash: sha1:dd60026c3178beb115190bd2b0e70ad79a3223fc
 authored: true
 ---
 # TodoCreateView
 
-**Módulo:** `core/views.py` (líneas 197-205) · hereda de `SuperuserRequiredMixin, CreateView`
+**Módulo:** `core/views.py` (líneas 220-228) · hereda de `SuperuserRequiredMixin, CreateView`
 
 ## Propósito
 

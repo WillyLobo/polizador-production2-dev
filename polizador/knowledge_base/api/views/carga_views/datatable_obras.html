@@ -1,5 +1,5 @@
 <h1>datatable_obras</h1>
-<p><strong>Módulo:</strong> <code>api/views/carga_views.py</code> (líneas 867-916)</p>
+<p><strong>Módulo:</strong> <code>api/views/carga_views.py</code> (líneas 868-917)</p>
 <h2>Propósito</h2>
 <p>El endpoint real detrás del listado principal de Obras (reemplaza al <code>AjaxDatatableView</code> comentado que quedó muerto en <code>carga/views/documentosdigitalesviews.py</code>): pagina/filtra/busca a mano (no usa <code>register_simple_datatable</code> porque necesita <code>obras_con_acumulado_anotado()</code> para las dos columnas de % acumulado, algo que el helper genérico no contempla) sobre un queryset con <code>select_related</code>+<code>prefetch_related</code> completo.</p>
 <h2>Firma</h2>

@@ -2,14 +2,14 @@
 symbol: update_area
 kind: function
 module: api/views/carga_views.py
-lines: 141-146
-signature_hash: sha1:cd64b43b0d3090b5e1342e7708ca4d167f7710dc
+lines: 142-147
+signature_hash: sha1:c687574807be8dbb3cf00513d7e7dee06039e826
 authored: true
 ---
 
 # update_area
 
-**Módulo:** `api/views/carga_views.py` (líneas 141-146)
+**Módulo:** `api/views/carga_views.py` (líneas 142-147)
 
 ## Propósito
 

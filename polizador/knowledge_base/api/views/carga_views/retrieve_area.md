@@ -2,14 +2,14 @@
 symbol: retrieve_area
 kind: function
 module: api/views/carga_views.py
-lines: 129-130
-signature_hash: sha1:a3a44c1f0d6994382b71b7b1a68d3eb4999c2679
+lines: 130-131
+signature_hash: sha1:e109126505728a023fd05b63cdedbfd4007d9a2d
 authored: true
 ---
 
 # retrieve_area
 
-**Módulo:** `api/views/carga_views.py` (líneas 129-130)
+**Módulo:** `api/views/carga_views.py` (líneas 130-131)
 
 ## Propósito
 

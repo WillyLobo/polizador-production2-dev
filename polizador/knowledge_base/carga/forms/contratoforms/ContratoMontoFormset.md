@@ -28,4 +28,4 @@ class ContratoMontoFormset(forms.models.BaseInlineFormSet):
 ## Ver también
 
 - [ContratoMonto](../../models/ContratoMonto.md)
-- [ContratoMontoForm](ContratoMontoForm.md)
+- [ContratoMontoForm](../contratomontoforms/ContratoMontoForm.md)

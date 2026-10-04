@@ -2,14 +2,14 @@
 symbol: generate_name_obra_documento
 kind: function
 module: carga/models.py
-lines: 56-61
-signature_hash: sha1:decb708d9620071ae3414ced1d5f4ae8fff6bdea
+lines: 64-69
+signature_hash: sha1:45d7ca3236ada108fa4d42cc9fbeb0cc040e423f
 authored: true
 ---
 
 # generate_name_obra_documento
 
-**Módulo:** `carga/models.py` (líneas 56-61)
+**Módulo:** `carga/models.py` (líneas 64-69)
 
 ## Propósito
 

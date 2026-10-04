@@ -2,14 +2,14 @@
 symbol: Directorio
 kind: class
 module: personalizador/models.py
-lines: 346-361
-signature_hash: sha1:c13b022f568745f21196b2b388dc5feee2f6aaee
+lines: 385-400
+signature_hash: sha1:32ab1b8423205df66f1aec1d93197aaec6b015a5
 authored: true
 ---
 
 # Directorio
 
-**Módulo:** `personalizador/models.py` (líneas 346-361) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 385-400) · hereda de `models.Model`
 
 ## Propósito
 

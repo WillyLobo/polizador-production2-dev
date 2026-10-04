@@ -2,14 +2,14 @@
 symbol: CrearPoliza
 kind: class
 module: carga/views/polizaviews.py
-lines: 22-40
-signature_hash: sha1:abad3099aa9336c6745088025e3c2f46ef27bfbb
+lines: 44-62
+signature_hash: sha1:3e9b38ffd4f01f66f2db452ad7dc088de736e344
 authored: true
 ---
 
 # CrearPoliza
 
-**Módulo:** `carga/views/polizaviews.py` (líneas 22-40) · hereda de `PermissionRequiredMixin, UserKwargsMixin, UserFormsetKwargsMixin, FormsetViewMixin, generic.CreateView`
+**Módulo:** `carga/views/polizaviews.py` (líneas 44-62) · hereda de `PermissionRequiredMixin, UserKwargsMixin, UserFormsetKwargsMixin, FormsetViewMixin, generic.CreateView`
 
 ## Propósito
 

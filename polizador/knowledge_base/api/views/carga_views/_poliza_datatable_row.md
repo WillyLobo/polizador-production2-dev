@@ -2,14 +2,14 @@
 symbol: _poliza_datatable_row
 kind: function
 module: api/views/carga_views.py
-lines: 1845-1871
-signature_hash: sha1:65376be2c49e392b8da602f7cdae80e6e52f13b6
+lines: 1866-1892
+signature_hash: sha1:dbe9e8cbde2323ef8ebdcbf9a8c8a4867aa36a36
 authored: true
 ---
 
 # _poliza_datatable_row
 
-**Módulo:** `api/views/carga_views.py` (líneas 1845-1871)
+**Módulo:** `api/views/carga_views.py` (líneas 1866-1892)
 
 ## Propósito
 

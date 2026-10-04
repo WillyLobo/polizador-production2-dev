@@ -2,14 +2,14 @@
 symbol: delete_aseguradora
 kind: function
 module: api/views/carga_views.py
-lines: 188-190
-signature_hash: sha1:2fd69dd1141bee20521923e5e2fb596b3f6a239b
+lines: 189-191
+signature_hash: sha1:9670347dc06a193d780968e5c58b01df4097f4f2
 authored: true
 ---
 
 # delete_aseguradora
 
-**Módulo:** `api/views/carga_views.py` (líneas 188-190)
+**Módulo:** `api/views/carga_views.py` (líneas 189-191)
 
 ## Propósito
 

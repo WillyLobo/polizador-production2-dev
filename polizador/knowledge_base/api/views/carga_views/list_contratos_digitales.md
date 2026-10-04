@@ -2,14 +2,14 @@
 symbol: list_contratos_digitales
 kind: function
 module: api/views/carga_views.py
-lines: 1696-1697
-signature_hash: sha1:48e2f1ddaf893c207aa4e4dc492b11f90e99b2e0
+lines: 1717-1718
+signature_hash: sha1:5d34d7e5466fff7429c2d2735e66be3feda03866
 authored: true
 ---
 
 # list_contratos_digitales
 
-**Módulo:** `api/views/carga_views.py` (líneas 1696-1697)
+**Módulo:** `api/views/carga_views.py` (líneas 1717-1718)
 
 ## Propósito
 

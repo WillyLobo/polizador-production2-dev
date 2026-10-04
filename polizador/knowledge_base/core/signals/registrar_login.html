@@ -1,7 +1,8 @@
 <h1>registrar_login</h1>
-<p><strong>Módulo:</strong> <code>core/signals.py</code> (líneas 15-17)</p>
+<p><strong>Módulo:</strong> <code>core/signals.py</code> (líneas 15-28)</p>
 <h2>Propósito</h2>
 <p>Receiver de la señal estándar de Django <code>user_logged_in</code>: crea un <code>LoginEvent</code> en cada inicio de sesión exitoso, para poder graficar actividad de usuarios en el dashboard — el único uso de señales propio de <code>core</code> (todas las de <code>carga</code>/<code>secretariador</code> son sobre modelos de negocio; esta es sobre autenticación).</p>
+<p>También guarda en <code>LoginEvent.backend</code> con qué backend entró el usuario (<code>getattr(user, "backend", "")</code>). <code>authenticate()</code> deja esa ruta en <code>user.backend</code> antes de emitir la señal, así que acá ya está disponible. Esa fila es la prueba de que la persona ya puede entrar por LDAP, condición para que <code>retirar_password_local</code> le quite después la contraseña local.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def registrar_login(sender, request, user, **kwargs):
 </code></pre>
@@ -17,7 +18,7 @@
     U-&gt;&gt;D: credenciales válidas
     D--&gt;&gt;S: user_logged_in
     S-&gt;&gt;S: _client_ip(request)
-    S-&gt;&gt;L: LoginEvent.objects.create(user, ip_address)
+    S-&gt;&gt;L: LoginEvent.objects.create(user, ip_address, backend)
 </code></pre>
 <h2>Ver también</h2>
 <ul>

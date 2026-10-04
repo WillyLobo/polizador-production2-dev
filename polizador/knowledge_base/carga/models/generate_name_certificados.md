@@ -2,14 +2,14 @@
 symbol: generate_name_certificados
 kind: function
 module: carga/models.py
-lines: 29-37
-signature_hash: sha1:34a7ab1305ec8178e303d620019fea6728e1338e
+lines: 30-38
+signature_hash: sha1:fd6c74d9057926517d3170da934205d83e0736d8
 authored: true
 ---
 
 # generate_name_certificados
 
-**Módulo:** `carga/models.py` (líneas 29-37)
+**Módulo:** `carga/models.py` (líneas 30-38)
 
 ## Propósito
 

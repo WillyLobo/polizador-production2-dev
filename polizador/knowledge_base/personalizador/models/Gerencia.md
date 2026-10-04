@@ -2,14 +2,14 @@
 symbol: Gerencia
 kind: class
 module: personalizador/models.py
-lines: 363-379
-signature_hash: sha1:167c33a7a95ff11bc64719681161187800529e98
+lines: 402-418
+signature_hash: sha1:16d36bbde7234c5b7c18a8f01e1c900c368b5d3c
 authored: true
 ---
 
 # Gerencia
 
-**Módulo:** `personalizador/models.py` (líneas 363-379) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 402-418) · hereda de `models.Model`
 
 ## Propósito
 

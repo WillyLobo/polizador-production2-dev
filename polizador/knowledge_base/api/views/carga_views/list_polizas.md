@@ -2,14 +2,14 @@
 symbol: list_polizas
 kind: function
 module: api/views/carga_views.py
-lines: 1807-1810
-signature_hash: sha1:7c06560374005b29fb263951cb489465fff03e1b
+lines: 1828-1831
+signature_hash: sha1:1f6969d5b944fb94b8d4d7335ae010447a757a78
 authored: true
 ---
 
 # list_polizas
 
-**Módulo:** `api/views/carga_views.py` (líneas 1807-1810)
+**Módulo:** `api/views/carga_views.py` (líneas 1828-1831)
 
 ## Propósito
 

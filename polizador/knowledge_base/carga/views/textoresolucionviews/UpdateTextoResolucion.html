@@ -1,14 +1,17 @@
 <h1>UpdateTextoResolucion</h1>
-<p><strong>Módulo:</strong> <code>carga/views/textoresolucionviews.py</code> (líneas 134-140)</p>
+<p><strong>Módulo:</strong> <code>carga/views/textoresolucionviews.py</code> (líneas 134-140) · hereda de <code>TextoResolucionEditorMixin, PermissionRequiredMixin, generic.UpdateView</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Edición de una plantilla existente: el formset arranca con sus <code>textoresolucion_bloques</code>.
+Cambiar la plantilla <strong>no</strong> reescribe los snapshots ya guardados en certificados. Esos
+siguen mostrando su texto hasta que se restauran o hasta que un cambio de datos los anula.
+Exige <code>carga.change_textoresolucioncertificado</code>.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class UpdateTextoResolucion(TextoResolucionEditorMixin, PermissionRequiredMixin, generic.UpdateView):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>carga:update-texto-resolucion</code>. Es la URL de <code>TextoResolucionCertificado.get_absolute_url()</code>.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="TextoResolucionEditorMixin.md">TextoResolucionEditorMixin</a></li>
+<li><a href="restaurar_texto_resolucion_certificado.md">restaurar_texto_resolucion_certificado</a></li>
+</ul>

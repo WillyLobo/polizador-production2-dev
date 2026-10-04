@@ -1,7 +1,12 @@
 <h1>ImprimirPolizaMovimiento</h1>
-<p><strong>Módulo:</strong> <code>carga/views/polizaviews.py</code> (líneas 81-85) · hereda de <code>PermissionRequiredMixin, generic.DetailView</code></p>
+<p><strong>Módulo:</strong> <code>carga/views/polizaviews.py</code> (líneas 147-163) · hereda de <code>PermissionRequiredMixin, generic.DetailView</code></p>
 <h2>Propósito</h2>
 <p>Ficha de impresión de un <code>Poliza_Movimiento</code> puntual (recibo/constancia del movimiento).</p>
+<p>La nota impresa la firma <strong>el usuario que la imprime</strong>. <code>get_context_data()</code> busca su
+<code>Agente</code> por <code>agente_usuario</code> y, como no todos los usuarios tienen ese vínculo cargado
+todavía, si no lo encuentra lo busca por nombre y apellido (<code>iexact</code>). Después
+<a href="_firmante_organigrama.md">_firmante_organigrama</a> arma el bloque de firma (cargo, unidad y
+gerencia) con los datos del organigrama.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class ImprimirPolizaMovimiento(PermissionRequiredMixin, generic.DetailView):
 </code></pre>
@@ -9,5 +14,11 @@
 <p><code>ImprimirPolizaMovimiento</code> (<code>carga:imprimir-poliza-movimiento</code>).</p>
 <h2>Ver también</h2>
 <ul>
-<li><a href="../../models/Poliza_Movimiento.md">Poliza_Movimiento</a></li>
+<li>
+<p><a href="../../models/Poliza_Movimiento.md">Poliza_Movimiento</a></p>
+</li>
+<li>
+<p><a href="_firmante_organigrama.md">_firmante_organigrama</a></p>
+</li>
+<li><a href="../../../personalizador/models/Agente.md">Agente</a></li>
 </ul>

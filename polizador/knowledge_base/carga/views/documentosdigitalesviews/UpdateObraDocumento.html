@@ -1,7 +1,8 @@
 <h1>UpdateObraDocumento</h1>
-<p><strong>Módulo:</strong> <code>carga/views/documentosdigitalesviews.py</code> (líneas 86-92) · hereda de <code>PermissionRequiredMixin, generic.UpdateView</code></p>
+<p><strong>Módulo:</strong> <code>carga/views/documentosdigitalesviews.py</code> (líneas 94-102) · hereda de <code>PermissionRequiredMixin, generic.UpdateView</code></p>
 <h2>Propósito</h2>
 <p>Edición de un <code>ObraDocumento</code> ya cargado.</p>
+<p>Exige <code>carga.change_obradocumento</code>. Al terminar vuelve a la ficha de la Obra (<code>carga:estado-obra</code>), no a un listado.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class UpdateObraDocumento(PermissionRequiredMixin, generic.UpdateView):
 </code></pre>

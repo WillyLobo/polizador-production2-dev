@@ -1,8 +1,8 @@
 <h1>Certificado</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 626-857) · hereda de <code>models.Model</code></p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 719-1012) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
 <p>El otro modelo central de <code>carga</code>: un certificado de pago (avance de obra) sobre una Obra.
-Con 231 líneas es el modelo más grande del módulo. Su complejidad viene de que
+Con ~290 líneas es el modelo más grande del módulo. Su complejidad viene de que
 <code>certificado_tipo</code> (<code>TIPO</code>) no es una simple etiqueta — cada tipo tiene reglas de negocio
 propias, todas enforced en <code>clean()</code>:</p>
 <ul>
@@ -27,13 +27,35 @@ propias, todas enforced en <code>clean()</code>:</p>
 por la base): monto menos devolución menos descuento de anticipo. <code>certificado_pct_principal</code>
 es el % "genérico" para listados que no distinguen tipo (usa <code>certificado_anticipo_pct</code>,
 <code>certificado_etapa_pct</code> o <code>certificado_mes_pct</code> según corresponda).</p>
+<p><strong>Monto certificado vs. importe a abonarse.</strong> <code>certificado_monto_cobrar</code> <em>no</em> descuenta el
+Fondo de Reparo, porque se usa como monto certificado (acumulados, saldo de la obra,
+reportes, legacy): el Fondo de Reparo se retiene pero la obra sigue estando certificada. El
+"importe a abonarse" que figura en la hoja del certificado sale de
+<code>certificado_importe_abonar_pesos()</code>/<code>_uvi()</code>: monto menos devolución, menos descuento de
+anticipo y menos Fondo de Reparo. Se calcula desde los campos y no desde el
+<code>GeneratedField</code>, así que también funciona con certificados todavía sin guardar (la
+previsualización de <code>GenerarCertificadosDesdeFoja</code>).</p>
+<p><strong>Retención adobe (Decreto 654/2015).</strong> Se retiene el tres por mil
+(<code>RETENCION_ADOBE_PCT = 0.3</code>) del monto bruto cuando el rubro del certificado es Vivienda
+(<code>certificadorubro_nombre_corto == "V"</code>). Se decide por rubro y no por obra, de modo que
+cubre también los certificados legacy, y aplica a cualquier <code>certificado_tipo</code>, ANTICIPO
+incluido.</p>
+<p><strong>Período certificado.</strong> <code>certificado_periodo_fecha</code> es el mes que se certifica: el
+<code>foja_periodo</code> de la Foja de origen si la tiene (PARCIAL/ETAPA) y si no, <code>certificado_fecha</code>.
+Una foja de septiembre se certifica en octubre, así que la fecha de emisión no sirve como
+período.</p>
+<p><strong>Texto de la resolución.</strong> <code>certificado_texto_resolucion</code> (JSON, <code>editable=False</code>) guarda
+el texto de la resolución ya renderizado desde <a href="TextoResolucionCertificado.md">TextoResolucionCertificado</a>,
+con los retoques que se le hayan hecho a mano desde la web, y registra de qué plantilla y de
+qué versión salió. Si está vacío, el texto se vuelve a resolver desde la plantilla (ver
+<code>editar_texto_resolucion_certificado</code>).</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class Certificado(models.Model):
 </code></pre>
 <h2>Uso real</h2>
 <p>Un certificado PARCIAL se construye en <code>certificacion.py</code>, no directamente en una vista
 (la vista arma los datos y delega el cálculo):</p>
-<pre><code class="language-python"># carga/certificacion.py:703
+<pre><code class="language-python"># carga/certificacion.py:742
 certificado = Certificado(
     certificado_obra=obra,
     certificado_tipo=&quot;PARCIAL&quot;,
@@ -45,7 +67,7 @@ certificado = Certificado(
 )
 </code></pre>
 <p>Un certificado ETAPA, con la misma lógica pero disparado por tramos pendientes:</p>
-<pre><code class="language-python"># carga/certificacion.py:639 (dentro del loop de tramos_pendientes)
+<pre><code class="language-python"># carga/certificacion.py:677 (dentro del loop de tramos_pendientes)
 certificado = Certificado(
     certificado_obra=contrato.contrato_obra,
     certificado_tipo=&quot;ETAPA&quot;,
@@ -60,5 +82,11 @@ certificado = Certificado(
 <li><a href="FojaDeMedicion.md">FojaDeMedicion</a></li>
 <li><a href="Contrato.md">Contrato</a> — <code>contrato_certificacion_por_etapas</code> decide si esta Obra genera certificados PARCIAL o ETAPA.</li>
 <li><a href="ContratoTramoPago.md">ContratoTramoPago</a></li>
-<li><a href="CertificadoRubro.md">CertificadoRubro</a></li>
+<li>
+<p><a href="CertificadoRubro.md">CertificadoRubro</a></p>
+</li>
+<li>
+<p><a href="TextoResolucionCertificado.md">TextoResolucionCertificado</a> — plantilla del texto de la resolución.</p>
+</li>
+<li><a href="../views/certificadoviews/GenerarCertificadosDesdeFoja.md">GenerarCertificadosDesdeFoja</a></li>
 </ul>

@@ -2,14 +2,14 @@
 symbol: delete_empresa
 kind: function
 module: api/views/carga_views.py
-lines: 256-258
-signature_hash: sha1:9a44496c820dd9d6dc4e2f155476cb3412877cb4
+lines: 257-259
+signature_hash: sha1:3583254c2d366954bf1db906e86f57776aa34fb9
 authored: true
 ---
 
 # delete_empresa
 
-**Módulo:** `api/views/carga_views.py` (líneas 256-258)
+**Módulo:** `api/views/carga_views.py` (líneas 257-259)
 
 ## Propósito
 

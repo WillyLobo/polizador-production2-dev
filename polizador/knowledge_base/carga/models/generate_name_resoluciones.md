@@ -2,14 +2,14 @@
 symbol: generate_name_resoluciones
 kind: function
 module: carga/models.py
-lines: 63-71
-signature_hash: sha1:25a8d3632082bfb1f7997bcc4d5dd1538dd190ed
+lines: 71-79
+signature_hash: sha1:fda9c9f49f09fa0f726fbfc2dafddd7bb39c97d3
 authored: true
 ---
 
 # generate_name_resoluciones
 
-**Módulo:** `carga/models.py` (líneas 63-71)
+**Módulo:** `carga/models.py` (líneas 71-79)
 
 ## Propósito
 

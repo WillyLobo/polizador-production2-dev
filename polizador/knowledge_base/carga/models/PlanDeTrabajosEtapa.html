@@ -1,5 +1,5 @@
 <h1>PlanDeTrabajosEtapa</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 1032-1090) · hereda de <code>models.Model</code></p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 1297-1358) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
 <p>El "gemelo proyectado" de <code>FojaDeMedicion</code>: mientras una Foja registra el avance <em>real</em>
 mes a mes, una Etapa registra el avance <em>proyectado</em> — misma estructura de numeración
@@ -15,12 +15,23 @@ de "anterior siguiendo la cadena de rubro reprogramado" (<code>etapa_anterior()<
 no está asignado en este punto (la señal <code>pre_save</code> corre <em>dentro</em> de
 <code>super().save()</code>, después de este código) — por eso busca "la última etapa de la cadena"
 directamente en vez de reusar el método.</p>
+<p>Este cálculo de <code>etapa_fecha</code> corre sólo si la Etapa llega <strong>sin</strong> fecha. Cuando
+<code>PlanDeTrabajosEtapaMatriz</code> completa los meses que tienen Foja pero no Etapa en el plan
+viejo, crea esas Etapas con <code>etapa_fecha=foja.foja_periodo</code>, y <code>save()</code> respeta esa fecha
+en vez de seguir la cadena.</p>
+<p>Ya no existe <code>anterior_items_map()</code> en este modelo. El piso que usa la matriz y
+<code>PlanDeTrabajosEtapaItem.save()</code> en la primera Etapa de un rubro reprogramado es el avance
+<strong>real</strong> (<code>FojaDeMedicion.anterior_items_map()</code>), no el proyectado del rubro viejo.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class PlanDeTrabajosEtapa(models.Model):
 </code></pre>
 <h2>Uso real</h2>
-<pre><code class="language-python"># carga/views/plandetrabajosetapaviews.py:102 (PlanDeTrabajosEtapaMatriz.post)
+<pre><code class="language-python"># carga/views/plandetrabajosetapaviews.py:214 (PlanDeTrabajosEtapaMatriz.post)
 etapa = PlanDeTrabajosEtapa.objects.create(etapa_rubro=rubro)
+</code></pre>
+<p>Relleno de un mes medido por Foja pero sin Etapa (la fecha viene dada):</p>
+<pre><code class="language-python"># carga/views/plandetrabajosetapaviews.py:210
+etapa = PlanDeTrabajosEtapa(etapa_rubro=rubro, etapa_fecha=gap_fojas[col].foja_periodo)
 </code></pre>
 <h2>Ver también</h2>
 <ul>

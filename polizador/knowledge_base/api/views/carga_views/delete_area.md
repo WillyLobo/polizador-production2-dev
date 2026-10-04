@@ -2,14 +2,14 @@
 symbol: delete_area
 kind: function
 module: api/views/carga_views.py
-lines: 151-153
-signature_hash: sha1:eab8a92ec60d432439127e43dd360b034812ff74
+lines: 152-154
+signature_hash: sha1:6afa05f16d1beeb9889ce2fb9ed130797f28e86a
 authored: true
 ---
 
 # delete_area
 
-**Módulo:** `api/views/carga_views.py` (líneas 151-153)
+**Módulo:** `api/views/carga_views.py` (líneas 152-154)
 
 ## Propósito
 

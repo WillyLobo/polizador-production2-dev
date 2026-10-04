@@ -2,14 +2,14 @@
 symbol: update_certificado
 kind: function
 module: api/views/carga_views.py
-lines: 1286-1291
-signature_hash: sha1:f17c3a486a8b096005e7d34b6f3f555daebc7115
+lines: 1287-1292
+signature_hash: sha1:b1841c7ecc257305ab574387c7f46581da57c75b
 authored: true
 ---
 
 # update_certificado
 
-**Módulo:** `api/views/carga_views.py` (líneas 1286-1291)
+**Módulo:** `api/views/carga_views.py` (líneas 1287-1292)
 
 ## Propósito
 

@@ -1,14 +1,24 @@
 <h1>resolucion_certificado_docx</h1>
 <p><strong>Módulo:</strong> <code>carga/views/textoresolucionviews.py</code> (líneas 254-281)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Descarga el <code>.docx</code> de la resolución de un Certificado
+(<code>resolucion-certificado-&lt;expediente&gt;.docx</code>, con <code>/</code> reemplazadas por <code>-</code>), armado con
+<code>carga.resolucion_docx.build_resolucion_certificado(bloques)</code>. Antes de generar el
+documento:
+- sin snapshot ni plantilla → <a href="_sin_plantilla.md">_sin_plantilla</a> (409);
+- error de render → 500 con el mensaje;
+- <strong>variables sin resolver</strong> → no emite nada: deja un <code>messages.error</code> con la lista y
+  redirige a la pantalla de revisión. Una resolución se firma, y emitirla con un
+  <code>«falta: ...»</code> adentro es peor que no emitirla.</p>
+<p>Un <code>ResolucionDocxError</code> también vuelve como 500 con mensaje. Exige
+<code>carga.view_certificado</code>.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def resolucion_certificado_docx(request, pk):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>carga:resolucion-certificado-docx</code>. También es el destino por defecto después de guardar en <code>editar_texto_resolucion_certificado</code>.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="_texto_certificado.md">_texto_certificado</a></li>
+<li><a href="editar_texto_resolucion_certificado.md">editar_texto_resolucion_certificado</a></li>
+</ul>

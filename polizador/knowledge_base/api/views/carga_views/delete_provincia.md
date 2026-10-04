@@ -2,14 +2,14 @@
 symbol: delete_provincia
 kind: function
 module: api/views/carga_views.py
-lines: 393-395
-signature_hash: sha1:d1f8ed42ad54a9443fab53b13844dda45f17713b
+lines: 394-396
+signature_hash: sha1:385f8e8ddd660d90f8b9980c59bd32f3415a85c6
 authored: true
 ---
 
 # delete_provincia
 
-**Módulo:** `api/views/carga_views.py` (líneas 393-395)
+**Módulo:** `api/views/carga_views.py` (líneas 394-396)
 
 ## Propósito
 

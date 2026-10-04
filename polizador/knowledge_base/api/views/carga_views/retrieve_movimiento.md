@@ -2,14 +2,14 @@
 symbol: retrieve_movimiento
 kind: function
 module: api/views/carga_views.py
-lines: 1920-1921
-signature_hash: sha1:a6f687fd8ff93a5b04c7675b95e70dc1334ec92b
+lines: 1941-1942
+signature_hash: sha1:7016b735d7cf0d8117f1116ece83680c90115ae2
 authored: true
 ---
 
 # retrieve_movimiento
 
-**Módulo:** `api/views/carga_views.py` (líneas 1920-1921)
+**Módulo:** `api/views/carga_views.py` (líneas 1941-1942)
 
 ## Propósito
 

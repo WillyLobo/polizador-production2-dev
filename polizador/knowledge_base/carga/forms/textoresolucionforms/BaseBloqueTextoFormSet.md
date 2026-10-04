@@ -4,16 +4,19 @@ kind: class
 module: carga/forms/textoresolucionforms.py
 lines: 153-163
 signature_hash: sha1:cd477a51a3ee8c9eacf71611e8b4a2202cedf0b2
-authored: false
+authored: true
 ---
 
 # BaseBloqueTextoFormSet
 
-**Módulo:** `carga/forms/textoresolucionforms.py` (líneas 153-163)
+**Módulo:** `carga/forms/textoresolucionforms.py` (líneas 153-163) · hereda de `forms.BaseFormSet`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Formset del texto resuelto. `bloques()` devuelve la lista `{clase, label, texto}` en el
+mismo formato que los bloques de plantilla, que es la que se guarda en el snapshot
+`certificado_texto_resolucion["bloques"]`. No borra ni reordena: la cantidad de bloques es
+la que dio la plantilla.
 
 ## Firma
 
@@ -23,14 +26,12 @@ class BaseBloqueTextoFormSet(forms.BaseFormSet):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/forms/textoresolucionforms.py:166` — `BloqueTextoFormSet = forms.formset_factory(BloqueTextoForm, formset=BaseBloqueTextoFormSet, extra=0)`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+```python
+# carga/views/textoresolucionviews.py (editar_texto_resolucion_certificado)
+"bloques": formset.bloques(),
+```
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [BloqueTextoForm](BloqueTextoForm.md)
+- [editar_texto_resolucion_certificado](../../views/textoresolucionviews/editar_texto_resolucion_certificado.md)

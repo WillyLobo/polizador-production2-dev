@@ -2,14 +2,14 @@
 symbol: create_poliza
 kind: function
 module: api/views/carga_views.py
-lines: 1824-1825
-signature_hash: sha1:328fc5a1f5d095b3c889c1d7a7b5d1061b963d8e
+lines: 1845-1846
+signature_hash: sha1:6c9c1c7c504bac9091438f2640c9c8ff9e43aac2
 authored: true
 ---
 
 # create_poliza
 
-**Módulo:** `api/views/carga_views.py` (líneas 1824-1825)
+**Módulo:** `api/views/carga_views.py` (líneas 1845-1846)
 
 ## Propósito
 

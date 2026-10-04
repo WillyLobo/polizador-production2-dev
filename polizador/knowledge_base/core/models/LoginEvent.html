@@ -1,7 +1,12 @@
 <h1>LoginEvent</h1>
-<p><strong>Módulo:</strong> <code>core/models.py</code> (líneas 143-154) · hereda de <code>models.Model</code></p>
+<p><strong>Módulo:</strong> <code>core/models.py</code> (líneas 143-167) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
 <p>Un inicio de sesión registrado (usuario + timestamp + IP), usado para graficar actividad de usuarios en <code>DashboardView</code> (<code>login_summary</code>/<code>recent_logins</code>, en <code>core/dashboard_data.py</code>, fuera del alcance de este manifest).</p>
+<p><code>backend</code> guarda la ruta completa del backend que autenticó (la que Django deja en
+<code>user.backend</code>), vacía en las filas anteriores a que existiera el campo. <code>por_ldap</code> es
+<code>backend.endswith("LDAPBackend")</code>. Para eso se agregó: <code>manage.py retirar_password_local</code>
+sólo le quita la contraseña local a un usuario después de haberlo visto entrar por LDAP al
+menos una vez, y ese "haberlo visto" se comprueba con estas filas.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class LoginEvent(models.Model):
 </code></pre>
@@ -10,5 +15,10 @@
 <h2>Ver también</h2>
 <ul>
 <li><a href="../signals/registrar_login.md">registrar_login</a></li>
-<li><a href="../views/DashboardView.md">DashboardView</a></li>
+<li>
+<p><a href="../views/DashboardView.md">DashboardView</a></p>
+</li>
+<li>
+<p><a href="../../personalizador/models/CustomUser.md">CustomUser</a> — <code>ad_username</code>/<code>solo_ldap</code>.</p>
+</li>
 </ul>

@@ -2,13 +2,13 @@
 symbol: ManagementCommandsView
 kind: class
 module: core/views.py
-lines: 121-154
-signature_hash: sha1:05da64c4e885c9ca69728222ac56c3ad2c8168fe
+lines: 144-177
+signature_hash: sha1:eed12018f449a152094f80ba44d8492b03ae2bf2
 authored: true
 ---
 # ManagementCommandsView
 
-**Módulo:** `core/views.py` (líneas 121-154) · hereda de `SuperuserRequiredMixin, TemplateView`
+**Módulo:** `core/views.py` (líneas 144-177) · hereda de `SuperuserRequiredMixin, TemplateView`
 
 ## Propósito
 

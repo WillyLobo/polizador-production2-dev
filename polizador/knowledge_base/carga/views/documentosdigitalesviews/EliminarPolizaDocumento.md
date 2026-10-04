@@ -2,18 +2,20 @@
 symbol: EliminarPolizaDocumento
 kind: class
 module: carga/views/documentosdigitalesviews.py
-lines: 142-149
-signature_hash: sha1:fccbb189bd8bdcb381283907c3f82c9a4177949c
-authored: false
+lines: 154-161
+signature_hash: sha1:ab0b1d38d9b732f58ef60391d97bd2a9e26990b9
+authored: true
 ---
 
 # EliminarPolizaDocumento
 
-**Módulo:** `carga/views/documentosdigitalesviews.py` (líneas 142-149)
+**Módulo:** `carga/views/documentosdigitalesviews.py` (líneas 154-161) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Confirma y borra un `PolizaDocumento`, mostrando antes los objetos relacionados que se
+borrarían en cascada (`DeleteRelatedObjectsMixin`). Exige `carga.delete_polizadocumento` y
+vuelve a la ficha de la Póliza.
 
 ## Firma
 
@@ -23,14 +25,8 @@ class EliminarPolizaDocumento(PermissionRequiredMixin, DeleteRelatedObjectsMixin
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`carga:eliminar-poliza-documento`, desde la ficha de la Póliza.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [PolizaDocumento](../../models/PolizaDocumento.md)

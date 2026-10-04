@@ -2,14 +2,14 @@
 symbol: ConcatOp
 kind: class
 module: personalizador/models.py
-lines: 12-16
-signature_hash: sha1:e8576f2eadc68b7830a5fc8bae93ffb31a9cb7b3
+lines: 13-17
+signature_hash: sha1:c681fcb719128862ec233c8c38fd0c10eef8c2c1
 authored: true
 ---
 
 # ConcatOp
 
-**Módulo:** `personalizador/models.py` (líneas 12-16) · hereda de `models.Func`
+**Módulo:** `personalizador/models.py` (líneas 13-17) · hereda de `models.Func`
 
 ## Propósito
 

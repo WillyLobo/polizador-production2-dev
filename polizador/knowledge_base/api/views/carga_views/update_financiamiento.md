@@ -2,14 +2,14 @@
 symbol: update_financiamiento
 kind: function
 module: api/views/carga_views.py
-lines: 1246-1251
-signature_hash: sha1:b901cacba00f028d16d3a95308a7c6fcd8a02724
+lines: 1247-1252
+signature_hash: sha1:8225e1f6591e4e91fa6b44a4f5e00f0c05574bba
 authored: true
 ---
 
 # update_financiamiento
 
-**Módulo:** `api/views/carga_views.py` (líneas 1246-1251)
+**Módulo:** `api/views/carga_views.py` (líneas 1247-1252)
 
 ## Propósito
 

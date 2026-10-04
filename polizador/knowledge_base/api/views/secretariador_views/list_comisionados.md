@@ -26,4 +26,4 @@ def list_comisionados(request, q: str=''):
 
 ## Ver también
 
-- [Agente](../../../secretariador/models/Agente.md)
+- [Agente](../../../personalizador/models/Agente.md)

@@ -2,14 +2,14 @@
 symbol: ActividadEspecifica
 kind: class
 module: personalizador/models.py
-lines: 259-269
-signature_hash: sha1:1377b1e26e5b51b0810c027f0fe3ce11143c1236
+lines: 298-308
+signature_hash: sha1:71f5542e3735030f7470865ee0a466527a2aa3a1
 authored: true
 ---
 
 # ActividadEspecifica
 
-**Módulo:** `personalizador/models.py` (líneas 259-269) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 298-308) · hereda de `models.Model`
 
 ## Propósito
 

@@ -32,4 +32,4 @@ class SolicitudForm(BaseFormMixin, forms.ModelForm):
 ## Ver también
 
 - [Solicitud](../../models/Solicitud.md)
-- [SolicitudExteriorForm](SolicitudExteriorForm.md)
+- [SolicitudExteriorForm](../solicitud_exteriorform/SolicitudExteriorForm.md)

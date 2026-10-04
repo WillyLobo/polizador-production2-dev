@@ -1,14 +1,19 @@
 <h1>CrearTextoResolucion</h1>
-<p><strong>Módulo:</strong> <code>carga/views/textoresolucionviews.py</code> (líneas 123-130)</p>
+<p><strong>Módulo:</strong> <code>carga/views/textoresolucionviews.py</code> (líneas 123-130) · hereda de <code>TextoResolucionEditorMixin, PermissionRequiredMixin, generic.CreateView</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Alta de una plantilla de texto de resolución. Arranca con <code>BLOQUES_INICIALES</code> (el
+esqueleto habitual de una resolución del organismo: visto, considerandos, fórmula
+resuelve y artículos de forma) para que el usuario no enfrente una pantalla en blanco.
+Admite <code>?certificado=&lt;id&gt;</code> para precargar la muestra de la vista previa, que es como llega
+desde la pantalla de "no hay texto base" (<a href="_sin_plantilla.md">_sin_plantilla</a>). Exige
+<code>carga.add_textoresolucioncertificado</code>.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class CrearTextoResolucion(TextoResolucionEditorMixin, PermissionRequiredMixin, generic.CreateView):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>carga:crear-texto-resolucion</code>.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="TextoResolucionEditorMixin.md">TextoResolucionEditorMixin</a></li>
+<li><a href="UpdateTextoResolucion.md">UpdateTextoResolucion</a></li>
+</ul>

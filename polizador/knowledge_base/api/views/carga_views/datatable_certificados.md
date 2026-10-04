@@ -2,14 +2,14 @@
 symbol: datatable_certificados
 kind: function
 module: api/views/carga_views.py
-lines: 1358-1398
-signature_hash: sha1:24c1c62261b6dbef63db44cb4bceb2a6be8cf0fc
+lines: 1359-1399
+signature_hash: sha1:d854a402e270cfd651f4f52e020b9abcde870800
 authored: true
 ---
 
 # datatable_certificados
 
-**Módulo:** `api/views/carga_views.py` (líneas 1358-1398)
+**Módulo:** `api/views/carga_views.py` (líneas 1359-1399)
 
 ## Propósito
 

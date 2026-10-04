@@ -2,14 +2,14 @@
 symbol: create_rubro
 kind: function
 module: api/views/carga_views.py
-lines: 1203-1204
-signature_hash: sha1:8c3b00de006221f74f950841f33e04566989d08b
+lines: 1204-1205
+signature_hash: sha1:591c085feb655242c4e07387d8d0db38b448acc5
 authored: true
 ---
 
 # create_rubro
 
-**Módulo:** `api/views/carga_views.py` (líneas 1203-1204)
+**Módulo:** `api/views/carga_views.py` (líneas 1204-1205)
 
 ## Propósito
 

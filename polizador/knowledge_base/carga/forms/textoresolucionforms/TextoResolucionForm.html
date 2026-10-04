@@ -1,17 +1,17 @@
 <h1>TextoResolucionForm</h1>
-<p><strong>Módulo:</strong> <code>carga/forms/textoresolucionforms.py</code> (líneas 23-39)</p>
+<p><strong>Módulo:</strong> <code>carga/forms/textoresolucionforms.py</code> (líneas 23-39) · hereda de <code>forms.ModelForm</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Form del <strong>alcance</strong> de una plantilla: nombre, programa (<code>programawidget</code>),
+financiamiento y tipo de certificado (vacío = comodín). Los bloques no pasan por acá: van en
+<code>BloqueFormSet</code> y la vista los asigna a <code>textoresolucion_bloques</code> antes de guardar. La
+unicidad del alcance la valida la <code>UniqueConstraint</code> del modelo.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class TextoResolucionForm(forms.ModelForm):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/textoresolucionviews.py:15</code> — <code>TextoResolucionForm,</code></li>
-<li><code>carga/views/textoresolucionviews.py:53</code> — <code>form_class = TextoResolucionForm</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>form_class</code> de <a href="../../views/textoresolucionviews/TextoResolucionEditorMixin.md">TextoResolucionEditorMixin</a>.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/TextoResolucionCertificado.md">TextoResolucionCertificado</a></li>
+<li><a href="BloqueForm.md">BloqueForm</a></li>
+</ul>

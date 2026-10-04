@@ -1,14 +1,15 @@
 <h1>UpdatePolizaMovimiento</h1>
-<p><strong>Módulo:</strong> <code>carga/views/polizaviews.py</code> (líneas 83-91)</p>
+<p><strong>Módulo:</strong> <code>carga/views/polizaviews.py</code> (líneas 105-113) · hereda de <code>PermissionRequiredMixin, UserKwargsMixin, generic.UpdateView</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Edición de un <code>Poliza_Movimiento</code> puntual, fuera del formset de la Póliza. Exige
+<code>carga.change_poliza_movimiento</code> y vuelve a la ficha de la Póliza.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class UpdatePolizaMovimiento(PermissionRequiredMixin, UserKwargsMixin, generic.UpdateView):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>carga:update-poliza-movimiento</code> (<code>crear/poliza/movimiento/&lt;pk&gt;/editar</code>).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/Poliza_Movimiento.md">Poliza_Movimiento</a></li>
+<li><a href="CrearPolizaMovimiento.md">CrearPolizaMovimiento</a></li>
+</ul>

@@ -30,4 +30,4 @@ def PaginaListaRepresentantesTecnicos(request):
 
 ## Ver también
 
-- [RepresentanteTecnico](../../models/RepresentanteTecnico.md)
+- [RepresentanteTecnico](../../../personalizador/models/RepresentanteTecnico.md)

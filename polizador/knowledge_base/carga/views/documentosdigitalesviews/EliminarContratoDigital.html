@@ -1,9 +1,10 @@
 <h1>EliminarContratoDigital</h1>
-<p><strong>Módulo:</strong> <code>carga/views/documentosdigitalesviews.py</code> (líneas 52-57) · hereda de <code>PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView</code></p>
+<p><strong>Módulo:</strong> <code>carga/views/documentosdigitalesviews.py</code> (líneas 56-63) · hereda de <code>PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView</code></p>
 <h2>Propósito</h2>
 <p>Confirma y ejecuta el borrado de un ContratosDigitales, mostrando antes (vía <code>DeleteRelatedObjectsMixin</code>
 — <code>core/mixins.py</code> + <code>core/deletion.py::get_deleted_objects</code>) los objetos relacionados que
 se borrarían en cascada, para que el usuario no borre a ciegas.</p>
+<p>Exige el permiso propio del modelo (<code>carga.delete_contratosdigitales</code>; antes pedía por error el de <code>certificado</code>). Al terminar vuelve a la ficha de la Obra del Contrato (<code>carga:estado-obra</code>), no a un listado.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class EliminarContratoDigital(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
 </code></pre>

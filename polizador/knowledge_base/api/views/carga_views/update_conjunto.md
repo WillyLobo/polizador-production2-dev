@@ -2,14 +2,14 @@
 symbol: update_conjunto
 kind: function
 module: api/views/carga_views.py
-lines: 1492-1497
-signature_hash: sha1:5d760b44b060fd2177d3a54473fdc178c9dc913e
+lines: 1493-1498
+signature_hash: sha1:33fc999b0cd69ab9a6156e3d20fdb622d8c1954d
 authored: true
 ---
 
 # update_conjunto
 
-**Módulo:** `api/views/carga_views.py` (líneas 1492-1497)
+**Módulo:** `api/views/carga_views.py` (líneas 1493-1498)
 
 ## Propósito
 

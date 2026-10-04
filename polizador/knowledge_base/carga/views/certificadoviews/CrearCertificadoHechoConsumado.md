@@ -2,14 +2,14 @@
 symbol: CrearCertificadoHechoConsumado
 kind: class
 module: carga/views/certificadoviews.py
-lines: 316-344
-signature_hash: sha1:17f5a410f8e5303260970a8bb204ebcbc3193161
+lines: 149-177
+signature_hash: sha1:f9b2b73dcc732d2f34b62dda925c9654cc9f78ae
 authored: true
 ---
 
 # CrearCertificadoHechoConsumado
 
-**Módulo:** `carga/views/certificadoviews.py` (líneas 316-344) · hereda de `PermissionRequiredMixin, generic.CreateView`
+**Módulo:** `carga/views/certificadoviews.py` (líneas 149-177) · hereda de `PermissionRequiredMixin, generic.CreateView`
 
 ## Propósito
 

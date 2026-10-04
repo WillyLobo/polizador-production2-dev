@@ -2,14 +2,14 @@
 symbol: _region_datatable_row
 kind: function
 module: api/views/carga_views.py
-lines: 435-446
-signature_hash: sha1:45aae3c4350875b3baec0b46441316c9a1e83f6d
+lines: 436-447
+signature_hash: sha1:9e1e1ab2e24b367381b04ea79e2b72a0abf5fc39
 authored: true
 ---
 
 # _region_datatable_row
 
-**Módulo:** `api/views/carga_views.py` (líneas 435-446)
+**Módulo:** `api/views/carga_views.py` (líneas 436-447)
 
 ## Propósito
 

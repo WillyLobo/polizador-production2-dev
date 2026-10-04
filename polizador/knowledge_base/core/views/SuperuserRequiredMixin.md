@@ -2,14 +2,14 @@
 symbol: SuperuserRequiredMixin
 kind: class
 module: core/views.py
-lines: 22-24
-signature_hash: sha1:686d40b80fb7b871c7d357336cc8ef91cc90171e
+lines: 24-26
+signature_hash: sha1:a1c4c1b84224c72368275396ede7dad35134876d
 authored: true
 ---
 
 # SuperuserRequiredMixin
 
-**Módulo:** `core/views.py` (líneas 22-24) · hereda de `LoginRequiredMixin, UserPassesTestMixin`
+**Módulo:** `core/views.py` (líneas 24-26) · hereda de `LoginRequiredMixin, UserPassesTestMixin`
 
 ## Propósito
 

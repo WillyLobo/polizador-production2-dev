@@ -2,14 +2,14 @@
 symbol: generate_name_polizas
 kind: function
 module: carga/models.py
-lines: 39-47
-signature_hash: sha1:7775197d31dcb71d83716ddbe206e934e27c0d06
+lines: 40-48
+signature_hash: sha1:b88b039d53949fa6e396c21db5379b3ae1431b70
 authored: true
 ---
 
 # generate_name_polizas
 
-**Módulo:** `carga/models.py` (líneas 39-47)
+**Módulo:** `carga/models.py` (líneas 40-48)
 
 ## Propósito
 

@@ -2,14 +2,14 @@
 symbol: list_obras
 kind: function
 module: api/views/carga_views.py
-lines: 706-722
-signature_hash: sha1:592d69de3c92df6d00014f31ac5e3a17a75237a9
+lines: 707-723
+signature_hash: sha1:af787d4ad78a3f10a5e2711e06d9c5b737efca46
 authored: true
 ---
 
 # list_obras
 
-**Módulo:** `api/views/carga_views.py` (líneas 706-722)
+**Módulo:** `api/views/carga_views.py` (líneas 707-723)
 
 ## Propósito
 

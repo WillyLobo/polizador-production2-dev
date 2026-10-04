@@ -2,14 +2,14 @@
 symbol: create_departamento_carga
 kind: function
 module: api/views/carga_views.py
-lines: 475-476
-signature_hash: sha1:2bd01c0f52789adab07b79ddf2a37264c8adce58
+lines: 476-477
+signature_hash: sha1:da6540f2a3a4af29e25d1f771e5e510ec88cdf37
 authored: true
 ---
 
 # create_departamento_carga
 
-**Módulo:** `api/views/carga_views.py` (líneas 475-476)
+**Módulo:** `api/views/carga_views.py` (líneas 476-477)
 
 ## Propósito
 

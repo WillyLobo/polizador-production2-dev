@@ -2,14 +2,14 @@
 symbol: retrieve_departamento_carga
 kind: function
 module: api/views/carga_views.py
-lines: 469-470
-signature_hash: sha1:02400196ad59520015f5b7e2b6a517a9329e175d
+lines: 470-471
+signature_hash: sha1:8a783b61172fbdf51c4b79b9162431e5838d63b6
 authored: true
 ---
 
 # retrieve_departamento_carga
 
-**Módulo:** `api/views/carga_views.py` (líneas 469-470)
+**Módulo:** `api/views/carga_views.py` (líneas 470-471)
 
 ## Propósito
 

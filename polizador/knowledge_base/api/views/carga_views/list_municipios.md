@@ -2,14 +2,14 @@
 symbol: list_municipios
 kind: function
 module: api/views/carga_views.py
-lines: 523-527
-signature_hash: sha1:0127f65b20acf401217ff7885fabf6a4f35cad16
+lines: 524-528
+signature_hash: sha1:21b3f5435c84ed6a7eac67037825895b367f7c82
 authored: true
 ---
 
 # list_municipios
 
-**Módulo:** `api/views/carga_views.py` (líneas 523-527)
+**Módulo:** `api/views/carga_views.py` (líneas 524-528)
 
 ## Propósito
 

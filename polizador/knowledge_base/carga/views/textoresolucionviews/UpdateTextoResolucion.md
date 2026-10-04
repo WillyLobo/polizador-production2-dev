@@ -4,16 +4,19 @@ kind: class
 module: carga/views/textoresolucionviews.py
 lines: 134-140
 signature_hash: sha1:c6c7c0a595cba133f9cb0fefd4682ea387b46af1
-authored: false
+authored: true
 ---
 
 # UpdateTextoResolucion
 
-**Módulo:** `carga/views/textoresolucionviews.py` (líneas 134-140)
+**Módulo:** `carga/views/textoresolucionviews.py` (líneas 134-140) · hereda de `TextoResolucionEditorMixin, PermissionRequiredMixin, generic.UpdateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Edición de una plantilla existente: el formset arranca con sus `textoresolucion_bloques`.
+Cambiar la plantilla **no** reescribe los snapshots ya guardados en certificados. Esos
+siguen mostrando su texto hasta que se restauran o hasta que un cambio de datos los anula.
+Exige `carga.change_textoresolucioncertificado`.
 
 ## Firma
 
@@ -23,14 +26,9 @@ class UpdateTextoResolucion(TextoResolucionEditorMixin, PermissionRequiredMixin,
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`carga:update-texto-resolucion`. Es la URL de `TextoResolucionCertificado.get_absolute_url()`.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [TextoResolucionEditorMixin](TextoResolucionEditorMixin.md)
+- [restaurar_texto_resolucion_certificado](restaurar_texto_resolucion_certificado.md)

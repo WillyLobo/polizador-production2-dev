@@ -2,14 +2,14 @@
 symbol: retrieve_obra
 kind: function
 module: api/views/carga_views.py
-lines: 764-769
-signature_hash: sha1:ed5aa784ecb52613d536c07064e0c581980fe3cd
+lines: 765-770
+signature_hash: sha1:9861510bde551ffec6224052e758c927b47eab1e
 authored: true
 ---
 
 # retrieve_obra
 
-**Módulo:** `api/views/carga_views.py` (líneas 764-769)
+**Módulo:** `api/views/carga_views.py` (líneas 765-770)
 
 ## Propósito
 

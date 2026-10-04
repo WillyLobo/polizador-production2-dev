@@ -2,14 +2,14 @@
 symbol: _obra_datatable_row
 kind: function
 module: api/views/carga_views.py
-lines: 838-862
-signature_hash: sha1:160f843406dc7510146f12375900a999906da35e
+lines: 839-863
+signature_hash: sha1:27ef456437ad1b49179d3b3c75cabab4cf411fe4
 authored: true
 ---
 
 # _obra_datatable_row
 
-**Módulo:** `api/views/carga_views.py` (líneas 838-862)
+**Módulo:** `api/views/carga_views.py` (líneas 839-863)
 
 ## Propósito
 

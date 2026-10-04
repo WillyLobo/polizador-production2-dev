@@ -1,5 +1,5 @@
 <h1>Contrato</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 1272-1312) · hereda de <code>models.Model</code></p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 1540-1591) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
 <p>El contrato de obra (legal/administrativo) de una Obra — puede haber más de uno a lo
 largo del tiempo (<code>contrato_vigente()</code> en <code>Obra</code> toma el más reciente, mismo patrón que
@@ -11,6 +11,10 @@ certificados PARCIAL (%mes de la Foja) — en su lugar, certifica en tramos fijo
 disparados cuando el avance acumulado de la Foja alcanza el umbral de cada
 <code>ContratoTramoPago</code>. Es la bifurcación central que decide si <code>certificacion.py</code> construye
 certificados PARCIAL o ETAPA para esta Obra.</p>
+<p><code>monto_total(financiamiento_codigo, moneda)</code> suma todos los <code>ContratoMonto</code> del Contrato
+para un financiamiento (N/P/T), en pesos o en UVI. Es la base común de los Certificados de
+Etapa (<code>certificacion._monto_contrato_total</code> delega acá) y del monto de garantía sugerido
+de <code>Poliza</code>.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class Contrato(models.Model):
 </code></pre>
@@ -21,5 +25,10 @@ certificados PARCIAL o ETAPA para esta Obra.</p>
 <li><a href="Obra.md">Obra</a></li>
 <li><a href="ContratoTramoPago.md">ContratoTramoPago</a> — solo relevante cuando <code>contrato_certificacion_por_etapas=True</code>.</li>
 <li><a href="ContratoMonto.md">ContratoMonto</a></li>
-<li><a href="Certificado.md">Certificado</a> — tipos PARCIAL vs ETAPA.</li>
+<li>
+<p><a href="Certificado.md">Certificado</a> — tipos PARCIAL vs ETAPA.</p>
+</li>
+<li>
+<p><a href="Poliza.md">Poliza</a> — usa <code>monto_total()</code> para el monto de garantía sugerido.</p>
+</li>
 </ul>

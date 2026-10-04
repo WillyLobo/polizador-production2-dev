@@ -2,14 +2,14 @@
 symbol: create_contrato_rubro
 kind: function
 module: api/views/carga_views.py
-lines: 1671-1672
-signature_hash: sha1:d79e5cc45832ebfb7a7f8f665b50ece6b849cd9c
+lines: 1692-1693
+signature_hash: sha1:d4bb829bb7f6736e0e350c45a2a2b83daafa6590
 authored: true
 ---
 
 # create_contrato_rubro
 
-**Módulo:** `api/views/carga_views.py` (líneas 1671-1672)
+**Módulo:** `api/views/carga_views.py` (líneas 1692-1693)
 
 ## Propósito
 

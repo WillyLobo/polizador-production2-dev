@@ -28,4 +28,4 @@ class PlanDeTrabajosItemFormset(forms.models.BaseInlineFormSet):
 ## Ver también
 
 - [PlanDeTrabajosItem](../../models/PlanDeTrabajosItem.md)
-- [PlanDeTrabajosItemForm](PlanDeTrabajosItemForm.md)
+- [PlanDeTrabajosItemForm](../plandetrabajositemforms/PlanDeTrabajosItemForm.md)

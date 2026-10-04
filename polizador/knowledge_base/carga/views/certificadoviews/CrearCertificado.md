@@ -2,14 +2,14 @@
 symbol: CrearCertificado
 kind: class
 module: carga/views/certificadoviews.py
-lines: 192-226
-signature_hash: sha1:8f1e456bdced07d9c9b6322a6141953754da7b0b
+lines: 35-69
+signature_hash: sha1:226e6fd716082425ad695d8168e99bf58d813eee
 authored: true
 ---
 
 # CrearCertificado
 
-**Módulo:** `carga/views/certificadoviews.py` (líneas 192-226) · hereda de `PermissionRequiredMixin, generic.CreateView`
+**Módulo:** `carga/views/certificadoviews.py` (líneas 35-69) · hereda de `PermissionRequiredMixin, generic.CreateView`
 
 ## Propósito
 

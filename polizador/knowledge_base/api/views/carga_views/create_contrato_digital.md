@@ -2,14 +2,14 @@
 symbol: create_contrato_digital
 kind: function
 module: api/views/carga_views.py
-lines: 1702-1703
-signature_hash: sha1:53713eb2710056e4ad984ea6ea9a83bfd4b07134
+lines: 1723-1724
+signature_hash: sha1:79976f50b3b0b08c15d9e6c94b4a5e0ed421efce
 authored: true
 ---
 
 # create_contrato_digital
 
-**Módulo:** `api/views/carga_views.py` (líneas 1702-1703)
+**Módulo:** `api/views/carga_views.py` (líneas 1723-1724)
 
 ## Propósito
 

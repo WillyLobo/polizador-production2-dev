@@ -2,14 +2,14 @@
 symbol: FormValidationErrorListView
 kind: class
 module: core/views.py
-lines: 31-32
-signature_hash: sha1:462312a7aea980b56bc289e07dd6c2a698b8bb4a
+lines: 54-55
+signature_hash: sha1:f34ed4ea64fc8f675688b9e2a5143c03ede76a4d
 authored: true
 ---
 
 # FormValidationErrorListView
 
-**Módulo:** `core/views.py` (líneas 31-32)
+**Módulo:** `core/views.py` (líneas 54-55)
 
 ## Propósito
 

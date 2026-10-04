@@ -2,14 +2,14 @@
 symbol: date_validation
 kind: function
 module: secretariador/models.py
-lines: 65-72
-signature_hash: sha1:6bee5a992bbf24a7ea64f8e54e3817266664e3d0
+lines: 66-73
+signature_hash: sha1:7c8f68e0784a5b1810e6eebbc4adcbd32732d8ee
 authored: true
 ---
 
 # date_validation
 
-**Módulo:** `secretariador/models.py` (líneas 65-72)
+**Módulo:** `secretariador/models.py` (líneas 66-73)
 
 ## Propósito
 

@@ -2,14 +2,14 @@
 symbol: retrieve_aseguradora
 kind: function
 module: api/views/carga_views.py
-lines: 166-167
-signature_hash: sha1:9a3a0b0778107ed7cbfe20656ac3e10895cee334
+lines: 167-168
+signature_hash: sha1:a0b7c5d412dabd319cd2cf8f2ebabf18ffc1804f
 authored: true
 ---
 
 # retrieve_aseguradora
 
-**Módulo:** `api/views/carga_views.py` (líneas 166-167)
+**Módulo:** `api/views/carga_views.py` (líneas 167-168)
 
 ## Propósito
 
