@@ -215,14 +215,19 @@ def _tasa_descuento(saldo_pendiente, saldo_a_certificar):
     return min(saldo_pendiente / saldo_a_certificar, Decimal("1"))
 
 
+def fecha_cotizacion_devolucion_anticipo(certificado):
+    """Fecha de la cotización UVI->$ de la Devolución de Anticipo: el último día del mes del
+    período del certificado (el de su Foja, o el de certificado_fecha si no tiene), SIEMPRE —
+    aunque el bruto haya quedado congelado en una cotización anterior por atraso (Ley
+    27397). En obras UVI el monto de contrato en pesos no significa nada (cambia todos los
+    meses), así que el anticipo se recupera en UVI y se valoriza al mes que se certifica."""
+    return ley27397.fin_de_mes(certificado.certificado_periodo_fecha)
+
+
 def _cotizacion_devolucion_anticipo(certificado):
-    """Cotización UVI->$ de la Devolución de Anticipo: la del último día del mes del período
-    del certificado (el de su Foja, o el de certificado_fecha si no tiene), SIEMPRE — aunque
-    el bruto haya quedado congelado en una cotización anterior por atraso (Ley 27397). En
-    obras UVI el monto de contrato en pesos no significa nada (cambia todos los meses), así
-    que el anticipo se recupera en UVI y se valoriza al mes que se certifica."""
+    """Valor de la cotización de fecha_cotizacion_devolucion_anticipo."""
     try:
-        return ley27397.cotizacion_fin_de_mes(certificado.certificado_periodo_fecha)
+        return ley27397.cotizacion_fin_de_mes(fecha_cotizacion_devolucion_anticipo(certificado))
     except ley27397.CotizacionFaltanteError as e:
         raise ValidationError(
             f"{e} No se puede valorizar en pesos la Devolución de Anticipo de este certificado."

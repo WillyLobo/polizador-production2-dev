@@ -130,9 +130,10 @@
 
   <div class="subtitulo">{% if object.certificado_tipo == "ETAPA" %}CERTIFICADO DE ETAPA{% else %}CERTIFICADO DE OBRA{% endif %} — PERIODO: {{ object.certificado_periodo_fecha|date:"F-Y"|capfirst }}</div>
 
+  {% with con_fecha_uvi=object.certificado_monto_uvi %}
   <table class="tabla-avance" style="margin-bottom:5mm;">
     <thead>
-      <tr><th style="text-align:left;">&nbsp;</th><th>UVI</th><th>PESOS</th></tr>
+      <tr><th style="text-align:left;">&nbsp;</th><th>UVI</th><th>PESOS</th>{% if con_fecha_uvi %}<th>FECHA UVI</th>{% endif %}</tr>
     </thead>
     <tbody>
       {% if object.certificado_tipo == "ETAPA" %}
@@ -140,53 +141,63 @@
         <td class="concepto">MONTO ACUMULADO</td>
         <td class="dato">{{ resumen.etapa.total_uvi|floatformat:2 }}</td>
         <td class="dato">{{ resumen.etapa.total_pesos|floatformat:2 }}</td>
+        {% if con_fecha_uvi %}<td class="dato" style="text-align:center;">—</td>{% endif %}
       </tr>
       <tr>
         <td class="concepto">MONTO ACUMULADO ANTERIOR</td>
         <td class="dato">{{ resumen.etapa.anterior_uvi|floatformat:2 }}</td>
         <td class="dato">{{ resumen.etapa.anterior_pesos|floatformat:2 }}</td>
+        {% if con_fecha_uvi %}<td class="dato" style="text-align:center;">—</td>{% endif %}
       </tr>
       {% else %}
       <tr>
         <td class="concepto">MONTO ACUMULADO</td>
         <td class="dato">{{ resumen.certificado_obra.total_uvi|floatformat:2 }}</td>
         <td class="dato">{{ resumen.certificado_obra.total_pesos|floatformat:2 }}</td>
+        {% if con_fecha_uvi %}<td class="dato" style="text-align:center;">—</td>{% endif %}
       </tr>
       <tr>
         <td class="concepto">MONTO ACUMULADO ANTERIOR</td>
         <td class="dato">{{ resumen.certificado_obra.anterior_uvi|floatformat:2 }}</td>
         <td class="dato">{{ resumen.certificado_obra.anterior_pesos|floatformat:2 }}</td>
+        {% if con_fecha_uvi %}<td class="dato" style="text-align:center;">—</td>{% endif %}
       </tr>
       {% endif %}
       <tr>
         <td class="concepto">IMPORTE PRESENTE CERTIFICADO</td>
         <td class="dato">{{ object.certificado_monto_uvi|floatformat:2 }}</td>
         <td class="dato">{{ object.certificado_monto_pesos|floatformat:2 }}</td>
+        {% if con_fecha_uvi %}<td class="dato" style="text-align:center;">{% for f in fechas_uvi_bruto %}{{ f|date:"d/m/Y" }}{% if not forloop.last %}<br>{% endif %}{% empty %}—{% endfor %}</td>{% endif %}
       </tr>
       <tr>
         <td class="concepto">DESCUENTO ANTICIPO</td>
         <td class="dato">{{ object.certificado_descuento_anticipo_uvi|floatformat:2 }}</td>
         <td class="dato">{{ object.certificado_descuento_anticipo_pesos|floatformat:2 }}</td>
+        {% if con_fecha_uvi %}<td class="dato" style="text-align:center;">{{ fecha_uvi_devolucion|date:"d/m/Y"|default:"—" }}</td>{% endif %}
       </tr>
       <tr>
         <td class="concepto">DESCUENTO FONDO DE REPARO ({{ object.certificado_fondoreparo_pct|floatformat:2 }}%)</td>
         <td class="dato">{{ object.certificado_fondoreparo_monto_uvi|floatformat:2 }}</td>
         <td class="dato">{{ object.certificado_fondoreparo_monto_pesos|floatformat:2 }}</td>
+        {% if con_fecha_uvi %}<td class="dato" style="text-align:center;">{% for f in fechas_uvi_bruto %}{{ f|date:"d/m/Y" }}{% if not forloop.last %}<br>{% endif %}{% empty %}—{% endfor %}</td>{% endif %}
       </tr>
       {% if object.certificado_aplica_retencion_adobe %}
       <tr>
         <td class="concepto">RETENCIÓN LADRILLOS DE ADOBE (Decreto 654/2015, {{ object.RETENCION_ADOBE_PCT|floatformat:1 }}‰)</td>
         <td class="dato">{{ object.certificado_retencion_adobe_monto_uvi|floatformat:2 }}</td>
         <td class="dato">{{ object.certificado_retencion_adobe_monto_pesos|floatformat:2 }}</td>
+        {% if con_fecha_uvi %}<td class="dato" style="text-align:center;">{% for f in fechas_uvi_bruto %}{{ f|date:"d/m/Y" }}{% if not forloop.last %}<br>{% endif %}{% empty %}—{% endfor %}</td>{% endif %}
       </tr>
       {% endif %}
       <tr>
         <td class="concepto">IMPORTE A ABONARSE</td>
         <td class="dato">{{ object.certificado_importe_abonar_uvi|floatformat:2 }}</td>
         <td class="dato">{{ object.certificado_importe_abonar_pesos|floatformat:2 }}</td>
+        {% if con_fecha_uvi %}<td class="dato" style="text-align:center;">—</td>{% endif %}
       </tr>
     </tbody>
   </table>
+  {% endwith %}
 
   {% if tramos_ley27397 %}
   <table class="tabla-rubros" style="margin-bottom:1mm;">

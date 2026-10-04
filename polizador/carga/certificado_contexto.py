@@ -16,7 +16,7 @@ certificado) y `carga/resolucion_texto.py` (texto de la resolucion).
 from datetime import date
 from decimal import Decimal
 
-from carga.certificacion import resumen_certificacion_mensual
+from carga.certificacion import fecha_cotizacion_devolucion_anticipo, resumen_certificacion_mensual
 from carga.ley27397 import _contratomonto_de_rubro
 from carga.models import CertificadoFinanciamiento, ContratoMonto, FojaDeMedicion, PlanDeTrabajosEtapa, Uvi
 from personalizador.models import Departamento, Direccion, Directorio, Gerencia
@@ -141,6 +141,21 @@ def _certificado_detalle_context(certificado):
     else:
         uvi_fecha_calculo = uvi_valor_calculo = None
 
+    # Fecha(s) de cotización UVI de cada fila de la hoja "Certificado de Obra". El bruto
+    # puede tener más de una (varios tramos de Ley 27397); Fondo de Reparo y adobe son % del
+    # bruto, así que heredan las mismas. Sin componente UVI no hay fechas que mostrar.
+    if certificado.certificado_monto_uvi:
+        fechas_uvi_bruto = sorted({t["tasa_fecha"] for t in tramos_ley27397}) or (
+            [uvi_fecha_calculo] if uvi_fecha_calculo else []
+        )
+        fecha_uvi_devolucion = (
+            fecha_cotizacion_devolucion_anticipo(certificado)
+            if certificado.certificado_descuento_anticipo_uvi
+            else None
+        )
+    else:
+        fechas_uvi_bruto, fecha_uvi_devolucion = [], None
+
     presidente = Directorio.objects.filter(directorio_nombre="Presidencia").first()
     gerencia_operativa = Gerencia.objects.filter(gerencia_nombre="Gerencia Operativa").first()
     direccion_certificaciones = Direccion.objects.filter(direccion_nombre="Certificaciones").first()
@@ -164,6 +179,8 @@ def _certificado_detalle_context(certificado):
         "ultimo_tramo": ultimo_tramo,
         "uvi_fecha_calculo": uvi_fecha_calculo,
         "uvi_valor_calculo": uvi_valor_calculo,
+        "fechas_uvi_bruto": fechas_uvi_bruto,
+        "fecha_uvi_devolucion": fecha_uvi_devolucion,
         "resumen": resumen_certificacion_mensual(certificado),
         "presidente": presidente,
         "hoja1_firmantes": [{"agente": gerente_agente, "cargo": "GERENTE OPERATIVO"}],
