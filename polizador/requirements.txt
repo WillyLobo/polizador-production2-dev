@@ -356,7 +356,7 @@ typing-inspection==0.4.2
     # via pydantic
 tzdata==2026.4
     # via -r requirements.in
-urllib3==2.7.0
+urllib3==2.8.0
     # via
     #   django-anymail
     #   requests
