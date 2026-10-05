@@ -28,6 +28,7 @@ def _foja_detalle_context(foja):
         for fi in items
     ]
     responsable_institucional = Gerencia.objects.get(gerencia_nombre="Gerencia Operativa").gerencia_autoridad_a_cargo_fk
+    total_pct_incidencia = sum(fi.fojaitem_planitem.planitem_incidencia_pct for fi in items)
     total_pct_anterior = sum(r["pct_anterior"] for r in rows)
     total_pct_mes = sum(fi.fojaitem_pct_avance_mes for fi in items)
     total_pct_acumulado = sum(fi.fojaitem_pct_acumulado for fi in items)
@@ -39,6 +40,7 @@ def _foja_detalle_context(foja):
         "rubro": rubro,
         "rows": rows,
 		"responsable_institucional": responsable_institucional,
+        "total_pct_incidencia": total_pct_incidencia,
         "total_pct_anterior": total_pct_anterior,
         "total_pct_mes": total_pct_mes,
         "total_pct_acumulado": total_pct_acumulado,
