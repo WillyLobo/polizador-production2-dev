@@ -52,7 +52,7 @@
       <p class="datos-lbl"><span class="lbl">FECHA INICIO:</span> {{ obra.obra_fecha_inicio|date:"d/m/Y"|default:"—" }}</p>
       {% if plan.trabajos_fecha_inicio %}<p class="datos-lbl"><span class="lbl">FECHA REINICIO:</span> {{ plan.trabajos_fecha_inicio|date:"d/m/Y" }}</p>{% endif %}
       <p class="datos-lbl"><span class="lbl">PLAZO OBRA:</span> {{ obra.obra_plazo|default:"—" }}</p>
-      <p class="datos-lbl"><span class="lbl">COMPULSA:</span> {{ obra.compulsa|default:"—" }}</p>
+      <p class="datos-lbl">{% comment %}<span class="lbl">COMPULSA:</span>{% endcomment %} {{ obra.compulsa|default:"—" }}</p>
       <p class="datos-lbl"><span class="lbl">NOMENCLATURA CATASTRAL:</span> {{ obra.obra_nomenclatura }}</p>
       <p class="datos-lbl"><span class="lbl">GEOREFERENCIA:</span> {{ obra.dd_to_dms}} </p>
       <p class="datos-lbl"><span class="lbl">EMPRESA:</span> {{ obra.obra_empresa.empresa_nombre }} ({{ obra.obra_empresa.empresa_cuit}})</p>
