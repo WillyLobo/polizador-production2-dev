@@ -209,7 +209,7 @@ numpy==2.2.6
     #   numexpr
     #   pandas
     #   pandas-gbq
-oauthlib==3.3.1
+oauthlib==4.0.0
     # via requests-oauthlib
 odfpy==1.4.1
     # via -r requirements.in
