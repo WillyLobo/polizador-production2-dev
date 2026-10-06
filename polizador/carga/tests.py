@@ -2462,3 +2462,29 @@ class RetencionAdobeContextoTextoTests(TestCase):
         self.assertIs(contexto["certificado"]["aplica_retencion_adobe"], False)
         self.assertEqual(texto, "$0,00")
         self.assertEqual(faltantes, set())
+
+
+class CuadreDesgloseItemsTests(TestCase):
+    """certificado_contexto._cuadrar: el pie de la tabla de ítems del certificado tiene que
+    dar exactamente lo certificado, aunque cada ítem se redondee a centavos por separado."""
+
+    def test_suma_el_residuo_de_redondeo_al_item_mayor(self):
+        from carga.certificado_contexto import _cuadrar
+
+        # Ítems del certificado 16128: 18% y 7% de 188679.86 UVI = 47169.965 en total, pero
+        # redondeados por separado suman 47169.96; lo certificado es 47169.97.
+        filas = [{"uvi": Decimal("33962.3748")}, {"uvi": Decimal("13207.5902")}, {"uvi": Decimal("0")}]
+
+        _cuadrar(filas, "uvi", Decimal("47169.97"))
+
+        self.assertEqual([f["uvi"] for f in filas], [Decimal("33962.38"), Decimal("13207.59"), Decimal("0.00")])
+
+    def test_no_fuerza_diferencias_que_no_son_de_redondeo(self):
+        from carga.certificado_contexto import _cuadrar
+
+        # Acumulado con fojas legacy sin certificado en el sistema: no se reparte nada.
+        filas = [{"uvi": Decimal("100")}, {"uvi": Decimal("50")}]
+
+        _cuadrar(filas, "uvi", Decimal("120"))
+
+        self.assertEqual([f["uvi"] for f in filas], [Decimal("100.00"), Decimal("50.00")])

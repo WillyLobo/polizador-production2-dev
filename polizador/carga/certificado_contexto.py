@@ -14,12 +14,48 @@ Consumidores: `carga/views/certificadoviews.py` (ficha e impresion del
 certificado) y `carga/resolucion_texto.py` (texto de la resolucion).
 """
 from datetime import date
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal
+
+from django.db.models import Sum
 
 from carga.certificacion import fecha_cotizacion_devolucion_anticipo, resumen_certificacion_mensual
 from carga.ley27397 import _contratomonto_de_rubro, tramo_monto_uvi
-from carga.models import CertificadoFinanciamiento, ContratoMonto, FojaDeMedicion, PlanDeTrabajosEtapa, Uvi
+from carga.models import Certificado, CertificadoFinanciamiento, ContratoMonto, FojaDeMedicion, PlanDeTrabajosEtapa, Uvi
 from personalizador.models import Departamento, Direccion, Directorio, Gerencia
+
+_CENTAVOS = Decimal("0.01")
+
+
+def _certificado_acumulado_rubro(certificado):
+    """(pesos, uvi) certificados para el rubro de la Foja de `certificado` (toda su cadena
+    de reprogramaciones) y su financiamiento, hasta esta Foja inclusive: suma de esos
+    certificados PARCIAL. Cada uno se pasó a pesos a su propia cotización (Ley 27397), así
+    que el acumulado no tiene una única fecha."""
+    foja = certificado.certificado_foja
+    totales = Certificado.objects.filter(
+        certificado_tipo="PARCIAL",
+        certificado_financiamiento=certificado.certificado_financiamiento,
+        certificado_foja__foja_rubro_id__in=foja.foja_rubro.rubro_cadena_ids(),
+        certificado_foja__foja_numero__lte=foja.foja_numero,
+    ).aggregate(pesos=Sum("certificado_monto_pesos"), uvi=Sum("certificado_monto_uvi"))
+    if totales["uvi"]:
+        return totales["pesos"], totales["uvi"]
+    return certificado.certificado_monto_pesos or Decimal("0"), certificado.certificado_monto_uvi or Decimal("0")
+
+
+def _cuadrar(filas, clave, objetivo):
+    """Redondea filas[*][clave] a centavos y suma el residuo de redondeo al ítem de mayor
+    monto, para que el pie de la tabla dé exactamente `objetivo`. Sólo si la diferencia es
+    de redondeo (< 1): si el acumulado incluye fojas legacy sin certificado en el sistema,
+    no hay nada que forzar."""
+    for fila in filas:
+        fila[clave] = fila[clave].quantize(_CENTAVOS, rounding=ROUND_HALF_UP)
+    if not filas:
+        return
+    diferencia = objetivo - sum(fila[clave] for fila in filas)
+    if diferencia and abs(diferencia) < 1:
+        max(filas, key=lambda fila: fila[clave])[clave] += diferencia
+
 
 def _desglose_items_certificado(certificado, contratomonto_rubro):
     """Costo por ítem de la Foja de origen de `certificado`: cada fila es un
@@ -40,6 +76,9 @@ def _desglose_items_certificado(certificado, contratomonto_rubro):
 
     base_uvi = contratomonto_rubro.contratomonto_uvi if contratomonto_rubro else Decimal("0")
     base_pesos = contratomonto_rubro.contratomonto_pesos if contratomonto_rubro else Decimal("0")
+    if base_uvi:
+        acumulado_pesos, acumulado_uvi = _certificado_acumulado_rubro(certificado)
+        tasa_acumulada = acumulado_pesos / acumulado_uvi if acumulado_uvi else Decimal("0")
 
     filas = []
     for item in items:
@@ -50,10 +89,14 @@ def _desglose_items_certificado(certificado, contratomonto_rubro):
         pct_acumulado = item.fojaitem_pct_acumulado
 
         if base_uvi:
+            # Básico: a la cotización pactada del contrato (su monto en pesos), no a una de
+            # hoy. Total (acumulado): UVI del ítem (a centavos) a la cotización ponderada con
+            # que efectivamente se certificó este rubro (ver _certificado_acumulado_rubro),
+            # para que cierre con los montos a pagar del certificado.
             monto_basico_uvi = incidencia_pct / Decimal("100") * base_uvi
             monto_total_uvi = pct_acumulado / Decimal("100") * base_uvi
-            monto_basico_pesos = Uvi.pesos_equivalentes(monto_basico_uvi, certificado.certificado_fecha)
-            monto_total_pesos = Uvi.pesos_equivalentes(monto_total_uvi, certificado.certificado_fecha)
+            monto_basico_pesos = incidencia_pct / Decimal("100") * base_pesos
+            monto_total_pesos = None  # se calcula abajo, sobre el UVI ya cuadrado
         else:
             monto_basico_uvi = None
             monto_total_uvi = None
@@ -71,6 +114,14 @@ def _desglose_items_certificado(certificado, contratomonto_rubro):
             "monto_total_uvi": monto_total_uvi,
             "monto_total_pesos": monto_total_pesos,
         })
+
+    if base_uvi:
+        _cuadrar(filas, "monto_basico_uvi", base_uvi)
+        _cuadrar(filas, "monto_basico_pesos", base_pesos)
+        _cuadrar(filas, "monto_total_uvi", acumulado_uvi)
+        for fila in filas:
+            fila["monto_total_pesos"] = fila["monto_total_uvi"] * tasa_acumulada
+        _cuadrar(filas, "monto_total_pesos", acumulado_pesos)
     return filas
 
 
