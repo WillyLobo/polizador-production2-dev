@@ -87,6 +87,7 @@ class CertificadoAnticipoForm(forms.ModelForm):
 		"certificado_expediente",
 		"certificado_fecha",
 		"certificado_anticipo_pct",
+		"certificado_fondoreparo_pct",
 		"certificado_digital",
 		)
 		labels = {
@@ -98,6 +99,7 @@ class CertificadoAnticipoForm(forms.ModelForm):
 		"certificado_expediente":forms.TextInput(attrs={"class":"form-control"}),
 		"certificado_fecha":DateHTMLWidget(attrs={"type":"date","class":"form-control", "autocomplete":"off"}),
 		"certificado_anticipo_pct":forms.NumberInput(attrs={"class":"form-control"}),
+		"certificado_fondoreparo_pct":forms.NumberInput(attrs={"class":"form-control"}),
 		"certificado_digital":CustomClearableFileInput(attrs={"class":"form-control"})
 		}
 

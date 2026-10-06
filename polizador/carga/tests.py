@@ -674,7 +674,7 @@ class ResumenCertificacionMensualTests(TestCase):
         self.assertEqual(resumen["anticipo"]["mes_pesos"], Decimal("0.00"))
         self.assertEqual(resumen["certificado_obra"]["total_pesos"], Decimal("15000.00"))
 
-    def test_fondo_de_reparo_5pct_sobre_bruto_sin_descontar_anticipo(self):
+    def test_fondo_de_reparo_5pct_sobre_bruto_neto_de_descuento_de_anticipo(self):
         cert1 = self._crear_certificado(
             "PARCIAL", date(2026, 1, 1), Decimal("10000"), certificado_descuento_anticipo_pesos=Decimal("2000")
         )
@@ -682,25 +682,36 @@ class ResumenCertificacionMensualTests(TestCase):
 
         resumen = certificacion.resumen_certificacion_mensual(cert2)
 
-        # 5% de 10000 (bruto, sin descontar los 2000 de anticipo) + 5% de 15000
-        self.assertEqual(resumen["fondo_reparo"]["anterior_pesos"], Decimal("500.00"))
+        # 5% de (10000 - 2000 de anticipo, que ya retuvo su FR en el Anticipo) + 5% de 15000
+        self.assertEqual(resumen["fondo_reparo"]["anterior_pesos"], Decimal("400.00"))
         self.assertEqual(resumen["fondo_reparo"]["mes_pesos"], Decimal("750.00"))
-        self.assertEqual(resumen["fondo_reparo"]["total_pesos"], Decimal("1250.00"))
+        self.assertEqual(resumen["fondo_reparo"]["total_pesos"], Decimal("1150.00"))
         self.assertEqual(
             resumen["total_general"]["total_pesos"],
-            resumen["subtotal1"]["total_pesos"] - Decimal("1250.00"),
+            resumen["subtotal1"]["total_pesos"] - Decimal("1150.00"),
         )
 
-    def test_fondo_de_reparo_no_aplica_a_anticipo(self):
+    def test_fondo_de_reparo_se_retiene_en_el_anticipo(self):
         cert = self._crear_certificado("ANTICIPO", date(2026, 1, 1), Decimal("5000"))
-        # certificado_fondoreparo_monto_*() ignoran el % cargado si el tipo es ANTICIPO.
-        self.assertEqual(cert.certificado_fondoreparo_monto_pesos(), Decimal("0"))
-        self.assertEqual(cert.certificado_fondoreparo_monto_uvi(), Decimal("0"))
-
-        # Certificado.clean() además fuerza el % a 0 para este tipo (se ejerce al
-        # pasar por full_clean(), como hacen las vistas de creación).
         cert.full_clean()
-        self.assertEqual(cert.certificado_fondoreparo_pct, Decimal("0"))
+
+        # Resolución 427/2026: el Anticipo se paga con la retención (clean() ya no la pone en 0).
+        self.assertEqual(cert.certificado_fondoreparo_pct, Decimal("5"))
+        self.assertEqual(cert.certificado_fondoreparo_monto_pesos(), Decimal("250"))
+        self.assertEqual(cert.certificado_importe_abonar_pesos(), Decimal("4750.00"))
+
+    def test_fondo_de_reparo_del_resumen_suma_el_del_anticipo(self):
+        self._crear_certificado("ANTICIPO", date(2026, 1, 1), Decimal("2000"))
+        cert = self._crear_certificado(
+            "PARCIAL", date(2026, 2, 1), Decimal("10000"), certificado_descuento_anticipo_pesos=Decimal("2000")
+        )
+
+        resumen = certificacion.resumen_certificacion_mensual(cert)
+
+        # 5% de 2000 (Anticipo) + 5% de (10000 - 2000): en total, 5% de los 10000 de obra.
+        self.assertEqual(resumen["fondo_reparo"]["anterior_pesos"], Decimal("100.00"))
+        self.assertEqual(resumen["fondo_reparo"]["mes_pesos"], Decimal("400.00"))
+        self.assertEqual(resumen["fondo_reparo"]["total_pesos"], Decimal("500.00"))
 
     def test_anticipo_pct_se_expresa_contra_el_pool_del_financiamiento_no_contra_el_rubro(self):
         # Un segundo rubro bajo el mismo financiamiento agranda el pool de la obra
@@ -2361,8 +2372,8 @@ class RetencionAdobeTests(TestCase):
 
 
 class ImporteAbonarTests(TestCase):
-    """Importe a abonarse: bruto - descuento de anticipo - Fondo de Reparo (sobre el bruto).
-    certificado_monto_cobrar, en cambio, no descuenta el Fondo de Reparo."""
+    """Importe a abonarse: bruto - descuento de anticipo - Fondo de Reparo (sobre el bruto
+    neto del descuento de anticipo). certificado_monto_cobrar no descuenta el Fondo de Reparo."""
 
     def setUp(self):
         empresa = Empresa.objects.create(empresa_nombre="Empresa Test")
@@ -2374,7 +2385,7 @@ class ImporteAbonarTests(TestCase):
             obra_nombre="Obra Test", obra_empresa=empresa, obra_programa=programa, obra_expediente="EXP-ABONAR",
         )
 
-    def test_descuenta_anticipo_y_fondo_de_reparo_sobre_el_bruto(self):
+    def test_descuenta_anticipo_y_fondo_de_reparo_sobre_el_neto(self):
         # Valores del certificado 16128: bruto 47.169,97 UVI, anticipo 20%, FR 5%.
         certificado = Certificado.objects.create(
             certificado_obra=self.obra,
@@ -2383,15 +2394,23 @@ class ImporteAbonarTests(TestCase):
             certificado_rubro_db=self.rubro,
             certificado_expediente="EXP",
             certificado_monto_uvi=Decimal("47169.97"),
-            certificado_monto_pesos=Decimal("67521446.40"),
+            certificado_monto_pesos=Decimal("67521453.56"),
             certificado_descuento_anticipo_uvi=Decimal("9433.99"),
             certificado_descuento_anticipo_pesos=Decimal("14734005.58"),
         )
         certificado.refresh_from_db()
 
-        # FR = 5% del bruto (2.358,50 UVI / 3.376.072,32 $), no del neto de anticipo.
-        self.assertEqual(certificado.certificado_importe_abonar_uvi(), Decimal("35377.48"))
-        self.assertEqual(certificado.certificado_importe_abonar_pesos(), Decimal("49411368.50"))
+        # FR = 5% de (bruto - descuento de anticipo) = 1.886,80 UVI (el cálculo a mano), no 5%
+        # del bruto (2.358,50 UVI); en pesos, esos 1.886,80 UVI a la cotización del bruto
+        # (1.431,45), no restando pesos de distintas fechas: 2.700.859,86 $.
+        self.assertEqual(certificado.certificado_fondoreparo_monto_uvi(), Decimal("1886.80"))
+        self.assertEqual(round(certificado.certificado_fondoreparo_monto_pesos(), 2), Decimal("2700859.86"))
+        self.assertEqual(certificado.certificado_importe_abonar_uvi(), Decimal("35849.18"))
+        self.assertEqual(certificado.certificado_importe_abonar_pesos(), Decimal("50086588.12"))
+        self.assertEqual(
+            round(certificado.certificado_fondoreparo_monto_pesos() / certificado.certificado_fondoreparo_monto_uvi(), 2),
+            Decimal("1431.45"),
+        )
         self.assertEqual(certificado.certificado_monto_cobrar_uvi, Decimal("37735.98"))
 
 

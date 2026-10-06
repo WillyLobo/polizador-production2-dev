@@ -142,8 +142,9 @@ def _certificado_detalle_context(certificado):
         uvi_fecha_calculo = uvi_valor_calculo = None
 
     # Fecha(s) de cotización UVI de cada fila de la hoja "Certificado de Obra". El bruto
-    # puede tener más de una (varios tramos de Ley 27397); Fondo de Reparo y adobe son % del
-    # bruto, así que heredan las mismas. Sin componente UVI no hay fechas que mostrar.
+    # puede tener más de una (varios tramos de Ley 27397); Fondo de Reparo y adobe se
+    # valorizan a la cotización del bruto, así que heredan las mismas. Sin componente UVI no
+    # hay fechas que mostrar.
     if certificado.certificado_monto_uvi:
         fechas_uvi_bruto = sorted({t["tasa_fecha"] for t in tramos_ley27397}) or (
             [uvi_fecha_calculo] if uvi_fecha_calculo else []

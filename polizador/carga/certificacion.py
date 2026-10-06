@@ -567,10 +567,14 @@ def resumen_certificacion_mensual(certificado):
     fondo_obra_anterior_pesos, fondo_obra_anterior_uvi = _fondo_reparo(obra_anterior_qs)
     fondo_etapa_total_pesos, fondo_etapa_total_uvi = _fondo_reparo(etapa_total_qs)
     fondo_etapa_anterior_pesos, fondo_etapa_anterior_uvi = _fondo_reparo(etapa_anterior_qs)
-    fondo_total_pesos = fondo_obra_total_pesos + fondo_etapa_total_pesos
-    fondo_total_uvi = fondo_obra_total_uvi + fondo_etapa_total_uvi
-    fondo_anterior_pesos = fondo_obra_anterior_pesos + fondo_etapa_anterior_pesos
-    fondo_anterior_uvi = fondo_obra_anterior_uvi + fondo_etapa_anterior_uvi
+    # El Anticipo también retiene Fondo de Reparo al pagarse (ver
+    # Certificado.certificado_fondoreparo_monto_pesos).
+    fondo_anticipo_total_pesos, fondo_anticipo_total_uvi = _fondo_reparo(anticipo_total_qs)
+    fondo_anticipo_anterior_pesos, fondo_anticipo_anterior_uvi = _fondo_reparo(anticipo_anterior_qs)
+    fondo_total_pesos = fondo_obra_total_pesos + fondo_etapa_total_pesos + fondo_anticipo_total_pesos
+    fondo_total_uvi = fondo_obra_total_uvi + fondo_etapa_total_uvi + fondo_anticipo_total_uvi
+    fondo_anterior_pesos = fondo_obra_anterior_pesos + fondo_etapa_anterior_pesos + fondo_anticipo_anterior_pesos
+    fondo_anterior_uvi = fondo_obra_anterior_uvi + fondo_etapa_anterior_uvi + fondo_anticipo_anterior_uvi
     fila_fondo = _fila_resumen(
         "Fondo de Reparo", fondo_total_pesos, fondo_total_uvi, fondo_anterior_pesos, fondo_anterior_uvi,
         base_pesos, base_uvi, con_pct=False

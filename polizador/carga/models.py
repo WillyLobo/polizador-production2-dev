@@ -860,8 +860,9 @@ class Certificado(models.Model):
         decimal_places=2,
         default=Decimal("5"),
         validators=[MinValueValidator(0), MaxValueValidator(100)],
-        help_text="Retención sobre el importe total del certificado, sin descontar el "
-                  "anticipo financiero. No aplica a certificados de Anticipo.",
+        help_text="Retención sobre el certificado neto del descuento de anticipo. El "
+                  "Anticipo lleva su propia retención al pagarse (ver Resolución 427/2026), "
+                  "así que la parte ya anticipada no vuelve a retenerse al devolverse.",
     )
     certificado_fecha = models.DateField("Fecha", default=timezone.now)
     certificado_monto_cobrar = models.GeneratedField(
@@ -899,15 +900,26 @@ class Certificado(models.Model):
     )
     certificado_history = HistoricalRecords(excluded_fields=['certificado_monto_cobrar', "certificado_monto_cobrar_uvi"])
 
+    # Fondo de Reparo: se retiene sobre el bruto MENOS el descuento de anticipo, porque el
+    # Anticipo ya pagó su propia retención al emitirse (Resolución 427/2026). Sobre el bruto
+    # completo, la parte anticipada se retendría dos veces. En total la obra retiene igual
+    # el % sobre el contrato: % del anticipo + % de (cada bruto - lo que devuelve).
+    #
+    # Con componente UVI, el monto en pesos es el FR en UVI (redondeado a centavos, como se
+    # imprime, para que "UVI * cotización" se pueda verificar a mano) valorizado a la
+    # cotización del bruto (bruto $ / bruto UVI): el FR retiene obra de este certificado,
+    # valuada a esa cotización. Restar en pesos (bruto - descuento) mezclaría la cotización del bruto con
+    # la de fin de mes de la devolución (ver certificacion.fecha_cotizacion_devolucion_anticipo).
     def certificado_fondoreparo_monto_pesos(self):
-        if self.certificado_tipo == "ANTICIPO":
-            return Decimal("0")
-        return (self.certificado_monto_pesos or Decimal("0")) * self.certificado_fondoreparo_pct / Decimal("100")
+        monto_pesos = self.certificado_monto_pesos or Decimal("0")
+        if self.certificado_monto_uvi:
+            return self.certificado_fondoreparo_monto_uvi() * monto_pesos / self.certificado_monto_uvi
+        base = monto_pesos - (self.certificado_descuento_anticipo_pesos or Decimal("0"))
+        return base * self.certificado_fondoreparo_pct / Decimal("100")
 
     def certificado_fondoreparo_monto_uvi(self):
-        if self.certificado_tipo == "ANTICIPO":
-            return Decimal("0")
-        return (self.certificado_monto_uvi or Decimal("0")) * self.certificado_fondoreparo_pct / Decimal("100")
+        base = (self.certificado_monto_uvi or Decimal("0")) - (self.certificado_descuento_anticipo_uvi or Decimal("0"))
+        return (base * self.certificado_fondoreparo_pct / Decimal("100")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
     # "Importe a abonarse" del certificado: neto de devolución/descuento de anticipo Y de
     # Fondo de Reparo. No es certificado_monto_cobrar: ese GeneratedField no descuenta el
@@ -982,9 +994,7 @@ class Certificado(models.Model):
         self.certificado_monto_uvi = self.certificado_monto_uvi or 0
         self.certificado_anticipo_pct = self.certificado_anticipo_pct or 0
 
-        if self.certificado_tipo == "ANTICIPO":
-            self.certificado_fondoreparo_pct = 0
-        else:
+        if self.certificado_tipo != "ANTICIPO":
             self.certificado_anticipo_pct = 0
 
         if self.certificado_tipo == "PARCIAL":
