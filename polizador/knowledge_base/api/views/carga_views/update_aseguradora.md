@@ -2,14 +2,14 @@
 symbol: update_aseguradora
 kind: function
 module: api/views/carga_views.py
-lines: 178-183
-signature_hash: sha1:d2fd2355701da27330b1545cb5b6b13c0a71a5aa
+lines: 179-184
+signature_hash: sha1:49e3ab7efa2cac83725fe68b52bd6149fd493ef6
 authored: true
 ---
 
 # update_aseguradora
 
-**Módulo:** `api/views/carga_views.py` (líneas 178-183)
+**Módulo:** `api/views/carga_views.py` (líneas 179-184)
 
 ## Propósito
 

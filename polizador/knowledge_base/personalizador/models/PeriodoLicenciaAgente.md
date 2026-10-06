@@ -2,14 +2,14 @@
 symbol: PeriodoLicenciaAgente
 kind: class
 module: personalizador/models.py
-lines: 548-574
-signature_hash: sha1:451166359266a828090e4590f3bc7a0382cfdbee
+lines: 587-613
+signature_hash: sha1:e728f86e12f5c7c07d1103e6b162197709ccdd55
 authored: true
 ---
 
 # PeriodoLicenciaAgente
 
-**Módulo:** `personalizador/models.py` (líneas 548-574) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 587-613) · hereda de `models.Model`
 
 ## Propósito
 

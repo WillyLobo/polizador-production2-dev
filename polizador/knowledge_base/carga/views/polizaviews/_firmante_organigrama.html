@@ -1,16 +1,21 @@
 <h1>_firmante_organigrama</h1>
 <p><strong>Módulo:</strong> <code>carga/views/polizaviews.py</code> (líneas 14-32)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Arma el bloque de firma de un <code>Agente</code> según el organigrama: <code>{agente, cargo, unidad,
+unidad_padre}</code>. La oficina es la designación temporal (<code>cargo_interno</code>) si tiene una y, si
+no, su <code>oficina</code>. La <code>unidad</code> es la más específica de esa oficina (Departamento →
+Dirección → Gerencia → Directorio). <code>unidad_padre</code> es la Gerencia, sólo cuando no coincide
+con la unidad. Devuelve <code>None</code> sin agente, y <code>unidad=None</code> si el agente no tiene oficina
+cargada.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def _firmante_organigrama(agente):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/polizaviews.py:159</code> — <code>context["firmante"] = _firmante_organigrama(agente)</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<pre><code class="language-python"># carga/views/polizaviews.py (ImprimirPolizaMovimiento.get_context_data)
+context[&quot;firmante&quot;] = _firmante_organigrama(agente)
+</code></pre>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="ImprimirPolizaMovimiento.md">ImprimirPolizaMovimiento</a></li>
+<li><a href="../../../personalizador/models/Agente.md">Agente</a></li>
+</ul>

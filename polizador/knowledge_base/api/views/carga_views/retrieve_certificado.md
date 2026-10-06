@@ -2,14 +2,14 @@
 symbol: retrieve_certificado
 kind: function
 module: api/views/carga_views.py
-lines: 1274-1275
-signature_hash: sha1:e120753035925faf757bb5dac4f1bb175cbd4a98
+lines: 1275-1276
+signature_hash: sha1:a92d82949bcb428a44e76019f6639de91f08f376
 authored: true
 ---
 
 # retrieve_certificado
 
-**Módulo:** `api/views/carga_views.py` (líneas 1274-1275)
+**Módulo:** `api/views/carga_views.py` (líneas 1275-1276)
 
 ## Propósito
 

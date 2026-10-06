@@ -2,14 +2,14 @@
 symbol: _municipio_datatable_row
 kind: function
 module: api/views/carga_views.py
-lines: 559-576
-signature_hash: sha1:858818a8038d37e7bce18d1c7ee81284e329cbca
+lines: 560-577
+signature_hash: sha1:9c75dd0b433d1698fa15f7b851aed29442a8559c
 authored: true
 ---
 
 # _municipio_datatable_row
 
-**Módulo:** `api/views/carga_views.py` (líneas 559-576)
+**Módulo:** `api/views/carga_views.py` (líneas 560-577)
 
 ## Propósito
 

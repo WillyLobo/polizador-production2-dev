@@ -2,14 +2,14 @@
 symbol: datatable_certificados_filtro_rubro
 kind: function
 module: api/views/carga_views.py
-lines: 1415-1421
-signature_hash: sha1:0edd48acbcc8fd8b2413428e535f6f45fdb93583
+lines: 1416-1422
+signature_hash: sha1:9783b1d47c3ac08d487b2c28996d6c404842cb5d
 authored: true
 ---
 
 # datatable_certificados_filtro_rubro
 
-**Módulo:** `api/views/carga_views.py` (líneas 1415-1421)
+**Módulo:** `api/views/carga_views.py` (líneas 1416-1422)
 
 ## Propósito
 

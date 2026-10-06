@@ -1,17 +1,15 @@
 <h1>_sin_plantilla</h1>
 <p><strong>Módulo:</strong> <code>carga/views/textoresolucionviews.py</code> (líneas 194-201)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Pantalla "no hay texto base para este alcance" (<code>textoresolucion/sin-texto-resolucion.html</code>),
+con el link para crear la plantilla que ya lleva este certificado como muestra. Responde
+<strong>409</strong>, no 404: el certificado existe y lo que falta es la plantilla.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def _sin_plantilla(request, certificado):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/textoresolucionviews.py:215</code> — <code>return _sin_plantilla(request, certificado)</code></li>
-<li><code>carga/views/textoresolucionviews.py:258</code> — <code>return _sin_plantilla(request, certificado)</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Lo devuelven <a href="editar_texto_resolucion_certificado.md">editar_texto_resolucion_certificado</a> y <a href="resolucion_certificado_docx.md">resolucion_certificado_docx</a> cuando <code>_texto_certificado</code> no encuentra snapshot ni plantilla.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="CrearTextoResolucion.md">CrearTextoResolucion</a></li>
+</ul>

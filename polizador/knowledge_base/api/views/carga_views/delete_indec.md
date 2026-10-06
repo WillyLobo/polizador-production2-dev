@@ -2,14 +2,14 @@
 symbol: delete_indec
 kind: function
 module: api/views/carga_views.py
-lines: 1798-1800
-signature_hash: sha1:678eff12574dc646c982404925edf2f04dc70d32
+lines: 1819-1821
+signature_hash: sha1:df624de67235d9f9a79cb68c2878dc056acf9ec4
 authored: true
 ---
 
 # delete_indec
 
-**Módulo:** `api/views/carga_views.py` (líneas 1798-1800)
+**Módulo:** `api/views/carga_views.py` (líneas 1819-1821)
 
 ## Propósito
 

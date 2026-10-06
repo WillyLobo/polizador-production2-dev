@@ -2,13 +2,13 @@
 symbol: schema_docs_asset
 kind: function
 module: core/views.py
-lines: 58-61
-signature_hash: sha1:72474c67b063d2d9dac3ebd7ea6bb79b6ce446cd
+lines: 81-84
+signature_hash: sha1:9edbd66d3bf656e7548ca7ba3388f577e674c1fe
 authored: true
 ---
 # schema_docs_asset
 
-**Módulo:** `core/views.py` (líneas 58-61)
+**Módulo:** `core/views.py` (líneas 81-84)
 
 ## Propósito
 

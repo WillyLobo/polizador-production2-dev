@@ -2,18 +2,24 @@
 symbol: PolizaDocumento
 kind: class
 module: carga/models.py
-lines: 282-295
-signature_hash: sha1:4f07ec758ac1943aa48a1e500887c77500f59b01
-authored: false
+lines: 283-296
+signature_hash: sha1:f9fb9c75081b538442f8ab3c1bb3cb5192653440
+authored: true
 ---
 
 # PolizaDocumento
 
-**Módulo:** `carga/models.py` (líneas 282-295)
+**Módulo:** `carga/models.py` (líneas 283-296) · hereda de `models.Model`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Un PDF adicional adjunto a una Póliza: anexos, adendas de cobertura, etc. Antes la
+Póliza sólo admitía un archivo (`poliza_digital`). Cada documento lleva una
+`polizadocumento_descripcion` libre (ej. "Anexo N°1") y el archivo, validado como PDF de
+hasta 14 MB con `FileValidator`, igual que el resto de los adjuntos de `carga`. El nombre
+en el storage sale del UUID ([generate_name_poliza_documento](generate_name_poliza_documento.md)),
+no del nombre que subió el usuario. Se borra en cascada con la Póliza
+(`related_name="documentos_poliza"`) y tiene historial propio.
 
 ## Firma
 
@@ -23,18 +29,11 @@ class PolizaDocumento(models.Model):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/views/documentosdigitalesviews.py:9` — `from carga.models import ContratosDigitales, ObraDocumento, PolizaDocumento`
-- `carga/views/documentosdigitalesviews.py:106` — `model = PolizaDocumento`
-- `carga/views/documentosdigitalesviews.py:134` — `model = PolizaDocumento`
-- `carga/views/documentosdigitalesviews.py:145` — `model = PolizaDocumento`
-- `carga/forms/documentosdigitalesforms.py:43` — `model = models.PolizaDocumento`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Se lista en la ficha de la Póliza (`poliza.documentos_poliza`) y se gestiona con
+[CrearPolizaDocumento](../views/documentosdigitalesviews/CrearPolizaDocumento.md)/[UpdatePolizaDocumento](../views/documentosdigitalesviews/UpdatePolizaDocumento.md)/[EliminarPolizaDocumento](../views/documentosdigitalesviews/EliminarPolizaDocumento.md).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [Poliza](Poliza.md)
+- [PolizaDocumentoForm](../forms/documentosdigitalesforms/PolizaDocumentoForm.md)
+- [generate_name_poliza_documento](generate_name_poliza_documento.md)

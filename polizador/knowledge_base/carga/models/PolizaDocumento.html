@@ -1,20 +1,22 @@
 <h1>PolizaDocumento</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 282-295)</p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 283-296) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Un PDF adicional adjunto a una Póliza: anexos, adendas de cobertura, etc. Antes la
+Póliza sólo admitía un archivo (<code>poliza_digital</code>). Cada documento lleva una
+<code>polizadocumento_descripcion</code> libre (ej. "Anexo N°1") y el archivo, validado como PDF de
+hasta 14 MB con <code>FileValidator</code>, igual que el resto de los adjuntos de <code>carga</code>. El nombre
+en el storage sale del UUID (<a href="generate_name_poliza_documento.md">generate_name_poliza_documento</a>),
+no del nombre que subió el usuario. Se borra en cascada con la Póliza
+(<code>related_name="documentos_poliza"</code>) y tiene historial propio.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class PolizaDocumento(models.Model):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/documentosdigitalesviews.py:9</code> — <code>from carga.models import ContratosDigitales, ObraDocumento, PolizaDocumento</code></li>
-<li><code>carga/views/documentosdigitalesviews.py:106</code> — <code>model = PolizaDocumento</code></li>
-<li><code>carga/views/documentosdigitalesviews.py:134</code> — <code>model = PolizaDocumento</code></li>
-<li><code>carga/views/documentosdigitalesviews.py:145</code> — <code>model = PolizaDocumento</code></li>
-<li><code>carga/forms/documentosdigitalesforms.py:43</code> — <code>model = models.PolizaDocumento</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Se lista en la ficha de la Póliza (<code>poliza.documentos_poliza</code>) y se gestiona con
+<a href="../views/documentosdigitalesviews/CrearPolizaDocumento.md">CrearPolizaDocumento</a>/<a href="../views/documentosdigitalesviews/UpdatePolizaDocumento.md">UpdatePolizaDocumento</a>/<a href="../views/documentosdigitalesviews/EliminarPolizaDocumento.md">EliminarPolizaDocumento</a>.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="Poliza.md">Poliza</a></li>
+<li><a href="../forms/documentosdigitalesforms/PolizaDocumentoForm.md">PolizaDocumentoForm</a></li>
+<li><a href="generate_name_poliza_documento.md">generate_name_poliza_documento</a></li>
+</ul>

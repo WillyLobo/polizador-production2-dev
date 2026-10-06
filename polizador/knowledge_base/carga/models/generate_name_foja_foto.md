@@ -2,14 +2,14 @@
 symbol: generate_name_foja_foto
 kind: function
 module: carga/models.py
-lines: 80-85
-signature_hash: sha1:f684f2a25909f08f1a537f2a119554c6ca8f29fa
+lines: 88-93
+signature_hash: sha1:16b74eeba69c536a71b3e338bc4d6e021cb81fdf
 authored: true
 ---
 
 # generate_name_foja_foto
 
-**Módulo:** `carga/models.py` (líneas 80-85)
+**Módulo:** `carga/models.py` (líneas 88-93)
 
 ## Propósito
 

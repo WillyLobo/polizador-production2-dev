@@ -2,14 +2,14 @@
 symbol: _localidad_datatable_row
 kind: function
 module: api/views/carga_views.py
-lines: 642-660
-signature_hash: sha1:a572e9c39704c3c32f302d125e48281fda768e55
+lines: 643-661
+signature_hash: sha1:ddd678eec5a4b91c557587e3ad08461c16016058
 authored: true
 ---
 
 # _localidad_datatable_row
 
-**Módulo:** `api/views/carga_views.py` (líneas 642-660)
+**Módulo:** `api/views/carga_views.py` (líneas 643-661)
 
 ## Propósito
 

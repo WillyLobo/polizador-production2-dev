@@ -1,16 +1,19 @@
 <h1>_history_id</h1>
 <p><strong>Módulo:</strong> <code>carga/views/textoresolucionviews.py</code> (líneas 243-249)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Id de la fila más reciente de <code>textoresolucion_history</code> de una plantilla, que es su
+versión vigente. Se guarda en el snapshot del certificado para poder auditar con qué
+versión del texto base se emitió una resolución, aunque la plantilla se haya editado
+después. Devuelve <code>None</code> sin plantilla (snapshot re-guardado) o sin historial.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def _history_id(plantilla):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/textoresolucionviews.py:222</code> — <code>"textoresolucion_history_id": _history_id(plantilla),</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<pre><code class="language-python"># carga/views/textoresolucionviews.py (editar_texto_resolucion_certificado)
+&quot;textoresolucion_history_id&quot;: _history_id(plantilla),
+</code></pre>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="editar_texto_resolucion_certificado.md">editar_texto_resolucion_certificado</a></li>
+<li><a href="../../models/TextoResolucionCertificado.md">TextoResolucionCertificado</a></li>
+</ul>

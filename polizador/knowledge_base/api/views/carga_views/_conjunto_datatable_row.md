@@ -2,14 +2,14 @@
 symbol: _conjunto_datatable_row
 kind: function
 module: api/views/carga_views.py
-lines: 1507-1524
-signature_hash: sha1:d46dd0d3c087292d556a9f6c1468663e494f7930
+lines: 1508-1525
+signature_hash: sha1:87407c66d8c5dca448a79a78b982813708f16623
 authored: true
 ---
 
 # _conjunto_datatable_row
 
-**Módulo:** `api/views/carga_views.py` (líneas 1507-1524)
+**Módulo:** `api/views/carga_views.py` (líneas 1508-1525)
 
 ## Propósito
 

@@ -2,14 +2,14 @@
 symbol: ConjuntoLicitado
 kind: class
 module: carga/models.py
-lines: 859-892
-signature_hash: sha1:b5b1317a64be2bc391558178677e0d9cf17c4b05
+lines: 1098-1131
+signature_hash: sha1:75adc120261826ed094be37a98e560c4e86fd5f0
 authored: true
 ---
 
 # ConjuntoLicitado
 
-**Módulo:** `carga/models.py` (líneas 859-892) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 1098-1131) · hereda de `models.Model`
 
 ## Propósito
 

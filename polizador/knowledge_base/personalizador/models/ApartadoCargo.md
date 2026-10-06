@@ -2,14 +2,14 @@
 symbol: ApartadoCargo
 kind: class
 module: personalizador/models.py
-lines: 227-236
-signature_hash: sha1:04f2877ff234c5a69607f6a83a81979162f1c67d
+lines: 266-275
+signature_hash: sha1:c69915725d98d5c79a77bf54bbd65e3242c4ab7d
 authored: true
 ---
 
 # ApartadoCargo
 
-**Módulo:** `personalizador/models.py` (líneas 227-236) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 266-275) · hereda de `models.Model`
 
 ## Propósito
 

@@ -2,14 +2,14 @@
 symbol: LicenciaPermiso
 kind: class
 module: personalizador/models.py
-lines: 629-744
-signature_hash: sha1:c0693467e5c7ddc4d66737c0156cb55a5e90c39b
+lines: 668-783
+signature_hash: sha1:99d02c4bd7472541fff63954f61c84c39a67556d
 authored: true
 ---
 
 # LicenciaPermiso
 
-**Módulo:** `personalizador/models.py` (líneas 629-744) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 668-783) · hereda de `models.Model`
 
 ## Propósito
 

@@ -2,18 +2,22 @@
 symbol: generate_name_poliza_documento
 kind: function
 module: carga/models.py
-lines: 49-54
-signature_hash: sha1:a8557fa021895c7e0d89feaf86f9821d8b4a92f2
-authored: false
+lines: 50-55
+signature_hash: sha1:e09a49a1df6a0d8f232e33c13535ff016f15ad96
+authored: true
 ---
 
 # generate_name_poliza_documento
 
-**Módulo:** `carga/models.py` (líneas 49-54)
+**Módulo:** `carga/models.py` (líneas 50-55)
 
 ## Propósito
 
-_(pendiente de autoría)_
+`upload_to` de `PolizaDocumento.polizadocumento_archivo`. Guarda cada archivo como
+`documentos_poliza/<polizadocumento_uuid>.pdf` e ignora el nombre original: así no hay
+colisiones ni nombres con caracteres raros en GCS/`MEDIA_ROOT`. Es el mismo patrón que los
+demás `generate_name_*` del módulo. La extensión es siempre `pdf`, cosa que el
+`FileValidator` del campo ya garantiza.
 
 ## Firma
 
@@ -23,14 +27,11 @@ def generate_name_poliza_documento(instance, filename):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/models.py:291` — `polizadocumento_archivo = models.FileField(verbose_name="Archivo", upload_to=generate_name_poliza_documento, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], max_length=500)`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+```python
+# carga/models.py (PolizaDocumento)
+polizadocumento_archivo = models.FileField(verbose_name="Archivo", upload_to=generate_name_poliza_documento, ...)
+```
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [PolizaDocumento](PolizaDocumento.md)

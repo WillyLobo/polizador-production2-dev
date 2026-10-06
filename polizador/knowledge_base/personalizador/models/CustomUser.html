@@ -1,5 +1,5 @@
 <h1>CustomUser</h1>
-<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 24-34) · hereda de <code>AbstractUser</code></p>
+<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 25-73) · hereda de <code>AbstractUser</code></p>
 <h2>Propósito</h2>
 <p><code>AUTH_USER_MODEL</code> del proyecto (<code>AbstractUser</code> de Django + <code>first_name</code>/<code>last_name</code>
 redeclarados con label en español, más <code>usuario_dni</code> opcional). Es el modelo de
@@ -7,6 +7,26 @@ autenticación (login/permisos), separado de <a href="Agente.md">Agente</a> (el 
 <code>Agente.agente_usuario</code> es el <code>OneToOneField</code> que los vincula cuando un empleado tiene
 cuenta en el sitio, pero un <code>CustomUser</code> puede existir sin <code>Agente</code> (ej. una cuenta de
 proveedor externo) y viceversa (un <code>Agente</code> cargado en RRHH sin acceso al sitio).</p>
+<p><strong>Vínculo con el Active Directory.</strong> El <code>username</code> de polizador casi nunca coincide con la
+cuenta de red: hay apodos y hasta correos personales (ver <code>manage.py auditar_usuarios_ad</code>).
+Por eso el mapeo no se adivina: cada usuario vincula su propia cuenta desde
+<code>core/views_vincular_ad.py</code> escribiendo sus credenciales de red, y el bind contra el AD
+prueba que las dos identidades son suyas.
+- <code>ad_username</code> es el <code>sAMAccountName</code> que devolvió el AD, no lo que tipeó el usuario. Es
+  <code>unique</code> con <code>null=True</code> (no <code>""</code>): Postgres admite muchos NULL bajo una restricción única
+  pero un solo <code>""</code>.
+- <code>ad_vinculado_en</code> es la fecha del vínculo.
+- <code>ad_sin_cuenta_red</code> es la salida para quien no tiene cuenta de red. Lo marca para que lo
+  revise un administrador (filtro en el admin) y <code>VincularADMiddleware</code> deja de mandarlo a
+  la página de vinculación.</p>
+<p><code>solo_ldap</code> es verdadero cuando el usuario tiene <code>ad_username</code> <strong>y</strong> ya no tiene contraseña
+local utilizable, el estado en que lo deja <code>manage.py retirar_password_local</code>. Tener
+<code>ad_username</code> no alcanza: durante la transición mucha gente está vinculada y conserva su
+contraseña. <code>core/adapters.py</code> y la vista de cambio de contraseña lo usan para impedir que
+alguien vuelva a habilitar la contraseña local. Si eso pasara, desactivar a la persona en
+el AD dejaría de quitarle el acceso.</p>
+<p>El historial (<code>usuario_history</code>) es un <code>M2MHistoricalRecords</code> que también audita <code>groups</code> y
+<code>user_permissions</code>.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class CustomUser(AbstractUser):
 </code></pre>
@@ -14,5 +34,10 @@ proveedor externo) y viceversa (un <code>Agente</code> cargado en RRHH sin acces
 <p><code>settings.AUTH_USER_MODEL</code>; <code>CustomUserForm</code> (<code>personalizador/forms/customuserform.py</code>) lo usa para el signup de <code>django-allauth</code>.</p>
 <h2>Ver también</h2>
 <ul>
-<li><a href="Agente.md">Agente</a></li>
+<li>
+<p><a href="Agente.md">Agente</a></p>
+</li>
+<li>
+<p><a href="../../core/models/LoginEvent.md">LoginEvent</a> — <code>backend</code> registra con qué backend entró cada login.</p>
+</li>
 </ul>

@@ -4,16 +4,20 @@ kind: class
 module: carga/views/ajaxviews.py
 lines: 250-259
 signature_hash: sha1:8c203ff3341ba740281092e3fa80a4e066b7972f
-authored: false
+authored: true
 ---
 
 # certificadomuestrawidget
 
-**Módulo:** `carga/views/ajaxviews.py` (líneas 250-259)
+**Módulo:** `carga/views/ajaxviews.py` (líneas 250-259) · hereda de `LoginRequiredMixin, s2forms.ModelSelect2Widget`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Select2 de Certificados para elegir el "certificado de muestra" contra el que se
+previsualiza una plantilla de texto de resolución. Busca por expediente o nombre de obra
+(`icontains`), con hasta 10 resultados. A propósito **no** filtra por el alcance de la
+plantilla: mientras se redacta, puede servir probar el texto contra cualquier certificado,
+incluso uno de otro programa.
 
 ## Firma
 
@@ -23,15 +27,9 @@ class certificadomuestrawidget(LoginRequiredMixin, s2forms.ModelSelect2Widget):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/forms/textoresolucionforms.py:6` — `from carga.views.ajaxviews import certificadomuestrawidget, programawidget`
-- `carga/forms/textoresolucionforms.py:116` — `widget=certificadomuestrawidget(attrs={"class": "form-control customSelect2", "data-placeholder": "Buscar por expediente u obra..."}),`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Widget del campo `certificado` de [CertificadoMuestraForm](../../forms/textoresolucionforms/CertificadoMuestraForm.md).
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [CertificadoMuestraForm](../../forms/textoresolucionforms/CertificadoMuestraForm.md)
+- [TextoResolucionEditorMixin](../textoresolucionviews/TextoResolucionEditorMixin.md)

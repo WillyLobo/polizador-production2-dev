@@ -2,14 +2,14 @@
 symbol: list_contratos_montos
 kind: function
 module: api/views/carga_views.py
-lines: 1631-1635
-signature_hash: sha1:3b25be60fbf32c41733b17a443c5ed86c23488ef
+lines: 1652-1656
+signature_hash: sha1:a837c509bad75708f5f207a71435fc32ba6aab41
 authored: true
 ---
 
 # list_contratos_montos
 
-**Módulo:** `api/views/carga_views.py` (líneas 1631-1635)
+**Módulo:** `api/views/carga_views.py` (líneas 1652-1656)
 
 ## Propósito
 

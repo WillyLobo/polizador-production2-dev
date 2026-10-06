@@ -1,11 +1,11 @@
 <h1>Obra</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 323-543) · hereda de <code>models.Model</code></p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 408-636) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
 <p>El modelo central de <code>carga</code>: una obra pública IPDUV, con su empresa contratista, ubicación
 geográfica (Región/Departamento/Municipio/Localidad, todos M2M salvo Región),
 financiamiento total desglosado por Nación/Provincia/Terceros (pesos y UVI), resolución de
 adjudicación, y las relaciones hacia Contrato/PlanDeTrabajos/Certificado/Póliza que cuelgan
-de ella. Es, con 220 líneas y ~25 métodos/propiedades, el modelo más grande de <code>carga</code>
+de ella. Es, con ~230 líneas y ~25 métodos/propiedades, el modelo más grande de <code>carga</code>
 junto con <code>Certificado</code>.</p>
 <p>Dos ideas de diseño no obvias:</p>
 <ul>
@@ -30,6 +30,14 @@ avance real" a los de tipo PARCIAL/HECHO_CONSUMADO/ETAPA (o LEGACY con
 <code>certificado_rubro_obra&gt;0</code>) — un Anticipo es un pool sobre toda la Obra, no un avance de
 rubro puntual, y si fuera el certificado más reciente "taparía" el % de avance real con un
 0 si se lo tomara como el último sin más.</p>
+<p><code>obra_fecha_inicio</code> es la fecha del Acta de Inicio, y hay <strong>una sola</strong> por obra. Los
+reinicios después de una reprogramación se guardan en
+<code>PlanDeTrabajos.trabajos_fecha_inicio</code>. Si la obra todavía no tiene fecha de inicio, el
+alta de la primera Foja de Medición la pide (<code>FojaDeMedicionForm</code> agrega el campo y
+<code>CrearFojaDeMedicion</code> la guarda en la Obra).</p>
+<p>El historial (<code>obra_history</code>) es un <code>M2MHistoricalRecords</code>: además de los campos propios,
+audita los M2M de ubicación (departamentos, municipios, localidades), los inspectores, los
+representantes técnicos y la obra principal.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class Obra(models.Model):
 </code></pre>
@@ -38,7 +46,7 @@ rubro puntual, y si fuera el certificado más reciente "taparía" el % de avance
 self.object = form.save()
 </code></pre>
 <p><code>recalcular_montos_contrato()</code> en particular se usa así, disparado por la señal (no a mano):</p>
-<pre><code class="language-python"># carga/signals.py:62 (recalcular_montos_obra)
+<pre><code class="language-python"># carga/signals.py:64 (recalcular_montos_obra)
 instance.contratomonto_contrato.contrato_obra.recalcular_montos_contrato()
 </code></pre>
 <h2>Ver también</h2>

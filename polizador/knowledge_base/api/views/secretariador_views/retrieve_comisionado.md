@@ -26,4 +26,4 @@ def retrieve_comisionado(request, id: int):
 
 ## Ver también
 
-- [Agente](../../../secretariador/models/Agente.md)
+- [Agente](../../../personalizador/models/Agente.md)

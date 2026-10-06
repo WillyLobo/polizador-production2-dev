@@ -2,14 +2,14 @@
 symbol: Municipio
 kind: class
 module: carga/models.py
-lines: 297-313
-signature_hash: sha1:d3cb8abcf1a118aef8254eb5359fbc82805109dd
+lines: 382-398
+signature_hash: sha1:3012c4d99e49478846e7036fa2fbbd9b63c966ab
 authored: true
 ---
 
 # Municipio
 
-**Módulo:** `carga/models.py` (líneas 297-313) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 382-398) · hereda de `models.Model`
 
 ## Propósito
 

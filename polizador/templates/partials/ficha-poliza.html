@@ -1,0 +1,245 @@
+{# ─── Fila 1: Póliza + Obra ─── #}
+<div class="row g-3 mb-3">
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-body-tertiary fw-semibold small d-flex justify-content-between align-items-center">
+                Póliza
+                <div class="d-flex">
+                    {% if object.poliza_digital %}
+                    <a href="{{object.poliza_digital.url}}" target="_blank" class="btn btn-sm btn-outline-secondary py-0">Descargar {{pdfimglink|safe}}</a>
+                    {% endif %}
+                    {% if perms.carga.change_poliza %}
+                    <a href="{% url "carga:update-poliza" object.id %}" class="btn btn-sm btn-outline-secondary py-0 ms-2">Editar</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card-body p-2">
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">ID</div>
+                    <div class="col-7 small">{{object.id}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Fecha de Carga</div>
+                    <div class="col-7 small">{{object.poliza_fecha}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Número de Actuación</div>
+                    <div class="col-7 small">{{object.poliza_expediente}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Número de Póliza</div>
+                    <div class="col-7 small">{{object.poliza_numero}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Concepto</div>
+                    <div class="col-7 small">{{object.get_poliza_concepto_display}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Anexo</div>
+                    <div class="col-7 small">{{object.poliza_anexo|default_if_none:"—"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Número de Recibo</div>
+                    <div class="col-7 small">{{object.poliza_recibo|default_if_none:"—"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Aseguradora</div>
+                    <div class="col-7 small">{{object.poliza_aseguradora}}</div>
+                </div>
+                <div class="row g-1">
+                    <div class="col-5 text-muted small fw-semibold">Tomador</div>
+                    <div class="col-7 small">{{object.poliza_tomador}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-header py-2 bg-body-tertiary fw-semibold small d-flex justify-content-between align-items-center">
+                Obra
+                {% if perms.carga.view_obra %}
+                <a href="{% url "carga:estado-obra" object.poliza_obra_id %}" class="btn btn-sm btn-outline-secondary py-0">Ver Obra</a>
+                {% endif %}
+            </div>
+            <div class="card-body p-2">
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Nombre</div>
+                    <div class="col-7 small">{{object.poliza_obra.obra_nombre}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Programa</div>
+                    <div class="col-7 small">{{object.poliza_obra.obra_programa}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Convenio</div>
+                    <div class="col-7 small">{{object.poliza_obra.obra_convenio|default_if_none:"—"}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Expediente Madre</div>
+                    <div class="col-7 small">{{object.poliza_obra.obra_expediente}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Resolución de Adjudicación</div>
+                    <div class="col-7 small">{{object.poliza_obra.obra_resolucion_display}}</div>
+                </div>
+                <div class="row g-1 mb-1">
+                    <div class="col-5 text-muted small fw-semibold">Firma de Contrato</div>
+                    <div class="col-7 small">{{object.poliza_obra.obra_fecha_contrato}}</div>
+                </div>
+                <div class="row g-1">
+                    <div class="col-5 text-muted small fw-semibold">Compulsa</div>
+                    <div class="col-7 small">{{object.poliza_obra.get_obra_licitacion_tipo_display}} N°{{object.poliza_obra.obra_licitacion_numero}}/{{object.poliza_obra.obra_licitacion_ano}}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{# ─── Sección 2: Montos ─── #}
+<div class="card mb-3">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Montos</div>
+    <div class="card-body p-2">
+        <div class="row g-2">
+            <div class="col-md-4">
+                <div class="border rounded p-2 bg-body-tertiary h-100">
+                    <div class="small fw-semibold text-center border-bottom mb-2 pb-1">Monto Asegurado</div>
+                    <div class="row g-1 mb-1">
+                        <div class="col-5 text-muted small">Pesos</div>
+                        <div class="col-7 small">${{object.poliza_monto_pesos}}</div>
+                    </div>
+                    <div class="row g-1">
+                        <div class="col-5 text-muted small">UVI</div>
+                        <div class="col-7 small">{{object.poliza_monto_uvi}}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="border rounded p-2 bg-body-tertiary h-100">
+                    <div class="small fw-semibold text-center border-bottom mb-2 pb-1">Contrato de Obra</div>
+                    <div class="row g-1 mb-1">
+                        <div class="col-5 text-muted small">Pesos</div>
+                        <div class="col-7 small">${{object.poliza_obra.obra_contrato_total_pesos}}</div>
+                    </div>
+                    <div class="row g-1">
+                        <div class="col-5 text-muted small">UVI</div>
+                        <div class="col-7 small">{{object.poliza_obra.obra_contrato_total_uvi}}</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="border rounded p-2 bg-body-tertiary h-100">
+                    <div class="small fw-semibold text-center border-bottom mb-2 pb-1">Cobertura Sugerida</div>
+                    <div class="row g-1 mb-1">
+                        <div class="col-5 text-muted small">Contrato</div>
+                        <div class="col-7 small">{{object.poliza_contrato|default:"—"}}</div>
+                    </div>
+                    <div class="row g-1 mb-1">
+                        <div class="col-5 text-muted small">Financiamiento</div>
+                        <div class="col-7 small">{{object.get_poliza_financiamiento_display|default:"—"}}</div>
+                    </div>
+                    {% with base_pesos=object.monto_contrato_base sugerido_pesos=object.monto_a_cubrir_sugerido %}
+                    {% if sugerido_pesos is not None %}
+                    <div class="row g-1 mb-1">
+                        <div class="col-5 text-muted small">Monto Base</div>
+                        <div class="col-7 small">${{base_pesos}}</div>
+                    </div>
+                    <div class="row g-1">
+                        <div class="col-5 text-muted small">A Cubrir</div>
+                        <div class="col-7 small fw-semibold">${{sugerido_pesos}}</div>
+                    </div>
+                    {% else %}
+                    <div class="small text-muted fst-italic">No disponible (Póliza sin Contrato/Financiamiento cargado).</div>
+                    {% endif %}
+                    {% endwith %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# ─── Sección 3: Documentación Adicional ─── #}
+{% with documentos_poliza=object.documentos_poliza.all %}
+{% if documentos_poliza or perms.carga.add_polizadocumento %}
+<div class="card mb-3">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Documentación Adicional (Anexos/Adendas)</div>
+    <div class="card-body p-2">
+        {% if documentos_poliza %}
+        <table class="table table-sm table-bordered table-hover mb-2">
+            <thead class="bg-body-tertiary">
+                <tr><th class="small">Descripción</th><th></th></tr>
+            </thead>
+            <tbody>
+                {% for documento in documentos_poliza %}
+                <tr>
+                    <td class="small">
+                        {% if documento.polizadocumento_archivo %}
+                        <a href="{{documento.polizadocumento_archivo.url}}" target="_blank">{{documento.polizadocumento_descripcion}}</a>
+                        {% else %}
+                        {{documento.polizadocumento_descripcion}}
+                        {% endif %}
+                    </td>
+                    <td class="small text-end">
+                        {% if perms.carga.change_polizadocumento %}<a href="{% url "carga:update-poliza-documento" documento.id %}">{{editimglink|safe}}</a>{% endif %}
+                        {% if perms.carga.delete_polizadocumento %}<a href="{% url "carga:eliminar-poliza-documento" documento.id %}">{{eliminarimglink|safe}}</a>{% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="small text-muted fst-italic">Sin documentos adicionales cargados.</p>
+        {% endif %}
+        {% if perms.carga.add_polizadocumento %}
+        <a href="{% url "carga:crear-poliza-documento" %}?poliza={{object.id|safe}}" class="btn btn-sm btn-outline-primary">+ Nuevo Documento</a>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endwith %}
+
+{# ─── Sección 4: Movimientos ─── #}
+{% with movimientos=object.poliza_movimiento_set.all %}
+<div class="card mb-3">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Movimientos</div>
+    <div class="card-body p-2">
+        {% if movimientos %}
+        <table class="table table-sm table-bordered table-hover mb-2">
+            <thead class="bg-body-tertiary">
+                <tr>
+                    <th class="small">#</th>
+                    <th class="small">Fecha</th>
+                    <th class="small">Receptor</th>
+                    <th class="small">Área</th>
+                    <th class="small">Enviado por</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for instance in movimientos %}
+                <tr>
+                    <td class="small">{{instance.id}}</td>
+                    <td class="small">{{instance.poliza_movimiento_fecha|date:"d-m-Y"}}</td>
+                    <td class="small">{{instance.poliza_movimiento_receptor}}</td>
+                    <td class="small">{{instance.poliza_movimiento_area}}</td>
+                    <td class="small">{{instance.poliza_movimiento_editor}}</td>
+                    <td class="small text-end">
+                        {% if perms.carga.change_poliza_movimiento %}<a href="{% url "carga:update-poliza-movimiento" instance.id %}">{{editimglink|safe}}</a>{% endif %}
+                        {% if perms.carga.delete_poliza_movimiento %}<a href="{% url "carga:eliminar-poliza-movimiento" instance.id %}">{{eliminarimglink|safe}}</a>{% endif %}
+                        <a href="{% url "carga:imprimir-poliza-movimiento" instance.id %}">{{imprimirimglink|safe}}</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="small text-muted fst-italic">Sin movimientos cargados.</p>
+        {% endif %}
+        {% if perms.carga.add_poliza_movimiento %}
+        <a href="{% url "carga:crear-poliza-movimiento" %}?poliza={{ object.pk|stringformat:"s" }}" class="btn btn-sm btn-outline-primary">+ Nuevo Movimiento</a>
+        {% endif %}
+    </div>
+</div>
+{% endwith %}

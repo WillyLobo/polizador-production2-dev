@@ -28,4 +28,4 @@ class DirectorioForm(forms.ModelForm):
 ## Ver también
 
 - [Directorio](../../models/Directorio.md)
-- [agentewidget](../ajaxviews/agentewidget.md)
+- [agentewidget](../../views/ajaxviews/agentewidget.md)

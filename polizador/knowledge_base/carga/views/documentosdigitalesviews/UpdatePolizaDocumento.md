@@ -2,18 +2,19 @@
 symbol: UpdatePolizaDocumento
 kind: class
 module: carga/views/documentosdigitalesviews.py
-lines: 131-139
-signature_hash: sha1:9277bec6f7d79532bbc7c9ab761d54ee065327d1
-authored: false
+lines: 143-151
+signature_hash: sha1:216d630cc8ff529f519ca1fcfb39b55f5adc0c1d
+authored: true
 ---
 
 # UpdatePolizaDocumento
 
-**Módulo:** `carga/views/documentosdigitalesviews.py` (líneas 131-139)
+**Módulo:** `carga/views/documentosdigitalesviews.py` (líneas 143-151) · hereda de `PermissionRequiredMixin, generic.UpdateView`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Edición de un `PolizaDocumento` (descripción o reemplazo del PDF). Exige
+`carga.change_polizadocumento` y vuelve a la ficha de la Póliza.
 
 ## Firma
 
@@ -23,14 +24,9 @@ class UpdatePolizaDocumento(PermissionRequiredMixin, generic.UpdateView):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-_(sin candidatos detectados por grep)_
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+`carga:update-poliza-documento`, desde la ficha de la Póliza.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [PolizaDocumento](../../models/PolizaDocumento.md)
+- [CrearPolizaDocumento](CrearPolizaDocumento.md)

@@ -1,20 +1,42 @@
 <h1>TextoResolucionCertificado</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 954-1034)</p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 1015-1095) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Plantilla, en Jinja, del texto de la resolución que aprueba un Certificado. El
+articulado cambia según el Programa, el financiamiento (Nación/Provincia/Terceros) y el tipo
+de certificado (un anticipo no dice lo mismo que un avance). Esas combinaciones las conoce
+el área y no el desarrollador, por eso el texto se guarda en la base y se carga desde la
+web, a diferencia de las resoluciones de viáticos, cuyo texto está fijo en
+<code>secretariador/docx_texto.py</code>.</p>
+<p>El <strong>alcance</strong> es la terna (<code>textoresolucion_programa</code>, <code>textoresolucion_financiamiento</code>,
+<code>textoresolucion_tipo</code>), única por <code>UniqueConstraint</code>. <code>textoresolucion_tipo=""</code> es el
+comodín: el texto genérico de ese programa y financiamiento, para cuando no hay uno
+específico del tipo. Es <code>""</code> y no NULL a propósito, porque en Postgres dos NULL no chocan y
+la restricción dejaría cargar comodines duplicados. <code>TIPO</code> es <code>Certificado.TIPO</code> sin
+<code>LEGACY</code>: a los certificados históricos no se les redactan resoluciones nuevas.</p>
+<p><code>textoresolucion_bloques</code> es una lista JSON de <code>{clase, label, texto}</code> (<code>clase</code> ∈ visto,
+bloque, considerando, resuelve, articulo; ver <code>CLASE_CHOICES</code> en
+<code>carga/forms/textoresolucionforms.py</code>), donde cada <code>texto</code> es fuente Jinja que
+<code>carga/resolucion_texto.py</code> evalúa contra <code>contexto_certificado()</code>.</p>
+<p><code>para_certificado(certificado)</code> resuelve la plantilla en una sola query: filtra por el
+programa de la obra, el financiamiento del certificado y <code>tipo in [tipo, ""]</code>, ordena para
+que gane la coincidencia exacta sobre el comodín y devuelve <code>None</code> si no hay ninguna.
+<code>alcance</code> es la etiqueta legible de la terna para el listado. Tiene <code>HistoricalRecords</code>, y
+el snapshot de cada certificado guarda qué fila histórica se usó (ver
+<a href="../views/textoresolucionviews/_history_id.md">_history_id</a>).</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class TextoResolucionCertificado(models.Model):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/models.py:887</code> — <code>"TextoResolucionCertificado y retocado a mano desde la web. Si está vacío, se "</code></li>
-<li><code>carga/views/textoresolucionviews.py:17</code> — <code>from carga.models import Certificado, TextoResolucionCertificado</code></li>
-<li><code>carga/views/textoresolucionviews.py:54</code> — <code>model = TextoResolucionCertificado</code></li>
-<li><code>carga/views/textoresolucionviews.py:147</code> — <code>model = TextoResolucionCertificado</code></li>
-<li><code>carga/views/textoresolucionviews.py:158</code> — <code>model = TextoResolucionCertificado</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<pre><code class="language-python"># carga/views/textoresolucionviews.py (_texto_certificado)
+plantilla = TextoResolucionCertificado.para_certificado(certificado)
+if plantilla is None:
+    return None, set(), None, None
+</code></pre>
+<p>Alta/edición desde <a href="../views/textoresolucionviews/CrearTextoResolucion.md">CrearTextoResolucion</a>/<a href="../views/textoresolucionviews/UpdateTextoResolucion.md">UpdateTextoResolucion</a>.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="Certificado.md">Certificado</a> — <code>certificado_texto_resolucion</code> guarda el texto ya resuelto.</li>
+<li><a href="../views/textoresolucionviews/TextoResolucionEditorMixin.md">TextoResolucionEditorMixin</a></li>
+<li><a href="../views/textoresolucionviews/editar_texto_resolucion_certificado.md">editar_texto_resolucion_certificado</a></li>
+<li><a href="Programa.md">Programa</a></li>
+</ul>

@@ -2,14 +2,14 @@
 symbol: ReporteCertificadoPorMesView
 kind: class
 module: carga/views/reportes.py
-lines: 20-68
-signature_hash: sha1:2483fafa56d20dceec8476a0d012772fffc7c230
+lines: 21-69
+signature_hash: sha1:416f61257d7f2b3e399f7aed5e99ba726449867f
 authored: true
 ---
 
 # ReporteCertificadoPorMesView
 
-**Módulo:** `carga/views/reportes.py` (líneas 20-68) · hereda de `PermissionRequiredMixin, generic.ListView`
+**Módulo:** `carga/views/reportes.py` (líneas 21-69) · hereda de `PermissionRequiredMixin, generic.ListView`
 
 ## Propósito
 

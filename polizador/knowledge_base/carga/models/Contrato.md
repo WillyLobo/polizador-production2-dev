@@ -2,13 +2,13 @@
 symbol: Contrato
 kind: class
 module: carga/models.py
-lines: 1272-1312
-signature_hash: sha1:604de6103e2764c477c2b13eab7c9240fcad90de
+lines: 1540-1591
+signature_hash: sha1:1d50b4e5778d168f8390076716fc3d7fa877530a
 authored: true
 ---
 # Contrato
 
-**Módulo:** `carga/models.py` (líneas 1272-1312) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 1540-1591) · hereda de `models.Model`
 
 ## Propósito
 
@@ -23,6 +23,11 @@ certificados PARCIAL (%mes de la Foja) — en su lugar, certifica en tramos fijo
 disparados cuando el avance acumulado de la Foja alcanza el umbral de cada
 `ContratoTramoPago`. Es la bifurcación central que decide si `certificacion.py` construye
 certificados PARCIAL o ETAPA para esta Obra.
+
+`monto_total(financiamiento_codigo, moneda)` suma todos los `ContratoMonto` del Contrato
+para un financiamiento (N/P/T), en pesos o en UVI. Es la base común de los Certificados de
+Etapa (`certificacion._monto_contrato_total` delega acá) y del monto de garantía sugerido
+de `Poliza`.
 
 ## Firma
 
@@ -40,3 +45,5 @@ class Contrato(models.Model):
 - [ContratoTramoPago](ContratoTramoPago.md) — solo relevante cuando `contrato_certificacion_por_etapas=True`.
 - [ContratoMonto](ContratoMonto.md)
 - [Certificado](Certificado.md) — tipos PARCIAL vs ETAPA.
+
+- [Poliza](Poliza.md) — usa `monto_total()` para el monto de garantía sugerido.

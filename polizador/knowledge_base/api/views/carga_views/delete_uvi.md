@@ -2,14 +2,14 @@
 symbol: delete_uvi
 kind: function
 module: api/views/carga_views.py
-lines: 1758-1760
-signature_hash: sha1:ef740073a53abe39b9cffa2af42cf5506f7587d5
+lines: 1779-1781
+signature_hash: sha1:5d60fce440c9aa1195a359fa37cb53ca1e7462ea
 authored: true
 ---
 
 # delete_uvi
 
-**Módulo:** `api/views/carga_views.py` (líneas 1758-1760)
+**Módulo:** `api/views/carga_views.py` (líneas 1779-1781)
 
 ## Propósito
 

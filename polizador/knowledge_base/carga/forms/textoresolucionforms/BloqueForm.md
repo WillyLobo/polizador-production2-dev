@@ -4,16 +4,24 @@ kind: class
 module: carga/forms/textoresolucionforms.py
 lines: 42-77
 signature_hash: sha1:0e72515d54761636acd63715ffde341de64c6619
-authored: false
+authored: true
 ---
 
 # BloqueForm
 
-**Módulo:** `carga/forms/textoresolucionforms.py` (líneas 42-77)
+**Módulo:** `carga/forms/textoresolucionforms.py` (líneas 42-77) · hereda de `forms.Form`
 
 ## Propósito
 
-_(pendiente de autoría)_
+Un bloque del cuerpo de una plantilla: `clase` (`CLASE_CHOICES`, en el orden habitual de una
+resolución), `label` opcional (sólo para salirse de la numeración automática de artículos)
+y `texto`, que es **fuente Jinja**.
+
+`clean_texto()` compila el Jinja (`compilar_bloque`) sin renderizarlo, porque para eso hace
+falta un certificado. Sin esta validación, un `{%` suelto rompería la ficha de todos los
+certificados del alcance. `clean()` exige texto salvo para las clases de
+`CLASES_SIN_TEXTO` (`resuelve`), cuya fórmula «EL PRESIDENTE ... RESUELVE:» es texto fijo
+del organismo: el bloque marca dónde va, no qué dice.
 
 ## Firma
 
@@ -23,15 +31,9 @@ class BloqueForm(forms.Form):
 
 ## Uso real
 
-_(pendiente de autoría — candidatos detectados automáticamente:)_
-
-- `carga/forms/textoresolucionforms.py:103` — `BloqueFormSet = forms.formset_factory(BloqueForm, formset=BaseBloqueFormSet, extra=0, can_delete=True)`
-- `carga/forms/textoresolucionforms.py:139` — `A diferencia de `BloqueForm`, acá el texto es final, no una plantilla: no se`
-
-## Flujo de datos
-
-_(pendiente de autoría)_
+Form base de `BloqueFormSet = formset_factory(BloqueForm, formset=BaseBloqueFormSet, extra=0, can_delete=True)`.
 
 ## Ver también
 
-_(pendiente de autoría)_
+- [BaseBloqueFormSet](BaseBloqueFormSet.md)
+- [BloqueTextoForm](BloqueTextoForm.md) — el equivalente para el texto ya resuelto.

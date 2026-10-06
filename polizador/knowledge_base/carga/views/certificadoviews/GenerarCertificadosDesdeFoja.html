@@ -1,5 +1,5 @@
 <h1>GenerarCertificadosDesdeFoja</h1>
-<p><strong>Módulo:</strong> <code>carga/views/certificadoviews.py</code> (líneas 230-278) · hereda de <code>PermissionRequiredMixin, generic.View</code></p>
+<p><strong>Módulo:</strong> <code>carga/views/certificadoviews.py</code> (líneas 73-111) · hereda de <code>PermissionRequiredMixin, generic.View</code></p>
 <h2>Propósito</h2>
 <p>El flujo normal de certificación: a partir de una Foja de Medición ya cargada, construye
 (sin guardar — <code>preview=True</code>) los Certificados que correspondería generar
@@ -9,6 +9,10 @@ explícitamente (<code>"confirmar" in request.POST</code>) — un patrón de "vi
 confirmar" para una operación que no es trivialmente reversible. Atrapa tanto
 <code>ValidationError</code> (reglas de negocio) como <code>Ley27397Error</code> (fallas del cálculo de
 indexación) y las muestra como error de formulario en vez de un 500.</p>
+<p>La tabla de la vista previa ya no calcula aparte el "monto a cobrar". Cada fila es
+<code>{"certificado": c}</code> y el template usa <code>certificado_importe_abonar_pesos()</code>/<code>_uvi()</code> del
+propio modelo, que también descuentan el Fondo de Reparo. Así la vista previa muestra lo
+mismo que la hoja impresa.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class GenerarCertificadosDesdeFoja(PermissionRequiredMixin, generic.View):
 </code></pre>

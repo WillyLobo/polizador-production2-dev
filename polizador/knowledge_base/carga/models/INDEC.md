@@ -2,13 +2,13 @@
 symbol: INDEC
 kind: class
 module: carga/models.py
-lines: 1412-1446
-signature_hash: sha1:5ebaa718231f4e8d835e388144cac7be4d18b949
+lines: 1691-1725
+signature_hash: sha1:5246e0afae79804ee28f9361cfb90cbca471112e
 authored: true
 ---
 # INDEC
 
-**Módulo:** `carga/models.py` (líneas 1412-1446) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 1691-1725) · hereda de `models.Model`
 
 ## Propósito
 

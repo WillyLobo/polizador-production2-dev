@@ -2,14 +2,14 @@
 symbol: Prototipo
 kind: class
 module: carga/models.py
-lines: 577-598
-signature_hash: sha1:261b622c8ddf9011a31cfbff3b9b1bc14bfad0a0
+lines: 670-691
+signature_hash: sha1:e7a7a096eb3101fe28c936f537e08f30dcf0dd1f
 authored: true
 ---
 
 # Prototipo
 
-**Módulo:** `carga/models.py` (líneas 577-598) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 670-691) · hereda de `models.Model`
 
 ## Propósito
 

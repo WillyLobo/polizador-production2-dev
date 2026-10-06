@@ -33,4 +33,4 @@ class OficinaForm(forms.ModelForm):
 ## Ver también
 
 - [Oficina](../../models/Oficina.md)
-- [OficinaGerenciaDependentWidgetMixin](../ajaxviews/OficinaGerenciaDependentWidgetMixin.md)
+- [OficinaGerenciaDependentWidgetMixin](../../views/ajaxviews/OficinaGerenciaDependentWidgetMixin.md)

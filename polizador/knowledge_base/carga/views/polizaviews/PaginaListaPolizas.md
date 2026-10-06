@@ -2,14 +2,14 @@
 symbol: PaginaListaPolizas
 kind: function
 module: carga/views/polizaviews.py
-lines: 89-92
-signature_hash: sha1:41f0b4b6871cb1fa4c4ad25256d80a841501a77b
+lines: 167-170
+signature_hash: sha1:98630e2bb9d3fe5cfc8637fdf1ad91a48150069d
 authored: true
 ---
 
 # PaginaListaPolizas
 
-**Módulo:** `carga/views/polizaviews.py` (líneas 89-92)
+**Módulo:** `carga/views/polizaviews.py` (líneas 167-170)
 
 ## Propósito
 

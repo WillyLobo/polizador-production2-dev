@@ -95,7 +95,7 @@
       {% endfor %}
       <tr class="totales">
         <td class="item" colspan="2">TOTALES</td>
-        <td class="pct"></td>
+        <td class="pct">{{ total_pct_incidencia|floatformat:3 }}</td>
         <td class="pct">{{ total_pct_anterior|floatformat:3 }}</td>
         <td class="pct">{{ total_pct_mes|floatformat:3 }}</td>
         <td class="pct">{{ total_pct_acumulado|floatformat:3 }}</td>

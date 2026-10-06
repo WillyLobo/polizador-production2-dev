@@ -2,14 +2,14 @@
 symbol: GrupoCargo
 kind: class
 module: personalizador/models.py
-lines: 249-258
-signature_hash: sha1:82df07385e23ad06c6efec38188a130c71ea1c81
+lines: 288-297
+signature_hash: sha1:e682fa633a42dc741fa720f11384cb9a43afe52d
 authored: true
 ---
 
 # GrupoCargo
 
-**Módulo:** `personalizador/models.py` (líneas 249-258) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 288-297) · hereda de `models.Model`
 
 ## Propósito
 

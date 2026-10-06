@@ -2,14 +2,14 @@
 symbol: delete_region
 kind: function
 module: api/views/carga_views.py
-lines: 430-432
-signature_hash: sha1:40ec1c0dbcc458c72989df39246e46f191c5b537
+lines: 431-433
+signature_hash: sha1:d4ffb8d6d3eb31ef632697f61101d666ef2fee71
 authored: true
 ---
 
 # delete_region
 
-**Módulo:** `api/views/carga_views.py` (líneas 430-432)
+**Módulo:** `api/views/carga_views.py` (líneas 431-433)
 
 ## Propósito
 

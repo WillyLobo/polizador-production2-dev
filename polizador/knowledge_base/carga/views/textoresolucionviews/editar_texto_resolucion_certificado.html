@@ -1,14 +1,27 @@
 <h1>editar_texto_resolucion_certificado</h1>
 <p><strong>Módulo:</strong> <code>carga/views/textoresolucionviews.py</code> (líneas 206-240)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Revisión del texto ya resuelto de un Certificado, antes de emitir el <code>.docx</code>. Imita
+<code>revisar_texto_actuacion</code> de viáticos: se guarda el <strong>texto final</strong> y no la plantilla.
+Usa <code>BloqueTextoFormSet</code>, en el que sólo se edita la redacción (clase y etiqueta van
+ocultas). En el POST guarda en <code>certificado_texto_resolucion</code>
+<code>{textoresolucion_id, textoresolucion_history_id, bloques}</code>, es decir, de qué plantilla y
+de qué versión de esa plantilla salió, para poder auditarlo
+(<a href="_history_id.md">_history_id</a>). Con <code>accion=guardar</code> vuelve a la ficha del certificado; si
+no, sigue directo a la descarga del <code>.docx</code>.</p>
+<p>El template muestra las variables faltantes, el error de render si lo hubo y si lo que se
+ve es un snapshot (<code>es_snapshot</code>), en cuyo caso ofrece restaurarlo desde la plantilla.
+Exige <code>carga.change_certificado</code>.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def editar_texto_resolucion_certificado(request, pk):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>carga:editar-texto-resolucion-certificado</code>, enlazada desde la ficha del certificado (<code>certificado/certificado.html</code>). También es el destino de <code>resolucion_certificado_docx</code> cuando faltan datos.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="_texto_certificado.md">_texto_certificado</a></li>
+<li><a href="../../forms/textoresolucionforms/BloqueTextoForm.md">BloqueTextoForm</a></li>
+<li><a href="restaurar_texto_resolucion_certificado.md">restaurar_texto_resolucion_certificado</a></li>
+<li><a href="resolucion_certificado_docx.md">resolucion_certificado_docx</a></li>
+<li><a href="../../signals/invalidar_texto_resolucion_por_cambio_de_datos.md">invalidar_texto_resolucion_por_cambio_de_datos</a></li>
+</ul>

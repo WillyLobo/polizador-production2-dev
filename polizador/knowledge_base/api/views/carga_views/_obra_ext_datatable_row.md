@@ -2,14 +2,14 @@
 symbol: _obra_ext_datatable_row
 kind: function
 module: api/views/carga_views.py
-lines: 1018-1068
-signature_hash: sha1:a9878f780cf7d656d327dc3521abb7233d64ca88
+lines: 1019-1069
+signature_hash: sha1:487d093bf5778ca9095a7159fe8019ea2efe4feb
 authored: true
 ---
 
 # _obra_ext_datatable_row
 
-**Módulo:** `api/views/carga_views.py` (líneas 1018-1068)
+**Módulo:** `api/views/carga_views.py` (líneas 1019-1069)
 
 ## Propósito
 

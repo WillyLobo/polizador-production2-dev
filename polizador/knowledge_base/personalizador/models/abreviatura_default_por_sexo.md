@@ -2,14 +2,14 @@
 symbol: abreviatura_default_por_sexo
 kind: function
 module: personalizador/models.py
-lines: 18-22
-signature_hash: sha1:ab10c4a7a5cfce21c027296b491aab869e492f13
+lines: 19-23
+signature_hash: sha1:72576e412ba226912fd9a566595ff2637f46508b
 authored: true
 ---
 
 # abreviatura_default_por_sexo
 
-**Módulo:** `personalizador/models.py` (líneas 18-22)
+**Módulo:** `personalizador/models.py` (líneas 19-23)
 
 ## Propósito
 

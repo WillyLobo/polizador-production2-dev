@@ -2,14 +2,14 @@
 symbol: delete_receptor
 kind: function
 module: api/views/carga_views.py
-lines: 114-116
-signature_hash: sha1:2b50a675aec9eccb0abb9cdd89949f40eaefa268
+lines: 115-117
+signature_hash: sha1:c10e0a26c995c396a0978022abd6b4be6551df02
 authored: true
 ---
 
 # delete_receptor
 
-**Módulo:** `api/views/carga_views.py` (líneas 114-116)
+**Módulo:** `api/views/carga_views.py` (líneas 115-117)
 
 ## Propósito
 

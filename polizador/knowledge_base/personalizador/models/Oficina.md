@@ -2,14 +2,14 @@
 symbol: Oficina
 kind: class
 module: personalizador/models.py
-lines: 271-331
-signature_hash: sha1:ef6624976743e0278ca6749b9808a459b978b074
+lines: 310-370
+signature_hash: sha1:33951a9869b3826be4aa233b5ee61b029534dc0a
 authored: true
 ---
 
 # Oficina
 
-**Módulo:** `personalizador/models.py` (líneas 271-331) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 310-370) · hereda de `models.Model`
 
 ## Propósito
 

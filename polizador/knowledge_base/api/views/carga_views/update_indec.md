@@ -2,14 +2,14 @@
 symbol: update_indec
 kind: function
 module: api/views/carga_views.py
-lines: 1788-1793
-signature_hash: sha1:54d8e24c38b678445601462644b463906a1a19b1
+lines: 1809-1814
+signature_hash: sha1:dc28149224c490a929f2517eecdacad819d76b2c
 authored: true
 ---
 
 # update_indec
 
-**Módulo:** `api/views/carga_views.py` (líneas 1788-1793)
+**Módulo:** `api/views/carga_views.py` (líneas 1809-1814)
 
 ## Propósito
 

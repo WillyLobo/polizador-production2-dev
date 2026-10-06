@@ -2,14 +2,14 @@
 symbol: Direccion
 kind: class
 module: personalizador/models.py
-lines: 381-398
-signature_hash: sha1:16746bf2f0515293ca5632836f0c526aa9f7fbbe
+lines: 420-437
+signature_hash: sha1:d44994659dcdad0ec867bb718392a9636d5814ee
 authored: true
 ---
 
 # Direccion
 
-**Módulo:** `personalizador/models.py` (líneas 381-398) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 420-437) · hereda de `models.Model`
 
 ## Propósito
 

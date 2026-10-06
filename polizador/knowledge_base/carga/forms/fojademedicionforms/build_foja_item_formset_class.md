@@ -2,14 +2,14 @@
 symbol: build_foja_item_formset_class
 kind: function
 module: carga/forms/fojademedicionforms.py
-lines: 218-228
-signature_hash: sha1:8094647571c1d79e57b9b8d82a012dde5c8b4752
+lines: 230-240
+signature_hash: sha1:d0b4d792d3eda37d87b3c093bcad11ca129664f8
 authored: true
 ---
 
 # build_foja_item_formset_class
 
-**Módulo:** `carga/forms/fojademedicionforms.py` (líneas 218-228)
+**Módulo:** `carga/forms/fojademedicionforms.py` (líneas 230-240)
 
 ## Propósito
 

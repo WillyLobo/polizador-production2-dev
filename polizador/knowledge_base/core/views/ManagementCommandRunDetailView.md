@@ -2,13 +2,13 @@
 symbol: ManagementCommandRunDetailView
 kind: class
 module: core/views.py
-lines: 157-160
-signature_hash: sha1:f0e9912690712d6a159a3d1e6d1654d96e1b00d0
+lines: 180-183
+signature_hash: sha1:65267d55fb765afdc862dcc748d3817b19131ed5
 authored: true
 ---
 # ManagementCommandRunDetailView
 
-**Módulo:** `core/views.py` (líneas 157-160) · hereda de `SuperuserRequiredMixin, DetailView`
+**Módulo:** `core/views.py` (líneas 180-183) · hereda de `SuperuserRequiredMixin, DetailView`
 
 ## Propósito
 

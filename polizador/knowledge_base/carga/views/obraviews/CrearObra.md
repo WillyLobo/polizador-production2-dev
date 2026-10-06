@@ -28,4 +28,4 @@ class CrearObra(PermissionRequiredMixin, UserKwargsMixin, generic.CreateView):
 ## Ver también
 
 - [Obra](../../models/Obra.md)
-- [CrearContrato](CrearContrato.md)
+- [CrearContrato](../contratoviews/CrearContrato.md)

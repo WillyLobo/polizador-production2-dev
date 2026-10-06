@@ -2,14 +2,14 @@
 symbol: _aseguradora_datatable_row
 kind: function
 module: api/views/carga_views.py
-lines: 193-204
-signature_hash: sha1:9b993ce5581369935309bb16b86a3cce93cf1b31
+lines: 194-205
+signature_hash: sha1:a2aeb5f19809eba96731394d7d275509ec511460
 authored: true
 ---
 
 # _aseguradora_datatable_row
 
-**Módulo:** `api/views/carga_views.py` (líneas 193-204)
+**Módulo:** `api/views/carga_views.py` (líneas 194-205)
 
 ## Propósito
 

@@ -2,14 +2,14 @@
 symbol: UpdateFojaDeMedicion
 kind: class
 module: carga/views/fojademedicionviews.py
-lines: 191-250
-signature_hash: sha1:416d1277a03178ba98b4be84ab6fe56c05472f38
+lines: 194-253
+signature_hash: sha1:a510fbd935028348f2f20480df32e7d800d69333
 authored: true
 ---
 
 # UpdateFojaDeMedicion
 
-**Módulo:** `carga/views/fojademedicionviews.py` (líneas 191-250) · hereda de `LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView`
+**Módulo:** `carga/views/fojademedicionviews.py` (líneas 194-253) · hereda de `LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView`
 
 ## Propósito
 

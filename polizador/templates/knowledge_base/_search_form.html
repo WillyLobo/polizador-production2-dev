@@ -1,0 +1,9 @@
+<form method="get" action="{% url 'knowledge_base_search' %}" role="search" class="kb-search mb-3">
+  <div class="input-group input-group-sm">
+    <span class="input-group-text"><i class="bi bi-search"></i></span>
+    <input type="search" name="q" value="{{ query|default:'' }}" class="form-control"
+           placeholder="Buscar clase, función, campo o texto…" aria-label="Buscar en la base de conocimiento"
+           {% if autofocus %}autofocus{% endif %}>
+    <button type="submit" class="btn btn-outline-secondary">Buscar</button>
+  </div>
+</form>

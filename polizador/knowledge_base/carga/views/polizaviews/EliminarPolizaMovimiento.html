@@ -1,9 +1,10 @@
 <h1>EliminarPolizaMovimiento</h1>
-<p><strong>Módulo:</strong> <code>carga/views/polizaviews.py</code> (líneas 54-58) · hereda de <code>PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView</code></p>
+<p><strong>Módulo:</strong> <code>carga/views/polizaviews.py</code> (líneas 117-124) · hereda de <code>PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView</code></p>
 <h2>Propósito</h2>
 <p>Confirma y ejecuta el borrado de un Poliza_Movimiento, mostrando antes (vía <code>DeleteRelatedObjectsMixin</code>
 — <code>core/mixins.py</code> + <code>core/deletion.py::get_deleted_objects</code>) los objetos relacionados que
 se borrarían en cascada, para que el usuario no borre a ciegas.</p>
+<p>Al terminar vuelve a la ficha de la Póliza (<code>carga:estado-poliza</code>).</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class EliminarPolizaMovimiento(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
 </code></pre>
@@ -11,5 +12,11 @@ se borrarían en cascada, para que el usuario no borre a ciegas.</p>
 <p>Enlazada desde la ficha de Póliza.</p>
 <h2>Ver también</h2>
 <ul>
-<li><a href="../../models/Poliza_Movimiento.md">Poliza_Movimiento</a></li>
+<li>
+<p><a href="../../models/Poliza_Movimiento.md">Poliza_Movimiento</a></p>
+</li>
+<li>
+<p><a href="CrearPolizaMovimiento.md">CrearPolizaMovimiento</a></p>
+</li>
+<li><a href="UpdatePolizaMovimiento.md">UpdatePolizaMovimiento</a></li>
 </ul>

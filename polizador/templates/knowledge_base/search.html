@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}<title>{% if query %}{{ query }} · {% endif %}Buscar · Base de Conocimiento | Polizador</title>{% endblock title %}
+{% block content %}
+<div class="container-fluid">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{% url 'knowledge_base' %}">Base de Conocimiento</a></li>
+      <li class="breadcrumb-item active">Buscar</li>
+    </ol>
+  </nav>
+
+  <div class="row">
+    <div class="col-lg-9">
+      {% include "knowledge_base/_search_form.html" with autofocus=True %}
+
+      {% if not query %}
+      <p class="text-muted">
+        Busca en el nombre del símbolo, su módulo y el texto de cada página, sin distinguir
+        mayúsculas ni tildes. Con varias palabras, aparecen las páginas que las contienen todas.
+      </p>
+      {% elif not results %}
+      <div class="alert alert-info">No hay páginas que contengan «{{ query }}».</div>
+      {% else %}
+      <p class="text-muted small mb-2">
+        {{ total_results }} resultado{{ total_results|pluralize }}{% if total_results > results|length %}, se muestran los {{ results|length }} más relevantes{% endif %}.
+      </p>
+      <ul class="list-group">
+        {% for result in results %}
+        <li class="list-group-item">
+          <div class="d-flex align-items-center gap-2 flex-wrap">
+            <i class="bi {% if result.kind == 'class' %}bi-diagram-2{% else %}bi-code-slash{% endif %}"></i>
+            <a href="{% url 'knowledge_base_page' page_path=result.page_path %}" class="fw-semibold text-decoration-none">{{ result.name }}</a>
+            <span class="text-muted small"><code>{{ result.module }}</code></span>
+            {% if result.stale %}
+            <span class="badge text-bg-warning">stale</span>
+            {% elif not result.authored %}
+            <span class="badge text-bg-secondary">stub</span>
+            {% endif %}
+          </div>
+          {% if result.snippet_html %}
+          <div class="small text-body-secondary mt-1">{{ result.snippet_html }}</div>
+          {% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock content %}

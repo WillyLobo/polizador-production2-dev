@@ -1,14 +1,17 @@
 <h1>ManualReprogramacionView</h1>
-<p><strong>Módulo:</strong> <code>carga/views/ayudaviews.py</code> (líneas 17-18)</p>
+<p><strong>Módulo:</strong> <code>carga/views/ayudaviews.py</code> (líneas 17-18) · hereda de <code>generic.TemplateView</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Página de ayuda estática (<code>ayuda/manual-reprogramacion.html</code>) que explica cómo reprogramar
+una obra: crear el Plan nuevo con rubros que apuntan al <code>rubro_anterior</code>, cómo contar
+<code>trabajos_meses</code> y cómo la matriz de Etapas completa el "hueco" de meses medidos sin
+Etapa. Sólo requiere login.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class ManualReprogramacionView(generic.TemplateView):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>carga:ayuda-reprogramacion</code> (<code>ayuda/reprogramacion/</code>), enlazada desde el menú de ayuda del navbar (<code>templates/navbar.html</code>).</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/PlanDeTrabajos.md">PlanDeTrabajos</a></li>
+<li><a href="../plandetrabajosetapaviews/PlanDeTrabajosEtapaMatriz.md">PlanDeTrabajosEtapaMatriz</a></li>
+</ul>

@@ -2,14 +2,14 @@
 symbol: Provincia
 kind: class
 module: carga/models.py
-lines: 229-241
-signature_hash: sha1:9be96fddd9477620c40240a00defc5d92a76834d
+lines: 314-326
+signature_hash: sha1:dcd1a241b3b1d09a4d04aefb5c008cfd2c8b3591
 authored: true
 ---
 
 # Provincia
 
-**Módulo:** `carga/models.py` (líneas 229-241) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 314-326) · hereda de `models.Model`
 
 ## Propósito
 

@@ -1,5 +1,5 @@
 <h1>PlanDeTrabajosRubro</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 922-994) · hereda de <code>models.Model</code></p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 1172-1259) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
 <p>Un rubro dentro de un Plan de Trabajos (ej. "Vivienda", "Infraestructura"), con su
 presupuesto y, opcionalmente, un <code>ContratoMonto</code> vinculado (<code>monto_base_pesos()</code>/
@@ -16,6 +16,10 @@ numeración continua de Fojas/Etapas (<code>FojaDeMedicion.foja_siguiente()</cod
 en cascada (<a href="../signals/recalcular_acumulado_fojas_siguientes.md">recalcular_acumulado_fojas_siguientes</a>):
 todos ellos filtran por <code>rubro_id__in=chain_ids</code> en vez de por un único rubro, para que
 una reprogramación no reinicie la numeración ni rompa el recálculo hacia adelante.</p>
+<p><code>comparacion_etapas_fojas()</code> pone lado a lado cada Etapa proyectada con la Foja de la misma
+posición y calcula el desfasaje (<code>foja_pct_acumulado() - etapa_pct_proyectado_acumulado()</code>).
+Si se midieron más Fojas que Etapas, las Fojas que sobran se comparan contra la última
+Etapa en lugar de quedar sin par. Lo usa <code>carga/templates/obra/planes-anteriores.html</code>.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class PlanDeTrabajosRubro(models.Model):
 </code></pre>

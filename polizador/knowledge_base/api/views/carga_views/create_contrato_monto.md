@@ -2,14 +2,14 @@
 symbol: create_contrato_monto
 kind: function
 module: api/views/carga_views.py
-lines: 1640-1641
-signature_hash: sha1:c5950e5edbc23653133b1dc9c4b3c9813c1cc2c4
+lines: 1661-1662
+signature_hash: sha1:49e81b328e0b0c38d63d0208b7d37b0e11a8099d
 authored: true
 ---
 
 # create_contrato_monto
 
-**Módulo:** `api/views/carga_views.py` (líneas 1640-1641)
+**Módulo:** `api/views/carga_views.py` (líneas 1661-1662)
 
 ## Propósito
 

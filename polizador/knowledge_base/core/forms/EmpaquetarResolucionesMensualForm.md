@@ -26,4 +26,4 @@ class EmpaquetarResolucionesMensualForm(BaseCommandRunForm):
 
 ## Ver también
 
-- [InstrumentosLegalesResoluciones](../../../secretariador/models/InstrumentosLegalesResoluciones.md)
+- [InstrumentosLegalesResoluciones](../../secretariador/models/InstrumentosLegalesResoluciones.md)

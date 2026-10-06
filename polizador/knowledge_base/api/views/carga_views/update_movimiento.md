@@ -2,14 +2,14 @@
 symbol: update_movimiento
 kind: function
 module: api/views/carga_views.py
-lines: 1932-1937
-signature_hash: sha1:dcef7d75fba467eefa9e861938ceb90f61998826
+lines: 1953-1958
+signature_hash: sha1:dde614b54dc259b046dfe4bed987e14b049f9046
 authored: true
 ---
 
 # update_movimiento
 
-**Módulo:** `api/views/carga_views.py` (líneas 1932-1937)
+**Módulo:** `api/views/carga_views.py` (líneas 1953-1958)
 
 ## Propósito
 

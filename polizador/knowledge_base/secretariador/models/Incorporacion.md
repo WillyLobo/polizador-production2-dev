@@ -2,13 +2,13 @@
 symbol: Incorporacion
 kind: class
 module: secretariador/models.py
-lines: 615-652
-signature_hash: sha1:8954cc927ee72af13491be1f64b9081e6ab2ca2b
+lines: 616-653
+signature_hash: sha1:0c6023595f9e95408e44eda916d37f90059c29c1
 authored: true
 ---
 # Incorporacion
 
-**Módulo:** `secretariador/models.py` (líneas 615-652) · hereda de `models.Model`
+**Módulo:** `secretariador/models.py` (líneas 616-653) · hereda de `models.Model`
 
 ## Propósito
 

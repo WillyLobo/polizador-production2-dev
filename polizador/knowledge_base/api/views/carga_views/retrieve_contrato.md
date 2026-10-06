@@ -2,14 +2,14 @@
 symbol: retrieve_contrato
 kind: function
 module: api/views/carga_views.py
-lines: 1600-1601
-signature_hash: sha1:e5b90d9b1d7afa968f3379704dc3763f0f4eb533
+lines: 1601-1602
+signature_hash: sha1:468ec4b0143aa10053aede0bab5e39f22f43009f
 authored: true
 ---
 
 # retrieve_contrato
 
-**Módulo:** `api/views/carga_views.py` (líneas 1600-1601)
+**Módulo:** `api/views/carga_views.py` (líneas 1601-1602)
 
 ## Propósito
 

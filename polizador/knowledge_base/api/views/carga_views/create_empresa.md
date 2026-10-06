@@ -2,14 +2,14 @@
 symbol: create_empresa
 kind: function
 module: api/views/carga_views.py
-lines: 240-241
-signature_hash: sha1:049f3e3917a9b14bbe9543cb4ed3349facff0987
+lines: 241-242
+signature_hash: sha1:c311adfaa1a2faa0f8267048700e4d39415582a6
 authored: true
 ---
 
 # create_empresa
 
-**Módulo:** `api/views/carga_views.py` (líneas 240-241)
+**Módulo:** `api/views/carga_views.py` (líneas 241-242)
 
 ## Propósito
 

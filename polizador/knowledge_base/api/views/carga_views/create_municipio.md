@@ -2,14 +2,14 @@
 symbol: create_municipio
 kind: function
 module: api/views/carga_views.py
-lines: 538-539
-signature_hash: sha1:038aeed5a0ea002471782181dabd1cd2b3a61ad4
+lines: 539-540
+signature_hash: sha1:38f4a1ec376c465ae49af5713ad89fb8bf27b1bf
 authored: true
 ---
 
 # create_municipio
 
-**Módulo:** `api/views/carga_views.py` (líneas 538-539)
+**Módulo:** `api/views/carga_views.py` (líneas 539-540)
 
 ## Propósito
 

@@ -2,14 +2,14 @@
 symbol: generate_name_memorandum
 kind: function
 module: secretariador/models.py
-lines: 50-64
-signature_hash: sha1:61b5459bc4bfb0c76a6078fc9cc6cfcfec610e87
+lines: 51-65
+signature_hash: sha1:2aa8547ff954e898ba9c6eefae0dfc55078d4f25
 authored: true
 ---
 
 # generate_name_memorandum
 
-**Módulo:** `secretariador/models.py` (líneas 50-64)
+**Módulo:** `secretariador/models.py` (líneas 51-65)
 
 ## Propósito
 

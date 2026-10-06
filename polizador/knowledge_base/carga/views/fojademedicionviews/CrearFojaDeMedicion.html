@@ -1,5 +1,5 @@
 <h1>CrearFojaDeMedicion</h1>
-<p><strong>Módulo:</strong> <code>carga/views/fojademedicionviews.py</code> (líneas 50-187) · hereda de <code>LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.CreateView</code></p>
+<p><strong>Módulo:</strong> <code>carga/views/fojademedicionviews.py</code> (líneas 50-190) · hereda de <code>LogInvalidFormMixin, PermissionRequiredMixin, FormsetViewMixin, generic.CreateView</code></p>
 <h2>Propósito</h2>
 <p>La vista más compleja del módulo <code>fojademedicionviews</code>: sobreescribe <code>get</code>/<code>post</code> en vez
 de apoyarse en el flujo estándar de <code>CreateView</code>, porque el formset de items
@@ -13,8 +13,10 @@ acumulado sin tener que ir a buscarlo.</p>
 (<code>FojaDeMedicionFotoFormset</code>) y, si la Foja resulta ser <code>foja_legacy</code>, vincula los
 Certificados elegidos en el campo <code>foja_legacy_certificados</code> (ver
 <a href="../ajaxviews/certificadolegacywidget.md">certificadolegacywidget</a>) seteándoles
-<code>certificado_foja</code> después de guardar. También setea <code>PlanDeTrabajos.trabajos_fecha_inicio</code>
-la primera vez que se carga (si el form trae ese dato y el Plan todavía no lo tiene).</p>
+<code>certificado_foja</code> después de guardar. <code>_save_fecha_inicio()</code> guarda dos fechas distintas, y cada una sólo si todavía estaba
+vacía: <code>obra_fecha_inicio</code> (el Acta de Inicio, en la <strong>Obra</strong>, pedida en la primera Foja de
+una obra sin esa fecha) y <code>trabajos_fecha_inicio</code> (el reinicio de una reprogramación, en el
+<strong>Plan</strong>).</p>
 <p>Por tener <code>post()</code> totalmente custom (no llama a <code>self.form_invalid()</code>), es el ejemplo
 citado en el propio docstring de <code>LogInvalidFormMixin</code> (<code>core/mixins.py</code>, fuera del
 alcance de esta base de conocimiento — no es <code>models.py</code>/<code>views.py</code>/<code>forms.py</code>) para el
@@ -39,5 +41,11 @@ foto_formset.save()
 <li><a href="../../models/FojaDeMedicionItem.md">FojaDeMedicionItem</a></li>
 <li><a href="../../signals/recalcular_acumulado_fojas_siguientes.md">recalcular_acumulado_fojas_siguientes</a></li>
 <li><a href="../ajaxviews/certificadolegacywidget.md">certificadolegacywidget</a></li>
-<li><a href="../../../core/models/FormValidationError.md">FormValidationError</a></li>
+<li>
+<p><a href="../../../core/models/FormValidationError.md">FormValidationError</a></p>
+</li>
+<li>
+<p><a href="../../models/Obra.md">Obra</a> — <code>obra_fecha_inicio</code>.</p>
+</li>
+<li><a href="../../forms/fojademedicionforms/FojaDeMedicionForm.md">FojaDeMedicionForm</a></li>
 </ul>

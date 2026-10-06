@@ -2,14 +2,14 @@
 symbol: list_prototipos
 kind: function
 module: api/views/carga_views.py
-lines: 1151-1155
-signature_hash: sha1:4880819644d1381fabbcb10acc584e98d8b09219
+lines: 1152-1156
+signature_hash: sha1:e72ece988ce3868e57eedf88cbe6200bb1da1c78
 authored: true
 ---
 
 # list_prototipos
 
-**Módulo:** `api/views/carga_views.py` (líneas 1151-1155)
+**Módulo:** `api/views/carga_views.py` (líneas 1152-1156)
 
 ## Propósito
 

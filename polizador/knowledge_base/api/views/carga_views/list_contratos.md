@@ -2,14 +2,14 @@
 symbol: list_contratos
 kind: function
 module: api/views/carga_views.py
-lines: 1591-1595
-signature_hash: sha1:b25604dd0b8ca07806fb76f1fd5be69cc5b2e8a4
+lines: 1592-1596
+signature_hash: sha1:a807540b789aec3765a1964ecce5979c8ef14365
 authored: true
 ---
 
 # list_contratos
 
-**Módulo:** `api/views/carga_views.py` (líneas 1591-1595)
+**Módulo:** `api/views/carga_views.py` (líneas 1592-1596)
 
 ## Propósito
 

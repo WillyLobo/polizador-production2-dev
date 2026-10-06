@@ -16,6 +16,7 @@
     <code>python manage.py kb_extract carga</code> y después <code>--render</code>.
   </div>
   {% else %}
+  {% include "knowledge_base/_search_form.html" with autofocus=True %}
   <div class="card">
     <div class="card-body">
       {% include "knowledge_base/_tree.html" %}

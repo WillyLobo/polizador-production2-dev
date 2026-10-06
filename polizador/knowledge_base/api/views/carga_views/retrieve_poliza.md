@@ -2,14 +2,14 @@
 symbol: retrieve_poliza
 kind: function
 module: api/views/carga_views.py
-lines: 1815-1819
-signature_hash: sha1:734fd37a638fb4428d96bae2cf1027d1f4dbdf74
+lines: 1836-1840
+signature_hash: sha1:d1ac3802597b398693c43dfcc8a6b28439dbfb8b
 authored: true
 ---
 
 # retrieve_poliza
 
-**Módulo:** `api/views/carga_views.py` (líneas 1815-1819)
+**Módulo:** `api/views/carga_views.py` (líneas 1836-1840)
 
 ## Propósito
 

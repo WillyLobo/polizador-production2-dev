@@ -28,6 +28,7 @@ def _foja_detalle_context(foja):
         for fi in items
     ]
     responsable_institucional = Gerencia.objects.get(gerencia_nombre="Gerencia Operativa").gerencia_autoridad_a_cargo_fk
+    total_pct_incidencia = sum(fi.fojaitem_planitem.planitem_incidencia_pct for fi in items)
     total_pct_anterior = sum(r["pct_anterior"] for r in rows)
     total_pct_mes = sum(fi.fojaitem_pct_avance_mes for fi in items)
     total_pct_acumulado = sum(fi.fojaitem_pct_acumulado for fi in items)
@@ -39,6 +40,7 @@ def _foja_detalle_context(foja):
         "rubro": rubro,
         "rows": rows,
 		"responsable_institucional": responsable_institucional,
+        "total_pct_incidencia": total_pct_incidencia,
         "total_pct_anterior": total_pct_anterior,
         "total_pct_mes": total_pct_mes,
         "total_pct_acumulado": total_pct_acumulado,
@@ -72,7 +74,7 @@ class CrearFojaDeMedicion(LogInvalidFormMixin, PermissionRequiredMixin, FormsetV
 	def _get_rubro(self):
 		rubro_id = self.request.GET.get("rubro") or self.request.POST.get("foja_rubro")
 		if rubro_id:
-			return PlanDeTrabajosRubro.objects.filter(pk=rubro_id).select_related("rubro_plan").first()
+			return PlanDeTrabajosRubro.objects.filter(pk=rubro_id).select_related("rubro_plan__trabajos_obra").first()
 		return None
 
 	def get_form_kwargs(self):
@@ -156,12 +158,15 @@ class CrearFojaDeMedicion(LogInvalidFormMixin, PermissionRequiredMixin, FormsetV
 			certificado.save(update_fields=["certificado_foja"])
 
 	def _save_fecha_inicio(self, form):
-		fecha_inicio = form.cleaned_data.get("trabajos_fecha_inicio")
-		if not fecha_inicio:
-			return
 		plan = self.object.foja_rubro.rubro_plan
-		if not plan.trabajos_fecha_inicio:
-			plan.trabajos_fecha_inicio = fecha_inicio
+		obra = plan.trabajos_obra
+		fecha_inicio = form.cleaned_data.get("obra_fecha_inicio")
+		if fecha_inicio and not obra.obra_fecha_inicio:
+			obra.obra_fecha_inicio = fecha_inicio
+			obra.save(update_fields=["obra_fecha_inicio"])
+		fecha_reinicio = form.cleaned_data.get("trabajos_fecha_inicio")
+		if fecha_reinicio and not plan.trabajos_fecha_inicio:
+			plan.trabajos_fecha_inicio = fecha_reinicio
 			plan.save(update_fields=["trabajos_fecha_inicio"])
 
 	def prepare_formset(self, formset):

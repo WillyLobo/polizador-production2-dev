@@ -2,14 +2,14 @@
 symbol: Obra
 kind: class
 module: carga/models.py
-lines: 323-543
-signature_hash: sha1:e3b2ff46f70d8f242347c1373f68026a8a170e03
+lines: 408-636
+signature_hash: sha1:e61d5aee69b3f9652f912c08bdd6531b59e84092
 authored: true
 ---
 
 # Obra
 
-**Módulo:** `carga/models.py` (líneas 323-543) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 408-636) · hereda de `models.Model`
 
 ## Propósito
 
@@ -17,7 +17,7 @@ El modelo central de `carga`: una obra pública IPDUV, con su empresa contratist
 geográfica (Región/Departamento/Municipio/Localidad, todos M2M salvo Región),
 financiamiento total desglosado por Nación/Provincia/Terceros (pesos y UVI), resolución de
 adjudicación, y las relaciones hacia Contrato/PlanDeTrabajos/Certificado/Póliza que cuelgan
-de ella. Es, con 220 líneas y ~25 métodos/propiedades, el modelo más grande de `carga`
+de ella. Es, con ~230 líneas y ~25 métodos/propiedades, el modelo más grande de `carga`
 junto con `Certificado`.
 
 Dos ideas de diseño no obvias:
@@ -44,6 +44,16 @@ avance real" a los de tipo PARCIAL/HECHO_CONSUMADO/ETAPA (o LEGACY con
 rubro puntual, y si fuera el certificado más reciente "taparía" el % de avance real con un
 0 si se lo tomara como el último sin más.
 
+`obra_fecha_inicio` es la fecha del Acta de Inicio, y hay **una sola** por obra. Los
+reinicios después de una reprogramación se guardan en
+`PlanDeTrabajos.trabajos_fecha_inicio`. Si la obra todavía no tiene fecha de inicio, el
+alta de la primera Foja de Medición la pide (`FojaDeMedicionForm` agrega el campo y
+`CrearFojaDeMedicion` la guarda en la Obra).
+
+El historial (`obra_history`) es un `M2MHistoricalRecords`: además de los campos propios,
+audita los M2M de ubicación (departamentos, municipios, localidades), los inspectores, los
+representantes técnicos y la obra principal.
+
 ## Firma
 
 ```python
@@ -60,7 +70,7 @@ self.object = form.save()
 `recalcular_montos_contrato()` en particular se usa así, disparado por la señal (no a mano):
 
 ```python
-# carga/signals.py:62 (recalcular_montos_obra)
+# carga/signals.py:64 (recalcular_montos_obra)
 instance.contratomonto_contrato.contrato_obra.recalcular_montos_contrato()
 ```
 

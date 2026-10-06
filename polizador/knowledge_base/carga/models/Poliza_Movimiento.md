@@ -2,14 +2,14 @@
 symbol: Poliza_Movimiento
 kind: class
 module: carga/models.py
-lines: 194-211
-signature_hash: sha1:524780e24ff7d59178e35d9b345e2df51544f2d1
+lines: 264-281
+signature_hash: sha1:71a50b530d9637f811bf799ee49b6ea84163f659
 authored: true
 ---
 
 # Poliza_Movimiento
 
-**Módulo:** `carga/models.py` (líneas 194-211) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 264-281) · hereda de `models.Model`
 
 ## Propósito
 

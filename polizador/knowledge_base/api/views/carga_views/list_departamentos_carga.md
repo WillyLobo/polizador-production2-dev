@@ -2,14 +2,14 @@
 symbol: list_departamentos_carga
 kind: function
 module: api/views/carga_views.py
-lines: 463-464
-signature_hash: sha1:dfa34494c37b3653663363c4757ba7b98ef583d5
+lines: 464-465
+signature_hash: sha1:7bc27d7b4e5a11f0de01b690ef063e1dd8a77460
 authored: true
 ---
 
 # list_departamentos_carga
 
-**Módulo:** `api/views/carga_views.py` (líneas 463-464)
+**Módulo:** `api/views/carga_views.py` (líneas 464-465)
 
 ## Propósito
 

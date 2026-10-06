@@ -2,14 +2,14 @@
 symbol: CorteLicencia
 kind: class
 module: personalizador/models.py
-lines: 753-829
-signature_hash: sha1:39381922ce6552dabcd90058ac35d8d2fc92b872
+lines: 792-868
+signature_hash: sha1:ac9df81d2f4b980d781d08890c6fbf29e4fcd932
 authored: true
 ---
 
 # CorteLicencia
 
-**Módulo:** `personalizador/models.py` (líneas 753-829) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 792-868) · hereda de `models.Model`
 
 ## Propósito
 

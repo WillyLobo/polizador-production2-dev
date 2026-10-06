@@ -2,14 +2,14 @@
 symbol: Departamento
 kind: class
 module: personalizador/models.py
-lines: 400-418
-signature_hash: sha1:5c7536e1c9265f3668c5ba99bac002018d33da05
+lines: 439-457
+signature_hash: sha1:7aa6df6551fa73725ceefd09a7da5472cc167645
 authored: true
 ---
 
 # Departamento
 
-**Módulo:** `personalizador/models.py` (líneas 400-418) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 439-457) · hereda de `models.Model`
 
 ## Propósito
 

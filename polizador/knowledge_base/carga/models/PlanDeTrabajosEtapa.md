@@ -2,13 +2,13 @@
 symbol: PlanDeTrabajosEtapa
 kind: class
 module: carga/models.py
-lines: 1032-1090
-signature_hash: sha1:e2a35cec7422d45618a7a37b8fdaa81cf323d0df
+lines: 1297-1358
+signature_hash: sha1:6dff5567394e98bbb7b8b83a482422c22ea7d06e
 authored: true
 ---
 # PlanDeTrabajosEtapa
 
-**Módulo:** `carga/models.py` (líneas 1032-1090) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 1297-1358) · hereda de `models.Model`
 
 ## Propósito
 
@@ -28,6 +28,15 @@ no está asignado en este punto (la señal `pre_save` corre *dentro* de
 `super().save()`, después de este código) — por eso busca "la última etapa de la cadena"
 directamente en vez de reusar el método.
 
+Este cálculo de `etapa_fecha` corre sólo si la Etapa llega **sin** fecha. Cuando
+`PlanDeTrabajosEtapaMatriz` completa los meses que tienen Foja pero no Etapa en el plan
+viejo, crea esas Etapas con `etapa_fecha=foja.foja_periodo`, y `save()` respeta esa fecha
+en vez de seguir la cadena.
+
+Ya no existe `anterior_items_map()` en este modelo. El piso que usa la matriz y
+`PlanDeTrabajosEtapaItem.save()` en la primera Etapa de un rubro reprogramado es el avance
+**real** (`FojaDeMedicion.anterior_items_map()`), no el proyectado del rubro viejo.
+
 ## Firma
 
 ```python
@@ -37,8 +46,13 @@ class PlanDeTrabajosEtapa(models.Model):
 ## Uso real
 
 ```python
-# carga/views/plandetrabajosetapaviews.py:102 (PlanDeTrabajosEtapaMatriz.post)
+# carga/views/plandetrabajosetapaviews.py:214 (PlanDeTrabajosEtapaMatriz.post)
 etapa = PlanDeTrabajosEtapa.objects.create(etapa_rubro=rubro)
+```
+Relleno de un mes medido por Foja pero sin Etapa (la fecha viene dada):
+```python
+# carga/views/plandetrabajosetapaviews.py:210
+etapa = PlanDeTrabajosEtapa(etapa_rubro=rubro, etapa_fecha=gap_fojas[col].foja_periodo)
 ```
 
 ## Ver también

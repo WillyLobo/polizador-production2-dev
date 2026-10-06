@@ -53,6 +53,7 @@ class ObraForm(AddRelatedPermissionMixin, forms.ModelForm):
 			"obra_licitacion_ano",
 			"obra_nomenclatura",
 			"obra_fecha_contrato",
+			"obra_fecha_inicio",
 			"obra_fecha_entrega",
 			"obra_inspector",
 			"obra_representantetecnico",
@@ -147,6 +148,10 @@ class ObraForm(AddRelatedPermissionMixin, forms.ModelForm):
 				"placeholder": "Nomenclatura Catastral"
 			}),
 			"obra_fecha_contrato": DateHTMLWidget(attrs={
+				"type":"date",
+				"class": "form-control",
+			}),
+			"obra_fecha_inicio": DateHTMLWidget(attrs={
 				"type":"date",
 				"class": "form-control",
 			}),

@@ -26,4 +26,4 @@ class ResaveComisionadoForm(BaseCommandRunForm):
 
 ## Ver también
 
-- [ComisionadoSolicitud](../../../secretariador/models/ComisionadoSolicitud.md)
+- [ComisionadoSolicitud](../../secretariador/models/ComisionadoSolicitud.md)

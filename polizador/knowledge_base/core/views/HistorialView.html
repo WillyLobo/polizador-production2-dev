@@ -1,14 +1,26 @@
 <h1>HistorialView</h1>
-<p><strong>Módulo:</strong> <code>core/views.py</code> (líneas 29-47)</p>
+<p><strong>Módulo:</strong> <code>core/views.py</code> (líneas 29-47) · hereda de <code>LoginRequiredMixin, TemplateView</code></p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Endpoint genérico de la barra lateral de historial: <code>/historial/&lt;app_label&gt;/&lt;model_name&gt;/&lt;pk&gt;/</code>
+devuelve el fragmento <code>partials/historial-timeline.html</code> con la línea de tiempo de cambios
+de cualquier objeto auditado con <code>simple_history</code>. <code>base.html</code> lo carga con el tag
+<code>{% historial_sidebar %}</code> en toda página de un solo objeto (<code>object</code>, o <code>historial_object</code>
+si la vista quiere mostrar la historia de otro objeto, como hace la matriz de Etapas con el
+Plan).</p>
+<p>Los chequeos van en orden: modelo inexistente o sin historial → 404, usuario sin permiso
+de ver/cambiar el modelo (<code>can_view_history</code>) → 403, pk inválido o inexistente → 404. La
+línea de tiempo sale de <code>core/history.py</code>: <code>sources_for(obj)</code> junta la historia propia más
+la de los hijos registrados con <code>register(model, children=...)</code> (por ejemplo, Póliza con sus
+movimientos y documentos) y <code>build_timeline()</code> la ordena, agrupa los cambios consecutivos
+del mismo usuario (<code>GROUP_GAP</code>), oculta el hash de la contraseña y saltea los guardados que
+sólo tocan <code>last_login</code>.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class HistorialView(LoginRequiredMixin, TemplateView):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>historial</code> (<code>polizador/urls.py</code>), pedido por AJAX desde la pestaña de historial de <code>base.html</code>.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../models/LoginEvent.md">LoginEvent</a></li>
+<li><a href="../../personalizador/models/CustomUser.md">CustomUser</a> — su historial también audita grupos y permisos (<code>M2MHistoricalRecords</code>).</li>
+</ul>

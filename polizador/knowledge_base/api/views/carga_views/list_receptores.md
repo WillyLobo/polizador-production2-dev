@@ -2,14 +2,14 @@
 symbol: list_receptores
 kind: function
 module: api/views/carga_views.py
-lines: 86-87
-signature_hash: sha1:15baf9f17a304f2c64ac9499ee520862a6534db4
+lines: 87-88
+signature_hash: sha1:70078abfcb8fe5d3f48e2f90e6919e9271779cd3
 authored: true
 ---
 
 # list_receptores
 
-**Módulo:** `api/views/carga_views.py` (líneas 86-87)
+**Módulo:** `api/views/carga_views.py` (líneas 87-88)
 
 ## Propósito
 

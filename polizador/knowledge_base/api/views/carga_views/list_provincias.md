@@ -2,14 +2,14 @@
 symbol: list_provincias
 kind: function
 module: api/views/carga_views.py
-lines: 365-366
-signature_hash: sha1:b455263d11f25eb6c5ad45ff88a9135d2f062bc3
+lines: 366-367
+signature_hash: sha1:f4af946aa2949129334c6a2162484f34ec6a8301
 authored: true
 ---
 
 # list_provincias
 
-**Módulo:** `api/views/carga_views.py` (líneas 365-366)
+**Módulo:** `api/views/carga_views.py` (líneas 366-367)
 
 ## Propósito
 

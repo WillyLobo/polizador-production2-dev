@@ -2,14 +2,14 @@
 symbol: _empresa_datatable_row
 kind: function
 module: api/views/carga_views.py
-lines: 261-279
-signature_hash: sha1:6797adbcd0313219ae44f10371f69a0854401940
+lines: 262-280
+signature_hash: sha1:c99db5b0d77a2960dfa2e6638ac2ecb25ec30e81
 authored: true
 ---
 
 # _empresa_datatable_row
 
-**Módulo:** `api/views/carga_views.py` (líneas 261-279)
+**Módulo:** `api/views/carga_views.py` (líneas 262-280)
 
 ## Propósito
 

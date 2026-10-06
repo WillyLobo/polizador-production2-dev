@@ -2,14 +2,14 @@
 symbol: delete_contrato_digital
 kind: function
 module: api/views/carga_views.py
-lines: 1718-1720
-signature_hash: sha1:e9eb5f04ffabe3e4b835054dafe9c1dbd150cfd6
+lines: 1739-1741
+signature_hash: sha1:5c8ad3dc16d93df97cd9f0cdcf9e1aa613aa5095
 authored: true
 ---
 
 # delete_contrato_digital
 
-**Módulo:** `api/views/carga_views.py` (líneas 1718-1720)
+**Módulo:** `api/views/carga_views.py` (líneas 1739-1741)
 
 ## Propósito
 

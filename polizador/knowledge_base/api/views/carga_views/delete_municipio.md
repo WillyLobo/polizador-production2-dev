@@ -2,14 +2,14 @@
 symbol: delete_municipio
 kind: function
 module: api/views/carga_views.py
-lines: 554-556
-signature_hash: sha1:760877da01dc5236337fbeaab152b072397cda96
+lines: 555-557
+signature_hash: sha1:19b8775ad4b87d0052b1eb426b5233e1db655d4e
 authored: true
 ---
 
 # delete_municipio
 
-**Módulo:** `api/views/carga_views.py` (líneas 554-556)
+**Módulo:** `api/views/carga_views.py` (líneas 555-557)
 
 ## Propósito
 

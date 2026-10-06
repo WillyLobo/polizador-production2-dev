@@ -2,14 +2,14 @@
 symbol: PaginaListaCertificados
 kind: function
 module: carga/views/certificadoviews.py
-lines: 396-399
-signature_hash: sha1:cc023534d8180ae14b9fb978a98cce3eb708df05
+lines: 229-232
+signature_hash: sha1:c317d8fc0ea479342722f8084aaf0d5e31481066
 authored: true
 ---
 
 # PaginaListaCertificados
 
-**Módulo:** `carga/views/certificadoviews.py` (líneas 396-399)
+**Módulo:** `carga/views/certificadoviews.py` (líneas 229-232)
 
 ## Propósito
 

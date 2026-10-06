@@ -2,14 +2,14 @@
 symbol: create_localidad
 kind: function
 module: api/views/carga_views.py
-lines: 621-622
-signature_hash: sha1:cfb6c8eae29305faa647e231e13c48181df56ff1
+lines: 622-623
+signature_hash: sha1:7cfe8b9569f4c53b70d2a5d858ce5d7577bfcc46
 authored: true
 ---
 
 # create_localidad
 
-**Módulo:** `api/views/carga_views.py` (líneas 621-622)
+**Módulo:** `api/views/carga_views.py` (líneas 622-623)
 
 ## Propósito
 

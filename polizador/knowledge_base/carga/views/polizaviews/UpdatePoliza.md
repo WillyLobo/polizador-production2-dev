@@ -2,14 +2,14 @@
 symbol: UpdatePoliza
 kind: class
 module: carga/views/polizaviews.py
-lines: 43-51
-signature_hash: sha1:b833728011b9e0cd425015f308bcc8668cd53ca1
+lines: 65-73
+signature_hash: sha1:fedd1a3a22917c80f0f015ba154abc8cf2649d1a
 authored: true
 ---
 
 # UpdatePoliza
 
-**Módulo:** `carga/views/polizaviews.py` (líneas 43-51) · hereda de `PermissionRequiredMixin, UserKwargsMixin, UserFormsetKwargsMixin, FormsetViewMixin, generic.UpdateView`
+**Módulo:** `carga/views/polizaviews.py` (líneas 65-73) · hereda de `PermissionRequiredMixin, UserKwargsMixin, UserFormsetKwargsMixin, FormsetViewMixin, generic.UpdateView`
 
 ## Propósito
 

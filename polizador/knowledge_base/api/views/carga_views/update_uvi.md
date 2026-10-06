@@ -2,14 +2,14 @@
 symbol: update_uvi
 kind: function
 module: api/views/carga_views.py
-lines: 1748-1753
-signature_hash: sha1:fd389321e95e88843d3365e10932d61d6c6acbf2
+lines: 1769-1774
+signature_hash: sha1:fd0abf0a308dc0b056e2532268b62bc796af47d5
 authored: true
 ---
 
 # update_uvi
 
-**Módulo:** `api/views/carga_views.py` (líneas 1748-1753)
+**Módulo:** `api/views/carga_views.py` (líneas 1769-1774)
 
 ## Propósito
 

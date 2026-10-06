@@ -2,14 +2,14 @@
 symbol: update_region
 kind: function
 module: api/views/carga_views.py
-lines: 420-425
-signature_hash: sha1:fa4e1e014cb3fecf5aba69f919ed8b5963af4e62
+lines: 421-426
+signature_hash: sha1:04d26e6b5788d81bed6166f10001127faa997517
 authored: true
 ---
 
 # update_region
 
-**Módulo:** `api/views/carga_views.py` (líneas 420-425)
+**Módulo:** `api/views/carga_views.py` (líneas 421-426)
 
 ## Propósito
 

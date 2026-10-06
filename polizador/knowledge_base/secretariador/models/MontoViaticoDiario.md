@@ -2,13 +2,13 @@
 symbol: MontoViaticoDiario
 kind: class
 module: secretariador/models.py
-lines: 292-312
-signature_hash: sha1:8b23abf40fea8526414de14f8b3c60dae55c7305
+lines: 293-313
+signature_hash: sha1:a49391c2378016a5efb44fdcd9cde538be6bc426
 authored: true
 ---
 # MontoViaticoDiario
 
-**Módulo:** `secretariador/models.py` (líneas 292-312) · hereda de `models.Model`
+**Módulo:** `secretariador/models.py` (líneas 293-313) · hereda de `models.Model`
 
 ## Propósito
 

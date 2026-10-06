@@ -2,14 +2,14 @@
 symbol: update_prototipo
 kind: function
 module: api/views/carga_views.py
-lines: 1172-1177
-signature_hash: sha1:59e67320d73a3d586ff5319e3abdcff03eaa609a
+lines: 1173-1178
+signature_hash: sha1:b0df1202e261a6134c2c6865e3f8d2ecb594aa40
 authored: true
 ---
 
 # update_prototipo
 
-**Módulo:** `api/views/carga_views.py` (líneas 1172-1177)
+**Módulo:** `api/views/carga_views.py` (líneas 1173-1178)
 
 ## Propósito
 

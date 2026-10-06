@@ -2,14 +2,14 @@
 symbol: list_movimientos
 kind: function
 module: api/views/carga_views.py
-lines: 1912-1915
-signature_hash: sha1:198557abeaaba821b09d27f0ae179450f2f05c09
+lines: 1933-1936
+signature_hash: sha1:ce7bf977d159b8ff37aed7ded1c699368d50cd31
 authored: true
 ---
 
 # list_movimientos
 
-**Módulo:** `api/views/carga_views.py` (líneas 1912-1915)
+**Módulo:** `api/views/carga_views.py` (líneas 1933-1936)
 
 ## Propósito
 

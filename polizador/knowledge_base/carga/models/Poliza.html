@@ -1,18 +1,36 @@
 <h1>Poliza</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 160-192) · hereda de <code>models.Model</code></p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 174-262) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
 <p>Póliza de garantía (ejecución de contrato, sustitución de fondo de reparo, o anticipo
 financiero — ver <code>CONCEPTO</code>) que una Empresa (<code>poliza_tomador</code>) presenta para una Obra
 puntual. El <code>UniqueConstraint</code> sobre (fecha, número, aseguradora, tomador) es la defensa
 contra carga duplicada de la misma póliza física.</p>
+<p><strong>Monto de garantía sugerido.</strong> <code>poliza_contrato</code> (el Contrato de la Obra),
+<code>poliza_financiamiento</code> (N/P/T) y, sólo para el concepto <code>A</code>, <code>poliza_anticipo_pct</code> dan la
+base para sugerir cuánto debería cubrir la Póliza. <code>calcular_monto_a_cubrir()</code> es un
+<code>classmethod</code> puro: 5% fijo (<code>GARANTIA_PCT_FIJO</code>) del monto de contrato para los conceptos
+<code>C</code>/<code>F</code>, y el % de anticipo para <code>A</code>. <code>monto_contrato_base()</code> toma esa base de
+<code>Contrato.monto_total()</code> y devuelve <code>None</code> en Pólizas legacy sin Contrato/Financiamiento
+(entonces no se sugiere nada). El valor es <strong>sólo informativo</strong>: nunca autocompleta
+<code>poliza_monto_pesos</code>/<code>poliza_monto_uvi</code>.</p>
+<p><code>clean()</code> exige que <code>poliza_contrato</code> pertenezca a <code>poliza_obra</code>, exige
+<code>poliza_anticipo_pct</code> cuando el concepto es <code>A</code> y lo pone en <code>None</code> para cualquier otro
+concepto.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class Poliza(models.Model):
 </code></pre>
 <h2>Uso real</h2>
 <p>Se crea/edita desde <code>CrearPoliza</code>/<code>UpdatePoliza</code> (<code>carga/views/polizaviews.py</code>), junto con su primer <code>Poliza_Movimiento</code> vía formset (<code>FormsetViewMixin</code>).</p>
+<p>El monto sugerido se muestra en la ficha (<code>templates/partials/ficha-poliza.html</code>, vía <code>monto_contrato_base</code>/<code>monto_a_cubrir_sugerido</code>) y en el listado de pólizas de la ficha de Obra. Mientras se completa el form, el endpoint <code>monto_garantia_sugerido</code> lo recalcula en vivo llamando directamente al <code>classmethod</code>:</p>
+<pre><code class="language-python"># api/views/carga_views.py (monto_garantia_sugerido)
+&quot;monto_a_cubrir_pesos&quot;: Poliza.calcular_monto_a_cubrir(concepto, monto_contrato_pesos, anticipo_pct),
+</code></pre>
 <h2>Ver también</h2>
 <ul>
 <li><a href="Poliza_Movimiento.md">Poliza_Movimiento</a> — historial de movimientos de esta Póliza.</li>
+<li><a href="PolizaDocumento.md">PolizaDocumento</a> — anexos/adendas adjuntos.</li>
+<li><a href="Contrato.md">Contrato</a> — <code>monto_total()</code> es la base del monto sugerido.</li>
+<li><a href="../../api/views/carga_views/monto_garantia_sugerido.md">monto_garantia_sugerido</a></li>
 <li><a href="Empresa.md">Empresa</a></li>
 <li><a href="Aseguradora.md">Aseguradora</a></li>
 </ul>

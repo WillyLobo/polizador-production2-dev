@@ -2,13 +2,13 @@
 symbol: ReglasViatico
 kind: class
 module: secretariador/models.py
-lines: 321-345
-signature_hash: sha1:43ef40538e15f86d5b583bf4d58fca51cfb8ef1d
+lines: 322-346
+signature_hash: sha1:ac551470b6b7b80a147c0f75f58feaf07520549d
 authored: true
 ---
 # ReglasViatico
 
-**Módulo:** `secretariador/models.py` (líneas 321-345) · hereda de `models.Model`
+**Módulo:** `secretariador/models.py` (líneas 322-346) · hereda de `models.Model`
 
 ## Propósito
 

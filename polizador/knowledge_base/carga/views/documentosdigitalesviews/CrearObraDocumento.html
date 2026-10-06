@@ -1,7 +1,8 @@
 <h1>CrearObraDocumento</h1>
-<p><strong>Módulo:</strong> <code>carga/views/documentosdigitalesviews.py</code> (líneas 60-83) · hereda de <code>PermissionRequiredMixin, generic.CreateView</code></p>
+<p><strong>Módulo:</strong> <code>carga/views/documentosdigitalesviews.py</code> (líneas 66-91) · hereda de <code>PermissionRequiredMixin, generic.CreateView</code></p>
 <h2>Propósito</h2>
 <p>Alta de un documento PDF adjunto a una Obra (<code>ObraDocumento</code>). Si viene <code>?obra=&lt;id&gt;</code>, precarga la Obra destino.</p>
+<p>Exige <code>carga.add_obradocumento</code>. Al terminar vuelve a la ficha de la Obra (<code>carga:estado-obra</code>), no a un listado.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class CrearObraDocumento(PermissionRequiredMixin, generic.CreateView):
 </code></pre>

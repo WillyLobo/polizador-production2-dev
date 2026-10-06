@@ -1,5 +1,5 @@
 <h1>PlanDeTrabajos</h1>
-<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 894-920) · hereda de <code>models.Model</code></p>
+<p><strong>Módulo:</strong> <code>carga/models.py</code> (líneas 1133-1170) · hereda de <code>models.Model</code></p>
 <h2>Propósito</h2>
 <p>El plan de trabajos vigente de una Obra: fecha de vigencia, duración en meses
 (<code>trabajos_meses</code>), y opcionalmente vinculado a un Contrato concreto. Una Obra puede tener
@@ -7,6 +7,15 @@ varios <code>PlanDeTrabajos</code> a lo largo del tiempo (reprogramaciones) — 
 <code>classmethod</code> que devuelve, para cada Obra, solo el más reciente (mayor <code>trabajos_fecha</code>,
 <code>pk</code> como desempate) vía <code>Subquery</code>, y <code>es_vigente()</code> lo usa para chequear una instancia
 puntual.</p>
+<p>Dos campos se malinterpretan fácil en una reprogramación:
+- <code>trabajos_meses</code> es la cantidad de columnas (meses) de la matriz de Etapas proyectadas
+  de cada Rubro, <strong>no</strong> la duración total de la obra. Si el Rubro tiene <code>rubro_anterior</code>,
+  las Etapas nuevas siguen la numeración del rubro viejo. Por eso hay que descontar del
+  plazo total las Etapas que ya tenía el plan anterior (no las Fojas medidas, que pueden ser
+  más). Los meses medidos por Foja que no tenían Etapa se rellenan solos al abrir la matriz
+  y también cuentan dentro de este número.
+- <code>trabajos_fecha_inicio</code> ("Fecha de Reinicio de Obra") se usa sólo para el reinicio
+  después de una reprogramación. El inicio original de la obra es <code>Obra.obra_fecha_inicio</code>.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class PlanDeTrabajos(models.Model):
 </code></pre>

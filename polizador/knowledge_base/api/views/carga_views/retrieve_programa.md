@@ -2,14 +2,14 @@
 symbol: retrieve_programa
 kind: function
 module: api/views/carga_views.py
-lines: 311-312
-signature_hash: sha1:0a6b087aa12c4210db6bd8dc02462371e7fa71fb
+lines: 312-313
+signature_hash: sha1:6438d5aef486111aea38965a10f5e951722a6518
 authored: true
 ---
 
 # retrieve_programa
 
-**Módulo:** `api/views/carga_views.py` (líneas 311-312)
+**Módulo:** `api/views/carga_views.py` (líneas 312-313)
 
 ## Propósito
 

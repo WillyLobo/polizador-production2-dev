@@ -2,14 +2,14 @@
 symbol: create_area
 kind: function
 module: api/views/carga_views.py
-lines: 135-136
-signature_hash: sha1:bd39f918ef587cdd1da735ebcb7ade1ef5e97990
+lines: 136-137
+signature_hash: sha1:c8d71377bbfc8c687aab10d20626c5ab2253ab98
 authored: true
 ---
 
 # create_area
 
-**Módulo:** `api/views/carga_views.py` (líneas 135-136)
+**Módulo:** `api/views/carga_views.py` (líneas 136-137)
 
 ## Propósito
 

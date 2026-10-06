@@ -599,6 +599,16 @@ class GenerarCertificadosDesdeFojaTests(TestCase):
         self.assertEqual(certificado.certificado_tipo, "PARCIAL")
         self.assertEqual(certificado.certificado_foja_id, foja.pk)
 
+    def test_periodo_es_el_de_la_foja_no_el_de_emision(self):
+        nacion = self._crear_financiamiento()
+        self._crear_contratomonto(nacion, pesos=Decimal("1000"))
+        foja = self._crear_foja(date(2026, 9, 30), "10")
+
+        certificado = generar_certificados_desde_foja(foja, "EXP", date(2026, 10, 2))[0]
+
+        self.assertEqual(certificado.certificado_periodo, "09/2026")
+        self.assertEqual(certificado.certificado_periodo_fecha, date(2026, 9, 30))
+
 
 class ResumenCertificacionMensualTests(TestCase):
     """certificacion.resumen_certificacion_mensual: cortes mes/anterior/total y
@@ -973,6 +983,15 @@ class ContratoMontoEntreObrasTests(TestCase):
         # algo derivado de 999999 (el ContratoMonto de la obra ajena).
         self.assertEqual(total_pesos, Decimal("110000"))
 
+    def test_redondea_el_monto_uvi_del_tramo_antes_de_pasarlo_a_pesos(self):
+        # Caso del certificado 16128: 25% de 188679.86 UVI = 47169.965 -> 47169.97 UVI,
+        # y recién ahí * 1431.45 = 67521453.5565 (sin redondear: 67521446.39...).
+        self.assertEqual(ley27397.tramo_monto_uvi(Decimal("25"), Decimal("188679.86")), Decimal("47169.97"))
+        self.assertEqual(
+            ley27397.tramo_monto_uvi(Decimal("25"), Decimal("188679.86")) * Decimal("1431.45"),
+            Decimal("67521453.5565"),
+        )
+
 
 class Ley27397IntegrationTests(Ley27397TestsBase):
     def test_financiamiento_sin_uvi_no_aplica_ley27397(self):
@@ -1033,6 +1052,8 @@ class AnticipoTests(TestCase):
         self.obra.refresh_from_db()
         Uvi.objects.create(uvi_fecha=date(2025, 12, 15), uvi_valor=Decimal("100"))
         Uvi.objects.create(uvi_fecha=date(2026, 2, 1), uvi_valor=Decimal("150"))
+        # Fin de mes del período de los certificados: cotización de la Devolución de Anticipo.
+        Uvi.objects.create(uvi_fecha=date(2026, 2, 28), uvi_valor=Decimal("160"))
 
     def _crear_certificado(self, **kwargs):
         defaults = {
@@ -1191,6 +1212,47 @@ class AnticipoTests(TestCase):
         self.assertEqual(cert.certificado_descuento_anticipo_uvi, Decimal("30.00"))
         self.assertEqual(cert.certificado_descuento_anticipo_pct, Decimal("3.000"))
 
+    def test_descuento_en_pesos_usa_la_cotizacion_de_fin_de_mes_aunque_el_bruto_este_congelado(self):
+        # Anticipo cobrado a 150 $/UVI; bruto congelado (Ley 27397, atraso) a la pactada de 100.
+        self._crear_certificado(
+            certificado_tipo="ANTICIPO", certificado_monto_uvi=Decimal("1000"), certificado_monto_pesos=Decimal("150000")
+        ).save()
+        cert = self._crear_certificado(
+            certificado_tipo="PARCIAL", certificado_monto_uvi=Decimal("2000"), certificado_monto_pesos=Decimal("200000")
+        )
+
+        certificacion.aplicar_descuento_anticipo(cert)
+
+        # tasa = 1000 / 10000 = 0.1 -> 200 UVI, valorizados a 160 (fin de feb), no a 100 ni a 150.
+        self.assertEqual(cert.certificado_descuento_anticipo_uvi, Decimal("200.00"))
+        self.assertEqual(cert.certificado_descuento_anticipo_pesos, Decimal("32000.00"))
+        self.assertEqual(cert.certificado_descuento_anticipo_pct, Decimal("10.000"))
+
+    def test_descuento_sin_cotizacion_de_fin_de_mes_lanza_validation_error(self):
+        self._crear_certificado(
+            certificado_tipo="ANTICIPO", certificado_monto_uvi=Decimal("1000"), certificado_monto_pesos=Decimal("150000")
+        ).save()
+        cert = self._crear_certificado(
+            certificado_tipo="PARCIAL", certificado_fecha=date(2026, 3, 5), certificado_monto_uvi=Decimal("2000")
+        )
+
+        with self.assertRaises(ValidationError):
+            certificacion.aplicar_descuento_anticipo(cert)
+
+    def test_financiamiento_sin_uvi_descuenta_sobre_el_pool_en_pesos(self):
+        self._crear_certificado(
+            certificado_tipo="ANTICIPO", certificado_financiamiento="P", certificado_monto_pesos=Decimal("50000")
+        ).save()
+        cert = self._crear_certificado(
+            certificado_tipo="PARCIAL", certificado_financiamiento="P", certificado_monto_pesos=Decimal("20000")
+        )
+
+        certificacion.aplicar_descuento_anticipo(cert)
+
+        # tasa = 50000 / 200000 = 0.25 -> 5000; no necesita cotización UVI.
+        self.assertEqual(cert.certificado_descuento_anticipo_pesos, Decimal("5000.00"))
+        self.assertEqual(cert.certificado_descuento_anticipo_uvi, Decimal("0"))
+
     def test_rechaza_anticipo_que_supere_el_30_por_ciento_pendiente(self):
         with self.assertRaises(ValidationError):
             certificacion.validar_anticipo_nuevo(self.obra, "N", Decimal("35"))
@@ -1242,6 +1304,7 @@ class HechoConsumadoTests(TestCase):
         Uvi.objects.create(uvi_fecha=date(2025, 12, 15), uvi_valor=Decimal("100"))
         # Cotización de "hoy" muy distinta a la pactada, para poder distinguir cuál se usó.
         Uvi.objects.create(uvi_fecha=date(2026, 6, 1), uvi_valor=Decimal("500"))
+        Uvi.objects.create(uvi_fecha=date(2026, 6, 30), uvi_valor=Decimal("520"))
 
     def _crear_certificado(self, **kwargs):
         defaults = {
@@ -1300,6 +1363,8 @@ class HechoConsumadoTests(TestCase):
 
         # saldo pendiente = 1000, saldo a certificar = 10000 -> tasa 0.1 -> descuento = 1000*0.1=100.
         self.assertEqual(certificado.certificado_descuento_anticipo_uvi, Decimal("100.00"))
+        # Sin Foja, el período es el mes de certificado_fecha: fin de junio (520), no 500.
+        self.assertEqual(certificado.certificado_descuento_anticipo_pesos, Decimal("52000.00"))
 
 
 class ContratoTramoPagoTests(TestCase):
@@ -2293,6 +2358,41 @@ class RetencionAdobeTests(TestCase):
 
         self.assertEqual(certificado.certificado_retencion_adobe_monto_pesos(), Decimal("0"))
         self.assertEqual(certificado.certificado_retencion_adobe_monto_uvi(), Decimal("0"))
+
+
+class ImporteAbonarTests(TestCase):
+    """Importe a abonarse: bruto - descuento de anticipo - Fondo de Reparo (sobre el bruto).
+    certificado_monto_cobrar, en cambio, no descuenta el Fondo de Reparo."""
+
+    def setUp(self):
+        empresa = Empresa.objects.create(empresa_nombre="Empresa Test")
+        programa = Programa.objects.create(programa_nombre="Programa Test")
+        self.rubro = CertificadoRubro.objects.create(
+            certificadorubro_nombre="Infraestructura", certificadorubro_nombre_corto="I"
+        )
+        self.obra = Obra.objects.create(
+            obra_nombre="Obra Test", obra_empresa=empresa, obra_programa=programa, obra_expediente="EXP-ABONAR",
+        )
+
+    def test_descuenta_anticipo_y_fondo_de_reparo_sobre_el_bruto(self):
+        # Valores del certificado 16128: bruto 47.169,97 UVI, anticipo 20%, FR 5%.
+        certificado = Certificado.objects.create(
+            certificado_obra=self.obra,
+            certificado_tipo="LEGACY",
+            certificado_financiamiento="P",
+            certificado_rubro_db=self.rubro,
+            certificado_expediente="EXP",
+            certificado_monto_uvi=Decimal("47169.97"),
+            certificado_monto_pesos=Decimal("67521446.40"),
+            certificado_descuento_anticipo_uvi=Decimal("9433.99"),
+            certificado_descuento_anticipo_pesos=Decimal("14734005.58"),
+        )
+        certificado.refresh_from_db()
+
+        # FR = 5% del bruto (2.358,50 UVI / 3.376.072,32 $), no del neto de anticipo.
+        self.assertEqual(certificado.certificado_importe_abonar_uvi(), Decimal("35377.48"))
+        self.assertEqual(certificado.certificado_importe_abonar_pesos(), Decimal("49411368.50"))
+        self.assertEqual(certificado.certificado_monto_cobrar_uvi, Decimal("37735.98"))
 
 
 class RetencionAdobeContextoTextoTests(TestCase):

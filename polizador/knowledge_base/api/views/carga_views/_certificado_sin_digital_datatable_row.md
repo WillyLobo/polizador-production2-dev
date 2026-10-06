@@ -2,14 +2,14 @@
 symbol: _certificado_sin_digital_datatable_row
 kind: function
 module: api/views/carga_views.py
-lines: 1424-1437
-signature_hash: sha1:e51f6848c978214fa05b2eba4bc778fa9c6cf8ff
+lines: 1425-1438
+signature_hash: sha1:c2b248862f68a51478169d08b10df8e2b09a81d1
 authored: true
 ---
 
 # _certificado_sin_digital_datatable_row
 
-**Módulo:** `api/views/carga_views.py` (líneas 1424-1437)
+**Módulo:** `api/views/carga_views.py` (líneas 1425-1438)
 
 ## Propósito
 

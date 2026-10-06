@@ -2,14 +2,14 @@
 symbol: update_programa
 kind: function
 module: api/views/carga_views.py
-lines: 323-328
-signature_hash: sha1:ea83547240bca6007d5a068161cae81194577e46
+lines: 324-329
+signature_hash: sha1:c8e26ef7937ddfc3894a31f682476565773d368e
 authored: true
 ---
 
 # update_programa
 
-**Módulo:** `api/views/carga_views.py` (líneas 323-328)
+**Módulo:** `api/views/carga_views.py` (líneas 324-329)
 
 ## Propósito
 

@@ -2,14 +2,14 @@
 symbol: retrieve_provincia
 kind: function
 module: api/views/carga_views.py
-lines: 371-372
-signature_hash: sha1:f46d42116c23f906832238f807c9381e52487414
+lines: 372-373
+signature_hash: sha1:d824058c9a7000c83fe6ef004263c223d782d087
 authored: true
 ---
 
 # retrieve_provincia
 
-**Módulo:** `api/views/carga_views.py` (líneas 371-372)
+**Módulo:** `api/views/carga_views.py` (líneas 372-373)
 
 ## Propósito
 

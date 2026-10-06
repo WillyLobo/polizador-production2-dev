@@ -2,14 +2,14 @@
 symbol: update_rubro
 kind: function
 module: api/views/carga_views.py
-lines: 1209-1214
-signature_hash: sha1:01d6fa1d4d5d6401e05a5018f277234dd9416f27
+lines: 1210-1215
+signature_hash: sha1:f8c8a2edf5bf99ca596c3a5740a2e0f841606b99
 authored: true
 ---
 
 # update_rubro
 
-**Módulo:** `api/views/carga_views.py` (líneas 1209-1214)
+**Módulo:** `api/views/carga_views.py` (líneas 1210-1215)
 
 ## Propósito
 

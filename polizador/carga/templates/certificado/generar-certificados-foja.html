@@ -56,7 +56,7 @@
               <th>Monto UVI</th>
               <th>Descuento Anticipo $</th>
               <th>Descuento Anticipo UVI</th>
-              <th>A Cobrar $</th>
+              <th>A Abonar $</th>
             </tr>
           </thead>
           <tbody>
@@ -72,7 +72,7 @@
               <td>{{fila.certificado.certificado_monto_uvi|floatformat:2}}</td>
               <td>{{fila.certificado.certificado_descuento_anticipo_pesos|floatformat:2}}</td>
               <td>{{fila.certificado.certificado_descuento_anticipo_uvi|floatformat:2}}</td>
-              <td>{{fila.monto_cobrar_pesos|floatformat:2}}</td>
+              <td>{{fila.certificado.certificado_importe_abonar_pesos|floatformat:2}}</td>
             </tr>
             {% endfor %}
           </tbody>

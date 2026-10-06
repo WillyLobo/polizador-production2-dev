@@ -2,14 +2,14 @@
 symbol: UpdateCertificado
 kind: class
 module: carga/views/certificadoviews.py
-lines: 354-365
-signature_hash: sha1:78f4ba143e7751cd30899f1f5b61b60edef73979
+lines: 187-198
+signature_hash: sha1:5355d74011655c4ee2a05f14c49cb71bc89942a8
 authored: true
 ---
 
 # UpdateCertificado
 
-**Módulo:** `carga/views/certificadoviews.py` (líneas 354-365) · hereda de `PermissionRequiredMixin, generic.UpdateView`
+**Módulo:** `carga/views/certificadoviews.py` (líneas 187-198) · hereda de `PermissionRequiredMixin, generic.UpdateView`
 
 ## Propósito
 

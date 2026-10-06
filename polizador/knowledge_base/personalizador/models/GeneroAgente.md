@@ -2,14 +2,14 @@
 symbol: GeneroAgente
 kind: class
 module: personalizador/models.py
-lines: 180-189
-signature_hash: sha1:c93aa71e5255e355bc2d34c5afdac5435ff8a8bb
+lines: 219-228
+signature_hash: sha1:0c6770b7b06b4609baa3eb97e4c60670eb2b864e
 authored: true
 ---
 
 # GeneroAgente
 
-**Módulo:** `personalizador/models.py` (líneas 180-189) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 219-228) · hereda de `models.Model`
 
 ## Propósito
 

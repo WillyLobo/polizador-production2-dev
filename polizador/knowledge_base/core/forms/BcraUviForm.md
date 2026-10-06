@@ -27,4 +27,4 @@ class BcraUviForm(BaseCommandRunForm):
 
 ## Ver también
 
-- [Uvi](../../../carga/models/Uvi.md)
+- [Uvi](../../carga/models/Uvi.md)

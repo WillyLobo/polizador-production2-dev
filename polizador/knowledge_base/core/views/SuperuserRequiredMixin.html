@@ -1,5 +1,5 @@
 <h1>SuperuserRequiredMixin</h1>
-<p><strong>Módulo:</strong> <code>core/views.py</code> (líneas 22-24) · hereda de <code>LoginRequiredMixin, UserPassesTestMixin</code></p>
+<p><strong>Módulo:</strong> <code>core/views.py</code> (líneas 24-26) · hereda de <code>LoginRequiredMixin, UserPassesTestMixin</code></p>
 <h2>Propósito</h2>
 <p>El mixin de permisos de toda página <code>/administracion/*</code>: <code>LoginRequiredMixin</code> + <code>UserPassesTestMixin</code> con <code>test_func</code> comprobando <code>request.user.is_superuser</code>. Todas las vistas de este archivo lo usan — es el patrón estándar del proyecto para "solo superusers" (ver CLAUDE.md).</p>
 <h2>Firma</h2>

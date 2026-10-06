@@ -2,14 +2,14 @@
 symbol: delete_programa
 kind: function
 module: api/views/carga_views.py
-lines: 333-335
-signature_hash: sha1:3f056fbd21aabc6a2cd3c29080c9d45b0a833786
+lines: 334-336
+signature_hash: sha1:8822d1555aceae4a7d94f460a489cf4fc3760bec
 authored: true
 ---
 
 # delete_programa
 
-**Módulo:** `api/views/carga_views.py` (líneas 333-335)
+**Módulo:** `api/views/carga_views.py` (líneas 334-336)
 
 ## Propósito
 

@@ -2,14 +2,14 @@
 symbol: CertificadoRubro
 kind: class
 module: carga/models.py
-lines: 600-611
-signature_hash: sha1:eb0ec1cb5ce7fcedd060844262142d91ac48d705
+lines: 693-704
+signature_hash: sha1:cac96662f08f0581d98d2214cca88c76553d62db
 authored: true
 ---
 
 # CertificadoRubro
 
-**Módulo:** `carga/models.py` (líneas 600-611) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 693-704) · hereda de `models.Model`
 
 ## Propósito
 

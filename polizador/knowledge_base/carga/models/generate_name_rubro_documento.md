@@ -2,14 +2,14 @@
 symbol: generate_name_rubro_documento
 kind: function
 module: carga/models.py
-lines: 73-78
-signature_hash: sha1:a77ce226d468a1990b378b487965abb67422cf6f
+lines: 81-86
+signature_hash: sha1:39e66ce6c4e9a57d68ec5f42f6831a80eccf7176
 authored: true
 ---
 
 # generate_name_rubro_documento
 
-**Módulo:** `carga/models.py` (líneas 73-78)
+**Módulo:** `carga/models.py` (líneas 81-86)
 
 ## Propósito
 

@@ -2,14 +2,14 @@
 symbol: update_receptor
 kind: function
 module: api/views/carga_views.py
-lines: 104-109
-signature_hash: sha1:b616c9fda214c8c74bff3455120d8a7abcc8a360
+lines: 105-110
+signature_hash: sha1:d57de34065c0592126ec6829cbf95d7891ce838d
 authored: true
 ---
 
 # update_receptor
 
-**Módulo:** `api/views/carga_views.py` (líneas 104-109)
+**Módulo:** `api/views/carga_views.py` (líneas 105-110)
 
 ## Propósito
 

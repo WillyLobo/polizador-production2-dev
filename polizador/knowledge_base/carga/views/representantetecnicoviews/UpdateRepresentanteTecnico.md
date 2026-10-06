@@ -27,4 +27,4 @@ class UpdateRepresentanteTecnico(PermissionRequiredMixin, generic.UpdateView):
 
 ## Ver también
 
-- [RepresentanteTecnico](../../models/RepresentanteTecnico.md)
+- [RepresentanteTecnico](../../../personalizador/models/RepresentanteTecnico.md)

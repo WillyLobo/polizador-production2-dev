@@ -2,14 +2,14 @@
 symbol: Empresa
 kind: class
 module: carga/models.py
-lines: 135-158
-signature_hash: sha1:97d01cd97275361e5e1e672791e2e420a5af578d
+lines: 143-166
+signature_hash: sha1:926ae9fc9b8b3a6933f468fc0fa3094c0275a17a
 authored: true
 ---
 
 # Empresa
 
-**Módulo:** `carga/models.py` (líneas 135-158) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 143-166) · hereda de `models.Model`
 
 ## Propósito
 

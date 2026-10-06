@@ -2,14 +2,14 @@
 symbol: Departamento
 kind: class
 module: carga/models.py
-lines: 259-273
-signature_hash: sha1:46146712b5f1cf60ffc33899a03c5df20bab073a
+lines: 344-358
+signature_hash: sha1:5ff4ba663724a9c83054a23463590848d961cbd6
 authored: true
 ---
 
 # Departamento
 
-**Módulo:** `carga/models.py` (líneas 259-273) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 344-358) · hereda de `models.Model`
 
 ## Propósito
 

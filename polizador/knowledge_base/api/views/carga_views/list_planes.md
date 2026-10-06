@@ -2,14 +2,14 @@
 symbol: list_planes
 kind: function
 module: api/views/carga_views.py
-lines: 1551-1555
-signature_hash: sha1:b9328d17c5625a816fa5ddf47c0bba823c355801
+lines: 1552-1556
+signature_hash: sha1:331e4ab1d28e16bec321825a77228aa9f6bf7f0e
 authored: true
 ---
 
 # list_planes
 
-**Módulo:** `api/views/carga_views.py` (líneas 1551-1555)
+**Módulo:** `api/views/carga_views.py` (líneas 1552-1556)
 
 ## Propósito
 

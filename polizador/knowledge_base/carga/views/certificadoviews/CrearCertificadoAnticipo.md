@@ -2,14 +2,14 @@
 symbol: CrearCertificadoAnticipo
 kind: class
 module: carga/views/certificadoviews.py
-lines: 282-312
-signature_hash: sha1:7592dc00d0285d85dda7cb0c74e4638550b585cf
+lines: 115-145
+signature_hash: sha1:c6d86320d0ecd7308c7dc4e6ac75d55cc88701c8
 authored: true
 ---
 
 # CrearCertificadoAnticipo
 
-**Módulo:** `carga/views/certificadoviews.py` (líneas 282-312) · hereda de `PermissionRequiredMixin, generic.CreateView`
+**Módulo:** `carga/views/certificadoviews.py` (líneas 115-145) · hereda de `PermissionRequiredMixin, generic.CreateView`
 
 ## Propósito
 

@@ -1,14 +1,23 @@
 <h1>monto_garantia_sugerido</h1>
 <p><strong>Módulo:</strong> <code>api/views/carga_views.py</code> (líneas 1630-1645)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p><code>GET /v1/api/contrato/{id}/monto-garantia/?financiamiento=&amp;concepto=&amp;anticipo_pct=</code>.
+Devuelve el monto de contrato para ese financiamiento (<code>Contrato.monto_total</code>, en pesos y
+en UVI) y el monto sugerido a cubrir por una garantía de ese concepto
+(<code>Poliza.calcular_monto_a_cubrir</code>). Existe para la vista previa en vivo del form de Póliza
+<strong>antes de guardar</strong>, cuando todavía no hay instancia sobre la que llamar
+<code>monto_a_cubrir_sugerido()</code>. Es sólo referencia y no escribe nada. Requiere permiso sobre
+<code>Contrato</code> (<code>require_model_perm</code>). Responde con el schema <code>GarantiaSugeridaOut</code>.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def monto_garantia_sugerido(request, id: int, financiamiento: str, concepto: str, anticipo_pct: Decimal=Decimal('0')):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<p><em>(sin candidatos detectados por grep)</em></p>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<pre><code class="language-javascript">// carga/static/carga/js/poliza-garantia-calc.js
+$.get(&quot;/v1/api/contrato/&quot; + contratoId + &quot;/monto-garantia/&quot;, params)
+</code></pre>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../../carga/models/Poliza.md">Poliza</a></li>
+<li><a href="../../../carga/models/Contrato.md">Contrato</a></li>
+<li><a href="../../../carga/forms/polizaforms/PolizaForm.md">PolizaForm</a></li>
+</ul>

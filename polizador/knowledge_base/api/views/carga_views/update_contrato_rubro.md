@@ -2,14 +2,14 @@
 symbol: update_contrato_rubro
 kind: function
 module: api/views/carga_views.py
-lines: 1677-1682
-signature_hash: sha1:6276e640b7db932cee504ace337cf6a1b3979da0
+lines: 1698-1703
+signature_hash: sha1:06968e9779ea20939794ae4b8a83e6cf471c9c6b
 authored: true
 ---
 
 # update_contrato_rubro
 
-**Módulo:** `api/views/carga_views.py` (líneas 1677-1682)
+**Módulo:** `api/views/carga_views.py` (líneas 1698-1703)
 
 ## Propósito
 

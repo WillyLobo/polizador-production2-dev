@@ -2,14 +2,14 @@
 symbol: datatable_localidades_filtro_funcion
 kind: function
 module: api/views/carga_views.py
-lines: 691-699
-signature_hash: sha1:2e7953d3c07985fb334d8cf1eba59ea4ca69f608
+lines: 692-700
+signature_hash: sha1:bd699db9bd96b694b71676f963a8bbce6e2fed1b
 authored: true
 ---
 
 # datatable_localidades_filtro_funcion
 
-**Módulo:** `api/views/carga_views.py` (líneas 691-699)
+**Módulo:** `api/views/carga_views.py` (líneas 692-700)
 
 ## Propósito
 

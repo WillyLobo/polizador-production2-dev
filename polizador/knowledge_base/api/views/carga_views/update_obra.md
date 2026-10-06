@@ -2,14 +2,14 @@
 symbol: update_obra
 kind: function
 module: api/views/carga_views.py
-lines: 793-808
-signature_hash: sha1:bec7ad056ced82c3f72a155570543b402166da2f
+lines: 794-809
+signature_hash: sha1:3ce74431ea9d1025f1375367d4df247899f80c18
 authored: true
 ---
 
 # update_obra
 
-**Módulo:** `api/views/carga_views.py` (líneas 793-808)
+**Módulo:** `api/views/carga_views.py` (líneas 794-809)
 
 ## Propósito
 

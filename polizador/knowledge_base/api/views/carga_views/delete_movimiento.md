@@ -2,14 +2,14 @@
 symbol: delete_movimiento
 kind: function
 module: api/views/carga_views.py
-lines: 1942-1944
-signature_hash: sha1:ca270a50f5efec6c6c5ec1d34edef20252088063
+lines: 1963-1965
+signature_hash: sha1:62bed0378c5025eeb1b29b147d56c1e4f77a5f5b
 authored: true
 ---
 
 # delete_movimiento
 
-**Módulo:** `api/views/carga_views.py` (líneas 1942-1944)
+**Módulo:** `api/views/carga_views.py` (líneas 1963-1965)
 
 ## Propósito
 

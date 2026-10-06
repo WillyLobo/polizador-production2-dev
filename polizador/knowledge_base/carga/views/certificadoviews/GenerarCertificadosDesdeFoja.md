@@ -2,14 +2,14 @@
 symbol: GenerarCertificadosDesdeFoja
 kind: class
 module: carga/views/certificadoviews.py
-lines: 230-278
-signature_hash: sha1:7f81cb086103b9943a3ec9d3895a2aa286f0af02
+lines: 73-111
+signature_hash: sha1:dd889c375efc61d312da7c7b7fefcac178d22c3b
 authored: true
 ---
 
 # GenerarCertificadosDesdeFoja
 
-**Módulo:** `carga/views/certificadoviews.py` (líneas 230-278) · hereda de `PermissionRequiredMixin, generic.View`
+**Módulo:** `carga/views/certificadoviews.py` (líneas 73-111) · hereda de `PermissionRequiredMixin, generic.View`
 
 ## Propósito
 
@@ -21,6 +21,11 @@ explícitamente (`"confirmar" in request.POST`) — un patrón de "vista previa 
 confirmar" para una operación que no es trivialmente reversible. Atrapa tanto
 `ValidationError` (reglas de negocio) como `Ley27397Error` (fallas del cálculo de
 indexación) y las muestra como error de formulario en vez de un 500.
+
+La tabla de la vista previa ya no calcula aparte el "monto a cobrar". Cada fila es
+`{"certificado": c}` y el template usa `certificado_importe_abonar_pesos()`/`_uvi()` del
+propio modelo, que también descuentan el Fondo de Reparo. Así la vista previa muestra lo
+mismo que la hoja impresa.
 
 ## Firma
 

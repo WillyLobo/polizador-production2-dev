@@ -2,14 +2,14 @@
 symbol: retrieve_conjunto
 kind: function
 module: api/views/carga_views.py
-lines: 1480-1481
-signature_hash: sha1:80a2d14e03fee89a411064d86a9c37e783786ab9
+lines: 1481-1482
+signature_hash: sha1:f89fda13f89b40dae4b0856f4517419485bf1a35
 authored: true
 ---
 
 # retrieve_conjunto
 
-**Módulo:** `api/views/carga_views.py` (líneas 1480-1481)
+**Módulo:** `api/views/carga_views.py` (líneas 1481-1482)
 
 ## Propósito
 

@@ -2,14 +2,14 @@
 symbol: list_empresas
 kind: function
 module: api/views/carga_views.py
-lines: 221-229
-signature_hash: sha1:93f4926201416ba4958fe6ffa7ffd62afb4226be
+lines: 222-230
+signature_hash: sha1:7bd31e2dc64289798cfe3406509e9452f6a48902
 authored: true
 ---
 
 # list_empresas
 
-**Módulo:** `api/views/carga_views.py` (líneas 221-229)
+**Módulo:** `api/views/carga_views.py` (líneas 222-230)
 
 ## Propósito
 

@@ -2,14 +2,14 @@
 symbol: Receptor
 kind: class
 module: carga/models.py
-lines: 87-101
-signature_hash: sha1:0be9de63e1a1a029945f42a96e885dbb4da5fdb1
+lines: 95-109
+signature_hash: sha1:03a38de2142f7eea926a3675c3981643393070ae
 authored: true
 ---
 
 # Receptor
 
-**Módulo:** `carga/models.py` (líneas 87-101) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 95-109) · hereda de `models.Model`
 
 ## Propósito
 

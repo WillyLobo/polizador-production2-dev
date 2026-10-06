@@ -2,13 +2,13 @@
 symbol: KnowledgeBasePageView
 kind: class
 module: core/views.py
-lines: 95-118
-signature_hash: sha1:e5f9bf11e9482a12f7f139823ecd39f3c92ac528
+lines: 118-141
+signature_hash: sha1:0eb26fd4f430c698d08e6d2ef3f6178a71830451
 authored: true
 ---
 # KnowledgeBasePageView
 
-**Módulo:** `core/views.py` (líneas 95-118) · hereda de `SuperuserRequiredMixin, TemplateView`
+**Módulo:** `core/views.py` (líneas 118-141) · hereda de `SuperuserRequiredMixin, TemplateView`
 
 ## Propósito
 

@@ -2,14 +2,14 @@
 symbol: EliminarPoliza
 kind: class
 module: carga/views/polizaviews.py
-lines: 13-18
-signature_hash: sha1:efe6eafbac3d922ae2121b2c21815402c140886f
+lines: 35-40
+signature_hash: sha1:2777a7778e26010e653add381aa7d7f1b985088b
 authored: true
 ---
 
 # EliminarPoliza
 
-**Módulo:** `carga/views/polizaviews.py` (líneas 13-18) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
+**Módulo:** `carga/views/polizaviews.py` (líneas 35-40) · hereda de `PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView`
 
 ## Propósito
 

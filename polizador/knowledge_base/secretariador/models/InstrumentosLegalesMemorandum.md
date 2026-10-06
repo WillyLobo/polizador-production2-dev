@@ -2,14 +2,14 @@
 symbol: InstrumentosLegalesMemorandum
 kind: class
 module: secretariador/models.py
-lines: 94-135
-signature_hash: sha1:9195747ea569e20819e38002bd1e11ed3c52492d
+lines: 95-136
+signature_hash: sha1:f1c58e0a7f0a3c4765c8f442d87abb364fa62254
 authored: true
 ---
 
 # InstrumentosLegalesMemorandum
 
-**Módulo:** `secretariador/models.py` (líneas 94-135) · hereda de `models.Model`
+**Módulo:** `secretariador/models.py` (líneas 95-136) · hereda de `models.Model`
 
 ## Propósito
 

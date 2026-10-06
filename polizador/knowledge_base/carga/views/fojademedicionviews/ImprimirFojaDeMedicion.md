@@ -2,13 +2,13 @@
 symbol: ImprimirFojaDeMedicion
 kind: class
 module: carga/views/fojademedicionviews.py
-lines: 277-286
-signature_hash: sha1:315111725cf7b8935d92fc940d81c4f5450a492c
+lines: 280-289
+signature_hash: sha1:5cccf251fb8fae6772430ca6ee9ab2dfbb29b854
 authored: true
 ---
 # ImprimirFojaDeMedicion
 
-**Módulo:** `carga/views/fojademedicionviews.py` (líneas 277-286) · hereda de `PermissionRequiredMixin, generic.DetailView`
+**Módulo:** `carga/views/fojademedicionviews.py` (líneas 280-289) · hereda de `PermissionRequiredMixin, generic.DetailView`
 
 ## Propósito
 

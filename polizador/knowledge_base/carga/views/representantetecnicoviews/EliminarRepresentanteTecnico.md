@@ -29,4 +29,4 @@ Enlazada desde el listado y la ficha de RepresentanteTecnico (botón de borrar d
 
 ## Ver también
 
-- [RepresentanteTecnico](../../models/RepresentanteTecnico.md)
+- [RepresentanteTecnico](../../../personalizador/models/RepresentanteTecnico.md)

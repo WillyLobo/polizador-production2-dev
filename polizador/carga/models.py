@@ -1,5 +1,5 @@
 from datetime import datetime
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal
 from django.utils import timezone
 from wsgiref.validate import validator
 from django.db import models
@@ -447,6 +447,11 @@ class Obra(models.Model):
     obra_nomenclatura_plano = models.CharField("Número de Plano", max_length=10, blank=True, null=True)
     obra_fecha_entrega = models.DateField("Fecha de Entrega de la Obra", blank=True, null=True)
     obra_fecha_contrato = models.DateField("Fecha de Firma de Contrato", blank=True, null=True)
+    obra_fecha_inicio = models.DateField(
+        "Fecha de Inicio de Obra", blank=True, null=True,
+        help_text="Fecha de firma del Acta de Inicio. Es única por obra: los reinicios por "
+                   "reprogramación se registran en cada Plan de Trabajos.",
+    )
     obra_expediente_costo = models.CharField("Expediente de Costos", max_length=18, blank=True, null=True)
     obra_inspector = models.ManyToManyField("personalizador.Agente", related_name="obra_inspector", verbose_name="Inspector", blank=True)
     obra_representantetecnico = models.ManyToManyField("personalizador.RepresentanteTecnico", related_name="obra_representantetecnico", verbose_name="Representante Técnico", blank=True)
@@ -904,6 +909,28 @@ class Certificado(models.Model):
             return Decimal("0")
         return (self.certificado_monto_uvi or Decimal("0")) * self.certificado_fondoreparo_pct / Decimal("100")
 
+    # "Importe a abonarse" del certificado: neto de devolución/descuento de anticipo Y de
+    # Fondo de Reparo. No es certificado_monto_cobrar: ese GeneratedField no descuenta el
+    # Fondo de Reparo porque se usa como monto certificado (acumulados y saldo de la obra,
+    # reportes, legacy), y el Fondo de Reparo se retiene pero sigue siendo obra certificada.
+    # Se calcula desde los campos (no desde el GeneratedField) para que también sirva en
+    # certificados todavía sin guardar (previsualización de generación desde Foja).
+    def certificado_importe_abonar_pesos(self):
+        neto = (
+            (self.certificado_monto_pesos or Decimal("0"))
+            - (self.certificado_devolucion_monto or Decimal("0"))
+            - (self.certificado_descuento_anticipo_pesos or Decimal("0"))
+        )
+        return neto - self.certificado_fondoreparo_monto_pesos().quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+    def certificado_importe_abonar_uvi(self):
+        neto = (
+            (self.certificado_monto_uvi or Decimal("0"))
+            - (self.certificado_devolucion_monto_uvi or Decimal("0"))
+            - (self.certificado_descuento_anticipo_uvi or Decimal("0"))
+        )
+        return neto - self.certificado_fondoreparo_monto_uvi().quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
     # Decreto 654/2015: retención del tres por mil (inciso c) del Artículo 10 de la Ley) sobre el
     # valor bruto de los certificados de obras que usan ladrillos de adobe como insumo. Los ladrillos
     # son insumo del rubro Vivienda, así que se decide por el rubro del certificado y no por un dato
@@ -924,6 +951,15 @@ class Certificado(models.Model):
         if not self.certificado_aplica_retencion_adobe:
             return Decimal("0")
         return (self.certificado_monto_uvi or Decimal("0")) * self.RETENCION_ADOBE_PCT / Decimal("100")
+
+    @property
+    def certificado_periodo_fecha(self):
+        """Mes que certifica este certificado: el período de su Foja de Medición si sale de
+        una (PARCIAL/ETAPA), no la fecha de emisión — una foja de septiembre se certifica
+        en octubre. Sin Foja (ANTICIPO/HECHO_CONSUMADO) cae a certificado_fecha."""
+        if self.certificado_foja_id:
+            return self.certificado_foja.foja_periodo
+        return self.certificado_fecha
 
     @property
     def certificado_pct_principal(self):
@@ -1112,7 +1148,8 @@ class PlanDeTrabajos(models.Model):
                    "quedaron sin Etapa en el plan anterior se completan solos al abrir la matriz y "
                    "también cuentan dentro de este número.",
     )
-    trabajos_fecha_inicio = models.DateField("Fecha de Inicio de Obra", null=True, blank=True)
+    # Sólo el reinicio de una reprogramación: el inicio original es Obra.obra_fecha_inicio.
+    trabajos_fecha_inicio = models.DateField("Fecha de Reinicio de Obra", null=True, blank=True)
     trabajos_contrato = models.ForeignKey("Contrato", verbose_name="Contrato Vinculado", on_delete=models.SET_NULL, null=True, blank=True, related_name="planes_trabajo")
     trabajos_history = HistoricalRecords()
 

@@ -1,17 +1,22 @@
 <h1>_texto_certificado</h1>
 <p><strong>Módulo:</strong> <code>carga/views/textoresolucionviews.py</code> (líneas 170-191)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Decide qué texto corresponde a un Certificado concreto. Devuelve
+<code>(bloques, faltantes, plantilla, error)</code>:
+- Si el certificado tiene un snapshot editado a mano (<code>certificado_texto_resolucion</code> con
+  <code>bloques</code>), lo usa tal cual (ya está renderizado) con <code>plantilla=None</code>.
+- Si no, busca la plantilla del alcance (<code>TextoResolucionCertificado.para_certificado</code>) y
+  la renderiza contra <code>contexto_certificado()</code>, reportando las variables sin resolver. Un
+  <code>TextoResolucionError</code> vuelve como <code>error</code>.
+- Sin snapshot ni plantilla devuelve <code>(None, set(), None, None)</code>, y quien llama muestra
+  <a href="_sin_plantilla.md">_sin_plantilla</a>.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">def _texto_certificado(certificado):
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/textoresolucionviews.py:213</code> — <code>bloques, faltantes, plantilla, error = _texto_certificado(certificado)</code></li>
-<li><code>carga/views/textoresolucionviews.py:256</code> — <code>bloques, faltantes, plantilla, error = _texto_certificado(certificado)</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Punto de entrada común de <a href="editar_texto_resolucion_certificado.md">editar_texto_resolucion_certificado</a> y <a href="resolucion_certificado_docx.md">resolucion_certificado_docx</a>.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="../../models/TextoResolucionCertificado.md">TextoResolucionCertificado</a></li>
+<li><a href="../../models/Certificado.md">Certificado</a></li>
+</ul>

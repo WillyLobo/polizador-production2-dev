@@ -2,14 +2,14 @@
 symbol: NuevoCertificadoMenu
 kind: class
 module: carga/views/certificadoviews.py
-lines: 348-350
-signature_hash: sha1:4ca8ebfe08727ee9526f1247df2086e63748627f
+lines: 181-183
+signature_hash: sha1:4bf651959b08bce36cab08bc8ee4edac01a04cfa
 authored: true
 ---
 
 # NuevoCertificadoMenu
 
-**Módulo:** `carga/views/certificadoviews.py` (líneas 348-350) · hereda de `PermissionRequiredMixin, generic.TemplateView`
+**Módulo:** `carga/views/certificadoviews.py` (líneas 181-183) · hereda de `PermissionRequiredMixin, generic.TemplateView`
 
 ## Propósito
 

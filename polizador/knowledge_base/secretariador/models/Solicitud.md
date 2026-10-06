@@ -2,13 +2,13 @@
 symbol: Solicitud
 kind: class
 module: secretariador/models.py
-lines: 402-468
-signature_hash: sha1:f078df4241d4585a7b36dcd7b7ca36485e0d1bd4
+lines: 403-469
+signature_hash: sha1:6d7991b9c5949194694cf6c394d8b2e5b7d2b174
 authored: true
 ---
 # Solicitud
 
-**Módulo:** `secretariador/models.py` (líneas 402-468) · hereda de `models.Model`
+**Módulo:** `secretariador/models.py` (líneas 403-469) · hereda de `models.Model`
 
 ## Propósito
 

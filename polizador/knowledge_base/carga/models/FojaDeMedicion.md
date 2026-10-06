@@ -2,13 +2,13 @@
 symbol: FojaDeMedicion
 kind: class
 module: carga/models.py
-lines: 1145-1222
-signature_hash: sha1:16cb80f0b6f128677bd1fe0c8b332210b573c29a
+lines: 1413-1490
+signature_hash: sha1:31c6f532c5ee8f9b1b038808067318980253abe8
 authored: true
 ---
 # FojaDeMedicion
 
-**Módulo:** `carga/models.py` (líneas 1145-1222) · hereda de `models.Model`
+**Módulo:** `carga/models.py` (líneas 1413-1490) · hereda de `models.Model`
 
 ## Propósito
 

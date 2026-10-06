@@ -66,6 +66,9 @@ from secretariador.models import InstrumentosLegalesDecretos
 
 DEBUG_DIR = Path("/tmp/sgt_debug_decretos")
 
+# Un .xlsx es un ZIP: los primeros bytes de cualquier export válido son siempre estos.
+XLSX_MAGIC = b"PK\x03\x04"
+
 GOBIERNO_DIGITAL_BASE = "https://gobiernodigital.chaco.gob.ar"
 SGT_LAUNCH_URL = f"{GOBIERNO_DIGITAL_BASE}/aplicacion/22/launch"
 SGT_TRAMITES_BASE = "https://app.chaco.gob.ar/tramites"
@@ -313,10 +316,23 @@ class Command(BaseCommand):
             with page.expect_download(timeout=20000) as download_info:
                 page.click("#BTNEXPORT")
             download = download_info.value
-            return Path(download.path()).read_bytes()
+            data = Path(download.path()).read_bytes()
         except Exception:
             self._debug_dump(page, "05_export_failed")
             raise
+        if not data.startswith(XLSX_MAGIC):
+            # El SGT a veces responde al export con una página HTML (sesión vencida, error del
+            # servidor, bloqueo del WAF): la descarga "anda" pero no es un .xlsx. Se corta acá,
+            # antes de que _guardar_excel_media lo cachee y envenene las corridas siguientes.
+            self._debug_dump(page, "05_export_not_xlsx")
+            DEBUG_DIR.mkdir(parents=True, exist_ok=True)
+            raw_path = DEBUG_DIR / "05_export_not_xlsx.bin"
+            raw_path.write_bytes(data)
+            raise CommandError(
+                f"El SGT devolvió algo que no es un .xlsx ({len(data)} bytes, empieza con "
+                f"{data[:60]!r}). Contenido crudo guardado en {raw_path}."
+            )
+        return data
 
     def _guardar_excel_media(self, data, prefix):
         """Guarda el Excel exportado en MEDIA_ROOT/sgt_exports/, para reuso en corridas futuras
@@ -336,7 +352,19 @@ class Command(BaseCommand):
         if not directorio.is_dir():
             return None
         candidatos = sorted(directorio.glob(f"{prefix}_*.xlsx"))
-        return candidatos[-1] if candidatos else None
+        if not candidatos:
+            return None
+        ultimo = candidatos[-1]
+        with ultimo.open("rb") as f:
+            if f.read(len(XLSX_MAGIC)) != XLSX_MAGIC:
+                # Export corrupto de una corrida anterior: se ignora y se baja uno nuevo, en vez
+                # de caer a uno más viejo (que daría un listado desactualizado sin avisar).
+                self.stdout.write(
+                    f"{self.style.WARNING('Ignorando Excel cacheado inválido (no es .xlsx):')} "
+                    f"{ultimo}"
+                )
+                return None
+        return ultimo
 
     def _listar_decretos(self, data):
         import openpyxl

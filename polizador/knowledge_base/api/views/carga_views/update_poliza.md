@@ -2,14 +2,14 @@
 symbol: update_poliza
 kind: function
 module: api/views/carga_views.py
-lines: 1830-1835
-signature_hash: sha1:4b19310064b7ec4b3f4955cf3ec67ea9c80eee43
+lines: 1851-1856
+signature_hash: sha1:79ce2301c755384d47b2352bb4486521fbee3c68
 authored: true
 ---
 
 # update_poliza
 
-**Módulo:** `api/views/carga_views.py` (líneas 1830-1835)
+**Módulo:** `api/views/carga_views.py` (líneas 1851-1856)
 
 ## Propósito
 

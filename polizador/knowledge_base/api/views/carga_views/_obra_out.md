@@ -2,14 +2,14 @@
 symbol: _obra_out
 kind: function
 module: api/views/carga_views.py
-lines: 725-759
-signature_hash: sha1:8d447afa68c4d905d70345f4201b929b05fd4990
+lines: 726-760
+signature_hash: sha1:8cca38c720b8786a325fc3e48687d21d16a7a432
 authored: true
 ---
 
 # _obra_out
 
-**Módulo:** `api/views/carga_views.py` (líneas 725-759)
+**Módulo:** `api/views/carga_views.py` (líneas 726-760)
 
 ## Propósito
 

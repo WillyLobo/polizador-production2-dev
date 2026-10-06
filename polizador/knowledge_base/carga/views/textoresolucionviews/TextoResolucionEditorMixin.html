@@ -1,17 +1,29 @@
 <h1>TextoResolucionEditorMixin</h1>
 <p><strong>Módulo:</strong> <code>carga/views/textoresolucionviews.py</code> (líneas 42-119)</p>
 <h2>Propósito</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>GET/POST compartido por el alta y la edición de plantillas: el form de alcance
+(<a href="../../forms/textoresolucionforms/TextoResolucionForm.md">TextoResolucionForm</a>), el formset
+de bloques (<code>BloqueFormSet</code>, prefijo <code>bloques</code>) y el panel de vista previa contra un
+certificado de muestra (<a href="../../forms/textoresolucionforms/CertificadoMuestraForm.md">CertificadoMuestraForm</a>).
+Las subclases sólo definen <code>view_type</code>, <code>title</code> y <code>bloques_iniciales()</code>.</p>
+<p>En el <code>post</code> se validan <strong>siempre</strong> los tres forms (sin <code>and</code> encadenado), para que la
+página vuelva con todos los errores marcados juntos. Si llega <code>accion=previsualizar</code> y el
+formset es válido, re-renderiza con la vista previa sin guardar. Si no, guarda el form con
+<code>commit=False</code>, le asigna <code>formset.bloques_validos()</code> a <code>textoresolucion_bloques</code> y
+redirige al listado.</p>
+<p>La vista previa es un POST normal que re-renderiza la página, no htmx: es el mismo ida y
+vuelta del resto del sistema y se testea con <code>self.client.post</code>. htmx está cargado en
+<code>base.html</code>, pero ninguna plantilla lo usa todavía y no hay un patrón de CSRF establecido.
+<code>get_context_data</code> agrega <code>VARIABLES</code>/<code>FILTROS_DOC</code> para la paleta del editor.</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class TextoResolucionEditorMixin:
 </code></pre>
 <h2>Uso real</h2>
-<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
-<ul>
-<li><code>carga/views/textoresolucionviews.py:123</code> — <code>class CrearTextoResolucion(TextoResolucionEditorMixin, PermissionRequiredMixin, generic.CreateView):</code></li>
-<li><code>carga/views/textoresolucionviews.py:134</code> — <code>class UpdateTextoResolucion(TextoResolucionEditorMixin, PermissionRequiredMixin, generic.UpdateView):</code></li>
-</ul>
-<h2>Flujo de datos</h2>
-<p><em>(pendiente de autoría)</em></p>
+<p>Base de <a href="CrearTextoResolucion.md">CrearTextoResolucion</a> y <a href="UpdateTextoResolucion.md">UpdateTextoResolucion</a>.</p>
 <h2>Ver también</h2>
-<p><em>(pendiente de autoría)</em></p>
+<ul>
+<li><a href="_previsualizar.md">_previsualizar</a></li>
+<li><a href="../../forms/textoresolucionforms/BaseBloqueFormSet.md">BaseBloqueFormSet</a></li>
+<li><a href="../../models/TextoResolucionCertificado.md">TextoResolucionCertificado</a></li>
+<li><a href="../ayudaviews/ManualTextosResolucionView.md">ManualTextosResolucionView</a></li>
+</ul>

@@ -2,14 +2,14 @@
 symbol: create_contrato
 kind: function
 module: api/views/carga_views.py
-lines: 1606-1607
-signature_hash: sha1:ccac06764a9f7bd33ebbd4b61b531eff8c3ff3ed
+lines: 1607-1608
+signature_hash: sha1:68a42491419e63e6cf1b75788f00e3c360887c17
 authored: true
 ---
 
 # create_contrato
 
-**Módulo:** `api/views/carga_views.py` (líneas 1606-1607)
+**Módulo:** `api/views/carga_views.py` (líneas 1607-1608)
 
 ## Propósito
 

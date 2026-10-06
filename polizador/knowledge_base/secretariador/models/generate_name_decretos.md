@@ -2,14 +2,14 @@
 symbol: generate_name_decretos
 kind: function
 module: secretariador/models.py
-lines: 17-31
-signature_hash: sha1:d2b52324ae4b00e2f5232a6811c76a9100606159
+lines: 18-32
+signature_hash: sha1:a6a37eea7db8ba6d5cd0e364654d754a77d0c7dc
 authored: true
 ---
 
 # generate_name_decretos
 
-**Módulo:** `secretariador/models.py` (líneas 17-31)
+**Módulo:** `secretariador/models.py` (líneas 18-32)
 
 ## Propósito
 

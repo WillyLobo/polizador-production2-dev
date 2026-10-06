@@ -2,14 +2,14 @@
 symbol: ObraForm
 kind: class
 module: carga/forms/obraforms.py
-lines: 20-170
-signature_hash: sha1:2e582a44a334b21e3cb5f3dbd2273315d207f2c6
+lines: 20-175
+signature_hash: sha1:ed35e74751190a625bcbca5baa9eedaad3634e2c
 authored: true
 ---
 
 # ObraForm
 
-**Módulo:** `carga/forms/obraforms.py` (líneas 20-170) · hereda de `AddRelatedPermissionMixin, forms.ModelForm`
+**Módulo:** `carga/forms/obraforms.py` (líneas 20-175) · hereda de `AddRelatedPermissionMixin, forms.ModelForm`
 
 ## Propósito
 
@@ -21,6 +21,8 @@ campo `obra_georeferencia`: no usa el `PointField` de GIS directamente, sino un
 nativo de `django.contrib.gis` para un `PointField` no encaja con el resto del layout
 Bootstrap del sitio, y este par convierte lat/lng planos a `Point` en la limpieza del
 form.
+
+Incluye `obra_fecha_inicio` (Acta de Inicio, con `DateHTMLWidget`).
 
 ## Firma
 
@@ -35,4 +37,4 @@ class ObraForm(AddRelatedPermissionMixin, forms.ModelForm):
 ## Ver también
 
 - [Obra](../../models/Obra.md)
-- [AddRelatedPermissionMixin](AddRelatedPermissionMixin.md)
+- [AddRelatedPermissionMixin](../mixins/AddRelatedPermissionMixin.md)

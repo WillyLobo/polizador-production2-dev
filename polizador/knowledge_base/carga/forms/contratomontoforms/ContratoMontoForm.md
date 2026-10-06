@@ -28,4 +28,4 @@ Form base de `ContratoMontoFormset` (`carga/forms/contratoforms.py`).
 ## Ver también
 
 - [ContratoMonto](../../models/ContratoMonto.md)
-- [ContratoMontoFormset](ContratoMontoFormset.md)
+- [ContratoMontoFormset](../contratoforms/ContratoMontoFormset.md)

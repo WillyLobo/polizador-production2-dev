@@ -1,5 +1,5 @@
 <h1>FojaDeMedicionForm</h1>
-<p><strong>Módulo:</strong> <code>carga/forms/fojademedicionforms.py</code> (líneas 10-124) · hereda de <code>forms.ModelForm</code></p>
+<p><strong>Módulo:</strong> <code>carga/forms/fojademedicionforms.py</code> (líneas 10-136) · hereda de <code>forms.ModelForm</code></p>
 <h2>Propósito</h2>
 <p>El form más elaborado de <code>carga</code> junto con <code>ObraForm</code>. Dos campos no-modelo:
 <code>foja_numero_manual</code> (solo usado si <code>foja_legacy</code>, ver <code>clean()</code>) y
@@ -8,12 +8,15 @@
 <p><code>__init__</code> hace bastante trabajo dinámico: acota <code>foja_rubro</code> a rubros de Planes vigentes;
 si ya hay un rubro elegido (en <code>self.data</code> o <code>self.initial</code>), calcula los inspectores
 candidatos (Agentes que inspeccionan la Obra dueña del rubro) y precarga
-<code>foja_inspector</code> con todos ellos por defecto en una Foja nueva; y si el Rubro elegido
-todavía no tiene <code>trabajos_fecha_inicio</code> en su Plan, agrega dinámicamente un campo
-<code>trabajos_fecha_inicio</code> (con label distinto según sea la primera vez o un "reinicio" tras
-reprogramación) — campo que la vista (<code>CrearFojaDeMedicion._save_fecha_inicio</code>) después
-usa para setear esa fecha en el Plan.</p>
-<p><code>clean()</code> solo aplica si <code>foja_legacy=True</code>: valida que el número manual sea menor al
+<code>foja_inspector</code> con todos ellos por defecto en una Foja nueva. Además agrega hasta dos
+campos de fecha obligatorios: <code>obra_fecha_inicio</code> ("Fecha de Inicio de Obra") si la
+<strong>Obra</strong> todavía no tiene Acta de Inicio, y <code>trabajos_fecha_inicio</code> ("Fecha de Reinicio de
+Obra") si el Rubro viene de una reprogramación (<code>rubro_anterior</code>) y su Plan todavía no tiene
+esa fecha. La vista (<code>CrearFojaDeMedicion._save_fecha_inicio</code>) guarda cada una en su
+modelo.</p>
+<p>En una Foja nueva que <strong>no</strong> es legacy, <code>clean()</code> rechaza un <code>foja_rubro</code> sin Etapas
+Proyectadas en su Plan: primero se cargan las etapas y después se miden Fojas.</p>
+<p>El resto de <code>clean()</code> aplica sólo si <code>foja_legacy=True</code>: valida que el número manual sea menor al
 <code>rubro_foja_numero_inicial</code> configurado (si no, hay que configurar ese campo primero en
 el Rubro) y que no choque con una Foja ya cargada para ese número — y si todo está bien,
 setea <code>self.instance.foja_numero</code> directamente (saltándose la auto-numeración de la
@@ -27,5 +30,10 @@ señal, que ya de por sí no toca las fojas legacy).</p>
 <ul>
 <li><a href="../../models/FojaDeMedicion.md">FojaDeMedicion</a></li>
 <li><a href="../../signals/auto_increment_foja_numero.md">auto_increment_foja_numero</a></li>
-<li><a href="../../views/ajaxviews/certificadolegacywidget.md">certificadolegacywidget</a></li>
+<li>
+<p><a href="../../views/ajaxviews/certificadolegacywidget.md">certificadolegacywidget</a></p>
+</li>
+<li>
+<p><a href="../../models/PlanDeTrabajosEtapa.md">PlanDeTrabajosEtapa</a> — debe existir al menos una para el Rubro.</p>
+</li>
 </ul>

@@ -2,14 +2,14 @@
 symbol: Agente
 kind: class
 module: personalizador/models.py
-lines: 36-178
-signature_hash: sha1:ff65a904827e4e0bc110472d0c3f184481377ff3
+lines: 75-217
+signature_hash: sha1:ce79eca8c139778a2c56664433c3b13999f7c35e
 authored: true
 ---
 
 # Agente
 
-**Módulo:** `personalizador/models.py` (líneas 36-178) · hereda de `models.Model`
+**Módulo:** `personalizador/models.py` (líneas 75-217) · hereda de `models.Model`
 
 ## Propósito
 

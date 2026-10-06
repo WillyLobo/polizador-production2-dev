@@ -20,7 +20,7 @@ el financiamiento/ContratoMonto sobre el que se está certificando.
 import calendar
 from dataclasses import dataclass
 from datetime import date
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal
 
 from carga.models import ContratoMonto, FojaDeMedicion, PlanDeTrabajosEtapa, Uvi
 
@@ -227,14 +227,23 @@ def tramos_a_pesos(tramos, financiamiento):
     pesos, usando el monto base en UVI del ContratoMonto de la etapa dueña de cada tramo
     (que puede diferir del ContratoMonto que se está certificando si el rubro fue
     reprogramado y el tramo pertenece a una etapa de una versión anterior con su propio
-    ContratoMonto)."""
+    ContratoMonto).
+
+    El monto en UVI de cada tramo se redondea a centavos ANTES de multiplicarlo por la
+    cotización (tramo_monto_uvi), para que el monto en pesos impreso sea exactamente
+    UVI impreso * cotización, verificable a mano."""
     total = Decimal("0")
     for tramo in tramos:
         contratomonto_lote = _contratomonto_de_rubro(tramo.lote.etapa_rubro, financiamiento)
         if contratomonto_lote is None or not contratomonto_lote.contratomonto_uvi:
             raise SinMontoBaseUviError(tramo.lote)
-        total += (tramo.pct / Decimal("100")) * contratomonto_lote.contratomonto_uvi * tramo.tasa_valor
+        total += tramo_monto_uvi(tramo.pct, contratomonto_lote.contratomonto_uvi) * tramo.tasa_valor
     return total
+
+
+def tramo_monto_uvi(pct, contratomonto_uvi):
+    """Monto en UVI de un tramo (pct del monto UVI del ContratoMonto), redondeado a centavos."""
+    return (pct / Decimal("100") * contratomonto_uvi).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
 
 def certificado_monto_pesos_foja(foja, contratomonto):

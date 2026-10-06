@@ -2,14 +2,14 @@
 symbol: retrieve_empresa
 kind: function
 module: api/views/carga_views.py
-lines: 234-235
-signature_hash: sha1:74d20ae1976dcba4a4be1a56d1eb94fe52369f76
+lines: 235-236
+signature_hash: sha1:0252829029d7bc67de960fcd8870509e4b8d07fb
 authored: true
 ---
 
 # retrieve_empresa
 
-**Módulo:** `api/views/carga_views.py` (líneas 234-235)
+**Módulo:** `api/views/carga_views.py` (líneas 235-236)
 
 ## Propósito
 

@@ -2,14 +2,14 @@
 symbol: list_regiones
 kind: function
 module: api/views/carga_views.py
-lines: 402-403
-signature_hash: sha1:b32f8f66ac4ef20f3d7c984e77c907b23c9a6490
+lines: 403-404
+signature_hash: sha1:23ba4a4b455e3ddb0866dcabe17c201bb98cb216
 authored: true
 ---
 
 # list_regiones
 
-**Módulo:** `api/views/carga_views.py` (líneas 402-403)
+**Módulo:** `api/views/carga_views.py` (líneas 403-404)
 
 ## Propósito
 
