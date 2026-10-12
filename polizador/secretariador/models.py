@@ -606,11 +606,19 @@ class ComisionadoSolicitud(models.Model):
         total = self.viaticos_computado() + self.comisionadosolicitud_combustible + self.comisionadosolicitud_gastos + self.comisionadosolicitud_pasaje
         return total
     
-    def save(self, *args, **kwargs):
+    def recalcular_campos_derivados(self):
+        """
+        Recalcula en memoria los campos derivados (días, viático diario, computado y
+        total), sin guardar. Lo usa save() y también el comando resave_comisionado,
+        que necesita comparar los valores guardados contra los recalculados.
+        """
         self.comisionadosolicitud_cantidad_de_dias = self.get_origin().solicitud_cantidad_de_dias
         self.comisionadosolicitud_viatico_diario = self.valor_viatico_dia()
         self.comisionadosolicitud_viatico_computado = self.viaticos_computado()
         self.comisionadosolicitud_viatico_total = self.viaticos_total()
+
+    def save(self, *args, **kwargs):
+        self.recalcular_campos_derivados()
         super(ComisionadoSolicitud, self).save(*args, **kwargs)
 
 class Incorporacion(models.Model):

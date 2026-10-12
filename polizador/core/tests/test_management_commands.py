@@ -173,10 +173,15 @@ class CopiarBucketDevFormTest(TestCase):
 
 
 class ResaveComisionadoFormTest(TestCase):
-    def test_takes_no_arguments(self):
-        form = ResaveComisionadoForm(data={})
-        assert form.is_valid()
-        assert form.to_argv() == []
+    def test_defaults_to_check(self):
+        form = ResaveComisionadoForm()
+        assert form.fields["mode"].initial == "check"
+
+    def test_modes_map_to_flags(self):
+        for mode, argv in (("check", ["--check"]), ("dry_run", ["--dry-run"]), ("apply", [])):
+            form = ResaveComisionadoForm(data={"mode": mode})
+            assert form.is_valid(), form.errors
+            assert form.to_argv() == argv
 
 
 class EmpaquetarResolucionesMensualFormTest(TestCase):

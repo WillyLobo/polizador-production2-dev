@@ -745,3 +745,72 @@ class InvalidarTextoIncorporacionTest(InvalidarTextoActuacionSignalsTestMixin, T
         self.solicitud.solicitud_actuacion_numero = 42
         self.solicitud.solicitud_texto_actuacion = None
         self.solicitud.save()  # no debe tirar excepción aunque no haya texto que invalidar
+
+
+class ResaveComisionadoCommandTest(InvalidarTextoActuacionSignalsTestMixin, TestCase):
+    """`resave_comisionado` debe detectar comisionados con campos derivados
+    desactualizados, mostrar el antes/después, y guardar solo esos."""
+
+    def setUp(self):
+        super().setUp()
+        self.ok = self.ComisionadoSolicitud.objects.create(
+            comisionadosolicitud_foreign=self.solicitud, comisionadosolicitud_nombre=self.agente,
+            comisionadosolicitud_colaborador=False, comisionadosolicitud_chofer=False,
+        )
+        self.roto = self.ComisionadoSolicitud.objects.create(
+            comisionadosolicitud_foreign=self.solicitud, comisionadosolicitud_nombre=self.solicitante,
+            comisionadosolicitud_colaborador=False, comisionadosolicitud_chofer=False,
+        )
+        self.total_correcto = self.roto.comisionadosolicitud_viatico_total
+        # Simula un registro que se cargó sin pasar por save().
+        self.ComisionadoSolicitud.objects.filter(pk=self.roto.pk).update(comisionadosolicitud_viatico_total=999)
+        # Texto editado a mano, que crear los comisionados invalidó.
+        self.solicitud.solicitud_texto_actuacion = {"parrafos": ["a mano"], "articulo_uno": "x", "articulo_dos": []}
+        self.solicitud.save(update_fields=["solicitud_texto_actuacion"])
+
+    def _run(self, *args):
+        from django.core.management import call_command
+        out, err = io.StringIO(), io.StringIO()
+        call_command("resave_comisionado", *args, stdout=out, stderr=err)
+        return out.getvalue(), err.getvalue()
+
+    def _historial(self, comisionado):
+        return comisionado.comisionadosolicitud_history.count()
+
+    def test_check_solo_cuenta(self):
+        out, _ = self._run("--check")
+        self.assertIn("1 con diferencias, 1 sin cambios, 0 error(es)", out)
+        self.assertNotIn(f"#{self.roto.pk}", out)
+        self.roto.refresh_from_db()
+        self.assertEqual(self.roto.comisionadosolicitud_viatico_total, 999)
+
+    def test_dry_run_muestra_antes_y_despues_sin_guardar(self):
+        historial = self._historial(self.roto)
+        out, _ = self._run("--dry-run")
+        self.assertIn(f"#{self.roto.pk}", out)
+        self.assertIn(f"Viatico Total 999.00 -> {self.total_correcto:.2f}", out)
+        self.assertNotIn(f"#{self.ok.pk} ", out)
+        self.roto.refresh_from_db()
+        self.assertEqual(self.roto.comisionadosolicitud_viatico_total, 999)
+        self.assertEqual(self._historial(self.roto), historial)
+
+    def test_aplicar_guarda_solo_los_que_difieren(self):
+        historial_ok = self._historial(self.ok)
+        with self.assertLogs("secretariador.management.commands.resave_comisionado", "INFO") as logs:
+            out, _ = self._run()
+        self.assertIn("1 con diferencias (1 guardado(s)), 1 sin cambios", out)
+        self.assertTrue(any(f"#{self.roto.pk}" in linea for linea in logs.output))
+
+        self.roto.refresh_from_db()
+        self.assertEqual(self.roto.comisionadosolicitud_viatico_total, self.total_correcto)
+        ultimo = self.roto.comisionadosolicitud_history.first()
+        self.assertEqual(ultimo.history_change_reason, "resave_comisionado: recálculo de campos derivados")
+        self.assertEqual(self._historial(self.ok), historial_ok)
+
+    def test_sin_diferencias_no_invalida_texto_editado(self):
+        self.ComisionadoSolicitud.objects.filter(pk=self.roto.pk).update(
+            comisionadosolicitud_viatico_total=self.total_correcto,
+        )
+        self._run()
+        self.solicitud.refresh_from_db()
+        self.assertIsNotNone(self.solicitud.solicitud_texto_actuacion)

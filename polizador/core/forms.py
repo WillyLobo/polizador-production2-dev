@@ -157,11 +157,8 @@ class FixBucketContentTypeForm(BaseCommandRunForm):
         return argv
 
 
-class ResaveComisionadoForm(BaseCommandRunForm):
-    """El comando `resave_comisionado` no toma argumentos."""
-
-    def to_argv(self):
-        return []
+class ResaveComisionadoForm(DryRunCheckApplyForm):
+    pass
 
 
 class EmpaquetarResolucionesMensualForm(BaseCommandRunForm):
