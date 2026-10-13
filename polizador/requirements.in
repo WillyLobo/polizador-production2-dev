@@ -1,5 +1,5 @@
 Bottleneck==1.6.0
-Django==6.0.8
+Django==6.1.2
 django-allauth==65.19.7
 django-anymail==15.2
 django-auth-ldap==5.3.0
@@ -13,10 +13,10 @@ django-simple-history==3.13.0
 django-storages==1.14.6
 docxcompose==2.2.0
 docxtpl==0.20.2
-gcsfs==2026.8.1
-google-api-core==2.40.0
+gcsfs==2026.10.0
+google-api-core==2.42.0
 google-cloud-documentai==3.16.0
-google-cloud-storage==3.16.0
+google-cloud-storage==3.17.0
 google-cloud-vision==3.16.0
 gunicorn==26.2.0
 Jinja2==3.1.6
@@ -39,7 +39,7 @@ python-docx==1.2.0
 python-magic==0.4.27
 requests==2.34.2
 sentry-sdk==2.71.0
-tzdata==2026.4
+tzdata==2026.5
 uuid_utils==0.17.0
 whitenoise==6.12.0
 xlrd==2.0.2
