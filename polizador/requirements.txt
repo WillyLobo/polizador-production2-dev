@@ -42,7 +42,7 @@ defusedxml==0.7.1
     # via odfpy
 diff-match-patch==20241021
     # via django-import-export
-django==6.0.8
+django==6.1.2
     # via
     #   -r requirements.in
     #   django-allauth
@@ -92,11 +92,11 @@ frozenlist==1.8.0
     # via
     #   aiohttp
     #   aiosignal
-fsspec==2026.7.0
+fsspec==2026.9.0
     # via gcsfs
-gcsfs==2026.8.1
+gcsfs==2026.10.0
     # via -r requirements.in
-google-api-core[grpc]==2.40.0
+google-api-core[grpc]==2.42.0
     # via
     #   -r requirements.in
     #   google-cloud-bigquery
@@ -132,7 +132,7 @@ google-cloud-core==2.6.0
     #   google-cloud-storage
 google-cloud-documentai==3.16.0
     # via -r requirements.in
-google-cloud-storage==3.16.0
+google-cloud-storage==3.17.0
     # via
     #   -r requirements.in
     #   gcsfs
@@ -354,7 +354,7 @@ typing-extensions==4.15.0
     #   typing-inspection
 typing-inspection==0.4.2
     # via pydantic
-tzdata==2026.4
+tzdata==2026.5
     # via -r requirements.in
 urllib3==2.8.0
     # via
