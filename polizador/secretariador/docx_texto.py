@@ -52,7 +52,7 @@ def generate_agente_list_articulo(agentes, cantidad_de_dias):
 		combustible = "{:,.2f}".format(agente.comisionadosolicitud_combustible).replace(",", "@").replace(".", ",").replace("@", ".")
 		pasaje = "{:,.2f}".format(agente.comisionadosolicitud_pasaje).replace(",", "@").replace(".", ",").replace("@", ".")
 		gastos = "{:,.2f}".format(agente.comisionadosolicitud_gastos).replace(",", "@").replace(".", ",").replace("@", ".")
-		valor_viatico_dia = "{:,.2f}".format(agente.valor_viatico_dia()).replace(",", "@").replace(".", ",").replace("@", ".")
+		valor_viatico_dia = "{:,.2f}".format(agente.comisionadosolicitud_viatico_diario).replace(",", "@").replace(".", ",").replace("@", ".")
 		valor_viatico_total = "{:,.2f}".format(agente.viaticos_total()).replace(",", "@").replace(".", ",").replace("@", ".")
 
 		subparrafo = f"(Viáticos: {dias_texto} a razón de ${valor_viatico_dia} diarios"

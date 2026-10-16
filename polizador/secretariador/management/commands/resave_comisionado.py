@@ -1,45 +1,20 @@
 import logging
 from datetime import timedelta
-from decimal import Decimal
 
 from django.core.management.base import BaseCommand
-from django.db import models, transaction
-from secretariador.models import ComisionadoSolicitud
+from django.db import transaction
+from secretariador.models import (
+    CAMPOS_DERIVADOS,
+    COMISIONADO_PREFETCH_RELATED,
+    COMISIONADO_SELECT_RELATED,
+    ComisionadoSolicitud,
+    _con_precision_guardada,
+)
 
 logger = logging.getLogger(__name__)
 
-# Relaciones que get_origin()/valor_viatico_dia()/__str__ recorren por registro:
-# precargarlas evita N+1 queries sobre Solicitud/Incorporacion/Agente.
-SELECT_RELATED = (
-    "comisionadosolicitud_foreign__solicitud_decreto_viaticos",
-    "comisionadosolicitud_foreign__solicitud_provincia",
-    "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_decreto_viaticos",
-    "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_provincia",
-    "comisionadosolicitud_nombre",
-    "comisionadosolicitud_externo",
-)
-PREFETCH_RELATED = ("comisionadosolicitud_nombre__directorio_set",)
-
-# Los únicos campos que ComisionadoSolicitud.recalcular_campos_derivados() pisa.
-CAMPOS_DERIVADOS = (
-    "comisionadosolicitud_cantidad_de_dias",
-    "comisionadosolicitud_viatico_diario",
-    "comisionadosolicitud_viatico_computado",
-    "comisionadosolicitud_viatico_total",
-)
-
 # Queda en history_change_reason de cada registro histórico que genera el comando.
 CHANGE_REASON = "resave_comisionado: recálculo de campos derivados"
-
-
-def _normalizar(campo, valor):
-    """Lleva el valor recalculado a la misma precisión con la que queda guardado
-    (decimal_places del DecimalField), para que una diferencia de redondeo que la
-    base igual descartaría no se reporte como cambio."""
-    field = ComisionadoSolicitud._meta.get_field(campo)
-    if valor is not None and isinstance(field, models.DecimalField):
-        return Decimal(str(valor)).quantize(Decimal(1).scaleb(-field.decimal_places))
-    return valor
 
 
 def _formatear(valor):
@@ -50,10 +25,16 @@ def _formatear(valor):
 
 class Command(BaseCommand):
     """
-    Management command: recalcula los campos derivados (dias, viatico diario,
-    viatico computado, viatico total) de todos los ComisionadoSolicitud y los
-    compara contra lo guardado, para detectar registros que quedaron
-    desactualizados (p. ej. cargados por un camino que no pasó por save()).
+    Management command: recalcula los campos derivados (dias, viatico
+    computado, viatico total) de todos los ComisionadoSolicitud y los compara
+    contra lo guardado, para detectar registros que quedaron desactualizados
+    (p. ej. cargados por un camino que no pasó por save(), o cuya Solicitud se
+    editó antes de que secretariador/signals.py los mantuviera sincronizados).
+
+    El viático diario queda congelado (ver
+    ComisionadoSolicitud.recalcular_campos_derivados): si la tarifa que dan hoy
+    las reglas difiere de la guardada, solo se informa. Con --recalcular-diario
+    se aplica también la tarifa actual.
 
     Solo se guardan los registros con diferencias, y únicamente esos campos:
     guardar uno sin cambios dejaría una entrada vacía en el historial y, vía
@@ -63,10 +44,10 @@ class Command(BaseCommand):
     Cada cambio aplicado queda en el historial del registro (simple_history,
     con history_change_reason=CHANGE_REASON) y en el log de la aplicación.
 
-    Uso: python manage.py resave_comisionado [--check | --dry-run]
+    Uso: python manage.py resave_comisionado [--check | --dry-run] [--recalcular-diario]
     """
 
-    help = "Recalcula los viáticos de los ComisionadoSolicitud y guarda solo los que difieren de lo guardado."
+    help = "Recalcula días y viáticos de los ComisionadoSolicitud y guarda solo los que difieren de lo guardado."
 
     def add_arguments(self, parser):
         modo = parser.add_mutually_exclusive_group()
@@ -80,28 +61,43 @@ class Command(BaseCommand):
             action="store_true",
             help="Muestra el detalle de las diferencias (registro por registro), sin guardarlas.",
         )
+        parser.add_argument(
+            "--recalcular-diario",
+            action="store_true",
+            help=(
+                "Recalcula también el viático diario con las reglas actuales (ReglasViatico, "
+                "escalafón, Directorio), en vez de mantener la tarifa congelada."
+            ),
+        )
 
     def handle(self, *args, **options):
         check = options["check"]
         dry_run = options["dry_run"]
+        recalcular_diario = options["recalcular_diario"]
         aplicar = not check and not dry_run
 
         queryset = ComisionadoSolicitud.objects.select_related(
-            *SELECT_RELATED
-        ).prefetch_related(*PREFETCH_RELATED).order_by("pk")
+            *COMISIONADO_SELECT_RELATED
+        ).prefetch_related(*COMISIONADO_PREFETCH_RELATED).order_by("pk")
         total = queryset.count()
         self.stdout.write(f"Se encontraron {total} ComisionadoSolicitud")
 
         con_diferencias = 0
         guardados = 0
         sin_cambios = 0
+        tarifa_distinta = 0
         errores = 0
 
         with transaction.atomic():
             for comisionado in queryset.iterator(chunk_size=500):
-                guardado = {campo: getattr(comisionado, campo) for campo in CAMPOS_DERIVADOS}
+                diario_guardado = comisionado.comisionadosolicitud_viatico_diario
                 try:
-                    comisionado.recalcular_campos_derivados()
+                    diario_actual = _con_precision_guardada(
+                        "comisionadosolicitud_viatico_diario", comisionado.valor_viatico_dia()
+                    )
+                    diferencias = comisionado.recalcular_campos_derivados(
+                        recalcular_diario=recalcular_diario
+                    )
                 except Exception as e:
                     errores += 1
                     self.stderr.write(
@@ -111,11 +107,14 @@ class Command(BaseCommand):
                     )
                     continue
 
-                diferencias = []
-                for campo in CAMPOS_DERIVADOS:
-                    recalculado = _normalizar(campo, getattr(comisionado, campo))
-                    if guardado[campo] != recalculado:
-                        diferencias.append((campo, guardado[campo], recalculado))
+                if not recalcular_diario and diario_guardado is not None and diario_actual != diario_guardado:
+                    tarifa_distinta += 1
+                    if not check:
+                        self.stdout.write(
+                            f"  ComisionadoSolicitud #{comisionado.pk} ({comisionado}): "
+                            f"tarifa congelada {diario_guardado}, con las reglas actuales sería "
+                            f"{diario_actual} (no se modifica)"
+                        )
 
                 if not diferencias:
                     sin_cambios += 1
@@ -132,7 +131,7 @@ class Command(BaseCommand):
                 try:
                     with transaction.atomic():
                         comisionado._change_reason = CHANGE_REASON
-                        comisionado.save(update_fields=CAMPOS_DERIVADOS)
+                        comisionado.save(update_fields=CAMPOS_DERIVADOS, recalcular_derivados=False)
                 except Exception as e:
                     errores += 1
                     self.stderr.write(
@@ -151,6 +150,8 @@ class Command(BaseCommand):
         if aplicar:
             resumen += f" ({guardados} guardado(s))"
         resumen += f", {sin_cambios} sin cambios, {errores} error(es)"
+        if not recalcular_diario:
+            resumen += f"; {tarifa_distinta} con tarifa congelada distinta de la actual (no se modifican)"
         self.stdout.write(self.style.SUCCESS(f"\n{resumen}"))
         if aplicar:
             logger.info("resave_comisionado: %s", resumen)

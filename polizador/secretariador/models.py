@@ -4,6 +4,7 @@ from core.history import M2MHistoricalRecords
 from django.core.validators import MinValueValidator
 from core.validators import FileValidator
 from datetime import datetime, timedelta
+from decimal import Decimal
 from django.utils import timezone
 from django.urls import reverse
 from django.core.exceptions import ValidationError
@@ -468,6 +469,49 @@ class Solicitud(models.Model):
         else:
             return reverse('secretariador:update-solicitud-exterior', kwargs={"pk": str(self.id)})
 
+# Los campos de ComisionadoSolicitud que recalcular_campos_derivados() pisa.
+CAMPOS_DERIVADOS = (
+    "comisionadosolicitud_cantidad_de_dias",
+    "comisionadosolicitud_viatico_diario",
+    "comisionadosolicitud_viatico_computado",
+    "comisionadosolicitud_viatico_total",
+)
+
+# Campos propios del comisionado de los que depende su tarifa diaria: si cambia
+# alguno (otro agente, otra Solicitud/Incorporacion, pasa a colaborador o "$0"),
+# save() recalcula el viático diario con las reglas actuales; si no, lo deja congelado.
+CAMPOS_TARIFA_COMISIONADO = (
+    "comisionadosolicitud_foreign_id",
+    "comisionadosolicitud_incorporacion_foreign_id",
+    "comisionadosolicitud_nombre_id",
+    "comisionadosolicitud_externo_id",
+    "comisionadosolicitud_colaborador",
+    "comisionadosolicitud_sin_viatico",
+)
+
+# Relaciones que get_origin()/valor_viatico_dia()/__str__ recorren por registro:
+# precargarlas evita N+1 queries sobre Solicitud/Incorporacion/Agente.
+COMISIONADO_SELECT_RELATED = (
+    "comisionadosolicitud_foreign__solicitud_decreto_viaticos",
+    "comisionadosolicitud_foreign__solicitud_provincia",
+    "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_decreto_viaticos",
+    "comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_provincia",
+    "comisionadosolicitud_nombre",
+    "comisionadosolicitud_externo",
+)
+COMISIONADO_PREFETCH_RELATED = ("comisionadosolicitud_nombre__directorio_set",)
+
+
+def _con_precision_guardada(campo, valor):
+    """Lleva un valor de ComisionadoSolicitud a la precisión con la que queda
+    guardado (decimal_places del DecimalField), para que una diferencia de redondeo
+    que la base igual descartaría no cuente como cambio."""
+    field = ComisionadoSolicitud._meta.get_field(campo)
+    if valor is not None and isinstance(field, models.DecimalField):
+        return Decimal(str(valor)).quantize(Decimal(1).scaleb(-field.decimal_places))
+    return valor
+
+
 class ComisionadoSolicitud(models.Model):
     class Meta:
         verbose_name = "Comisionado Solicitud"
@@ -587,14 +631,14 @@ class ComisionadoSolicitud(models.Model):
     
     def viaticos_computado(self):
         """
-        Calculates the total amount of viaticos based on the position and stratum of the commissioned person.
+        Calculates the total amount of viaticos: the days of the origin Solicitud times
+        the stored (frozen) daily rate, not today's valor_viatico_dia().
 
         Returns:
-            float: The total amount of viaticos computed.
+            Decimal: The total amount of viaticos computed.
         """
         dias = self.get_origin().solicitud_cantidad_de_dias
-        estrato_decreto = self.valor_viatico_dia() 
-        return int(dias.days) * estrato_decreto
+        return int(dias.days) * self.comisionadosolicitud_viatico_diario
     
     def viaticos_total(self):
         """
@@ -606,20 +650,89 @@ class ComisionadoSolicitud(models.Model):
         total = self.viaticos_computado() + self.comisionadosolicitud_combustible + self.comisionadosolicitud_gastos + self.comisionadosolicitud_pasaje
         return total
     
-    def recalcular_campos_derivados(self):
+    def _diario_guardado_vigente(self):
         """
-        Recalcula en memoria los campos derivados (días, viático diario, computado y
-        total), sin guardar. Lo usa save() y también el comando resave_comisionado,
-        que necesita comparar los valores guardados contra los recalculados.
+        Devuelve el viático diario guardado en la base si sigue valiendo para este
+        registro (no es nuevo y no cambió ninguno de CAMPOS_TARIFA_COMISIONADO), o
+        None si hay que calcularlo de nuevo.
         """
+        if self._state.adding or self.pk is None:
+            return None
+        anterior = ComisionadoSolicitud.objects.filter(pk=self.pk).values(
+            *CAMPOS_TARIFA_COMISIONADO, "comisionadosolicitud_viatico_diario"
+        ).first()
+        if anterior is None or anterior["comisionadosolicitud_viatico_diario"] is None:
+            return None
+        if any(anterior[campo] != getattr(self, campo) for campo in CAMPOS_TARIFA_COMISIONADO):
+            return None
+        return anterior["comisionadosolicitud_viatico_diario"]
+
+    def recalcular_campos_derivados(self, recalcular_diario=None):
+        """
+        Recalcula en memoria los campos derivados, sin guardar, y devuelve la lista
+        de (campo, antes, después) de los que cambiaron.
+
+        Días, computado y total son aritmética sobre la Solicitud de origen y
+        siempre se recalculan. El viático diario, en cambio, queda congelado al
+        asignarse: cambios posteriores en ReglasViatico, en el escalafón/gabinete
+        del agente o en el Directorio no alteran comisiones ya cargadas. Se vuelve
+        a calcular con las reglas actuales solo si:
+        - recalcular_diario=True: lo piden secretariador/signals.py cuando cambia
+          la provincia o el decreto de la Solicitud, o el comando
+          resave_comisionado con --recalcular-diario;
+        - recalcular_diario=None (lo que usa save()) y el registro es nuevo o
+          cambió alguno de CAMPOS_TARIFA_COMISIONADO respecto de la base. Si no
+          cambió, se toma el diario de la base y no el que haya en memoria, que
+          puede estar viejo si una señal lo recalculó después de cargar esta
+          instancia (p. ej. un formset que guarda filas cargadas antes de que se
+          guardara la Solicitud).
+        - recalcular_diario=False usa el diario en memoria tal cual.
+        """
+        antes = {campo: getattr(self, campo) for campo in CAMPOS_DERIVADOS}
+        if recalcular_diario is None:
+            guardado = self._diario_guardado_vigente()
+            recalcular_diario = guardado is None
+            if guardado is not None:
+                self.comisionadosolicitud_viatico_diario = guardado
+        if recalcular_diario or self.comisionadosolicitud_viatico_diario is None:
+            self.comisionadosolicitud_viatico_diario = self.valor_viatico_dia()
         self.comisionadosolicitud_cantidad_de_dias = self.get_origin().solicitud_cantidad_de_dias
-        self.comisionadosolicitud_viatico_diario = self.valor_viatico_dia()
         self.comisionadosolicitud_viatico_computado = self.viaticos_computado()
         self.comisionadosolicitud_viatico_total = self.viaticos_total()
 
-    def save(self, *args, **kwargs):
-        self.recalcular_campos_derivados()
+        cambios = []
+        for campo in CAMPOS_DERIVADOS:
+            nuevo = _con_precision_guardada(campo, getattr(self, campo))
+            setattr(self, campo, nuevo)
+            if antes[campo] != nuevo:
+                cambios.append((campo, antes[campo], nuevo))
+        return cambios
+
+    def save(self, *args, recalcular_derivados=True, **kwargs):
+        """`recalcular_derivados=False` es para quien ya llamó a
+        recalcular_campos_derivados() con un recalcular_diario explícito y no
+        quiere que save() lo vuelva a resolver en modo automático."""
+        if recalcular_derivados:
+            self.recalcular_campos_derivados()
         super(ComisionadoSolicitud, self).save(*args, **kwargs)
+
+
+def sincronizar_comisionados(comisionados, recalcular_diario, motivo):
+    """
+    Recalcula los campos derivados de cada ComisionadoSolicitud de `comisionados`
+    (un queryset) y guarda solo los que cambiaron, únicamente esos campos y con
+    `motivo` como history_change_reason. Devuelve la cantidad guardada.
+    """
+    guardados = 0
+    for comisionado in comisionados.select_related(*COMISIONADO_SELECT_RELATED).prefetch_related(
+        *COMISIONADO_PREFETCH_RELATED
+    ):
+        if not comisionado.recalcular_campos_derivados(recalcular_diario=recalcular_diario):
+            continue
+        comisionado._change_reason = motivo
+        comisionado.save(update_fields=CAMPOS_DERIVADOS, recalcular_derivados=False)
+        guardados += 1
+    return guardados
 
 class Incorporacion(models.Model):
     class Meta:

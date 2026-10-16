@@ -158,7 +158,21 @@ class FixBucketContentTypeForm(BaseCommandRunForm):
 
 
 class ResaveComisionadoForm(DryRunCheckApplyForm):
-    pass
+    recalcular_diario = forms.BooleanField(
+        required=False,
+        label="Recalcular también el viático diario",
+        help_text=(
+            "Sin marcar, la tarifa diaria de cada comisionado queda congelada y solo se corrigen "
+            "días y totales. Marcado, se aplica la tarifa que dan hoy las reglas de viáticos, el "
+            "escalafón y el Directorio, aun para comisiones viejas."
+        ),
+    )
+
+    def to_argv(self):
+        argv = super().to_argv()
+        if self.cleaned_data["recalcular_diario"]:
+            argv.append("--recalcular-diario")
+        return argv
 
 
 class EmpaquetarResolucionesMensualForm(BaseCommandRunForm):

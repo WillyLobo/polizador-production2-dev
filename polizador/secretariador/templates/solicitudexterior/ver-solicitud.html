@@ -60,9 +60,9 @@
               <div class="col-10 border-bottom border-dark" style="text-align:justify">
                 <p class="m-0" style="text-align: justify;">{{agente.persona.abreviatura}} {{agente.persona.agente_apellidos}}, {{agente.persona.agente_nombres}} - D.N.I.Nº{{agente.persona.dni}}</p>
                 {%if agente.comisionadosolicitud_chofer %}
-                  <p class="m-0" style="text-align: justify;">(<u>Viáticos:</u> {{solicitud.cantidad_de_dias}}{%if solicitud.cantidad_de_dias > 1 %} días {%else%} día {%endif%}a razón de ${{agente.valor_viatico_dia|intcomma}} diarios + <u>Combustible:</u> ${{agente.comisionadosolicitud_combustible|intcomma}} + <u>Gastos:</u> ${{agente.comisionadosolicitud_gastos|intcomma}}).</p>
+                  <p class="m-0" style="text-align: justify;">(<u>Viáticos:</u> {{solicitud.cantidad_de_dias}}{%if solicitud.cantidad_de_dias > 1 %} días {%else%} día {%endif%}a razón de ${{agente.comisionadosolicitud_viatico_diario|intcomma}} diarios + <u>Combustible:</u> ${{agente.comisionadosolicitud_combustible|intcomma}} + <u>Gastos:</u> ${{agente.comisionadosolicitud_gastos|intcomma}}).</p>
                 {% else %}
-                  <p class="m-0" style="text-align: justify;">(<u>Viáticos:</u> {{solicitud.cantidad_de_dias}}{%if solicitud.cantidad_de_dias > 1 %} días {%else%} día {%endif%}a razón de ${{agente.valor_viatico_dia|intcomma}} diarios).</p>
+                  <p class="m-0" style="text-align: justify;">(<u>Viáticos:</u> {{solicitud.cantidad_de_dias}}{%if solicitud.cantidad_de_dias > 1 %} días {%else%} día {%endif%}a razón de ${{agente.comisionadosolicitud_viatico_diario|intcomma}} diarios).</p>
                 {%endif%}
             </div>
             <div class="col-2 border-bottom border-dark text-end">

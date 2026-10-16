@@ -183,6 +183,11 @@ class ResaveComisionadoFormTest(TestCase):
             assert form.is_valid(), form.errors
             assert form.to_argv() == argv
 
+    def test_recalcular_diario_adds_flag(self):
+        form = ResaveComisionadoForm(data={"mode": "dry_run", "recalcular_diario": "on"})
+        assert form.is_valid(), form.errors
+        assert form.to_argv() == ["--dry-run", "--recalcular-diario"]
+
 
 class EmpaquetarResolucionesMensualFormTest(TestCase):
     def test_blank_ano_and_mes_is_valid(self):
