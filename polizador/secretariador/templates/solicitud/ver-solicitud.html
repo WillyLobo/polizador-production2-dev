@@ -75,32 +75,5 @@
   <p style="text-align: justify;"><b>ARTICULO 5º:</b> DESE al Registro de este Instituto, efectuadas las comunicaciones pertinentes, archívese.</p>
 </div>
 
-{%comment%}
-Lic. Constanza Ruelli D.N.I. Nº. 32.300.252...............…………………...…….……...$54.000,00 (Viático: 2 días a razón de $27.000,00 diario).
-Chofer Perez Ramón Antonio D.N.I.Nº.23.273.715......................…………............$208.000,00 (Viático: 2 días a razón de $23.100,00 diario + Combustible: $ 160.000,00 + Peaje: $ 1.800,00).-
-
-{%for agente in solicitud.comisionadosolicitud_set.all %}
-  <p>
-    {{agente.persona.abreviatura}} {{agente.persona.agente_apellidos}}, {{agente.persona.agente_nombres}} - D.N.I.Nº{{agente.persona.dni}} - 
-    ${{agente.comisionadosolicitud_viaticos}}{{agente.comisionadosolicitud_viaticos|add:agente.comisionadosolicitud_combustible}}
-    {%if agente.comisionadosolicitud_chofer%}
-    
-    {%endif%}
-  </p>
-    {%endfor%}
-
-    {%if agente.comisionadosolicitud_chofer %}
-    (Viáticos: {{solicitud.cantidad_de_dias()}}{%if solicitud.cantidad_de_dias() > 1 %} días {%else%} día {%endif%}a razón de ${{solicitud.tmpviaticos()}} diarios + Combustible: ${{agente.comisionadosolicitud_combustible}} + Gastos: ${{agente.comisionadosolicitud_gastos}}).
-    {%else%}
-    (Viáticos: {{solicitud.cantidad_de_dias()}}{%if solicitud.cantidad_de_dias() > 1 %} días {%else%} día {%endif%}a razón de ${{solicitud.tmpviaticos()}} diarios.
-    {%endif%}
-    
-Gastos:
-{{"${:,.2f}".format(agente.comisionadosolicitud_gastos|float) .replace(",", "@").replace(".", ",").replace("@", ".")}}
-{%endcomment%}
-
-
-
-
 {{ form.media.js }}
 {% endblock %}
