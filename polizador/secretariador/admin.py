@@ -1,6 +1,7 @@
 from django.contrib import admin
 from import_export.admin import ImportExportMixin
 from simple_history.admin import SimpleHistoryAdmin
+from core.admin_mixins import StrSelectRelatedAdminMixin
 from secretariador.models import *
 from secretariador.resources import OrganigramaResource, VehiculoResource, IncorporacionResource
 from django.contrib.auth.models import Group
@@ -23,8 +24,9 @@ class InstrumentosLegalesDecretoAdmin(SimpleHistoryAdmin):
     list_display = ["id", "instrumentolegaldecretos_tipo", "instrumentolegaldecretos_numero", "instrumentolegaldecretos_ano", "instrumentolegaldecretos_fecha_aprobacion"]
     list_filter = ["instrumentolegaldecretos_tipo"]
 
-class MontoViaticoDiarioAdmin(SimpleHistoryAdmin):
+class MontoViaticoDiarioAdmin(StrSelectRelatedAdminMixin, SimpleHistoryAdmin):
     model = MontoViaticoDiario
+    str_select_related = ["montoviaticodiario_decreto_reglamentario"]
     search_fields = ["montoviaticodiario_decreto_reglamentario__instrumentolegaldecretos_numero"]
     autocomplete_fields = ["montoviaticodiario_decreto_reglamentario"]
     list_display = ["id", "montoviaticodiario_decreto_reglamentario"]
@@ -52,9 +54,9 @@ class OrganigramaAdmin(ImportExportMixin, SimpleHistoryAdmin):
     search_fields = ["organigrama_cargo", "organigrama_escalafon"]
     list_display = ["id", "organigrama_cargo", "organigrama_escalafon"]
 
-class ComisionadoSolicitudAdminInline(admin.TabularInline):
+class ComisionadoSolicitudAdminInline(StrSelectRelatedAdminMixin, admin.TabularInline):
     model = ComisionadoSolicitud
-    search_fields = ["comisionadosolicitud_nombre__agente_nombreyapellido", "comisionadosolicitud_externo__agente_nombreyapellido"]
+    str_select_related = ["comisionadosolicitud_foreign", "comisionadosolicitud_incorporacion_foreign", "comisionadosolicitud_nombre", "comisionadosolicitud_externo"]
     fields = [
         "comisionadosolicitud_nombre",
         "comisionadosolicitud_externo",
@@ -64,13 +66,15 @@ class ComisionadoSolicitudAdminInline(admin.TabularInline):
         "comisionadosolicitud_pasaje",
         "comisionadosolicitud_gastos",
     ]
-    autocomplete_fields = ["comisionadosolicitud_foreign", "comisionadosolicitud_incorporacion_foreign", "comisionadosolicitud_nombre", "comisionadosolicitud_externo"]
+    autocomplete_fields = ["comisionadosolicitud_nombre", "comisionadosolicitud_externo"]
 
 class SolicitudAdmin(SimpleHistoryAdmin):
     inlines = [ComisionadoSolicitudAdminInline]
     search_fields = ["solicitud_actuacion"]
     autocomplete_fields = ["solicitud_solicitante", "solicitud_provincia", "solicitud_localidades", "solicitud_decreto_viaticos", "solicitud_vehiculo", "solicitud_resolucion"]
     list_display = ["id", "solicitud_actuacion", "solicitud_solicitante", "solicitud_provincia", "solicitud_fecha_desde", "solicitud_fecha_hasta", "solicitud_anulada"]
+    list_select_related = ["solicitud_solicitante", "solicitud_provincia"]
+    ordering = ["-id"]
     list_filter = ["solicitud_provincia", "solicitud_aereo", "solicitud_dia_inhabil", "solicitud_anulada"]
 
 class VehiculoAdmin(ImportExportMixin, SimpleHistoryAdmin):
@@ -79,6 +83,7 @@ class VehiculoAdmin(ImportExportMixin, SimpleHistoryAdmin):
     search_fields = ["vehiculo_modelo", "vehiculo_patente"]
     autocomplete_fields = ["vehiculo_titular_agente", "vehiculo_titular_empresa", "vehiculo_poliza_aseguradora"]
     list_display = ["id", "vehiculo_modelo", "vehiculo_patente", "vehiculo_caracter", "vehiculo_titular_agente", "vehiculo_titular_empresa"]
+    list_select_related = ["vehiculo_titular_agente", "vehiculo_titular_empresa"]
     list_filter = ["vehiculo_caracter"]
 
 class IncorporacionAdmin(ImportExportMixin, SimpleHistoryAdmin):
@@ -88,9 +93,13 @@ class IncorporacionAdmin(ImportExportMixin, SimpleHistoryAdmin):
     search_fields = ["incorporacion_actuacion"]
     autocomplete_fields = ["incorporacion_solicitud", "incorporacion_solicitante", "incorporacion_resolucion"]
     list_display = ["id", "incorporacion_actuacion", "incorporacion_solicitud", "incorporacion_solicitante"]
+    list_select_related = ["incorporacion_solicitud", "incorporacion_solicitante"]
+    ordering = ["-id"]
 
-class ComisionadoSolicitudAdmin(SimpleHistoryAdmin):
+class ComisionadoSolicitudAdmin(StrSelectRelatedAdminMixin, SimpleHistoryAdmin):
     model = ComisionadoSolicitud
+    str_select_related = ["comisionadosolicitud_foreign", "comisionadosolicitud_incorporacion_foreign", "comisionadosolicitud_nombre", "comisionadosolicitud_externo"]
+    ordering = ["-id"]
     search_fields = ["comisionadosolicitud_foreign__solicitud_actuacion", "comisionadosolicitud_incorporacion_foreign__incorporacion_actuacion", "comisionadosolicitud_nombre__agente_nombreyapellido", "comisionadosolicitud_externo__agente_nombreyapellido"]
     autocomplete_fields = ["comisionadosolicitud_foreign", "comisionadosolicitud_incorporacion_foreign", "comisionadosolicitud_nombre", "comisionadosolicitud_externo"]
     list_display = ["id", "comisionadosolicitud_nombre", "comisionadosolicitud_externo", "comisionadosolicitud_foreign", "comisionadosolicitud_incorporacion_foreign", "comisionadosolicitud_viatico_total"]

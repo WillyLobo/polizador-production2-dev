@@ -690,6 +690,9 @@ class Prototipo(models.Model):
     prototipo_discapacitado = models.BooleanField("Es Prototipo para Discapacitado", default=False)
     prototipo_history = HistoricalRecords()
 
+    def __str__(self):
+        return f"{self.get_prototipo_tipo_display()} x{self.prototipo_cantidad} - {self.prototipo_obra.obra_nombre}"
+
 class CertificadoRubro(models.Model):
     class Meta:
         verbose_name_plural = "Rubros"
@@ -1674,6 +1677,9 @@ class ContratosDigitales(models.Model):
     contratodigital_tipo = models.ForeignKey("ContratoRubro", verbose_name="Rubro Contrato", on_delete=models.CASCADE)
     contratodigital_archivo = models.FileField(upload_to=generate_name_contratos, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], max_length=500, null=True, blank=True)
     contratodigital_history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.contratodigital_tipo} - {self.contratodigital_nombre_archivo or self.contratodigital_descripcion}"
 
 class Uvi(models.Model):
     class Meta:
