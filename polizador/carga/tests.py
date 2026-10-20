@@ -2488,3 +2488,123 @@ class CuadreDesgloseItemsTests(TestCase):
         _cuadrar(filas, "uvi", Decimal("120"))
 
         self.assertEqual([f["uvi"] for f in filas], [Decimal("100.00"), Decimal("50.00")])
+
+
+class ReporteColumnasTests(TestCase):
+    """Reportes de Obras y de Certificados con columnas elegidas por el usuario
+    (carga/reportes_columnas.py)."""
+
+    def setUp(self):
+        empresa = Empresa.objects.create(empresa_nombre="Constructora Norte")
+        programa = Programa.objects.create(programa_nombre="Programa Reporte")
+        self.obra = Obra.objects.create(
+            obra_nombre="20 Viviendas", obra_empresa=empresa, obra_programa=programa,
+            obra_expediente="EXP-OBRA-1", obra_grupo="G7",
+            obra_contrato_nacion_uvi=Decimal("1000"),
+        )
+        self.otra_obra = Obra.objects.create(
+            obra_nombre="Otra Obra", obra_empresa=empresa, obra_programa=programa, obra_expediente="EXP-OBRA-2",
+        )
+        rubro = CertificadoRubro.objects.create(certificadorubro_nombre="Vivienda", certificadorubro_nombre_corto="V")
+        base = {
+            "certificado_obra": self.obra, "certificado_financiamiento": "N",
+            "certificado_rubro_db": rubro, "certificado_expediente": "EXP-CERT",
+        }
+        Certificado.objects.create(
+            certificado_tipo="PARCIAL", certificado_fecha=date(2026, 1, 31), certificado_mes_pct=Decimal("10"),
+            certificado_acum_pct=Decimal("10"), certificado_monto_pesos=Decimal("1000"), certificado_monto_uvi=Decimal("100"),
+            **base,
+        )
+        Certificado.objects.create(
+            certificado_tipo="PARCIAL", certificado_fecha=date(2026, 2, 28), certificado_mes_pct=Decimal("15"),
+            certificado_acum_pct=Decimal("25"), certificado_monto_pesos=Decimal("2000"), certificado_monto_uvi=Decimal("150"),
+            **base,
+        )
+        # Un Anticipo posterior no tapa el % de avance del último certificado de obra.
+        Certificado.objects.create(
+            certificado_tipo="ANTICIPO", certificado_fecha=date(2026, 3, 31), certificado_monto_pesos=Decimal("500"),
+            certificado_monto_uvi=Decimal("50"), **base,
+        )
+        self.obra.obra_principal.add(self.otra_obra)
+        user = get_user_model().objects.create_superuser(username="admin", password="testpass123")
+        self.client.force_login(user)
+
+    def _obras(self, **params):
+        return self.client.get(reverse("carga:crear-reporte-obra"), {"empresa": self.obra.obra_empresa_id, **params})
+
+    def _certificados(self, **params):
+        return self.client.get(reverse("carga:crear-reporte-certificado"), {"ano": "2026", **params})
+
+    def test_sin_col_usa_las_columnas_por_defecto(self):
+        from carga.reportes_columnas import REPORTE_CERTIFICADOS, REPORTE_OBRAS
+
+        response = self._obras()
+        self.assertEqual([c.clave for c in response.context["columnas"]], REPORTE_OBRAS.defaults)
+        response = self._certificados()
+        self.assertEqual([c.clave for c in response.context["columnas"]], REPORTE_CERTIFICADOS.defaults)
+
+    def test_col_validas_respetan_el_orden_del_catalogo_e_ignora_invalidas(self):
+        response = self._obras(col=["obra_grupo", "no_existe", "obra_nombre"])
+        self.assertEqual([c.clave for c in response.context["columnas"]], ["obra_nombre", "obra_grupo"])
+        self.assertContains(response, "G7")
+
+    def test_solo_col_invalidas_usa_default(self):
+        from carga.reportes_columnas import REPORTE_OBRAS
+
+        response = self._obras(col=["no_existe"])
+        self.assertEqual([c.clave for c in response.context["columnas"]], REPORTE_OBRAS.defaults)
+
+    def test_reporte_de_certificados_ofrece_columnas_de_obra(self):
+        response = self._certificados(col=["obra_grupo", "obra_expediente", "certificado_monto_pesos"])
+        self.assertContains(response, "G7")
+        self.assertContains(response, "EXP-OBRA-1")
+        self.assertContains(response, "Expediente de Obra")
+
+    def test_agregados_anotados_coinciden_con_el_calculo_de_la_obra(self):
+        response = self._obras(col=["acum_pesos", "acum_uvi", "saldo_uvi", "ultimo_mes_pct", "acum_pct", "cantidad_certificados"])
+        filas = {obj.pk: (obj, celdas) for obj, celdas in response.context["filas"]}
+        obra, _ = filas[self.obra.pk]
+        certificados = self.obra.certificado_set.all()
+        acum_pesos = sum(c.certificado_monto_cobrar for c in certificados)
+        acum_uvi = sum(c.certificado_monto_cobrar_uvi for c in certificados)
+        self.assertEqual(obra.rep_acum_pesos, acum_pesos)
+        self.assertEqual(obra.rep_acum_uvi, acum_uvi)
+        ultimo = self.obra.ultimo_certificado_avance()
+        self.assertEqual(obra.rep_ultimo_mes_pct, ultimo.certificado_mes_pct)
+        self.assertEqual(obra.rep_acum_pct, ultimo.certificado_acum_pct)
+        self.assertEqual(obra.rep_cantidad_certificados, 3)
+        _, celdas = filas[self.obra.pk]
+        claves = [c.clave for c in response.context["columnas"]]
+        saldo = celdas[claves.index("saldo_uvi")]
+        self.assertEqual(Decimal(saldo.orden), self.obra.obra_contrato_total_uvi - acum_uvi)
+        # Una obra sin certificados queda en 0, no en None.
+        otra, _ = filas[self.otra_obra.pk]
+        self.assertEqual(otra.rep_acum_pesos, 0)
+        self.assertIsNone(otra.rep_ultimo_mes_pct)
+
+    def test_solo_precarga_lo_que_piden_las_columnas(self):
+        from carga.reportes_columnas import REPORTE_CERTIFICADOS
+
+        def queryset(claves):
+            return REPORTE_CERTIFICADOS.preparar_queryset(
+                Certificado.objects.all(), REPORTE_CERTIFICADOS.seleccionar(claves)
+            )
+
+        with self.assertNumQueries(1):
+            filas = list(queryset(["certificado_monto_pesos", "certificado_expediente"]))
+            [col.celda(obj) for obj in filas for col in REPORTE_CERTIFICADOS.seleccionar(["certificado_monto_pesos"])]
+        # Empresa + obra madre (prefetch): una query por la tabla y otra por el M2M,
+        # sin importar cuántos certificados haya.
+        columnas = REPORTE_CERTIFICADOS.seleccionar(["obra_empresa", "obra_principal"])
+        with self.assertNumQueries(2):
+            celdas = [col.celda(obj) for obj in queryset(["obra_empresa", "obra_principal"]) for col in columnas]
+        self.assertIn("Otra Obra", [c.texto for c in celdas])
+
+    def test_todas_las_columnas_se_renderizan(self):
+        from carga.reportes_columnas import REPORTE_CERTIFICADOS, REPORTE_OBRAS
+
+        response = self._obras(col=[c.clave for c in REPORTE_OBRAS.columnas])
+        self.assertEqual(len(response.context["columnas"]), len(REPORTE_OBRAS.columnas))
+        response = self._certificados(col=[c.clave for c in REPORTE_CERTIFICADOS.columnas])
+        self.assertEqual(len(response.context["columnas"]), len(REPORTE_CERTIFICADOS.columnas))
+        self.assertEqual(len(response.context["filas"]), 3)

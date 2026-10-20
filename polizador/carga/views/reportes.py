@@ -6,10 +6,12 @@ from django.urls import reverse_lazy
 from django.views import generic
 from django.shortcuts import render, redirect
 from carga.models import Certificado, Obra, Localidad, Empresa, Programa, CertificadoRubro, Uvi
+from carga.reportes_columnas import REPORTE_CERTIFICADOS, REPORTE_OBRAS
 from personalizador.models import Agente
 from django.db.models import Q, FilteredRelation, Subquery, Sum, F
 from django.core.exceptions import ValidationError
 from django.core.management import call_command
+from django.utils.functional import cached_property
 from datetime import datetime, timedelta
 
 MESES_NOMBRES = {
@@ -17,10 +19,32 @@ MESES_NOMBRES = {
 	7: "Julio", 8: "Agosto", 9: "Septiembre", 10: "Octubre", 11: "Noviembre", 12: "Diciembre",
 }
 
+class ColumnasReporteMixin:
+	"""Columnas elegidas por el usuario (?col=...) sobre el catálogo de self.reporte
+	(ver carga/reportes_columnas.py)."""
+	reporte = None
+
+	@cached_property
+	def columnas(self):
+		return self.reporte.seleccionar(self.request.GET.getlist("col"))
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		context["columnas"] = self.columnas
+		context["filas"] = [
+			(obj, [columna.celda(obj) for columna in self.columnas]) for obj in context["object_list"]
+		]
+		context["grupos_columnas"] = self.reporte.grupos(self.columnas)
+		context["columnas_default"] = " ".join(self.reporte.defaults)
+		context["orden_inicial_indice"] = self.reporte.indice_orden_inicial(self.columnas)
+		context["orden_inicial_direccion"] = self.reporte.orden_inicial[1]
+		return context
+
 @method_decorator(login_required, name="dispatch")
-class ReporteCertificadoPorMesView(PermissionRequiredMixin, generic.ListView):
+class ReporteCertificadoPorMesView(ColumnasReporteMixin, PermissionRequiredMixin, generic.ListView):
 	permission_required = "carga.view_certificado"
 	model = Certificado
+	reporte = REPORTE_CERTIFICADOS
 	context_object_name = "object_list"
 	template_name = "reportes/reporte-certificado-por-mes.html"
 
@@ -47,9 +71,8 @@ class ReporteCertificadoPorMesView(PermissionRequiredMixin, generic.ListView):
 		if obra_ids:
 			filtro &= Q(certificado_obra__id__in=obra_ids)
 
-		return Certificado.objects.filter(filtro).order_by(
-			"certificado_obra__obra_programa"
-			).prefetch_related("certificado_obra").select_related("certificado_obra__obra_empresa", "certificado_obra__obra_programa")
+		qs = Certificado.objects.filter(filtro).order_by("certificado_obra__obra_programa")
+		return self.reporte.preparar_queryset(qs, self.columnas)
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
@@ -69,14 +92,15 @@ class ReporteCertificadoPorMesView(PermissionRequiredMixin, generic.ListView):
 		return context
 
 @method_decorator(login_required, name="dispatch")
-class CrearReporteObraView(PermissionRequiredMixin, generic.ListView):
+class CrearReporteObraView(ColumnasReporteMixin, PermissionRequiredMixin, generic.ListView):
 	permission_required = "carga.view_certificado"
 	model = Obra
+	reporte = REPORTE_OBRAS
 	context_object_name = "object_list"
 	template_name = "reportes/crear-reporte-obra.html"
 	
 	def get_queryset(self):
-		if not self.request.GET:
+		if not [k for k in self.request.GET if k != "col"]:
 			return Obra.objects.none()
 
 		localidad_ids = self.request.GET.getlist("localidad")
@@ -87,7 +111,7 @@ class CrearReporteObraView(PermissionRequiredMixin, generic.ListView):
 		tipodefiltro = self.request.GET.get("tipodefiltro")
 		rubro_ids = self.request.GET.getlist("rubro")
 
-		qs = Obra.objects.all().select_related("obra_empresa", "obra_programa").prefetch_related("obra_localidad_m", "certificado_set")
+		qs = Obra.objects.all()
 
 		if localidad_ids:
 			locality_q = Q()
@@ -135,21 +159,10 @@ class CrearReporteObraView(PermissionRequiredMixin, generic.ListView):
 		elif financiamiento == "4":
 			qs = qs.filter(certificado__certificado_financiamiento="T").distinct()
 
-		return qs
+		return self.reporte.preparar_queryset(qs, self.columnas)
 
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
-		for obra in context["object_list"]:
-			acum_pesos = 0
-			acum_uvi = 0
-			certs = obra.certificado_set.all()
-			if certs:
-				acum_pesos = sum(c.certificado_monto_cobrar or 0 for c in certs)
-				acum_uvi = sum(c.certificado_monto_cobrar_uvi or 0 for c in certs)
-			setattr(obra, "obra_acum_pesos", acum_pesos)
-			setattr(obra, "obra_acum_uvi", acum_uvi)
-			saldo = obra.obra_contrato_total_uvi - acum_uvi
-			setattr(obra, "saldo_uvi", saldo)
 		context["selected_localidades"] = Localidad.objects.filter(id__in=self.request.GET.getlist("localidad"))
 		context["selected_empresas"] = Empresa.objects.filter(id__in=self.request.GET.getlist("empresa"))
 		context["selected_programas"] = Programa.objects.filter(id__in=self.request.GET.getlist("programa"))
