@@ -156,9 +156,6 @@
             <li><a class="dropdown-item" href="{% url "secretariador:crear-incorporacion" %}"><i class="bi bi-plus-circle me-1"></i>Incorporación</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:crear-comisionado-externo" %}"><i class="bi bi-person-badge me-1"></i>Nuevo Comisionado Externo</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:crear-vehiculo" %}"><i class="bi bi-car-front me-1"></i>Vehículo</a></li>
-            <li><a class="dropdown-item" href="{% url "secretariador:crear-memorandum" %}"><i class="bi bi-file-text me-1"></i>Memorándum</a></li>
-            <li><a class="dropdown-item" href="{% url "secretariador:redirect-decreto" %}"><i class="bi bi-file-text me-1"></i>Decreto</a></li>
-            <li><a class="dropdown-item" href="{% url "secretariador:redirect-resoluciones" %}"><i class="bi bi-file-text me-1"></i>Resolución</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:crear-montoviaticodiario" %}"><i class="bi bi-currency-exchange me-1"></i>Monto Viáticos</a></li>
             <li><hr class="dropdown-divider"></li>
             <li class="dropdown-item fw-bold text-muted"><small>LISTADOS</small></li>
@@ -167,9 +164,30 @@
             <li><a class="dropdown-item" href="{% url "secretariador:lista-comisionados" %}"><i class="bi bi-list-ul me-1"></i>Agentes</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:lista-comisionados-externos" %}"><i class="bi bi-list-ul me-1"></i>Comisionados Externos</a></li>
             <li><a class="dropdown-item" href="{% url "secretariador:lista-vehiculos" %}"><i class="bi bi-list-ul me-1"></i>Vehículos</a></li>
-            <li><a class="dropdown-item" href="{% url "secretariador:lista-memorandum" %}"><i class="bi bi-list-ul me-1"></i>Memorándum</a></li>
-            <li><a class="dropdown-item" href="{% url "secretariador:lista-decretos" %}"><i class="bi bi-list-ul me-1"></i>Decretos</a></li>
-            <li><a class="dropdown-item" href="{% url "secretariador:lista-resoluciones" %}"><i class="bi bi-list-ul me-1"></i>Resoluciones</a></li>
+          </ul>
+        </li>
+        {% endif %}
+
+        <!-- Instrumentos -->
+        {% if perms.secretariador.view_instrumentoslegalesmemorandum or perms.secretariador.view_instrumentoslegalesdecretos or perms.secretariador.view_instrumentoslegalesresoluciones or perms.secretariador.add_instrumentoslegalesmemorandum or perms.secretariador.add_instrumentoslegalesdecretos or perms.secretariador.add_instrumentoslegalesresoluciones %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+            <i class="bi bi-file-text me-1"></i>Instrumentos
+          </a>
+          <ul class="dropdown-menu dropdown-menu-lg-start">
+            {% if perms.secretariador.add_instrumentoslegalesmemorandum or perms.secretariador.add_instrumentoslegalesdecretos or perms.secretariador.add_instrumentoslegalesresoluciones %}
+            <li class="dropdown-item fw-bold text-muted"><small>CREAR</small></li>
+            {% if perms.secretariador.add_instrumentoslegalesmemorandum %}<li><a class="dropdown-item" href="{% url "secretariador:crear-memorandum" %}"><i class="bi bi-plus-circle me-1"></i>Memorándum</a></li>{% endif %}
+            {% if perms.secretariador.add_instrumentoslegalesdecretos %}<li><a class="dropdown-item" href="{% url "secretariador:redirect-decreto" %}"><i class="bi bi-plus-circle me-1"></i>Decreto</a></li>{% endif %}
+            {% if perms.secretariador.add_instrumentoslegalesresoluciones %}<li><a class="dropdown-item" href="{% url "secretariador:redirect-resoluciones" %}"><i class="bi bi-plus-circle me-1"></i>Resolución</a></li>{% endif %}
+            {% endif %}
+            {% if perms.secretariador.view_instrumentoslegalesmemorandum or perms.secretariador.view_instrumentoslegalesdecretos or perms.secretariador.view_instrumentoslegalesresoluciones %}
+            {% if perms.secretariador.add_instrumentoslegalesmemorandum or perms.secretariador.add_instrumentoslegalesdecretos or perms.secretariador.add_instrumentoslegalesresoluciones %}<li><hr class="dropdown-divider"></li>{% endif %}
+            <li class="dropdown-item fw-bold text-muted"><small>LISTADOS</small></li>
+            {% if perms.secretariador.view_instrumentoslegalesmemorandum %}<li><a class="dropdown-item" href="{% url "secretariador:lista-memorandum" %}"><i class="bi bi-list-ul me-1"></i>Memorándum</a></li>{% endif %}
+            {% if perms.secretariador.view_instrumentoslegalesdecretos %}<li><a class="dropdown-item" href="{% url "secretariador:lista-decretos" %}"><i class="bi bi-list-ul me-1"></i>Decretos</a></li>{% endif %}
+            {% if perms.secretariador.view_instrumentoslegalesresoluciones %}<li><a class="dropdown-item" href="{% url "secretariador:lista-resoluciones" %}"><i class="bi bi-list-ul me-1"></i>Resoluciones</a></li>{% endif %}
+            {% endif %}
           </ul>
         </li>
         {% endif %}
