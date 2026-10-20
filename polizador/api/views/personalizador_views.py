@@ -2,7 +2,7 @@
 from typing import List
 
 from django.contrib.auth import get_user_model
-from django.db.models import BooleanField, Case, F, Func, IntegerField, Value, When
+from django.db.models import BooleanField, Case, Count, F, Func, IntegerField, Value, When
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -24,7 +24,7 @@ from personalizador.models import (
     Agente, ApartadoCargo, ActividadEspecifica, CargoTipo, Categoria, CEIC,
     ComisionadoExterno, Departamento, DenominacionCargo, Direccion, Directorio,
     Gerencia, GeneroAgente, GrupoCargo, Oficina, RepresentanteTecnico, TituloProfesional,
-    LicenciaPermiso, PeriodoLicencia, TipoLicenciaPermiso,
+    LicenciaPermiso, PeriodoLicencia, TipoLicenciaPermiso, InstrumentoAgente,
 )
 from personalizador.licencias import (
     balance_tipo, resumen_agente, saldos_pendientes_agente,
@@ -322,6 +322,53 @@ register_simple_datatable(
     search_lookups=["tituloprofesional_nombre__icontains", "tituloprofesional_abreviatura__icontains"],
     row_builder=_tituloprofesional_datatable_row,
     default_order="tituloprofesional_nombre",
+)
+
+
+# --- InstrumentoAgente datatable ---
+def _instrumentoagente_datatable_row(i: InstrumentoAgente, user) -> dict:
+    id_ = i.id
+    acciones = _simple_acciones(
+        user, "personalizador.delete_instrumentoagente", "personalizador.change_instrumentoagente",
+        f"<a href='/personal/crear/instrumentoagente/{id_}'>{editlinkimg}</a>",
+        f"<a href='/personal/eliminar/instrumentoagente/{id_}'>{eliminarlinkimg}</a>",
+    )
+    if i.instrumentoagente:
+        acciones += f"<a href='{i.instrumentoagente.url}' target='_blank' title='Ver documento'><i class='bi bi-file-earmark-pdf text-danger'></i></a>"
+    return {
+        "id": i.id,
+        "instrumentoagente_tipo": i.get_instrumentoagente_tipo_display(),
+        "instrumentoagente_organismo": i.instrumentoagente_organismo,
+        "instrumentoagente_numero": i.instrumentoagente_numero,
+        "instrumentoagente_descripcion": i.instrumentoagente_descripcion,
+        "agentes": i.cantidad_agentes,
+        "acciones": acciones,
+    }
+
+
+register_simple_datatable(
+    router, InstrumentoAgente, "instrumentoagentes",
+    order_fields={
+        "id": "id",
+        "instrumentoagente_tipo": "instrumentoagente_tipo",
+        "instrumentoagente_organismo": "instrumentoagente_organismo",
+        "instrumentoagente_numero": "instrumentoagente_numero",
+        "instrumentoagente_descripcion": "instrumentoagente_descripcion",
+    },
+    filter_fields={
+        "instrumentoagente_tipo": "instrumentoagente_tipo",
+        "instrumentoagente_organismo": "instrumentoagente_organismo__icontains",
+        "instrumentoagente_numero": "instrumentoagente_numero__icontains",
+        "instrumentoagente_descripcion": "instrumentoagente_descripcion__icontains",
+    },
+    search_lookups=["instrumentoagente_numero__icontains", "instrumentoagente_organismo__icontains", "instrumentoagente_descripcion__icontains"],
+    row_builder=_instrumentoagente_datatable_row,
+    default_order="instrumentoagente_tipo",
+    queryset=InstrumentoAgente.objects.annotate(
+        cantidad_agentes=Count("agentes_aportes_ley", distinct=True)
+        + Count("agentes_aportes_anses", distinct=True)
+        + Count("agentes_transferencia_definitiva", distinct=True),
+    ),
 )
 
 
@@ -712,6 +759,7 @@ def _agente_datatable_row(a: Agente, user) -> dict:
         "antiguedad": _formatear_antiguedad(a.antiguedad),
         "activo": "Sí" if a.activo else "No",
         "con_errores": "Sí" if a.con_errores else "No",
+        "instrumentos_sin_vincular": "Sí" if a.instrumentos_sin_vincular_calc else "No",
         "acciones": acciones,
     }
 
@@ -727,6 +775,7 @@ register_simple_datatable(
         "edad": "edad_calculada",
         "activo": "activo",
         "con_errores": "con_errores",
+        "instrumentos_sin_vincular": "instrumentos_sin_vincular_calc",
     },
     filter_fields={
         "agente_apellidos": "agente_apellidos__icontains",
@@ -736,6 +785,7 @@ register_simple_datatable(
         "edad": "edad_calculada",
         "activo": "activo",
         "con_errores": "con_errores",
+        "instrumentos_sin_vincular": "instrumentos_sin_vincular_calc",
     },
     search_lookups=["agente_apellidos__icontains", "agente_nombres__icontains", "dni__icontains"],
     row_builder=_agente_datatable_row,
@@ -743,8 +793,14 @@ register_simple_datatable(
     queryset=Agente.objects.select_related(
         "denominacion_cargo", "oficina__cargo_directorio", "oficina__cargo_gerencia",
         "oficina__cargo_direccion", "oficina__cargo_departamento",
-    ).annotate(edad_calculada=_EdadCalculada(F("fecha_nacimiento"))),
-    boolean_filter_keys=frozenset({"activo", "con_errores"}),
+    ).annotate(
+        edad_calculada=_EdadCalculada(F("fecha_nacimiento")),
+        instrumentos_sin_vincular_calc=Case(
+            When(Agente.q_instrumentos_sin_vincular(), then=Value(True)),
+            default=Value(False), output_field=BooleanField(),
+        ),
+    ),
+    boolean_filter_keys=frozenset({"activo", "con_errores", "instrumentos_sin_vincular"}),
     with_detail=False,
 )
 

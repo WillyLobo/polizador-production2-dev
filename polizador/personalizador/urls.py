@@ -3,6 +3,7 @@ from django.urls import path
 from personalizador.views.generoagenteviews import *
 from personalizador.views.tituloprofesionalviews import *
 from personalizador.views.categoriaviews import *
+from personalizador.views.instrumentoagenteviews import *
 from personalizador.views.denominacioncargoviews import *
 from personalizador.views.apartadocargoviews import *
 from personalizador.views.ceicviews import *
@@ -36,6 +37,11 @@ tituloprofesional_patterns = [
 	path("crear/tituloprofesional/", CrearTituloProfesional.as_view(), name="crear-tituloprofesional"),
 	path("crear/tituloprofesional/<pk>", UpdateTituloProfesional.as_view(), name="update-tituloprofesional"),
 	path("eliminar/tituloprofesional/<pk>", EliminarTituloProfesional.as_view(), name="eliminar-tituloprofesional"),
+]
+instrumentoagente_patterns = [
+	path("crear/instrumentoagente/", CrearInstrumentoAgente.as_view(), name="crear-instrumentoagente"),
+	path("crear/instrumentoagente/<pk>", UpdateInstrumentoAgente.as_view(), name="update-instrumentoagente"),
+	path("eliminar/instrumentoagente/<pk>", EliminarInstrumentoAgente.as_view(), name="eliminar-instrumentoagente"),
 ]
 categoria_patterns = [
 	path("crear/categoria/", CrearCategoria.as_view(), name="crear-categoria"),
@@ -130,6 +136,7 @@ ajax = [
 	path("listas/generoagentes", PaginaListaGeneroAgentes, name="lista-generoagentes"),
 	path("listas/tituloprofesionales", PaginaListaTituloProfesionales, name="lista-tituloprofesionales"),
 	path("listas/categorias", PaginaListaCategorias, name="lista-categorias"),
+	path("listas/instrumentoagentes", PaginaListaInstrumentoAgentes, name="lista-instrumentoagentes"),
 	path("listas/denominacioncargos", PaginaListaDenominacionCargos, name="lista-denominacioncargos"),
 	path("listas/apartadocargos", PaginaListaApartadoCargos, name="lista-apartadocargos"),
 	path("listas/ceics", PaginaListaCEICs, name="lista-ceics"),
@@ -151,6 +158,7 @@ urlpatterns += ajax
 urlpatterns += generoagente_patterns
 urlpatterns += tituloprofesional_patterns
 urlpatterns += categoria_patterns
+urlpatterns += instrumentoagente_patterns
 urlpatterns += denominacioncargo_patterns
 urlpatterns += apartadocargo_patterns
 urlpatterns += ceic_patterns

@@ -6,7 +6,7 @@ from django.urls import reverse_lazy
 from django.views import generic
 from secretariador.models import InstrumentosLegalesMemorandum, InstrumentosLegalesDecretos, InstrumentosLegalesResoluciones
 from secretariador.forms.instrumentoslegalesform import *
-from core.mixins import DeleteRelatedObjectsMixin
+from core.mixins import DeleteRelatedObjectsMixin, PopupCreateMixin
 
 @method_decorator(login_required, name="dispatch")
 class CrearInstrumentoLegalMemorandum(PermissionRequiredMixin, generic.CreateView):
@@ -23,7 +23,7 @@ class CrearInstrumentoLegalMemorandum(PermissionRequiredMixin, generic.CreateVie
 		return self.title
 	
 @method_decorator(login_required, name="dispatch")
-class CrearInstrumentoLegalDecreto(PermissionRequiredMixin, generic.CreateView):
+class CrearInstrumentoLegalDecreto(PopupCreateMixin, PermissionRequiredMixin, generic.CreateView):
 	permission_required = "secretariador.add_instrumentoslegalesdecretos"
 
 	model = InstrumentosLegalesDecretos
@@ -35,6 +35,20 @@ class CrearInstrumentoLegalDecreto(PermissionRequiredMixin, generic.CreateView):
 
 	def get_title(self):
 		return self.title
+
+	def get_form_class(self):
+		return InstrumentosLegalesDecretosPopupForm if self.is_popup() else super().get_form_class()
+
+@method_decorator(login_required, name="dispatch")
+class CrearInstrumentoLegalResolucion(PopupCreateMixin, PermissionRequiredMixin, generic.CreateView):
+	"""Alta rapida (solo popup del boton "+" de un select2) de una Resolucion de
+	Presidencia o de Directorio, eligiendo el tipo en el form."""
+	permission_required = "secretariador.add_instrumentoslegalesresoluciones"
+
+	model = InstrumentosLegalesResoluciones
+	template_name = PopupCreateMixin.popup_template_name
+	form_class = InstrumentosLegalesResolucionesPopupForm
+	success_url = reverse_lazy("secretariador:lista-resoluciones")
 
 @method_decorator(login_required, name="dispatch")
 class CrearInstrumentoLegalResolucionPresidencia(PermissionRequiredMixin, generic.CreateView):

@@ -22,9 +22,11 @@ from personalizador.models import (
     Gerencia,
     GeneroAgente,
     GrupoCargo,
+    InstrumentoAgente,
     Oficina,
     TituloProfesional,
 )
+from personalizador.instrumentos import AMBIGUO, CONCEPTOS, EXT, buscar, instrumento_vinculado
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +58,12 @@ SHEET_NAME = "PERSONAL"
 # respectivamente: vienen ya codificadas con los mismos valores que los
 # choices del modelo (RES/DEC, RES/DEC y DEC/RES/DIS), sin encabezado en la
 # fila 2.
+#
+# Los numeros de instrumento (pase a planta, bonificacion, contrato de servicio,
+# transferencia, aportes de ley) se leen como texto y despues
+# _vincular_instrumentos los cambia por la FK a la Resolucion/Decreto (o
+# InstrumentoAgente) que les corresponde; los que no matchean quedan en las
+# columnas de texto como dato heredado (ver personalizador/instrumentos.py).
 #
 # Los bloques "ANTIGÜEDAD BONIFICABLE" (AÑOS/MES/DIAS/FECHA DE SISTEMA) y
 # "AÑOS TOTALES" son totales ya calculados (equivalentes a la property
@@ -104,6 +112,16 @@ COL_APORTES_ANSES_MESES = 43
 COL_APORTES_ANSES_DIAS = 44
 
 FIRST_DATA_ROW = 4
+
+# Columna del xlsx de cada concepto de personalizador/instrumentos.py::CONCEPTOS (para
+# senalar la celda en los avisos). cargo_interno y aportes_anses no se importan.
+COL_INSTRUMENTO_POR_CONCEPTO = {
+    "pase_planta": COL_N_DECRETO,
+    "bonificacion": COL_N_RESOLUCION_BONIFICACION,
+    "contrato_servicio": COL_N_RESOLUCION_CONTRATO_SERVICIO,
+    "transferencia_definitiva": COL_N_DECRETO_TRANSFERENCIA,
+    "aportes_ley": COL_APORTES_LEY_RESOLUCION,
+}
 
 SEXO_A_GENERO = {"M": "Masculino", "F": "Femenino"}
 
@@ -351,6 +369,7 @@ class Command(BaseCommand):
                 avisos_antes = len(avisos)
 
                 updates = self._resolver_campos(row, dni, fila_excel, avisos)
+                self._vincular_instrumentos(agente, updates, dni, fila_excel, avisos)
                 updates["activo"] = True
 
                 titulo = self._resolver_titulo(row, dni, fila_excel, avisos)
@@ -716,6 +735,57 @@ class Command(BaseCommand):
                 )
 
         return updates
+
+    def _vincular_instrumentos(self, agente, updates, dni, fila_excel, avisos):
+        """Reemplaza en `updates` los textos de instrumentos leidos del xlsx por la FK al
+        instrumento que les corresponde (ver personalizador/instrumentos.py).
+
+        - Si matchea una Resolucion/Decreto: se vincula y se vacia el texto heredado.
+        - Disposiciones de aportes (y aportes sin tipo que no matchean): InstrumentoAgente.
+        - Si no matchea y el agente ya tiene un instrumento vinculado para ese concepto, se
+          conserva el vinculado y se descarta el texto.
+        - Si no matchea y no hay nada vinculado: queda como texto heredado + aviso.
+        """
+        for concepto in CONCEPTOS:
+            if concepto.clave not in COL_INSTRUMENTO_POR_CONCEPTO:
+                continue
+            if concepto.heredado not in updates:
+                # Tipo sin numero: no hay nada que vincular ni que guardar como heredado.
+                if concepto.heredado_tipo and not getattr(agente, concepto.heredado):
+                    updates.pop(concepto.heredado_tipo, None)
+                continue
+            col = COL_INSTRUMENTO_POR_CONCEPTO[concepto.clave]
+            texto = updates[concepto.heredado]
+            tipo = updates.get(concepto.heredado_tipo) if concepto.heredado_tipo else concepto.tipo_fijo
+
+            resultado = buscar(tipo, texto)
+            if resultado.instrumento is not None and resultado.tipo in concepto.fks:
+                destino, instrumento = concepto.fks[resultado.tipo], resultado.instrumento
+            elif EXT in concepto.fks and (tipo == "DIS" or (tipo is None and resultado.motivo != AMBIGUO)):
+                destino = concepto.fks[EXT]
+                instrumento, _ = InstrumentoAgente.objects.get_or_create(
+                    instrumentoagente_tipo="DIS" if tipo == "DIS" else "OTR",
+                    instrumentoagente_organismo="",
+                    instrumentoagente_numero=texto,
+                )
+            else:
+                vinculado_tipo, _ = instrumento_vinculado(agente, concepto)
+                if vinculado_tipo:
+                    del updates[concepto.heredado]
+                    updates.pop(concepto.heredado_tipo, None)
+                else:
+                    _registrar_aviso(
+                        avisos, fila_excel, dni, col,
+                        f"DNI {dni}: {concepto.label} '{texto}' no se pudo vincular a un instrumento legal "
+                        f"({resultado.motivo}), quedo como dato heredado.",
+                    )
+                continue
+
+            for campo in concepto.fks.values():
+                updates[campo] = instrumento if campo == destino else None
+            updates[concepto.heredado] = None
+            if concepto.heredado_tipo:
+                updates[concepto.heredado_tipo] = None
 
     def _resolver_titulo(self, row, dni, fila_excel, avisos):
         grado_raw, nombre_raw = row[COL_TITULO_GRADO], row[COL_TITULO_NOMBRE]

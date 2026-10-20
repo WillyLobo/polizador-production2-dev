@@ -6,6 +6,7 @@ from django.contrib.auth.admin import UserAdmin
 from core.admin_mixins import StrSelectRelatedAdminMixin
 from personalizador.models import *
 from personalizador.resources import *
+from personalizador.instrumentos import CONCEPTOS
 
 class SinGruposFilter(admin.SimpleListFilter):
     """Filtro para encontrar las altas automaticas por LDAP.
@@ -74,6 +75,12 @@ class AgenteAdmin(StrSelectRelatedAdminMixin, ImportExportMixin, SimpleHistoryAd
         "oficina",
         "domicilio_localidad",
     ]
+    raw_id_fields = [campo for concepto in CONCEPTOS for campo in concepto.fks.values()]
+
+class InstrumentoAgenteAdmin(SimpleHistoryAdmin):
+    list_display = ["instrumentoagente_tipo", "instrumentoagente_organismo", "instrumentoagente_numero", "instrumentoagente_fecha"]
+    list_filter = ["instrumentoagente_tipo"]
+    search_fields = ["instrumentoagente_numero", "instrumentoagente_organismo", "instrumentoagente_descripcion"]
 
 class GeneroAgenteAdmin(ImportExportMixin, SimpleHistoryAdmin):
     resource_class = GeneroAgenteResource
@@ -226,6 +233,7 @@ class CorteLicenciaAdmin(StrSelectRelatedAdminMixin, SimpleHistoryAdmin):
     dias_restantes.short_description = "Días Restantes"
 
 admin.site.register(Agente, AgenteAdmin)
+admin.site.register(InstrumentoAgente, InstrumentoAgenteAdmin)
 admin.site.register(GeneroAgente, GeneroAgenteAdmin)
 admin.site.register(TituloProfesional, TituloProfesionalAdmin)
 admin.site.register(Categoria, CategoriaAdmin)

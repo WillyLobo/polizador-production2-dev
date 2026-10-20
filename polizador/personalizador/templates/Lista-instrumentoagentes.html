@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+{% block title %}<title>Lista Instrumentos Externos</title>{% endblock title%}
+
+<div class="min-vh-100">
+  <div class="card">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Instrumentos Externos</div>
+    <div class="card-body p-2">
+      <div class="table-responsive">
+        <table id="tableInstrumentoAgentes" width="auto" class="table table-striped table-bordered align-middle mb-0">
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script language="javascript">
+
+  $(document).ready(function() {
+      var columns = [
+          {
+              data: 'instrumentoagente_tipo', name: 'instrumentoagente_tipo', title: 'Tipo',
+              filterType: 'select', filterChoices: [['DIS', 'Disposición'], ['RES', 'Resolución'], ['DEC', 'Decreto'], ['OTR', 'Otro']],
+          },
+          { data: 'instrumentoagente_organismo', name: 'instrumentoagente_organismo', title: 'Organismo' },
+          { data: 'instrumentoagente_numero', name: 'instrumentoagente_numero', title: 'Número' },
+          { data: 'instrumentoagente_descripcion', name: 'instrumentoagente_descripcion', title: 'Descripción' },
+          { data: 'agentes', title: 'Agentes', orderable: false, filterable: false },
+          { data: 'acciones', title: 'Acciones', orderable: false, searchable: false },
+      ];
+
+      NinjaDatatableUtils.initialize_table(
+          $('#tableInstrumentoAgentes'),
+          '/v1/api/datatables/instrumentoagentes/',
+          columns,
+          {
+              order: [[0, 'asc']],
+              lengthMenu: [[50, 100, -1], [50, 100, 'all']],
+              detailUrl: '/v1/api/datatables/instrumentoagentes/{id}/detalle/',
+          },
+      );
+  });
+
+</script>
+
+{% endblock %}
