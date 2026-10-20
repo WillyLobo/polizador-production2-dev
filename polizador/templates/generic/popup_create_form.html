@@ -1,5 +1,5 @@
 {{ form.media }}
-<form id="popupCreateForm" method="post" novalidate>
+<form id="popupCreateForm" method="post" enctype="multipart/form-data" novalidate>
   {% csrf_token %}
   <input type="hidden" name="_popup" value="1">
   {% if popup_form_partial %}

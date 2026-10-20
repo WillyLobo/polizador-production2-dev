@@ -216,8 +216,8 @@ class InstrumentosLegalesResolucionesDirectorioForm(BaseFormMixin, forms.ModelFo
         self.fields['instrumentolegalresoluciones_ano'].initial = datetime.now().year
 class InstrumentosLegalesResolucionesPopupForm(BaseFormMixin, forms.ModelForm):
     """Alta rapida de una Resolucion (Presidencia o Directorio) desde el boton "+" de un
-    select2 (ej. instrumentos del Agente). Sin PDF: el modal no envia archivos, se sube
-    despues desde la edicion o lo completa sync_resoluciones_sgt."""
+    select2 (ej. instrumentos del Agente). El PDF es opcional: si no se sube, lo completa
+    sync_resoluciones_sgt."""
     class Meta:
         model = InstrumentosLegalesResoluciones
         fields = (
@@ -227,6 +227,7 @@ class InstrumentosLegalesResolucionesPopupForm(BaseFormMixin, forms.ModelForm):
             "instrumentolegalresoluciones_ano",
             "instrumentolegalresoluciones_fecha_aprobacion",
             "instrumentolegalresoluciones_descripcion",
+            "instrumentolegalresoluciones",
         )
         widgets = {
             "instrumentolegalresoluciones_tipo": forms.Select(attrs={"class": "form-control"}),
@@ -235,6 +236,7 @@ class InstrumentosLegalesResolucionesPopupForm(BaseFormMixin, forms.ModelForm):
             "instrumentolegalresoluciones_ano": forms.TextInput(attrs={"class": "form-control"}),
             "instrumentolegalresoluciones_fecha_aprobacion": DateHTMLWidget(attrs={"type": "date", "class": "form-control", "autocomplete": "off"}),
             "instrumentolegalresoluciones_descripcion": forms.TextInput(attrs={"class": "form-control"}),
+            "instrumentolegalresoluciones": forms.ClearableFileInput(attrs={"class": "form-control"}),
         }
         help_texts = {
             "instrumentolegalresoluciones_acta": "Solo para Resoluciones de Directorio.",
@@ -263,7 +265,7 @@ class InstrumentosLegalesResolucionesPopupForm(BaseFormMixin, forms.ModelForm):
         return cleaned_data
 
 class InstrumentosLegalesDecretosPopupForm(BaseFormMixin, forms.ModelForm):
-    """Alta rapida de un Decreto desde el boton "+" de un select2. Sin PDF (ver
+    """Alta rapida de un Decreto desde el boton "+" de un select2. PDF opcional (ver
     InstrumentosLegalesResolucionesPopupForm)."""
     class Meta:
         model = InstrumentosLegalesDecretos
@@ -273,6 +275,7 @@ class InstrumentosLegalesDecretosPopupForm(BaseFormMixin, forms.ModelForm):
             "instrumentolegaldecretos_ano",
             "instrumentolegaldecretos_fecha_aprobacion",
             "instrumentolegaldecretos_descripcion",
+            "instrumentolegaldecretos",
         )
         widgets = {
             "instrumentolegaldecretos_tipo": forms.Select(attrs={"class": "form-control"}),
@@ -280,6 +283,7 @@ class InstrumentosLegalesDecretosPopupForm(BaseFormMixin, forms.ModelForm):
             "instrumentolegaldecretos_ano": forms.TextInput(attrs={"class": "form-control"}),
             "instrumentolegaldecretos_fecha_aprobacion": DateHTMLWidget(attrs={"type": "date", "class": "form-control", "autocomplete": "off"}),
             "instrumentolegaldecretos_descripcion": forms.TextInput(attrs={"class": "form-control"}),
+            "instrumentolegaldecretos": forms.ClearableFileInput(attrs={"class": "form-control"}),
         }
 
     def __init__(self, *args, **kwargs):

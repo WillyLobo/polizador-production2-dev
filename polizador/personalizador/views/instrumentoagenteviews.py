@@ -33,9 +33,6 @@ class CrearInstrumentoAgente(PopupCreateMixin, PermissionRequiredMixin, generic.
 	def get_title(self):
 		return self.title
 
-	def get_form_class(self):
-		return InstrumentoAgentePopupForm if self.is_popup() else super().get_form_class()
-
 	def get_context_data(self, **kwargs):
 		context = super().get_context_data(**kwargs)
 		context["title"] = self.get_title()

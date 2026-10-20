@@ -23,10 +23,3 @@ class InstrumentoAgenteForm(forms.ModelForm):
 			"instrumentoagente_descripcion": forms.TextInput(attrs={"class": "form-control"}),
 			"instrumentoagente": forms.ClearableFileInput(attrs={"class": "form-control"}),
 		}
-
-class InstrumentoAgentePopupForm(InstrumentoAgenteForm):
-	"""Alta rapida desde el boton "+" del form de Agente: el modal no envia archivos, el
-	documento digitalizado se sube despues desde la edicion."""
-
-	class Meta(InstrumentoAgenteForm.Meta):
-		fields = tuple(f for f in InstrumentoAgenteForm.Meta.fields if f != "instrumentoagente")

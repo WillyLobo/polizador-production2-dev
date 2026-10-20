@@ -639,9 +639,22 @@ class InstrumentosAgenteTest(TestCase):
         respuesta = self.client.get(reverse("secretariador:crear-resolucion"), {"_popup": "1"})
         self.assertContains(respuesta, "popupCreateForm")
         respuesta = self.client.get(reverse("personalizador:crear-instrumentoagente"), {"_popup": "1"})
-        self.assertNotContains(respuesta, 'type="file"')
+        self.assertContains(respuesta, 'type="file"')
         respuesta = self.client.get(reverse("personalizador:lista-instrumentoagentes"))
         self.assertEqual(respuesta.status_code, 200)
+
+    def test_popup_sube_pdf(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from personalizador.models import InstrumentoAgente
+        self.client.force_login(UserModel.objects.create_superuser("admin", "admin@example.com", "x"))
+        pdf = SimpleUploadedFile("disp.pdf", b"%PDF-1.4\n%%EOF\n", content_type="application/pdf")
+        respuesta = self.client.post(reverse("personalizador:crear-instrumentoagente"), {
+            "_popup": "1", "instrumentoagente_tipo": "DIS", "instrumentoagente_numero": "5160/19", "instrumentoagente": pdf,
+        })
+        self.assertEqual(respuesta.status_code, 200, respuesta.content)
+        instrumento = InstrumentoAgente.objects.get(pk=respuesta.json()["id"])
+        self.assertTrue(instrumento.instrumentoagente.name.endswith(".pdf"))
+        instrumento.instrumentoagente.delete(save=False)
 
 
 class SituacionAgenteTest(TestCase):
