@@ -26,7 +26,8 @@ class CrearInstrumentoAgente(PopupCreateMixin, PermissionRequiredMixin, generic.
 	template_name = "instrumentoagente/crear-instrumentoagente.html"
 	form_class = InstrumentoAgenteForm
 	success_url = reverse_lazy("personalizador:crear-instrumentoagente")
-	popup_form_partial = "partials/instrumentoagente-form-partial.html"
+	# Sin popup_form_partial: el modal usa form.as_div, igual que el alta rapida de
+	# Resoluciones y Decretos que se abren desde el mismo form de Agente.
 
 	title = "Crear Instrumento Externo"
 
