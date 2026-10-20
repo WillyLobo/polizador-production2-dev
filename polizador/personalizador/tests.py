@@ -642,3 +642,50 @@ class InstrumentosAgenteTest(TestCase):
         self.assertNotContains(respuesta, 'type="file"')
         respuesta = self.client.get(reverse("personalizador:lista-instrumentoagentes"))
         self.assertEqual(respuesta.status_code, 200)
+
+
+class SituacionAgenteTest(TestCase):
+    """Activo es excluyente con retirado/jubilado/fallecido, que si se combinan entre si."""
+
+    def setUp(self):
+        self.genero = GeneroAgente.objects.create(generoagente_nombre="Test")
+
+    def _agente(self, dni, **kwargs):
+        return Agente.objects.create(
+            agente_nombres="Juan", agente_apellidos="Perez", sexo=self.genero,
+            dni=dni, cuil="20301112223", **kwargs,
+        )
+
+    def test_activo_excluye_bajas(self):
+        agente = Agente(agente_nombres="Juan", agente_apellidos="Perez", sexo=self.genero, activo=True, jubilado=True)
+        with self.assertRaises(ValidationError):
+            agente.clean()
+
+    def test_bajas_combinables(self):
+        agente = self._agente(30111222, activo=False, retirado=True, jubilado=True, fallecido=True)
+        agente.clean()
+        self.assertEqual(agente.bajas, ["Retirado", "Jubilado", "Fallecido"])
+
+    def test_constraint_en_base(self):
+        from django.db import IntegrityError, transaction
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            self._agente(30111222, activo=True, fallecido=True)
+
+    def test_filtro_situacion_datatable(self):
+        import json
+        self.client.force_login(UserModel.objects.create_superuser("admin", "admin@example.com", "x"))
+        activo = self._agente(30111222)
+        jubilado = self._agente(30111333, activo=False, jubilado=True)
+        fallecido = self._agente(30111444, activo=False, jubilado=True, fallecido=True)
+        inactivo = self._agente(30111555, activo=False)
+
+        def ids(filtros):
+            respuesta = self.client.get("/v1/api/datatables/agentes/", {"filters": json.dumps(filtros)})
+            return {fila["id"] for fila in respuesta.json()["data"]}
+
+        self.assertEqual(ids({"situacion": "activo"}), {activo.pk})
+        self.assertEqual(ids({"situacion": "activo,jubilado"}), {activo.pk, jubilado.pk, fallecido.pk})
+        self.assertEqual(ids({"situacion": "activo,fallecido"}), {activo.pk, fallecido.pk})
+        self.assertEqual(ids({}), {activo.pk, jubilado.pk, fallecido.pk, inactivo.pk})
+        self.assertEqual(ids({"situacion_columna": "inactivo"}), {inactivo.pk})
+        self.assertEqual(ids({"situacion_columna": "fallecido"}), {fallecido.pk})

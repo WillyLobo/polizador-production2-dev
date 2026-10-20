@@ -88,6 +88,13 @@ class Agente(models.Model):
         verbose_name = "Agente"
         verbose_name_plural = "Agentes"
         ordering = ("agente_apellidos","agente_nombres")
+        constraints = [
+            # Retirado/jubilado/fallecido son excluyentes con activo (no entre si).
+            models.CheckConstraint(
+                condition=~(Q(activo=True) & (Q(retirado=True) | Q(jubilado=True) | Q(fallecido=True))),
+                name="agente_activo_excluye_baja",
+            ),
+        ]
 
     agente_usuario = models.OneToOneField(CustomUser, on_delete=models.CASCADE, blank=True, null=True)
     agente_nombres = models.CharField("Nombres", max_length=120)
@@ -172,6 +179,9 @@ class Agente(models.Model):
     aportes_anses_dias = models.PositiveIntegerField("Días reconocidos (ANSES)", default=0, blank=True)
     # FLAGS
     activo = models.BooleanField("Activo", default=True)
+    retirado = models.BooleanField("Retirado", default=False, help_text="Excluyente con Activo")
+    jubilado = models.BooleanField("Jubilado", default=False, help_text="Excluyente con Activo")
+    fallecido = models.BooleanField("Fallecido", default=False, help_text="Excluyente con Activo")
     con_errores = models.BooleanField(
         "Con errores de carga", default=False,
         help_text="Se marca automaticamente al importar personal_gral.xlsx si la fila tuvo algun aviso.",
@@ -245,8 +255,17 @@ class Agente(models.Model):
             q |= Q(**{f"{concepto.heredado}__gt": ""})
         return q
 
+    BAJAS = ("retirado", "jubilado", "fallecido")
+
+    @property
+    def bajas(self):
+        """Etiquetas de los flags de baja marcados (ej. ["Jubilado", "Fallecido"])."""
+        return [self._meta.get_field(flag).verbose_name for flag in self.BAJAS if getattr(self, flag)]
+
     def clean(self):
         super().clean()
+        if self.activo and self.bajas:
+            raise ValidationError({"activo": f"Un agente activo no puede estar marcado como {', '.join(self.bajas).lower()}."})
         for concepto in CONCEPTOS:
             cargados = [campo for campo in concepto.fks.values() if getattr(self, f"{campo}_id")]
             if len(cargados) > 1:

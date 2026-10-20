@@ -2,7 +2,7 @@
 from typing import List
 
 from django.contrib.auth import get_user_model
-from django.db.models import BooleanField, Case, Count, F, Func, IntegerField, Value, When
+from django.db.models import BooleanField, Case, Count, F, Func, IntegerField, Q, Value, When
 from django.shortcuts import get_object_or_404
 from django.template.loader import render_to_string
 from django.utils import timezone
@@ -758,10 +758,31 @@ def _agente_datatable_row(a: Agente, user) -> dict:
         "edad": int(a.edad_calculada) if a.edad_calculada is not None else "",
         "antiguedad": _formatear_antiguedad(a.antiguedad),
         "activo": "Sí" if a.activo else "No",
+        "situacion": ", ".join(a.bajas) or ("Activo" if a.activo else "Inactivo"),
         "con_errores": "Sí" if a.con_errores else "No",
         "instrumentos_sin_vincular": "Sí" if a.instrumentos_sin_vincular_calc else "No",
         "acciones": acciones,
     }
+
+
+def _filtrar_situacion_agentes(qs, value):
+    """`situacion`: lista separada por comas de los grupos a mostrar ("activo", "retirado",
+    "jubilado", "fallecido"); un agente entra si pertenece a cualquiera (OR)."""
+    q = Q()
+    for flag in value.split(","):
+        if flag == "activo" or flag in Agente.BAJAS:
+            q |= Q(**{flag: True})
+    return qs.filter(q) if q else qs.none()
+
+
+def _filtrar_situacion_columna_agentes(qs, value):
+    """Filtro de la columna Situación: una sola situacion. "inactivo" = no activo y sin
+    ninguna baja (retirado/jubilado/fallecido) marcada."""
+    if value == "inactivo":
+        return qs.filter(activo=False, retirado=False, jubilado=False, fallecido=False)
+    if value == "activo" or value in Agente.BAJAS:
+        return qs.filter(**{value: True})
+    return qs
 
 
 register_simple_datatable(
@@ -801,6 +822,10 @@ register_simple_datatable(
         ),
     ),
     boolean_filter_keys=frozenset({"activo", "con_errores", "instrumentos_sin_vincular"}),
+    custom_filters={
+        "situacion": _filtrar_situacion_agentes,
+        "situacion_columna": _filtrar_situacion_columna_agentes,
+    },
     with_detail=False,
 )
 

@@ -69,6 +69,9 @@ class AgenteForm(AddRelatedPermissionMixin, forms.ModelForm):
 			"agente_personal_transitorio",
 			"agente_personal_de_gabinete",
 			"activo",
+			"retirado",
+			"jubilado",
+			"fallecido",
 			"con_errores",
 		)
 		widgets = {
@@ -111,6 +114,9 @@ class AgenteForm(AddRelatedPermissionMixin, forms.ModelForm):
 			"agente_personal_transitorio": forms.CheckboxInput(attrs={"class": "form-check-input"}),
 			"agente_personal_de_gabinete": forms.CheckboxInput(attrs={"class": "form-check-input"}),
 			"activo": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+			"retirado": forms.CheckboxInput(attrs={"class": "form-check-input agente-baja"}),
+			"jubilado": forms.CheckboxInput(attrs={"class": "form-check-input agente-baja"}),
+			"fallecido": forms.CheckboxInput(attrs={"class": "form-check-input agente-baja"}),
 			"con_errores": forms.CheckboxInput(attrs={"class": "form-check-input"}),
 			"instrumento_pase_planta_decreto": decretoagentewidget(attrs={"class": "form-control customSelect2"}),
 			"instrumento_bonificacion_resolucion": resolucionagentewidget(attrs={"class": "form-control customSelect2"}),

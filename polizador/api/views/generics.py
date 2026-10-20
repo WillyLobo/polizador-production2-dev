@@ -112,6 +112,7 @@ def register_simple_datatable(
     queryset=None,
     with_detail: bool = True,
     boolean_filter_keys: frozenset = frozenset(),
+    custom_filters: dict | None = None,
 ):
     """Registers `GET /datatables/<url_slug>/` (+ `.../<{id}>/detalle/` unless
     `with_detail=False`) for a "simple" list: one model, a handful of columns,
@@ -122,7 +123,10 @@ def register_simple_datatable(
 
     `boolean_filter_keys` names the `filter_fields` keys backed by a BooleanField:
     the "true"/"false" strings sent by a <select> filter get coerced before
-    `.filter()`, same as the dedicated Solicitud/Obra endpoints do inline."""
+    `.filter()`, same as the dedicated Solicitud/Obra endpoints do inline.
+
+    `custom_filters` maps a filter key to `fn(qs, value) -> qs`, for filters that a
+    single lookup can't express (ej. an OR across several fields)."""
     base_qs = model.objects.all() if queryset is None else queryset
 
     @router.get(f"/datatables/{url_slug}/", operation_id=f"datatable_{url_slug}_list")
@@ -144,6 +148,10 @@ def register_simple_datatable(
         except (TypeError, ValueError):
             active_filters = {}
         for key, value in active_filters.items():
+            if custom_filters and key in custom_filters:
+                if value not in (None, ""):
+                    qs = custom_filters[key](qs, value)
+                continue
             lookup = filter_fields.get(key)
             if not lookup or value in (None, ""):
                 continue

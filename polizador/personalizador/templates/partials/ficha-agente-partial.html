@@ -3,7 +3,7 @@
     <h5 class="mb-0">
         {{object.agente_apellidoynombre_coma}}
         {% if object.agente_personal_transitorio %}<span class="badge text-bg-secondary ms-1">Comisionado</span>{% endif %}
-        {% if not object.activo %}<span class="badge text-bg-danger ms-1">Inactivo</span>{% endif %}
+        {% for baja in object.bajas %}<span class="badge text-bg-dark ms-1">{{baja}}</span>{% empty %}{% if not object.activo %}<span class="badge text-bg-danger ms-1">Inactivo</span>{% endif %}{% endfor %}
     </h5>
     {% if perms.personalizador.change_agente %}
     <a href="{% url "personalizador:update-agente" object.id %}" class="btn btn-sm btn-outline-secondary">Editar</a>
@@ -90,6 +90,7 @@
             <div class="card-header py-2 bg-body-tertiary fw-semibold small">Estado</div>
             <div class="card-body p-2 d-flex flex-wrap gap-2">
                 <span class="badge {% if object.activo %}text-bg-success{% else %}text-bg-danger{% endif %}">{% if object.activo %}Activo{% else %}Inactivo{% endif %}</span>
+                {% for baja in object.bajas %}<span class="badge text-bg-dark">{{baja}}</span>{% endfor %}
                 <span class="badge {% if object.agente_verificado_contra_padron %}text-bg-success{% else %}text-bg-secondary{% endif %}">{% if object.agente_verificado_contra_padron %}Chequeado contra padrón{% else %}Sin chequear{% endif %}</span>
                 {% if object.agente_es_inpector_obra %}<span class="badge text-bg-info">Inspector de Obra</span>{% endif %}
                 {% if object.agente_personal_transitorio %}<span class="badge text-bg-secondary">Personal Transitorio</span>{% endif %}

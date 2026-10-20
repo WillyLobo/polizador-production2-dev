@@ -279,7 +279,8 @@ class Command(BaseCommand):
         "inconsistente): se calcula con core.validators.get_cuil() a partir "
         "del DNI y el SEXO de cada fila. "
         "Ademas marca Agente.activo=True para los Agentes matcheados por DNI "
-        "presente en el xlsx, y Agente.activo=False para todos los demas "
+        "presente en el xlsx (salvo los marcados como retirado/jubilado/"
+        "fallecido, que quedan como estan con un aviso), y Agente.activo=False para todos los demas "
         "Agentes de la base que no aparezcan en el listado (con DNI valido). "
         "Tambien marca Agente.con_errores=True si la fila del agente genero "
         "algun aviso (incluidos los de TituloProfesional silenciados de la "
@@ -370,7 +371,15 @@ class Command(BaseCommand):
 
                 updates = self._resolver_campos(row, dni, fila_excel, avisos)
                 self._vincular_instrumentos(agente, updates, dni, fila_excel, avisos)
-                updates["activo"] = True
+                if agente.bajas:
+                    # Activo es excluyente con retirado/jubilado/fallecido: no se pisa la baja
+                    # cargada a mano, se avisa para que alguien revise cual de los dos esta mal.
+                    _registrar_aviso(
+                        avisos, fila_excel, dni, COL_DNI,
+                        f"DNI {dni}: figura en el listado pero esta marcado como {', '.join(agente.bajas).lower()}, no se marco como activo.",
+                    )
+                else:
+                    updates["activo"] = True
 
                 titulo = self._resolver_titulo(row, dni, fila_excel, avisos)
                 titulo_nuevo = titulo is not None and not agente.titulo_profesional.filter(pk=titulo.pk).exists()

@@ -7,9 +7,23 @@
   <div class="card">
     <div class="card-header py-2 bg-body-tertiary fw-semibold small d-flex justify-content-between align-items-center">
       <span>Agentes</span>
-      <div class="form-check form-switch mb-0">
-        <input class="form-check-input" type="checkbox" id="switchMostrarTodos">
-        <label class="form-check-label" for="switchMostrarTodos">Mostrar todos</label>
+      <div class="d-flex flex-wrap gap-3">
+        <div class="form-check form-switch mb-0">
+          <input class="form-check-input switch-situacion" type="checkbox" id="switchRetirados" value="retirado">
+          <label class="form-check-label" for="switchRetirados">Retirados</label>
+        </div>
+        <div class="form-check form-switch mb-0">
+          <input class="form-check-input switch-situacion" type="checkbox" id="switchJubilados" value="jubilado">
+          <label class="form-check-label" for="switchJubilados">Jubilados</label>
+        </div>
+        <div class="form-check form-switch mb-0">
+          <input class="form-check-input switch-situacion" type="checkbox" id="switchFallecidos" value="fallecido">
+          <label class="form-check-label" for="switchFallecidos">Fallecidos</label>
+        </div>
+        <div class="form-check form-switch mb-0">
+          <input class="form-check-input" type="checkbox" id="switchMostrarTodos">
+          <label class="form-check-label" for="switchMostrarTodos">Mostrar todos</label>
+        </div>
       </div>
     </div>
     <div class="card-body p-2">
@@ -36,6 +50,11 @@
           { data: 'edad', name: 'edad', title: 'Edad' },
           { data: 'antiguedad', title: 'Antigüedad', orderable: false, filterable: false },
           {
+              data: 'situacion', name: 'situacion_columna', title: 'Situación', orderable: false,
+              filterType: 'select',
+              filterChoices: [['activo', 'Activo'], ['inactivo', 'Inactivo'], ['retirado', 'Retirado'], ['jubilado', 'Jubilado'], ['fallecido', 'Fallecido']],
+          },
+          {
               data: 'activo', name: 'activo', title: 'Activo',
               filterType: 'select', filterChoices: [['true', 'Sí'], ['false', 'No']],
           },
@@ -60,8 +79,18 @@
               order: [[0, 'asc']],
               lengthMenu: [[50, 100, -1], [50, 100, 'all']],
               detailUrl: '/v1/api/datatables/agentes/{id}/detalle/',
+              // Por defecto solo activos; cada switch suma su grupo y "Mostrar todos"
+              // incluye tambien a los inactivos sin ninguna baja marcada.
+              // Si se eligio una situacion en el filtro de la columna, esa manda sobre los switches.
               extraFilters: function() {
-                  return { activo: mostrarTodos ? undefined : 'true' };
+                  var indiceSituacion = columns.findIndex(function(col) { return col.name === 'situacion_columna'; });
+                  var filtroColumna = $('#tableAgentes .ninja-datatable-filter-row th').eq(indiceSituacion).find('select').val();
+                  if (mostrarTodos || filtroColumna) {
+                      return {};
+                  }
+                  var situacion = ['activo'];
+                  $('.switch-situacion:checked').each(function() { situacion.push(this.value); });
+                  return { situacion: situacion.join(',') };
               },
               dataTableOptions: {
                   createdRow: function(row, data) {
@@ -75,6 +104,11 @@
 
       $('#switchMostrarTodos').on('change', function() {
           mostrarTodos = $(this).is(':checked');
+          $('.switch-situacion').prop('disabled', mostrarTodos);
+          table.draw();
+      });
+
+      $('.switch-situacion').on('change', function() {
           table.draw();
       });
   });
