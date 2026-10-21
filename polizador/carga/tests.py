@@ -2824,3 +2824,73 @@ class RubroMontoVinculadoTests(TestCase):
 
         self.assertContains(response, "Sin monto de contrato vinculado")
         self.assertContains(response, reverse("carga:update-plandetrabajosrubro", kwargs={"pk": rubro_nuevo.pk}))
+
+
+class CrearObraYContratoRedirectTests(TestCase):
+    """Al crear una Obra o un Contrato, "Guardar" vuelve a la ficha de la obra con un mensaje,
+    en lugar de mostrar un formulario en blanco sin confirmación."""
+
+    def setUp(self):
+        self.empresa = Empresa.objects.create(empresa_nombre="Empresa Test")
+        self.programa = Programa.objects.create(programa_nombre="Programa Test")
+        user = get_user_model().objects.create_superuser(username="tester", password="testpass123")
+        self.client.force_login(user)
+
+    def _obra_data(self, **extra):
+        return {
+            "obra_nombre": "Obra Nueva",
+            "obra_empresa": self.empresa.pk,
+            "obra_programa": self.programa.pk,
+            "obra_expediente": "EXP-1",
+            **extra,
+        }
+
+    def test_crear_obra_redirige_a_la_ficha_con_mensaje(self):
+        response = self.client.post(reverse("carga:crear-obra"), self._obra_data(), follow=True)
+        obra = Obra.objects.get(obra_nombre="Obra Nueva")
+        self.assertRedirects(response, reverse("carga:estado-obra", kwargs={"pk": obra.pk}))
+        self.assertContains(response, 'Se guardó la obra &quot;Obra Nueva&quot;.')
+
+    def test_crear_obra_y_cargar_contrato_sigue_yendo_al_contrato(self):
+        response = self.client.post(reverse("carga:crear-obra"), self._obra_data(next="contrato"))
+        obra = Obra.objects.get(obra_nombre="Obra Nueva")
+        self.assertRedirects(
+            response, f"{reverse('carga:crear-contrato')}?obra={obra.pk}", fetch_redirect_response=False
+        )
+
+    def test_crear_contrato_redirige_a_la_ficha_con_mensaje(self):
+        obra = Obra.objects.create(**{
+            "obra_nombre": "Obra Test", "obra_empresa": self.empresa,
+            "obra_programa": self.programa, "obra_expediente": "EXP-2",
+        })
+        response = self.client.post(reverse("carga:crear-contrato"), {
+            "contrato_obra": obra.pk,
+            "contrato_fecha": "2026-01-01",
+            "contrato_descripcion": "Contrato Test",
+            "contratomonto_set-TOTAL_FORMS": "0",
+            "contratomonto_set-INITIAL_FORMS": "0",
+        }, follow=True)
+        self.assertEqual(Contrato.objects.filter(contrato_obra=obra).count(), 1)
+        self.assertRedirects(response, reverse("carga:estado-obra", kwargs={"pk": obra.pk}))
+        self.assertContains(response, "Se guardó el contrato.")
+
+
+class ManualesAyudaTests(TestCase):
+    """Los manuales de ayuda cargan y todas las capturas que referencian existen en static."""
+
+    def setUp(self):
+        user = get_user_model().objects.create_superuser(username="tester", password="testpass123")
+        self.client.force_login(user)
+
+    def test_manuales_cargan_y_sus_imagenes_existen(self):
+        import re
+        from django.conf import settings
+        from django.contrib.staticfiles import finders
+
+        for nombre in ("ayuda-plan-fojas", "ayuda-certificados", "ayuda-reprogramacion", "ayuda-textos-resolucion"):
+            with self.subTest(manual=nombre):
+                response = self.client.get(reverse(f"carga:{nombre}"))
+                self.assertEqual(response.status_code, 200)
+                for src in re.findall(r'<img[^>]+src="([^"]+)"', response.content.decode()):
+                    ruta = src.removeprefix(settings.STATIC_URL)
+                    self.assertIsNotNone(finders.find(ruta), f"Falta la imagen {ruta}")

@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.contrib.auth.decorators import login_required, permission_required
@@ -74,7 +75,6 @@ class CrearObra(PermissionRequiredMixin, UserKwargsMixin, generic.CreateView):
 	model = Obra
 	template_name = "obra/crear-obra.html"
 	form_class = ObraForm
-	success_url = reverse_lazy("carga:crear-obra")
 
 	title = "Crear Obra"
 
@@ -86,8 +86,12 @@ class CrearObra(PermissionRequiredMixin, UserKwargsMixin, generic.CreateView):
 		context["title"] = self.get_title()
 		return context
 
+	def get_success_url(self):
+		return reverse("carga:estado-obra", kwargs={"pk": self.object.pk})
+
 	def form_valid(self, form):
 		response = super().form_valid(form)
+		messages.success(self.request, f"Se guardó la obra \"{self.object.obra_nombre}\".")
 		if self.request.POST.get("next") == "contrato":
 			return HttpResponseRedirect(f"{reverse('carga:crear-contrato')}?obra={self.object.pk}")
 		return response
