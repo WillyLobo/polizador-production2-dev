@@ -112,7 +112,6 @@
             {% comment %} {% if perms.personalizador.add_cargotipo %}<li><a class="dropdown-item" href="{% url "personalizador:crear-cargotipo" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Tipo de Cargo</a></li>{% endif %} {% endcomment %}
             {% comment %} {% if perms.personalizador.add_generoagente %}<li><a class="dropdown-item" href="{% url "personalizador:crear-generoagente" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Género</a></li>{% endif %} {% endcomment %}
             {% if perms.personalizador.add_tituloprofesional %}<li><a class="dropdown-item" href="{% url "personalizador:crear-tituloprofesional" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Título Profesional</a></li>{% endif %}
-            {% if perms.personalizador.add_instrumentoagente %}<li><a class="dropdown-item" href="{% url "personalizador:crear-instrumentoagente" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Instrumento Externo</a></li>{% endif %}
             {% if perms.personalizador.add_licenciapermiso %}<li><a class="dropdown-item" href="{% url "personalizador:crear-licenciapermiso" %}"><i class="bi bi-plus-circle me-1"></i>Registrar Licencia/Permiso</a></li>{% endif %}
             {% if perms.personalizador.add_tipolicenciapermiso %}<li><a class="dropdown-item" href="{% url "personalizador:crear-tipolicenciapermiso" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Tipo de Licencia/Permiso</a></li>{% endif %}
             {% if perms.personalizador.add_periodolicencia %}<li><a class="dropdown-item" href="{% url "personalizador:crear-periodolicencia" %}"><i class="bi bi-plus-circle me-1"></i>Nuevo Período de Licencia</a></li>{% endif %}
@@ -138,7 +137,6 @@
             <li><a class="dropdown-item" href="{% url "personalizador:lista-generoagentes" %}"><i class="bi bi-list-ul me-1"></i>Géneros</a></li>
             {% endcomment %}
             <li><a class="dropdown-item" href="{% url "personalizador:lista-tituloprofesionales" %}"><i class="bi bi-list-ul me-1"></i>Títulos Profesionales</a></li>
-            {% if perms.personalizador.view_instrumentoagente %}<li><a class="dropdown-item" href="{% url "personalizador:lista-instrumentoagentes" %}"><i class="bi bi-file-earmark-text me-1"></i>Instrumentos Externos</a></li>{% endif %}
           </ul>
         </li>
         {% endif %}
@@ -171,24 +169,26 @@
         {% endif %}
 
         <!-- Instrumentos -->
-        {% if perms.secretariador.view_instrumentoslegalesmemorandum or perms.secretariador.view_instrumentoslegalesdecretos or perms.secretariador.view_instrumentoslegalesresoluciones or perms.secretariador.add_instrumentoslegalesmemorandum or perms.secretariador.add_instrumentoslegalesdecretos or perms.secretariador.add_instrumentoslegalesresoluciones %}
+        {% if perms.secretariador.view_instrumentoslegalesmemorandum or perms.secretariador.view_instrumentoslegalesdecretos or perms.secretariador.view_instrumentoslegalesresoluciones or perms.personalizador.view_instrumentoagente or perms.secretariador.add_instrumentoslegalesmemorandum or perms.secretariador.add_instrumentoslegalesdecretos or perms.secretariador.add_instrumentoslegalesresoluciones or perms.personalizador.add_instrumentoagente %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-file-text me-1"></i>Instrumentos
           </a>
           <ul class="dropdown-menu dropdown-menu-lg-start">
-            {% if perms.secretariador.add_instrumentoslegalesmemorandum or perms.secretariador.add_instrumentoslegalesdecretos or perms.secretariador.add_instrumentoslegalesresoluciones %}
+            {% if perms.secretariador.add_instrumentoslegalesmemorandum or perms.secretariador.add_instrumentoslegalesdecretos or perms.secretariador.add_instrumentoslegalesresoluciones or perms.personalizador.add_instrumentoagente %}
             <li class="dropdown-item fw-bold text-muted"><small>CREAR</small></li>
             {% if perms.secretariador.add_instrumentoslegalesmemorandum %}<li><a class="dropdown-item" href="{% url "secretariador:crear-memorandum" %}"><i class="bi bi-plus-circle me-1"></i>Memorándum</a></li>{% endif %}
             {% if perms.secretariador.add_instrumentoslegalesdecretos %}<li><a class="dropdown-item" href="{% url "secretariador:redirect-decreto" %}"><i class="bi bi-plus-circle me-1"></i>Decreto</a></li>{% endif %}
             {% if perms.secretariador.add_instrumentoslegalesresoluciones %}<li><a class="dropdown-item" href="{% url "secretariador:redirect-resoluciones" %}"><i class="bi bi-plus-circle me-1"></i>Resolución</a></li>{% endif %}
+            {% if perms.personalizador.add_instrumentoagente %}<li><a class="dropdown-item" href="{% url "personalizador:crear-instrumentoagente" %}"><i class="bi bi-plus-circle me-1"></i>Instrumento Externo</a></li>{% endif %}
             {% endif %}
-            {% if perms.secretariador.view_instrumentoslegalesmemorandum or perms.secretariador.view_instrumentoslegalesdecretos or perms.secretariador.view_instrumentoslegalesresoluciones %}
-            {% if perms.secretariador.add_instrumentoslegalesmemorandum or perms.secretariador.add_instrumentoslegalesdecretos or perms.secretariador.add_instrumentoslegalesresoluciones %}<li><hr class="dropdown-divider"></li>{% endif %}
+            {% if perms.secretariador.view_instrumentoslegalesmemorandum or perms.secretariador.view_instrumentoslegalesdecretos or perms.secretariador.view_instrumentoslegalesresoluciones or perms.personalizador.view_instrumentoagente %}
+            {% if perms.secretariador.add_instrumentoslegalesmemorandum or perms.secretariador.add_instrumentoslegalesdecretos or perms.secretariador.add_instrumentoslegalesresoluciones or perms.personalizador.add_instrumentoagente %}<li><hr class="dropdown-divider"></li>{% endif %}
             <li class="dropdown-item fw-bold text-muted"><small>LISTADOS</small></li>
             {% if perms.secretariador.view_instrumentoslegalesmemorandum %}<li><a class="dropdown-item" href="{% url "secretariador:lista-memorandum" %}"><i class="bi bi-list-ul me-1"></i>Memorándum</a></li>{% endif %}
             {% if perms.secretariador.view_instrumentoslegalesdecretos %}<li><a class="dropdown-item" href="{% url "secretariador:lista-decretos" %}"><i class="bi bi-list-ul me-1"></i>Decretos</a></li>{% endif %}
             {% if perms.secretariador.view_instrumentoslegalesresoluciones %}<li><a class="dropdown-item" href="{% url "secretariador:lista-resoluciones" %}"><i class="bi bi-list-ul me-1"></i>Resoluciones</a></li>{% endif %}
+            {% if perms.personalizador.view_instrumentoagente %}<li><a class="dropdown-item" href="{% url "personalizador:lista-instrumentoagentes" %}"><i class="bi bi-list-ul me-1"></i>Instrumentos Externos</a></li>{% endif %}
             {% endif %}
           </ul>
         </li>
