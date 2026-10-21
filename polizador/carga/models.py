@@ -881,7 +881,9 @@ class Certificado(models.Model):
     certificado_digital = models.FileField(upload_to=generate_name_certificados, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], null=True, blank=True)
     certificado_fecha_carga = models.DateField("Fecha de carga", default=timezone.now)
     certificado_fecha_carga_legacy = models.BooleanField("Es Certificado Viejo", default=False)
-    certificado_foja = models.ForeignKey("FojaDeMedicion", verbose_name="Foja de Medición de Origen", on_delete=models.SET_NULL, null=True, blank=True)
+    # RESTRICT y no SET_NULL: un Parcial/Etapa sin Foja ya no pasa clean(). RESTRICT (no
+    # PROTECT) deja borrar la Obra entera, que se lleva Fojas y Certificados en la misma cascada.
+    certificado_foja = models.ForeignKey("FojaDeMedicion", verbose_name="Foja de Medición de Origen", on_delete=models.RESTRICT, null=True, blank=True)
     certificado_ley27397_detalle = models.JSONField(
         "Detalle de tramos Ley 27397",
         null=True,
@@ -1250,6 +1252,24 @@ class PlanDeTrabajosRubro(models.Model):
             return self.rubro_contratomonto.contratomonto_uvi
         return None
 
+    def problema_monto_vinculado(self):
+        """Aviso (o None) si este rubro no va a poder generar certificados desde Foja, o los
+        generaría con montos de un contrato viejo. Misma resolución que
+        certificacion.financiamientos_de_rubro. La reprogramación no copia estos vínculos a
+        propósito (los montos cambian con la adenda), así que la ficha de la obra lo avisa."""
+        contrato_vigente = self.rubro_plan.trabajos_obra.contrato_vigente()
+        if self.rubro_certificado_rubro_id:
+            if contrato_vigente is None or not ContratoMonto.objects.filter(
+                contratomonto_contrato=contrato_vigente, contratomonto_rubro_id=self.rubro_certificado_rubro_id
+            ).exists():
+                return f"El contrato vigente no tiene montos para el rubro {self.rubro_certificado_rubro}."
+            return None
+        if self.rubro_contratomonto_id:
+            if contrato_vigente is None or self.rubro_contratomonto.contratomonto_contrato_id != contrato_vigente.pk:
+                return "Vinculado a un monto de un contrato que ya no es el vigente."
+            return None
+        return "Sin monto de contrato vinculado: no se van a poder generar certificados."
+
     def comparacion_etapas_fojas(self):
         """Empareja cada Etapa proyectada con la Foja de igual posición, para ver el
         desfasaje entre lo planificado y lo medido. Si hay más Fojas que Etapas (se
@@ -1410,9 +1430,10 @@ class PlanDeTrabajosEtapaItem(models.Model):
                 # al 100% de la incidencia de cada item sin importar el avance real, así
                 # que no sirve de piso. Se usa en cambio el avance REAL (Fojas de
                 # Medición) al momento de reprogramar (misma base que valida la matriz,
-                # ver PlanDeTrabajosEtapaMatriz._get_anterior_map).
+                # ver PlanDeTrabajosEtapaMatriz._get_anterior_map): la última Foja de los
+                # rubros predecesores, sin contar las Fojas ya medidas sobre este rubro.
                 real_map = FojaDeMedicion.anterior_items_map(
-                    self.etapaitem_etapa.etapa_rubro, items=[self.etapaitem_planitem]
+                    self.etapaitem_etapa.etapa_rubro.rubro_anterior, items=[self.etapaitem_planitem]
                 )
                 previous_acumulado = real_map.get(self.etapaitem_planitem_id)
 

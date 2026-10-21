@@ -1,6 +1,8 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.http import HttpResponseRedirect
+from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
 from django.urls import reverse, reverse_lazy
 from django.views import generic
@@ -261,9 +263,19 @@ class EliminarFojaDeMedicion(PermissionRequiredMixin, DeleteRelatedObjectsMixin,
 
 	model = FojaDeMedicion
 	template_name = "generic/confirm_delete.html"
+	protected_error_message = "No se puede eliminar la Foja de Medición porque ya tiene certificados generados."
 
 	def get_success_url(self):
 		return reverse("carga:estado-obra", kwargs={"pk": self.object.foja_rubro.rubro_plan.trabajos_obra_id})
+
+	def form_valid(self, form):
+		# Sólo la última Foja de la cadena: el número y el acumulado de las siguientes se
+		# derivan de esta, así que borrar una intermedia dejaría un hueco en la numeración
+		# y los acumulados posteriores desactualizados. Para corregirla, se edita.
+		if self.object.foja_siguiente():
+			messages.error(self.request, "Sólo se puede eliminar la última Foja de Medición del rubro. Para corregir una anterior, editala.")
+			return redirect(self.get_success_url())
+		return super().form_valid(form)
 
 
 @method_decorator(login_required, name="dispatch")

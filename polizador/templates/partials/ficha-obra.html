@@ -322,6 +322,13 @@
                 </div>
                 <a href="{% url "carga:update-plandetrabajosrubro" rubro.id %}" class="btn btn-sm btn-outline-secondary ms-2 flex-shrink-0">Editar rubro</a>
             </div>
+            {% with problema=rubro.problema_monto_vinculado %}
+            {% if problema %}
+            <div class="alert alert-warning small py-1 px-2 mb-2">
+                {{problema}} <a href="{% url "carga:update-plandetrabajosrubro" rubro.id %}" class="alert-link">Vincular monto</a>
+            </div>
+            {% endif %}
+            {% endwith %}
 
             {# ── Matriz: Etapas Proyectadas ── #}
             <div class="mb-3">

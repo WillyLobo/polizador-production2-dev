@@ -106,11 +106,15 @@ class PlanDeTrabajosEtapaMatriz(LogInvalidFormMixin, PermissionRequiredMixin, ge
 		piso se corta en la última de esas — no en la última Foja de toda la cadena — porque
 		los meses posteriores ya están representados como columnas propias de la grilla (el
 		hueco recién completado, o etapas ya guardadas): sumarlos dos veces duplicaría el
-		acumulado."""
+		acumulado.
+
+		Sin Fojas de historial no hay piso: o el rubro no viene de una reprogramación (la
+		grilla ya edita todas sus Etapas desde la 1, y sus propias Fojas no son un piso a
+		sumar encima), o todas las Fojas predecesoras ya son columnas de la grilla (hueco)."""
 		if historial_fojas:
 			ultima = historial_fojas[-1]
 			return {item.pk: self._historial_acumulado(ultima, item) for item in items}
-		return FojaDeMedicion.anterior_items_map(rubro, items=items)
+		return {}
 
 	def _build_context(self, rubro, items, existentes, form, readonly, historial_fojas, gap_fojas, anterior_map, total_columns):
 		num_gap = len(gap_fojas)

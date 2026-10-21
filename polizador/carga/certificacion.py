@@ -18,7 +18,7 @@ from django.db import transaction
 from django.db.models import Q, Sum
 
 from carga import ley27397
-from carga.models import Certificado, ContratoMonto, ContratoTramoPago, Uvi
+from carga.models import Certificado, ContratoMonto, ContratoTramoPago, FojaDeMedicion, Uvi
 
 _DOS_DECIMALES = Decimal("0.01")
 _TRES_DECIMALES = Decimal("0.001")
@@ -110,7 +110,8 @@ def financiamientos_de_rubro(foja):
 
     raise ValidationError(
         f"El rubro '{rubro.rubro_nombre}' del Plan de Trabajos no tiene ningún monto de "
-        "contrato vinculado (ni un Monto de Contrato puntual, ni un Rubro de Certificado)."
+        "contrato vinculado (ni un Monto de Contrato puntual, ni un Rubro de Certificado). "
+        "Vinculalo desde 'Editar rubro' en la ficha de la obra."
     )
 
 
@@ -719,9 +720,16 @@ def construir_certificados_desde_foja(
             foja, contrato_etapas, certificado_expediente, certificado_fecha, certificado_fecha_carga_legacy
         )
 
+    # El camino ETAPA ya se protege solo (un tramo certificado no vuelve a quedar
+    # pendiente); el PARCIAL no tiene nada que lo ate a la Foja más que esta consulta.
+    if Certificado.objects.filter(certificado_foja=foja, certificado_tipo="PARCIAL").exists():
+        raise ValidationError(
+            f"Ya se generaron los Certificados Parciales de la Foja N°{foja.foja_numero}; "
+            "para volver a generarlos, primero hay que eliminar los existentes."
+        )
+
     montos = financiamientos_de_rubro(foja)
 
-    obra = foja.foja_rubro.rubro_plan.trabajos_obra
     mes_pct = _redondear_pct(foja.foja_pct_avance_mes())
     acum_pct = _redondear_pct(foja.foja_pct_acumulado())
     ante_pct = acum_pct - mes_pct
@@ -770,11 +778,15 @@ def construir_certificados_desde_foja(
 def generar_certificados_desde_foja(
     foja, certificado_expediente, certificado_fecha, certificado_fecha_carga_legacy=False
 ):
-    """Construye y persiste los certificados de construir_certificados_desde_foja, todo o nada."""
-    certificados = construir_certificados_desde_foja(
-        foja, certificado_expediente, certificado_fecha, certificado_fecha_carga_legacy
-    )
+    """Construye y persiste los certificados de construir_certificados_desde_foja, todo o nada.
+
+    Bloquea la fila de la Foja antes de construir: sin eso, dos "confirmar" simultáneos
+    pasan los dos el chequeo de certificados ya generados antes de que alguno guarde."""
     with transaction.atomic():
+        FojaDeMedicion.objects.select_for_update().get(pk=foja.pk)
+        certificados = construir_certificados_desde_foja(
+            foja, certificado_expediente, certificado_fecha, certificado_fecha_carga_legacy
+        )
         for certificado in certificados:
             certificado.save()
     return certificados
