@@ -30,7 +30,7 @@
         <div class="card-body p-3">
             <p>Reprogramar una obra es crear un <strong>Plan de Trabajos nuevo</strong> cuando el avance real (medido en las Fojas de Medición) se desvió de lo que proyectaba el plan vigente — típicamente porque la obra se atrasó y las Etapas ya cargadas no dejan margen para seguir proyectando. "Reprogramar" <strong>no edita</strong> el plan viejo: lo deja tal cual, como historial, y arma uno nuevo a partir de él.</p>
 
-            <p>Al reprogramar, cada Rubro y cada Ítem del plan viejo se <strong>clona</strong> en el plan nuevo (mismo nombre, mismo % de incidencia), quedando vinculados al original. Las Etapas Proyectadas, en cambio, <strong>no se clonan</strong>: hay que cargarlas de nuevo, pero solo los meses que realmente faltan — el sistema resuelve automáticamente la parte que ya se sabe.</p>
+            <p>Al reprogramar, cada Rubro y cada Ítem del plan viejo se <strong>clona</strong> en el plan nuevo (mismo nombre, mismo % de incidencia), quedando vinculados al original. Lo que <strong>no</strong> se clona es el vínculo de cada Rubro con el contrato (Monto de Contrato o Rubro de Certificado) ni su documento digital: al reprogramar, los montos suelen cambiar con un contrato nuevo (adenda), así que hay que volver a vincularlos (ver <a href="#paso3">Paso 3</a>). Las Etapas Proyectadas, en cambio, <strong>no se clonan</strong>: hay que cargarlas de nuevo, pero solo los meses que realmente faltan — el sistema resuelve automáticamente la parte que ya se sabe.</p>
 
             <div class="alert alert-info small mb-3">
                 <i class="bi bi-info-circle me-1"></i>
@@ -57,6 +57,8 @@
             <p>Se abre el formulario de un Plan de Trabajos nuevo, con la Obra ya preseleccionada. El campo que más cuidado necesita es <strong>Duración (meses)</strong>: define cuántas columnas va a tener la matriz de cada Rubro reprogramado, y <strong>no es la duración total de la obra</strong>.</p>
             <img src="{% static 'carga/img/ayuda/reprogramacion/02-reprogramar-form-completo.png' %}" class="img-fluid border rounded mb-3" alt="Formulario de reprogramación con el campo Duración (meses) completo y su ayuda contextual">
 
+            <p>La <strong>Fecha de Vigencia</strong> del plan nuevo tiene que ser <strong>posterior</strong> a la del plan actual: el plan vigente es siempre el de Fecha de Vigencia más reciente, no el último que se cargó. Si la obra tiene un contrato nuevo (adenda), elegilo en <strong>Contrato Vinculado</strong>.</p>
+
             <div class="alert alert-warning small mb-0">
                 <i class="bi bi-exclamation-triangle me-1"></i>
                 Las Etapas nuevas continúan numerando desde la última Etapa del rubro anterior — no vuelven a empezar en 1. Para que la numeración llegue exactamente al plazo total de la obra, hay que restar del plazo total la cantidad de <strong>Etapas</strong> que ya tenía el plan anterior (3 en este ejemplo), <strong>no</strong> la cantidad de Fojas medidas (5): son cosas distintas, y confundirlas hace que la matriz quede corta o se pase de largo. Los meses del hueco (2, en este ejemplo) ya están incluidos en esa cuenta — no hay que sumarlos aparte.
@@ -68,7 +70,12 @@
     <div class="card mb-4" id="paso3">
         <div class="card-header py-2 bg-body-tertiary fw-semibold small">Paso 3 — Abrir "Gestionar Etapas": el hueco se completa solo</div>
         <div class="card-body p-3">
-            <p>Al guardar, la ficha de la obra muestra el plan nuevo con sus Rubros ya clonados, pero sin ninguna Etapa Proyectada todavía. Hacé clic en <strong>"Gestionar Etapas"</strong> sobre el rubro:</p>
+            <p>Al guardar, quedás en la pantalla del plan nuevo, con sus Rubros ya clonados. Volvé a la ficha de la obra (por ejemplo, desde el listado del menú Obras → Obras): ahí el plan nuevo aparece como vigente, sin ninguna Etapa Proyectada todavía.</p>
+            <div class="alert alert-warning small">
+                <i class="bi bi-exclamation-triangle me-1"></i>
+                Cada rubro clonado va a mostrar el aviso amarillo <strong>"Sin monto de contrato vinculado"</strong>. Hacé clic en <strong>"Vincular monto"</strong> y elegí el Monto de Contrato (o el Rubro de Certificado) que corresponde: sin ese vínculo no se van a poder generar certificados desde las Fojas del plan nuevo.
+            </div>
+            <p>Después hacé clic en <strong>"Gestionar Etapas"</strong> sobre el rubro:</p>
             <img src="{% static 'carga/img/ayuda/reprogramacion/03-obra-ficha-plan-nuevo-vacio.png' %}" class="img-fluid border rounded mb-3" alt="Ficha de la obra con el plan reprogramado recién creado, rubro clonado sin Etapas">
 
             <p>La matriz se abre con las columnas del hueco ya resueltas: a la izquierda, en gris, las Fojas que ya tenían su propia Etapa en el plan viejo (columnas <strong>"Avance Anterior"</strong>, solo referencia); después, también en gris pero como celdas <strong>bloqueadas</strong> dentro de la grilla editable, las Fojas que quedaron sin Etapa — con el avance real ya cargado. Recién a la derecha de esas empiezan las columnas <strong>"(nueva)"</strong>, vacías, listas para proyectar:</p>
@@ -96,6 +103,7 @@
         <div class="card-body p-3">
             <p>Al guardar, la ficha de la obra muestra el plan reprogramado con su cronograma completo — incluidas las Etapas que resolvieron el hueco, ya numeradas junto a las nuevas —, listo para seguir cargando Fojas de Medición sobre él:</p>
             <img src="{% static 'carga/img/ayuda/reprogramacion/06-obra-ficha-plan-nuevo-completo.png' %}" class="img-fluid border rounded" alt="Ficha de la obra con el plan reprogramado completo, mostrando las Etapas del hueco y las nuevas ya numeradas en la misma cadena">
+            <p class="mt-3 mb-0">En la <strong>primera Foja</strong> que cargues sobre el plan reprogramado, el formulario pide además la <strong>Fecha de Reinicio de Obra</strong> (en un recuadro amarillo): es obligatoria para guardarla, y queda registrada en el plan.</p>
         </div>
     </div>
 
@@ -127,6 +135,9 @@
 
                 <dt>¿Por qué no puedo editar la matriz de Etapas del plan anterior?</dt>
                 <dd class="mb-3">Un plan de trabajos que ya no es el vigente se muestra siempre en modo solo lectura. Para seguir cargando avance hay que hacerlo sobre el plan vigente (reprogramando de nuevo si hace falta), no reabriendo uno cerrado.</dd>
+
+                <dt>Después de reprogramar no puedo generar certificados.</dt>
+                <dd class="mb-3">Los rubros del plan nuevo no copian el vínculo con el contrato. Usá "Vincular monto" en el aviso amarillo de la ficha (o "Editar rubro") para elegir el Monto de Contrato del contrato vigente.</dd>
 
                 <dt>¿Se pierde algo del plan viejo al reprogramar?</dt>
                 <dd class="mb-0">No. El plan viejo queda intacto y accesible desde "Ver planes anteriores", con su comparación Etapa vs Foja y el link a su matriz en modo lectura. Reprogramar solo agrega un plan nuevo — nunca borra ni modifica el anterior.</dd>
