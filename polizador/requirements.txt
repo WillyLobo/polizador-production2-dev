@@ -64,7 +64,7 @@ django-appconf==1.2.0
     # via django-select2
 django-auth-ldap==5.3.0
     # via -r requirements.in
-django-debug-toolbar==7.1.1
+django-debug-toolbar==8.0.0
     # via -r requirements.in
 django-environ==0.14.0
     # via -r requirements.in
