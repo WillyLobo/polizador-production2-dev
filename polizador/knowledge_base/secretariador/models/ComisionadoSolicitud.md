@@ -32,14 +32,26 @@ los mismos nombres de atributo (ver el docstring de
   default de externos) para indexar el campo correcto de
   [MontoViaticoDiario](MontoViaticoDiario.md) (estrato × interior/exterior según la
   Provincia de la Solicitud de origen).
-- `viaticos_computado()`: días de la Solicitud/Incorporación de origen × valor diario.
+- `viaticos_computado()`: días de la Solicitud/Incorporación de origen × viático diario
+  **guardado** (`comisionadosolicitud_viatico_diario`), no el que daría hoy `valor_viatico_dia()`.
 - `viaticos_total()`: computado + combustible + gastos + pasaje.
 
-`save()` recalcula y persiste los tres (`_cantidad_de_dias`, `_viatico_diario`,
-`_viatico_computado`, `_viatico_total`) en cada guardado — son snapshots calculados al
-momento de guardar, no propiedades derivadas en cada lectura (mismo patrón que
-`carga.FojaDeMedicionItem.fojaitem_pct_acumulado`, aunque acá no hay una señal de cascada
-hacia adelante porque no hay "comisionados siguientes" en una cadena).
+`save()` llama a `recalcular_campos_derivados()` y persiste los cuatro (`_cantidad_de_dias`,
+`_viatico_diario`, `_viatico_computado`, `_viatico_total`) — son snapshots, no propiedades
+derivadas en cada lectura. **La tarifa diaria queda congelada al asignarse:** cambios
+posteriores en ReglasViatico, en el escalafón/gabinete del agente o en el Directorio no
+alteran comisiones ya cargadas. Se recalcula solo si el registro es nuevo, si cambia alguno
+de `CAMPOS_TARIFA_COMISIONADO` (agente/externo, Solicitud/Incorporación de origen,
+colaborador, `sin_viatico`), o si la Solicitud cambia de provincia o decreto. Días,
+computado y total siempre siguen a la Solicitud. La resolución (.docx) y `ver-solicitud`
+muestran el diario guardado.
+
+Como los formsets de edición solo guardan las filas tocadas, la sincronización con la
+Solicitud la hacen las señales de `secretariador/signals.py`
+(`sincronizar_comisionados_de_solicitud`, `sincronizar_comisionados_de_incorporacion`) vía
+`sincronizar_comisionados()`, guardando solo los registros que cambian. El comando
+`resave_comisionado` corrige registros desincronizados de antes (`--recalcular-diario` para
+aplicar también la tarifa actual).
 
 ## Firma
 
@@ -52,6 +64,9 @@ class ComisionadoSolicitud(models.Model):
 ```python
 # secretariador/views/solicitudviews.py (CrearSolicitud, vía FormsetViewMixin)
 formset.save()  # -> cada ComisionadoSolicitud.save() recalcula sus 4 campos de viático
+
+# secretariador/signals.py, post_save de Solicitud con fechas/provincia/decreto cambiados
+sincronizar_comisionados(comisionados, recalcular_diario, MOTIVO_SINCRONIZAR_SOLICITUD)
 ```
 
 ## Ver también

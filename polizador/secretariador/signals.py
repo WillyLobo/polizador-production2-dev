@@ -1,7 +1,8 @@
 from django.db.models.signals import pre_save, post_save, post_delete, m2m_changed
+from django.db.models import Q
 from django.dispatch import receiver
 
-from .models import ComisionadoSolicitud, Incorporacion, Solicitud
+from .models import ComisionadoSolicitud, Incorporacion, Solicitud, sincronizar_comisionados
 
 # Campos de Solicitud que alimentan `_calcular_texto_solicitud`/`_calcular_texto_exterior`.
 # `solicitud_localidades` (m2m) y los agentes (ComisionadoSolicitud) se manejan aparte.
@@ -41,6 +42,21 @@ CAMPOS_TEXTO_INCORPORACION = [
 	"incorporacion_actuacion_ano",
 ]
 
+# Campos de Solicitud de los que dependen los campos derivados de sus
+# ComisionadoSolicitud (y de los de su Incorporacion): las fechas, los días; la
+# provincia y el decreto, la tarifa diaria. Ver sincronizar_comisionados().
+CAMPOS_DIAS_SOLICITUD = [
+	"solicitud_fecha_desde",
+	"solicitud_fecha_hasta",
+]
+CAMPOS_TARIFA_SOLICITUD = [
+	"solicitud_provincia_id",
+	"solicitud_decreto_viaticos_id",
+]
+
+MOTIVO_SINCRONIZAR_SOLICITUD = "Solicitud editada: recálculo de días/viáticos"
+MOTIVO_SINCRONIZAR_INCORPORACION = "Incorporación asociada a otra Solicitud: recálculo de días/viáticos"
+
 
 def _valor_comparable(instance, campo):
 	"""Normaliza el valor en memoria de `campo` al tipo que devuelve la
@@ -52,6 +68,14 @@ def _valor_comparable(instance, campo):
 	if campo.endswith("_id"):
 		return valor
 	return instance._meta.get_field(campo).to_python(valor)
+
+
+def _campos_que_se_guardan(model, campos, update_fields):
+	"""Con save(update_fields=...), un campo distinto en memoria pero fuera de
+	update_fields no llega a la base: no cuenta como cambio."""
+	if update_fields is None:
+		return campos
+	return [campo for campo in campos if model._meta.get_field(campo).name in update_fields]
 
 
 def _invalidar_texto(model, pk, campo_texto):
@@ -133,3 +157,68 @@ def invalidar_texto_actuacion_por_comisionados(sender, instance, **kwargs):
 	_invalidar_incorporacion_de_solicitud(instance.comisionadosolicitud_foreign_id)
 	# Agente agregado directamente en la Incorporacion (`agentes_incorporacion`).
 	_invalidar_texto_incorporacion(instance.comisionadosolicitud_incorporacion_foreign_id)
+
+
+@receiver(pre_save, sender=Solicitud)
+def detectar_cambios_para_comisionados(sender, instance, update_fields=None, **kwargs):
+	"""Los días y viáticos de un ComisionadoSolicitud son copias calculadas a partir
+	de su Solicitud, y los formsets de edición solo guardan las filas que el usuario
+	tocó: corregir solo las fechas de la Solicitud dejaba a sus comisionados con los
+	días viejos. Acá se anota qué cambió, para que `sincronizar_comisionados_de_solicitud`
+	los recalcule una vez guardada la Solicitud (y su GeneratedField de días)."""
+	instance._sincronizar_comisionados = None
+	if not instance.pk:
+		return
+	campos_dias = _campos_que_se_guardan(Solicitud, CAMPOS_DIAS_SOLICITUD, update_fields)
+	campos_tarifa = _campos_que_se_guardan(Solicitud, CAMPOS_TARIFA_SOLICITUD, update_fields)
+	if not campos_dias and not campos_tarifa:
+		return
+	anterior = Solicitud.objects.filter(pk=instance.pk).values(*campos_dias, *campos_tarifa).first()
+	if anterior is None:
+		return
+
+	def cambio(lista):
+		return any(anterior[campo] != _valor_comparable(instance, campo) for campo in lista)
+
+	if cambio(campos_tarifa):
+		instance._sincronizar_comisionados = {"recalcular_diario": True}
+	elif cambio(campos_dias):
+		instance._sincronizar_comisionados = {"recalcular_diario": False}
+
+
+@receiver(post_save, sender=Solicitud)
+def sincronizar_comisionados_de_solicitud(sender, instance, created, **kwargs):
+	"""Recalcula los comisionados de la Solicitud y los agregados por una
+	Incorporacion a ella. El viático diario solo se recalcula si cambió la
+	provincia o el decreto; si solo cambiaron las fechas queda congelado
+	(ver ComisionadoSolicitud.recalcular_campos_derivados)."""
+	pendiente = getattr(instance, "_sincronizar_comisionados", None)
+	instance._sincronizar_comisionados = None
+	if created or pendiente is None:
+		return
+	comisionados = ComisionadoSolicitud.objects.filter(
+		Q(comisionadosolicitud_foreign=instance)
+		| Q(comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud=instance)
+	)
+	sincronizar_comisionados(comisionados, pendiente["recalcular_diario"], MOTIVO_SINCRONIZAR_SOLICITUD)
+
+
+@receiver(pre_save, sender=Incorporacion)
+def detectar_cambio_de_solicitud_de_incorporacion(sender, instance, update_fields=None, **kwargs):
+	"""Si la Incorporacion pasa a apuntar a otra Solicitud, sus comisionados
+	cambian de viaje (fechas, provincia, decreto): se recalculan del todo."""
+	instance._sincronizar_comisionados = False
+	if not instance.pk or not _campos_que_se_guardan(Incorporacion, ["incorporacion_solicitud_id"], update_fields):
+		return
+	anterior = Incorporacion.objects.filter(pk=instance.pk).values_list("incorporacion_solicitud_id", flat=True).first()
+	instance._sincronizar_comisionados = anterior is not None and anterior != instance.incorporacion_solicitud_id
+
+
+@receiver(post_save, sender=Incorporacion)
+def sincronizar_comisionados_de_incorporacion(sender, instance, created, **kwargs):
+	pendiente = getattr(instance, "_sincronizar_comisionados", False)
+	instance._sincronizar_comisionados = False
+	if created or not pendiente:
+		return
+	comisionados = ComisionadoSolicitud.objects.filter(comisionadosolicitud_incorporacion_foreign=instance)
+	sincronizar_comisionados(comisionados, True, MOTIVO_SINCRONIZAR_INCORPORACION)

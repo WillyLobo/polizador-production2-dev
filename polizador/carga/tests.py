@@ -162,6 +162,47 @@ class PlanDeTrabajosEtapaTestCase(TestCase):
         # no de trabajos_fecha del nuevo plan.
         self.assertEqual(etapa3.etapa_fecha, date(2026, 3, 1))
 
+    def test_primera_etapa_reprogramada_no_cuenta_las_fojas_del_rubro_nuevo(self):
+        """El piso de la primera Etapa de un rubro reprogramado es el avance real al
+        momento de reprogramar (última Foja de los rubros predecesores). Si después se
+        mide sobre el rubro nuevo y se vuelve a guardar esa Etapa, esas Fojas nuevas no
+        deben sumarse al piso."""
+        rubro_viejo = self._crear_rubro()
+        item_viejo = PlanDeTrabajosItem.objects.create(
+            planitem_rubro=rubro_viejo, planitem_nombre="Item 1", planitem_incidencia_pct=Decimal("100")
+        )
+        etapa_vieja = PlanDeTrabajosEtapa.objects.create(etapa_rubro=rubro_viejo)
+        PlanDeTrabajosEtapaItem.objects.create(
+            etapaitem_etapa=etapa_vieja, etapaitem_planitem=item_viejo, etapaitem_pct_proyectado_mes=Decimal("100")
+        )
+        foja_vieja = FojaDeMedicion.objects.create(foja_rubro=rubro_viejo, foja_periodo=date(2026, 1, 1))
+        FojaDeMedicionItem.objects.create(
+            fojaitem_foja=foja_vieja, fojaitem_planitem=item_viejo, fojaitem_pct_avance_mes=Decimal("30")
+        )
+
+        plan_nuevo = PlanDeTrabajos.objects.create(trabajos_obra=self.obra, trabajos_fecha=date(2026, 6, 1))
+        rubro_nuevo = PlanDeTrabajosRubro.objects.create(
+            rubro_plan=plan_nuevo, rubro_nombre="Vivienda", rubro_anterior=rubro_viejo
+        )
+        item_nuevo = PlanDeTrabajosItem.objects.create(
+            planitem_rubro=rubro_nuevo, planitem_nombre="Item 1",
+            planitem_incidencia_pct=Decimal("100"), item_anterior=item_viejo,
+        )
+        etapa_nueva = PlanDeTrabajosEtapa.objects.create(etapa_rubro=rubro_nuevo)
+        etapaitem = PlanDeTrabajosEtapaItem.objects.create(
+            etapaitem_etapa=etapa_nueva, etapaitem_planitem=item_nuevo, etapaitem_pct_proyectado_mes=Decimal("10")
+        )
+        self.assertEqual(etapaitem.etapaitem_pct_proyectado_acumulado, Decimal("40"))
+
+        foja_nueva = FojaDeMedicion.objects.create(foja_rubro=rubro_nuevo, foja_periodo=date(2026, 6, 1))
+        FojaDeMedicionItem.objects.create(
+            fojaitem_foja=foja_nueva, fojaitem_planitem=item_nuevo, fojaitem_pct_avance_mes=Decimal("10")
+        )
+        etapaitem.save()
+
+        etapaitem.refresh_from_db()
+        self.assertEqual(etapaitem.etapaitem_pct_proyectado_acumulado, Decimal("40"))
+
     def test_etapa_monto_pesos(self):
         contratomonto = self._crear_contratomonto(pesos=Decimal("10000"))
         rubro = self._crear_rubro(rubro_contratomonto=contratomonto)
@@ -303,6 +344,21 @@ class PlanDeTrabajosEtapaMatrizViewTests(TestCase):
             response, reverse("carga:estado-obra", kwargs={"pk": self.plan.trabajos_obra_id})
         )
         self.assertEqual(PlanDeTrabajosEtapa.objects.count(), 3)
+
+    def test_volver_a_guardar_la_matriz_con_fojas_ya_cargadas_no_suma_el_avance_real(self):
+        """En un rubro no reprogramado la matriz edita todas sus Etapas desde la 1: el
+        avance real de sus propias Fojas no es un piso a sumar encima de esas columnas."""
+        self.client.post(self.url, self._post_data(["60", "40"]))
+        foja = FojaDeMedicion.objects.create(foja_rubro=self.rubro, foja_periodo=date(2026, 1, 1))
+        FojaDeMedicionItem.objects.create(
+            fojaitem_foja=foja, fojaitem_planitem=self.item, fojaitem_pct_avance_mes=Decimal("50")
+        )
+
+        response = self.client.post(self.url, self._post_data(["60", "40"]))
+
+        self.assertRedirects(
+            response, reverse("carga:estado-obra", kwargs={"pk": self.plan.trabajos_obra_id})
+        )
 
 
 class FojaDeMedicionNumeracionTests(TestCase):
@@ -609,6 +665,17 @@ class GenerarCertificadosDesdeFojaTests(TestCase):
         self.assertEqual(certificado.certificado_periodo, "09/2026")
         self.assertEqual(certificado.certificado_periodo_fecha, date(2026, 9, 30))
 
+    def test_no_permite_generar_dos_veces_los_parciales_de_una_misma_foja(self):
+        nacion = self._crear_financiamiento()
+        self._crear_contratomonto(nacion, pesos=Decimal("1000"))
+        foja = self._crear_foja(date(2026, 1, 1), "10")
+        generar_certificados_desde_foja(foja, "EXP-1", date(2026, 2, 1))
+
+        with self.assertRaises(ValidationError):
+            generar_certificados_desde_foja(foja, "EXP-1", date(2026, 2, 1))
+
+        self.assertEqual(Certificado.objects.filter(certificado_foja=foja).count(), 1)
+
 
 class ResumenCertificacionMensualTests(TestCase):
     """certificacion.resumen_certificacion_mensual: cortes mes/anterior/total y
@@ -674,7 +741,7 @@ class ResumenCertificacionMensualTests(TestCase):
         self.assertEqual(resumen["anticipo"]["mes_pesos"], Decimal("0.00"))
         self.assertEqual(resumen["certificado_obra"]["total_pesos"], Decimal("15000.00"))
 
-    def test_fondo_de_reparo_5pct_sobre_bruto_sin_descontar_anticipo(self):
+    def test_fondo_de_reparo_5pct_sobre_bruto_neto_de_descuento_de_anticipo(self):
         cert1 = self._crear_certificado(
             "PARCIAL", date(2026, 1, 1), Decimal("10000"), certificado_descuento_anticipo_pesos=Decimal("2000")
         )
@@ -682,25 +749,36 @@ class ResumenCertificacionMensualTests(TestCase):
 
         resumen = certificacion.resumen_certificacion_mensual(cert2)
 
-        # 5% de 10000 (bruto, sin descontar los 2000 de anticipo) + 5% de 15000
-        self.assertEqual(resumen["fondo_reparo"]["anterior_pesos"], Decimal("500.00"))
+        # 5% de (10000 - 2000 de anticipo, que ya retuvo su FR en el Anticipo) + 5% de 15000
+        self.assertEqual(resumen["fondo_reparo"]["anterior_pesos"], Decimal("400.00"))
         self.assertEqual(resumen["fondo_reparo"]["mes_pesos"], Decimal("750.00"))
-        self.assertEqual(resumen["fondo_reparo"]["total_pesos"], Decimal("1250.00"))
+        self.assertEqual(resumen["fondo_reparo"]["total_pesos"], Decimal("1150.00"))
         self.assertEqual(
             resumen["total_general"]["total_pesos"],
-            resumen["subtotal1"]["total_pesos"] - Decimal("1250.00"),
+            resumen["subtotal1"]["total_pesos"] - Decimal("1150.00"),
         )
 
-    def test_fondo_de_reparo_no_aplica_a_anticipo(self):
+    def test_fondo_de_reparo_se_retiene_en_el_anticipo(self):
         cert = self._crear_certificado("ANTICIPO", date(2026, 1, 1), Decimal("5000"))
-        # certificado_fondoreparo_monto_*() ignoran el % cargado si el tipo es ANTICIPO.
-        self.assertEqual(cert.certificado_fondoreparo_monto_pesos(), Decimal("0"))
-        self.assertEqual(cert.certificado_fondoreparo_monto_uvi(), Decimal("0"))
-
-        # Certificado.clean() además fuerza el % a 0 para este tipo (se ejerce al
-        # pasar por full_clean(), como hacen las vistas de creación).
         cert.full_clean()
-        self.assertEqual(cert.certificado_fondoreparo_pct, Decimal("0"))
+
+        # Resolución 427/2026: el Anticipo se paga con la retención (clean() ya no la pone en 0).
+        self.assertEqual(cert.certificado_fondoreparo_pct, Decimal("5"))
+        self.assertEqual(cert.certificado_fondoreparo_monto_pesos(), Decimal("250"))
+        self.assertEqual(cert.certificado_importe_abonar_pesos(), Decimal("4750.00"))
+
+    def test_fondo_de_reparo_del_resumen_suma_el_del_anticipo(self):
+        self._crear_certificado("ANTICIPO", date(2026, 1, 1), Decimal("2000"))
+        cert = self._crear_certificado(
+            "PARCIAL", date(2026, 2, 1), Decimal("10000"), certificado_descuento_anticipo_pesos=Decimal("2000")
+        )
+
+        resumen = certificacion.resumen_certificacion_mensual(cert)
+
+        # 5% de 2000 (Anticipo) + 5% de (10000 - 2000): en total, 5% de los 10000 de obra.
+        self.assertEqual(resumen["fondo_reparo"]["anterior_pesos"], Decimal("100.00"))
+        self.assertEqual(resumen["fondo_reparo"]["mes_pesos"], Decimal("400.00"))
+        self.assertEqual(resumen["fondo_reparo"]["total_pesos"], Decimal("500.00"))
 
     def test_anticipo_pct_se_expresa_contra_el_pool_del_financiamiento_no_contra_el_rubro(self):
         # Un segundo rubro bajo el mismo financiamiento agranda el pool de la obra
@@ -2361,8 +2439,8 @@ class RetencionAdobeTests(TestCase):
 
 
 class ImporteAbonarTests(TestCase):
-    """Importe a abonarse: bruto - descuento de anticipo - Fondo de Reparo (sobre el bruto).
-    certificado_monto_cobrar, en cambio, no descuenta el Fondo de Reparo."""
+    """Importe a abonarse: bruto - descuento de anticipo - Fondo de Reparo (sobre el bruto
+    neto del descuento de anticipo). certificado_monto_cobrar no descuenta el Fondo de Reparo."""
 
     def setUp(self):
         empresa = Empresa.objects.create(empresa_nombre="Empresa Test")
@@ -2374,7 +2452,7 @@ class ImporteAbonarTests(TestCase):
             obra_nombre="Obra Test", obra_empresa=empresa, obra_programa=programa, obra_expediente="EXP-ABONAR",
         )
 
-    def test_descuenta_anticipo_y_fondo_de_reparo_sobre_el_bruto(self):
+    def test_descuenta_anticipo_y_fondo_de_reparo_sobre_el_neto(self):
         # Valores del certificado 16128: bruto 47.169,97 UVI, anticipo 20%, FR 5%.
         certificado = Certificado.objects.create(
             certificado_obra=self.obra,
@@ -2383,15 +2461,23 @@ class ImporteAbonarTests(TestCase):
             certificado_rubro_db=self.rubro,
             certificado_expediente="EXP",
             certificado_monto_uvi=Decimal("47169.97"),
-            certificado_monto_pesos=Decimal("67521446.40"),
+            certificado_monto_pesos=Decimal("67521453.56"),
             certificado_descuento_anticipo_uvi=Decimal("9433.99"),
             certificado_descuento_anticipo_pesos=Decimal("14734005.58"),
         )
         certificado.refresh_from_db()
 
-        # FR = 5% del bruto (2.358,50 UVI / 3.376.072,32 $), no del neto de anticipo.
-        self.assertEqual(certificado.certificado_importe_abonar_uvi(), Decimal("35377.48"))
-        self.assertEqual(certificado.certificado_importe_abonar_pesos(), Decimal("49411368.50"))
+        # FR = 5% de (bruto - descuento de anticipo) = 1.886,80 UVI (el cálculo a mano), no 5%
+        # del bruto (2.358,50 UVI); en pesos, esos 1.886,80 UVI a la cotización del bruto
+        # (1.431,45), no restando pesos de distintas fechas: 2.700.859,86 $.
+        self.assertEqual(certificado.certificado_fondoreparo_monto_uvi(), Decimal("1886.80"))
+        self.assertEqual(round(certificado.certificado_fondoreparo_monto_pesos(), 2), Decimal("2700859.86"))
+        self.assertEqual(certificado.certificado_importe_abonar_uvi(), Decimal("35849.18"))
+        self.assertEqual(certificado.certificado_importe_abonar_pesos(), Decimal("50086588.12"))
+        self.assertEqual(
+            round(certificado.certificado_fondoreparo_monto_pesos() / certificado.certificado_fondoreparo_monto_uvi(), 2),
+            Decimal("1431.45"),
+        )
         self.assertEqual(certificado.certificado_monto_cobrar_uvi, Decimal("37735.98"))
 
 
@@ -2443,3 +2529,368 @@ class RetencionAdobeContextoTextoTests(TestCase):
         self.assertIs(contexto["certificado"]["aplica_retencion_adobe"], False)
         self.assertEqual(texto, "$0,00")
         self.assertEqual(faltantes, set())
+
+
+class CuadreDesgloseItemsTests(TestCase):
+    """certificado_contexto._cuadrar: el pie de la tabla de ítems del certificado tiene que
+    dar exactamente lo certificado, aunque cada ítem se redondee a centavos por separado."""
+
+    def test_suma_el_residuo_de_redondeo_al_item_mayor(self):
+        from carga.certificado_contexto import _cuadrar
+
+        # Ítems del certificado 16128: 18% y 7% de 188679.86 UVI = 47169.965 en total, pero
+        # redondeados por separado suman 47169.96; lo certificado es 47169.97.
+        filas = [{"uvi": Decimal("33962.3748")}, {"uvi": Decimal("13207.5902")}, {"uvi": Decimal("0")}]
+
+        _cuadrar(filas, "uvi", Decimal("47169.97"))
+
+        self.assertEqual([f["uvi"] for f in filas], [Decimal("33962.38"), Decimal("13207.59"), Decimal("0.00")])
+
+    def test_no_fuerza_diferencias_que_no_son_de_redondeo(self):
+        from carga.certificado_contexto import _cuadrar
+
+        # Acumulado con fojas legacy sin certificado en el sistema: no se reparte nada.
+        filas = [{"uvi": Decimal("100")}, {"uvi": Decimal("50")}]
+
+        _cuadrar(filas, "uvi", Decimal("120"))
+
+        self.assertEqual([f["uvi"] for f in filas], [Decimal("100.00"), Decimal("50.00")])
+
+
+class ReporteColumnasTests(TestCase):
+    """Reportes de Obras y de Certificados con columnas elegidas por el usuario
+    (carga/reportes_columnas.py)."""
+
+    def setUp(self):
+        empresa = Empresa.objects.create(empresa_nombre="Constructora Norte")
+        programa = Programa.objects.create(programa_nombre="Programa Reporte")
+        self.obra = Obra.objects.create(
+            obra_nombre="20 Viviendas", obra_empresa=empresa, obra_programa=programa,
+            obra_expediente="EXP-OBRA-1", obra_grupo="G7",
+            obra_contrato_nacion_uvi=Decimal("1000"),
+        )
+        self.otra_obra = Obra.objects.create(
+            obra_nombre="Otra Obra", obra_empresa=empresa, obra_programa=programa, obra_expediente="EXP-OBRA-2",
+        )
+        rubro = CertificadoRubro.objects.create(certificadorubro_nombre="Vivienda", certificadorubro_nombre_corto="V")
+        base = {
+            "certificado_obra": self.obra, "certificado_financiamiento": "N",
+            "certificado_rubro_db": rubro, "certificado_expediente": "EXP-CERT",
+        }
+        Certificado.objects.create(
+            certificado_tipo="PARCIAL", certificado_fecha=date(2026, 1, 31), certificado_mes_pct=Decimal("10"),
+            certificado_acum_pct=Decimal("10"), certificado_monto_pesos=Decimal("1000"), certificado_monto_uvi=Decimal("100"),
+            **base,
+        )
+        Certificado.objects.create(
+            certificado_tipo="PARCIAL", certificado_fecha=date(2026, 2, 28), certificado_mes_pct=Decimal("15"),
+            certificado_acum_pct=Decimal("25"), certificado_monto_pesos=Decimal("2000"), certificado_monto_uvi=Decimal("150"),
+            **base,
+        )
+        # Un Anticipo posterior no tapa el % de avance del último certificado de obra.
+        Certificado.objects.create(
+            certificado_tipo="ANTICIPO", certificado_fecha=date(2026, 3, 31), certificado_monto_pesos=Decimal("500"),
+            certificado_monto_uvi=Decimal("50"), **base,
+        )
+        self.obra.obra_principal.add(self.otra_obra)
+        user = get_user_model().objects.create_superuser(username="admin", password="testpass123")
+        self.client.force_login(user)
+
+    def _obras(self, **params):
+        return self.client.get(reverse("carga:crear-reporte-obra"), {"empresa": self.obra.obra_empresa_id, **params})
+
+    def _certificados(self, **params):
+        return self.client.get(reverse("carga:crear-reporte-certificado"), {"ano": "2026", **params})
+
+    def test_sin_col_usa_las_columnas_por_defecto(self):
+        from carga.reportes_columnas import REPORTE_CERTIFICADOS, REPORTE_OBRAS
+
+        response = self._obras()
+        self.assertEqual([c.clave for c in response.context["columnas"]], REPORTE_OBRAS.defaults)
+        response = self._certificados()
+        self.assertEqual([c.clave for c in response.context["columnas"]], REPORTE_CERTIFICADOS.defaults)
+
+    def test_col_validas_respetan_el_orden_del_catalogo_e_ignora_invalidas(self):
+        response = self._obras(col=["obra_grupo", "no_existe", "obra_nombre"])
+        self.assertEqual([c.clave for c in response.context["columnas"]], ["obra_nombre", "obra_grupo"])
+        self.assertContains(response, "G7")
+
+    def test_solo_col_invalidas_usa_default(self):
+        from carga.reportes_columnas import REPORTE_OBRAS
+
+        response = self._obras(col=["no_existe"])
+        self.assertEqual([c.clave for c in response.context["columnas"]], REPORTE_OBRAS.defaults)
+
+    def test_reporte_de_certificados_ofrece_columnas_de_obra(self):
+        response = self._certificados(col=["obra_grupo", "obra_expediente", "certificado_monto_pesos"])
+        self.assertContains(response, "G7")
+        self.assertContains(response, "EXP-OBRA-1")
+        self.assertContains(response, "Expediente de Obra")
+
+    def test_agregados_anotados_coinciden_con_el_calculo_de_la_obra(self):
+        response = self._obras(col=["acum_pesos", "acum_uvi", "saldo_uvi", "ultimo_mes_pct", "acum_pct", "cantidad_certificados"])
+        filas = {obj.pk: (obj, celdas) for obj, celdas in response.context["filas"]}
+        obra, _ = filas[self.obra.pk]
+        certificados = self.obra.certificado_set.all()
+        acum_pesos = sum(c.certificado_monto_cobrar for c in certificados)
+        acum_uvi = sum(c.certificado_monto_cobrar_uvi for c in certificados)
+        self.assertEqual(obra.rep_acum_pesos, acum_pesos)
+        self.assertEqual(obra.rep_acum_uvi, acum_uvi)
+        ultimo = self.obra.ultimo_certificado_avance()
+        self.assertEqual(obra.rep_ultimo_mes_pct, ultimo.certificado_mes_pct)
+        self.assertEqual(obra.rep_acum_pct, ultimo.certificado_acum_pct)
+        self.assertEqual(obra.rep_cantidad_certificados, 3)
+        _, celdas = filas[self.obra.pk]
+        claves = [c.clave for c in response.context["columnas"]]
+        saldo = celdas[claves.index("saldo_uvi")]
+        self.assertEqual(Decimal(saldo.orden), self.obra.obra_contrato_total_uvi - acum_uvi)
+        # Una obra sin certificados queda en 0, no en None.
+        otra, _ = filas[self.otra_obra.pk]
+        self.assertEqual(otra.rep_acum_pesos, 0)
+        self.assertIsNone(otra.rep_ultimo_mes_pct)
+
+    def test_solo_precarga_lo_que_piden_las_columnas(self):
+        from carga.reportes_columnas import REPORTE_CERTIFICADOS
+
+        def queryset(claves):
+            return REPORTE_CERTIFICADOS.preparar_queryset(
+                Certificado.objects.all(), REPORTE_CERTIFICADOS.seleccionar(claves)
+            )
+
+        with self.assertNumQueries(1):
+            filas = list(queryset(["certificado_monto_pesos", "certificado_expediente"]))
+            [col.celda(obj) for obj in filas for col in REPORTE_CERTIFICADOS.seleccionar(["certificado_monto_pesos"])]
+        # Empresa + obra madre (prefetch): una query por la tabla y otra por el M2M,
+        # sin importar cuántos certificados haya.
+        columnas = REPORTE_CERTIFICADOS.seleccionar(["obra_empresa", "obra_principal"])
+        with self.assertNumQueries(2):
+            celdas = [col.celda(obj) for obj in queryset(["obra_empresa", "obra_principal"]) for col in columnas]
+        self.assertIn("Otra Obra", [c.texto for c in celdas])
+
+    def test_todas_las_columnas_se_renderizan(self):
+        from carga.reportes_columnas import REPORTE_CERTIFICADOS, REPORTE_OBRAS
+
+        response = self._obras(col=[c.clave for c in REPORTE_OBRAS.columnas])
+        self.assertEqual(len(response.context["columnas"]), len(REPORTE_OBRAS.columnas))
+        response = self._certificados(col=[c.clave for c in REPORTE_CERTIFICADOS.columnas])
+        self.assertEqual(len(response.context["columnas"]), len(REPORTE_CERTIFICADOS.columnas))
+        self.assertEqual(len(response.context["filas"]), 3)
+
+
+class EliminarFojaDeMedicionTests(TestCase):
+    """Sólo se puede borrar la última Foja de la cadena de rubros, y sólo si no tiene
+    certificados: borrar una intermedia dejaba un hueco en la numeración y el acumulado
+    de las siguientes desactualizado; borrar una con certificados los dejaba huérfanos
+    (SET_NULL) y después fallaba Certificado.clean()."""
+
+    def setUp(self):
+        empresa = Empresa.objects.create(empresa_nombre="Empresa Test")
+        programa = Programa.objects.create(programa_nombre="Programa Test")
+        self.obra = Obra.objects.create(
+            obra_nombre="Obra Test", obra_empresa=empresa, obra_programa=programa, obra_expediente="EXP-DEL"
+        )
+        self.plan = PlanDeTrabajos.objects.create(trabajos_obra=self.obra, trabajos_fecha=date(2026, 1, 1))
+        self.rubro = PlanDeTrabajosRubro.objects.create(
+            rubro_plan=self.plan, rubro_nombre="Vivienda", rubro_presupuesto=Decimal("1000")
+        )
+        self.item = PlanDeTrabajosItem.objects.create(
+            planitem_rubro=self.rubro, planitem_nombre="Item 1", planitem_incidencia_pct=Decimal("100")
+        )
+        self.certificado_rubro_db = CertificadoRubro.objects.create(
+            certificadorubro_nombre="Vivienda", certificadorubro_nombre_corto="V"
+        )
+        user = get_user_model().objects.create_superuser(username="tester", password="testpass123")
+        self.client.force_login(user)
+
+    def _crear_foja(self, periodo, pct_avance):
+        foja = FojaDeMedicion.objects.create(foja_rubro=self.rubro, foja_periodo=periodo)
+        FojaDeMedicionItem.objects.create(
+            fojaitem_foja=foja, fojaitem_planitem=self.item, fojaitem_pct_avance_mes=Decimal(pct_avance)
+        )
+        return foja
+
+    def _eliminar(self, foja):
+        return self.client.post(reverse("carga:eliminar-fojademedicion", kwargs={"pk": foja.pk}))
+
+    def test_no_permite_eliminar_una_foja_intermedia(self):
+        foja1 = self._crear_foja(date(2026, 1, 1), "10")
+        self._crear_foja(date(2026, 2, 1), "10")
+
+        self._eliminar(foja1)
+
+        self.assertTrue(FojaDeMedicion.objects.filter(pk=foja1.pk).exists())
+        self.assertEqual(
+            list(FojaDeMedicion.objects.order_by("foja_numero").values_list("foja_numero", flat=True)), [1, 2]
+        )
+
+    def test_no_permite_eliminar_una_foja_con_certificados(self):
+        foja = self._crear_foja(date(2026, 1, 1), "10")
+        certificado = Certificado.objects.create(
+            certificado_obra=self.obra,
+            certificado_tipo="PARCIAL",
+            certificado_foja=foja,
+            certificado_expediente="EXP-CERT",
+            certificado_rubro_db=self.certificado_rubro_db,
+        )
+
+        self._eliminar(foja)
+
+        self.assertTrue(FojaDeMedicion.objects.filter(pk=foja.pk).exists())
+        certificado.refresh_from_db()
+        self.assertEqual(certificado.certificado_foja_id, foja.pk)
+
+    def test_permite_eliminar_la_ultima_foja_sin_certificados(self):
+        self._crear_foja(date(2026, 1, 1), "10")
+        foja2 = self._crear_foja(date(2026, 2, 1), "10")
+
+        response = self._eliminar(foja2)
+
+        self.assertRedirects(response, reverse("carga:estado-obra", kwargs={"pk": self.obra.pk}))
+        self.assertFalse(FojaDeMedicion.objects.filter(pk=foja2.pk).exists())
+
+
+class RubroMontoVinculadoTests(TestCase):
+    """La reprogramación no copia el vínculo del rubro con los montos de contrato (los
+    montos cambian con la adenda), así que la ficha de la obra tiene que avisar qué
+    rubros del plan vigente no van a poder certificar, o lo harían con montos viejos."""
+
+    def setUp(self):
+        empresa = Empresa.objects.create(empresa_nombre="Empresa Test")
+        programa = Programa.objects.create(programa_nombre="Programa Test")
+        self.obra = Obra.objects.create(
+            obra_nombre="Obra Test", obra_empresa=empresa, obra_programa=programa, obra_expediente="EXP-MONTO"
+        )
+        self.plan = PlanDeTrabajos.objects.create(trabajos_obra=self.obra, trabajos_fecha=date(2026, 1, 1))
+        self.certificado_rubro = CertificadoRubro.objects.create(
+            certificadorubro_nombre="Vivienda", certificadorubro_nombre_corto="V"
+        )
+        self.nacion = CertificadoFinanciamiento.objects.create(
+            certificadofinanciamiento_nombre="Nación", certificadofinanciamiento_nombre_corto="N"
+        )
+        self.contrato = Contrato.objects.create(contrato_obra=self.obra, contrato_fecha=date(2026, 1, 1))
+        self.contratomonto = self._crear_contratomonto(self.contrato)
+        self.rubro = PlanDeTrabajosRubro.objects.create(
+            rubro_plan=self.plan, rubro_nombre="Vivienda", rubro_contratomonto=self.contratomonto
+        )
+        PlanDeTrabajosItem.objects.create(
+            planitem_rubro=self.rubro, planitem_nombre="Item 1", planitem_incidencia_pct=Decimal("100")
+        )
+
+    def _crear_contratomonto(self, contrato):
+        return ContratoMonto.objects.create(
+            contratomonto_contrato=contrato,
+            contratomonto_rubro=self.certificado_rubro,
+            contratomonto_financiamiento=self.nacion,
+            contratomonto_pesos=Decimal("1000"),
+        )
+
+    def test_rubro_vinculado_al_contrato_vigente_no_tiene_problema(self):
+        self.assertIsNone(self.rubro.problema_monto_vinculado())
+
+    def test_rubro_sin_vinculo_tiene_problema(self):
+        self.rubro.rubro_contratomonto = None
+        self.rubro.save()
+
+        self.assertIn("Sin monto de contrato vinculado", self.rubro.problema_monto_vinculado())
+
+    def test_rubro_vinculado_a_un_contrato_que_ya_no_es_el_vigente(self):
+        Contrato.objects.create(contrato_obra=self.obra, contrato_fecha=date(2026, 6, 1))
+
+        self.assertIn("ya no es el vigente", self.rubro.problema_monto_vinculado())
+
+    def test_rubro_certificado_sin_montos_en_el_contrato_vigente(self):
+        self.rubro.rubro_contratomonto = None
+        self.rubro.rubro_certificado_rubro = self.certificado_rubro
+        self.rubro.save()
+        self.assertIsNone(self.rubro.problema_monto_vinculado())
+
+        Contrato.objects.create(contrato_obra=self.obra, contrato_fecha=date(2026, 6, 1))
+
+        self.assertIn("no tiene montos", self.rubro.problema_monto_vinculado())
+
+    def test_la_ficha_avisa_que_el_rubro_reprogramado_no_tiene_monto(self):
+        user = get_user_model().objects.create_superuser(username="tester", password="testpass123")
+        self.client.force_login(user)
+        self.client.post(reverse("carga:crear-plandetrabajos"), {
+            "clonar": self.plan.pk,
+            "trabajos_obra": self.obra.pk,
+            "trabajos_fecha": "2026-06-01",
+            "trabajos_meses": 3,
+        })
+        rubro_nuevo = PlanDeTrabajosRubro.objects.get(rubro_anterior=self.rubro)
+        self.assertIsNone(rubro_nuevo.rubro_contratomonto_id)
+
+        response = self.client.get(reverse("carga:estado-obra", kwargs={"pk": self.obra.pk}))
+
+        self.assertContains(response, "Sin monto de contrato vinculado")
+        self.assertContains(response, reverse("carga:update-plandetrabajosrubro", kwargs={"pk": rubro_nuevo.pk}))
+
+
+class CrearObraYContratoRedirectTests(TestCase):
+    """Al crear una Obra o un Contrato, "Guardar" vuelve a la ficha de la obra con un mensaje,
+    en lugar de mostrar un formulario en blanco sin confirmación."""
+
+    def setUp(self):
+        self.empresa = Empresa.objects.create(empresa_nombre="Empresa Test")
+        self.programa = Programa.objects.create(programa_nombre="Programa Test")
+        user = get_user_model().objects.create_superuser(username="tester", password="testpass123")
+        self.client.force_login(user)
+
+    def _obra_data(self, **extra):
+        return {
+            "obra_nombre": "Obra Nueva",
+            "obra_empresa": self.empresa.pk,
+            "obra_programa": self.programa.pk,
+            "obra_expediente": "EXP-1",
+            **extra,
+        }
+
+    def test_crear_obra_redirige_a_la_ficha_con_mensaje(self):
+        response = self.client.post(reverse("carga:crear-obra"), self._obra_data(), follow=True)
+        obra = Obra.objects.get(obra_nombre="Obra Nueva")
+        self.assertRedirects(response, reverse("carga:estado-obra", kwargs={"pk": obra.pk}))
+        self.assertContains(response, 'Se guardó la obra &quot;Obra Nueva&quot;.')
+
+    def test_crear_obra_y_cargar_contrato_sigue_yendo_al_contrato(self):
+        response = self.client.post(reverse("carga:crear-obra"), self._obra_data(next="contrato"))
+        obra = Obra.objects.get(obra_nombre="Obra Nueva")
+        self.assertRedirects(
+            response, f"{reverse('carga:crear-contrato')}?obra={obra.pk}", fetch_redirect_response=False
+        )
+
+    def test_crear_contrato_redirige_a_la_ficha_con_mensaje(self):
+        obra = Obra.objects.create(**{
+            "obra_nombre": "Obra Test", "obra_empresa": self.empresa,
+            "obra_programa": self.programa, "obra_expediente": "EXP-2",
+        })
+        response = self.client.post(reverse("carga:crear-contrato"), {
+            "contrato_obra": obra.pk,
+            "contrato_fecha": "2026-01-01",
+            "contrato_descripcion": "Contrato Test",
+            "contratomonto_set-TOTAL_FORMS": "0",
+            "contratomonto_set-INITIAL_FORMS": "0",
+        }, follow=True)
+        self.assertEqual(Contrato.objects.filter(contrato_obra=obra).count(), 1)
+        self.assertRedirects(response, reverse("carga:estado-obra", kwargs={"pk": obra.pk}))
+        self.assertContains(response, "Se guardó el contrato.")
+
+
+class ManualesAyudaTests(TestCase):
+    """Los manuales de ayuda cargan y todas las capturas que referencian existen en static."""
+
+    def setUp(self):
+        user = get_user_model().objects.create_superuser(username="tester", password="testpass123")
+        self.client.force_login(user)
+
+    def test_manuales_cargan_y_sus_imagenes_existen(self):
+        import re
+        from django.conf import settings
+        from django.contrib.staticfiles import finders
+
+        for nombre in ("ayuda-plan-fojas", "ayuda-certificados", "ayuda-reprogramacion", "ayuda-textos-resolucion"):
+            with self.subTest(manual=nombre):
+                response = self.client.get(reverse(f"carga:{nombre}"))
+                self.assertEqual(response.status_code, 200)
+                for src in re.findall(r'<img[^>]+src="([^"]+)"', response.content.decode()):
+                    ruta = src.removeprefix(settings.STATIC_URL)
+                    self.assertIsNotNone(finders.find(ruta), f"Falta la imagen {ruta}")

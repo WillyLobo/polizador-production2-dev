@@ -690,6 +690,9 @@ class Prototipo(models.Model):
     prototipo_discapacitado = models.BooleanField("Es Prototipo para Discapacitado", default=False)
     prototipo_history = HistoricalRecords()
 
+    def __str__(self):
+        return f"{self.get_prototipo_tipo_display()} x{self.prototipo_cantidad} - {self.prototipo_obra.obra_nombre}"
+
 class CertificadoRubro(models.Model):
     class Meta:
         verbose_name_plural = "Rubros"
@@ -860,8 +863,9 @@ class Certificado(models.Model):
         decimal_places=2,
         default=Decimal("5"),
         validators=[MinValueValidator(0), MaxValueValidator(100)],
-        help_text="Retención sobre el importe total del certificado, sin descontar el "
-                  "anticipo financiero. No aplica a certificados de Anticipo.",
+        help_text="Retención sobre el certificado neto del descuento de anticipo. El "
+                  "Anticipo lleva su propia retención al pagarse (ver Resolución 427/2026), "
+                  "así que la parte ya anticipada no vuelve a retenerse al devolverse.",
     )
     certificado_fecha = models.DateField("Fecha", default=timezone.now)
     certificado_monto_cobrar = models.GeneratedField(
@@ -877,7 +881,9 @@ class Certificado(models.Model):
     certificado_digital = models.FileField(upload_to=generate_name_certificados, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], null=True, blank=True)
     certificado_fecha_carga = models.DateField("Fecha de carga", default=timezone.now)
     certificado_fecha_carga_legacy = models.BooleanField("Es Certificado Viejo", default=False)
-    certificado_foja = models.ForeignKey("FojaDeMedicion", verbose_name="Foja de Medición de Origen", on_delete=models.SET_NULL, null=True, blank=True)
+    # RESTRICT y no SET_NULL: un Parcial/Etapa sin Foja ya no pasa clean(). RESTRICT (no
+    # PROTECT) deja borrar la Obra entera, que se lleva Fojas y Certificados en la misma cascada.
+    certificado_foja = models.ForeignKey("FojaDeMedicion", verbose_name="Foja de Medición de Origen", on_delete=models.RESTRICT, null=True, blank=True)
     certificado_ley27397_detalle = models.JSONField(
         "Detalle de tramos Ley 27397",
         null=True,
@@ -899,15 +905,26 @@ class Certificado(models.Model):
     )
     certificado_history = HistoricalRecords(excluded_fields=['certificado_monto_cobrar', "certificado_monto_cobrar_uvi"])
 
+    # Fondo de Reparo: se retiene sobre el bruto MENOS el descuento de anticipo, porque el
+    # Anticipo ya pagó su propia retención al emitirse (Resolución 427/2026). Sobre el bruto
+    # completo, la parte anticipada se retendría dos veces. En total la obra retiene igual
+    # el % sobre el contrato: % del anticipo + % de (cada bruto - lo que devuelve).
+    #
+    # Con componente UVI, el monto en pesos es el FR en UVI (redondeado a centavos, como se
+    # imprime, para que "UVI * cotización" se pueda verificar a mano) valorizado a la
+    # cotización del bruto (bruto $ / bruto UVI): el FR retiene obra de este certificado,
+    # valuada a esa cotización. Restar en pesos (bruto - descuento) mezclaría la cotización del bruto con
+    # la de fin de mes de la devolución (ver certificacion.fecha_cotizacion_devolucion_anticipo).
     def certificado_fondoreparo_monto_pesos(self):
-        if self.certificado_tipo == "ANTICIPO":
-            return Decimal("0")
-        return (self.certificado_monto_pesos or Decimal("0")) * self.certificado_fondoreparo_pct / Decimal("100")
+        monto_pesos = self.certificado_monto_pesos or Decimal("0")
+        if self.certificado_monto_uvi:
+            return self.certificado_fondoreparo_monto_uvi() * monto_pesos / self.certificado_monto_uvi
+        base = monto_pesos - (self.certificado_descuento_anticipo_pesos or Decimal("0"))
+        return base * self.certificado_fondoreparo_pct / Decimal("100")
 
     def certificado_fondoreparo_monto_uvi(self):
-        if self.certificado_tipo == "ANTICIPO":
-            return Decimal("0")
-        return (self.certificado_monto_uvi or Decimal("0")) * self.certificado_fondoreparo_pct / Decimal("100")
+        base = (self.certificado_monto_uvi or Decimal("0")) - (self.certificado_descuento_anticipo_uvi or Decimal("0"))
+        return (base * self.certificado_fondoreparo_pct / Decimal("100")).quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
 
     # "Importe a abonarse" del certificado: neto de devolución/descuento de anticipo Y de
     # Fondo de Reparo. No es certificado_monto_cobrar: ese GeneratedField no descuenta el
@@ -982,9 +999,7 @@ class Certificado(models.Model):
         self.certificado_monto_uvi = self.certificado_monto_uvi or 0
         self.certificado_anticipo_pct = self.certificado_anticipo_pct or 0
 
-        if self.certificado_tipo == "ANTICIPO":
-            self.certificado_fondoreparo_pct = 0
-        else:
+        if self.certificado_tipo != "ANTICIPO":
             self.certificado_anticipo_pct = 0
 
         if self.certificado_tipo == "PARCIAL":
@@ -1237,6 +1252,24 @@ class PlanDeTrabajosRubro(models.Model):
             return self.rubro_contratomonto.contratomonto_uvi
         return None
 
+    def problema_monto_vinculado(self):
+        """Aviso (o None) si este rubro no va a poder generar certificados desde Foja, o los
+        generaría con montos de un contrato viejo. Misma resolución que
+        certificacion.financiamientos_de_rubro. La reprogramación no copia estos vínculos a
+        propósito (los montos cambian con la adenda), así que la ficha de la obra lo avisa."""
+        contrato_vigente = self.rubro_plan.trabajos_obra.contrato_vigente()
+        if self.rubro_certificado_rubro_id:
+            if contrato_vigente is None or not ContratoMonto.objects.filter(
+                contratomonto_contrato=contrato_vigente, contratomonto_rubro_id=self.rubro_certificado_rubro_id
+            ).exists():
+                return f"El contrato vigente no tiene montos para el rubro {self.rubro_certificado_rubro}."
+            return None
+        if self.rubro_contratomonto_id:
+            if contrato_vigente is None or self.rubro_contratomonto.contratomonto_contrato_id != contrato_vigente.pk:
+                return "Vinculado a un monto de un contrato que ya no es el vigente."
+            return None
+        return "Sin monto de contrato vinculado: no se van a poder generar certificados."
+
     def comparacion_etapas_fojas(self):
         """Empareja cada Etapa proyectada con la Foja de igual posición, para ver el
         desfasaje entre lo planificado y lo medido. Si hay más Fojas que Etapas (se
@@ -1397,9 +1430,10 @@ class PlanDeTrabajosEtapaItem(models.Model):
                 # al 100% de la incidencia de cada item sin importar el avance real, así
                 # que no sirve de piso. Se usa en cambio el avance REAL (Fojas de
                 # Medición) al momento de reprogramar (misma base que valida la matriz,
-                # ver PlanDeTrabajosEtapaMatriz._get_anterior_map).
+                # ver PlanDeTrabajosEtapaMatriz._get_anterior_map): la última Foja de los
+                # rubros predecesores, sin contar las Fojas ya medidas sobre este rubro.
                 real_map = FojaDeMedicion.anterior_items_map(
-                    self.etapaitem_etapa.etapa_rubro, items=[self.etapaitem_planitem]
+                    self.etapaitem_etapa.etapa_rubro.rubro_anterior, items=[self.etapaitem_planitem]
                 )
                 previous_acumulado = real_map.get(self.etapaitem_planitem_id)
 
@@ -1664,6 +1698,9 @@ class ContratosDigitales(models.Model):
     contratodigital_tipo = models.ForeignKey("ContratoRubro", verbose_name="Rubro Contrato", on_delete=models.CASCADE)
     contratodigital_archivo = models.FileField(upload_to=generate_name_contratos, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], max_length=500, null=True, blank=True)
     contratodigital_history = HistoricalRecords()
+
+    def __str__(self):
+        return f"{self.contratodigital_tipo} - {self.contratodigital_nombre_archivo or self.contratodigital_descripcion}"
 
 class Uvi(models.Model):
     class Meta:

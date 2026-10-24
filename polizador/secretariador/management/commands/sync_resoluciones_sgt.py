@@ -73,6 +73,9 @@ ESTADO_APROBADO = "instrumento aprobado"
 IDENTIFICACION_RE = re.compile(r"RES-(\d{4})-(\d+)-10-(\d+)")
 PDF_PATH_RE = re.compile(r"PublicTempStorage/[^\"'\s]*\.pdf", re.IGNORECASE)
 
+# Cuánto se espera a que el visor de 'Ver Proyecto' referencie el PDF (ver _esperar_pdf_path).
+PDF_ESPERA_SEGUNDOS = 60
+
 
 class Command(BaseCommand):
     help = (
@@ -216,9 +219,21 @@ class Command(BaseCommand):
                         self._descargar_y_guardar(page, fila)
                     except Exception as e:
                         self.stdout.write(
-                            f"{self.style.ERROR('Error procesando')} {fila['identificacion']}: {e}"
+                            f"{self.style.ERROR('Error procesando')} {fila['identificacion']}: "
+                            f"{type(e).__name__}: {e}"
                         )
                         self._debug_dump(page, f"error_{fila['numero']}_{fila['ano']}")
+                        # Sin esto, un error a mitad de camino deja el modal abierto y el
+                        # panel filtrado por este número+año, y la fila siguiente arranca
+                        # desde ese estado sucio (ver _fill_y_esperar_filtro).
+                        self._cerrar_modal(page)
+                        try:
+                            self._limpiar_filtro_numero_ano(page)
+                        except Exception as e2:
+                            self.stdout.write(
+                                f"{self.style.WARNING('No pude limpiar el filtro:')} "
+                                f"{type(e2).__name__}: {e2}"
+                            )
 
             if browser:
                 browser.close()
@@ -233,6 +248,15 @@ class Command(BaseCommand):
         try:
             page.screenshot(path=str(png_path), full_page=True)
             html_path.write_text(page.content())
+            # page.content() solo trae el documento principal: el contenido de los iframes
+            # (p.ej. el modal 'Ver Proyecto' y su visor de PDF) va en archivos aparte.
+            for i, frame in enumerate(page.frames[1:], start=1):
+                try:
+                    (DEBUG_DIR / f"{name}_frame{i}.html").write_text(
+                        f"<!-- url: {frame.url} -->\n{frame.content()}"
+                    )
+                except Exception:
+                    pass
             self.stdout.write(
                 f"{self.style.WARNING('Diagnóstico guardado:')} {png_path} / {html_path} "
                 f"(url actual: {page.url})"
@@ -266,8 +290,22 @@ class Command(BaseCommand):
             self._debug_dump(page, "03_sso_did_not_reach_sgt")
             raise CommandError(f"El SSO al SGT no llegó a app.chaco.gob.ar (url: {page.url}).")
 
-        page.goto(SGT_PANEL_URL)
-        page.wait_for_load_state("networkidle")
+        # No se espera el evento "load" (default de goto) ni "networkidle": "load" exige que
+        # termine de bajar TODO recurso de la página (scripts, imágenes, iframes de GeneXus) y
+        # uno solo que tarde alcanza para pasar el timeout de 30s aunque el panel ya sea usable
+        # (pasó en producción: "Page.goto: Timeout 30000ms exceeded ... waiting until load").
+        # Lo que de verdad hace falta es que exista el select de Tipo, así que se espera eso.
+        inicio = datetime.datetime.now()
+        try:
+            page.goto(SGT_PANEL_URL, wait_until="domcontentloaded", timeout=90000)
+            page.wait_for_selector(
+                "#vINSTRUMENTOPROYECTOINSTRUMENTOLEGALTIPO", state="visible", timeout=60000
+            )
+        except Exception:
+            self._debug_dump(page, "04_panel_did_not_load")
+            raise
+        segundos = (datetime.datetime.now() - inicio).total_seconds()
+        self.stdout.write(f"    Panel del SGT cargado en {segundos:.1f}s.")
         try:
             page.select_option(
                 "#vINSTRUMENTOPROYECTOINSTRUMENTOLEGALTIPO", TIPO_RESOLUCION_SGT, timeout=10000
@@ -275,7 +313,13 @@ class Command(BaseCommand):
         except Exception:
             self._debug_dump(page, "04_tipo_filter_not_found")
             raise
-        page.wait_for_load_state("networkidle")
+        # Best-effort: deja que el refresco de la grilla por el cambio de Tipo termine, pero sin
+        # cortar la corrida si el panel nunca queda 100% quieto (GeneXus puede seguir haciendo
+        # requests). Los pasos siguientes esperan sus propias respuestas.
+        try:
+            page.wait_for_load_state("networkidle", timeout=15000)
+        except Exception:
+            pass
 
     def _exportar_excel(self, page):
         """Dispara la exportación nativa del panel (botón "BTNEXPORT") y devuelve los bytes
@@ -401,6 +445,13 @@ class Command(BaseCommand):
         self._fill_y_esperar_filtro(page, "#vINSTRUMENTOLEGALANIO", ano)
 
     def _fill_y_esperar_filtro(self, page, selector, value):
+        # GeneXus solo hace el POST si el valor cambió (evento change del input). Si el campo
+        # ya tiene ese valor —p.ej. el año, cuando el filtro quedó en "2026" tras un error y
+        # la fila siguiente también es de 2026— no hay respuesta que esperar y
+        # expect_response se colgaría hasta el timeout. El filtro ya está aplicado: no-op.
+        actual = re.sub(r"\D", "", page.input_value(selector))
+        if actual == re.sub(r"\D", "", value):
+            return
         with page.expect_response(
             lambda r: "com.ecom.panelprotocolo" in r.url and r.request.method == "POST",
             timeout=15000,
@@ -430,13 +481,16 @@ class Command(BaseCommand):
         with page.expect_event("frameattached", timeout=15000) as frame_info:
             botones.first.click()
         frame = frame_info.value
-        frame.wait_for_load_state("networkidle")
 
-        m = PDF_PATH_RE.search(frame.content())
-        if not m:
+        pdf_path = self._esperar_pdf_path(page, frame)
+        if not pdf_path:
+            self._debug_dump(page, f"pdf_no_aparece_{fila['numero']}_{fila['ano']}")
             self._cerrar_modal(page)
-            raise CommandError("No encontré la referencia al PDF dentro de 'Ver Proyecto'.")
-        pdf_url = f"{SGT_TRAMITES_BASE}/{m.group(0)}"
+            raise CommandError(
+                f"El visor de 'Ver Proyecto' no mostró la referencia al PDF en "
+                f"{PDF_ESPERA_SEGUNDOS}s."
+            )
+        pdf_url = f"{SGT_TRAMITES_BASE}/{pdf_path}"
 
         resp = page.context.request.get(pdf_url)
         if resp.status != 200 or "pdf" not in resp.headers.get("content-type", ""):
@@ -475,6 +529,31 @@ class Command(BaseCommand):
             f"{self.style.SUCCESS('OK')} {fila['identificacion']} {estado} "
             f"({len(pdf_bytes)} bytes)."
         )
+
+    def _esperar_pdf_path(self, page, frame):
+        """Espera a que el iframe de 'Ver Proyecto' referencie el PDF y devuelve su path
+        (PublicTempStorage/...pdf), o None si no aparece en PDF_ESPERA_SEGUNDOS.
+
+        El iframe carga primero los datos del instrumento (número, firmantes) y recién después
+        completa el visor del PDF: el SGT genera el archivo temporal al momento y lo
+        enchufa al visor de forma asíncrona. Antes se esperaba "networkidle" y se buscaba la
+        referencia una sola vez; cuando el SGT tarda en generar el PDF, el visor seguía vacío
+        en ese instante (confirmado con captura en producción) y la fila fallaba. Se reintenta
+        en vez de esperar un estado de red que GeneXus no garantiza."""
+        limite = datetime.datetime.now() + datetime.timedelta(seconds=PDF_ESPERA_SEGUNDOS)
+        while datetime.datetime.now() < limite:
+            # Además del HTML del iframe se miran las URLs de sus sub-frames, por si el visor
+            # es a su vez un <iframe>/<embed> que navega directo al PDF.
+            for f in [frame, *frame.child_frames]:
+                try:
+                    m = PDF_PATH_RE.search(f.url) or PDF_PATH_RE.search(f.content())
+                except Exception:
+                    # El frame puede estar navegando o recién desprendido: se reintenta.
+                    continue
+                if m:
+                    return m.group(0)
+            page.wait_for_timeout(1000)
+        return None
 
     def _cerrar_modal(self, page):
         try:

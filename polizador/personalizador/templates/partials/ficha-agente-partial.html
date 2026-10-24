@@ -3,7 +3,7 @@
     <h5 class="mb-0">
         {{object.agente_apellidoynombre_coma}}
         {% if object.agente_personal_transitorio %}<span class="badge text-bg-secondary ms-1">Comisionado</span>{% endif %}
-        {% if not object.activo %}<span class="badge text-bg-danger ms-1">Inactivo</span>{% endif %}
+        {% for baja in object.bajas %}<span class="badge text-bg-dark ms-1">{{baja}}</span>{% empty %}{% if not object.activo %}<span class="badge text-bg-danger ms-1">Inactivo</span>{% endif %}{% endfor %}
     </h5>
     {% if perms.personalizador.change_agente %}
     <a href="{% url "personalizador:update-agente" object.id %}" class="btn btn-sm btn-outline-secondary">Editar</a>
@@ -90,6 +90,7 @@
             <div class="card-header py-2 bg-body-tertiary fw-semibold small">Estado</div>
             <div class="card-body p-2 d-flex flex-wrap gap-2">
                 <span class="badge {% if object.activo %}text-bg-success{% else %}text-bg-danger{% endif %}">{% if object.activo %}Activo{% else %}Inactivo{% endif %}</span>
+                {% for baja in object.bajas %}<span class="badge text-bg-dark">{{baja}}</span>{% endfor %}
                 <span class="badge {% if object.agente_verificado_contra_padron %}text-bg-success{% else %}text-bg-secondary{% endif %}">{% if object.agente_verificado_contra_padron %}Chequeado contra padrón{% else %}Sin chequear{% endif %}</span>
                 {% if object.agente_es_inpector_obra %}<span class="badge text-bg-info">Inspector de Obra</span>{% endif %}
                 {% if object.agente_personal_transitorio %}<span class="badge text-bg-secondary">Personal Transitorio</span>{% endif %}
@@ -124,7 +125,7 @@
                 </div>
                 <div class="row g-1 mb-1">
                     <div class="col-5 text-muted small fw-semibold">Fecha de Pase a Planta</div>
-                    <div class="col-7 small">{{object.fecha_pase_a_planta|default_if_none:"—"}}{% if object.n_decreto %} (Dec. {{object.n_decreto}}){% endif %}</div>
+                    <div class="col-7 small">{{object.fecha_pase_a_planta|default_if_none:"—"}}{% if object.instrumentos.pase_planta.instrumento or object.instrumentos.pase_planta.heredado %} ({% include "partials/agente-instrumento-ficha.html" with i=object.instrumentos.pase_planta %}){% endif %}</div>
                 </div>
                 <div class="row g-1 mb-1">
                     <div class="col-5 text-muted small fw-semibold">Categoría</div>
@@ -141,7 +142,7 @@
                 {% if object.cargo_interno %}
                 <div class="row g-1 mb-1">
                     <div class="col-5 text-muted small fw-semibold">Designación Temporal</div>
-                    <div class="col-7 small">{{object.cargo_interno}}{% if object.instrumento_cargo_interno %} ({{object.get_instrumento_cargo_interno_tipo_display}} {{object.instrumento_cargo_interno}}){% endif %}</div>
+                    <div class="col-7 small">{{object.cargo_interno}}{% if object.instrumentos.cargo_interno.instrumento or object.instrumentos.cargo_interno.heredado %} ({% include "partials/agente-instrumento-ficha.html" with i=object.instrumentos.cargo_interno %}){% endif %}</div>
                 </div>
                 {% endif %}
                 <div class="row g-1 mb-1">
@@ -171,30 +172,30 @@
                 <div class="row g-1 mb-1">
                     <div class="col-5 text-muted small fw-semibold">Bonificación por Título</div>
                     <div class="col-7 small">
-                        {% if object.instrumento_bonificacion %}{{object.get_instrumento_bonificacion_tipo_display}} {{object.instrumento_bonificacion}} ({{object.porcentaje_bonificacion|default_if_none:0}}%){% else %}—{% endif %}
+                        {% include "partials/agente-instrumento-ficha.html" with i=object.instrumentos.bonificacion %}{% if object.porcentaje_bonificacion %} ({{object.porcentaje_bonificacion}}%){% endif %}
                     </div>
                 </div>
                 <div class="row g-1 mb-1">
                     <div class="col-5 text-muted small fw-semibold">Contrato de Servicio</div>
                     <div class="col-7 small">
-                        {% if object.instrumento_contrato_de_servicio %}{{object.get_instrumento_contrato_de_servicio_tipo_display}} {{object.instrumento_contrato_de_servicio}}{% else %}—{% endif %}
+                        {% include "partials/agente-instrumento-ficha.html" with i=object.instrumentos.contrato_servicio %}
                     </div>
                 </div>
                 <div class="row g-1 mb-1">
                     <div class="col-5 text-muted small fw-semibold">Transferencia Definitiva</div>
-                    <div class="col-7 small">{{object.n_decreto_transferencia_definitiva|default_if_none:"—"}}</div>
+                    <div class="col-7 small">{% include "partials/agente-instrumento-ficha.html" with i=object.instrumentos.transferencia_definitiva %}</div>
                 </div>
                 <div class="row g-1 mb-1 pt-1 border-top">
                     <div class="col-5 text-muted small fw-semibold">Aportes (Ley/Resolución)</div>
                     <div class="col-7 small">
-                        {% if object.aportes_ley_resolucion %}{{object.get_aportes_ley_resolucion_tipo_display}} {{object.aportes_ley_resolucion}} — {% endif %}
+                        {% if object.instrumentos.aportes_ley.instrumento or object.instrumentos.aportes_ley.heredado %}{% include "partials/agente-instrumento-ficha.html" with i=object.instrumentos.aportes_ley %} — {% endif %}
                         {{object.aportes_ley_resolucion_anios}}a {{object.aportes_ley_resolucion_meses}}m {{object.aportes_ley_resolucion_dias}}d
                     </div>
                 </div>
                 <div class="row g-1">
                     <div class="col-5 text-muted small fw-semibold">Aportes (ANSES)</div>
                     <div class="col-7 small">
-                        {% if object.aportes_anses %}{{object.aportes_anses}} — {% endif %}
+                        {% if object.instrumentos.aportes_anses.instrumento or object.instrumentos.aportes_anses.heredado %}{% include "partials/agente-instrumento-ficha.html" with i=object.instrumentos.aportes_anses %} — {% endif %}
                         {{object.aportes_anses_anios}}a {{object.aportes_anses_meses}}m {{object.aportes_anses_dias}}d
                     </div>
                 </div>

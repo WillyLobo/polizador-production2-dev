@@ -1,14 +1,18 @@
 import os
 from django.db import models
+from django.db.models import Q
 from django.core.exceptions import ValidationError
 from simple_history.models import HistoricalRecords
 from core.history import M2MHistoricalRecords
 from django.core.validators import MinValueValidator
 from django.contrib.auth.models import AbstractUser
 from django.utils import timezone
+from django.urls import reverse
+from django.utils.functional import cached_property
 from core.validators import FileValidator, CuitValidator
 from dateutil.relativedelta import relativedelta
 from uuid_utils import compat
+from personalizador.instrumentos import CONCEPTOS, TIPO_LABELS, instrumento_vinculado, tipo_heredado, url_documento
 
 class ConcatOp(models.Func):
     arg_joiner = " || "
@@ -72,11 +76,25 @@ class CustomUser(AbstractUser):
         """
         return bool(self.ad_username) and not self.has_usable_password()
 
+# Tipos de los instrumentos heredados (columnas de texto de Agente, ver instrumentos.py).
+INSTRUMENTO_TIPO = (
+    ("RES", "Resolución"),
+    ("DEC", "Decreto"),
+    ("DIS", "Disposición"),
+)
+
 class Agente(models.Model):
     class Meta:
         verbose_name = "Agente"
         verbose_name_plural = "Agentes"
         ordering = ("agente_apellidos","agente_nombres")
+        constraints = [
+            # Retirado/jubilado/fallecido son excluyentes con activo (no entre si).
+            models.CheckConstraint(
+                condition=~(Q(activo=True) & (Q(retirado=True) | Q(jubilado=True) | Q(fallecido=True))),
+                name="agente_activo_excluye_baja",
+            ),
+        ]
 
     agente_usuario = models.OneToOneField(CustomUser, on_delete=models.CASCADE, blank=True, null=True)
     agente_nombres = models.CharField("Nombres", max_length=120)
@@ -105,20 +123,22 @@ class Agente(models.Model):
     # Datos Dependencia
     fecha_ingreso = models.DateField("Fecha de Ingreso", blank=True, null=True)
     fecha_pase_a_planta = models.DateField("Fecha de pase a planta permanente", blank=True, null=True) # fecha utilizada para el computo de antiguedad.
-    n_decreto = models.CharField(max_length=10, blank=True, null=True, help_text="N° de instrumento de pase a planta permanente - Solo Numero/Año")
-    INSTRUMENTO_BONIFICACION_TIPO = (
-        ("RES", "Resolución"),
-        ("DEC", "Decreto"),
-    )
-    instrumento_bonificacion_tipo = models.CharField("Tipo de instrumento", max_length=3, choices=INSTRUMENTO_BONIFICACION_TIPO, blank=True, null=True)
-    instrumento_bonificacion = models.CharField(max_length=13, blank=True, null=True, help_text="Instrumento que aprueba la bonificacion por titulo - Solo Numero/Año")
+    # Instrumentos legales: cada concepto apunta por FK a una Resolucion/Decreto del IPDUV o a un
+    # InstrumentoAgente (otros organismos); ver personalizador/instrumentos.py::CONCEPTOS. Las
+    # columnas de texto (n_decreto, instrumento_*, ...) son datos heredados que todavia no se
+    # pudieron vincular: no se editan desde el form y se vacian al vincularlas
+    # (comando vincular_instrumentos_agente).
+    n_decreto = models.CharField(max_length=10, blank=True, null=True, editable=False, help_text="Dato heredado sin vincular: instrumento de pase a planta permanente")
+    instrumento_pase_planta_decreto = models.ForeignKey("secretariador.InstrumentosLegalesDecretos", verbose_name="Decreto de pase a planta permanente", related_name="agentes_pase_planta", on_delete=models.PROTECT, blank=True, null=True)
+    instrumento_bonificacion_tipo = models.CharField("Tipo de instrumento", max_length=3, choices=INSTRUMENTO_TIPO, blank=True, null=True, editable=False)
+    instrumento_bonificacion = models.CharField(max_length=13, blank=True, null=True, editable=False, help_text="Dato heredado sin vincular: instrumento que aprueba la bonificacion por titulo")
+    instrumento_bonificacion_resolucion = models.ForeignKey("secretariador.InstrumentosLegalesResoluciones", verbose_name="Resolución de bonificación por título", related_name="agentes_bonificacion", on_delete=models.PROTECT, blank=True, null=True)
+    instrumento_bonificacion_decreto = models.ForeignKey("secretariador.InstrumentosLegalesDecretos", verbose_name="Decreto de bonificación por título", related_name="agentes_bonificacion", on_delete=models.PROTECT, blank=True, null=True)
     porcentaje_bonificacion = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
-    INSTRUMENTO_CONTRATO_DE_SERVICIO_TIPO = (
-        ("RES", "Resolución"),
-        ("DEC", "Decreto"),
-    )
-    instrumento_contrato_de_servicio_tipo = models.CharField("Tipo de instrumento", max_length=3, choices=INSTRUMENTO_CONTRATO_DE_SERVICIO_TIPO, blank=True, null=True)
-    instrumento_contrato_de_servicio = models.CharField(max_length=13, blank=True, null=True, help_text="Instrumento que aprueba el contrato de servicio - Solo Numero/Año")
+    instrumento_contrato_de_servicio_tipo = models.CharField("Tipo de instrumento", max_length=3, choices=INSTRUMENTO_TIPO, blank=True, null=True, editable=False)
+    instrumento_contrato_de_servicio = models.CharField(max_length=13, blank=True, null=True, editable=False, help_text="Dato heredado sin vincular: instrumento que aprueba el contrato de servicio")
+    instrumento_contrato_servicio_resolucion = models.ForeignKey("secretariador.InstrumentosLegalesResoluciones", verbose_name="Resolución de contrato de servicio", related_name="agentes_contrato_servicio", on_delete=models.PROTECT, blank=True, null=True)
+    instrumento_contrato_servicio_decreto = models.ForeignKey("secretariador.InstrumentosLegalesDecretos", verbose_name="Decreto de contrato de servicio", related_name="agentes_contrato_servicio", on_delete=models.PROTECT, blank=True, null=True)
     categoria = models.ForeignKey("Categoria", on_delete=models.CASCADE, blank=True, null=True)
     denominacion_cargo = models.ForeignKey("DenominacionCargo", related_name="agente_denominacion_cargo", on_delete=models.CASCADE, blank=True, null=True)
     cargo_interno = models.ForeignKey(
@@ -126,40 +146,42 @@ class Agente(models.Model):
         on_delete=models.CASCADE, blank=True, null=True,
         help_text="Oficina a la que el agente esta designado transitoriamente, distinta de su oficina habitual.",
     )
-    INSTRUMENTO_CARGO_INTERNO_TIPO = (
-        ("RES", "Resolución"),
-        ("DEC", "Decreto"),
-    )
-    instrumento_cargo_interno_tipo = models.CharField("Tipo de instrumento", max_length=3, choices=INSTRUMENTO_CARGO_INTERNO_TIPO, blank=True, null=True)
-    instrumento_cargo_interno = models.CharField("Instrumento de designación temporal", max_length=13, blank=True, null=True, help_text="Número de instrumento de designación temporal - Solo Numero/Año")
+    instrumento_cargo_interno_tipo = models.CharField("Tipo de instrumento", max_length=3, choices=INSTRUMENTO_TIPO, blank=True, null=True, editable=False)
+    instrumento_cargo_interno = models.CharField("Instrumento de designación temporal", max_length=13, blank=True, null=True, editable=False, help_text="Dato heredado sin vincular: instrumento de designación temporal")
+    instrumento_cargo_interno_resolucion = models.ForeignKey("secretariador.InstrumentosLegalesResoluciones", verbose_name="Resolución de designación temporal", related_name="agentes_cargo_interno", on_delete=models.PROTECT, blank=True, null=True)
+    instrumento_cargo_interno_decreto = models.ForeignKey("secretariador.InstrumentosLegalesDecretos", verbose_name="Decreto de designación temporal", related_name="agentes_cargo_interno", on_delete=models.PROTECT, blank=True, null=True)
     apartado = models.ForeignKey("ApartadoCargo", on_delete=models.CASCADE, blank=True, null=True)
     ceic = models.ForeignKey("CEIC", on_delete=models.CASCADE, blank=True, null=True)
     grupo = models.ForeignKey("GrupoCargo", on_delete=models.CASCADE, blank=True, null=True)
     activdad_central = models.CharField(max_length=1, default="1")
     actividad_especifica = models.ForeignKey("ActividadEspecifica", on_delete=models.CASCADE, blank=True, null=True)
     oficina = models.ForeignKey("Oficina", on_delete=models.CASCADE, blank=True, null=True)
-    n_decreto_transferencia_definitiva = models.CharField(max_length=10, blank=True, null=True, help_text="Decreto de transferencia definitiva - Solo Numero/Año")
+    n_decreto_transferencia_definitiva = models.CharField(max_length=10, blank=True, null=True, editable=False, help_text="Dato heredado sin vincular: decreto de transferencia definitiva")
+    instrumento_transferencia_definitiva_decreto = models.ForeignKey("secretariador.InstrumentosLegalesDecretos", verbose_name="Decreto de transferencia definitiva", related_name="agentes_transferencia_definitiva", on_delete=models.PROTECT, blank=True, null=True)
+    instrumento_transferencia_definitiva_externo = models.ForeignKey("InstrumentoAgente", verbose_name="Instrumento externo de transferencia definitiva", related_name="agentes_transferencia_definitiva", on_delete=models.PROTECT, blank=True, null=True)
     domicilio_direccion = models.CharField("Dirección", max_length=500, blank=True, null=True)
     domicilio_barrio = models.CharField("Barrio", max_length=300, blank=True, null=True)
     domicilio_localidad = models.ForeignKey("carga.Localidad", on_delete=models.CASCADE, blank=True, null=True)
     domicilio_provincia = models.ForeignKey("carga.Provincia", on_delete=models.CASCADE, blank=True, null=True)
     # Antigüedad reconocida por instrumentos legales, adicional a la que surge de fecha_ingreso.
-    APORTES_LEY_RESOLUCION_TIPO = (
-        ("DEC", "Decreto"),
-        ("RES", "Resolución"),
-        ("DIS", "Disposición"),
-    )
-    aportes_ley_resolucion_tipo = models.CharField("Tipo de instrumento", max_length=3, choices=APORTES_LEY_RESOLUCION_TIPO, blank=True, null=True)
-    aportes_ley_resolucion = models.CharField(max_length=13, blank=True, null=True, help_text="Instrumento que establece los aportes - Solo Numero/Año")
+    aportes_ley_resolucion_tipo = models.CharField("Tipo de instrumento", max_length=3, choices=INSTRUMENTO_TIPO, blank=True, null=True, editable=False)
+    aportes_ley_resolucion = models.CharField(max_length=13, blank=True, null=True, editable=False, help_text="Dato heredado sin vincular: instrumento que establece los aportes")
+    instrumento_aportes_ley_resolucion = models.ForeignKey("secretariador.InstrumentosLegalesResoluciones", verbose_name="Resolución de aportes", related_name="agentes_aportes_ley", on_delete=models.PROTECT, blank=True, null=True)
+    instrumento_aportes_ley_decreto = models.ForeignKey("secretariador.InstrumentosLegalesDecretos", verbose_name="Decreto de aportes", related_name="agentes_aportes_ley", on_delete=models.PROTECT, blank=True, null=True)
+    instrumento_aportes_ley_externo = models.ForeignKey("InstrumentoAgente", verbose_name="Instrumento externo de aportes", related_name="agentes_aportes_ley", on_delete=models.PROTECT, blank=True, null=True)
     aportes_ley_resolucion_anios = models.PositiveIntegerField("Años reconocidos (Resolución)", default=0, blank=True)
     aportes_ley_resolucion_meses = models.PositiveIntegerField("Meses reconocidos (Resolución)", default=0, blank=True)
     aportes_ley_resolucion_dias = models.PositiveIntegerField("Días reconocidos (Resolución)", default=0, blank=True)
-    aportes_anses = models.CharField(max_length=13, blank=True, null=True, help_text="Instrumento que establece los aportes")
+    aportes_anses = models.CharField(max_length=13, blank=True, null=True, editable=False, help_text="Dato heredado sin vincular: instrumento que establece los aportes")
+    instrumento_aportes_anses_externo = models.ForeignKey("InstrumentoAgente", verbose_name="Instrumento de aportes ANSES", related_name="agentes_aportes_anses", on_delete=models.PROTECT, blank=True, null=True)
     aportes_anses_anios = models.PositiveIntegerField("Años reconocidos (ANSES)", default=0, blank=True)
     aportes_anses_meses = models.PositiveIntegerField("Meses reconocidos (ANSES)", default=0, blank=True)
     aportes_anses_dias = models.PositiveIntegerField("Días reconocidos (ANSES)", default=0, blank=True)
     # FLAGS
     activo = models.BooleanField("Activo", default=True)
+    retirado = models.BooleanField("Retirado", default=False, help_text="Excluyente con Activo")
+    jubilado = models.BooleanField("Jubilado", default=False, help_text="Excluyente con Activo")
+    fallecido = models.BooleanField("Fallecido", default=False, help_text="Excluyente con Activo")
     con_errores = models.BooleanField(
         "Con errores de carga", default=False,
         help_text="Se marca automaticamente al importar personal_gral.xlsx si la fila tuvo algun aviso.",
@@ -205,6 +227,50 @@ class Agente(models.Model):
 
         return {"anios": anios, "meses": meses, "dias": dias}
 
+    @cached_property
+    def instrumentos(self):
+        """{clave de concepto: {"label", "tipo", "instrumento", "url", "es_pdf", "heredado",
+        "heredado_tipo"}} para la ficha: el instrumento vinculado (con link al PDF o a su
+        edicion) y, si no hay, el texto heredado."""
+        datos = {}
+        for concepto in CONCEPTOS:
+            tipo, instrumento = instrumento_vinculado(self, concepto)
+            url, es_pdf = url_documento(instrumento) if instrumento else (None, False)
+            datos[concepto.clave] = {
+                "label": concepto.label,
+                "tipo": TIPO_LABELS.get(tipo),
+                "instrumento": instrumento,
+                "url": url,
+                "es_pdf": es_pdf,
+                "heredado": getattr(self, concepto.heredado),
+                "heredado_tipo": dict(INSTRUMENTO_TIPO).get(tipo_heredado(self, concepto)),
+            }
+        return datos
+
+    @staticmethod
+    def q_instrumentos_sin_vincular():
+        """Q de los agentes con algun instrumento heredado (texto) todavia sin vincular."""
+        q = Q()
+        for concepto in CONCEPTOS:
+            q |= Q(**{f"{concepto.heredado}__gt": ""})
+        return q
+
+    BAJAS = ("retirado", "jubilado", "fallecido")
+
+    @property
+    def bajas(self):
+        """Etiquetas de los flags de baja marcados (ej. ["Jubilado", "Fallecido"])."""
+        return [self._meta.get_field(flag).verbose_name for flag in self.BAJAS if getattr(self, flag)]
+
+    def clean(self):
+        super().clean()
+        if self.activo and self.bajas:
+            raise ValidationError({"activo": f"Un agente activo no puede estar marcado como {', '.join(self.bajas).lower()}."})
+        for concepto in CONCEPTOS:
+            cargados = [campo for campo in concepto.fks.values() if getattr(self, f"{campo}_id")]
+            if len(cargados) > 1:
+                raise ValidationError(f"{concepto.label}: solo se puede vincular un instrumento legal.")
+
     def __str__(self):
         if self.agente_personal_transitorio:
             return f"(C){self.agente_nombreyapellido} - DNI Nº{self.dni}"
@@ -215,6 +281,49 @@ class Agente(models.Model):
         if not self.abreviatura:
             self.abreviatura = abreviatura_default_por_sexo(self.sexo)
         super().save(*args, **kwargs)
+
+def generate_name_instrumentoagente(instance, filename):
+    numero = "".join(c if c.isalnum() else "-" for c in instance.instrumentoagente_numero)
+    return os.path.join("instrumentosagentes/", f"{instance.instrumentoagente_tipo}-{numero}-{instance.instrumentoagente_uuid}.pdf")
+
+class InstrumentoAgente(models.Model):
+    """Instrumento legal de otro organismo (Disposiciones de la caja previsional, resoluciones
+    de ANSES, decretos de otras jurisdicciones...) referenciado desde un Agente. Los
+    instrumentos propios del IPDUV son InstrumentosLegalesResoluciones/Decretos
+    (secretariador). La numeracion se guarda tal cual, como texto."""
+    class Meta:
+        verbose_name = "Instrumento Externo"
+        verbose_name_plural = "Instrumentos Externos"
+        ordering = ("instrumentoagente_tipo", "instrumentoagente_organismo", "instrumentoagente_numero")
+        constraints = [
+            models.UniqueConstraint(
+                fields=["instrumentoagente_tipo", "instrumentoagente_organismo", "instrumentoagente_numero"],
+                name="unique_instrumentoagente_1",
+            ),
+        ]
+
+    TIPO = (
+        ("DIS", "Disposición"),
+        ("RES", "Resolución"),
+        ("DEC", "Decreto"),
+        ("OTR", "Otro"),
+    )
+
+    instrumentoagente_tipo = models.CharField("Tipo", max_length=3, choices=TIPO, default="DIS")
+    instrumentoagente_organismo = models.CharField("Organismo", max_length=120, blank=True, default="", help_text="Organismo emisor (ej. ANSES, InSSSeP)")
+    instrumentoagente_numero = models.CharField("Número", max_length=60, help_text="Numeración tal cual figura en el instrumento (ej. 5160/19)")
+    instrumentoagente_fecha = models.DateField("Fecha", blank=True, null=True)
+    instrumentoagente_descripcion = models.CharField("Descripción", max_length=600, blank=True, default="")
+    instrumentoagente = models.FileField("Documento digitalizado", upload_to=generate_name_instrumentoagente, max_length=500, validators=[FileValidator(max_size=14*1024*1024, min_size=None, content_types=("application/pdf",))], null=True, blank=True)
+    instrumentoagente_uuid = models.UUIDField(default=compat.uuid7, editable=False)
+    instrumentoagente_history = HistoricalRecords()
+
+    def __str__(self):
+        organismo = f" ({self.instrumentoagente_organismo})" if self.instrumentoagente_organismo else ""
+        return f"{self.get_instrumentoagente_tipo_display()} {self.instrumentoagente_numero}{organismo}"
+
+    def get_absolute_url(self):
+        return reverse("personalizador:update-instrumentoagente", kwargs={"pk": self.pk})
 
 class GeneroAgente(models.Model):
     class Meta:

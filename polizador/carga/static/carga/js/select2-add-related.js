@@ -25,12 +25,13 @@ $(function () {
 
     $(document).on("submit", "#popupCreateForm", function (e) {
         e.preventDefault();
-        var $form = $(this);
-
+        // FormData (no serialize()) para que tambien viajen los archivos del form.
         $.ajax({
             url: currentCreateUrl,
             method: "POST",
-            data: $form.serialize(),
+            data: new FormData(this),
+            processData: false,
+            contentType: false,
             dataType: "json",
         }).done(function (data) {
             var $select = $("#" + currentSelectId);

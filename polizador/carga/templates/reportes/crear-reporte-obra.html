@@ -83,6 +83,7 @@
             </div>
           </div>
         </div>
+        {% include "reportes/partials/selector-columnas.html" with reporte_id="obras" %}
         <div class="text-end">
           <input type='submit' value='Buscar' class="btn btn-primary btn-sm" />
         </div>
@@ -94,116 +95,12 @@
     <div class="card-header py-2 bg-body-tertiary fw-semibold small">Resultados</div>
     <div class="card-body p-2">
       <div class="table-responsive">
-        <table width="auto" class="table table-sm table-bordered table-hover align-middle mb-0" id="tablaReporte">
-            <thead class="bg-body-tertiary">
-                <tr>
-                    <th class="small" scope="col">ID#</th>
-                    <th class="small" scope="col">Obra</th>
-                    <th class="small" scope="col">Soluciones</th>
-                    <th class="small" scope="col">Localidad</th>
-                    <th class="small" scope="col">Contratista</th>
-                    <th class="small" scope="col">Programa</th>
-                    <th class="small" scope="col">Convenio</th>
-                    <th class="small" scope="col">Expediente</th>
-                    <th class="small" scope="col">Monto Pesos</th>
-                    <th class="small" scope="col">Monto UVI</th>
-                    <th class="small" scope="col">Saldo UVI</th>
-                    <th class="small" scope="col">% Ultimo Mes</th>
-                    <th class="small" scope="col">% Acumulado</th>
-                    <th class="small" scope="col">Acumulado en Pesos</th>
-                    <th class="small" scope="col">Acumulado en UVI</th>
-                    <th class="small d-print-none" scope="col">Link</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for instance in object_list %}
-                <tr>
-                    <th class="small" scope="row">{{instance.id}}</th>
-                    <td class="small">{{instance.obra_nombre}}</td>
-                    <td class="small">{{instance.obra_soluciones|default_if_none:"0"}}</td>
-                    <td class="small">{{instance.lista_localidades}}</td>
-                    <td class="small">{{instance.obra_empresa.empresa_nombre}}</td>
-                    <td class="small">{{instance.obra_programa}}</td>
-                    <td class="small">{{instance.obra_convenio|default_if_none:"-"}}</td>
-                    <td class="small">{{instance.obra_expediente}}</td>
-                    <td class="small">{{instance.obra_contrato_total_pesos}}</td>
-                    <td class="small">{{instance.obra_contrato_total_uvi}}</td>
-                    <td class="small">{{instance.saldo_uvi|default_if_none:0}}</td>
-                    <td class="small">{{instance.ultimo_certificado_avance.certificado_mes_pct|default:0}}%</td>
-                    <td class="small">{{instance.ultimo_certificado_avance.certificado_acum_pct|default:0}}%</td>
-                    <td class="small">{{instance.obra_acum_pesos|default_if_none:0}}</td>
-                    <td class="small">{{instance.obra_acum_uvi|default_if_none:0}}</td>
-                    <td class="small d-print-none"><a href="{% url "carga:estado-obra" instance.id %}">{{detalleimglink|safe}}</a></td>
-                </tr>
-                {% endfor %}
-            </tbody>
-            <tfoot class="bg-body-tertiary fw-semibold">
-                <tr>
-                    <th scope="col"></th>
-                    <th scope="col"></th>
-                    <th class="small" id="totalSoluciones" scope="col"></th>
-                    <th scope="col"></th>
-                    <th scope="col"></th>
-                    <th scope="col"></th>
-                    <th scope="col"></th>
-                    <th scope="col"></th>
-                    <th class="small" id="totalPesos" scope="col"></th>
-                    <th class="small" id="totalUVI" scope="col"></th>
-                    <th class="small" id="saldoUVI" scope="col"></th>
-                    <th scope="col"></th>
-                    <th scope="col"></th>
-                    <th class="small" id="acumuladoPesos" scope="col"></th>
-                    <th class="small" id="acumuladoUVI" scope="col"></th>
-                    <th class="d-print-none" scope="col"></th>
-                </tr>
-            </tfoot>
-        </table>
+        {% include "reportes/partials/tabla-reporte.html" with accion="obra" titulo_export="Reporte de Obras" %}
       </div>
     </div>
   </div>
 </div>
 
-<script>
-    new DataTable('#tablaReporte', {
-    info: false,
-    paging: false,
-    layout: { topStart: 'buttons' },
-    buttons: DatatablesExportButtons.build('Reporte de Obras'),
-    order: [[ 1, 'desc' ]],
-    language: {
-            "emptyTable": "Ningún dato disponible en esta tabla",
-            "search": "Buscar:",
-    },
-    "footerCallback": function ( row, data, start, end, display ) {
-            var api = this.api(), data;
-            const columnsToSum = [2, 8, 9, 10, 13, 14];
-
-            // Remove the formatting to get integer data for summation
-            var intVal = function ( i ) {
-                return typeof i === 'string' ?
-                    i.replace(/[.]/g, '').replace(/[,]/g,'.')*1 :
-                    typeof i === 'number' ?
-                        i : 0;
-            };
-            for (const n of columnsToSum) {
-            // Total over all pages
-            total = api.column( n ).data().reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
-
-            // Total over this page
-            pageTotal = api.column( n, { page: 'current'} ).data().reduce( function (a, b) {
-                    return intVal(a) + intVal(b);
-                }, 0 );
-
-            // Update footer
-            $( api.column( n ).footer() ).html(
-                pageTotal.toLocaleString() +' ('+ total.toLocaleString() +' total)'
-            );
-        }
-    }
-});
-</script>
 {% include "partials/select2-script-partial.html" with id_field="inputGroupSelectLocalidad" url="/v1/api/select2_localidad/" %}
 {% include "partials/select2-script-partial.html" with id_field="inputGroupSelectEmpresa" url="/v1/api/select2_empresa/" %}
 {% include "partials/select2-script-partial.html" with id_field="inputGroupSelectPrograma" url="/v1/api/select2_programa/" %}

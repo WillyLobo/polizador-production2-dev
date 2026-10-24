@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.utils.decorators import method_decorator
@@ -17,7 +18,6 @@ class CrearContrato(PermissionRequiredMixin, FormsetViewMixin, generic.CreateVie
 	model = Contrato
 	template_name = "contrato/crear-contrato.html"
 	form_class = ContratoForm
-	success_url = reverse_lazy("carga:crear-contrato")
 	title = "Crear Contrato"
 
 	def get_title(self):
@@ -29,6 +29,14 @@ class CrearContrato(PermissionRequiredMixin, FormsetViewMixin, generic.CreateVie
 		if obra_id:
 			initial["contrato_obra"] = obra_id
 		return initial
+
+	def get_success_url(self):
+		return reverse("carga:estado-obra", kwargs={"pk": self.object.contrato_obra_id})
+
+	def form_valid(self, form, formset):
+		response = super().form_valid(form, formset)
+		messages.success(self.request, "Se guardó el contrato.")
+		return response
 
 @method_decorator(login_required, name="dispatch")
 class UpdateContrato(PermissionRequiredMixin, FormsetViewMixin, generic.UpdateView):

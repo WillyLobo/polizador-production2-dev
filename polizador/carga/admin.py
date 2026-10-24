@@ -4,6 +4,7 @@ from import_export.admin import ImportExportMixin
 from simple_history.admin import SimpleHistoryAdmin
 
 from carga import models
+from core.admin_mixins import StrSelectRelatedAdminMixin
 from carga import resources
 
 # Register your models here.
@@ -24,14 +25,22 @@ class EmpresaAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	ordering = ["id"]
 	resource_class = resources.EmpresaResource
 	search_fields = ["empresa_nombre", "empresa_cuit"]
-class PolizaAdmin(ImportExportMixin, SimpleHistoryAdmin):
+class PolizaAdmin(StrSelectRelatedAdminMixin, ImportExportMixin, SimpleHistoryAdmin):
+	str_select_related = ["poliza_aseguradora", "poliza_obra__obra_empresa", "poliza_tomador"]
 	autocomplete_fields = ["poliza_aseguradora", "poliza_tomador", "poliza_obra", "poliza_contrato"]
 	search_fields = ["poliza_numero", "poliza_expediente", "poliza_aseguradora__aseguradora_nombre", "poliza_tomador__empresa_nombre", "poliza_obra__obra_nombre"]
 	list_display = ["id", "poliza_numero", "poliza_fecha", "poliza_concepto", "poliza_aseguradora", "poliza_tomador", "poliza_obra"]
 	list_filter = ["poliza_concepto", "poliza_aseguradora"]
 	resource_class = resources.PolizaResource
 
-class PolizaMovimientoAdmin(ImportExportMixin, SimpleHistoryAdmin):
+class PolizaMovimientoAdmin(StrSelectRelatedAdminMixin, ImportExportMixin, SimpleHistoryAdmin):
+	str_select_related = [
+		"poliza_movimiento_numero__poliza_aseguradora",
+		"poliza_movimiento_numero__poliza_obra__obra_empresa",
+		"poliza_movimiento_numero__poliza_tomador",
+		"poliza_movimiento_area",
+	]
+	list_select_related = ["poliza_movimiento_receptor"]
 	autocomplete_fields = ["poliza_movimiento_receptor", "poliza_movimiento_area", "poliza_movimiento_numero"]
 	search_fields = ["poliza_movimiento_numero__poliza_numero"]
 	list_display = ["id", "poliza_movimiento_numero", "poliza_movimiento_area", "poliza_movimiento_receptor", "poliza_movimiento_fecha"]
@@ -66,10 +75,13 @@ class MunicipioAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	autocomplete_fields = ["municipio_departamento", "municipio_region"]
 	search_fields = ["municipio_nombre"]
 	list_display = ("id", "municipio_nombre", "municipio_departamento", "municipio_region")
+	list_select_related = ["municipio_departamento", "municipio_region"]
 	list_filter = ["municipio_departamento", "municipio_region"]
 
-class ObraAdmin(ImportExportMixin, SimpleHistoryAdmin):
+class ObraAdmin(StrSelectRelatedAdminMixin, ImportExportMixin, SimpleHistoryAdmin):
 	ordering = ["id"]
+	str_select_related = ["obra_empresa"]
+	list_select_related = ["obra_programa"]
 	autocomplete_fields = [
 		"obra_empresa",
 		"obra_region",
@@ -87,16 +99,17 @@ class ObraAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	list_filter = ["obra_licitacion_tipo", "obra_programa", "obra_region"]
 	resource_class = resources.ObraResource
 
-class PrototipoAdmin(ImportExportMixin, SimpleHistoryAdmin):
+class PrototipoAdmin(StrSelectRelatedAdminMixin, ImportExportMixin, SimpleHistoryAdmin):
+	str_select_related = ["prototipo_obra"]
 	autocomplete_fields = ["prototipo_obra"]
 	search_fields = ["prototipo_obra__obra_nombre"]
 	list_display = ["id", "prototipo_obra", "prototipo_tipo", "prototipo_cantidad", "prototipo_superficie"]
 	list_filter = ["prototipo_tipo", "prototipo_discapacitado"]
 	resource_class = resources.PrototipoResource
 
-class CertificadoAdmin(ImportExportMixin, SimpleHistoryAdmin):
+class CertificadoAdmin(StrSelectRelatedAdminMixin, ImportExportMixin, SimpleHistoryAdmin):
 	autocomplete_fields = ["certificado_obra", "certificado_rubro_db", "certificado_foja", "certificado_contrato_origen", "certificado_contrato_tramo"]
-	list_select_related = ["certificado_obra"]
+	str_select_related = ["certificado_obra__obra_empresa", "certificado_rubro_db"]
 	search_fields = ["certificado_expediente", "certificado_obra__obra_nombre", "certificado_periodo"]
 	list_display = [
 		"id",
@@ -116,6 +129,7 @@ class ConjuntoLicitadoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	autocomplete_fields = ["conjunto_subconjunto"]
 	search_fields = ["conjunto_nombre"]
 	list_display = ["id", "conjunto_nombre", "conjunto_resolucion", "conjunto_subconjunto"]
+	list_select_related = ["conjunto_subconjunto"]
 	resource_class = resources.ConjuntoLicitadoResource
 
 class RegionAdmin(ImportExportMixin, SimpleHistoryAdmin):
@@ -133,22 +147,25 @@ class CertificadoFinanciamientoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	search_fields = ["certificadofinanciamiento_nombre"]
 	list_display = ["id", "certificadofinanciamiento_nombre", "certificadofinanciamiento_nombre_corto"]
 
-class PlanDeTrabajosItemAdmin(ImportExportMixin, SimpleHistoryAdmin):
+class PlanDeTrabajosItemAdmin(StrSelectRelatedAdminMixin, ImportExportMixin, SimpleHistoryAdmin):
+	str_select_related = ["planitem_rubro__rubro_plan__trabajos_obra__obra_empresa"]
 	autocomplete_fields = ["planitem_rubro", "item_anterior"]
-	search_fields = ["planitem_nombre", "planitem_rubro__rubro_nombre"]
+	search_fields = ["planitem_nombre", "planitem_rubro__rubro_nombre", "planitem_rubro__rubro_plan__trabajos_obra__obra_nombre"]
 	list_display = ["id", "planitem_nombre", "planitem_rubro", "planitem_incidencia_pct", "planitem_orden"]
-	list_filter = ["planitem_rubro"]
 	resource_class = resources.PlanDeTrabajosItemResource
 
-class PlanDeTrabajosItemInline(admin.TabularInline):
+class PlanDeTrabajosItemInline(StrSelectRelatedAdminMixin, admin.TabularInline):
 	model = models.PlanDeTrabajosItem
 	autocomplete_fields = ["item_anterior"]
 
-class PlanDeTrabajosRubroInline(admin.TabularInline):
+class PlanDeTrabajosRubroInline(StrSelectRelatedAdminMixin, admin.TabularInline):
 	model = models.PlanDeTrabajosRubro
 	autocomplete_fields = ["rubro_anterior", "rubro_contratomonto"]
 
-class PlandeTrabajosAdmin(ImportExportMixin, SimpleHistoryAdmin):
+class PlandeTrabajosAdmin(StrSelectRelatedAdminMixin, ImportExportMixin, SimpleHistoryAdmin):
+	str_select_related = ["trabajos_obra__obra_empresa"]
+	ordering = ["trabajos_obra__obra_nombre", "-trabajos_fecha"]
+	list_select_related = ["trabajos_contrato__contrato_obra__obra_empresa"]
 	autocomplete_fields = ["trabajos_obra", "trabajos_contrato"]
 	search_fields = ["trabajos_obra__obra_nombre"]
 	list_display = ["id", "trabajos_obra", "trabajos_fecha", "trabajos_meses", "trabajos_contrato"]
@@ -159,7 +176,14 @@ class PlandeTrabajosAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	]
 	resource_class = resources.PlandeTrabajosResource
 
-class PlanDeTrabajosRubroAdmin(ImportExportMixin, SimpleHistoryAdmin):
+class PlanDeTrabajosRubroAdmin(StrSelectRelatedAdminMixin, ImportExportMixin, SimpleHistoryAdmin):
+	str_select_related = ["rubro_plan__trabajos_obra__obra_empresa"]
+	list_select_related = [
+		"rubro_contratomonto__contratomonto_rubro",
+		"rubro_contratomonto__contratomonto_financiamiento",
+		"rubro_contratomonto__contratomonto_contrato__contrato_obra__obra_empresa",
+		"rubro_certificado_rubro",
+	]
 	autocomplete_fields = ["rubro_plan", "rubro_anterior", "rubro_contratomonto", "rubro_certificado_rubro"]
 	search_fields = ["rubro_nombre", "rubro_plan__trabajos_obra__obra_nombre"]
 	list_display = ("rubro_nombre", "rubro_plan", "rubro_presupuesto", "rubro_contratomonto", "rubro_certificado_rubro")
@@ -169,11 +193,12 @@ class PlanDeTrabajosRubroAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	]
 	resource_class = resources.PlanDeTrabajosRubroResource
 
-class PlanDeTrabajosEtapaItemInline(admin.TabularInline):
+class PlanDeTrabajosEtapaItemInline(StrSelectRelatedAdminMixin, admin.TabularInline):
 	model = models.PlanDeTrabajosEtapaItem
 	autocomplete_fields = ["etapaitem_planitem"]
 
-class PlanDeTrabajosEtapaAdmin(ImportExportMixin, SimpleHistoryAdmin):
+class PlanDeTrabajosEtapaAdmin(StrSelectRelatedAdminMixin, ImportExportMixin, SimpleHistoryAdmin):
+	str_select_related = ["etapa_rubro__rubro_plan__trabajos_obra__obra_empresa"]
 	autocomplete_fields = ["etapa_rubro"]
 	search_fields = ["etapa_rubro__rubro_nombre"]
 	list_display = ("id", "etapa_rubro", "etapa_numero", "etapa_fecha")
@@ -183,14 +208,17 @@ class PlanDeTrabajosEtapaAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	]
 	resource_class = resources.PlanDeTrabajosEtapaResource
 
-class FojaDeMedicionItemInline(admin.TabularInline):
+class FojaDeMedicionItemInline(StrSelectRelatedAdminMixin, admin.TabularInline):
 	model = models.FojaDeMedicionItem
+	str_select_related = ["fojaitem_planitem", "fojaitem_foja__foja_rubro__rubro_plan__trabajos_obra__obra_empresa"]
 	autocomplete_fields = ["fojaitem_planitem"]
 
-class FojaDeMedicionFotoInline(admin.TabularInline):
+class FojaDeMedicionFotoInline(StrSelectRelatedAdminMixin, admin.TabularInline):
 	model = models.FojaDeMedicionFoto
+	str_select_related = ["fotofoja_foja__foja_rubro__rubro_plan__trabajos_obra__obra_empresa"]
 
-class FojaDeMedicionAdmin(ImportExportMixin, SimpleHistoryAdmin):
+class FojaDeMedicionAdmin(StrSelectRelatedAdminMixin, ImportExportMixin, SimpleHistoryAdmin):
+	str_select_related = ["foja_rubro__rubro_plan__trabajos_obra__obra_empresa"]
 	autocomplete_fields = ["foja_rubro", "foja_inspector"]
 	search_fields = ["foja_rubro__rubro_nombre", "foja_numero"]
 	list_display = ["id", "foja_numero", "foja_rubro", "foja_periodo", "foja_fecha", "foja_legacy"]
@@ -201,7 +229,7 @@ class FojaDeMedicionAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	]
 	resource_class = resources.FojaDeMedicionResource
 
-class ContratoMontoInline(admin.TabularInline):
+class ContratoMontoInline(StrSelectRelatedAdminMixin, admin.TabularInline):
 	model = models.ContratoMonto
 	autocomplete_fields = ["contratomonto_rubro", "contratomonto_financiamiento"]
 
@@ -209,7 +237,8 @@ class ContratoTramoPagoInline(admin.TabularInline):
 	model = models.ContratoTramoPago
 	readonly_fields = ["tramo_numero"]
 
-class ContratoAdmin(ImportExportMixin, SimpleHistoryAdmin):
+class ContratoAdmin(StrSelectRelatedAdminMixin, ImportExportMixin, SimpleHistoryAdmin):
+	str_select_related = ["contrato_obra__obra_empresa"]
 	autocomplete_fields = ["contrato_obra"]
 	search_fields = ["contrato_descripcion", "contrato_obra__obra_nombre"]
 	list_display = ["id", "contrato_obra", "contrato_descripcion", "contrato_fecha", "contrato_resolucion"]
@@ -220,14 +249,16 @@ class ContratoAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	]
 	resource_class = resources.ContratoResource
 
-class ContratoMontoAdmin(ImportExportMixin, SimpleHistoryAdmin):
+class ContratoMontoAdmin(StrSelectRelatedAdminMixin, ImportExportMixin, SimpleHistoryAdmin):
+	str_select_related = ["contratomonto_rubro", "contratomonto_financiamiento", "contratomonto_contrato__contrato_obra__obra_empresa"]
 	autocomplete_fields = ["contratomonto_contrato", "contratomonto_rubro", "contratomonto_financiamiento"]
 	search_fields = ["contratomonto_contrato__contrato_descripcion", "contratomonto_contrato__contrato_obra__obra_nombre"]
 	list_display = ["id", "contratomonto_contrato", "contratomonto_rubro", "contratomonto_financiamiento", "contratomonto_pesos", "contratomonto_uvi"]
 	list_filter = ["contratomonto_rubro", "contratomonto_financiamiento"]
 	resource_class = resources.ContratoMontoResource
 
-class ContratoTramoPagoAdmin(ImportExportMixin, SimpleHistoryAdmin):
+class ContratoTramoPagoAdmin(StrSelectRelatedAdminMixin, ImportExportMixin, SimpleHistoryAdmin):
+	str_select_related = ["tramo_contrato__contrato_obra__obra_empresa"]
 	autocomplete_fields = ["tramo_contrato"]
 	search_fields = ["tramo_contrato__contrato_descripcion", "tramo_contrato__contrato_obra__obra_nombre"]
 	list_display = ["id", "tramo_contrato", "tramo_numero", "tramo_pct_pago", "tramo_pct_disparador"]
@@ -239,14 +270,17 @@ class ContratoRubroAdmin(ImportExportMixin, SimpleHistoryAdmin):
 	search_fields = ["contratorubro_tipo"]
 	list_display = ["id", "contratorubro_tipo"]
 
-class ContratoDigitalAdmin(ImportExportMixin, SimpleHistoryAdmin):
+class ContratoDigitalAdmin(StrSelectRelatedAdminMixin, ImportExportMixin, SimpleHistoryAdmin):
+	str_select_related = ["contratodigital_tipo"]
+	list_select_related = ["contratodigital_contrato__contrato_obra__obra_empresa"]
 	autocomplete_fields = ["contratodigital_contrato", "contratodigital_tipo"]
 	search_fields = ["contratodigital_descripcion", "contratodigital_contrato__contrato_descripcion", "contratodigital_contrato__contrato_obra__obra_nombre"]
 	list_display = ["id", "contratodigital_contrato", "contratodigital_tipo", "contratodigital_nombre_archivo"]
 	list_filter = ["contratodigital_tipo"]
 	resource_class = resources.ContratoDigitalResource
 
-class ObraDocumentoAdmin(ImportExportMixin, SimpleHistoryAdmin):
+class ObraDocumentoAdmin(StrSelectRelatedAdminMixin, ImportExportMixin, SimpleHistoryAdmin):
+	str_select_related = ["obradocumento_obra__obra_empresa"]
 	autocomplete_fields = ["obradocumento_obra"]
 	search_fields = ["obradocumento_descripcion", "obradocumento_obra__obra_nombre"]
 	list_display = ["id", "obradocumento_obra", "obradocumento_descripcion"]

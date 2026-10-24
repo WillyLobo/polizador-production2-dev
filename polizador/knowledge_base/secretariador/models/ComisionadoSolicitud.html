@@ -20,20 +20,34 @@ los mismos nombres de atributo (ver el docstring de
   default de externos) para indexar el campo correcto de
   <a href="MontoViaticoDiario.md">MontoViaticoDiario</a> (estrato × interior/exterior según la
   Provincia de la Solicitud de origen).</li>
-<li><code>viaticos_computado()</code>: días de la Solicitud/Incorporación de origen × valor diario.</li>
+<li><code>viaticos_computado()</code>: días de la Solicitud/Incorporación de origen × viático diario
+  <strong>guardado</strong> (<code>comisionadosolicitud_viatico_diario</code>), no el que daría hoy <code>valor_viatico_dia()</code>.</li>
 <li><code>viaticos_total()</code>: computado + combustible + gastos + pasaje.</li>
 </ul>
-<p><code>save()</code> recalcula y persiste los tres (<code>_cantidad_de_dias</code>, <code>_viatico_diario</code>,
-<code>_viatico_computado</code>, <code>_viatico_total</code>) en cada guardado — son snapshots calculados al
-momento de guardar, no propiedades derivadas en cada lectura (mismo patrón que
-<code>carga.FojaDeMedicionItem.fojaitem_pct_acumulado</code>, aunque acá no hay una señal de cascada
-hacia adelante porque no hay "comisionados siguientes" en una cadena).</p>
+<p><code>save()</code> llama a <code>recalcular_campos_derivados()</code> y persiste los cuatro (<code>_cantidad_de_dias</code>,
+<code>_viatico_diario</code>, <code>_viatico_computado</code>, <code>_viatico_total</code>) — son snapshots, no propiedades
+derivadas en cada lectura. <strong>La tarifa diaria queda congelada al asignarse:</strong> cambios
+posteriores en ReglasViatico, en el escalafón/gabinete del agente o en el Directorio no
+alteran comisiones ya cargadas. Se recalcula solo si el registro es nuevo, si cambia alguno
+de <code>CAMPOS_TARIFA_COMISIONADO</code> (agente/externo, Solicitud/Incorporación de origen,
+colaborador, <code>sin_viatico</code>), o si la Solicitud cambia de provincia o decreto. Días,
+computado y total siempre siguen a la Solicitud. La resolución (.docx) y <code>ver-solicitud</code>
+muestran el diario guardado.</p>
+<p>Como los formsets de edición solo guardan las filas tocadas, la sincronización con la
+Solicitud la hacen las señales de <code>secretariador/signals.py</code>
+(<code>sincronizar_comisionados_de_solicitud</code>, <code>sincronizar_comisionados_de_incorporacion</code>) vía
+<code>sincronizar_comisionados()</code>, guardando solo los registros que cambian. El comando
+<code>resave_comisionado</code> corrige registros desincronizados de antes (<code>--recalcular-diario</code> para
+aplicar también la tarifa actual).</p>
 <h2>Firma</h2>
 <pre><code class="language-python">class ComisionadoSolicitud(models.Model):
 </code></pre>
 <h2>Uso real</h2>
 <pre><code class="language-python"># secretariador/views/solicitudviews.py (CrearSolicitud, vía FormsetViewMixin)
 formset.save()  # -&gt; cada ComisionadoSolicitud.save() recalcula sus 4 campos de viático
+
+# secretariador/signals.py, post_save de Solicitud con fechas/provincia/decreto cambiados
+sincronizar_comisionados(comisionados, recalcular_diario, MOTIVO_SINCRONIZAR_SOLICITUD)
 </code></pre>
 <h2>Ver también</h2>
 <ul>

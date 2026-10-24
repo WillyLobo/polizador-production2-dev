@@ -8,7 +8,8 @@ from django.urls import reverse_lazy
 from personalizador.models import Agente
 from personalizador.forms.agenteforms import *
 from personalizador.licencias import resumen_agente, saldos_pendientes_agente
-from core.mixins import DeleteRelatedObjectsMixin, PopupCreateMixin
+from core.mixins import DeleteRelatedObjectsMixin, PopupCreateMixin, UserKwargsMixin
+from personalizador.instrumentos import CONCEPTOS
 
 @method_decorator(login_required, name="dispatch")
 class EliminarAgente(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
@@ -20,7 +21,7 @@ class EliminarAgente(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic
 
 
 @method_decorator(login_required, name="dispatch")
-class CrearAgente(PopupCreateMixin, PermissionRequiredMixin, generic.CreateView):
+class CrearAgente(PopupCreateMixin, UserKwargsMixin, PermissionRequiredMixin, generic.CreateView):
 	permission_required = "personalizador.add_agente"
 
 	model = Agente
@@ -41,7 +42,7 @@ class CrearAgente(PopupCreateMixin, PermissionRequiredMixin, generic.CreateView)
 
 
 @method_decorator(login_required, name="dispatch")
-class UpdateAgente(PermissionRequiredMixin, generic.UpdateView):
+class UpdateAgente(UserKwargsMixin, PermissionRequiredMixin, generic.UpdateView):
 	permission_required = "personalizador.change_agente"
 
 	model = Agente
@@ -66,6 +67,7 @@ class FichaAgente(PermissionRequiredMixin, generic.DetailView):
 			"oficina__cargo_direccion", "oficina__cargo_departamento",
 			"cargo_interno__cargo_directorio", "cargo_interno__cargo_gerencia",
 			"cargo_interno__cargo_direccion", "cargo_interno__cargo_departamento",
+			*(campo for concepto in CONCEPTOS for campo in concepto.fks.values()),
 		).prefetch_related(
 			"titulo_profesional",
 			"licenciapermiso_set__licenciapermiso_tipo",

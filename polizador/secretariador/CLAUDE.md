@@ -1,0 +1,1 @@
+**Document generation** uses `docxtpl` (Jinja2-in-docx) against static templates in `secretariador/media/*.docx` (`solicitud_template.docx`, `solicitud_exterior.docx`, `solicitud_incorporacion.docx`) — see `secretariador/views/solicitudviews.py`, `solicitud_exteriorviews.py`, `incorporacionviews.py`.

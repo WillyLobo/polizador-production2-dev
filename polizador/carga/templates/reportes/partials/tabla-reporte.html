@@ -1,0 +1,73 @@
+{% load l10n %}
+{# Tabla de un reporte con columnas elegidas. accion: "obra" (link al estado de obra) o "certificado" (PDF). #}
+<table class="table table-sm table-bordered table-hover align-middle mb-0" id="tablaReporte">
+    <thead class="bg-body-tertiary">
+        <tr>
+            {% for columna in columnas %}
+            <th class="small{% if columna.sumable %} reporte-sumable{% endif %}" scope="col">{{ columna.etiqueta }}</th>
+            {% endfor %}
+            <th class="small d-print-none" scope="col">{% if accion == "obra" %}Link{% else %}PDF{% endif %}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for object, celdas in filas %}
+        <tr id="{{ object.id|unlocalize }}">
+            {% for celda in celdas %}
+            <td class="small"{% if celda.orden is not None %} data-order="{{ celda.orden }}"{% endif %}>{{ celda.texto }}</td>
+            {% endfor %}
+            {% if accion == "obra" %}
+            <td class="small d-print-none"><a href="{% url "carga:estado-obra" object.id %}">{{ detalleimglink|safe }}</a></td>
+            {% elif object.certificado_digital %}
+            <td class="small d-print-none"><a href="{{ object.certificado_digital.url }}" target="_blank">{{ pdfimglink|safe }}</a></td>
+            {% else %}
+            <td class="small d-print-none">{{ nofileimglink|safe }}</td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+    <tfoot class="bg-body-tertiary fw-semibold">
+        <tr>
+            {% for columna in columnas %}
+            <th class="small" scope="col">{% if forloop.first and not columna.sumable %}Totales{% endif %}</th>
+            {% endfor %}
+            <th class="d-print-none" scope="col"></th>
+        </tr>
+    </tfoot>
+</table>
+
+<script>
+    new DataTable('#tablaReporte', {
+    info: false,
+    paging: false,
+    layout: { topStart: 'buttons' },
+    buttons: DatatablesExportButtons.build('{{ titulo_export|escapejs }}'),
+    order: {% if orden_inicial_indice is not None %}[[ {{ orden_inicial_indice }}, '{{ orden_inicial_direccion }}' ]]{% else %}[]{% endif %},
+    language: {
+            "emptyTable": "Ningún dato disponible en esta tabla",
+            "search": "Buscar:",
+    },
+    // Suma las columnas marcadas como sumables en el catálogo, leyendo el valor crudo
+    // de data-order (no el texto localizado).
+    footerCallback: function () {
+        var api = this.api();
+        var sumar = function (nodos) {
+            var total = 0;
+            nodos.each(function (td) {
+                var valor = parseFloat(td.dataset.order);
+                if (!isNaN(valor)) total += valor;
+            });
+            return total;
+        };
+        var formato = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+        api.columns('.reporte-sumable').every(function (indice) {
+            var filtrado = sumar(api.column(indice, { search: 'applied' }).nodes());
+            var total = sumar(this.nodes());
+            var texto = filtrado.toLocaleString('es-AR', formato);
+            if (filtrado !== total) {
+                texto += ' (' + total.toLocaleString('es-AR', formato) + ' total)';
+            }
+            $(this.footer()).html(texto);
+        });
+    }
+});
+</script>

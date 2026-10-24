@@ -494,3 +494,211 @@ class LicenciaPermisoViewsPermissionTest(TestCase):
         resp = self.client.get(reverse("personalizador:crear-licenciapermiso"))
         self.assertEqual(resp.status_code, 200)
         self.assertContains(resp, "licenciapermiso-balance/")
+
+
+class InstrumentosAgenteTest(TestCase):
+    """Vinculacion de los instrumentos legales del Agente (personalizador/instrumentos.py)."""
+
+    def setUp(self):
+        from secretariador.models import InstrumentosLegalesDecretos, InstrumentosLegalesResoluciones
+        self.genero = GeneroAgente.objects.create(generoagente_nombre="Test")
+        self.res_presidencia = InstrumentosLegalesResoluciones.objects.create(
+            instrumentolegalresoluciones_tipo="P", instrumentolegalresoluciones_numero=38,
+            instrumentolegalresoluciones_ano="2021",
+        )
+        self.res_directorio = InstrumentosLegalesResoluciones.objects.create(
+            instrumentolegalresoluciones_tipo="D", instrumentolegalresoluciones_numero=940,
+            instrumentolegalresoluciones_acta="32", instrumentolegalresoluciones_ano="2015",
+        )
+        self.decreto = InstrumentosLegalesDecretos.objects.create(
+            instrumentolegaldecretos_tipo="P", instrumentolegaldecretos_numero=1458,
+            instrumentolegaldecretos_ano="2012",
+        )
+
+    def _agente(self, **kwargs):
+        return Agente.objects.create(
+            agente_nombres="Juan", agente_apellidos="Perez", sexo=self.genero,
+            dni=30111222, cuil="20301112223", **kwargs,
+        )
+
+    def test_parsear(self):
+        from personalizador.instrumentos import parsear
+        self.assertEqual(parsear("940/32/2015"), (940, "32", "2015"))
+        self.assertEqual(parsear("0038-21"), (38, None, "2021"))
+        self.assertEqual(parsear("2760/97"), (2760, None, "1997"))
+        self.assertIsNone(parsear("1570"))
+        self.assertIsNone(parsear("RES. ANSES 26"))
+
+    def test_buscar_por_tipo(self):
+        from personalizador.instrumentos import buscar, AMBIGUO, SIN_MATCH, RES, DEC
+        self.assertEqual(buscar(RES, "0038/21").instrumento, self.res_presidencia)
+        self.assertEqual(buscar(RES, "940/32/2015").instrumento, self.res_directorio)
+        self.assertEqual(buscar(RES, "940/2015").motivo, SIN_MATCH)
+        self.assertEqual(buscar(DEC, "1458/12").instrumento, self.decreto)
+        self.assertEqual(buscar(None, "1458/2012").tipo, DEC)
+        self.assertEqual(buscar("DIS", "1458/2012").motivo, SIN_MATCH)
+
+        from secretariador.models import InstrumentosLegalesDecretos
+        InstrumentosLegalesDecretos.objects.create(
+            instrumentolegaldecretos_tipo="P", instrumentolegaldecretos_numero=38,
+            instrumentolegaldecretos_ano="2021",
+        )
+        self.assertEqual(buscar(None, "38/2021").motivo, AMBIGUO)
+
+    def test_clean_rechaza_dos_instrumentos_del_mismo_concepto(self):
+        agente = self._agente(
+            instrumento_bonificacion_resolucion=self.res_presidencia,
+            instrumento_bonificacion_decreto=self.decreto,
+        )
+        with self.assertRaises(ValidationError):
+            agente.clean()
+
+    def test_form_descarta_la_fk_del_tipo_no_elegido_y_limpia_heredado(self):
+        from core.validators import get_cuil
+        from personalizador.forms.agenteforms import AgenteForm
+        agente = self._agente(instrumento_bonificacion="1458/2012", instrumento_bonificacion_tipo="DEC")
+        data = {
+            "agente_nombres": "Juan", "agente_apellidos": "Perez", "sexo": self.genero.pk,
+            "dni": 30111222, "cuil": get_cuil("30111222", "M"), "activdad_central": "1",
+            "tipo_instrumento_bonificacion": "DEC",
+            "instrumento_bonificacion_resolucion": self.res_presidencia.pk,
+            "instrumento_bonificacion_decreto": self.decreto.pk,
+        }
+        form = AgenteForm(data, instance=agente)
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        agente.refresh_from_db()
+        self.assertEqual(agente.instrumento_bonificacion_decreto, self.decreto)
+        self.assertIsNone(agente.instrumento_bonificacion_resolucion)
+        self.assertIsNone(agente.instrumento_bonificacion)
+        self.assertIsNone(agente.instrumento_bonificacion_tipo)
+
+    def test_comando_vincular(self):
+        from io import StringIO
+        from django.core.management import call_command
+        agente = self._agente(
+            n_decreto="1458/2012",
+            instrumento_contrato_de_servicio="940/32/2015", instrumento_contrato_de_servicio_tipo="RES",
+            instrumento_bonificacion="9999/2020", instrumento_bonificacion_tipo="RES",
+        )
+
+        call_command("vincular_instrumentos_agente", "--dry-run", stdout=StringIO())
+        agente.refresh_from_db()
+        self.assertIsNone(agente.instrumento_pase_planta_decreto)
+        self.assertEqual(agente.n_decreto, "1458/2012")
+
+        call_command("vincular_instrumentos_agente", stdout=StringIO())
+        agente.refresh_from_db()
+        self.assertEqual(agente.instrumento_pase_planta_decreto, self.decreto)
+        self.assertIsNone(agente.n_decreto)
+        self.assertEqual(agente.instrumento_contrato_servicio_resolucion, self.res_directorio)
+        self.assertIsNone(agente.instrumento_contrato_de_servicio_tipo)
+        # Sin coincidencia: queda como dato heredado.
+        self.assertEqual(agente.instrumento_bonificacion, "9999/2020")
+        self.assertTrue(Agente.objects.filter(Agente.q_instrumentos_sin_vincular(), pk=agente.pk).exists())
+
+    def test_popup_resolucion_acta(self):
+        from secretariador.forms.instrumentoslegalesform import InstrumentosLegalesResolucionesPopupForm
+        base = {
+            "instrumentolegalresoluciones_numero": 12, "instrumentolegalresoluciones_ano": "2026",
+            "instrumentolegalresoluciones_fecha_aprobacion": "2026-01-10",
+        }
+        form = InstrumentosLegalesResolucionesPopupForm({**base, "instrumentolegalresoluciones_tipo": "D"})
+        self.assertIn("instrumentolegalresoluciones_acta", form.errors)
+
+        form = InstrumentosLegalesResolucionesPopupForm({**base, "instrumentolegalresoluciones_tipo": "D", "instrumentolegalresoluciones_acta": "5"})
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.save().instrumentolegalresoluciones_acta, "05")
+
+        form = InstrumentosLegalesResolucionesPopupForm({**base, "instrumentolegalresoluciones_tipo": "P", "instrumentolegalresoluciones_acta": "7"})
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.save().instrumentolegalresoluciones_acta, "")
+
+    def test_paginas_y_filtro_sin_vincular(self):
+        import json
+        usuario = UserModel.objects.create_superuser("admin", "admin@example.com", "x")
+        self.client.force_login(usuario)
+        vinculado = self._agente(instrumento_pase_planta_decreto=self.decreto)
+        heredado = Agente.objects.create(
+            agente_nombres="Ana", agente_apellidos="Gomez", sexo=self.genero,
+            dni=30111333, cuil="27301113334", instrumento_bonificacion="0074/05/2014", instrumento_bonificacion_tipo="RES",
+        )
+
+        respuesta = self.client.get(reverse("personalizador:update-agente", args=[heredado.pk]))
+        self.assertContains(respuesta, "Dato heredado sin vincular")
+        self.assertContains(respuesta, 'name="tipo_instrumento_bonificacion"')
+
+        respuesta = self.client.get(reverse("personalizador:ficha-agente", args=[vinculado.pk]))
+        self.assertContains(respuesta, reverse("secretariador:update-decreto", args=[self.decreto.pk]))
+        respuesta = self.client.get(reverse("personalizador:ficha-agente", args=[heredado.pk]))
+        self.assertContains(respuesta, "sin vincular")
+
+        respuesta = self.client.get("/v1/api/datatables/agentes/", {"filters": json.dumps({"instrumentos_sin_vincular": "true"})})
+        self.assertEqual([fila["id"] for fila in respuesta.json()["data"]], [heredado.pk])
+
+        respuesta = self.client.get(reverse("secretariador:crear-resolucion"), {"_popup": "1"})
+        self.assertContains(respuesta, "popupCreateForm")
+        respuesta = self.client.get(reverse("personalizador:crear-instrumentoagente"), {"_popup": "1"})
+        self.assertContains(respuesta, 'type="file"')
+        respuesta = self.client.get(reverse("personalizador:lista-instrumentoagentes"))
+        self.assertEqual(respuesta.status_code, 200)
+
+    def test_popup_sube_pdf(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from personalizador.models import InstrumentoAgente
+        self.client.force_login(UserModel.objects.create_superuser("admin", "admin@example.com", "x"))
+        pdf = SimpleUploadedFile("disp.pdf", b"%PDF-1.4\n%%EOF\n", content_type="application/pdf")
+        respuesta = self.client.post(reverse("personalizador:crear-instrumentoagente"), {
+            "_popup": "1", "instrumentoagente_tipo": "DIS", "instrumentoagente_numero": "5160/19", "instrumentoagente": pdf,
+        })
+        self.assertEqual(respuesta.status_code, 200, respuesta.content)
+        instrumento = InstrumentoAgente.objects.get(pk=respuesta.json()["id"])
+        self.assertTrue(instrumento.instrumentoagente.name.endswith(".pdf"))
+        instrumento.instrumentoagente.delete(save=False)
+
+
+class SituacionAgenteTest(TestCase):
+    """Activo es excluyente con retirado/jubilado/fallecido, que si se combinan entre si."""
+
+    def setUp(self):
+        self.genero = GeneroAgente.objects.create(generoagente_nombre="Test")
+
+    def _agente(self, dni, **kwargs):
+        return Agente.objects.create(
+            agente_nombres="Juan", agente_apellidos="Perez", sexo=self.genero,
+            dni=dni, cuil="20301112223", **kwargs,
+        )
+
+    def test_activo_excluye_bajas(self):
+        agente = Agente(agente_nombres="Juan", agente_apellidos="Perez", sexo=self.genero, activo=True, jubilado=True)
+        with self.assertRaises(ValidationError):
+            agente.clean()
+
+    def test_bajas_combinables(self):
+        agente = self._agente(30111222, activo=False, retirado=True, jubilado=True, fallecido=True)
+        agente.clean()
+        self.assertEqual(agente.bajas, ["Retirado", "Jubilado", "Fallecido"])
+
+    def test_constraint_en_base(self):
+        from django.db import IntegrityError, transaction
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            self._agente(30111222, activo=True, fallecido=True)
+
+    def test_filtro_situacion_datatable(self):
+        import json
+        self.client.force_login(UserModel.objects.create_superuser("admin", "admin@example.com", "x"))
+        activo = self._agente(30111222)
+        jubilado = self._agente(30111333, activo=False, jubilado=True)
+        fallecido = self._agente(30111444, activo=False, jubilado=True, fallecido=True)
+        inactivo = self._agente(30111555, activo=False)
+
+        def ids(filtros):
+            respuesta = self.client.get("/v1/api/datatables/agentes/", {"filters": json.dumps(filtros)})
+            return {fila["id"] for fila in respuesta.json()["data"]}
+
+        self.assertEqual(ids({"situacion": "activo"}), {activo.pk})
+        self.assertEqual(ids({"situacion": "activo,jubilado"}), {activo.pk, jubilado.pk, fallecido.pk})
+        self.assertEqual(ids({"situacion": "activo,fallecido"}), {activo.pk, fallecido.pk})
+        self.assertEqual(ids({}), {activo.pk, jubilado.pk, fallecido.pk, inactivo.pk})
+        self.assertEqual(ids({"situacion_columna": "inactivo"}), {inactivo.pk})
+        self.assertEqual(ids({"situacion_columna": "fallecido"}), {fallecido.pk})

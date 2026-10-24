@@ -10,7 +10,7 @@
     {% if field.label %}<label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>{% endif %}
   </div>
 {% else %}
-  {% if field.label %}{{ field.label_tag }}<br>{% endif %}
+  {% if field.label %}<div>{{ field.label_tag }}</div>{% endif %}
   {{ field.errors }}
   {{ field }}
 {% endif %}

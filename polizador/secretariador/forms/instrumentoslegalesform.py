@@ -214,3 +214,81 @@ class InstrumentosLegalesResolucionesDirectorioForm(BaseFormMixin, forms.ModelFo
         super(type(self), self).__init__(*args, **kwargs)
         self.fields['instrumentolegalresoluciones_tipo'].initial = "D"
         self.fields['instrumentolegalresoluciones_ano'].initial = datetime.now().year
+class InstrumentosLegalesResolucionesPopupForm(BaseFormMixin, forms.ModelForm):
+    """Alta rapida de una Resolucion (Presidencia o Directorio) desde el boton "+" de un
+    select2 (ej. instrumentos del Agente). El PDF es opcional: si no se sube, lo completa
+    sync_resoluciones_sgt."""
+    class Meta:
+        model = InstrumentosLegalesResoluciones
+        fields = (
+            "instrumentolegalresoluciones_tipo",
+            "instrumentolegalresoluciones_numero",
+            "instrumentolegalresoluciones_acta",
+            "instrumentolegalresoluciones_ano",
+            "instrumentolegalresoluciones_fecha_aprobacion",
+            "instrumentolegalresoluciones_descripcion",
+            "instrumentolegalresoluciones",
+        )
+        widgets = {
+            "instrumentolegalresoluciones_tipo": forms.Select(attrs={"class": "form-control"}),
+            "instrumentolegalresoluciones_numero": forms.TextInput(attrs={"class": "form-control"}),
+            "instrumentolegalresoluciones_acta": forms.TextInput(attrs={"class": "form-control"}),
+            "instrumentolegalresoluciones_ano": forms.TextInput(attrs={"class": "form-control"}),
+            "instrumentolegalresoluciones_fecha_aprobacion": DateHTMLWidget(attrs={"type": "date", "class": "form-control", "autocomplete": "off"}),
+            "instrumentolegalresoluciones_descripcion": forms.TextInput(attrs={"class": "form-control"}),
+            "instrumentolegalresoluciones": forms.ClearableFileInput(attrs={"class": "form-control"}),
+        }
+        help_texts = {
+            "instrumentolegalresoluciones_acta": "Solo para Resoluciones de Directorio.",
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["instrumentolegalresoluciones_tipo"].initial = "P"
+        self.fields["instrumentolegalresoluciones_ano"].initial = datetime.now().year
+        self.fields["instrumentolegalresoluciones_acta"].required = False
+        self.fields["instrumentolegalresoluciones_descripcion"].required = False
+
+    def clean(self):
+        cleaned_data = super().clean()
+        tipo = cleaned_data.get("instrumentolegalresoluciones_tipo")
+        acta = (cleaned_data.get("instrumentolegalresoluciones_acta") or "").strip()
+        if tipo == "D":
+            if not acta:
+                self.add_error("instrumentolegalresoluciones_acta", "El acta es obligatoria para las Resoluciones de Directorio.")
+            elif acta.isdigit():
+                acta = acta.zfill(2)  # Las actas cargadas se guardan con 2 digitos ("09").
+        else:
+            # Presidencia no lleva acta: es lo que esperan el matcher y sync_resoluciones_sgt.
+            acta = ""
+        cleaned_data["instrumentolegalresoluciones_acta"] = acta
+        return cleaned_data
+
+class InstrumentosLegalesDecretosPopupForm(BaseFormMixin, forms.ModelForm):
+    """Alta rapida de un Decreto desde el boton "+" de un select2. PDF opcional (ver
+    InstrumentosLegalesResolucionesPopupForm)."""
+    class Meta:
+        model = InstrumentosLegalesDecretos
+        fields = (
+            "instrumentolegaldecretos_tipo",
+            "instrumentolegaldecretos_numero",
+            "instrumentolegaldecretos_ano",
+            "instrumentolegaldecretos_fecha_aprobacion",
+            "instrumentolegaldecretos_descripcion",
+            "instrumentolegaldecretos",
+        )
+        widgets = {
+            "instrumentolegaldecretos_tipo": forms.Select(attrs={"class": "form-control"}),
+            "instrumentolegaldecretos_numero": forms.TextInput(attrs={"class": "form-control"}),
+            "instrumentolegaldecretos_ano": forms.TextInput(attrs={"class": "form-control"}),
+            "instrumentolegaldecretos_fecha_aprobacion": DateHTMLWidget(attrs={"type": "date", "class": "form-control", "autocomplete": "off"}),
+            "instrumentolegaldecretos_descripcion": forms.TextInput(attrs={"class": "form-control"}),
+            "instrumentolegaldecretos": forms.ClearableFileInput(attrs={"class": "form-control"}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["instrumentolegaldecretos_tipo"].initial = "P"
+        self.fields["instrumentolegaldecretos_ano"].initial = datetime.now().year
+        self.fields["instrumentolegaldecretos_descripcion"].initial = ""
+        self.fields["instrumentolegaldecretos_descripcion"].required = False

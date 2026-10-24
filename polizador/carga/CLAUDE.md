@@ -1,0 +1,1 @@
+**Auto-numbering via signals**, not model `save()` overrides, for sequential fields that must stay gapless across a chain of related records (e.g. `foja_numero` on `FojaDeMedicion`, etapa numbers on `PlanDeTrabajosEtapa`) — see `carga/signals.py`, wired up in `carga/apps.py`.

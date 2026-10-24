@@ -1,6 +1,6 @@
 {
   "api": {
-    "generated_at": "2026-10-04T13:08:39.169585+00:00",
+    "generated_at": "2026-10-20T22:39:42.763104+00:00",
     "modules": {
       "views/carga_views": {
         "file": "api/views/carga_views.py",
@@ -4188,19 +4188,19 @@
               }
             ],
             "decorators": [],
-            "docstring": "Registers `GET /datatables/<url_slug>/` (+ `.../<{id}>/detalle/` unless\n`with_detail=False`) for a \"simple\" list: one model, a handful of columns,\npermission-gated action links, no bespoke per-row computation beyond\n`row_builder(obj, user) -> dict`. Covers the ~10 lookup-table style listings\n(Aseguradora, Programa, Departamento, ...) that were otherwise near-identical\ncopies of the same AjaxDatatableView boilerplate.\n\n`boolean_filter_keys` names the `filter_fields` keys backed by a BooleanField:\nthe \"true\"/\"false\" strings sent by a <select> filter get coerced before\n`.filter()`, same as the dedicated Solicitud/Obra endpoints do inline.",
+            "docstring": "Registers `GET /datatables/<url_slug>/` (+ `.../<{id}>/detalle/` unless\n`with_detail=False`) for a \"simple\" list: one model, a handful of columns,\npermission-gated action links, no bespoke per-row computation beyond\n`row_builder(obj, user) -> dict`. Covers the ~10 lookup-table style listings\n(Aseguradora, Programa, Departamento, ...) that were otherwise near-identical\ncopies of the same AjaxDatatableView boilerplate.\n\n`boolean_filter_keys` names the `filter_fields` keys backed by a BooleanField:\nthe \"true\"/\"false\" strings sent by a <select> filter get coerced before\n`.filter()`, same as the dedicated Solicitud/Obra endpoints do inline.\n\n`custom_filters` maps a filter key to `fn(qs, value) -> qs`, for filters that a\nsingle lookup can't express (ej. an OR across several fields).",
             "kind": "function",
             "lines": [
               102,
-              181
+              189
             ],
             "methods": [],
             "module": "api/views/generics.py",
             "name": "register_simple_datatable",
             "page_path": "api/views/generics/register_simple_datatable",
-            "signature": "def register_simple_datatable(router, model, url_slug: str, *, order_fields: dict, filter_fields: dict, search_lookups: list, row_builder, default_order: str='id', queryset=None, with_detail: bool=True, boolean_filter_keys: frozenset=frozenset()):",
-            "signature_hash": "sha1:cf91db5e722fda45bd3c744bcb71a4c2c339324b",
-            "stale": false
+            "signature": "def register_simple_datatable(router, model, url_slug: str, *, order_fields: dict, filter_fields: dict, search_lookups: list, row_builder, default_order: str='id', queryset=None, with_detail: bool=True, boolean_filter_keys: frozenset=frozenset(), custom_filters: dict | None=None):",
+            "signature_hash": "sha1:735279a4882f9884c6f2fa9b40d111710e412c99",
+            "stale": true
           },
           "render_datatable_row_details": {
             "authored": true,
@@ -4213,7 +4213,7 @@
               },
               {
                 "file": "api/views/generics.py",
-                "line": 179,
+                "line": 187,
                 "snippet": "return {\"html\": render_datatable_row_details(model, obj, request)}"
               }
             ],
@@ -4245,24 +4245,24 @@
             "candidate_usages": [
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 746,
-                "snippet": ").annotate(edad_calculada=_EdadCalculada(F(\"fecha_nacimiento\"))),"
+                "line": 818,
+                "snippet": "edad_calculada=_EdadCalculada(F(\"fecha_nacimiento\")),"
               }
             ],
             "decorators": [],
             "docstring": "Años completos entre hoy y `fecha_nacimiento`, calculado en Postgres:\nEXTRACT(YEAR FROM AGE(fecha_nacimiento)).",
             "kind": "class",
             "lines": [
-              680,
-              684
+              727,
+              731
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "_EdadCalculada",
             "page_path": "api/views/personalizador_views/_EdadCalculada",
             "signature": "class _EdadCalculada(Func):",
-            "signature_hash": "sha1:ac3b466ab8a908921198a6a20dde1a1e9304151e",
-            "stale": false
+            "signature_hash": "sha1:a434d91667f78e84c06f6bd2e4a0b281f4fdab96",
+            "stale": true
           },
           "_actividadespecifica_datatable_row": {
             "authored": true,
@@ -4270,7 +4270,7 @@
             "candidate_usages": [
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 464,
+                "line": 511,
                 "snippet": "row_builder=_actividadespecifica_datatable_row,"
               }
             ],
@@ -4278,16 +4278,16 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              437,
-              449
+              484,
+              496
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "_actividadespecifica_datatable_row",
             "page_path": "api/views/personalizador_views/_actividadespecifica_datatable_row",
             "signature": "def _actividadespecifica_datatable_row(a: ActividadEspecifica, user) -> dict:",
-            "signature_hash": "sha1:f6e9c2ee10097e5bc145bc3b71f77e9264553da9",
-            "stale": false
+            "signature_hash": "sha1:078d0f2bc66011b29db2ce4c7ae7c7c14b8c812f",
+            "stale": true
           },
           "_agente_comisionado_datatable_row": {
             "authored": true,
@@ -4320,7 +4320,7 @@
             "candidate_usages": [
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 741,
+                "line": 812,
                 "snippet": "row_builder=_agente_datatable_row,"
               }
             ],
@@ -4328,16 +4328,16 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              693,
-              716
+              740,
+              765
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "_agente_datatable_row",
             "page_path": "api/views/personalizador_views/_agente_datatable_row",
             "signature": "def _agente_datatable_row(a: Agente, user) -> dict:",
-            "signature_hash": "sha1:20df6f5327f562bd3149dd828fc18ff33896099b",
-            "stale": false
+            "signature_hash": "sha1:75d7d658a8bb18e191eda9f037d17098da76b4bf",
+            "stale": true
           },
           "_apartadocargo_datatable_row": {
             "authored": true,
@@ -4345,7 +4345,7 @@
             "candidate_usages": [
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 389,
+                "line": 436,
                 "snippet": "row_builder=_apartadocargo_datatable_row,"
               }
             ],
@@ -4353,16 +4353,16 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              374,
-              381
+              421,
+              428
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "_apartadocargo_datatable_row",
             "page_path": "api/views/personalizador_views/_apartadocargo_datatable_row",
             "signature": "def _apartadocargo_datatable_row(a: ApartadoCargo, user) -> dict:",
-            "signature_hash": "sha1:827713d00eb1a4840200d283973ae6f250f85d24",
-            "stale": false
+            "signature_hash": "sha1:f68611ea3938948a243d075d2b52f27ee47d1348",
+            "stale": true
           },
           "_cargotipo_datatable_row": {
             "authored": true,
@@ -4370,7 +4370,7 @@
             "candidate_usages": [
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 485,
+                "line": 532,
                 "snippet": "row_builder=_cargotipo_datatable_row,"
               }
             ],
@@ -4378,16 +4378,16 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              470,
-              477
+              517,
+              524
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "_cargotipo_datatable_row",
             "page_path": "api/views/personalizador_views/_cargotipo_datatable_row",
             "signature": "def _cargotipo_datatable_row(c: CargoTipo, user) -> dict:",
-            "signature_hash": "sha1:726a3346526ff72cb871dd669f040613763cef40",
-            "stale": false
+            "signature_hash": "sha1:6620cf4d16a480630ef525ab52d45ed432486e62",
+            "stale": true
           },
           "_categoria_datatable_row": {
             "authored": true,
@@ -4395,7 +4395,7 @@
             "candidate_usages": [
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 347,
+                "line": 394,
                 "snippet": "row_builder=_categoria_datatable_row,"
               }
             ],
@@ -4403,16 +4403,16 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              329,
-              336
+              376,
+              383
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "_categoria_datatable_row",
             "page_path": "api/views/personalizador_views/_categoria_datatable_row",
             "signature": "def _categoria_datatable_row(c: Categoria, user) -> dict:",
-            "signature_hash": "sha1:c8ea5c759293efc7187a03e82330c8eb1f9fe67d",
-            "stale": false
+            "signature_hash": "sha1:f3090932964ad1efc0d521200919213c5ac6d963",
+            "stale": true
           },
           "_ceic_datatable_row": {
             "authored": true,
@@ -4420,7 +4420,7 @@
             "candidate_usages": [
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 410,
+                "line": 457,
                 "snippet": "row_builder=_ceic_datatable_row,"
               }
             ],
@@ -4428,16 +4428,16 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              395,
-              402
+              442,
+              449
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "_ceic_datatable_row",
             "page_path": "api/views/personalizador_views/_ceic_datatable_row",
             "signature": "def _ceic_datatable_row(c: CEIC, user) -> dict:",
-            "signature_hash": "sha1:d4b96c0307b9b11d6802f728975691294f643612",
-            "stale": false
+            "signature_hash": "sha1:351162284807823d676f3daa105bb2c85991e077",
+            "stale": true
           },
           "_comisionadoexterno_datatable_row": {
             "authored": true,
@@ -4470,7 +4470,7 @@
             "candidate_usages": [
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 368,
+                "line": 415,
                 "snippet": "row_builder=_denominacioncargo_datatable_row,"
               }
             ],
@@ -4478,16 +4478,16 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              353,
-              360
+              400,
+              407
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "_denominacioncargo_datatable_row",
             "page_path": "api/views/personalizador_views/_denominacioncargo_datatable_row",
             "signature": "def _denominacioncargo_datatable_row(d: DenominacionCargo, user) -> dict:",
-            "signature_hash": "sha1:370e57703527a719abf90fb7e1724b1ce2e65f06",
-            "stale": false
+            "signature_hash": "sha1:48b74bec273fa6294caf15ae0f7ce36f221fd02f",
+            "stale": true
           },
           "_departamento_personal_datatable_row": {
             "authored": true,
@@ -4495,7 +4495,7 @@
             "candidate_usages": [
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 630,
+                "line": 677,
                 "snippet": "row_builder=_departamento_personal_datatable_row,"
               }
             ],
@@ -4503,16 +4503,16 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              600,
-              613
+              647,
+              660
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "_departamento_personal_datatable_row",
             "page_path": "api/views/personalizador_views/_departamento_personal_datatable_row",
             "signature": "def _departamento_personal_datatable_row(d: Departamento, user) -> dict:",
-            "signature_hash": "sha1:d38beea8e909378f073ee85d57098f7b6d122e8a",
-            "stale": false
+            "signature_hash": "sha1:26a5941be262fbcc4e213ca80a35c01a37a536d2",
+            "stale": true
           },
           "_direccion_personal_datatable_row": {
             "authored": true,
@@ -4520,7 +4520,7 @@
             "candidate_usages": [
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 593,
+                "line": 640,
                 "snippet": "row_builder=_direccion_personal_datatable_row,"
               }
             ],
@@ -4528,16 +4528,16 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              563,
-              576
+              610,
+              623
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "_direccion_personal_datatable_row",
             "page_path": "api/views/personalizador_views/_direccion_personal_datatable_row",
             "signature": "def _direccion_personal_datatable_row(d: Direccion, user) -> dict:",
-            "signature_hash": "sha1:cbb58f2b3a8459419c18e4451554d6a964f28112",
-            "stale": false
+            "signature_hash": "sha1:5559d697f5cbfaa2374a211076870433820440a1",
+            "stale": true
           },
           "_directorio_datatable_row": {
             "authored": true,
@@ -4545,7 +4545,7 @@
             "candidate_usages": [
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 520,
+                "line": 567,
                 "snippet": "row_builder=_directorio_datatable_row,"
               }
             ],
@@ -4553,15 +4553,65 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              491,
-              504
+              538,
+              551
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "_directorio_datatable_row",
             "page_path": "api/views/personalizador_views/_directorio_datatable_row",
             "signature": "def _directorio_datatable_row(d: Directorio, user) -> dict:",
-            "signature_hash": "sha1:2a1da9a67e1226f9602469c8bd1be2d784ba8597",
+            "signature_hash": "sha1:082a8713c0f917b539d272c68271afd69cba677a",
+            "stale": true
+          },
+          "_filtrar_situacion_agentes": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "api/views/personalizador_views.py",
+                "line": 826,
+                "snippet": "\"situacion\": _filtrar_situacion_agentes,"
+              }
+            ],
+            "decorators": [],
+            "docstring": "`situacion`: lista separada por comas de los grupos a mostrar (\"activo\", \"retirado\",\n\"jubilado\", \"fallecido\"); un agente entra si pertenece a cualquiera (OR).",
+            "kind": "function",
+            "lines": [
+              768,
+              775
+            ],
+            "methods": [],
+            "module": "api/views/personalizador_views.py",
+            "name": "_filtrar_situacion_agentes",
+            "page_path": "api/views/personalizador_views/_filtrar_situacion_agentes",
+            "signature": "def _filtrar_situacion_agentes(qs, value):",
+            "signature_hash": "sha1:b0fd1f838895ff53ffa5fde91d813606e75306f8",
+            "stale": false
+          },
+          "_filtrar_situacion_columna_agentes": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "api/views/personalizador_views.py",
+                "line": 827,
+                "snippet": "\"situacion_columna\": _filtrar_situacion_columna_agentes,"
+              }
+            ],
+            "decorators": [],
+            "docstring": "Filtro de la columna Situación: una sola situacion. \"inactivo\" = no activo y sin\nninguna baja (retirado/jubilado/fallecido) marcada.",
+            "kind": "function",
+            "lines": [
+              778,
+              785
+            ],
+            "methods": [],
+            "module": "api/views/personalizador_views.py",
+            "name": "_filtrar_situacion_columna_agentes",
+            "page_path": "api/views/personalizador_views/_filtrar_situacion_columna_agentes",
+            "signature": "def _filtrar_situacion_columna_agentes(qs, value):",
+            "signature_hash": "sha1:001fe47fd9ecc6bdcf082c2ce4a3ecbe207de77c",
             "stale": false
           },
           "_formatear_antiguedad": {
@@ -4570,7 +4620,7 @@
             "candidate_usages": [
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 712,
+                "line": 759,
                 "snippet": "\"antiguedad\": _formatear_antiguedad(a.antiguedad),"
               }
             ],
@@ -4578,16 +4628,16 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              687,
-              690
+              734,
+              737
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "_formatear_antiguedad",
             "page_path": "api/views/personalizador_views/_formatear_antiguedad",
             "signature": "def _formatear_antiguedad(antiguedad: dict | None) -> str:",
-            "signature_hash": "sha1:2aaec4834c3ef692cc11fa7550eeaa43f607dd07",
-            "stale": false
+            "signature_hash": "sha1:9bcd1cb8a8153a078cb75598885bcb81ce2473e9",
+            "stale": true
           },
           "_generoagente_datatable_row": {
             "authored": true,
@@ -4620,7 +4670,7 @@
             "candidate_usages": [
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 556,
+                "line": 603,
                 "snippet": "row_builder=_gerencia_personal_datatable_row,"
               }
             ],
@@ -4628,16 +4678,16 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              526,
-              539
+              573,
+              586
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "_gerencia_personal_datatable_row",
             "page_path": "api/views/personalizador_views/_gerencia_personal_datatable_row",
             "signature": "def _gerencia_personal_datatable_row(g: Gerencia, user) -> dict:",
-            "signature_hash": "sha1:d5763074be7271130d30dae7203e88c3ce5d8672",
-            "stale": false
+            "signature_hash": "sha1:0a3eb70229c0a52c8c33a4bb8d0027bc62a8c45a",
+            "stale": true
           },
           "_grupocargo_datatable_row": {
             "authored": true,
@@ -4645,7 +4695,7 @@
             "candidate_usages": [
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 431,
+                "line": 478,
                 "snippet": "row_builder=_grupocargo_datatable_row,"
               }
             ],
@@ -4653,15 +4703,40 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              416,
-              423
+              463,
+              470
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "_grupocargo_datatable_row",
             "page_path": "api/views/personalizador_views/_grupocargo_datatable_row",
             "signature": "def _grupocargo_datatable_row(g: GrupoCargo, user) -> dict:",
-            "signature_hash": "sha1:6e9b46844ab9d5245fa740cc8b38acb8b80c0e35",
+            "signature_hash": "sha1:7590c9b7791734fe6629c74ee96c78ad4c2b8cfd",
+            "stale": true
+          },
+          "_instrumentoagente_datatable_row": {
+            "authored": false,
+            "bases": [],
+            "candidate_usages": [
+              {
+                "file": "api/views/personalizador_views.py",
+                "line": 365,
+                "snippet": "row_builder=_instrumentoagente_datatable_row,"
+              }
+            ],
+            "decorators": [],
+            "docstring": null,
+            "kind": "function",
+            "lines": [
+              329,
+              346
+            ],
+            "methods": [],
+            "module": "api/views/personalizador_views.py",
+            "name": "_instrumentoagente_datatable_row",
+            "page_path": "api/views/personalizador_views/_instrumentoagente_datatable_row",
+            "signature": "def _instrumentoagente_datatable_row(i: InstrumentoAgente, user) -> dict:",
+            "signature_hash": "sha1:4b932b39e7f7dc3636741f2f88936aae0e67b1a0",
             "stale": false
           },
           "_licenciapermiso_datatable_row": {
@@ -4670,7 +4745,7 @@
             "candidate_usages": [
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 837,
+                "line": 918,
                 "snippet": "row_builder=_licenciapermiso_datatable_row,"
               }
             ],
@@ -4678,16 +4753,16 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              794,
-              812
+              875,
+              893
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "_licenciapermiso_datatable_row",
             "page_path": "api/views/personalizador_views/_licenciapermiso_datatable_row",
             "signature": "def _licenciapermiso_datatable_row(s: LicenciaPermiso, user) -> dict:",
-            "signature_hash": "sha1:fff66cd33372bf024ad5fbf0d0aff62a12fd7b6d",
-            "stale": false
+            "signature_hash": "sha1:d2b1de7aa10a0d9c9c146b36fd9f1e04a6d00eb2",
+            "stale": true
           },
           "_oficina_datatable_row": {
             "authored": true,
@@ -4695,7 +4770,7 @@
             "candidate_usages": [
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 673,
+                "line": 720,
                 "snippet": "row_builder=_oficina_datatable_row,"
               }
             ],
@@ -4703,16 +4778,16 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              637,
-              651
+              684,
+              698
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "_oficina_datatable_row",
             "page_path": "api/views/personalizador_views/_oficina_datatable_row",
             "signature": "def _oficina_datatable_row(o: Oficina, user) -> dict:",
-            "signature_hash": "sha1:0031c330bcdaeca36691db2c198590d935b6de99",
-            "stale": false
+            "signature_hash": "sha1:0d179319ce3af46fc15812259052dc8e426e588a",
+            "stale": true
           },
           "_periodolicencia_datatable_row": {
             "authored": true,
@@ -4720,7 +4795,7 @@
             "candidate_usages": [
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 938,
+                "line": 1019,
                 "snippet": "row_builder=_periodolicencia_datatable_row,"
               }
             ],
@@ -4728,16 +4803,16 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              902,
-              923
+              983,
+              1004
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "_periodolicencia_datatable_row",
             "page_path": "api/views/personalizador_views/_periodolicencia_datatable_row",
             "signature": "def _periodolicencia_datatable_row(p: PeriodoLicencia, user) -> dict:",
-            "signature_hash": "sha1:4b9bb8eb4b271ff7463b224bcd605eb637cb6063",
-            "stale": false
+            "signature_hash": "sha1:6a0e2b94c33813c60bc7094583936969aa768577",
+            "stale": true
           },
           "_representantetecnico_datatable_row": {
             "authored": true,
@@ -4785,12 +4860,12 @@
               },
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 355,
+                "line": 378,
                 "snippet": "acciones = _simple_acciones("
               },
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 376,
+                "line": 402,
                 "snippet": "acciones = _simple_acciones("
               }
             ],
@@ -4815,7 +4890,7 @@
             "candidate_usages": [
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 895,
+                "line": 976,
                 "snippet": "row_builder=_tipolicenciapermiso_datatable_row,"
               }
             ],
@@ -4823,16 +4898,16 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              850,
-              871
+              931,
+              952
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "_tipolicenciapermiso_datatable_row",
             "page_path": "api/views/personalizador_views/_tipolicenciapermiso_datatable_row",
             "signature": "def _tipolicenciapermiso_datatable_row(t: TipoLicenciaPermiso, user) -> dict:",
-            "signature_hash": "sha1:e0845b4f2e31f965bdae939392b996df79d40e4e",
-            "stale": false
+            "signature_hash": "sha1:c7531c63ddbba92d01f0fe7cc06e4ecd04e2a280",
+            "stale": true
           },
           "_tituloprofesional_datatable_row": {
             "authored": true,
@@ -4936,16 +5011,16 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              754,
-              778
+              835,
+              859
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "datatable_agentes_detalle",
             "page_path": "api/views/personalizador_views/datatable_agentes_detalle",
             "signature": "def datatable_agentes_detalle(request, id: int):",
-            "signature_hash": "sha1:45d58686408a831f445ade790d55c37838382920",
-            "stale": false
+            "signature_hash": "sha1:e17c6405363d02edf5df84e33005ab0caa7b383e",
+            "stale": true
           },
           "datatable_agentes_filtro_denominacion": {
             "authored": true,
@@ -4958,16 +5033,16 @@
             "docstring": null,
             "kind": "function",
             "lines": [
-              783,
-              790
+              864,
+              871
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "datatable_agentes_filtro_denominacion",
             "page_path": "api/views/personalizador_views/datatable_agentes_filtro_denominacion",
             "signature": "def datatable_agentes_filtro_denominacion(request):",
-            "signature_hash": "sha1:1db53bdafdaf16ec09de66dd80b4aea4e092fb3d",
-            "stale": false
+            "signature_hash": "sha1:840f6b9b050e39e6adc6a5d1aa59e19b8e8e2226",
+            "stale": true
           },
           "delete_departamento_personal": {
             "authored": true,
@@ -4997,7 +5072,7 @@
             "candidate_usages": [
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 566,
+                "line": 613,
                 "snippet": "user, \"personalizador.delete_direccion\", \"personalizador.change_direccion\","
               }
             ],
@@ -5025,7 +5100,7 @@
             "candidate_usages": [
               {
                 "file": "api/views/personalizador_views.py",
-                "line": 529,
+                "line": 576,
                 "snippet": "user, \"personalizador.delete_gerencia\", \"personalizador.change_gerencia\","
               }
             ],
@@ -5058,16 +5133,16 @@
             "docstring": "Días/horas correspondientes, usados y disponibles de `tipo` para `agente` en\n`anio` (año actual por defecto). Para la Licencia Anual Ordinaria, `correspondientes`\nya viene calculado según la antigüedad del agente (ver `licencias.balance_tipo`).",
             "kind": "function",
             "lines": [
-              945,
-              958
+              1026,
+              1039
             ],
             "methods": [],
             "module": "api/views/personalizador_views.py",
             "name": "licenciapermiso_balance",
             "page_path": "api/views/personalizador_views/licenciapermiso_balance",
             "signature": "def licenciapermiso_balance(request, agente: int, tipo: int, anio: int=None):",
-            "signature_hash": "sha1:ea3a8a24e5e1d0124f617da0bb64c4df035a12f4",
-            "stale": false
+            "signature_hash": "sha1:b21caba1642f944af814dd2af0112fa38f305f33",
+            "stale": true
           },
           "list_departamentos_personal": {
             "authored": true,

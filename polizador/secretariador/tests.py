@@ -745,3 +745,213 @@ class InvalidarTextoIncorporacionTest(InvalidarTextoActuacionSignalsTestMixin, T
         self.solicitud.solicitud_actuacion_numero = 42
         self.solicitud.solicitud_texto_actuacion = None
         self.solicitud.save()  # no debe tirar excepción aunque no haya texto que invalidar
+
+
+class ResaveComisionadoCommandTest(InvalidarTextoActuacionSignalsTestMixin, TestCase):
+    """`resave_comisionado` debe detectar comisionados con campos derivados
+    desactualizados, mostrar el antes/después, y guardar solo esos."""
+
+    def setUp(self):
+        super().setUp()
+        self.ok = self.ComisionadoSolicitud.objects.create(
+            comisionadosolicitud_foreign=self.solicitud, comisionadosolicitud_nombre=self.agente,
+            comisionadosolicitud_colaborador=False, comisionadosolicitud_chofer=False,
+        )
+        self.roto = self.ComisionadoSolicitud.objects.create(
+            comisionadosolicitud_foreign=self.solicitud, comisionadosolicitud_nombre=self.solicitante,
+            comisionadosolicitud_colaborador=False, comisionadosolicitud_chofer=False,
+        )
+        self.total_correcto = self.roto.comisionadosolicitud_viatico_total
+        # Simula un registro que se cargó sin pasar por save().
+        self.ComisionadoSolicitud.objects.filter(pk=self.roto.pk).update(comisionadosolicitud_viatico_total=999)
+        # Texto editado a mano, que crear los comisionados invalidó.
+        self.solicitud.solicitud_texto_actuacion = {"parrafos": ["a mano"], "articulo_uno": "x", "articulo_dos": []}
+        self.solicitud.save(update_fields=["solicitud_texto_actuacion"])
+
+    def _run(self, *args):
+        from django.core.management import call_command
+        out, err = io.StringIO(), io.StringIO()
+        call_command("resave_comisionado", *args, stdout=out, stderr=err)
+        return out.getvalue(), err.getvalue()
+
+    def _historial(self, comisionado):
+        return comisionado.comisionadosolicitud_history.count()
+
+    def test_check_solo_cuenta(self):
+        out, _ = self._run("--check")
+        self.assertIn("1 con diferencias, 1 sin cambios, 0 error(es)", out)
+        self.assertNotIn(f"#{self.roto.pk}", out)
+        self.roto.refresh_from_db()
+        self.assertEqual(self.roto.comisionadosolicitud_viatico_total, 999)
+
+    def test_dry_run_muestra_antes_y_despues_sin_guardar(self):
+        historial = self._historial(self.roto)
+        out, _ = self._run("--dry-run")
+        self.assertIn(f"#{self.roto.pk}", out)
+        self.assertIn(f"Viatico Total 999.00 -> {self.total_correcto:.2f}", out)
+        self.assertNotIn(f"#{self.ok.pk} ", out)
+        self.roto.refresh_from_db()
+        self.assertEqual(self.roto.comisionadosolicitud_viatico_total, 999)
+        self.assertEqual(self._historial(self.roto), historial)
+
+    def test_aplicar_guarda_solo_los_que_difieren(self):
+        historial_ok = self._historial(self.ok)
+        with self.assertLogs("secretariador.management.commands.resave_comisionado", "INFO") as logs:
+            out, _ = self._run()
+        self.assertIn("1 con diferencias (1 guardado(s)), 1 sin cambios", out)
+        self.assertTrue(any(f"#{self.roto.pk}" in linea for linea in logs.output))
+
+        self.roto.refresh_from_db()
+        self.assertEqual(self.roto.comisionadosolicitud_viatico_total, self.total_correcto)
+        ultimo = self.roto.comisionadosolicitud_history.first()
+        self.assertEqual(ultimo.history_change_reason, "resave_comisionado: recálculo de campos derivados")
+        self.assertEqual(self._historial(self.ok), historial_ok)
+
+    def test_sin_diferencias_no_invalida_texto_editado(self):
+        self.ComisionadoSolicitud.objects.filter(pk=self.roto.pk).update(
+            comisionadosolicitud_viatico_total=self.total_correcto,
+        )
+        self._run()
+        self.solicitud.refresh_from_db()
+        self.assertIsNotNone(self.solicitud.solicitud_texto_actuacion)
+
+    def test_tarifa_distinta_se_informa_pero_no_se_aplica(self):
+        from decimal import Decimal
+        self.agente.agente_escalafon = 3
+        self.agente.save()
+        out, _ = self._run()
+        self.assertIn(f"#{self.ok.pk} ", out)
+        self.assertIn("tarifa congelada 20.00, con las reglas actuales sería 30.00 (no se modifica)", out)
+        self.assertIn("1 con tarifa congelada distinta de la actual", out)
+        self.ok.refresh_from_db()
+        self.assertEqual(self.ok.comisionadosolicitud_viatico_diario, Decimal("20.00"))
+
+    def test_recalcular_diario_aplica_la_tarifa_actual(self):
+        from decimal import Decimal
+        self.agente.agente_escalafon = 3
+        self.agente.save()
+        out, _ = self._run("--recalcular-diario")
+        self.assertIn("Viatico Diario 20.00 -> 30.00", out)
+        self.ok.refresh_from_db()
+        self.assertEqual(self.ok.comisionadosolicitud_viatico_diario, Decimal("30.00"))
+        self.assertEqual(self.ok.comisionadosolicitud_viatico_total, Decimal("60.00"))
+
+
+class SincronizarComisionadosTest(InvalidarTextoActuacionSignalsTestMixin, TestCase):
+    """secretariador/signals.py mantiene los días/viáticos de los comisionados en
+    sincronía con su Solicitud, con la tarifa diaria congelada salvo que cambie
+    la provincia o el decreto (ver ComisionadoSolicitud.recalcular_campos_derivados)."""
+
+    def setUp(self):
+        from decimal import Decimal
+        from carga.models import Provincia
+        super().setUp()
+        self.D = Decimal
+        self.provincia_otra = Provincia.objects.create(id=2, provincia_nombre="Corrientes")
+        # Chaco, escalafón 2 por defecto: 20/día; 2026-01-01 a 2026-01-02: 2 días.
+        self.com = self.ComisionadoSolicitud.objects.create(
+            comisionadosolicitud_foreign=self.solicitud, comisionadosolicitud_nombre=self.agente,
+            comisionadosolicitud_colaborador=False, comisionadosolicitud_chofer=False,
+            comisionadosolicitud_gastos=5,
+        )
+
+    def _assert_com(self, dias, diario, total):
+        self.com.refresh_from_db()
+        self.assertEqual(self.com.comisionadosolicitud_cantidad_de_dias.days, dias)
+        self.assertEqual(self.com.comisionadosolicitud_viatico_diario, self.D(diario))
+        self.assertEqual(self.com.comisionadosolicitud_viatico_total, self.D(total))
+
+    def test_alta_calcula_con_las_reglas_actuales(self):
+        self._assert_com(dias=2, diario="20.00", total="45.00")
+
+    def test_corregir_fechas_recalcula_dias_y_totales(self):
+        self.solicitud.solicitud_fecha_hasta = "2026-01-04"
+        self.solicitud.save()
+        self._assert_com(dias=4, diario="20.00", total="85.00")
+        self.assertEqual(
+            self.com.comisionadosolicitud_history.first().history_change_reason,
+            "Solicitud editada: recálculo de días/viáticos",
+        )
+
+    def test_corregir_fechas_no_aplica_reglas_nuevas_a_la_tarifa(self):
+        self.agente.agente_escalafon = 3
+        self.agente.save()
+        self.solicitud.solicitud_fecha_hasta = "2026-01-04"
+        self.solicitud.save()
+        self._assert_com(dias=4, diario="20.00", total="85.00")
+
+    def test_cambiar_provincia_recalcula_la_tarifa(self):
+        self.solicitud.solicitud_provincia = self.provincia_otra
+        self.solicitud.save()
+        self._assert_com(dias=2, diario="200.00", total="405.00")
+
+    def test_guardar_solicitud_sin_cambios_relevantes_no_toca_comisionados(self):
+        historial = self.com.comisionadosolicitud_history.count()
+        self.solicitud.solicitud_tareas = "Otra tarea"
+        self.solicitud.save()
+        self.assertEqual(self.com.comisionadosolicitud_history.count(), historial)
+
+    def test_instancia_cargada_antes_no_pisa_la_tarifa_recalculada(self):
+        """Lo que hace un formset de edición: carga las filas, se guarda la
+        Solicitud (la señal recalcula en la base) y después guarda las filas que
+        el usuario tocó, con el diario viejo todavía en memoria."""
+        vieja = self.ComisionadoSolicitud.objects.get(pk=self.com.pk)
+        self.solicitud.solicitud_provincia = self.provincia_otra
+        self.solicitud.save()
+        vieja.comisionadosolicitud_gastos = 0
+        vieja.save()
+        self._assert_com(dias=2, diario="200.00", total="400.00")
+
+    def test_editar_montos_del_comisionado_mantiene_la_tarifa(self):
+        self.agente.agente_escalafon = 3
+        self.agente.save()
+        self.com.comisionadosolicitud_gastos = 0
+        self.com.save()
+        self._assert_com(dias=2, diario="20.00", total="40.00")
+
+    def test_pasar_a_colaborador_recalcula_la_tarifa(self):
+        self.com.comisionadosolicitud_colaborador = True
+        self.com.save()
+        self._assert_com(dias=2, diario="0.00", total="5.00")
+
+    def test_comisionados_de_incorporacion_siguen_a_su_solicitud(self):
+        incorporacion = self.Incorporacion.objects.create(
+            incorporacion_solicitud=self.solicitud,
+            incorporacion_actuacion_ano=2026, incorporacion_actuacion_numero=1,
+            incorporacion_solicitante=self.solicitante,
+        )
+        self.com.comisionadosolicitud_foreign = None
+        self.com.comisionadosolicitud_incorporacion_foreign = incorporacion
+        self.com.save()
+        self.solicitud.solicitud_fecha_hasta = "2026-01-03"
+        self.solicitud.save()
+        self._assert_com(dias=3, diario="20.00", total="65.00")
+
+    def test_incorporacion_movida_a_otra_solicitud_recalcula_todo(self):
+        otra = self.Solicitud.objects.create(
+            solicitud_actuacion_ano=2026, solicitud_actuacion_numero=2,
+            solicitud_solicitante=self.solicitante, solicitud_provincia=self.provincia_otra,
+            solicitud_decreto_viaticos=self.monto,
+            solicitud_fecha_desde="2026-02-01", solicitud_fecha_hasta="2026-02-03",
+            solicitud_tareas="Otra", solicitud_dia_inhabil=False,
+        )
+        incorporacion = self.Incorporacion.objects.create(
+            incorporacion_solicitud=self.solicitud,
+            incorporacion_actuacion_ano=2026, incorporacion_actuacion_numero=1,
+            incorporacion_solicitante=self.solicitante,
+        )
+        self.com.comisionadosolicitud_foreign = None
+        self.com.comisionadosolicitud_incorporacion_foreign = incorporacion
+        self.com.save()
+        incorporacion.incorporacion_solicitud = otra
+        incorporacion.save()
+        self._assert_com(dias=3, diario="200.00", total="605.00")
+
+    def test_texto_de_resolucion_usa_la_tarifa_congelada(self):
+        from secretariador.docx_texto import generate_agente_list_articulo
+        self.agente.agente_escalafon = 3
+        self.agente.save()
+        self.com.refresh_from_db()
+        fila = generate_agente_list_articulo([self.com], 2)[0]
+        self.assertIn("a razón de $20,00 diarios", fila["subparrafo"])
+        self.assertEqual(fila["monto"], "45,00")

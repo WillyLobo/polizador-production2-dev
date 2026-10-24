@@ -3,6 +3,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 from carga.views.ajaxviews import AddRelatedWidgetMixin, SmallCatalogWidgetMixin
 from personalizador.models import TipoLicenciaPermiso
+from personalizador.instrumentos import parsear
 from personalizador.licencias import LICENCIA_ANUAL_ORDINARIA_NOMBRE, LICENCIA_ANUAL_INVIERNO_NOMBRE
 
 class representantetecnicoMultipleWidget(LoginRequiredMixin, s2forms.ModelSelect2MultipleWidget):
@@ -66,6 +67,55 @@ class oficinawidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSele
         "cargo_gerencia__gerencia_nombre__icontains",
         "cargo_direccion__direccion_nombre__icontains",
         "cargo_departamento__departamento_nombre__icontains",
+    ]
+
+class InstrumentoNumeroSearchMixin:
+    """Si el termino buscado tiene forma de numeracion ('940/32/2015', '1458/12'), filtra por
+    numero/año(/acta) en vez de por los search_fields de texto."""
+    numero_lookup = None
+    ano_lookup = None
+    acta_lookup = None
+
+    def filter_queryset(self, request, term, queryset=None, **dependent_fields):
+        partes = parsear(term)
+        if not partes:
+            return super().filter_queryset(request, term, queryset, **dependent_fields)
+        numero, acta, anio = partes
+        if queryset is None:
+            queryset = self.get_queryset()
+        filtros = {self.numero_lookup: numero, self.ano_lookup: anio}
+        if acta is not None:
+            if not self.acta_lookup:
+                return queryset.none()
+            filtros[f"{self.acta_lookup}__in"] = {acta, acta.lstrip("0") or "0", acta.zfill(2)}
+        return queryset.filter(**filtros)
+
+class resolucionagentewidget(InstrumentoNumeroSearchMixin, AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+    add_related_url_name = "secretariador:crear-resolucion"
+    numero_lookup = "instrumentolegalresoluciones_numero"
+    ano_lookup = "instrumentolegalresoluciones_ano"
+    acta_lookup = "instrumentolegalresoluciones_acta"
+    search_fields = [
+        "instrumentolegalresoluciones_str__icontains",
+        "instrumentolegalresoluciones_numero_sgt__icontains",
+        "instrumentolegalresoluciones_descripcion__icontains",
+    ]
+
+class decretoagentewidget(InstrumentoNumeroSearchMixin, AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+    add_related_url_name = "secretariador:crear-decreto"
+    numero_lookup = "instrumentolegaldecretos_numero"
+    ano_lookup = "instrumentolegaldecretos_ano"
+    search_fields = [
+        "instrumentolegaldecretos_str__icontains",
+        "instrumentolegaldecretos_descripcion__icontains",
+    ]
+
+class instrumentoagentewidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):
+    add_related_url_name = "personalizador:crear-instrumentoagente"
+    search_fields = [
+        "instrumentoagente_numero__icontains",
+        "instrumentoagente_organismo__icontains",
+        "instrumentoagente_descripcion__icontains",
     ]
 
 class agentewidget(AddRelatedWidgetMixin, LoginRequiredMixin, s2forms.ModelSelect2Widget):

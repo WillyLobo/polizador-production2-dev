@@ -2,7 +2,7 @@ import logging
 
 from django.contrib import messages
 from django.core.exceptions import ImproperlyConfigured
-from django.db.models import ProtectedError
+from django.db.models import ProtectedError, RestrictedError
 from django.http import HttpResponseRedirect, JsonResponse
 from django.views import generic
 from django.shortcuts import redirect
@@ -123,8 +123,8 @@ class LogInvalidFormMixin:
 
 class DeleteRelatedObjectsMixin:
     """Para DeleteView: muestra los objetos relacionados que se borrarian en
-    cascada (o que bloquean el borrado por ser PROTECT) y, si el usuario
-    confirma igual, atrapa el ProtectedError que lanza .delete() en ese caso
+    cascada (o que bloquean el borrado por ser PROTECT/RESTRICT) y, si el usuario
+    confirma igual, atrapa el ProtectedError/RestrictedError que lanza .delete() en ese caso
     en lugar de dejarlo propagar como error 500."""
 
     protected_error_message = "No se puede eliminar porque tiene relaciones protegidas asociadas."
@@ -140,7 +140,7 @@ class DeleteRelatedObjectsMixin:
     def form_valid(self, form):
         try:
             return super().form_valid(form)
-        except ProtectedError:
+        except (ProtectedError, RestrictedError):
             messages.error(self.request, self.protected_error_message)
             return redirect(self.get_success_url())
 

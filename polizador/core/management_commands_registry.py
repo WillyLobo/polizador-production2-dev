@@ -111,9 +111,13 @@ COMMAND_REGISTRY = {
     "resave_comisionado": {
         "label": "Recalcular viáticos de comisionados",
         "help_text": (
-            "Vuelve a guardar todas las ComisionadoSolicitud para forzar el recálculo "
-            "de los campos derivados (días, viático diario, viático computado, viático "
-            "total). Sin parámetros: toca todos los registros de la tabla."
+            "Recalcula días, viático computado y viático total de todas las "
+            "ComisionadoSolicitud y los compara con lo guardado. 'Simular' muestra "
+            "registro por registro el valor anterior y el nuevo. 'Aplicar' guarda solo "
+            "los que difieren (quedan en su historial); esto invalida el texto de "
+            "resolución editado a mano de sus solicitudes/incorporaciones. La tarifa "
+            "diaria queda congelada: si las reglas actuales darían otra, solo se informa, "
+            "salvo que se marque 'Recalcular también el viático diario'."
         ),
         "form": ResaveComisionadoForm,
         "mutates_data": True,

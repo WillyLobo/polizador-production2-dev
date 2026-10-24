@@ -1,0 +1,25 @@
+{% comment %}
+Campos de un concepto de instrumento legal del Agente (ver AgenteForm.instrumentos).
+Si hay selector de tipo, solo se muestra el select de la FK elegida (JS en agente-form-partial.html).
+{% endcomment %}
+<div class="instrumento-grupo">
+    <div class="row">
+        {% if g.selector %}
+        <div class="col-md-4">
+            {{g.selector.as_field_group}}
+        </div>
+        {% endif %}
+        <div class="{% if g.selector %}col-md-8{% else %}col-md-12{% endif %}">
+            {% for c in g.campos %}
+            <div class="instrumento-campo" data-tipo="{{c.tipo}}">
+                {{c.campo.as_field_group}}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% if g.heredado %}
+    <div class="form-text text-warning-emphasis mb-2">
+        <i class="bi bi-exclamation-triangle"></i> Dato heredado sin vincular: <strong>{{g.heredado}}</strong>. Buscá o cargá el instrumento para vincularlo.
+    </div>
+    {% endif %}
+</div>

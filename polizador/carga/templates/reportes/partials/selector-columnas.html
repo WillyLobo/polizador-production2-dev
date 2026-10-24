@@ -1,0 +1,91 @@
+{# Selector de columnas del reporte. Va dentro del <form> de filtros: los checkboxes viajan como ?col=... #}
+<div class="mb-3" id="selectorColumnas" data-defaults="{{ columnas_default }}" data-storage-key="reporte-columnas:{{ reporte_id }}">
+  <button class="btn btn-outline-secondary btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#panelColumnas" aria-expanded="false" aria-controls="panelColumnas">
+    <i class="bi bi-layout-three-columns"></i> Columnas (<span id="contadorColumnas">{{ columnas|length }}</span>)
+  </button>
+  <div class="collapse mt-2" id="panelColumnas">
+    <div class="border rounded p-2">
+      <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+        <input type="search" class="form-control form-control-sm" id="buscarColumna" placeholder="Buscar columna..." style="max-width: 260px;">
+        <button type="button" class="btn btn-link btn-sm p-0" data-columnas="todas">Todas</button>
+        <button type="button" class="btn btn-link btn-sm p-0" data-columnas="ninguna">Ninguna</button>
+        <button type="button" class="btn btn-link btn-sm p-0" data-columnas="default">Restablecer por defecto</button>
+      </div>
+      <div class="row g-3">
+        {% for grupo, items in grupos_columnas %}
+        <div class="col-md-4">
+          <div class="small fw-semibold mb-1">{{ grupo }}</div>
+          {% for columna, elegida in items %}
+          <div class="form-check columna-opcion">
+            <input class="form-check-input" type="checkbox" name="col" value="{{ columna.clave }}" id="col-{{ columna.clave }}" {% if elegida %}checked{% endif %}>
+            <label class="form-check-label small" for="col-{{ columna.clave }}">{{ columna.etiqueta }}</label>
+          </div>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+      <div class="form-text">Si no se elige ninguna columna se muestran las columnas por defecto.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+    var selector = document.getElementById('selectorColumnas');
+    var form = selector.closest('form');
+    var checks = Array.from(selector.querySelectorAll('input[name="col"]'));
+    var defaults = selector.dataset.defaults.split(' ');
+    var storageKey = selector.dataset.storageKey;
+    var contador = document.getElementById('contadorColumnas');
+
+    function leer() {
+        try { return JSON.parse(localStorage.getItem(storageKey)); } catch (e) { return null; }
+    }
+    function guardar(claves) {
+        try { localStorage.setItem(storageKey, JSON.stringify(claves)); } catch (e) {}
+    }
+    function marcar(claves) {
+        checks.forEach(function(c) { c.checked = claves.indexOf(c.value) !== -1; });
+        actualizarContador();
+    }
+    function actualizarContador() {
+        contador.textContent = checks.filter(function(c) { return c.checked; }).length;
+    }
+
+    // La URL manda; si no trae columnas se usa la última selección de este navegador.
+    var params = new URLSearchParams(window.location.search);
+    var guardadas = leer();
+    if (!params.has('col') && Array.isArray(guardadas) && guardadas.length) {
+        var validas = guardadas.filter(function(clave) { return checks.some(function(c) { return c.value === clave; }); });
+        if (validas.length) {
+            if (params.toString()) {
+                // Hay una búsqueda sin columnas: se repite con la selección guardada.
+                validas.forEach(function(clave) { params.append('col', clave); });
+                window.location.replace(window.location.pathname + '?' + params.toString());
+                return;
+            }
+            marcar(validas);
+        }
+    }
+
+    selector.addEventListener('click', function(ev) {
+        var accion = ev.target.dataset.columnas;
+        if (!accion) return;
+        if (accion === 'todas') marcar(checks.map(function(c) { return c.value; }));
+        if (accion === 'ninguna') marcar([]);
+        if (accion === 'default') marcar(defaults);
+    });
+    selector.addEventListener('change', actualizarContador);
+
+    document.getElementById('buscarColumna').addEventListener('input', function() {
+        var texto = this.value.trim().toLowerCase();
+        selector.querySelectorAll('.columna-opcion').forEach(function(opcion) {
+            opcion.classList.toggle('d-none', texto && opcion.textContent.toLowerCase().indexOf(texto) === -1);
+        });
+    });
+
+    form.addEventListener('submit', function() {
+        guardar(checks.filter(function(c) { return c.checked; }).map(function(c) { return c.value; }));
+    });
+})();
+</script>

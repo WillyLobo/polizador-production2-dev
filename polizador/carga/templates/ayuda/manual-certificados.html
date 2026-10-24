@@ -54,7 +54,7 @@
 
             <div class="alert alert-info small">
                 <i class="bi bi-info-circle me-1"></i>
-                Si el avance acumulado de la Foja cruza alguno de los umbrales mensuales proyectados en las Etapas, el sistema también genera certificados de <strong>Etapa de Contrato</strong> (Ley 27397): la previsualización lo indica con un mensaje distinto ("...certificado(s) de Etapa de Contrato") y una fila por tramo.
+                Si el contrato tiene tildada la <strong>"Certificación por Etapas"</strong>, la Foja no genera certificados Parciales: genera un certificado de <strong>Etapa de Contrato</strong> por cada <strong>Tramo de Pago</strong> del contrato (se definen con "Gestionar Tramos de Pago", al editar el contrato) cuyo umbral de avance acumulado alcanzó la Foja. La previsualización lo indica con un mensaje distinto ("...certificado(s) de Etapa de Contrato") y una fila por tramo.
             </div>
 
             <p>Con la previsualización correcta, hacé clic en <strong>"Confirmar y Crear Certificados"</strong>. El sistema vuelve a la ficha de la obra con un mensaje de confirmación, y el/los certificado(s) recién creado(s) aparecen en la tabla <strong>"Certificados Emitidos"</strong>, al final de la página:</p>
@@ -138,11 +138,17 @@
                 <dt>La previsualización desde la Foja dice "No hay certificados nuevos para generar con esta Foja".</dt>
                 <dd class="mb-3">Ya se generaron todos los certificados posibles con el avance medido hasta ahora, o la Foja no tiene avance nuevo respecto a la anterior.</dd>
 
+                <dt>Al previsualizar dice "Ya se generaron los Certificados Parciales de la Foja".</dt>
+                <dd class="mb-3">Los certificados Parciales de una Foja se generan una sola vez. Si hay que rehacerlos (por ejemplo, porque se corrigió la Foja), primero eliminá los existentes desde la tabla "Certificados Emitidos" de la ficha y después volvé a generarlos.</dd>
+
+                <dt>Al generar dice que el rubro no tiene ningún monto de contrato vinculado.</dt>
+                <dd class="mb-3">El rubro del Plan de Trabajos tiene que estar vinculado a un Monto de Contrato (o a un Rubro de Certificado). Vinculalo desde "Editar rubro", o desde el aviso amarillo "Vincular monto" que muestra la ficha de la obra sobre ese rubro.</dd>
+
                 <dt>No encuentro el Rubro que necesito al crear un Certificado por Hecho Consumado.</dt>
                 <dd class="mb-3">El combo de Rubro sólo tiene sentido si el Contrato/Resolución de Origen elegido tiene un Monto de Contrato cargado para ese Rubro y Financiamiento — revisalo en la ficha de la obra, sección "Montos de Contrato".</dd>
 
                 <dt>Quiero cargar un Certificado de Anticipo y me dice "No hay cotización UVI disponible para la fecha del certificado".</dt>
-                <dd class="mb-3">El financiamiento tiene componente en UVI y no hay ningún valor de UVI cargado en o antes de la fecha elegida. Cargá la cotización UVI correspondiente (ver <strong>Reportes → Cotización UVI</strong>) o elegí una fecha con cotización disponible.</dd>
+                <dd class="mb-3">El financiamiento tiene componente en UVI y no hay ningún valor de UVI cargado en o antes de la fecha elegida. Cargá la cotización UVI correspondiente (ver <strong>Obras → Cotización UVI</strong>, en "Listados") o elegí una fecha con cotización disponible.</dd>
 
                 <dt>¿Cuál elijo si no estoy seguro?</dt>
                 <dd class="mb-0">Si ya cargaste la Foja del mes, casi siempre es <strong>Certificado Parcial de Obra</strong> (el botón "Cert." de la Foja). Los otros tres son para excepciones: adelantar fondos sin Foja (Anticipo), certificar algo puntual sin Foja contra un Contrato/Resolución específico (Hecho Consumado), o corregir/migrar datos históricos (manual/legacy).</dd>
