@@ -233,7 +233,7 @@ pandas-gbq==0.35.2
     # via -r requirements.in
 pikepdf==10.17.0
     # via -r requirements.in
-pillow==12.3.0
+pillow==13.0.0
     # via
     #   pikepdf
     #   pytesseract
