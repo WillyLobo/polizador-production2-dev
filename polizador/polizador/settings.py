@@ -163,6 +163,16 @@ INSTALLED_APPS = [
     "api",
     "gdu",
 ]
+
+# --- Impersonacion (django-hijack) ---
+# Permite a un superusuario "entrar como" otro usuario desde el admin de
+# usuarios, para probar permisos y pantallas tal como las ve esa persona. Un
+# banner arriba de cada pagina avisa que se esta impersonando y permite volver.
+# Pensado para el servidor de prueba: apagado salvo HIJACK_HABILITADO=True en
+# el .env.
+HIJACK_HABILITADO = env.bool("HIJACK_HABILITADO", default=False)
+if HIJACK_HABILITADO:
+    INSTALLED_APPS += ["hijack", "hijack.contrib.admin"]
 SITE_ID = 1
 # Widget template override. Place "widgetX.html" into "templates/django/forms/widgets/"
 FORM_RENDERER = 'django.forms.renderers.TemplatesSetting'
@@ -180,6 +190,11 @@ MIDDLEWARE = [
     "allauth.account.middleware.AccountMiddleware",
     "core.middleware_vincular_ad.VincularADMiddleware",
 ]
+if HIJACK_HABILITADO:
+    MIDDLEWARE.insert(
+        MIDDLEWARE.index("django.contrib.auth.middleware.AuthenticationMiddleware") + 1,
+        "hijack.middleware.HijackUserMiddleware",
+    )
 
 ROOT_URLCONF = 'polizador.urls'
 

@@ -85,6 +85,9 @@ debugpatterns = [
     path("__debug__/", include("debug_toolbar.urls")),
 ]
 
+if settings.HIJACK_HABILITADO:
+    urlpatterns += [path("hijack/", include("hijack.urls"))]
+
 if settings.DEBUG:
     # Cambia MEDIA_URL y MEDIA_ROOT si debug=True
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
