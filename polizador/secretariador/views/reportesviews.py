@@ -18,6 +18,32 @@ def _anos_disponibles():
     return [d.year for d in Solicitud.objects.dates("solicitud_fecha_desde", "year", order="DESC")]
 
 
+def _solicitudes_reporte(request):
+    # Comisionados de los reportes de viaticos segun el filtro elegido: uno o varios años
+    # completos si se eligió "ano" (tiene prioridad sobre las fechas sueltas), el rango
+    # Desde/Hasta si vienen ambas, o los ultimos 30 dias por defecto.
+    # Los años se filtran con __year__in y no como rango, para que elegir p.ej. 2022 y 2024
+    # no traiga tambien 2023.
+    anos = sorted({int(a) for a in request.GET.getlist("ano") if a})
+    if anos:
+        fecha_inicial, fecha_final = datetime(anos[0], 1, 1), datetime(anos[-1], 12, 31)
+        filtro = Q(comisionadosolicitud_foreign__solicitud_fecha_desde__year__in=anos) | Q(
+            comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__year__in=anos)
+    else:
+        fecha_inicial = request.GET.get("fecha_inicial")
+        fecha_final = request.GET.get("fecha_final")
+        if fecha_inicial and fecha_final:
+            fecha_inicial = datetime.strptime(fecha_inicial, "%Y-%m-%d")
+            fecha_final = datetime.strptime(fecha_final, "%Y-%m-%d")
+        else:
+            fecha_final = datetime.today()
+            fecha_inicial = fecha_final - timedelta(days=30)
+        filtro = Q(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial, fecha_final]) | Q(
+            comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__range=[fecha_inicial, fecha_final])
+    solicitudes = ComisionadoSolicitud.objects.filter(filtro).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
+    return solicitudes, fecha_inicial, fecha_final, anos
+
+
 @method_decorator(login_required, name="dispatch")
 class PDFMergeTemplateView(PermissionRequiredMixin, generic.TemplateView):
     permission_required = "secretariador.view_solicitud"
@@ -32,18 +58,7 @@ class CrearReporteViaticosPorAgente(PermissionRequiredMixin, generic.ListView):
     template_name = "reportes/crear-reporteviaticosporagente.html"
 	
     def get_queryset(self):
-        if not self.request.GET or self.request.GET.get("fecha_final") == "" or self.request.GET.get("fecha_inicial") == "":
-            fecha_final = datetime.today()
-            fecha_inicial = fecha_final - timedelta(days=30)
-            solicitudes = ComisionadoSolicitud.objects.filter(Q(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial, fecha_final]) | Q(
-                comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__range=[fecha_inicial, fecha_final])).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
-        elif self.request.GET:
-            fecha_final = self.request.GET.get("fecha_final")
-            fecha_final = datetime.strptime(fecha_final, "%Y-%m-%d")
-            fecha_inicial = self.request.GET.get("fecha_inicial")
-            fecha_inicial = datetime.strptime(fecha_inicial, "%Y-%m-%d")
-            solicitudes = ComisionadoSolicitud.objects.filter(Q(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial, fecha_final]) | Q(
-                comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__range=[fecha_inicial, fecha_final])).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
+        solicitudes, fecha_inicial, fecha_final, anos = _solicitudes_reporte(self.request)
 
         agentes = Agente.objects.all()
         queryset = {}
@@ -81,9 +96,18 @@ class CrearReporteViaticosPorAgente(PermissionRequiredMixin, generic.ListView):
         final_queryset.update({
             "comisionados": queryset,
             "fecha_inicial": fecha_inicial,
-            "fecha_final": fecha_final
+            "fecha_final": fecha_final,
+            "anos": anos
         })
         return final_queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            "anos_elegidos": self.request.GET.getlist("ano"),
+            "anos_disponibles": _anos_disponibles(),
+        })
+        return context
 
 @method_decorator(login_required, name="dispatch")
 class CrearReporteViaticosporArea(PermissionRequiredMixin, generic.ListView):
@@ -95,18 +119,7 @@ class CrearReporteViaticosporArea(PermissionRequiredMixin, generic.ListView):
 
     def get_queryset(self):
 
-        if not self.request.GET or self.request.GET.get("fecha_final") == "" or self.request.GET.get("fecha_inicial") == "":
-            fecha_final = datetime.today()
-            fecha_inicial = fecha_final - timedelta(days=30)
-            solicitudes = ComisionadoSolicitud.objects.filter(Q(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial, fecha_final]) | Q(
-                comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__range=[fecha_inicial, fecha_final])).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
-        elif self.request.GET:
-            fecha_final = self.request.GET.get("fecha_final")
-            fecha_final = datetime.strptime(fecha_final, "%Y-%m-%d")
-            fecha_inicial = self.request.GET.get("fecha_inicial")
-            fecha_inicial = datetime.strptime(fecha_inicial, "%Y-%m-%d")
-            solicitudes = ComisionadoSolicitud.objects.filter(Q(comisionadosolicitud_foreign__solicitud_fecha_desde__range=[fecha_inicial, fecha_final]) | Q(
-                comisionadosolicitud_incorporacion_foreign__incorporacion_solicitud__solicitud_fecha_desde__range=[fecha_inicial, fecha_final])).exclude(comisionadosolicitud_foreign__solicitud_anulada=True)
+        solicitudes, fecha_inicial, fecha_final, anos = _solicitudes_reporte(self.request)
 
         def _totales(qs):
             return qs.annotate(
@@ -199,9 +212,18 @@ class CrearReporteViaticosporArea(PermissionRequiredMixin, generic.ListView):
         final_queryset.update({
             "comisionados": queryset,
             "fecha_inicial": fecha_inicial,
-            "fecha_final": fecha_final
+            "fecha_final": fecha_final,
+            "anos": anos
         })
         return final_queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.update({
+            "anos_elegidos": self.request.GET.getlist("ano"),
+            "anos_disponibles": _anos_disponibles(),
+        })
+        return context
 
 @method_decorator(login_required, name="dispatch")
 class CrearReporteAusenciasPorAgente(PermissionRequiredMixin, generic.ListView):
