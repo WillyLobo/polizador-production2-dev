@@ -56,19 +56,19 @@ django==6.1.2
     #   django-select2
     #   django-simple-history
     #   django-storages
-django-allauth==65.19.7
+django-allauth==65.20.1
     # via -r requirements.in
 django-anymail==15.2
     # via -r requirements.in
 django-appconf==1.2.0
     # via django-select2
-django-auth-ldap==5.3.0
+django-auth-ldap==5.4.0
     # via -r requirements.in
 django-debug-toolbar==8.0.0
     # via -r requirements.in
 django-environ==0.14.0
     # via -r requirements.in
-django-import-export==4.4.2
+django-import-export==4.4.3
     # via -r requirements.in
 django-ninja==1.7.1
     # via -r requirements.in
@@ -96,7 +96,7 @@ fsspec==2026.9.0
     # via gcsfs
 gcsfs==2026.10.1
     # via -r requirements.in
-google-api-core[grpc]==2.42.0
+google-api-core[grpc]==2.43.0
     # via
     #   -r requirements.in
     #   google-cloud-bigquery
@@ -189,7 +189,7 @@ lxml==6.1.1
     #   docxtpl
     #   pikepdf
     #   python-docx
-markdown==3.11.1
+markdown==3.11.2
     # via -r requirements.in
 markupsafe==3.0.3
     # via jinja2
@@ -229,7 +229,7 @@ pandas==3.0.5
     # via
     #   db-dtypes
     #   pandas-gbq
-pandas-gbq==0.35.2
+pandas-gbq==0.35.3
     # via -r requirements.in
 pikepdf==10.17.0
     # via -r requirements.in
@@ -237,7 +237,7 @@ pillow==13.0.0
     # via
     #   pikepdf
     #   pytesseract
-playwright==1.64.0
+playwright==1.64.1
     # via -r requirements.in
 pluggy==1.6.0
     # via
@@ -333,7 +333,7 @@ requests==2.34.2
     #   requests-oauthlib
 requests-oauthlib==2.0.0
     # via google-auth-oauthlib
-sentry-sdk==2.72.0
+sentry-sdk==2.73.0
     # via -r requirements.in
 six==1.17.0
     # via python-dateutil
