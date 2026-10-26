@@ -2,7 +2,7 @@ import json
 from collections import defaultdict
 
 from django.contrib.auth.decorators import login_required, permission_required
-from django.contrib.gis.db.models.functions import Transform
+from django.contrib.gis.db.models.functions import AsGeoJSON, Transform
 from django.contrib.gis.geos import Polygon
 from django.core.exceptions import PermissionDenied
 from django.conf import settings
@@ -26,6 +26,9 @@ from gdu.models import (
 MAP_SRID = 3857  # como la manda ol/loadingstrategy/bbox, para el filtro espacial
 GEOJSON_SRID = 4326  # GeoJSON (RFC 7946) siempre es WGS84; ol.format.GeoJSON asume esto al reproyectar
 MAX_FEATURES_POR_CAPA = 3000
+# decimales de las coordenadas (grados WGS84) en el GeoJSON del visor: 6 ≈ 10 cm, de sobra para
+# dibujar. Con los 15 que salían por default el payload pesaba casi el doble ya comprimido.
+GEOJSON_PRECISION = 6
 
 
 def _obras_por_expediente():
@@ -65,15 +68,14 @@ def _bbox_polygon(request):
 def _feature_collection(queryset, propiedades):
     features = []
     for obj in queryset:
-        geom = obj.geom_4326
-        if geom is None:
+        if obj.geojson is None:
             continue
         features.append({
             "type": "Feature",
             # id a nivel de feature (no solo en properties): ol.source.Vector lo usa para no volver
             # a agregar las features que ya tiene cuando la estrategia bbox repide un área solapada
             "id": obj.pk,
-            "geometry": json.loads(geom.geojson),
+            "geometry": json.loads(obj.geojson),
             "properties": propiedades(obj),
         })
     return {"type": "FeatureCollection", "features": features}
@@ -90,9 +92,10 @@ def _geojson_capa(request, model, propiedades, filtros=None):
     # Filtrar sobre `geom` tal cual (no sobre Transform("geom", 3857)): Django reproyecta el bbox
     # al SRID de la columna y así Postgres puede usar el índice GiST. Con el Transform del lado de
     # la columna el índice no aplica, se evalúa fila por fila y el costo estimado dispara el JIT.
+    # El GeoJSON de la geometría lo arma PostGIS (ST_AsGeoJSON), más rápido que pasar por GEOS.
     qs = (
         model.objects
-        .annotate(geom_4326=Transform("geom", GEOJSON_SRID))
+        .annotate(geojson=AsGeoJSON(Transform("geom", GEOJSON_SRID), precision=GEOJSON_PRECISION))
         .filter(geom__intersects=bbox)
     )
     if filtros:
