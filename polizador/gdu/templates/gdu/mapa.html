@@ -102,6 +102,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const planoUrl = "{% url 'gdu:plano' %}";
   const estadoObraBaseUrl = "{% url 'carga:estado-obra' pk=0 %}";
   const fichaBaseUrl = "{% url 'gdu:ficha' capa='CAPA' objeto_id=0 %}";
+  const detalleBaseUrl = "{% url 'gdu:detalle_capa' capa='CAPA' %}";
+  const maxIdsDetalle = {{ max_ids_detalle }};
   const consultar3450Url = "{% url 'gdu:consultar_3450' %}";
   const actualizarNroAdjBaseUrl = "{% url 'gdu:actualizar_nro_adjudicatario' uf_id=0 %}";
   const puedeEditarNroAdjudicatario = {{ perms.gdu.editar_nro_adjudicatario|yesno:"true,false" }};
@@ -646,15 +648,71 @@ document.addEventListener("DOMContentLoaded", function () {
     return encontrada ? encontrada[0] : null;
   }
 
+  // El GeoJSON de las capas trae solo id + geometría (para que entren más elementos por pedido);
+  // las propiedades que muestra el panel se piden a gdu:detalle_capa recién al seleccionar.
+  const detalles = new WeakMap(); // feature -> propiedades, o { __error: true } si falló el pedido
+  const detallesPendientes = new WeakSet(); // features con el pedido de detalle en curso
+  let cargaDetallesProgramada = false;
+
+  // el Ctrl+arrastre agrega los elementos a la selección de a uno (un "add" y un renderPanel por
+  // cada uno): se difiere la carga al final de esa tanda para pedir todo junto, por capa
+  function programarCargaDetalles() {
+    if (cargaDetallesProgramada) return;
+    cargaDetallesProgramada = true;
+    setTimeout(function () {
+      cargaDetallesProgramada = false;
+      cargarDetalles();
+    }, 0);
+  }
+
+  function cargarDetalles() {
+    const porCapa = {};
+    selectedFeatures.getArray().forEach(function (feature) {
+      if (detalles.has(feature) || detallesPendientes.has(feature)) return;
+      const capa = capaDeFeature(feature);
+      if (!capa) return;
+      detallesPendientes.add(feature);
+      (porCapa[capa] = porCapa[capa] || []).push(feature);
+    });
+    Object.keys(porCapa).forEach(function (capa) {
+      const features = porCapa[capa];
+      for (let i = 0; i < features.length; i += maxIdsDetalle) {
+        const lote = features.slice(i, i + maxIdsDetalle);
+        const ids = lote.map(function (f) { return f.getId(); }).join(",");
+        fetch(detalleBaseUrl.replace("/CAPA/", "/" + capa + "/") + "?ids=" + ids)
+          .then(function (r) {
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            return r.json();
+          })
+          .then(function (data) {
+            lote.forEach(function (f) { detalles.set(f, data[f.getId()] || { __error: true }); });
+          })
+          .catch(function () {
+            lote.forEach(function (f) { detalles.set(f, { __error: true }); });
+          })
+          .finally(function () {
+            lote.forEach(function (f) { detallesPendientes.delete(f); });
+            renderPanel();
+          });
+      }
+    });
+  }
+
   function renderPanel() {
     const features = selectedFeatures.getArray();
     if (!features.length) {
       panelBody.innerHTML = '<p class="text-muted small mb-0">Hacé click en un barrio o vivienda del mapa. Shift+click o Ctrl+arrastre para seleccionar varios.</p>';
       return;
     }
+    programarCargaDetalles();
     let html = `<p class="small text-muted mb-2">${features.length} elemento(s) seleccionado(s)</p>`;
     features.forEach(function (feature, idx) {
-      const props = feature.getProperties();
+      const props = detalles.get(feature);
+      if (!props || props.__error) {
+        const texto = props ? '<span class="text-danger">No se pudieron cargar los datos.</span>' : "Cargando…";
+        html += `<div class="border rounded p-2 mb-2 small text-muted" data-idx="${idx}">${texto}</div>`;
+        return;
+      }
       const capa = capaDeFeature(feature);
       const esVivienda = capa === "viviendas";
       html += `<div class="border rounded p-2 mb-2" data-idx="${idx}"><dl class="mb-0">`;
@@ -698,7 +756,7 @@ document.addEventListener("DOMContentLoaded", function () {
           `;
         }
       }
-      if (capa && props.id !== undefined && props.id !== null) {
+      if (capa && feature.getId() !== undefined) {
         html += `
           <button class="btn btn-sm btn-outline-primary mt-2" type="button" data-action="imprimir-ficha">
             <i class="bi bi-printer"></i> Imprimir ficha
@@ -759,7 +817,7 @@ document.addEventListener("DOMContentLoaded", function () {
         z: vista.getZoom().toFixed(2),
         base: base ? base.value : "carto",
       });
-      const url = fichaBaseUrl.replace("/CAPA/0/", `/${capaDeFeature(feature)}/${feature.get("id")}/`);
+      const url = fichaBaseUrl.replace("/CAPA/0/", `/${capaDeFeature(feature)}/${feature.getId()}/`);
       window.open(url + "?" + query.toString(), "_blank");
       return;
     }
@@ -800,7 +858,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const input = contenedor.querySelector('[data-role="nro-editar"]');
       const resultado = contenedor.querySelector('[data-role="resultado-editar"]');
       const nro = input.value.trim();
-      const url = actualizarNroAdjBaseUrl.replace("/0/", "/" + feature.get("id") + "/");
+      const url = actualizarNroAdjBaseUrl.replace("/0/", "/" + feature.getId() + "/");
       resultado.textContent = "Guardando...";
       const body = new URLSearchParams();
       body.set("nro_adjudicatario", nro);
@@ -817,7 +875,7 @@ document.addEventListener("DOMContentLoaded", function () {
             resultado.innerHTML = `<span class="text-danger">${r.data.errors || "Error guardando"}</span>`;
             return;
           }
-          feature.set("nro_adjudicatario", r.data.nro_adjudicatario);
+          detalles.get(feature).nro_adjudicatario = r.data.nro_adjudicatario;
           renderPanel();
         })
         .catch(function () {

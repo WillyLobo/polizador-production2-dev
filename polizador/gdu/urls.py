@@ -23,6 +23,7 @@ urlpatterns = [
     path("mapa/planos-mensura.geojson", visor.geojson_planos_mensura, name="geojson_planos_mensura"),
     path("mapa/catastro-urbano.geojson", visor.geojson_catastro_urbano, name="geojson_catastro_urbano"),
     path("mapa/para-escriturar.geojson", visor.geojson_para_escriturar, name="geojson_para_escriturar"),
+    path("mapa/<slug:capa>/detalle.json", visor.detalle_capa, name="detalle_capa"),
     path("mapa/buscar-localidad.json", visor.buscar_localidad, name="buscar_localidad"),
     path("mapa/buscar-parcela.json", visor.buscar_parcela, name="buscar_parcela"),
     path("mapa/opciones-busqueda.json", visor.opciones_busqueda, name="opciones_busqueda"),
