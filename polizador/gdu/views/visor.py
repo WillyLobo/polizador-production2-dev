@@ -84,10 +84,13 @@ def _geojson_capa(request, model, propiedades, filtros=None):
     if bbox is None:
         return HttpResponseBadRequest("falta el parámetro bbox")
 
+    # Filtrar sobre `geom` tal cual (no sobre Transform("geom", 3857)): Django reproyecta el bbox
+    # al SRID de la columna y así Postgres puede usar el índice GiST. Con el Transform del lado de
+    # la columna el índice no aplica, se evalúa fila por fila y el costo estimado dispara el JIT.
     qs = (
         model.objects
-        .annotate(geom_web=Transform("geom", MAP_SRID), geom_4326=Transform("geom", GEOJSON_SRID))
-        .filter(geom_web__intersects=bbox)
+        .annotate(geom_4326=Transform("geom", GEOJSON_SRID))
+        .filter(geom__intersects=bbox)
     )
     if filtros:
         qs = qs.filter(**filtros)

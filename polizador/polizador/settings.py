@@ -357,6 +357,9 @@ DATABASES = {
         "USER": DBUSER,
 	    "PASSWORD":DBSECRET,
         "NAME":DBNAME,
+        # Sin JIT: las consultas del visor GDU (vistas con muchos JOINs) tienen costos estimados
+        # inflados que lo activan, y compilar tardaba más (~1.4 s) que ejecutar la consulta.
+        "OPTIONS": {"options": "-c jit=off"},
     }
 }
 
