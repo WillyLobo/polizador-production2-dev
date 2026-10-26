@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const opcionesBusquedaUrl = "{% url 'gdu:opciones_busqueda' %}";
   const planoUrl = "{% url 'gdu:plano' %}";
   const estadoObraBaseUrl = "{% url 'carga:estado-obra' pk=0 %}";
-  const printUrl = "{% url 'gdu:imprimir' %}";
+  const fichaBaseUrl = "{% url 'gdu:ficha' capa='CAPA' objeto_id=0 %}";
   const consultar3450Url = "{% url 'gdu:consultar_3450' %}";
   const actualizarNroAdjBaseUrl = "{% url 'gdu:actualizar_nro_adjudicatario' uf_id=0 %}";
   const puedeEditarNroAdjudicatario = {{ perms.gdu.editar_nro_adjudicatario|yesno:"true,false" }};
@@ -172,6 +172,7 @@ document.addEventListener("DOMContentLoaded", function () {
     layer: capaPoligono(expropiacionesSource, "#6f42c1"),
     source: expropiacionesSource,
     toggleId: "toggle-expropiaciones",
+    capa: "expropiaciones", // slug de gdu:ficha
   });
   capasFiltrables.push(expropiacionesSource);
   {% endif %}
@@ -182,6 +183,7 @@ document.addEventListener("DOMContentLoaded", function () {
     layer: capaPuntos(viviendasDispersasSource, "#20c997", 12),
     source: viviendasDispersasSource,
     toggleId: "toggle-viviendas-dispersas",
+    capa: "viviendas-dispersas", // slug de gdu:ficha
   });
   capasFiltrables.push(viviendasDispersasSource);
   {% endif %}
@@ -192,6 +194,7 @@ document.addEventListener("DOMContentLoaded", function () {
     layer: capaPoligono(planosMensuraSource, "#6c757d", 13),
     source: planosMensuraSource,
     toggleId: "toggle-planos-mensura",
+    capa: "planos-mensura", // slug de gdu:ficha
   });
   {% endif %}
 
@@ -201,6 +204,7 @@ document.addEventListener("DOMContentLoaded", function () {
     layer: capaPoligono(catastroUrbanoSource, "#495057", 14),
     source: catastroUrbanoSource,
     toggleId: "toggle-catastro-urbano",
+    capa: "catastro-urbano", // slug de gdu:ficha
   });
   capasFiltrables.push(catastroUrbanoSource);
   {% endif %}
@@ -211,6 +215,7 @@ document.addEventListener("DOMContentLoaded", function () {
     layer: capaPoligono(paraEscriturarSource, "#198754", 13),
     source: paraEscriturarSource,
     toggleId: "toggle-para-escriturar",
+    capa: "para-escriturar", // slug de gdu:ficha
   });
   capasFiltrables.push(paraEscriturarSource);
   {% endif %}
@@ -549,6 +554,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const panelBody = document.getElementById("gdu-panel-body");
 
+  // slug de gdu:ficha de la capa a la que pertenece cada elemento seleccionado (el click y el
+  // Ctrl+arrastre lo agregan a la misma colección, así que se resuelve por la fuente que lo tiene)
+  function capaDeFeature(feature) {
+    const fuentes = [["barrios", barriosSource], ["viviendas", viviendasSource], ...capasExtra.map((c) => [c.capa, c.source])];
+    const encontrada = fuentes.find(([, source]) => source.hasFeature(feature));
+    return encontrada ? encontrada[0] : null;
+  }
+
   function renderPanel() {
     const features = selectedFeatures.getArray();
     if (!features.length) {
@@ -558,7 +571,8 @@ document.addEventListener("DOMContentLoaded", function () {
     let html = `<p class="small text-muted mb-2">${features.length} elemento(s) seleccionado(s)</p>`;
     features.forEach(function (feature, idx) {
       const props = feature.getProperties();
-      const esVivienda = viviendasLayer.getSource().getFeatures().indexOf(feature) !== -1;
+      const capa = capaDeFeature(feature);
+      const esVivienda = capa === "viviendas";
       html += `<div class="border rounded p-2 mb-2" data-idx="${idx}"><dl class="mb-0">`;
       for (const key in props) {
         if (key === "geometry" || key === "planos" || key === "obras") continue;
@@ -599,6 +613,13 @@ document.addEventListener("DOMContentLoaded", function () {
             <div class="small mt-1" data-role="resultado-editar"></div>
           `;
         }
+      }
+      if (capa && props.id !== undefined && props.id !== null) {
+        html += `
+          <button class="btn btn-sm btn-outline-primary mt-2" type="button" data-action="imprimir-ficha">
+            <i class="bi bi-printer"></i> Imprimir ficha
+          </button>
+        `;
       }
       html += "</div>";
     });
@@ -642,6 +663,22 @@ document.addEventListener("DOMContentLoaded", function () {
     const idx = Number(contenedor.dataset.idx);
     const feature = selectedFeatures.getArray()[idx];
     if (!feature) return;
+
+    if (boton.dataset.action === "imprimir-ficha") {
+      // la ficha abre con la misma vista y capa base que el visor
+      const vista = map.getView();
+      const centro = vista.getCenter();
+      const base = document.querySelector('input[name="gdu-capa-base"]:checked');
+      const query = new URLSearchParams({
+        x: centro[0].toFixed(2),
+        y: centro[1].toFixed(2),
+        z: vista.getZoom().toFixed(2),
+        base: base ? base.value : "carto",
+      });
+      const url = fichaBaseUrl.replace("/CAPA/0/", `/${capaDeFeature(feature)}/${feature.get("id")}/`);
+      window.open(url + "?" + query.toString(), "_blank");
+      return;
+    }
 
     if (boton.dataset.action === "buscar-3450") {
       const input = contenedor.querySelector('[data-role="nro-3450"]');
@@ -707,47 +744,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
   document.getElementById("btn-limpiar-seleccion").addEventListener("click", function () {
     selectedFeatures.clear();
-  });
-
-  document.getElementById("btn-imprimir-ficha").addEventListener("click", function () {
-    const features = selectedFeatures.getArray();
-    if (!features.length) {
-      alert("Seleccioná al menos un elemento del mapa para imprimir.");
-      return;
-    }
-    const datos = features.map(function (feature) {
-      const props = Object.assign({}, feature.getProperties());
-      delete props.geometry;
-      return props;
-    });
-    // se abre la pestaña ya, en el mismo gesto del click, para no chocar con el
-    // bloqueador de popups del navegador cuando recién se abre tras el fetch
-    const ventana = window.open("", "_blank");
-    fetch(printUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-CSRFToken": csrftoken },
-      body: JSON.stringify({ template: "Ficha GDU", data: datos }),
-    })
-      .then(function (resp) {
-        if (!resp.ok) {
-          throw new Error("No se pudo generar la ficha (HTTP " + resp.status + ")");
-        }
-        return resp.blob();
-      })
-      .then(function (blob) {
-        const url = URL.createObjectURL(blob);
-        if (ventana) {
-          ventana.location.href = url;
-        } else {
-          window.open(url, "_blank");
-        }
-      })
-      .catch(function (err) {
-        if (ventana) {
-          ventana.close();
-        }
-        alert(err.message);
-      });
   });
 
   // --- Medición de distancia y área ---
@@ -971,9 +967,6 @@ document.addEventListener("DOMContentLoaded", function () {
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-secondary btn-sm" id="btn-limpiar-seleccion" data-bs-dismiss="modal">
           <i class="bi bi-x-circle"></i> Limpiar selección
-        </button>
-        <button type="button" class="btn btn-outline-primary btn-sm" id="btn-imprimir-ficha">
-          <i class="bi bi-printer"></i> Imprimir ficha
         </button>
       </div>
     </div>
