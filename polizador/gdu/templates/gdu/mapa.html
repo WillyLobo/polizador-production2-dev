@@ -282,16 +282,26 @@ document.addEventListener("DOMContentLoaded", function () {
   // algo que terminó pasando acá. Desde 2026-08 CARTO exige una API key incluso para el
   // tier gratis (GDU_CARTO_API_KEY en .env; ver https://carto.com/basemaps/apikey).
   const cartoApiKey = "{{ carto_api_key|escapejs }}";
+  // El estilo sigue al tema del sitio (data-bs-theme en <html>): Voyager en claro,
+  // Dark Matter en oscuro. La ficha no lo hace porque está pensada para imprimirse.
+  function urlsCarto() {
+    const estilo = document.documentElement.getAttribute("data-bs-theme") === "dark" ? "dark_all" : "voyager";
+    return ["a", "b", "c", "d"].map(
+      (s) => `https://${s}.basemaps.cartocdn.com/rastertiles/${estilo}/{z}/{x}/{y}.png?key=${cartoApiKey}`
+    );
+  }
   const capaBaseCarto = new ol.layer.Tile({
     source: new ol.source.XYZ({
-      urls: ["a", "b", "c", "d"].map(
-        (s) => `https://${s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png?key=${cartoApiKey}`
-      ),
+      urls: urlsCarto(),
       attributions: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a>',
       maxZoom: 20,
     }),
     visible: true,
   });
+  // el botón de tema del navbar solo cambia el atributo, sin disparar ningún evento
+  new MutationObserver(function () {
+    capaBaseCarto.getSource().setUrls(urlsCarto());
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-bs-theme"] });
   const capaBaseEsri = new ol.layer.Tile({
     source: new ol.source.XYZ({
       url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
