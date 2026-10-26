@@ -51,11 +51,11 @@
                 <tr id="{{object.id}}">
                     <td class="small">{{s}}</td>
                     <td class="small">{{d.cantidad_de_dias}}</td>
-                    <td class="small">{{d.viatico}}</td>
-                    <td class="small">{{d.combustible}}</td>
-                    <td class="small">{{d.gastos}}</td>
-                    <td class="small">{{d.pasaje}}</td>
-                    <td class="small">{{d.valor_viatico}}</td>
+                    <td class="small">{{d.viatico|default_if_none:0}}</td>
+                    <td class="small">{{d.combustible|default_if_none:0}}</td>
+                    <td class="small">{{d.gastos|default_if_none:0}}</td>
+                    <td class="small">{{d.pasaje|default_if_none:0}}</td>
+                    <td class="small">{{d.valor_viatico|default_if_none:0}}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -83,6 +83,9 @@
     layout: { topStart: 'buttons' },
     buttons: DatatablesExportButtons.build('Reporte de Viáticos por Agente'),
     order: [[ 1, 'desc' ]],
+    // Los montos llegan localizados (es-AR: 1.234,56); sin esto DataTables toma la coma
+    // como separador de miles y ordena mal las columnas numericas.
+    language: { decimal: ',', thousands: '.' },
     "footerCallback": function ( row, data, start, end, display ) {
             var api = this.api(), data;
 
