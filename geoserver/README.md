@@ -112,7 +112,7 @@ destino o un secreto -- el script corta con un mensaje claro si falta alguna.
 | `PGHOST` | *(requerida, salvo fase `postgres`)* | Host de Postgres -- típicamente `127.0.0.1`, ya que GeoServer corre en el mismo servidor |
 | `PGPORT` | `5432` | Puerto de Postgres |
 | `PGDATABASE` | *(requerida)* | Base de datos destino |
-| `PG_APP_USER` / `PG_APP_PASSWORD` | *(requeridas, solo fase `postgres`)* | Credenciales con privilegio para crear el schema `geoserver_auth` y hacer GRANT sobre `catastro.*` (ej. el `DBUSER` de `polizador/.env`) |
+| `PG_APP_USER` / `PG_APP_PASSWORD` | *(requeridas, solo fase `postgres`)* | Credenciales con privilegio para crear el schema `geoserver_auth`, hacer GRANT sobre `catastro.*` y crear índices en tablas de `catastro` (`sql/03_indices_visor.sql`, tiene que ser su owner) (ej. el `DBUSER` de `polizador/.env`) |
 | `GEOSERVER_DS_PASSWORD` | *(requerida)* | Contraseña a fijar/usar para el rol `geoserver_piloto` (datastore) |
 | `GEOSERVER_SECURITY_DB_PASSWORD` | *(requerida)* | Contraseña a fijar/usar para el rol `geoserver_security` (servicio de roles) |
 

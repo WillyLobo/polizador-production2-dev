@@ -41,7 +41,7 @@
 # en consecuencia (ver README.md).
 #
 # Uso:
-#   ./deploy_geoserver.sh postgres   # crea roles + schema geoserver_auth en Postgres
+#   ./deploy_geoserver.sh postgres   # crea roles + schema geoserver_auth + índices del visor GDU en Postgres
 #   ./deploy_geoserver.sh geoserver  # instala/actualiza el servicio nativo de GeoServer
 #   ./deploy_geoserver.sh verify     # corre la misma batería de pruebas allow/deny de la Fase 2
 #   ./deploy_geoserver.sh all        # las tres fases en orden
@@ -275,7 +275,7 @@ anon_oculta() {
 }
 
 phase_postgres() {
-  log "Fase Postgres: creando roles (necesita superusuario) y schema geoserver_auth"
+  log "Fase Postgres: creando roles (necesita superusuario), schema geoserver_auth e índices del visor GDU"
   require_env PGDATABASE
   require_env PG_APP_USER
   require_env PG_APP_PASSWORD
@@ -298,6 +298,10 @@ phase_postgres() {
   log "Aplicando 02_provision_schema.sql como $PG_APP_USER (schema geoserver_auth + grants)..."
   PGPASSWORD="$PG_APP_PASSWORD" psql -h "$PGHOST" -p "$PGPORT" -U "$PG_APP_USER" -d "$PGDATABASE" \
     -v ON_ERROR_STOP=1 -f "$SQL_DIR/02_provision_schema.sql"
+
+  log "Aplicando 03_indices_visor.sql como $PG_APP_USER (índices de catastro para el visor de mapa de GDU)..."
+  PGPASSWORD="$PG_APP_PASSWORD" psql -h "$PGHOST" -p "$PGPORT" -U "$PG_APP_USER" -d "$PGDATABASE" \
+    -v ON_ERROR_STOP=1 -f "$SQL_DIR/03_indices_visor.sql"
 
   log "Fase Postgres OK"
 }
