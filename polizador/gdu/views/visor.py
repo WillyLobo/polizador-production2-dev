@@ -70,6 +70,9 @@ def _feature_collection(queryset, propiedades):
             continue
         features.append({
             "type": "Feature",
+            # id a nivel de feature (no solo en properties): ol.source.Vector lo usa para no volver
+            # a agregar las features que ya tiene cuando la estrategia bbox repide un área solapada
+            "id": obj.pk,
             "geometry": json.loads(geom.geojson),
             "properties": propiedades(obj),
         })
@@ -94,8 +97,13 @@ def _geojson_capa(request, model, propiedades, filtros=None):
     )
     if filtros:
         qs = qs.filter(**filtros)
-    qs = qs[:MAX_FEATURES_POR_CAPA]
-    return JsonResponse(_feature_collection(qs, propiedades))
+    # se pide una de más para saber si el bbox quedó recortado; `truncado` (miembro extra del
+    # FeatureCollection) le avisa al visor que tiene que volver a pedir el área al acercarse
+    objetos = list(qs[:MAX_FEATURES_POR_CAPA + 1])
+    truncado = len(objetos) > MAX_FEATURES_POR_CAPA
+    respuesta = _feature_collection(objetos[:MAX_FEATURES_POR_CAPA], propiedades)
+    respuesta["truncado"] = truncado
+    return JsonResponse(respuesta)
 
 
 def _filtros_texto(request, mapeo):

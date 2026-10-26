@@ -63,6 +63,21 @@ origen (sin path ni query) a otros sitios; el meta pisa al header. {% endcomment
     height: 18px;
     pointer-events: none;
   }
+  #gdu-aviso-truncado {
+    display: none;
+    position: absolute;
+    top: .5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    max-width: calc(100% - 7rem);
+    padding: .25rem .75rem;
+    border-radius: 4px;
+    background: rgba(255,193,7,.95);
+    color: #000;
+    font-size: .8rem;
+    text-align: center;
+    pointer-events: none;
+  }
   .gdu-search { position: relative; width: 220px; }
   .gdu-search-results {
     position: absolute;
@@ -96,26 +111,48 @@ document.addEventListener("DOMContentLoaded", function () {
   // se leen al vuelo en cada bboxSource "filtrable" para no tener que recrear las capas al aplicar/limpiar
   const filtrosActivos = {};
 
-  function bboxSource(baseUrl, filtrable) {
-    return new ol.source.Vector({
+  // El servidor corta cada respuesta en MAX_FEATURES_POR_CAPA y avisa con `truncado`. La estrategia
+  // bbox recuerda las áreas ya cargadas y al acercarse no vuelve a pedir nada (la vista nueva está
+  // dentro de una ya cargada), así que lo recortado quedaría faltando. Por eso cada fuente anota sus
+  // áreas recortadas (`truncadas`, con la resolución a la que se pidieron) y al acercarse se olvidan
+  // (olvidarTruncadasAlAcercarse) para que se vuelvan a pedir. No se olvidan apenas llegan: el
+  // siguiente render las volvería a pedir y quedaría en loop.
+  function bboxSource(baseUrl, filtrable, nombre) {
+    const source = new ol.source.Vector({
       format: new ol.format.GeoJSON(),
       strategy: ol.loadingstrategy.bbox,
-      url: function (extent) {
+      loader: function (extent, resolution, projection, success, failure) {
         const params = new URLSearchParams({ bbox: extent.join(",") });
         if (filtrable) {
           Object.keys(filtrosActivos).forEach(function (k) {
             if (filtrosActivos[k]) params.set(k, filtrosActivos[k]);
           });
         }
-        return baseUrl + "?" + params.toString();
+        fetch(baseUrl + "?" + params.toString())
+          .then(function (r) {
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            return r.json();
+          })
+          .then(function (data) {
+            const features = source.getFormat().readFeatures(data, { featureProjection: projection });
+            source.addFeatures(features);
+            if (data.truncado) source.truncadas.push({ extent: extent, resolution: resolution });
+            success(features);
+          })
+          .catch(function () { failure(); });
       },
     });
+    source.nombre = nombre;
+    source.truncadas = [];
+    // refresh() (filtros del modal) limpia features y áreas cargadas: lo recortado ya no aplica
+    source.on("clear", function () { source.truncadas = []; });
+    return source;
   }
 
   const capasFiltrables = []; // fuentes a refrescar cuando se aplica/limpia el modal de búsqueda avanzada
 
-  const barriosSource = bboxSource(barriosUrl, true);
-  const viviendasSource = bboxSource(viviendasUrl, true);
+  const barriosSource = bboxSource(barriosUrl, true, "Barrios");
+  const viviendasSource = bboxSource(viviendasUrl, true, "Viviendas");
   capasFiltrables.push(barriosSource, viviendasSource);
 
   const barriosLayer = new ol.layer.Vector({
@@ -167,7 +204,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const capasExtra = []; // [{ layer, source, toggleId }]
 
   {% if perms.gdu.ver_expropiaciones %}
-  const expropiacionesSource = bboxSource("{% url 'gdu:geojson_expropiaciones' %}", true);
+  const expropiacionesSource = bboxSource("{% url 'gdu:geojson_expropiaciones' %}", true, "Expropiaciones");
   capasExtra.push({
     layer: capaPoligono(expropiacionesSource, "#6f42c1"),
     source: expropiacionesSource,
@@ -178,7 +215,7 @@ document.addEventListener("DOMContentLoaded", function () {
   {% endif %}
 
   {% if perms.gdu.ver_viviendas_dispersas %}
-  const viviendasDispersasSource = bboxSource("{% url 'gdu:geojson_viviendas_dispersas' %}", true);
+  const viviendasDispersasSource = bboxSource("{% url 'gdu:geojson_viviendas_dispersas' %}", true, "Viviendas Dispersas");
   capasExtra.push({
     layer: capaPuntos(viviendasDispersasSource, "#20c997", 12),
     source: viviendasDispersasSource,
@@ -189,7 +226,7 @@ document.addEventListener("DOMContentLoaded", function () {
   {% endif %}
 
   {% if perms.gdu.ver_plano_mensura %}
-  const planosMensuraSource = bboxSource("{% url 'gdu:geojson_planos_mensura' %}");
+  const planosMensuraSource = bboxSource("{% url 'gdu:geojson_planos_mensura' %}", false, "Planos de Mensura");
   capasExtra.push({
     layer: capaPoligono(planosMensuraSource, "#6c757d", 13),
     source: planosMensuraSource,
@@ -199,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
   {% endif %}
 
   {% if perms.gdu.ver_catastro_urbano %}
-  const catastroUrbanoSource = bboxSource("{% url 'gdu:geojson_catastro_urbano' %}", true);
+  const catastroUrbanoSource = bboxSource("{% url 'gdu:geojson_catastro_urbano' %}", true, "Catastro Urbano");
   capasExtra.push({
     layer: capaPoligono(catastroUrbanoSource, "#495057", 14),
     source: catastroUrbanoSource,
@@ -210,7 +247,7 @@ document.addEventListener("DOMContentLoaded", function () {
   {% endif %}
 
   {% if perms.gdu.ver_escriturar %}
-  const paraEscriturarSource = bboxSource("{% url 'gdu:geojson_para_escriturar' %}", true);
+  const paraEscriturarSource = bboxSource("{% url 'gdu:geojson_para_escriturar' %}", true, "Para Escriturar");
   capasExtra.push({
     layer: capaPoligono(paraEscriturarSource, "#198754", 13),
     source: paraEscriturarSource,
@@ -334,6 +371,53 @@ document.addEventListener("DOMContentLoaded", function () {
   if (googleApiKey) {
     map.addControl(new ol.control.Control({ element: logoGoogle }));
   }
+
+  // --- Áreas recortadas por MAX_FEATURES_POR_CAPA (ver bboxSource) ---
+
+  const avisoTruncado = document.createElement("div");
+  avisoTruncado.id = "gdu-aviso-truncado";
+  map.addControl(new ol.control.Control({ element: avisoTruncado }));
+
+  function capasVectorBbox() {
+    return map.getLayers().getArray().filter(function (layer) {
+      return layer.getSource && layer.getSource() && Array.isArray(layer.getSource().truncadas);
+    });
+  }
+
+  function olvidarTruncadasAlAcercarse() {
+    const resolucion = map.getView().getResolution();
+    capasVectorBbox().forEach(function (layer) {
+      const source = layer.getSource();
+      const cantidad = source.truncadas.length;
+      source.truncadas = source.truncadas.filter(function (t) {
+        if (resolucion >= t.resolution) return true;
+        source.removeLoadedExtent(t.extent);
+        return false;
+      });
+      // removeLoadedExtent no dispara una carga, y map.render() tampoco: el renderer vectorial no
+      // vuelve a llamar a loadFeatures si no cambió la vista ni la revisión de la fuente
+      if (source.truncadas.length !== cantidad) source.changed();
+    });
+  }
+
+  function actualizarAvisoTruncado() {
+    const view = map.getView();
+    const extentVista = view.calculateExtent(map.getSize());
+    const nombres = capasVectorBbox()
+      .filter(function (layer) {
+        return layer.isVisible(view) && layer.getSource().truncadas.some(function (t) {
+          return ol.extent.intersects(t.extent, extentVista);
+        });
+      })
+      .map(function (layer) { return layer.getSource().nombre; });
+    avisoTruncado.textContent = nombres.length
+      ? nombres.join(", ") + ": hay más elementos de los que se pueden mostrar a este zoom. Acercá el mapa para verlos todos."
+      : "";
+    avisoTruncado.style.display = nombres.length ? "block" : "none";
+  }
+
+  map.on("moveend", olvidarTruncadasAlAcercarse);
+  map.on("rendercomplete", actualizarAvisoTruncado);
 
   // el mapa ocupa hasta el borde inferior de la pantalla, dejando el mismo margen
   // que el padding inferior del body; se recalcula en cada resize porque el toolbar
