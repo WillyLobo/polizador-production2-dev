@@ -19,6 +19,12 @@ source ../env/bin/activate
 python manage.py collectstatic --noinput
 python manage.py migrate
 
+# Cada versión de playwright exige su propia revisión de Firefox; si el paquete
+# se actualizó, sin esto el próximo sync_*_sgt arranca bajándolo (o falla si no
+# hay red). Si ya está, no hace nada. `python -m` y no `playwright` a secas,
+# para usar siempre el del venv.
+python -m playwright install firefox
+
 sudo systemctl restart gunicorn.service
 
 # --- Release de Sentry ---
