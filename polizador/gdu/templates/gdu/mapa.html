@@ -808,6 +808,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // --- Búsqueda 3450 y edición de Nº de adjudicatario (delegado, sobrevive a los re-render) ---
 
+  function escapeHtml(texto) {
+    const div = document.createElement("div");
+    div.textContent = texto;
+    return div.innerHTML;
+  }
+
   panelBody.addEventListener("click", function (evt) {
     const boton = evt.target.closest("[data-action]");
     if (!boton) return;
@@ -855,8 +861,25 @@ document.addEventListener("DOMContentLoaded", function () {
             resultado.innerHTML = `<span class="text-danger">${r.data.error || r.data.errors || "Error consultando 3450"}</span>`;
             return;
           }
-          resultado.innerHTML = "<dl class=\"mb-0\">" + Object.entries(r.data).map(function (kv) {
-            return `<dt>${kv[0]}</dt><dd>${kv[1] !== null && kv[1] !== undefined ? kv[1] : "-"}</dd>`;
+          // la API externa envuelve el registro en SDTDatosAdjuGIS
+          const datos = r.data && r.data.SDTDatosAdjuGIS;
+          if (!datos || !datos.AdjuGISapeynom) {
+            resultado.innerHTML = '<span class="text-muted">S3450: Sin datos</span>';
+            return;
+          }
+          const filas = [
+            ["Adjudicatario", datos.AdjuGISapeynom],
+            ["DNI", datos.AdjuGISdni],
+            ["Nº Adj.", nro],
+            ["Dirección", datos.AdjuGISdireccion],
+            ["Escriturado", datos.AdjuGISEscritura],
+            ["Matrícula", datos.AdjuGISmatricula],
+            ["Situación", datos.AdjuGISsituacion],
+            ["Motivo", datos.AdjuGISmotivo],
+          ];
+          resultado.innerHTML = "<dl class=\"mb-0\">" + filas.map(function (kv) {
+            const valor = kv[1] !== null && kv[1] !== undefined && kv[1] !== "" ? kv[1] : "-";
+            return `<dt>${kv[0]}</dt><dd>${escapeHtml(String(valor))}</dd>`;
           }).join("") + "</dl>";
         })
         .catch(function () {
