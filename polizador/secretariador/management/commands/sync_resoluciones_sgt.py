@@ -33,7 +33,7 @@ de JS. Firefox vía Playwright NO tiene ese problema y fue lo que se usó para v
 flujo. Por eso el comando lanza Firefox, no Chrome.
 
 Requiere en el .env: SGT_USERNAME, SGT_PASSWORD (credenciales del usuario institucional).
-Requiere el navegador de Playwright instalado una vez: `playwright install firefox`.
+El navegador de Playwright se descarga solo si falta (ver secretariador/sgt_playwright.py).
 """
 import datetime
 import io
@@ -51,6 +51,7 @@ from django.conf import settings
 from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand, CommandError
 
+from secretariador.sgt_playwright import lanzar_firefox
 from secretariador.models import InstrumentosLegalesResoluciones
 
 DEBUG_DIR = Path("/tmp/sgt_debug")
@@ -126,8 +127,8 @@ class Command(BaseCommand):
             from playwright.sync_api import sync_playwright
         except ImportError:
             raise CommandError(
-                "Falta playwright. Instalá con `pip install playwright` y despues "
-                "`playwright install firefox`."
+                "Falta playwright. Instalá con `pip install -r requirements.txt` "
+                "dentro del venv."
             )
 
         data = None
@@ -148,13 +149,7 @@ class Command(BaseCommand):
                 nonlocal browser, page
                 if browser is not None:
                     return page
-                try:
-                    browser = p.firefox.launch(headless=not options["headed"])
-                except Exception as e:
-                    raise CommandError(
-                        f"No pude lanzar Firefox: {e}\n"
-                        "¿Está instalado? Corré `playwright install firefox`."
-                    )
+                browser = lanzar_firefox(p, headless=not options["headed"], stdout=self.stdout)
                 context = browser.new_context(
                     accept_downloads=True,
                     locale="es-AR",
