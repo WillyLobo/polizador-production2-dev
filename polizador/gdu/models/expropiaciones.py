@@ -39,9 +39,9 @@ class Expropiacion(Auditado):
 
 
 class ParcelaExpropiada(NomenclaturaCatastral, Auditado):
-    expropiacion = models.ForeignKey(Expropiacion, models.PROTECT, related_name="parcelas")
+    expropiacion = models.ForeignKey(Expropiacion, models.PROTECT, related_name="parcelas", verbose_name="expropiación")
     objeto = models.ForeignKey(ObjetoExpropiacion, models.PROTECT, related_name="+")
-    estado_gestion = models.ForeignKey(EstadoGestionExpropiacion, models.PROTECT, related_name="+")
+    estado_gestion = models.ForeignKey(EstadoGestionExpropiacion, models.PROTECT, related_name="+", verbose_name="estado de gestión")
     propietario_expropiado = models.CharField(max_length=255, blank=True)
     propietario_actual = models.CharField(max_length=255, blank=True, help_text="Luego de la expropiación")
     inscripcion = models.CharField("inscripción", max_length=255, blank=True)

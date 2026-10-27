@@ -47,7 +47,7 @@ class TipoContratacion(Lookup):
 
 
 class Contratacion(Auditado):
-    actuacion = models.ForeignKey(Actuacion, models.PROTECT, related_name="contrataciones")
+    actuacion = models.ForeignKey(Actuacion, models.PROTECT, related_name="contrataciones", verbose_name="actuación")
     tipo = models.ForeignKey(TipoContratacion, models.PROTECT, related_name="+")
     # la base heredada mezclaba ambos con COALESCE(expediente, resolucion); acá quedan separados
     expediente = models.CharField(max_length=255, blank=True)
@@ -104,7 +104,7 @@ class Intervencion(Auditado):
         EVALUACION = "evaluacion", "Evaluación"
         TERMINADA = "terminada", "Terminada"
 
-    contratacion = models.ForeignKey(Contratacion, models.PROTECT, related_name="intervenciones")
+    contratacion = models.ForeignKey(Contratacion, models.PROTECT, related_name="intervenciones", verbose_name="contratación")
     localidad = models.ForeignKey("carga.Localidad", models.PROTECT, related_name="intervenciones_gdu")
     nombre = models.CharField(max_length=255)
     tipo = models.ForeignKey(TipoIntervencion, models.PROTECT, related_name="+")
@@ -115,6 +115,7 @@ class Intervencion(Auditado):
     grupo = models.CharField(max_length=255, blank=True)
     adjudicacion = models.ForeignKey(
         AdjudicacionBeneficiario, models.PROTECT, null=True, blank=True, related_name="intervenciones",
+        verbose_name="adjudicación",
     )
 
     def __str__(self):
@@ -156,7 +157,7 @@ class Inspector(Lookup):
 # tabla intermedia se publica como colección propia para editarla desde QGIS.
 
 class IntervencionEjecutor(Auditado):
-    intervencion = models.ForeignKey(Intervencion, models.CASCADE, related_name="ejecutores")
+    intervencion = models.ForeignKey(Intervencion, models.CASCADE, related_name="ejecutores", verbose_name="intervención")
     ejecutor = models.ForeignKey(Ejecutor, models.PROTECT, related_name="intervenciones")
 
     def __str__(self):
@@ -171,7 +172,7 @@ class IntervencionEjecutor(Auditado):
 
 
 class IntervencionInspector(Auditado):
-    intervencion = models.ForeignKey(Intervencion, models.CASCADE, related_name="inspectores")
+    intervencion = models.ForeignKey(Intervencion, models.CASCADE, related_name="inspectores", verbose_name="intervención")
     inspector = models.ForeignKey(Inspector, models.PROTECT, related_name="intervenciones")
 
     def __str__(self):

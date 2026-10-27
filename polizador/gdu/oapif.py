@@ -11,10 +11,15 @@ CRS: las geometrías se publican solo en CRS84 (lon, lat) y QGIS las reproyecta.
 no invierte ejes, así que ofrecer EPSG:22175 (cuyo orden EPSG es norte, este) hacía que
 QGIS dibujara todo cruzado y guardara las geometrías corridas sin dar error.
 """
+import hashlib
+import hmac
 import json
 from pathlib import Path
 
+from django.conf import settings
+from django.contrib.auth import authenticate, get_user_model
 from django.contrib.gis.geos import GEOSGeometry
+from django.core.cache import cache
 from django.core.exceptions import NON_FIELD_ERRORS, ValidationError as DjangoValidationError
 from django.db.models import AutoField, BigAutoField, CharField, ProtectedError, Q, RestrictedError, TextField
 from django.http import Http404, HttpResponse
@@ -42,11 +47,36 @@ class JSONSinEscapar(JSONRenderer):
     json_dumps_params = {"ensure_ascii": False}
 
 
+class BasicAuthCacheada(BasicAuth):
+    """
+    Basic Auth no abre sesión: QGIS manda usuario y clave en cada pedido, y verificarlos
+    (hash PBKDF2 de la clave, o un bind contra LDAP) costaba ~160 ms por pedido; abrir el
+    proyecto, con ~7 pedidos en serie por capa, tardaba dos minutos. Un par usuario/clave ya
+    verificado se recuerda unos minutos. La clave de la caché es un HMAC del par: la clave
+    del usuario no se guarda. Un cambio de clave o una baja se notan a lo sumo en DURACION.
+    """
+    DURACION = 10 * 60
+
+    def authenticate(self, request, username, password):
+        clave = "gdu-oapif-auth:" + hmac.new(
+            settings.SECRET_KEY.encode(), f"{username}\0{password}".encode(), hashlib.sha256,
+        ).hexdigest()
+        if (usuario_id := cache.get(clave)) is not None:
+            usuario = get_user_model().objects.filter(pk=usuario_id, is_active=True).first()
+            if usuario is not None:
+                request.user = usuario
+                return usuario
+        if usuario := authenticate(request, username=username, password=password):
+            cache.set(clave, usuario.pk, self.DURACION)
+            request.user = usuario
+        return request.user
+
+
 api = OAPIF(
     title="GDU",
     description="Capas de la Gerencia de Desarrollo Urbano (IPDUV)",
     urls_namespace="gdu-oapif",
-    auth=[BasicAuth(), DjangoAuth()],
+    auth=[BasicAuthCacheada(), DjangoAuth()],
     renderer=JSONSinEscapar(),
 )
 
@@ -297,7 +327,7 @@ def opciones_item_desconocido(request, collection_id):
     coleccion = api.collections.get(collection_id)
     if coleccion is None:
         raise Http404
-    BasicAuth()(request)
+    BasicAuthCacheada()(request)
     if not coleccion.has_view_permission(request):
         raise Http404
     permitidos = ["OPTIONS", "GET"]

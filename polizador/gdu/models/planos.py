@@ -33,7 +33,7 @@ class PlanoMensura(Auditado):
 
 class PlanoMensuraIntervencion(Auditado):
     plano = models.ForeignKey(PlanoMensura, models.CASCADE, related_name="intervenciones")
-    intervencion = models.ForeignKey("Intervencion", models.CASCADE, related_name="planos")
+    intervencion = models.ForeignKey("Intervencion", models.CASCADE, related_name="planos", verbose_name="intervención")
     tipo = models.CharField(max_length=20, choices=TipoVinculoPlano.choices)
 
     def __str__(self):

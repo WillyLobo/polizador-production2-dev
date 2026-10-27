@@ -1,7 +1,7 @@
 import base64
 from io import StringIO
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth import authenticate, get_user_model
 from django.contrib.gis.geos import MultiPolygon, Point, Polygon
 from django.db import IntegrityError
 from django.test import TestCase
@@ -558,3 +558,45 @@ class OapifColeccionesTest(OapifTest):
         usadas = set(re.findall(r"typename='([^']+)'", qgs))
         self.assertTrue(usadas)
         self.assertEqual(usadas - set(api.collections), set())
+
+    def test_nomenclatura_incompleta_se_sirve_como_null(self):
+        # daba 500: el schema la declaraba texto no nulo (viviendas_punto, pre_adjudicatarios_dispersa)
+        vivienda = ViviendaPunto.objects.create(
+            intervencion=self.intervencion, estado_dominial="ipduv", geom=Point(5, 5, srid=SRID_GDU),
+            **{**NOMENCLATURA, "parc": None},
+        )
+        respuesta = self.pedir("get", "/collections/viviendas_punto/items", "lector_qgis")
+        self.assertEqual(respuesta.status_code, 200, respuesta.content)
+        feature = next(f for f in respuesta.json()["features"] if int(f["id"]) == vivienda.pk)
+        self.assertIsNone(feature["properties"]["nomenclatura"])
+
+    def test_basic_auth_se_verifica_una_vez(self):
+        from unittest import mock
+
+        from django.core.cache import cache
+
+        cache.clear()
+        with mock.patch("gdu.oapif.authenticate", wraps=authenticate) as verificar:
+            for _ in range(3):
+                self.assertEqual(self.pedir("get", "/collections/barrios/items", "lector_qgis").status_code, 200)
+            self.assertEqual(verificar.call_count, 1)
+            # otra clave para el mismo usuario no usa lo recordado
+            otra = "Basic " + base64.b64encode(b"lector_qgis:otra-clave").decode()
+            respuesta = self.client.get(f"{self.BASE}/collections/barrios/items", HTTP_AUTHORIZATION=otra,
+                                        HTTP_ACCEPT="application/geo+json")
+            self.assertIn(respuesta.status_code, (401, 403))
+            self.assertEqual(verificar.call_count, 2)
+        # dado de baja: no entra aunque el par esté recordado
+        get_user_model().objects.filter(pk=self.lector_qgis.pk).update(is_active=False)
+        self.assertIn(self.pedir("get", "/collections/barrios/items", "lector_qgis").status_code, (401, 403))
+
+    def test_mensaje_de_unicidad_con_tildes(self):
+        ejecutor = Ejecutor.objects.create(
+            tipo=TipoEjecutor.objects.create(nombre="Empresa"), cuit="20123456786", nombre="Constructora",
+        )
+        IntervencionEjecutor.objects.create(intervencion=self.intervencion, ejecutor=ejecutor)
+        feature = {"type": "Feature", "geometry": None,
+                   "properties": {"intervencion": self.intervencion.pk, "ejecutor": ejecutor.pk}}
+        respuesta = self.pedir("post", "/collections/intervenciones_ejecutores/items", "editor_qgis", feature)
+        self.assertEqual(respuesta.status_code, 422)
+        self.assertIn("Intervención y Ejecutor", respuesta.json()["detail"])

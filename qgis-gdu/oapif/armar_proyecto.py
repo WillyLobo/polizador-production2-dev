@@ -75,15 +75,20 @@ MOSTRAR = {
     "resoluciones_costos": "\"nro_largo\" || '/' || \"nro_corto\" || ' - ' || \"ano\" || ' (' || \"tipo\" || ')'",
     "planos_mensura": "\"depto\" || '-' || \"nro\" || '-' || \"ano\"",
     PARCELAS: "coalesce(\"nomenclatura\", 'Parcela ' || \"id\")",
-    "ufs": "'UF ' || \"uf\"",
+    "ufs": "'UF ' || \"uf\" || ' (parcela ' || \"parcela\" || ')'",
     "tierras": "coalesce(nullif(\"propietario\", ''), \"nomenclatura\", 'Tierra ' || \"id\")",
     "expropiaciones": "'Ley ' || \"nro_ley\" || coalesce(\"letra_ley\", '') || coalesce('/' || \"ano_ley\", '')",
     "parcelas_expropiadas": "coalesce(\"nomenclatura\", 'Parcela expropiada ' || \"id\")",
     "localidades": "\"localidad_nombre\"",
     "adjudicatarios_3450": "\"nro_adjudicatario\" || ' - ' || \"apellido_nombre\"",
 }
-# FK que quedan como número: el combo cargaría la tabla entera (~80.000 adjudicatarios)
-FK_SIN_COMBO = {("ufs", "adjudicatario"), ("viviendas_punto", "adjudicatario")}
+# FK que quedan como número: el combo carga la tabla referenciada entera (~70.000 adjudicatarios,
+# ~65.000 parcelas; 25-30 s al abrir la tabla de atributos). Las consultas de viviendas son de
+# solo lectura, no necesitan el combo.
+VIVIENDAS_CONSULTA = ("viviendas_sin_plan_grupo", "viviendas_con_plan_grupo_sin_adjudicatario", "viviendas_para_escriturar")
+FK_SIN_COMBO = {("ufs", "adjudicatario"), ("viviendas_punto", "adjudicatario")} | {
+    (coleccion_id, campo) for coleccion_id in VIVIENDAS_CONSULTA for campo in ("adjudicatario", "parcela")
+}
 
 # listas hijas en el formulario del padre: (padre, tabla hija, FK al padre, FK al otro lado si es N:M).
 # Las N:M con datos propios en la tabla intermedia (el tipo de vínculo de los planos) van 1:N,
@@ -193,7 +198,9 @@ def armar(args):
         titulo = schemas[coleccion_id].get("title", coleccion_id)
         capa = QgsVectorLayer(uri, titulo, "OAPIF")
         if not capa.isValid():
-            sys.exit(f"No carga la colección {coleccion_id}: {capa.error().summary()}")
+            # una colección que el servidor no puede servir no frena el resto: queda fuera del proyecto
+            print(f"AVISO: no carga la colección {coleccion_id}, queda fuera del proyecto", file=sys.stderr)
+            continue
         if capa.isSpatial():
             simbolo = QgsSymbol.defaultSymbol(capa.geometryType())
             color = QColor(COLORES[i % len(COLORES)])
@@ -218,13 +225,18 @@ def armar(args):
     # una relación por FK, hacia la colección que dice el servidor
     relaciones = proyecto.relationManager()
 
+    def clave(coleccion_id):
+        """campo clave de la colección (x-ogc-role: id); "id" salvo, p. ej., adjudicatarios_3450"""
+        propiedades = schemas[coleccion_id]["properties"]
+        return next((n for n, p in propiedades.items() if p.get("x-ogc-role") == "id"), "id")
+
     def relacion(hija_id, campo, padre_id):
         rel = QgsRelation()
         rel.setId(f"{hija_id}__{campo}__{padre_id}")
         rel.setName(f"{capas[hija_id].name()} - {campo}")
         rel.setReferencingLayer(capas[hija_id].id())
         rel.setReferencedLayer(capas[padre_id].id())
-        rel.addFieldPair(campo, "id")
+        rel.addFieldPair(campo, clave(padre_id))
         if not rel.isValid():
             sys.exit(f"Relación inválida: {rel.id()} ({rel.validationError()})")
         relaciones.addRelation(rel)
@@ -257,7 +269,11 @@ def armar(args):
                     "AllowAddFeatures": False, "ReadOnly": False,
                 }))
             elif etiquetas := propiedad.get("x-gdu-etiquetas"):
-                mapa = ([{"(vacío)": "{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}"}] if nulo else [])
+                # el vacío de una choice de texto es "" en el servidor (CharField blank). Con "" el
+                # combo muestra "(vacío)" en esos registros; al leer el proyecto QGIS lo vuelve NULL
+                # al guardar, y el servidor guarda NULL como "" (ColeccionGdu.save_model)
+                vacio = "" if propiedad.get("type") == "string" else "{2839923C-8B7D-419E-B84B-CA2FE9B80EC7}"
+                mapa = ([{"(vacío)": vacio}] if nulo else [])
                 mapa += [{etiqueta: valor} for valor, etiqueta in etiquetas.items()]
                 capa.setEditorWidgetSetup(idx, QgsEditorWidgetSetup("ValueMap", {"map": mapa}))
 
@@ -300,7 +316,7 @@ def armar(args):
 
     # panel de capas
     arbol = proyecto.layerTreeRoot()
-    for nombre, elegidos in ordenar_en_grupos(ids):
+    for nombre, elegidos in ordenar_en_grupos(list(capas)):
         grupo = arbol.addGroup(nombre)
         grupo.setExpanded(nombre == "Capas")
         for coleccion_id in elegidos:

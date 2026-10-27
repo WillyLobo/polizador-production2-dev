@@ -81,6 +81,9 @@ def _nomenclatura_abstracta(obligatoria):
         ),
         output_field=models.CharField(max_length=28, null=True),
         db_persist=True,
+        # null en el campo (no solo en output_field): es lo que leen los schemas de la API,
+        # y con alguna parte vacía vale NULL
+        null=True,
     )
     atributos["Meta"] = type("Meta", (), {"abstract": True})
     atributos["__module__"] = __name__

@@ -7,7 +7,7 @@ from .base import (
 
 
 class Barrio(Auditado):
-    intervencion = models.ForeignKey("Intervencion", models.PROTECT, related_name="barrios")
+    intervencion = models.ForeignKey("Intervencion", models.PROTECT, related_name="barrios", verbose_name="intervención")
     nombre = models.CharField(max_length=255, blank=True)
     geom = models.MultiPolygonField(srid=SRID_GDU)
 
@@ -19,7 +19,7 @@ class Barrio(Auditado):
 
 
 class Manzana(Auditado):
-    intervencion = models.ForeignKey("Intervencion", models.PROTECT, related_name="manzanas")
+    intervencion = models.ForeignKey("Intervencion", models.PROTECT, related_name="manzanas", verbose_name="intervención")
     nombre = models.CharField(max_length=255)
     geom = models.PolygonField(srid=SRID_GDU)
 
@@ -28,7 +28,7 @@ class Manzana(Auditado):
 
 
 class Calle(Auditado):
-    intervencion = models.ForeignKey("Intervencion", models.PROTECT, related_name="calles")
+    intervencion = models.ForeignKey("Intervencion", models.PROTECT, related_name="calles", verbose_name="intervención")
     nombre = models.CharField(max_length=255, blank=True)
     geom = models.LineStringField(srid=SRID_GDU)
 
@@ -49,7 +49,7 @@ class ParcelaQuerySet(models.QuerySet):
 
 
 class Parcela(NomenclaturaCatastral, Auditado):
-    intervencion = models.ForeignKey("Intervencion", models.PROTECT, related_name="parcelas")
+    intervencion = models.ForeignKey("Intervencion", models.PROTECT, related_name="parcelas", verbose_name="intervención")
     destino = models.ForeignKey(DestinoParcela, models.PROTECT, related_name="+")
     estado_dominial = models.CharField(
         max_length=20, choices=EstadoDominial.choices, blank=True,
@@ -118,7 +118,7 @@ class Uf(DatosAdjudicatario, Auditado):
 
 
 class ViviendaPunto(DatosAdjudicatario, NomenclaturaCatastralOpcional, Auditado):
-    intervencion = models.ForeignKey("Intervencion", models.PROTECT, related_name="viviendas_punto")
+    intervencion = models.ForeignKey("Intervencion", models.PROTECT, related_name="viviendas_punto", verbose_name="intervención")
     estado_dominial = models.CharField(max_length=20, choices=EstadoDominial.choices)
     apellido = models.CharField(max_length=255, blank=True)
     nombre = models.CharField(max_length=255, blank=True)
