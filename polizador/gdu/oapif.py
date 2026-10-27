@@ -11,8 +11,12 @@ CRS: las geometrías se publican solo en CRS84 (lon, lat) y QGIS las reproyecta.
 no invierte ejes, así que ofrecer EPSG:22175 (cuyo orden EPSG es norte, este) hacía que
 QGIS dibujara todo cruzado y guardara las geometrías corridas sin dar error.
 """
+import json
+from pathlib import Path
+
+from django.contrib.gis.geos import GEOSGeometry
 from django.core.exceptions import NON_FIELD_ERRORS, ValidationError as DjangoValidationError
-from django.db.models import AutoField, BigAutoField, CharField, ProtectedError, RestrictedError, TextField
+from django.db.models import AutoField, BigAutoField, CharField, ProtectedError, Q, RestrictedError, TextField
 from django.http import Http404, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django_oapif import OAPIF, OapifCollection
@@ -21,8 +25,16 @@ from django_oapif.crs import CRS84
 from ninja.errors import AuthorizationError, HttpError, ValidationError
 from ninja.renderers import JSONRenderer
 
-from gdu.models import Barrio, Intervencion, PlanoMensura, PlanoMensuraIntervencion
-
+from carga.models import Localidad
+from gdu.models import (
+    Actuacion, AdjudicacionBeneficiario, Adjudicatario3450, Barrio, Calle, Catastrourbano, Contratacion,
+    DestinoParcela, Ejecutor, EstadoGestionExpropiacion, Expropiacion, Inspector, Intervencion,
+    IntervencionEjecutor, IntervencionInspector, Manzana, ObjetoExpropiacion, Parcela, ParcelaExpropiada,
+    PlanoMensura, PlanoMensuraIntervencion, PlanoMensuraTierra, PreAdjudicatarioDispersa, Programa,
+    ResolucionCostos, Tierra, TierraConsulta, TierraDestino, TipoContratacion, TipoDocProbatoria, TipoEjecutor,
+    TipoIntervencion, Uf, ViviendaPunto, ZonaParcelas,
+)
+from gdu.models.base import SRID_GDU
 
 
 class JSONSinEscapar(JSONRenderer):
@@ -92,6 +104,12 @@ class ColeccionGdu(OapifCollection):
         solo_lectura = set(self.get_readonly_fields(request))
         if "required" in schema:
             schema["required"] = [campo for campo in schema["required"] if campo not in solo_lectura]
+        # django-oapif publica solo los valores de las choices (Part 5 no tiene palabra para
+        # las etiquetas); el armado del proyecto QGIS las usa para los combos
+        for nombre, propiedades in schema["properties"].items():
+            if "enum" in propiedades:
+                campo = self.opts.get_field(nombre)
+                propiedades["x-gdu-etiquetas"] = {str(valor): str(etiqueta) for valor, etiqueta in campo.flatchoices}
         return schema
 
     def validate_feature_or_raise(self, request, schema, feature):
@@ -154,30 +172,116 @@ class ColeccionSoloLectura(ColeccionGdu):
         return False
 
 
-@api.register(Barrio)
-class Barrios(ColeccionGdu):
-    id = "barrios"
-    title = "Barrios"
+def coleccion(modelo, id, title, base=ColeccionGdu, **atributos):
+    """Registra una colección; la mayoría no necesita más que su id y su título."""
+    clase = type(f"Coleccion_{id}", (base,), {"id": id, "title": title, **atributos})
+    api.register(modelo)(clase)
+    return clase
 
 
-@api.register(PlanoMensura)
-class PlanosMensura(ColeccionGdu):
-    id = "planos_mensura"
-    title = "Planos de mensura"
+# Proyecto: programa -> actuación -> contratación -> intervención, y sus tablas de tipos
+coleccion(Programa, "programas", "Programas")
+coleccion(Actuacion, "actuaciones", "Actuaciones")
+coleccion(TipoContratacion, "tipos_contratacion", "Tipos de contratación")
+coleccion(Contratacion, "contrataciones", "Contrataciones")
+coleccion(TipoIntervencion, "tipos_intervencion", "Tipos de intervención")
+coleccion(Intervencion, "intervenciones", "Intervenciones")
+coleccion(AdjudicacionBeneficiario, "adjudicaciones_beneficiario", "Adjudicaciones a beneficiarios")
+coleccion(ResolucionCostos, "resoluciones_costos", "Resoluciones de costos")
+coleccion(TipoEjecutor, "tipos_ejecutor", "Tipos de ejecutor")
+coleccion(Ejecutor, "ejecutores", "Ejecutores")
+coleccion(Inspector, "inspectores", "Inspectores")
+coleccion(IntervencionEjecutor, "intervenciones_ejecutores", "Ejecutores por intervención")
+coleccion(IntervencionInspector, "intervenciones_inspectores", "Inspectores por intervención")
+
+# Territorio
+coleccion(Barrio, "barrios", "Barrios")
+coleccion(Manzana, "manzanas", "Manzanas")
+coleccion(Calle, "calles", "Calles")
+coleccion(DestinoParcela, "destinos_parcela", "Destinos de parcela")
+# la completa primero: al validar una FK a parcela se busca en las colecciones en este orden
+coleccion(Parcela, "parcelas", "Parcelas (completa)")
 
 
-@api.register(PlanoMensuraIntervencion)
-class PlanosMensuraIntervencion(ColeccionGdu):
-    id = "planos_mensura_intervencion"
-    title = "Planos de mensura por intervención"
+class ParcelasDeZona(ColeccionGdu):
+    """Parcelas que tocan una zona fija (un departamento o un cuarto de Resistencia).
+    El proyecto QGIS viejo lo hacía con un filtro SQL en cada capa; acá lo define el
+    servidor, porque QGIS pierde la autenticación de las capas OAPIF filtradas."""
+    zona = None
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).filter(geom__intersects=self.zona)
 
 
-@api.register(Intervencion)
-class Intervenciones(ColeccionSoloLectura):
-    # sin geometría: la usan los formularios de QGIS como lista de valores (FK intervencion)
-    id = "intervenciones"
-    title = "Intervenciones"
-    fields = ("id", "nombre", "contratacion", "localidad", "tipo", "estado", "plan", "grupo")
+with open(Path(__file__).parent / "data" / "zonas_parcelas.json", encoding="utf-8") as archivo:
+    # polígonos copiados de los filtros del proyecto QGIS heredado, en EPSG:22175
+    ZONAS_PARCELAS = json.load(archivo)
+for _zona in ZONAS_PARCELAS:
+    coleccion(Parcela, _zona["id"], _zona["titulo"], ParcelasDeZona, zona=GEOSGeometry(_zona["wkt"], srid=SRID_GDU))
+
+
+class Ufs(ColeccionGdu):
+    def get_readonly_fields(self, request, obj=None):
+        # permisos por campo heredados del visualizador
+        solo_lectura = set(super().get_readonly_fields(request, obj))
+        if not request.user.has_perm("gdu.editar_dominio"):
+            solo_lectura.add("estado_dominial")
+        if not request.user.has_perm("gdu.editar_nro_adjudicatario"):
+            solo_lectura |= {"dni", "adjudicatario"}
+        return tuple(solo_lectura)
+
+
+coleccion(Uf, "ufs", "Unidades funcionales", Ufs)
+coleccion(ViviendaPunto, "viviendas_punto", "Viviendas dispersas")
+coleccion(PreAdjudicatarioDispersa, "pre_adjudicatarios_dispersa", "Pre-adjudicatarios de vivienda dispersa")
+coleccion(ZonaParcelas, "zonas_parcelas", "Zonificación de Resistencia")
+
+
+class ViviendasFiltradas(ColeccionSoloLectura):
+    """Reemplazan a las vistas vistas.viviendas_* del proyecto heredado: son UF filtradas;
+    los datos del Sistema 3450 se suman en QGIS uniendo con adjudicatarios_3450."""
+    filtro = Q()
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).filter(self.filtro)
+
+
+_sin_plan_o_grupo = Q(parcela__intervencion__plan__isnull=True) | Q(parcela__intervencion__grupo="")
+coleccion(Uf, "viviendas_sin_plan_grupo", "Viviendas sin plan o grupo", ViviendasFiltradas, filtro=_sin_plan_o_grupo)
+coleccion(
+    Uf, "viviendas_con_plan_grupo_sin_adjudicatario", "Viviendas con plan y grupo sin adjudicatario",
+    ViviendasFiltradas,
+    filtro=~_sin_plan_o_grupo & Q(dni__isnull=True, adjudicatario__isnull=True, nro_adjudicatario_legacy__isnull=True),
+)
+coleccion(
+    Uf, "viviendas_para_escriturar", "Viviendas para escriturar", ViviendasFiltradas,
+    filtro=Q(adjudicatario__escritura=False),
+)
+
+# Planos y tierras
+coleccion(PlanoMensura, "planos_mensura", "Planos de mensura")
+coleccion(PlanoMensuraIntervencion, "planos_mensura_intervencion", "Planos de mensura por intervención")
+coleccion(TierraDestino, "tierra_destinos", "Destinos de tierra")
+coleccion(TipoDocProbatoria, "tipos_doc_probatoria", "Tipos de documentación probatoria")
+coleccion(Tierra, "tierras", "Tierras")
+coleccion(TierraConsulta, "tierras_consultas", "Consultas sobre tierras")
+coleccion(PlanoMensuraTierra, "planos_mensura_tierra", "Planos de mensura por tierra")
+
+# Expropiaciones
+coleccion(EstadoGestionExpropiacion, "estados_gestion_expropiacion", "Estados de gestión de expropiación")
+coleccion(ObjetoExpropiacion, "objetos_expropiacion", "Objetos de expropiación")
+coleccion(Expropiacion, "expropiaciones", "Expropiaciones")
+coleccion(ParcelaExpropiada, "parcelas_expropiadas", "Parcelas expropiadas")
+
+# Referencia, sin edición desde QGIS
+coleccion(Catastrourbano, "catastro_urbano", "Catastro urbano", ColeccionSoloLectura)
+# las mantiene importar_3450; las UF las referencian por FK
+coleccion(Adjudicatario3450, "adjudicatarios_3450", "Adjudicatarios (Sistema 3450)", ColeccionSoloLectura)
+# compartidas con carga, que es quien las edita
+coleccion(
+    Localidad, "localidades", "Localidades", ColeccionSoloLectura,
+    fields=("id", "localidad_nombre", "localidad_departamento", "localidad_municipio"),
+)
 
 
 @csrf_exempt

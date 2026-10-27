@@ -1,3 +1,6 @@
+import base64
+from io import StringIO
+
 from django.contrib.auth import get_user_model
 from django.contrib.gis.geos import MultiPolygon, Point, Polygon
 from django.db import IntegrityError
@@ -429,3 +432,129 @@ class OapifTest(TestCase):
         cuerpo = respuesta.content.decode()
         self.assertIn("Plano de intervención", cuerpo)  # sin \u00f3
         self.assertNotIn("__all__", cuerpo)
+
+
+class OapifColeccionesTest(OapifTest):
+    """Fase 4: todas las capas del proyecto QGIS publicadas, con los grupos de permisos que
+    arma configurar_grupos_qgis."""
+
+    # un punto de Resistencia (el mismo de feature_barrio), en EPSG:22175
+    RESISTENCIA = Polygon(((5600800, 6959250), (5600800, 6959300), (5600850, 6959300), (5600850, 6959250),
+                           (5600800, 6959250)), srid=SRID_GDU)
+
+    @classmethod
+    def setUpTestData(cls):
+        from django.core.management import call_command
+
+        super().setUpTestData()
+        User = get_user_model()
+        cls.editor_qgis = User.objects.create_user("editor_qgis", password="clave-editor_qgis")
+        cls.lector_qgis = User.objects.create_user("lector_qgis", password="clave-lector_qgis")
+        call_command("configurar_grupos_qgis", editores=["editor_qgis"], lectores=["lector_qgis"], stdout=StringIO())
+        cls.auth.update({
+            usuario: "Basic " + base64.b64encode(f"{usuario}:clave-{usuario}".encode()).decode()
+            for usuario in ("editor_qgis", "lector_qgis")
+        })
+
+    def ids(self, ruta, usuario):
+        respuesta = self.pedir("get", ruta, usuario)
+        self.assertEqual(respuesta.status_code, 200, respuesta.content)
+        return {int(f["id"]) for f in respuesta.json()["features"]}
+
+    def test_los_grupos_ven_todas_las_colecciones(self):
+        from gdu.oapif import api
+
+        for usuario in ("editor_qgis", "lector_qgis"):
+            visibles = {c["id"] for c in self.pedir("get", "/collections", usuario).json()["collections"]}
+            self.assertEqual(visibles, set(api.collections), usuario)
+
+    def test_el_lector_no_edita_y_las_de_referencia_no_se_editan(self):
+        allow = lambda coleccion, usuario: set(
+            self.pedir("options", f"/collections/{coleccion}/items", usuario)["Allow"].split(", ")
+        )
+        self.assertIn("POST", allow("tierras", "editor_qgis"))
+        self.assertNotIn("POST", allow("tierras", "lector_qgis"))
+        for coleccion in ("catastro_urbano", "localidades", "adjudicatarios_3450", "viviendas_para_escriturar"):
+            self.assertNotIn("POST", allow(coleccion, "editor_qgis"), coleccion)
+
+    def test_configurar_grupos_es_repetible(self):
+        from django.contrib.auth.models import Group
+        from django.core.management import call_command
+
+        antes = Group.objects.get(name="GDU: Editores QGIS").permissions.count()
+        call_command("configurar_grupos_qgis", stdout=StringIO())
+        self.assertEqual(Group.objects.get(name="GDU: Editores QGIS").permissions.count(), antes)
+        self.assertTrue(self.editor_qgis.groups.filter(name="GDU: Editores QGIS").exists())
+
+    def test_zonas_de_parcelas(self):
+        from gdu.oapif import ZONAS_PARCELAS, api
+
+        self.assertEqual(len(ZONAS_PARCELAS), 29)
+        for zona in ZONAS_PARCELAS:
+            self.assertTrue(api.collections[zona["id"]].zona.valid, zona["id"])
+        parcela = Parcela.objects.create(
+            intervencion=self.intervencion, destino=self.destino, geom=self.RESISTENCIA, **NOMENCLATURA,
+        )
+        con_la_parcela = {
+            zona["id"] for zona in ZONAS_PARCELAS
+            if parcela.pk in self.ids(f"/collections/{zona['id']}/items", "lector_qgis")
+        }
+        self.assertTrue(con_la_parcela)
+        self.assertTrue(all(z.startswith("parcelas_resistencia_") for z in con_la_parcela), con_la_parcela)
+        self.assertIn(parcela.pk, self.ids("/collections/parcelas/items", "lector_qgis"))
+        # se edita desde la capa de su zona
+        zona = sorted(con_la_parcela)[0]
+        cambio = self.pedir("patch", f"/collections/{zona}/items/{parcela.pk}", "editor_qgis",
+                            {"type": "Feature", "properties": {"estado_dominial": "ipduv"}})
+        self.assertEqual(cambio.status_code, 200, cambio.content)
+        self.assertEqual(self.pedir("get", f"/collections/parcelas_dpto_01/items/{parcela.pk}", "editor_qgis").status_code, 404)
+
+    def test_permisos_por_campo_de_las_uf(self):
+        from django.contrib.auth.models import Permission
+
+        solo_lectura = lambda usuario: {
+            campo for campo, p in self.client.get(
+                f"{self.BASE}/collections/ufs/schema", HTTP_AUTHORIZATION=self.auth[usuario],
+                HTTP_ACCEPT="application/schema+json",
+            ).json()["properties"].items() if p.get("readOnly")
+        }
+        self.assertFalse({"estado_dominial", "dni", "adjudicatario"} & solo_lectura("editor_qgis"))
+        self.editor.user_permissions.add(*Permission.objects.filter(content_type__app_label="gdu", codename__in=["view_uf", "change_uf"]))
+        self.assertTrue({"estado_dominial", "dni", "adjudicatario"} <= solo_lectura("editor"))
+
+    def test_viviendas_filtradas(self):
+        parcela = Parcela.objects.create(intervencion=self.intervencion, destino=self.destino, geom=CUADRADO, **NOMENCLATURA)
+        Adjudicatario3450.objects.create(nro_adjudicatario=1, escritura=False)
+        Adjudicatario3450.objects.create(nro_adjudicatario=2, escritura=True)
+        sin_escritura = Uf.objects.create(parcela=parcela, uf="1", geom=CUADRADO, adjudicatario_id=1)
+        Uf.objects.create(parcela=parcela, uf="2", geom=CUADRADO, adjudicatario_id=2)
+        sin_adjudicatario = Uf.objects.create(parcela=parcela, uf="3", geom=CUADRADO)
+        self.assertEqual(self.ids("/collections/viviendas_para_escriturar/items", "lector_qgis"), {sin_escritura.pk})
+        # la intervención del fixture no tiene plan
+        self.assertEqual(len(self.ids("/collections/viviendas_sin_plan_grupo/items", "lector_qgis")), 3)
+        Intervencion.objects.filter(pk=self.intervencion.pk).update(plan=12, grupo="8A")
+        self.assertEqual(
+            self.ids("/collections/viviendas_con_plan_grupo_sin_adjudicatario/items", "lector_qgis"),
+            {sin_adjudicatario.pk},
+        )
+
+    def test_schema_trae_las_etiquetas_de_las_choices(self):
+        schema = self.client.get(f"{self.BASE}/collections/tierras/schema", HTTP_AUTHORIZATION=self.auth["lector_qgis"],
+                                 HTTP_ACCEPT="application/schema+json").json()
+        self.assertEqual(schema["properties"]["superficie"]["x-gdu-etiquetas"]["500+"], "Más de 500 m²")
+
+    def test_el_proyecto_qgis_usa_colecciones_existentes(self):
+        import re
+        import zipfile
+        from pathlib import Path
+
+        from gdu.oapif import api
+
+        qgz = Path(__file__).resolve().parents[2] / "qgis-gdu" / "oapif" / "gdu-oapif.qgz"
+        if not qgz.exists():
+            self.skipTest("todavía no se generó qgis-gdu/oapif/gdu-oapif.qgz")
+        with zipfile.ZipFile(qgz) as archivo:
+            qgs = archivo.read(next(n for n in archivo.namelist() if n.endswith(".qgs"))).decode()
+        usadas = set(re.findall(r"typename='([^']+)'", qgs))
+        self.assertTrue(usadas)
+        self.assertEqual(usadas - set(api.collections), set())
