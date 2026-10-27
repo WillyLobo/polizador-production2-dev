@@ -6,8 +6,9 @@ from django.test import TestCase
 from carga.models import Departamento, Localidad, Municipio
 from gdu.models import (
     Actuacion, Adjudicatario3450, Contratacion, DestinoParcela, Encuesta, EventoVisor, Intervencion,
-    IntervencionEjecutor, Ejecutor, Parcela, PreguntaRelevamiento, Programa, Relevamiento, TipoContratacion,
-    TipoEjecutor, TipoIntervencion, Uf, ViviendaPunto, ViviendaRelevamiento,
+    IntervencionEjecutor, Ejecutor, Parcela, PlanoMensura, PlanoMensuraIntervencion, PreAdjudicatarioDispersa,
+    PreguntaRelevamiento, Programa, Relevamiento, TipoContratacion, TipoEjecutor, TipoIntervencion, Uf,
+    ViviendaPunto, ViviendaRelevamiento, Barrio,
 )
 from gdu.models.base import SRID_GDU
 
@@ -260,3 +261,153 @@ class ImportadorLegacyTest(TestCase):
         reporte = self.correr_etl(dry_run=True)
         self.assertEqual(reporte.tablas["gdu_uf"].cargadas, 3)
         self.assertFalse(Uf.objects.exists())
+
+
+class OapifTest(TestCase):
+    """Capas del piloto OAPIF (gdu/oapif.py), como las usa QGIS: Basic Auth, OPTIONS para
+    saber qué puede editar, POST con Location, PATCH, DELETE y geometrías en CRS84."""
+
+    BASE = "/gdu/oapif"
+    CRS84 = "http://www.opengis.net/def/crs/OGC/1.3/CRS84"
+
+    @classmethod
+    def setUpTestData(cls):
+        import base64
+
+        from django.contrib.auth.models import Permission
+
+        ModelosGduTest.setUpTestData.__func__(cls)
+        User = get_user_model()
+        cls.editor = User.objects.create_user("editor", password="clave-editor")
+        cls.editor.user_permissions.add(*Permission.objects.filter(
+            content_type__app_label="gdu",
+            codename__in=["view_barrio", "add_barrio", "change_barrio", "delete_barrio", "view_intervencion"],
+        ))
+        cls.lector = User.objects.create_user("lector", password="clave-lector")
+        cls.lector.user_permissions.add(Permission.objects.get(content_type__app_label="gdu", codename="view_barrio"))
+        cls.auth = {
+            usuario: "Basic " + base64.b64encode(f"{usuario}:clave-{usuario}".encode()).decode()
+            for usuario in ("editor", "lector")
+        }
+
+    def pedir(self, metodo, ruta, usuario=None, datos=None, **headers):
+        import json
+
+        if usuario:
+            headers["HTTP_AUTHORIZATION"] = self.auth[usuario]
+        if datos is not None:
+            headers.update(data=json.dumps(datos), content_type="application/geo+json")
+        return getattr(self.client, metodo)(f"{self.BASE}{ruta}", HTTP_ACCEPT="application/geo+json", **headers)
+
+    def feature_barrio(self, nombre="Barrio nuevo", **propiedades):
+        # un cuadrado de ~100 m en Resistencia, en lon/lat (≈ X 5600850, Y 6959288 en EPSG:22175)
+        lon, lat, d = -58.9794, -27.4930, 0.001
+        return {
+            "type": "Feature",
+            "properties": {"nombre": nombre, "intervencion": self.intervencion.pk, **propiedades},
+            "geometry": {
+                "type": "MultiPolygon",
+                "coordinates": [[[[lon, lat], [lon, lat + d], [lon + d, lat + d], [lon + d, lat], [lon, lat]]]],
+            },
+        }
+
+    def test_cada_usuario_ve_solo_sus_colecciones_en_crs84(self):
+        respuesta = self.pedir("get", "/collections", "lector")
+        self.assertEqual(respuesta.status_code, 200)
+        colecciones = {c["id"]: c for c in respuesta.json()["collections"]}
+        self.assertEqual(set(colecciones), {"barrios"})
+        # 22175 no se ofrece: su orden de ejes EPSG es norte, este y django-oapif no lo invierte
+        self.assertEqual(colecciones["barrios"]["storageCrs"], self.CRS84)
+        self.assertEqual(colecciones["barrios"]["crs"], [self.CRS84])
+        epsg = f"http://www.opengis.net/def/crs/EPSG/0/{SRID_GDU}"
+        self.assertEqual(self.pedir("get", f"/collections/barrios/items?crs={epsg}", "lector").status_code, 400)
+        editor = {c["id"] for c in self.pedir("get", "/collections", "editor").json()["collections"]}
+        self.assertEqual(editor, {"barrios", "intervenciones"})
+
+    def test_allow_segun_permisos(self):
+        allow = lambda usuario: set(self.pedir("options", "/collections/barrios/items", usuario)["Allow"].split(", "))
+        self.assertIn("POST", allow("editor"))
+        self.assertNotIn("POST", allow("lector"))
+        allow_intervencion = self.pedir("options", "/collections/intervenciones/items", "editor")["Allow"]
+        self.assertNotIn("POST", allow_intervencion)
+
+    def test_sin_permiso_no_ve_la_capa(self):
+        self.assertIn(self.pedir("get", "/collections/barrios/items").status_code, (401, 403))
+
+    def test_alta_edicion_y_borrado(self):
+        alta = self.pedir("post", "/collections/barrios/items", "editor", self.feature_barrio())
+        self.assertEqual(alta.status_code, 201, alta.content)
+        self.assertIn("/collections/barrios/items/", alta["Location"])
+        barrio = Barrio.objects.get(nombre="Barrio nuevo")
+        self.assertEqual(barrio.updated_by, self.editor)
+        # guardada en 22175 con los ejes en su lugar (X ≈ 5,6 millones, Y ≈ 6,96 millones)
+        xmin, ymin, _, _ = barrio.geom.extent
+        self.assertAlmostEqual(xmin, 5600850, delta=200)
+        self.assertAlmostEqual(ymin, 6959288, delta=200)
+        self.assertEqual(barrio.history.get().history_user, self.editor)
+
+        cambio = self.pedir(
+            "patch", f"/collections/barrios/items/{barrio.pk}", "editor", {"type": "Feature", "properties": {"nombre": "Renombrado"}},
+        )
+        self.assertEqual(cambio.status_code, 200, cambio.content)
+        self.assertEqual(Barrio.objects.get(pk=barrio.pk).nombre, "Renombrado")
+
+        self.assertEqual(self.pedir("delete", f"/collections/barrios/items/{barrio.pk}", "lector").status_code, 403)
+        self.assertEqual(self.pedir("delete", f"/collections/barrios/items/{barrio.pk}", "editor").status_code, 200)
+        self.assertFalse(Barrio.objects.filter(pk=barrio.pk).exists())
+
+    def test_validacion_del_modelo_devuelve_422(self):
+        feature = self.feature_barrio(nombre="x" * 300)  # max_length=255
+        respuesta = self.pedir("post", "/collections/barrios/items", "editor", feature)
+        self.assertEqual(respuesta.status_code, 422, respuesta.content)
+        # mensaje legible para QGIS, sin repetir el valor enviado
+        self.assertEqual(respuesta.json(), {"detail": "nombre: admite como máximo 255 caracteres"})
+
+    def test_borrar_algo_referenciado_devuelve_409(self):
+        from django.contrib.auth.models import Permission
+
+        self.editor.user_permissions.add(*Permission.objects.filter(
+            content_type__app_label="gdu", codename__in=["view_planomensura", "delete_planomensura"],
+        ))
+        plano = PlanoMensura.objects.create(depto="09", nro=78, ano="11")
+        PlanoMensuraIntervencion.objects.create(plano=plano, intervencion=self.intervencion, tipo="perimetral")
+        # el borrado en cascada de PlanoMensuraIntervencion no protege; uno PROTECT sí
+        PreAdjudicatarioDispersa.objects.create(apellido="A", nombre="B", plano_mensura=plano, geom=Point(5, 5, srid=SRID_GDU))
+        respuesta = self.pedir("delete", f"/collections/planos_mensura/items/{plano.pk}", "editor")
+        self.assertEqual(respuesta.status_code, 409, respuesta.content)
+        self.assertIn("No se puede borrar", respuesta.json()["detail"])
+
+    def test_options_unknown_id_para_colecciones_vacias(self):
+        # QGIS pregunta así los permisos de edición cuando la capa no tiene features
+        allow = lambda usuario: set(self.pedir("options", "/collections/barrios/items/unknown_id", usuario)["Allow"].split(", "))
+        self.assertTrue({"PUT", "PATCH", "DELETE"} <= allow("editor"))
+        self.assertEqual(allow("lector"), {"OPTIONS", "GET"})
+        self.assertEqual(self.pedir("get", "/collections/barrios/items/no-numerico", "editor").status_code, 404)
+
+    def test_alta_como_la_manda_qgis(self):
+        # QGIS manda todos los campos de la capa: id y los de solo lectura en null
+        feature = self.feature_barrio(id=None, updated_at=None, updated_by=None)
+        alta = self.pedir("post", "/collections/barrios/items", "editor", feature)
+        self.assertEqual(alta.status_code, 201, alta.content)
+        schema = self.client.get(f"{self.BASE}/collections/barrios/schema", HTTP_AUTHORIZATION=self.auth["editor"],
+                                 HTTP_ACCEPT="application/schema+json").json()
+        self.assertTrue(schema["properties"]["id"].get("readOnly"))
+        self.assertFalse({"id", "updated_at", "updated_by"} & set(schema.get("required", [])))
+
+    def test_texto_vacio_en_null_no_da_500(self):
+        from django.contrib.auth.models import Permission
+
+        self.editor.user_permissions.add(*Permission.objects.filter(
+            content_type__app_label="gdu", codename__in=["view_planomensura", "add_planomensura"],
+        ))
+        feature = {
+            "type": "Feature", "geometry": None,
+            "properties": {"depto": "99", "nro": 1, "ano": "26", "pm_antecedente": None, "en_gdu": None},
+        }
+        alta = self.pedir("post", "/collections/planos_mensura/items", "editor", feature)
+        self.assertEqual(alta.status_code, 201, alta.content)
+        self.assertEqual(PlanoMensura.objects.get(depto="99").pm_antecedente, "")
+
+    def test_lector_recibe_403_aunque_el_cuerpo_sea_invalido(self):
+        respuesta = self.pedir("post", "/collections/barrios/items", "lector", self.feature_barrio(nombre="x" * 300))
+        self.assertEqual(respuesta.status_code, 403)

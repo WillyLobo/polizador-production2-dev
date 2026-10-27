@@ -2,6 +2,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from gdu.oapif import api as gdu_oapif, opciones_item_desconocido
 from django.contrib.auth import views as auth_views
 from django.views.generic.base import TemplateView
 from carga.views.inspeccionviews import InspeccionHomeView
@@ -38,6 +39,9 @@ urlpatterns = [
     path("obra/", include("carga.urls")),
     path("viaticos/", include("secretariador.urls")),
     path("personal/", include("personalizador.urls")),
+    # OGC API - Features de gdu (edición desde QGIS), antes del include de gdu/
+    path("gdu/oapif/collections/<str:collection_id>/items/unknown_id", opciones_item_desconocido),
+    path("gdu/oapif/", gdu_oapif.urls),
     path("gdu/", include("gdu.urls")),
     #path("api/", include("api.urls")),
     path("v1/api/", include(("api.urls", "api"), namespace="api-1.0")),

@@ -9,7 +9,7 @@ class Adjudicatario3450(models.Model):
     apellido_nombre = models.CharField(max_length=255, blank=True)
     dni = models.BigIntegerField(null=True, blank=True)
     direccion = models.CharField(max_length=255, blank=True)
-    escritura = models.BooleanField(null=True, help_text="Escriturada según el Sistema 3450")
+    escritura = models.BooleanField(null=True, blank=True, help_text="Escriturada según el Sistema 3450")
     matricula = models.CharField(max_length=255, blank=True)
     res_nro = models.IntegerField(null=True, blank=True)
     res_fecha = models.DateField(null=True, blank=True)

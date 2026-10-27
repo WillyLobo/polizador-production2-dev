@@ -8,6 +8,8 @@ django-environ==0.14.0
 django-hijack==3.7.9
 django-import-export==4.4.2
 django-ninja==1.7.1
+# OGC API - Features (edición QGIS de las capas de gdu); 2.x en beta, versión fijada a propósito
+django-oapif==2.0.0b4
 django-redis==7.0.0
 django-select2==8.4.8
 django-simple-history==3.13.0

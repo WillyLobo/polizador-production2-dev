@@ -45,7 +45,7 @@ class ParcelaExpropiada(NomenclaturaCatastral, Auditado):
     propietario_expropiado = models.CharField(max_length=255, blank=True)
     propietario_actual = models.CharField(max_length=255, blank=True, help_text="Luego de la expropiación")
     inscripcion = models.CharField("inscripción", max_length=255, blank=True)
-    regularizable = models.BooleanField(null=True)
+    regularizable = models.BooleanField(null=True, blank=True)
     observaciones = models.TextField(blank=True)
     geom = models.PolygonField(srid=SRID_GDU)
 

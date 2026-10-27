@@ -163,6 +163,7 @@ INSTALLED_APPS = [
     "api",
     "gdu",
     "gdu_piloto",
+    "django_oapif",
 ]
 
 # --- Impersonacion (django-hijack) ---
