@@ -17,7 +17,9 @@ el servidor (una colección o un campo nuevo), se vuelve a generar.
    - nombre "GDU OAPIF";
    - usuario y clave de polizador (los de la red, por LDAP);
    - el **Id** tiene que ser exactamente `gduoapf`. Se edita destrabando el candado junto al campo.
-3. Abrir `gdu-oapif.qgz`. Se puede copiar solo, porque no lleva carpeta `forms/` al lado.
+3. Descargar `gdu-oapif.qgz` desde el visor (botón **Proyecto QGIS**) y abrirlo. No lleva carpeta `forms/` al lado.
+   La descarga es este mismo archivo, con las capas apuntando al servidor desde el que se baja
+   (`gdu:descargar_proyecto_qgis` le cambia la URL); por eso el versionado puede generarse contra el de desarrollo.
 
 ## Reglas de edición
 

@@ -128,13 +128,13 @@ class EstadoObra(PermissionRequiredMixin, generic.DetailView):
 		prefetch = _obra_estado_prefetch()
 		return Obra.objects.select_related(
 			"obra_empresa", "obra_programa", "obra_conjunto",
-			"gdu_contratacion__contratacion__id_actuacion", "gdu_contratacion__contratacion__tipo",
+			"gdu_contratacion__contratacion__actuacion", "gdu_contratacion__contratacion__tipo",
 		).prefetch_related(
 			*prefetch,
 			Prefetch(
 				"obra_madre",
 				queryset=Obra.objects.select_related(
-					"gdu_contratacion__contratacion__id_actuacion", "gdu_contratacion__contratacion__tipo",
+					"gdu_contratacion__contratacion__actuacion", "gdu_contratacion__contratacion__tipo",
 				).prefetch_related(*_obra_estado_prefetch()),
 			),
 		)

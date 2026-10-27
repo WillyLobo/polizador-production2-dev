@@ -1,59 +1,53 @@
 import io
 import re
+import zipfile
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.http import FileResponse, JsonResponse
+from django.http import FileResponse, Http404
+from django.urls import reverse
 from django.views.decorators.http import require_GET
 
-from gdu.services.qgis_reconnect import generar_paquete_qgis
-from gdu.views.visor import PERMISOS_CAPAS
+from gdu.auditoria import registrar_evento
+from gdu.oapif import api
 
-# Id de una config "Basic" del Auth Manager local de QGIS (Settings > Options >
-# Authentication) -- 7 caracteres, no es un secreto (ver reconectar_wfs.py).
-_AUTHCFG_RE = re.compile(r"[A-Za-z0-9]{7}")
+# la raíz OAPIF con la que se generó el proyecto (armar_proyecto.py --url), en cada capa
+_URL_OAPIF = re.compile(r"url='[^']*/gdu/oapif/'")
 
-# Mismo patrón que UnicodeUsernameValidator de Django (auth.User): evita que un
-# username con comilla simple rompa el par key='value' del datasource WFS
-# armado en reconectar_wfs.construir_datasource_wfs.
-_LDAP_USERNAME_RE = re.compile(r"[\w.@+-]+")
+
+def proyecto_con_url(contenido, url_oapif):
+    """El .qgz con las capas apuntando a `url_oapif`. El proyecto versionado se genera contra
+    un servidor puntual (el de desarrollo); acá se le cambia la URL sin QGIS, editando el
+    .qgs adentro del zip."""
+    entrada = zipfile.ZipFile(io.BytesIO(contenido))
+    salida = io.BytesIO()
+    with zipfile.ZipFile(salida, "w", zipfile.ZIP_DEFLATED) as nuevo:
+        for item in entrada.infolist():
+            datos = entrada.read(item)
+            if item.filename.endswith(".qgs"):
+                datos = _URL_OAPIF.sub(f"url='{url_oapif}'", datos.decode()).encode()
+            nuevo.writestr(item, datos)
+    return salida.getvalue()
 
 
 @login_required
 @require_GET
 def descargar_proyecto_qgis(request):
-    """Descarga un .zip con gdu.qgz (reconectado a WFS en GeoServer) + forms/,
-    para abrir en QGIS Desktop. Mismo público que el visor web
-    (gdu/views/visor.py::mapa): no hay un permiso propio para esto, la
-    autorización real por capa la hace GeoServer
-    (geoserver/templates/layers.properties) contra el mismo username.
-
-    Por default reconecta con username=<usuario logueado> (sin password) --
-    QGIS pide la contraseña LDAP la primera vez que abre cada capa, lento en
-    tablas grandes (ver "Pendiente" en geoserver/INSTALL_PRODUCCION.md). Si se
-    pasa ?authcfg=<id de 7 caracteres> (ya cargado por el usuario en su Auth
-    Manager local de QGIS), se usa esa vía rápida en su lugar.
-
-    El usuario de Django logueado no siempre coincide con el usuario LDAP real
-    (hay cuentas locales, ver AUTHENTICATION_BACKENDS en settings.py, que no
-    pasan por django_auth_ldap.backend.LDAPBackend) -- para esos casos se puede
-    pasar ?ldap_username=<usuario de red> y se usa ese en lugar del username de
-    Django logueado. Se ignora si se pasa authcfg (misma exclusión mutua que
-    ya tiene reconectar_wfs.py entre --authcfg y --username)."""
-    if not any(request.user.has_perm(p) for p in PERMISOS_CAPAS):
+    """
+    El proyecto QGIS de GDU (qgis-gdu/oapif/gdu-oapif.qgz), conectado a las capas OGC API -
+    Features de este mismo servidor. Es el mismo archivo para todos: guarda solo el id de
+    autenticación (gduoapf), que cada usuario carga una vez en su QGIS con su usuario y clave
+    (ver qgis-gdu/oapif/README.md). Lo puede bajar quien vea alguna capa OAPIF.
+    """
+    if not any(coleccion.has_view_permission(request) for coleccion in api.collections.values()):
         raise PermissionDenied
-
-    authcfg = request.GET.get("authcfg", "").strip()
-    if authcfg and not _AUTHCFG_RE.fullmatch(authcfg):
-        return JsonResponse({"errors": "authcfg inválido: debe tener 7 caracteres alfanuméricos"}, status=400)
-
-    ldap_username = request.GET.get("ldap_username", "").strip()
-    if ldap_username and not _LDAP_USERNAME_RE.fullmatch(ldap_username):
-        return JsonResponse({"errors": "usuario LDAP inválido"}, status=400)
-
-    contenido = generar_paquete_qgis(ldap_username or request.user.username, authcfg or None)
+    try:
+        contenido = settings.GDU_QGIS_PROYECTO.read_bytes()
+    except FileNotFoundError:
+        raise Http404("No está el proyecto QGIS en el servidor")
+    url_oapif = request.build_absolute_uri(reverse("gdu-oapif:root"))
+    registrar_evento(request, "descargaProyectoQgis")
     return FileResponse(
-        io.BytesIO(contenido),
-        as_attachment=True,
-        filename=f"gdu_qgis_{request.user.username}.zip",
+        io.BytesIO(proyecto_con_url(contenido, url_oapif)), as_attachment=True, filename="gdu-oapif.qgz",
     )

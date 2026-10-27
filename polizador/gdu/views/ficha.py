@@ -10,135 +10,21 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.utils import timezone
 
-from gdu.matching import normalizar_expediente
-from gdu_piloto.models import (
-    Barrios,
-    Catastrourbano,
-    Expropiaciones,
-    PlanoMensura,
-    ViviendaDispersa,
-    Viviendas,
-    ViviendasParaEscriturar,
-)
+from gdu.auditoria import registrar_evento
+from gdu.capas import CAPAS, obras_vinculadas
 from gdu.views import api3450
-from gdu.views.visor import GEOJSON_SRID, _obras_por_expediente
+from gdu.views.visor import GEOJSON_SRID
 
-OBRAS_VINCULADAS = "obras_vinculadas"  # marcador de campo: obras de carga resueltas por expediente
-
-
-def _nomenclatura(o):
-    return f"{o.dpto}-{o.circ}-{o.secc}-{o.ch}-{o.qta}-{o.fracc}-{o.mz}-{o.parc}"
-
-
-CAMPOS_VIVIENDA = [
-    ("UF", "uf"),
-    ("Obra", "obra"),
-    ("Localidad", "localidad"),
-    ("Adjudicación", "adjudicacion"),
-    ("Nº adjudicatario", "nro_adjudicatario"),
-    ("Estado dominial", "estado_dominial"),
-    ("Planos", "planos"),
-    ("Obras vinculadas", OBRAS_VINCULADAS),
-]
-
-# Una entrada por capa del visor. Los campos de la ficha son los mismos que expone el GeoJSON
-# de la capa (gdu/views/visor.py), menos el id, con etiqueta en castellano; `estilo` replica
-# el color/tipo/minZoom de la capa en el visor (gdu/templates/gdu/mapa.html) para dibujarla
-# como contexto atenuado.
-CAPAS = {
-    "viviendas": {
-        "modelo": Viviendas,
-        "permiso": "gdu_piloto.ver_viviendas",
-        "titulo": "Vivienda",
-        "nombre_capa": "Viviendas",
-        "geojson": "gdu:geojson_viviendas",
-        "estilo": {"color": "#dc3545", "tipo": "poligono", "minZoom": 13},
-        "campos": CAMPOS_VIVIENDA,
-    },
-    "barrios": {
-        "modelo": Barrios,
-        "permiso": "gdu_piloto.ver_barrios",
-        "titulo": "Barrio",
-        "nombre_capa": "Barrios",
-        "geojson": "gdu:geojson_barrios",
-        "estilo": {"color": "#0d6efd", "tipo": "poligono", "minZoom": 0},
-        "campos": [
-            ("Barrio", "barrio"),
-            ("Localidad", "localidad"),
-            ("Programa", "programa"),
-            ("Obras vinculadas", OBRAS_VINCULADAS),
-        ],
-    },
-    "expropiaciones": {
-        "modelo": Expropiaciones,
-        "permiso": "gdu_piloto.ver_expropiaciones",
-        "titulo": "Expropiación",
-        "nombre_capa": "Expropiaciones",
-        "geojson": "gdu:geojson_expropiaciones",
-        "estilo": {"color": "#6f42c1", "tipo": "poligono", "minZoom": 0},
-        "campos": [
-            ("Ley", "ley"),
-            ("Localidad", "localidad"),
-            ("Nomenclatura", _nomenclatura),
-            ("Objeto", "objeto"),
-            ("Propietario expropiado", "propietario_expropiado"),
-            ("Estado", "estado"),
-        ],
-    },
-    "viviendas-dispersas": {
-        "modelo": ViviendaDispersa,
-        "permiso": "gdu_piloto.ver_viviendas_dispersas",
-        "titulo": "Vivienda dispersa",
-        "nombre_capa": "Viviendas Dispersas",
-        "geojson": "gdu:geojson_viviendas_dispersas",
-        "estilo": {"color": "#20c997", "tipo": "punto", "minZoom": 12},
-        "campos": [
-            ("Obra", "obra"),
-            ("Localidad", "localidad"),
-            ("Adjudicación", "adjudicacion"),
-            ("Planos", "planos"),
-            ("Obras vinculadas", OBRAS_VINCULADAS),
-        ],
-    },
-    "planos-mensura": {
-        "modelo": PlanoMensura,
-        "permiso": "gdu_piloto.ver_plano_mensura",
-        "titulo": "Plano de mensura",
-        "nombre_capa": "Planos de Mensura",
-        "geojson": "gdu:geojson_planos_mensura",
-        "estilo": {"color": "#6c757d", "tipo": "poligono", "minZoom": 13},
-        "campos": [
-            ("Plano", lambda p: p.pm_antecedente or f"{p.depto}-{p.nro}-{p.ano}"),
-            ("En GDU", "en_gdu"),
-            ("Sup. parcelas", "sup_parcelas"),
-            ("Sup. calles", "sup_calles"),
-            ("Sup. reserva", "sup_reserva"),
-        ],
-    },
-    "catastro-urbano": {
-        "modelo": Catastrourbano,
-        "permiso": "gdu_piloto.ver_catastro_urbano",
-        "titulo": "Catastro urbano",
-        "nombre_capa": "Catastro Urbano",
-        "geojson": "gdu:geojson_catastro_urbano",
-        "estilo": {"color": "#495057", "tipo": "poligono", "minZoom": 14},
-        "campos": [
-            ("Nomenclatura", "id_nomencl"),
-            ("Plano aprobado", "plano_apro"),
-            ("Matrícula", "matric"),
-            ("Municipio", "municipio"),
-            ("Año", "anio"),
-        ],
-    },
-    "para-escriturar": {
-        "modelo": ViviendasParaEscriturar,
-        "permiso": "gdu_piloto.ver_escriturar",
-        "titulo": "Vivienda para escriturar",
-        "nombre_capa": "Para Escriturar",
-        "geojson": "gdu:geojson_para_escriturar",
-        "estilo": {"color": "#198754", "tipo": "poligono", "minZoom": 13},
-        "campos": CAMPOS_VIVIENDA,
-    },
+# Cómo se dibuja cada capa del visor (gdu/templates/gdu/mapa.html), para mostrarla como
+# contexto atenuado en la ficha: URL del GeoJSON y color/tipo/minZoom.
+ESTILOS = {
+    "viviendas": ("gdu:geojson_viviendas", {"color": "#dc3545", "tipo": "poligono", "minZoom": 13}),
+    "barrios": ("gdu:geojson_barrios", {"color": "#0d6efd", "tipo": "poligono", "minZoom": 0}),
+    "expropiaciones": ("gdu:geojson_expropiaciones", {"color": "#6f42c1", "tipo": "poligono", "minZoom": 0}),
+    "viviendas-dispersas": ("gdu:geojson_viviendas_dispersas", {"color": "#20c997", "tipo": "punto", "minZoom": 12}),
+    "planos-mensura": ("gdu:geojson_planos_mensura", {"color": "#6c757d", "tipo": "poligono", "minZoom": 13}),
+    "catastro-urbano": ("gdu:geojson_catastro_urbano", {"color": "#495057", "tipo": "poligono", "minZoom": 14}),
+    "para-escriturar": ("gdu:geojson_para_escriturar", {"color": "#198754", "tipo": "poligono", "minZoom": 13}),
 }
 
 
@@ -150,17 +36,11 @@ def _formatear(valor):
     return str(valor)
 
 
-def _filas(obj, campos):
-    filas = []
-    for etiqueta, campo in campos:
-        if campo == OBRAS_VINCULADAS:
-            obras = _obras_por_expediente().get(normalizar_expediente(obj.expediente), [])
-            valor = ", ".join(o["nombre"] or f"Obra {o['id']}" for o in obras)
-        elif callable(campo):
-            valor = campo(obj)
-        else:
-            valor = getattr(obj, campo)
-        filas.append((etiqueta, _formatear(valor)))
+def _filas(capa, datos):
+    filas = [(etiqueta, _formatear(datos[clave])) for etiqueta, clave, _ in capa.campos]
+    if "obras" in datos:
+        obras = ", ".join(o["nombre"] or f"Obra {o['id']}" for o in datos["obras"])
+        filas.append(("Obras vinculadas", _formatear(obras)))
     return filas
 
 
@@ -175,13 +55,13 @@ CAMPOS_3450 = [
 ]
 
 
-def _datos_3450(obj):
+def _datos_3450(datos):
     """
     Datos del Sistema 3450 para el Nº de adjudicatario del objeto, como en "Buscar 3450" del visor.
     None si la capa no tiene Nº de adjudicatario o está vacío; {"error": ...} si la API falla o no
     tiene datos (la API devuelve un registro vacío para números desconocidos).
     """
-    nro = getattr(obj, "nro_adjudicatario", None)
+    nro = datos.get("nro_adjudicatario")
     if not nro:
         return None
     try:
@@ -205,34 +85,32 @@ def ficha(request, capa, objeto_id):
     config = CAPAS.get(capa)
     if config is None:
         raise Http404("Capa desconocida")
-    if not request.user.has_perm(config["permiso"]):
+    if not request.user.has_perm(config.permiso):
         raise PermissionDenied
 
     obj = get_object_or_404(
-        config["modelo"].objects.annotate(geom_4326=Transform("geom", GEOJSON_SRID)),
+        config.relacionar(config.queryset()).annotate(geom_4326=Transform("geom", GEOJSON_SRID)),
         pk=objeto_id,
     )
+    obras = obras_vinculadas([config.intervencion(obj).contratacion_id]) if config.intervencion else None
+    datos = config.datos(obj, obras)
+    registrar_evento(request, "printFeature", {"layer": capa, "id": obj.pk})
 
     capas_contexto = [
-        {
-            "capa": slug,
-            "nombre": c["nombre_capa"],
-            "url": reverse(c["geojson"]),
-            **c["estilo"],
-        }
+        {"capa": slug, "nombre": c.nombre, "url": reverse(ESTILOS[slug][0]), **ESTILOS[slug][1]}
         for slug, c in CAPAS.items()
-        if request.user.has_perm(c["permiso"])
+        if request.user.has_perm(c.permiso)
     ]
 
     return render(request, "gdu/ficha.html", {
-        "titulo": config["titulo"],
+        "titulo": config.titulo,
         "objeto": obj,
-        "filas": _filas(obj, config["campos"]),
-        "datos_3450": _datos_3450(obj),
+        "filas": _filas(config, datos),
+        "datos_3450": _datos_3450(datos),
         "fecha": timezone.localtime(),
         "config_mapa": {
             "geometria": json.loads(obj.geom_4326.geojson) if obj.geom_4326 else None,
-            "estiloObjeto": config["estilo"]["tipo"],
+            "estiloObjeto": ESTILOS[capa][1]["tipo"],
             "capasContexto": capas_contexto,
         },
         "carto_api_key": settings.GDU_CARTO_API_KEY,

@@ -3,7 +3,7 @@ from django.db import models
 
 class ObraContratacion(models.Model):
     """
-    Vínculo entre carga.Obra y catastro.contratacion, resuelto por
+    Vínculo entre carga.Obra y gdu.Contratacion, resuelto por
     gdu/management/commands/vincular_obras_contrataciones.py haciendo matching por
     expediente normalizado (gdu.matching.normalizar_expediente). A diferencia del
     resto de gdu/models/*, esta tabla es nueva y managed=True (no espeja nada de
@@ -13,8 +13,9 @@ class ObraContratacion(models.Model):
         "carga.Obra", on_delete=models.CASCADE, related_name="gdu_contratacion",
     )
     contratacion = models.ForeignKey(
-        "Contratacion", on_delete=models.PROTECT, related_name="obras_vinculadas",
-        # "catastro"."contratacion" es una tabla heredada que no existe en una base nueva
+        # las PK de gdu.Contratacion son las heredadas de catastro.contratacion, a las que
+        # apuntaba antes: mismos valores en la misma columna, sin constraint
+        "gdu.Contratacion", on_delete=models.PROTECT, related_name="obras_vinculadas",
         db_constraint=False,
     )
     vinculado_manualmente = models.BooleanField(

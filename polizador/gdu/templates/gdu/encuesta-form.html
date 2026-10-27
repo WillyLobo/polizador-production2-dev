@@ -1,20 +1,20 @@
 {% extends "base.html" %}
 
-{% block title %}<title>Encuesta - Vivienda {{ vivienda.vivienda }}</title>{% endblock %}
+{% block title %}<title>Encuesta - Vivienda {{ vivienda.numero }}</title>{% endblock %}
 
 {% block content %}
 <div class="container-fluid">
   <h4 class="mb-1">Encuesta — {{ relevamiento.nombre }}</h4>
   <p class="text-muted mb-3">
-    Vivienda {{ vivienda.vivienda }} — {{ vivienda.properties.adjudicatario|default:"-" }}
-    ({{ vivienda.properties.barrio|default:"-" }}, Mz {{ vivienda.properties.mz|default:"-" }} /
-    Parc {{ vivienda.properties.parc|default:"-" }})
+    Vivienda {{ vivienda.numero }} — {{ vivienda.datos.adjudicatario|default:"-" }}
+    ({{ vivienda.datos.barrio|default:"-" }}, Mz {{ vivienda.datos.mz|default:"-" }} /
+    Parc {{ vivienda.datos.parc|default:"-" }})
   </p>
 
   {% if encuestas_previas %}
   <div class="alert alert-info small">
     Esta vivienda ya tiene {{ encuestas_previas|length }} encuesta(s) cargada(s) anteriormente
-    (última: {{ encuestas_previas.0.tstamp }}). Guardar este formulario agrega una encuesta nueva,
+    (última: {{ encuestas_previas.0.enviada_en }}). Guardar este formulario agrega una encuesta nueva,
     no reemplaza las anteriores.
   </div>
   {% endif %}
@@ -66,19 +66,30 @@ document.addEventListener("DOMContentLoaded", function () {
   );
   if (!grupos.length) return;
 
+  // tipos de gdu.TipoPregunta cuyo valor se compara como texto en las reglas
+  const TIPOS_TEXTO = ["2", "7"];
+
+  function tipar(valor, tipoPregunta) {
+    if (valor === "" || valor === null || valor === undefined) return null;
+    if (tipoPregunta === "5") return valor === "true";  // SI/NO
+    if (TIPOS_TEXTO.includes(tipoPregunta)) return valor;
+    const numero = Number(valor);
+    return Number.isNaN(numero) ? valor : numero;
+  }
+
   function valorDeCampo(variable, tipoPregunta) {
-    const checkboxes = form.querySelectorAll(`[name="${variable}"]`);
-    if (!checkboxes.length) return null;
-    if (checkboxes.length > 1 && checkboxes[0].type === "checkbox") {
-      return Array.from(checkboxes).filter((c) => c.checked).map((c) => c.value);
+    if (tipoPregunta === "10") {  // años y meses: total en meses, como en el servidor
+      const anios = form.querySelector(`[name="${variable}_anios"]`);
+      const meses = form.querySelector(`[name="${variable}_meses"]`);
+      if (!anios || (!anios.value && !meses.value)) return null;
+      return Number(anios.value || 0) * 12 + Number(meses.value || 0);
     }
-    const campo = checkboxes[0];
-    const valor = campo.value;
-    // Tipo 5 = SI/NO: convertir "true"/"false" a booleano real para comparaciones estrictas (=== true)
-    if (tipoPregunta === "5") {
-      return valor === "true" ? true : valor === "false" ? false : null;
+    const campos = form.querySelectorAll(`[name="${variable}"]`);
+    if (!campos.length) return null;
+    if (campos[0].type === "checkbox") {
+      return Array.from(campos).filter((c) => c.checked).map((c) => tipar(c.value, tipoPregunta));
     }
-    return valor;
+    return tipar(campos[0].value, tipoPregunta);
   }
 
   function construirEstado() {
@@ -89,14 +100,46 @@ document.addEventListener("DOMContentLoaded", function () {
     return e;
   }
 
+  // Evaluador JsonLogic con los mismos operadores y la misma semántica que gdu/reglas.py::evaluar,
+  // que es el que decide en el servidor qué se guarda.
+  function evaluar(regla, datos) {
+    if (regla === null || typeof regla !== "object" || Array.isArray(regla)) return regla;
+    const operador = Object.keys(regla)[0];
+    let args = regla[operador];
+    if (operador === "var") {
+      return String(args).split(".").reduce((v, parte) => (v !== null && typeof v === "object" ? v[parte] ?? null : null), datos);
+    }
+    if (!Array.isArray(args)) args = [args];
+    if (operador === "and") {
+      let r = true;
+      for (const a of args) { r = evaluar(a, datos); if (!r) return r; }
+      return r;
+    }
+    if (operador === "or") {
+      let r = false;
+      for (const a of args) { r = evaluar(a, datos); if (r) return r; }
+      return r;
+    }
+    if (operador === "!") return !evaluar(args[0], datos);
+    const [a, b] = args.map((x) => evaluar(x, datos));
+    if (operador === "in") return b !== null && b !== undefined && b.includes(a);
+    if (operador === "==") return a === b;
+    if (operador === "!=") return a !== b;
+    if (a === null || b === null) return false;
+    if (operador === ">") return a > b;
+    if (operador === ">=") return a >= b;
+    if (operador === "<") return a < b;
+    if (operador === "<=") return a <= b;
+    throw new Error("Operador no soportado: " + operador);
+  }
+
   function actualizarVisibilidad() {
     const e = construirEstado();
     grupos.forEach((g) => {
       try {
-        const regla = new Function("return " + g.dataset.visibleRule)();
-        g.hidden = !regla(e);
+        g.hidden = !evaluar(JSON.parse(g.dataset.visibleRule), e);
       } catch (err) {
-        // regla mal formada: no ocultar el campo, solo avisar en consola
+        // regla mal formada: no ocultar el campo, solo avisar en consola (el servidor tampoco lo oculta)
         console.warn("Regla 'visible' inválida para", g.dataset.variable, err);
       }
     });

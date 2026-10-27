@@ -2,10 +2,17 @@ import requests
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from gdu_piloto.models import Adjudicatario3450
+from gdu.etl.importador import SI_NO
+from gdu.models import Adjudicatario3450
 
 PAGE_SIZE = 5000
-MAXIMO = 70000
+# corte de seguridad: se lee de a páginas hasta la primera vacía (el piloto paraba fijo en
+# 70.000 y el número máximo ya pasa de 81.000)
+MAXIMO = 1_000_000
+CAMPOS = [
+    "apellido_nombre", "dni", "direccion", "escritura", "matricula", "res_nro", "res_fecha", "res_acta",
+    "motivo", "situacion",
+]
 
 
 class Command(BaseCommand):
@@ -60,25 +67,26 @@ class Command(BaseCommand):
         return resp.json().get("SDTDatosAdjuGISCol", []), token
 
     def _upsert(self, registros):
-        actualizados = 0
+        """Alta o actualización en bloque. estado_regularizacion no viene de la API: se conserva."""
+        filas = []
         for r in registros:
             fecha = r.get("AdjuGISResFecha")
             if fecha == "0000-00-00T00:00:00":
                 fecha = None
-            Adjudicatario3450.objects.update_or_create(
-                adjugisnroadju=r["AdjuGISNroAdju"],
-                defaults={
-                    "adjugisescritura": r.get("AdjuGISEscritura"),
-                    "adjugisresacta": r.get("AdjuGISResActa"),
-                    "adjugisresfecha": fecha,
-                    "adjugisresnro": r.get("AdjuGISResNro"),
-                    "adjugisapeynom": r.get("AdjuGISapeynom"),
-                    "adjugisdireccion": r.get("AdjuGISdireccion"),
-                    "adjugisdni": r.get("AdjuGISdni"),
-                    "adjugismatricula": r.get("AdjuGISmatricula"),
-                    "adjugismotivo": r.get("AdjuGISmotivo"),
-                    "adjugissituacion": r.get("AdjuGISsituacion"),
-                },
-            )
-            actualizados += 1
-        return actualizados
+            filas.append(Adjudicatario3450(
+                nro_adjudicatario=r["AdjuGISNroAdju"],
+                apellido_nombre=(r.get("AdjuGISapeynom") or "").strip(),
+                dni=r.get("AdjuGISdni") or None,
+                direccion=(r.get("AdjuGISdireccion") or "").strip(),
+                escritura=SI_NO.get((r.get("AdjuGISEscritura") or "").strip().upper()),
+                matricula=(r.get("AdjuGISmatricula") or "").strip(),
+                res_nro=r.get("AdjuGISResNro") or None,
+                res_fecha=fecha or None,
+                res_acta=r.get("AdjuGISResActa") or "",
+                motivo=r.get("AdjuGISmotivo") or "",
+                situacion=(r.get("AdjuGISsituacion") or "").strip(),
+            ))
+        Adjudicatario3450.objects.bulk_create(
+            filas, update_conflicts=True, unique_fields=["nro_adjudicatario"], update_fields=[*CAMPOS, "actualizado_en"],
+        )
+        return len(filas)

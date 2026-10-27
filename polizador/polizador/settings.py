@@ -74,6 +74,8 @@ GDU_SMB_PASSWORD = env("GDU_SMB_PASSWORD")
 # qgis-gdu/: proyecto QGIS Desktop (gdu.qgz) reconectado a WFS por usuario, ver
 # gdu/services/qgis_reconnect.py y qgis-gdu/scripts/reconectar_wfs.py.
 QGIS_GDU_DIR = BASE_DIR.parent / "qgis-gdu"
+# Proyecto QGIS sobre OGC API - Features (qgis-gdu/oapif/), el que entrega gdu:descargar_proyecto_qgis
+GDU_QGIS_PROYECTO = Path(env("GDU_QGIS_PROYECTO", default=str(QGIS_GDU_DIR / "oapif" / "gdu-oapif.qgz")))
 # Mismas capas que geoserver/templates/layers.properties publica por WFS-T --
 # actualizar ambos juntos si se suma/saca una capa piloto.
 GDU_WFS_LAYERS = env.list("GDU_WFS_LAYERS", default=[

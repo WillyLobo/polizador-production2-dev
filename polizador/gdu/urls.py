@@ -1,6 +1,6 @@
 from django.urls import path
 
-from gdu.views import api3450, audit, csv_export, encuesta, ficha, listados, qgis_project, smb, uf, vincular_obra, visor
+from gdu.views import api3450, csv_export, encuesta, ficha, listados, qgis_project, smb, uf, vincular_obra, visor
 
 app_name = "gdu"
 
@@ -9,7 +9,6 @@ urlpatterns = [
     path("relevamientos/<int:relevamiento_id>/viviendas/", encuesta.relevamiento_viviendas, name="relevamiento_viviendas"),
     path("relevamientos/<int:relevamiento_id>/viviendas/<int:vivienda_id>/encuesta/", encuesta.encuesta_form, name="encuesta_form"),
 
-    path("log/", audit.post_log, name="post_log"),
     path("planos/", smb.plano, name="plano"),
     path("csv/", csv_export.exportar_csv, name="exportar_csv"),
     path("3450/", api3450.consultar_3450, name="consultar_3450"),
@@ -46,9 +45,7 @@ urlpatterns = [
     path("listas/adjudicaciones-beneficiario/", listados.lista_adjudicaciones_beneficiario, name="lista_adjudicaciones_beneficiario"),
     path("listas/resoluciones-costos/", listados.lista_resoluciones_costos, name="lista_resoluciones_costos"),
     path("listas/tipos-contratacion/", listados.lista_tipos_contratacion, name="lista_tipos_contratacion"),
-    path("listas/tipos-estado/", listados.lista_tipos_estado, name="lista_tipos_estado"),
     path("listas/tipos-intervencion/", listados.lista_tipos_intervencion, name="lista_tipos_intervencion"),
-    path("listas/tipos-uf/", listados.lista_tipos_uf, name="lista_tipos_uf"),
     path("listas/destinos-parcela/", listados.lista_destinos_parcela, name="lista_destinos_parcela"),
     path("listas/estados-gestion-expropiacion/", listados.lista_estados_gestion_expropiacion, name="lista_estados_gestion_expropiacion"),
     path("listas/adjudicatarios-3450/", listados.lista_adjudicatarios_3450, name="lista_adjudicatarios_3450"),

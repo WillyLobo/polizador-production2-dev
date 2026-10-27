@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from gdu.forms import build_encuesta_form, guardar_encuesta
-from gdu_piloto.models import Encuesta, Relevamiento, Vivienda
+from gdu.models import Encuesta, Relevamiento, ViviendaRelevamiento
 
 
 def _agrupar_por_seccion(form):
@@ -32,49 +32,46 @@ def _agrupar_por_seccion(form):
     return secciones
 
 
-@permission_required("gdu_piloto.view_relevamiento", raise_exception=True)
+@permission_required("gdu.view_relevamiento", raise_exception=True)
 def relevamientos_list(request):
     relevamientos = (
         Relevamiento.objects
         .annotate(
-            total_viviendas=Count("vivienda", distinct=True),
-            total_relevadas=Count("vivienda", filter=Q(vivienda__relevado=True), distinct=True),
+            total_viviendas=Count("viviendas", distinct=True),
+            total_relevadas=Count("viviendas", filter=Q(viviendas__encuestas__isnull=False), distinct=True),
         )
         .order_by("-fecha")
     )
     return render(request, "gdu/relevamientos-list.html", {"relevamientos": relevamientos})
 
 
-@permission_required("gdu_piloto.view_relevamiento", raise_exception=True)
+@permission_required("gdu.view_relevamiento", raise_exception=True)
 def relevamiento_viviendas(request, relevamiento_id):
     relevamiento = get_object_or_404(Relevamiento, pk=relevamiento_id)
-    viviendas = Vivienda.objects.filter(relevamiento_id=relevamiento_id).order_by("vivienda")
+    viviendas = ViviendaRelevamiento.objects.filter(relevamiento=relevamiento).con_relevado().order_by("numero")
     return render(request, "gdu/relevamiento-viviendas.html", {
         "relevamiento": relevamiento,
         "viviendas": viviendas,
     })
 
 
-@permission_required("gdu_piloto.encuestar_relevamiento", raise_exception=True)
+@permission_required("gdu.encuestar_relevamiento", raise_exception=True)
 def encuesta_form(request, relevamiento_id, vivienda_id):
+    # vivienda_id es el número de la vivienda dentro del relevamiento, como en la base heredada
     relevamiento = get_object_or_404(Relevamiento, pk=relevamiento_id)
-    vivienda = get_object_or_404(Vivienda, relevamiento_id=relevamiento_id, vivienda=vivienda_id)
-    EncuestaForm = build_encuesta_form(relevamiento_id)
+    vivienda = get_object_or_404(ViviendaRelevamiento, relevamiento=relevamiento, numero=vivienda_id)
+    EncuestaForm = build_encuesta_form(relevamiento)
 
     if request.method == "POST":
         form = EncuestaForm(request.POST)
         if form.is_valid():
-            guardar_encuesta(relevamiento_id, vivienda_id, form, request.user.username)
+            guardar_encuesta(relevamiento, vivienda, form, request.user)
             messages.success(request, "Encuesta guardada correctamente.")
             return redirect(reverse("gdu:relevamiento_viviendas", args=[relevamiento_id]))
     else:
         form = EncuestaForm()
 
-    encuestas_previas = (
-        Encuesta.objects
-        .filter(relevamiento_id=relevamiento_id, vivienda=vivienda_id)
-        .order_by("-tstamp")
-    )
+    encuestas_previas = vivienda.encuestas.order_by("-enviada_en")
 
     return render(request, "gdu/encuesta-form.html", {
         "relevamiento": relevamiento,

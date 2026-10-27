@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.gis.db.models.functions import AsGeoJSON, Transform
 from django.contrib.gis.geos import Polygon
@@ -8,19 +6,9 @@ from django.conf import settings
 from django.http import Http404, HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import render
 
-from gdu.matching import normalizar_expediente
-from gdu_piloto.models import (
-    Barrios,
-    Catastrourbano,
-    Expropiaciones,
-    Localidad,
-    ObraContratacion,
-    Parcela,
-    PlanoMensura,
-    ViviendaDispersa,
-    Viviendas,
-    ViviendasParaEscriturar,
-)
+from carga.models import Localidad
+from gdu.capas import CAPAS, PERMISOS_CAPAS, filtros_de, obras_vinculadas
+from gdu.models import Catastrourbano, Expropiacion, Intervencion, Parcela, Programa, Actuacion
 
 MAP_SRID = 3857  # como la manda ol/loadingstrategy/bbox, para el filtro espacial
 GEOJSON_SRID = 4326  # GeoJSON (RFC 7946) siempre es WGS84; ol.format.GeoJSON asume esto al reproyectar
@@ -31,26 +19,6 @@ MAX_FEATURES_POR_CAPA = 12000
 # decimales de las coordenadas (grados WGS84) en el GeoJSON del visor: 6 ≈ 10 cm, de sobra para
 # dibujar. Con los 15 que salían por default el payload pesaba casi el doble ya comprimido.
 GEOJSON_PRECISION = 6
-
-
-def _obras_por_expediente():
-    """
-    {expediente normalizado de la contratación: [(obra_id, obra_nombre), ...]} para poder
-    resolver, a partir del campo `expediente` que ya traen las vistas del mapa
-    (Viviendas/Barrios), a qué carga.Obra corresponde — sin repetir el matching por
-    capa (ver gdu/management/commands/vincular_obras_contrataciones.py). Una misma
-    contratación puede estar vinculada a varias obras (ej. un proyecto grande dividido
-    en "Grupo 1"/"Grupo 2" como obras separadas en carga que comparten expediente), así
-    que la clave mapea a una lista, no a una sola obra.
-    """
-    resultado = defaultdict(list)
-    for obra_id, obra_nombre, expediente in ObraContratacion.objects.select_related(
-        "obra", "contratacion"
-    ).values_list("obra_id", "obra__obra_nombre", "contratacion__expediente"):
-        clave = normalizar_expediente(expediente)
-        if clave is not None:
-            resultado[clave].append({"id": obra_id, "nombre": obra_nombre})
-    return resultado
 
 
 def _bbox_polygon(request):
@@ -67,7 +35,7 @@ def _bbox_polygon(request):
     return poly
 
 
-def _geojson_capa(request, model, filtros=None):
+def _geojson_capa(request, queryset, filtros=None):
     """Respuesta GeoJSON genérica para una capa del visor: filtra por bbox (ol/loadingstrategy/bbox)
     y opcionalmente por `filtros` (los criterios del modal de búsqueda avanzada). Común a todas las
     capas de gdu/views/visor.py.
@@ -83,7 +51,7 @@ def _geojson_capa(request, model, filtros=None):
     # al SRID de la columna y así Postgres puede usar el índice GiST. Con el Transform del lado de
     # la columna el índice no aplica, se evalúa fila por fila y el costo estimado dispara el JIT.
     # El GeoJSON de la geometría lo arma PostGIS (ST_AsGeoJSON), más rápido que pasar por GEOS.
-    qs = model.objects.filter(geom__intersects=bbox)
+    qs = queryset.filter(geom__intersects=bbox)
     if filtros:
         qs = qs.filter(**filtros)
     qs = qs.annotate(
@@ -108,65 +76,11 @@ def _geojson_capa(request, model, filtros=None):
     return HttpResponse(cuerpo, content_type="application/json")
 
 
-def _filtros_texto(request, mapeo):
-    """{parámetro de la query string: campo del modelo} -> kwargs de filter(), solo con los
-    presentes y no vacíos. Usado para los criterios de texto del modal de búsqueda avanzada
-    (Programa/Actuación/Estado de Gestión/Ley/Municipio)."""
-    filtros = {}
-    for parametro, campo in mapeo.items():
-        valor = request.GET.get(parametro)
-        if valor:
-            filtros[campo] = valor
-    return filtros
-
-
-def _filtros_enteros(request, mapeo):
-    """Igual que `_filtros_texto` pero para campos numéricos (Grupo/Plan de intervención);
-    valores no convertibles a int se descartan en silencio."""
-    filtros = {}
-    for parametro, campo in mapeo.items():
-        valor = request.GET.get(parametro)
-        if valor:
-            try:
-                filtros[campo] = int(valor)
-            except ValueError:
-                pass
-    return filtros
-
-
-def _distintos_texto(*querysets_campo):
-    """Valores distintos y no vacíos de uno o más (queryset, campo), combinados. Para poblar los
-    combos del modal de búsqueda avanzada a partir de varias capas que comparten el mismo campo
-    (ej. `programa`/`actuacion` en Barrios y Viviendas). El vacío se descarta en Python, no en SQL:
-    algunos de estos campos (ej. `Expropiaciones.gestion`) son enums de Postgres donde comparar
-    contra '' directamente en la query falla."""
-    valores = set()
-    for queryset, campo in querysets_campo:
-        valores.update(
-            queryset
-            .exclude(**{f"{campo}__isnull": True})
-            .values_list(campo, flat=True)
-            .distinct()
-        )
+def _distintos(queryset, campo):
+    """Valores distintos y no vacíos de un campo, ordenados, para los combos de la búsqueda avanzada."""
+    valores = set(queryset.exclude(**{f"{campo}__isnull": True}).values_list(campo, flat=True).distinct())
     valores.discard("")
     return sorted(valores)
-
-
-def _distintos_enteros(queryset, campo):
-    return sorted(set(
-        queryset.exclude(**{f"{campo}__isnull": True}).values_list(campo, flat=True).distinct()
-    ))
-
-
-PERMISOS_CAPAS = [
-    "gdu_piloto.ver_viviendas",
-    "gdu_piloto.ver_barrios",
-    "gdu_piloto.ver_expropiaciones",
-    "gdu_piloto.ver_viviendas_dispersas",
-    "gdu_piloto.ver_plano_mensura",
-    "gdu_piloto.ver_catastro_urbano",
-    "gdu_piloto.ver_escriturar",
-]
 
 
 @login_required
@@ -182,17 +96,24 @@ def mapa(request):
     })
 
 
-FILTROS_TEXTO_PROGRAMA_ACTUACION = {"programa": "programa", "actuacion": "actuacion"}
-FILTROS_ENTEROS_GRUPO_PLAN = {"grupo": "grupo", "plan": "plan"}
+def _vista_geojson(slug):
+    capa = CAPAS[slug]
+
+    @permission_required(capa.permiso, raise_exception=True)
+    def vista(request):
+        return _geojson_capa(request, capa.queryset(), filtros_de(request, capa))
+
+    vista.__name__ = f"geojson_{slug.replace('-', '_')}"
+    return vista
 
 
-@permission_required("gdu_piloto.ver_viviendas", raise_exception=True)
-def geojson_viviendas(request):
-    filtros = {
-        **_filtros_texto(request, FILTROS_TEXTO_PROGRAMA_ACTUACION),
-        **_filtros_enteros(request, FILTROS_ENTEROS_GRUPO_PLAN),
-    }
-    return _geojson_capa(request, Viviendas, filtros)
+geojson_viviendas = _vista_geojson("viviendas")
+geojson_barrios = _vista_geojson("barrios")
+geojson_expropiaciones = _vista_geojson("expropiaciones")
+geojson_viviendas_dispersas = _vista_geojson("viviendas-dispersas")
+geojson_planos_mensura = _vista_geojson("planos-mensura")
+geojson_catastro_urbano = _vista_geojson("catastro-urbano")
+geojson_para_escriturar = _vista_geojson("para-escriturar")
 
 
 @login_required
@@ -201,13 +122,13 @@ def opciones_busqueda(request):
     Grupo, Plan, Estado de Gestión de Expropiación, Ley de Expropiación, Municipio) — mismos
     criterios que ofrece el buscador del sitio original de GDU."""
     return JsonResponse({
-        "programas": _distintos_texto((Barrios.objects, "programa"), (Viviendas.objects, "programa")),
-        "actuaciones": _distintos_texto((Barrios.objects, "actuacion"), (Viviendas.objects, "actuacion")),
-        "grupos": _distintos_enteros(Viviendas.objects, "grupo"),
-        "planes": _distintos_enteros(Viviendas.objects, "plan"),
-        "estados_gestion": _distintos_texto((Expropiaciones.objects, "gestion")),
-        "leyes": _distintos_texto((Expropiaciones.objects, "ley")),
-        "municipios": _distintos_texto((Catastrourbano.objects, "municipio")),
+        "programas": _distintos(Programa.objects, "nombre"),
+        "actuaciones": _distintos(Actuacion.objects, "nombre"),
+        "grupos": _distintos(Intervencion.objects, "grupo"),
+        "planes": _distintos(Intervencion.objects, "plan"),
+        "estados_gestion": [valor for valor, _ in Expropiacion.Gestion.choices],
+        "leyes": _distintos(CAPAS["expropiaciones"].queryset(), "ley"),
+        "municipios": _distintos(Catastrourbano.objects, "municipio"),
     })
 
 
@@ -219,16 +140,16 @@ def buscar_localidad(request):
 
     qs = (
         Localidad.objects
-        .annotate(geom_4326=Transform("geom", GEOJSON_SRID))
-        .filter(localidad__icontains=q)
-        .order_by("localidad")[:15]
+        .select_related("localidad_departamento")
+        .filter(localidad_nombre__icontains=q, localidad_centroide_lat__isnull=False)
+        .order_by("localidad_nombre")[:15]
     )
     results = [
         {
             "id": loc.id,
-            "text": f"{loc.localidad}, {loc.departamento}",
-            "lon": loc.geom_4326.x,
-            "lat": loc.geom_4326.y,
+            "text": f"{loc.localidad_nombre}, {loc.localidad_departamento.departamento_nombre}",
+            "lon": float(loc.localidad_centroide_lon),
+            "lat": float(loc.localidad_centroide_lat),
         }
         for loc in qs
     ]
@@ -248,141 +169,11 @@ def buscar_parcela(request):
         .order_by("nomenclatura")[:15]
     )
     results = [
-        {
-            "id": p.id,
-            "text": p.nomenclatura or f"{p.dpto}-{p.circ}-{p.secc}-{p.ch}-{p.qta}-{p.fracc}-{p.mz}-{p.parc}",
-            "extent": list(p.geom_web.extent),
-        }
+        {"id": p.id, "text": p.nomenclatura, "extent": list(p.geom_web.extent)}
         for p in qs
     ]
     return JsonResponse({"results": results})
 
-
-@permission_required("gdu_piloto.ver_barrios", raise_exception=True)
-def geojson_barrios(request):
-    filtros = _filtros_texto(request, FILTROS_TEXTO_PROGRAMA_ACTUACION)
-    return _geojson_capa(request, Barrios, filtros)
-
-
-@permission_required("gdu_piloto.ver_expropiaciones", raise_exception=True)
-def geojson_expropiaciones(request):
-    filtros = _filtros_texto(request, {"ley": "ley", "estado_gestion": "gestion"})
-    return _geojson_capa(request, Expropiaciones, filtros)
-
-
-@permission_required("gdu_piloto.ver_viviendas_dispersas", raise_exception=True)
-def geojson_viviendas_dispersas(request):
-    filtros = {
-        **_filtros_texto(request, FILTROS_TEXTO_PROGRAMA_ACTUACION),
-        **_filtros_enteros(request, FILTROS_ENTEROS_GRUPO_PLAN),
-    }
-    return _geojson_capa(request, ViviendaDispersa, filtros)
-
-
-@permission_required("gdu_piloto.ver_plano_mensura", raise_exception=True)
-def geojson_planos_mensura(request):
-    return _geojson_capa(request, PlanoMensura)
-
-
-@permission_required("gdu_piloto.ver_catastro_urbano", raise_exception=True)
-def geojson_catastro_urbano(request):
-    filtros = _filtros_texto(request, {"municipio": "municipio"})
-    return _geojson_capa(request, Catastrourbano, filtros)
-
-
-@permission_required("gdu_piloto.ver_escriturar", raise_exception=True)
-def geojson_para_escriturar(request):
-    filtros = {
-        **_filtros_texto(request, FILTROS_TEXTO_PROGRAMA_ACTUACION),
-        **_filtros_enteros(request, FILTROS_ENTEROS_GRUPO_PLAN),
-    }
-    return _geojson_capa(request, ViviendasParaEscriturar, filtros)
-
-
-# --- Detalle de los elementos seleccionados en el visor ---
-# Las propiedades que muestra el panel de selección, por capa. Antes viajaban en cada feature del
-# GeoJSON; ahora el visor las pide recién al seleccionar (`detalle_capa`). `obras` recibe el
-# resultado de _obras_por_expediente() (o None en las capas que no lo usan).
-
-def _propiedades_vivienda(v, obras):
-    return {
-        "id": v.id,
-        "uf": v.uf,
-        "obra": v.obra,
-        "localidad": v.localidad,
-        "adjudicacion": v.adjudicacion,
-        "nro_adjudicatario": v.nro_adjudicatario,
-        "estado_dominial": v.estado_dominial,
-        "planos": v.planos,
-        "obras": obras.get(normalizar_expediente(v.expediente), []),
-    }
-
-
-def _propiedades_barrio(b, obras):
-    return {
-        "id": b.id,
-        "barrio": b.barrio,
-        "localidad": b.localidad,
-        "programa": b.programa,
-        "obras": obras.get(normalizar_expediente(b.expediente), []),
-    }
-
-
-def _propiedades_expropiacion(e, obras):
-    return {
-        "id": e.id,
-        "ley": e.ley,
-        "localidad": e.localidad,
-        "nomenclatura": f"{e.dpto}-{e.circ}-{e.secc}-{e.ch}-{e.qta}-{e.fracc}-{e.mz}-{e.parc}",
-        "objeto": e.objeto,
-        "propietario_expropiado": e.propietario_expropiado,
-        "estado": e.estado,
-    }
-
-
-def _propiedades_vivienda_dispersa(v, obras):
-    return {
-        "id": v.id,
-        "obra": v.obra,
-        "localidad": v.localidad,
-        "adjudicacion": v.adjudicacion,
-        "planos": v.planos,
-        "obras": obras.get(normalizar_expediente(v.expediente), []),
-    }
-
-
-def _propiedades_plano_mensura(p, obras):
-    return {
-        "id": p.id,
-        "plano": p.pm_antecedente or f"{p.depto}-{p.nro}-{p.ano}",
-        "en_gdu": p.en_gdu,
-        "sup_parcelas": p.sup_parcelas,
-        "sup_calles": p.sup_calles,
-        "sup_reserva": p.sup_reserva,
-    }
-
-
-def _propiedades_catastro_urbano(c, obras):
-    return {
-        "id": c.id,
-        "nomenclatura": c.id_nomencl,
-        "plano_aprobado": c.plano_apro,
-        "matricula": c.matric,
-        "municipio": c.municipio,
-        "anio": c.anio,
-    }
-
-
-# slug de capa (los mismos que gdu:ficha) -> (modelo, permiso, propiedades, usa obras vinculadas)
-CAPAS_DETALLE = {
-    "viviendas": (Viviendas, "gdu_piloto.ver_viviendas", _propiedades_vivienda, True),
-    "barrios": (Barrios, "gdu_piloto.ver_barrios", _propiedades_barrio, True),
-    "expropiaciones": (Expropiaciones, "gdu_piloto.ver_expropiaciones", _propiedades_expropiacion, False),
-    "viviendas-dispersas": (ViviendaDispersa, "gdu_piloto.ver_viviendas_dispersas", _propiedades_vivienda_dispersa, True),
-    "planos-mensura": (PlanoMensura, "gdu_piloto.ver_plano_mensura", _propiedades_plano_mensura, False),
-    "catastro-urbano": (Catastrourbano, "gdu_piloto.ver_catastro_urbano", _propiedades_catastro_urbano, False),
-    "para-escriturar": (ViviendasParaEscriturar, "gdu_piloto.ver_escriturar", _propiedades_vivienda, True),
-}
 
 # tope de ids por pedido de detalle; el visor parte selecciones más grandes en varios pedidos
 MAX_IDS_DETALLE = 500
@@ -391,11 +182,11 @@ MAX_IDS_DETALLE = 500
 @login_required
 def detalle_capa(request, capa):
     """{id: propiedades} de los elementos `ids` (separados por coma) de una capa del visor, para el
-    panel de selección."""
-    if capa not in CAPAS_DETALLE:
+    panel de selección. Las properties no viajan en el GeoJSON: se piden recién al seleccionar."""
+    if capa not in CAPAS:
         raise Http404
-    model, permiso, propiedades, usa_obras = CAPAS_DETALLE[capa]
-    if not request.user.has_perm(permiso):
+    config = CAPAS[capa]
+    if not request.user.has_perm(config.permiso):
         raise PermissionDenied
     try:
         ids = [int(v) for v in request.GET.get("ids", "").split(",") if v]
@@ -404,8 +195,8 @@ def detalle_capa(request, capa):
     if not ids or len(ids) > MAX_IDS_DETALLE:
         return HttpResponseBadRequest(f"entre 1 y {MAX_IDS_DETALLE} ids")
 
-    obras = _obras_por_expediente() if usa_obras else None
-    return JsonResponse({
-        obj.pk: propiedades(obj, obras)
-        for obj in model.objects.filter(pk__in=ids).defer("geom")
-    })
+    objetos = list(config.detalle_queryset().filter(pk__in=ids))
+    obras = None
+    if config.intervencion is not None:
+        obras = obras_vinculadas(config.intervencion(o).contratacion_id for o in objetos)
+    return JsonResponse({obj.pk: config.datos(obj, obras) for obj in objetos})

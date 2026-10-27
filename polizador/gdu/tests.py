@@ -5,6 +5,7 @@ from django.contrib.auth import authenticate, get_user_model
 from django.contrib.gis.geos import MultiPolygon, Point, Polygon
 from django.db import IntegrityError
 from django.test import TestCase
+from django.urls import reverse
 
 from carga.models import Departamento, Localidad, Municipio
 from gdu.models import (
@@ -558,6 +559,9 @@ class OapifColeccionesTest(OapifTest):
         usadas = set(re.findall(r"typename='([^']+)'", qgs))
         self.assertTrue(usadas)
         self.assertEqual(usadas - set(api.collections), set())
+        # y al revés: una colección nueva en el servidor pide regenerar el proyecto
+        # (qgis-gdu/oapif/armar_proyecto.py, ver su README)
+        self.assertEqual(set(api.collections) - usadas, set(), "regenerar qgis-gdu/oapif/gdu-oapif.qgz")
 
     def test_nomenclatura_incompleta_se_sirve_como_null(self):
         # daba 500: el schema la declaraba texto no nulo (viviendas_punto, pre_adjudicatarios_dispersa)
@@ -621,3 +625,343 @@ class OapifColeccionesTest(OapifTest):
         self.assertEqual(cambio.status_code, 200, cambio.content)
         self.assertEqual(cambio.json()["properties"]["parcela_nomenclatura"], parcela.nomenclatura)
         self.assertEqual(Uf.objects.get(pk=uf.pk).uf, "012")
+
+
+class VisorYFichaTest(TestCase):
+    """Visor, ficha imprimible y ediciones del visor sobre los modelos de gdu (fase 5: antes
+    leían las vistas SQL visualizador.* del piloto)."""
+
+    # ~50 m en Resistencia, en EPSG:22175
+    GEOM = Polygon(((5600800, 6959250), (5600800, 6959300), (5600850, 6959300), (5600850, 6959250),
+                    (5600800, 6959250)), srid=SRID_GDU)
+
+    @classmethod
+    def setUpTestData(cls):
+        from gdu.models import (
+            AdjudicacionBeneficiario, Catastrourbano, EstadoGestionExpropiacion, Expropiacion, ObjetoExpropiacion,
+            ParcelaExpropiada, ResolucionCostos,
+        )
+
+        ModelosGduTest.setUpTestData.__func__(cls)
+        Intervencion.objects.filter(pk=cls.intervencion.pk).update(
+            plan=12, grupo="8A",
+            adjudicacion=AdjudicacionBeneficiario.objects.create(nro="45", ano=2010, tipo="definitiva"),
+        )
+        cls.plano = PlanoMensura.objects.create(depto="20", nro=107, ano="86", en_gdu=True, geom=cls.GEOM)
+        PlanoMensuraIntervencion.objects.create(plano=cls.plano, intervencion=cls.intervencion, tipo="subdivision")
+        cls.parcela = Parcela.objects.create(intervencion=cls.intervencion, destino=cls.destino, geom=cls.GEOM, **NOMENCLATURA)
+        cls.uf = Uf.objects.create(parcela=cls.parcela, uf="1", poligono="00-01", geom=cls.GEOM, adjudicatario_id=12345,
+                                   estado_dominial="adjudicatario", res_costos=ResolucionCostos.objects.create(
+                                       nro_largo=100, nro_corto=1, ano=2010, tipo="provisoria"))
+        Adjudicatario3450.objects.create(nro_adjudicatario=12345, escritura=False)
+        cls.barrio = Barrio.objects.create(intervencion=cls.intervencion, nombre="Barrio Norte", geom=MultiPolygon(cls.GEOM))
+        cls.dispersa = ViviendaPunto.objects.create(
+            intervencion=cls.intervencion, estado_dominial="ipduv", geom=Point(5600825, 6959275, srid=SRID_GDU),
+        )
+        expropiacion = Expropiacion.objects.create(
+            nro_ley=1234, letra_ley="A", ano_ley=1999, localidad_id=1, asentamiento=False, gestion="ipduv",
+        )
+        cls.expropiada = ParcelaExpropiada.objects.create(
+            expropiacion=expropiacion, objeto=ObjetoExpropiacion.objects.create(nombre="Vivienda"),
+            estado_gestion=EstadoGestionExpropiacion.objects.create(nombre="Iniciada"),
+            propietario_expropiado="Juan Pérez", geom=cls.GEOM, **NOMENCLATURA,
+        )
+        cls.catastro = Catastrourbano.objects.create(id_nomencl="01-II-A", municipio="RESISTENCIA", anio=1998, geom=cls.GEOM)
+        cls.objetos = {
+            "viviendas": cls.uf, "barrios": cls.barrio, "expropiaciones": cls.expropiada,
+            "viviendas-dispersas": cls.dispersa, "planos-mensura": cls.plano, "catastro-urbano": cls.catastro,
+            "para-escriturar": cls.uf,
+        }
+
+    def setUp(self):
+        from unittest import mock
+
+        # la ficha consulta la API del Sistema 3450 en vivo
+        patcher = mock.patch("gdu.views.ficha.api3450.consultar", return_value={"SDTDatosAdjuGIS": {}})
+        patcher.start()
+        self.addCleanup(patcher.stop)
+
+    def login(self, *codenames, username="visor"):
+        from django.contrib.auth.models import Permission
+
+        usuario = get_user_model().objects.create_user(username, password="x")
+        usuario.user_permissions.add(*Permission.objects.filter(content_type__app_label="gdu", codename__in=codenames))
+        self.client.force_login(usuario)
+        return usuario
+
+    def todas(self):
+        from gdu.capas import CAPAS
+
+        return self.login(*(c.permiso.split(".")[1] for c in CAPAS.values()))
+
+    def bbox(self):
+        # bbox de Resistencia en EPSG:3857, como lo manda OpenLayers
+        return "-6566000,-3186000,-6565000,-3184000"
+
+    def test_cada_capa_dibuja_y_detalla_sus_elementos(self):
+        self.todas()
+        for capa, obj in self.objetos.items():
+            with self.subTest(capa=capa):
+                url = reverse_lazy_capa(capa)
+                geojson = self.client.get(url, {"bbox": "-6600000,-3200000,-6500000,-3100000"})
+                self.assertEqual(geojson.status_code, 200)
+                self.assertIn(obj.pk, [f["id"] for f in geojson.json()["features"]])
+                detalle = self.client.get(f"/gdu/mapa/{capa}/detalle.json", {"ids": str(obj.pk)})
+                self.assertEqual(detalle.status_code, 200, detalle.content)
+                self.assertIn(str(obj.pk), detalle.json())
+
+    def test_detalle_de_vivienda_como_la_vista_heredada(self):
+        self.todas()
+        datos = self.client.get("/gdu/mapa/viviendas/detalle.json", {"ids": str(self.uf.pk)}).json()[str(self.uf.pk)]
+        self.assertEqual(datos["uf"], "00-01")  # la vista heredada mostraba el polígono
+        self.assertEqual(datos["obra"], "40 viviendas")
+        self.assertEqual(datos["localidad"], "Resistencia")
+        self.assertEqual(datos["adjudicacion"], "45/2010 - definitiva")
+        self.assertEqual(datos["planos"], "20-107-86/subdivision")
+        self.assertEqual(datos["nro_adjudicatario"], 12345)
+        self.assertEqual(datos["obras"], [])
+
+    def test_busqueda_avanzada(self):
+        self.todas()
+        url = reverse_lazy_capa("viviendas")
+        con = self.client.get(url, {"bbox": "-6600000,-3200000,-6500000,-3100000", "programa": "Programa", "grupo": "8A"})
+        self.assertEqual(len(con.json()["features"]), 1)
+        sin = self.client.get(url, {"bbox": "-6600000,-3200000,-6500000,-3100000", "programa": "Otro"})
+        self.assertEqual(sin.json()["features"], [])
+        ley = self.client.get(reverse_lazy_capa("expropiaciones"), {"bbox": "-6600000,-3200000,-6500000,-3100000", "ley": "1234A/1999"})
+        self.assertEqual(len(ley.json()["features"]), 1)
+        opciones = self.client.get("/gdu/mapa/opciones-busqueda.json").json()
+        self.assertEqual(opciones["grupos"], ["8A"])
+        self.assertEqual(opciones["leyes"], ["1234A/1999"])
+        self.assertEqual(opciones["estados_gestion"], ["ipduv", "externa"])
+
+    def test_buscar_localidad_usa_las_de_carga(self):
+        Localidad.objects.filter(pk=1).update(localidad_centroide_lat=-27.45, localidad_centroide_lon=-58.98)
+        self.todas()
+        resultados = self.client.get("/gdu/mapa/buscar-localidad.json", {"q": "resis"}).json()["results"]
+        self.assertEqual(resultados[0]["text"], "Resistencia, San Fernando")
+        self.assertEqual(resultados[0]["lat"], -27.45)
+
+    def test_ficha_de_cada_capa(self):
+        self.todas()
+        esperado = {
+            "viviendas": ["00-01", "Nº adjudicatario", "12345", "Adjudicatario"],
+            "barrios": ["Barrio Norte", "Programa"],
+            "expropiaciones": ["1234A/1999", "Juan Pérez", "Iniciada"],
+            "viviendas-dispersas": ["40 viviendas", "Resistencia"],
+            "planos-mensura": ["20-107-86", "En GDU", "Sí"],
+            "catastro-urbano": ["Matrícula", "RESISTENCIA", "1998"],
+            "para-escriturar": ["00-01"],
+        }
+        for capa, textos in esperado.items():
+            with self.subTest(capa=capa):
+                respuesta = self.client.get(f"/gdu/ficha/{capa}/{self.objetos[capa].pk}/")
+                self.assertEqual(respuesta.status_code, 200)
+                for texto in textos:
+                    self.assertContains(respuesta, texto)
+                self.assertIn(respuesta.context["config_mapa"]["geometria"]["type"], ("Polygon", "MultiPolygon", "Point"))
+
+    def test_ficha_registra_el_evento_y_respeta_permisos(self):
+        usuario = self.login("ver_viviendas", "ver_catastro_urbano")
+        respuesta = self.client.get(f"/gdu/ficha/viviendas/{self.uf.pk}/")
+        capas = [c["capa"] for c in respuesta.context["config_mapa"]["capasContexto"]]
+        self.assertEqual(capas, ["viviendas", "catastro-urbano"])
+        evento = EventoVisor.objects.get(accion="printFeature")
+        self.assertEqual((evento.usuario, evento.metadata), (usuario, {"layer": "viviendas", "id": self.uf.pk}))
+        self.assertEqual(self.client.get(f"/gdu/ficha/barrios/{self.barrio.pk}/").status_code, 403)
+        self.assertEqual(self.client.get(f"/gdu/ficha/parcelas/{self.parcela.pk}/").status_code, 404)
+        self.assertEqual(self.client.get("/gdu/ficha/viviendas/999999/").status_code, 404)
+
+    def test_obras_vinculadas_en_la_ficha(self):
+        from unittest import mock
+
+        self.todas()
+        obras = {self.intervencion.contratacion_id: [{"id": 5, "nombre": "Obra Cinco"}, {"id": 6, "nombre": None}]}
+        with mock.patch("gdu.views.ficha.obras_vinculadas", return_value=obras):
+            respuesta = self.client.get(f"/gdu/ficha/viviendas/{self.uf.pk}/")
+        self.assertContains(respuesta, "Obra Cinco, Obra 6")
+
+    def test_editar_nro_adjudicatario_queda_en_el_historial(self):
+        usuario = self.login("editar_nro_adjudicatario")
+        respuesta = self.client.post(f"/gdu/uf/{self.uf.pk}/nro-adjudicatario/", {"nro_adjudicatario": "777"})
+        self.assertEqual(respuesta.json(), {"id": self.uf.pk, "nro_adjudicatario": 777})
+        uf = Uf.objects.get(pk=self.uf.pk)
+        self.assertEqual((uf.adjudicatario_id, uf.updated_by), (777, usuario))
+        self.assertEqual(uf.history.first().history_user, usuario)
+        self.assertEqual(self.client.post(f"/gdu/uf/{self.uf.pk}/nro-adjudicatario/", {"nro_adjudicatario": "x"}).status_code, 400)
+        self.assertEqual(self.client.post("/gdu/uf/999999/nro-adjudicatario/", {"nro_adjudicatario": "1"}).status_code, 404)
+
+    def test_descarga_del_proyecto_qgis_con_la_url_del_servidor(self):
+        import io
+        import tempfile
+        import zipfile
+        from pathlib import Path
+
+        from django.test import override_settings
+
+        qgs = "<qgis><datasource>url='http://192.168.0.51:8000/gdu/oapif/' typename='barrios' authcfg='gduoapf'</datasource></qgis>"
+        with tempfile.TemporaryDirectory() as carpeta:
+            archivo = Path(carpeta) / "gdu-oapif.qgz"
+            with zipfile.ZipFile(archivo, "w") as z:
+                z.writestr("gdu-oapif.qgs", qgs)
+                z.writestr("gdu-oapif.qgd", b"\x00")
+            with override_settings(GDU_QGIS_PROYECTO=archivo, ALLOWED_HOSTS=["testserver", "polizador.ipduv.gob.ar"]):
+                self.login(username="sin-capas")
+                self.assertEqual(self.client.get("/gdu/mapa/qgis/descargar/").status_code, 403)
+                self.login("view_barrio")
+                respuesta = self.client.get("/gdu/mapa/qgis/descargar/", HTTP_HOST="polizador.ipduv.gob.ar")
+                self.assertEqual(respuesta.status_code, 200)
+                contenido = b"".join(respuesta.streaming_content)
+        with zipfile.ZipFile(io.BytesIO(contenido)) as z:
+            self.assertEqual(
+                z.read("gdu-oapif.qgs").decode(),
+                qgs.replace("http://192.168.0.51:8000/gdu/oapif/", "http://polizador.ipduv.gob.ar/gdu/oapif/"),
+            )
+            self.assertEqual(z.read("gdu-oapif.qgd"), b"\x00")
+        self.assertTrue(EventoVisor.objects.filter(accion="descargaProyectoQgis").exists())
+
+    def test_el_proyecto_versionado_se_puede_reescribir(self):
+        import io
+        import re
+        import zipfile
+
+        from django.conf import settings
+
+        from gdu.views.qgis_project import proyecto_con_url
+
+        if not settings.GDU_QGIS_PROYECTO.exists():
+            self.skipTest("no está el .qgz versionado")
+        nuevo = proyecto_con_url(settings.GDU_QGIS_PROYECTO.read_bytes(), "https://otro/gdu/oapif/")
+        with zipfile.ZipFile(io.BytesIO(nuevo)) as z:
+            qgs = z.read(next(n for n in z.namelist() if n.endswith(".qgs"))).decode()
+        urls = set(re.findall(r"url='([^']*)'", qgs))
+        self.assertEqual(urls - {"https://otro/gdu/oapif/"}, {u for u in urls if "/gdu/oapif/" not in u})
+
+    def test_listados_de_la_api(self):
+        usuario = get_user_model().objects.create_superuser("admin-gdu", password="x")
+        self.client.force_login(usuario)
+        for slug in (
+            "gdu-actuaciones", "gdu-contrataciones", "gdu-contrataciones-sin-obra", "gdu-intervenciones", "gdu-programas",
+            "gdu-barrios", "gdu-parcelas", "gdu-ufs", "gdu-localidades", "gdu-expropiaciones", "gdu-planos-mensura",
+            "gdu-adjudicaciones-beneficiario", "gdu-resoluciones-costos", "gdu-tipos-contratacion",
+            "gdu-tipos-intervencion", "gdu-destinos-parcela", "gdu-estados-gestion-expropiacion", "gdu-adjudicatarios-3450",
+        ):
+            with self.subTest(slug=slug):
+                respuesta = self.client.get(f"/v1/api/datatables/{slug}/")
+                self.assertEqual(respuesta.status_code, 200, respuesta.content[:300])
+                self.assertGreaterEqual(respuesta.json()["recordsTotal"], 1, slug)
+        busqueda = self.client.get("/v1/api/datatables/gdu-adjudicatarios-3450/", {"search": "12345"}).json()
+        self.assertEqual([f["nro_adjudicatario"] for f in busqueda["data"]], [12345])
+        for nombre in ("lista_actuaciones", "lista_ufs", "lista_localidades", "lista_adjudicatarios_3450"):
+            self.assertEqual(self.client.get(reverse(f"gdu:{nombre}")).status_code, 200, nombre)
+
+    def test_adjudicatario_cero_no_es_vacio(self):
+        # en el Sistema 3450 el 0 es "crédito desadjudicado"
+        Uf.objects.filter(pk=self.uf.pk).update(adjudicatario_id=0)
+        self.todas()
+        datos = self.client.get("/gdu/mapa/viviendas/detalle.json", {"ids": str(self.uf.pk)}).json()[str(self.uf.pk)]
+        self.assertEqual(datos["nro_adjudicatario"], 0)
+
+
+def reverse_lazy_capa(capa):
+    return reverse(f"gdu:geojson_{capa.replace('-', '_')}")
+
+
+class EncuestaWebTest(TestCase):
+    """Formulario web de encuestas: las reglas JsonLogic deciden en el servidor qué se exige y
+    qué se guarda (las preguntas ocultas no se guardan)."""
+
+    @classmethod
+    def setUpTestData(cls):
+        from gdu.models import Pregunta, Respuesta, Seccion, TipoPregunta
+
+        cls.relevamiento = Relevamiento.objects.create(nombre="Fontana", fecha="2024-01-01", objetivo=10)
+        seccion = Seccion.objects.create(relevamiento=cls.relevamiento, nombre="Hogar", orden=1)
+        numerico = TipoPregunta.objects.create(id=1, nombre="Multiple Choice Numérico", tipo="integer")
+        texto = TipoPregunta.objects.create(id=7, nombre="Texto Simple", tipo="string")
+        multiple = TipoPregunta.objects.create(id=9, nombre="Múltiple Choice Numérico - Respuesta Múltiple", tipo="integer[]")
+        relacion = Pregunta.objects.create(tipo=numerico, texto="Relación con el adjudicatario")
+        cls.opciones = {
+            n: Respuesta.objects.create(pregunta=relacion, texto=t, nro_opcion=n, valor=str(n))
+            for n, t in ((1, "Es el adjudicatario"), (2, "Es familiar"), (3, "Otro"))
+        }
+        servicios = Pregunta.objects.create(tipo=multiple, texto="Servicios")
+        for n, t in ((1, "Agua"), (2, "Luz")):
+            Respuesta.objects.create(pregunta=servicios, texto=t, nro_opcion=n, valor=str(n))
+        PreguntaRelevamiento.objects.create(
+            relevamiento=cls.relevamiento, seccion=seccion, pregunta=relacion, variable="relacion", requerida=True,
+        )
+        PreguntaRelevamiento.objects.create(
+            relevamiento=cls.relevamiento, seccion=seccion, variable="relacion_otro", requerida=True,
+            pregunta=Pregunta.objects.create(tipo=texto, texto="¿Cuál?"),
+            regla_visible={"==": [{"var": "relacion"}, 3]},
+            regla_valido={"!=": [{"var": "relacion_otro"}, "ninguna"]},
+        )
+        PreguntaRelevamiento.objects.create(
+            relevamiento=cls.relevamiento, seccion=seccion, pregunta=servicios, variable="servicios",
+        )
+        cls.vivienda = ViviendaRelevamiento.objects.create(
+            relevamiento=cls.relevamiento, numero=7, geom=MultiPolygon(CUADRADO), datos={"barrio": "Centro"},
+        )
+        cls.usuario = get_user_model().objects.create_superuser("encuestador", password="x")
+
+    def setUp(self):
+        self.client.force_login(self.usuario)
+        self.url = f"/gdu/relevamientos/{self.relevamiento.pk}/viviendas/7/encuesta/"
+
+    def test_pregunta_oculta_no_se_exige_ni_se_guarda(self):
+        respuesta = self.client.post(self.url, {"relacion": "1", "relacion_otro": "no va", "servicios": ["1", "2"]})
+        self.assertEqual(respuesta.status_code, 302, respuesta.context and respuesta.context["form"].errors)
+        encuesta = Encuesta.objects.get()
+        self.assertEqual((encuesta.vivienda, encuesta.usuario, encuesta.tipo), (self.vivienda, self.usuario, Encuesta.Tipo.WEB))
+        guardadas = {(r.pregunta_relevamiento.variable, r.valor) for r in encuesta.respuestas.all()}
+        self.assertEqual(guardadas, {("relacion", "1"), ("servicios", "1"), ("servicios", "2")})
+        # el valor es el de la opción (lo que comparan las reglas), con la FK a la opción elegida
+        self.assertEqual(encuesta.respuestas.get(pregunta_relevamiento__variable="relacion").respuesta, self.opciones[1])
+        self.assertEqual(encuesta.respuestas.filter(respuesta__isnull=True).count(), 0)
+        self.assertTrue(ViviendaRelevamiento.objects.con_relevado().get(pk=self.vivienda.pk).relevado)
+
+    def test_pregunta_visible_obligatoria_y_regla_de_validez(self):
+        sin_respuesta = self.client.post(self.url, {"relacion": "3"})
+        self.assertEqual(sin_respuesta.context["form"].errors, {"relacion_otro": ["Este campo es obligatorio."]})
+        invalida = self.client.post(self.url, {"relacion": "3", "relacion_otro": "ninguna"})
+        self.assertIn("no es válido", invalida.context["form"].errors["relacion_otro"][0])
+        self.assertEqual(self.client.post(self.url, {"relacion": "3", "relacion_otro": "vecino"}).status_code, 302)
+        self.assertEqual(
+            Encuesta.objects.get().respuestas.get(pregunta_relevamiento__variable="relacion_otro").valor, "vecino",
+        )
+
+    def test_el_navegador_recibe_la_regla_en_json(self):
+        respuesta = self.client.get(self.url)
+        self.assertContains(respuesta, 'data-visible-rule="{&quot;==&quot;: [{&quot;var&quot;: &quot;relacion&quot;}, 3]}"')
+        self.assertContains(respuesta, "Centro")
+
+    def test_listado_de_viviendas_y_csv(self):
+        self.client.post(self.url, {"relacion": "2", "servicios": ["1", "2"]})
+        listado = self.client.get(f"/gdu/relevamientos/{self.relevamiento.pk}/viviendas/")
+        self.assertEqual([v.relevado for v in listado.context["viviendas"]], [True])
+        relevamientos = self.client.get("/gdu/relevamientos/").context["relevamientos"]
+        self.assertEqual((relevamientos[0].total_viviendas, relevamientos[0].total_relevadas), (1, 1))
+        csv = self.client.post("/gdu/csv/", {"relevamiento": self.relevamiento.pk}).content.decode().splitlines()
+        self.assertEqual(csv[0], "vivienda,tipo,fechahora,relacion,relacion_otro,servicios")
+        self.assertTrue(csv[1].startswith("7,5,"))
+        self.assertTrue(csv[1].endswith(",2,,1;2"))
+
+
+class Importar3450Test(TestCase):
+    def test_alta_y_actualizacion_conservan_el_estado_de_regularizacion(self):
+        from gdu.management.commands.importar_3450 import Command
+
+        Adjudicatario3450.objects.create(nro_adjudicatario=1, apellido_nombre="Viejo", estado_regularizacion="En trámite")
+        registros = [
+            {"AdjuGISNroAdju": 1, "AdjuGISapeynom": "BRITES MERCEDES ", "AdjuGISEscritura": "NO",
+             "AdjuGISResFecha": "0000-00-00T00:00:00", "AdjuGISdni": 30111222},
+            {"AdjuGISNroAdju": 81357, "AdjuGISapeynom": "NUEVO", "AdjuGISEscritura": "SI", "AdjuGISResFecha": "2020-05-04"},
+        ]
+        self.assertEqual(Command()._upsert(registros), 2)
+        uno = Adjudicatario3450.objects.get(pk=1)
+        self.assertEqual(
+            (uno.apellido_nombre, uno.escritura, uno.dni, uno.res_fecha, uno.estado_regularizacion),
+            ("BRITES MERCEDES", False, 30111222, None, "En trámite"),
+        )
+        self.assertTrue(Adjudicatario3450.objects.get(pk=81357).escritura)

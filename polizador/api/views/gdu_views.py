@@ -9,8 +9,9 @@ from ninja.decorators import decorate_view
 
 from api.permissions import require_model_perm
 from api.views.generics import parse_order_by, register_simple_datatable
-from carga.models import Obra
-from gdu_piloto.models import (
+from carga.models import Localidad, Obra
+from gdu.capas import nro_adjudicatario
+from gdu.models import (
     AdjudicacionBeneficiario,
     Adjudicatario3450,
     Actuacion,
@@ -20,15 +21,12 @@ from gdu_piloto.models import (
     EstadoGestionExpropiacion,
     Expropiacion,
     Intervencion,
-    Localidad,
     Parcela,
     PlanoMensura,
     Programa,
     ResolucionCostos,
     TipoContratacion,
-    TipoEstado,
     TipoIntervencion,
-    TipoUf,
     Uf,
 )
 
@@ -42,22 +40,22 @@ def _actuacion_row(a: Actuacion, user) -> dict:
         "nombre": a.nombre,
         "ano": a.ano,
         "instrumento": a.instrumento,
-        "programa": a.id_programa.nombre if a.id_programa else "",
+        "programa": a.programa.nombre,
     }
 
 
 register_simple_datatable(
     router, Actuacion, "gdu-actuaciones",
-    queryset=Actuacion.objects.select_related("id_programa"),
+    queryset=Actuacion.objects.select_related("programa"),
     order_fields={
         "id": "id", "nombre": "nombre", "ano": "ano", "instrumento": "instrumento",
-        "programa": "id_programa__nombre",
+        "programa": "programa__nombre",
     },
     filter_fields={
         "nombre": "nombre__icontains", "instrumento": "instrumento__icontains",
-        "programa": "id_programa__nombre__icontains",
+        "programa": "programa__nombre__icontains",
     },
-    search_lookups=["nombre__icontains", "instrumento__icontains", "id_programa__nombre__icontains"],
+    search_lookups=["nombre__icontains", "instrumento__icontains", "programa__nombre__icontains"],
     row_builder=_actuacion_row,
     default_order="nombre",
 )
@@ -71,22 +69,22 @@ def _contratacion_row(c: Contratacion, user) -> dict:
         "expediente": c.expediente,
         "resolucion": c.resolucion,
         "ano": c.ano,
-        "tipo": c.tipo.nombre if c.tipo else "",
-        "actuacion": c.id_actuacion.nombre if c.id_actuacion else "",
+        "tipo": c.tipo.nombre,
+        "actuacion": c.actuacion.nombre,
     }
 
 
 register_simple_datatable(
     router, Contratacion, "gdu-contrataciones",
-    queryset=Contratacion.objects.select_related("id_actuacion", "tipo"),
+    queryset=Contratacion.objects.select_related("actuacion", "tipo"),
     order_fields={
         "id": "id", "nombre": "nombre", "expediente": "expediente", "resolucion": "resolucion",
-        "ano": "ano", "tipo": "tipo__nombre", "actuacion": "id_actuacion__nombre",
+        "ano": "ano", "tipo": "tipo__nombre", "actuacion": "actuacion__nombre",
     },
     filter_fields={
         "nombre": "nombre__icontains", "expediente": "expediente__icontains",
         "resolucion": "resolucion__icontains", "tipo": "tipo__nombre__icontains",
-        "actuacion": "id_actuacion__nombre__icontains",
+        "actuacion": "actuacion__nombre__icontains",
     },
     search_lookups=["nombre__icontains", "expediente__icontains", "resolucion__icontains"],
     row_builder=_contratacion_row,
@@ -97,25 +95,25 @@ register_simple_datatable(
 # --- Contratacion sin obra vinculada (gdu.ObraContratacion) ---
 def _contratacion_sin_obra_row(c: Contratacion, user) -> dict:
     row = _contratacion_row(c, user)
-    row["programa"] = c.id_actuacion.id_programa.nombre if c.id_actuacion and c.id_actuacion.id_programa else ""
+    row["programa"] = c.actuacion.programa.nombre
     return row
 
 
 register_simple_datatable(
     router, Contratacion, "gdu-contrataciones-sin-obra",
     queryset=Contratacion.objects.filter(obras_vinculadas__isnull=True).select_related(
-        "id_actuacion__id_programa", "tipo",
+        "actuacion__programa", "tipo",
     ),
     order_fields={
         "id": "id", "nombre": "nombre", "expediente": "expediente", "resolucion": "resolucion",
-        "ano": "ano", "tipo": "tipo__nombre", "actuacion": "id_actuacion__nombre",
-        "programa": "id_actuacion__id_programa__nombre",
+        "ano": "ano", "tipo": "tipo__nombre", "actuacion": "actuacion__nombre",
+        "programa": "actuacion__programa__nombre",
     },
     filter_fields={
         "nombre": "nombre__icontains", "expediente": "expediente__icontains",
         "resolucion": "resolucion__icontains", "tipo": "tipo__nombre__icontains",
-        "actuacion": "id_actuacion__nombre__icontains",
-        "programa": "id_actuacion__id_programa_id",
+        "actuacion": "actuacion__nombre__icontains",
+        "programa": "actuacion__programa_id",
     },
     search_lookups=["nombre__icontains", "expediente__icontains", "resolucion__icontains"],
     row_builder=_contratacion_sin_obra_row,
@@ -129,10 +127,9 @@ register_simple_datatable(
 def datatable_gdu_contrataciones_sin_obra_filtro_programa(request):
     choices = (
         Contratacion.objects.filter(obras_vinculadas__isnull=True)
-        .exclude(id_actuacion__id_programa=None)
-        .values_list("id_actuacion__id_programa_id", "id_actuacion__id_programa__nombre")
+        .values_list("actuacion__programa_id", "actuacion__programa__nombre")
         .distinct()
-        .order_by("id_actuacion__id_programa__nombre")
+        .order_by("actuacion__programa__nombre")
     )
     return {"choices": list(choices)}
 
@@ -193,26 +190,26 @@ def _intervencion_row(i: Intervencion, user) -> dict:
     return {
         "id": i.id,
         "nombre": i.nombre,
-        "tipo": i.tipo.nombre if i.tipo else "",
-        "localidad": i.id_localidad.localidad if i.id_localidad else "",
-        "contratacion": i.id_contratacion.nombre if i.id_contratacion else "",
+        "tipo": i.tipo.nombre,
+        "localidad": i.localidad.localidad_nombre,
+        "contratacion": str(i.contratacion),
         "avance": i.avance,
-        "estado": i.estado.nombre if i.estado else "",
+        "estado": i.get_estado_display(),
     }
 
 
 register_simple_datatable(
     router, Intervencion, "gdu-intervenciones",
-    queryset=Intervencion.objects.select_related("id_localidad", "id_contratacion", "tipo", "estado"),
+    queryset=Intervencion.objects.select_related("localidad", "contratacion", "tipo"),
     order_fields={
         "id": "id", "nombre": "nombre", "tipo": "tipo__nombre",
-        "localidad": "id_localidad__localidad", "contratacion": "id_contratacion__nombre",
-        "avance": "avance", "estado": "estado__nombre",
+        "localidad": "localidad__localidad_nombre", "contratacion": "contratacion__nombre",
+        "avance": "avance", "estado": "estado",
     },
     filter_fields={
         "nombre": "nombre__icontains", "tipo": "tipo__nombre__icontains",
-        "localidad": "id_localidad__localidad__icontains",
-        "estado": "estado__nombre__icontains",
+        "localidad": "localidad__localidad_nombre__icontains",
+        "estado": "estado__icontains",
     },
     search_lookups=["nombre__icontains"],
     row_builder=_intervencion_row,
@@ -222,7 +219,7 @@ register_simple_datatable(
 
 # --- Programa (gdu) ---
 def _programa_row(p: Programa, user) -> dict:
-    return {"id": p.id, "nombre": p.nombre, "origen": p.origen, "fiinancia": p.fiinancia}
+    return {"id": p.id, "nombre": p.nombre, "origen": p.get_origen_display()}
 
 
 register_simple_datatable(
@@ -240,16 +237,16 @@ def _barrio_row(b: Barrio, user) -> dict:
     return {
         "id": b.id,
         "nombre": b.nombre,
-        "intervencion": b.id_intervencion.nombre if b.id_intervencion else "",
+        "intervencion": b.intervencion.nombre,
     }
 
 
 register_simple_datatable(
     router, Barrio, "gdu-barrios",
-    queryset=Barrio.objects.select_related("id_intervencion"),
-    order_fields={"id": "id", "nombre": "nombre", "intervencion": "id_intervencion__nombre"},
+    queryset=Barrio.objects.select_related("intervencion"),
+    order_fields={"id": "id", "nombre": "nombre", "intervencion": "intervencion__nombre"},
     filter_fields={
-        "nombre": "nombre__icontains", "intervencion": "id_intervencion__nombre__icontains",
+        "nombre": "nombre__icontains", "intervencion": "intervencion__nombre__icontains",
     },
     search_lookups=["nombre__icontains"],
     row_builder=_barrio_row,
@@ -262,22 +259,22 @@ def _parcela_row(p: Parcela, user) -> dict:
     return {
         "id": p.id,
         "nomenclatura": p.nomenclatura,
-        "intervencion": p.id_intervencion.nombre if p.id_intervencion else "",
-        "destino": p.destino.nombre if p.destino else "",
+        "intervencion": p.intervencion.nombre,
+        "destino": p.destino.nombre,
         "es_ph": p.es_ph,
     }
 
 
 register_simple_datatable(
     router, Parcela, "gdu-parcelas",
-    queryset=Parcela.objects.select_related("id_intervencion", "destino"),
+    queryset=Parcela.objects.con_es_ph().select_related("intervencion", "destino"),
     order_fields={
-        "id": "id", "nomenclatura": "nomenclatura", "intervencion": "id_intervencion__nombre",
+        "id": "id", "nomenclatura": "nomenclatura", "intervencion": "intervencion__nombre",
         "destino": "destino__nombre", "es_ph": "es_ph",
     },
     filter_fields={
         "nomenclatura": "nomenclatura__icontains",
-        "intervencion": "id_intervencion__nombre__icontains",
+        "intervencion": "intervencion__nombre__icontains",
         "destino": "destino__nombre__icontains",
     },
     search_lookups=["nomenclatura__icontains"],
@@ -291,53 +288,55 @@ def _uf_row(u: Uf, user) -> dict:
     return {
         "id": u.id,
         "uf": u.uf,
-        "parcela": u.id_parcela.nomenclatura if u.id_parcela else "",
-        "tipo": u.tipo.nombre if u.tipo else "",
-        "nro_adjudicatario": u.nro_adjudicatario,
-        "irregular": u.irregular,
+        "poligono": u.poligono,
+        "parcela": u.parcela.nomenclatura,
+        "nro_adjudicatario": nro_adjudicatario(u),
+        "dni": u.dni,
+        "estado_dominial": u.get_estado_dominial_display(),
         "fr_mat": u.fr_mat,
     }
 
 
 register_simple_datatable(
     router, Uf, "gdu-ufs",
-    queryset=Uf.objects.select_related("id_parcela", "tipo"),
+    queryset=Uf.objects.select_related("parcela"),
     order_fields={
-        "id": "id", "uf": "uf", "parcela": "id_parcela__nomenclatura", "tipo": "tipo__nombre",
-        "nro_adjudicatario": "nro_adjudicatario", "irregular": "irregular", "fr_mat": "fr_mat",
+        "id": "id", "uf": "uf", "poligono": "poligono", "parcela": "parcela__nomenclatura",
+        "nro_adjudicatario": "adjudicatario", "dni": "dni", "estado_dominial": "estado_dominial", "fr_mat": "fr_mat",
     },
     filter_fields={
-        "uf": "uf__icontains", "parcela": "id_parcela__nomenclatura__icontains",
-        "tipo": "tipo__nombre__icontains", "fr_mat": "fr_mat__icontains",
+        "uf": "uf__icontains", "poligono": "poligono__icontains", "parcela": "parcela__nomenclatura__icontains",
+        "fr_mat": "fr_mat__icontains",
     },
-    search_lookups=["uf__icontains", "fr_mat__icontains"],
+    search_lookups=["uf__icontains", "poligono__icontains", "fr_mat__icontains"],
     row_builder=_uf_row,
     default_order="uf",
 )
 
 
-# --- Localidad (gdu) ---
+# --- Localidad (compartida con carga) ---
 def _localidad_row(l: Localidad, user) -> dict:
     return {
         "id": l.id,
-        "localidad": l.localidad,
-        "departamento": l.departamento,
-        "provincia": l.provincia,
-        "codloc": l.codloc,
+        "localidad": l.localidad_nombre,
+        "departamento": l.localidad_departamento.departamento_nombre,
+        "municipio": l.localidad_municipio.municipio_nombre,
     }
 
 
 register_simple_datatable(
     router, Localidad, "gdu-localidades",
+    queryset=Localidad.objects.select_related("localidad_departamento", "localidad_municipio"),
     order_fields={
-        "id": "id", "localidad": "localidad", "departamento": "departamento",
-        "provincia": "provincia", "codloc": "codloc",
+        "id": "id", "localidad": "localidad_nombre", "departamento": "localidad_departamento__departamento_nombre",
+        "municipio": "localidad_municipio__municipio_nombre",
     },
     filter_fields={
-        "localidad": "localidad__icontains", "departamento": "departamento__icontains",
-        "provincia": "provincia__icontains",
+        "localidad": "localidad_nombre__icontains",
+        "departamento": "localidad_departamento__departamento_nombre__icontains",
+        "municipio": "localidad_municipio__municipio_nombre__icontains",
     },
-    search_lookups=["localidad__icontains", "departamento__icontains"],
+    search_lookups=["localidad_nombre__icontains", "localidad_departamento__departamento_nombre__icontains"],
     row_builder=_localidad_row,
     default_order="localidad",
 )
@@ -349,7 +348,7 @@ def _expropiacion_row(e: Expropiacion, user) -> dict:
         "id": e.id,
         "nro_ley": e.nro_ley,
         "ano_ley": e.ano_ley,
-        "localidad": e.localidad.localidad if e.localidad else "",
+        "localidad": e.localidad.localidad_nombre,
         "asentamiento_nombre": e.asentamiento_nombre,
         "asentamiento": e.asentamiento,
     }
@@ -360,12 +359,12 @@ register_simple_datatable(
     queryset=Expropiacion.objects.select_related("localidad"),
     order_fields={
         "id": "id", "nro_ley": "nro_ley", "ano_ley": "ano_ley",
-        "localidad": "localidad__localidad", "asentamiento_nombre": "asentamiento_nombre",
+        "localidad": "localidad__localidad_nombre", "asentamiento_nombre": "asentamiento_nombre",
         "asentamiento": "asentamiento",
     },
     filter_fields={
-        "nro_ley": "nro_ley__icontains", "asentamiento_nombre": "asentamiento_nombre__icontains",
-        "localidad": "localidad__localidad__icontains",
+        "nro_ley": "nro_ley", "asentamiento_nombre": "asentamiento_nombre__icontains",
+        "localidad": "localidad__localidad_nombre__icontains",
     },
     search_lookups=["asentamiento_nombre__icontains"],
     row_builder=_expropiacion_row,
@@ -439,9 +438,7 @@ def _nombre_row(obj, user) -> dict:
 
 for _model, _slug in (
     (TipoContratacion, "gdu-tipos-contratacion"),
-    (TipoEstado, "gdu-tipos-estado"),
     (TipoIntervencion, "gdu-tipos-intervencion"),
-    (TipoUf, "gdu-tipos-uf"),
     (DestinoParcela, "gdu-destinos-parcela"),
     (EstadoGestionExpropiacion, "gdu-estados-gestion-expropiacion"),
 ):
@@ -456,39 +453,37 @@ for _model, _slug in (
 
 
 # --- Adjudicatario3450 ---
-# Bespoke endpoint (no register_simple_datatable): su PK es `adjugisnroadju`, no
+# Bespoke endpoint (no register_simple_datatable): su PK es `nro_adjudicatario`, no
 # `id`, y register_simple_datatable ordena siempre por "id" como desempate fijo.
 _ADJ3450_ORDER_FIELDS = {
-    "adjugisnroadju": "adjugisnroadju",
-    "adjugisapeynom": "adjugisapeynom",
-    "adjugisdireccion": "adjugisdireccion",
-    "adjugisdni": "adjugisdni",
-    "adjugissituacion": "adjugissituacion",
-    "adjugisestadoreg": "adjugisestadoreg",
+    "nro_adjudicatario": "nro_adjudicatario",
+    "apellido_nombre": "apellido_nombre",
+    "direccion": "direccion",
+    "dni": "dni",
+    "situacion": "situacion",
+    "estado_regularizacion": "estado_regularizacion",
 }
 
 _ADJ3450_FILTER_FIELDS = {
-    "adjugisapeynom": "adjugisapeynom__icontains",
-    "adjugisdireccion": "adjugisdireccion__icontains",
-    "adjugisdni": "adjugisdni__icontains",
-    "adjugissituacion": "adjugissituacion__icontains",
-    "adjugisestadoreg": "adjugisestadoreg__icontains",
+    "apellido_nombre": "apellido_nombre__icontains",
+    "direccion": "direccion__icontains",
+    "dni": "dni",
+    "situacion": "situacion__icontains",
+    "estado_regularizacion": "estado_regularizacion__icontains",
 }
 
-_ADJ3450_SEARCH_LOOKUPS = [
-    "adjugisapeynom__icontains", "adjugisdireccion__icontains", "adjugismatricula__icontains",
-]
+_ADJ3450_SEARCH_LOOKUPS = ["apellido_nombre__icontains", "direccion__icontains", "matricula__icontains"]
 
 
 def _adjudicatario3450_row(a: Adjudicatario3450) -> dict:
     return {
-        "id": a.adjugisnroadju,
-        "adjugisnroadju": a.adjugisnroadju,
-        "adjugisapeynom": a.adjugisapeynom,
-        "adjugisdireccion": a.adjugisdireccion,
-        "adjugisdni": a.adjugisdni,
-        "adjugissituacion": a.adjugissituacion,
-        "adjugisestadoreg": a.adjugisestadoreg,
+        "id": a.nro_adjudicatario,
+        "nro_adjudicatario": a.nro_adjudicatario,
+        "apellido_nombre": a.apellido_nombre,
+        "direccion": a.direccion,
+        "dni": a.dni,
+        "situacion": a.situacion,
+        "estado_regularizacion": a.estado_regularizacion,
     }
 
 
@@ -500,7 +495,7 @@ def datatable_adjudicatarios_3450(
     start: int = 0,
     length: int = 50,
     search: str = "",
-    order_by: str = "adjugisapeynom",
+    order_by: str = "apellido_nombre",
     filters: str = "{}",
 ):
     qs = Adjudicatario3450.objects.all()
@@ -513,18 +508,22 @@ def datatable_adjudicatarios_3450(
     for key, value in active_filters.items():
         lookup = _ADJ3450_FILTER_FIELDS.get(key)
         if lookup and value not in (None, ""):
+            if key == "dni" and not str(value).isdigit():
+                continue
             qs = qs.filter(**{lookup: value})
 
     if search:
         search_q = Q()
         for lookup in _ADJ3450_SEARCH_LOOKUPS:
             search_q |= Q(**{lookup: search})
-        qs = qs.filter(search_q).distinct()
+        if search.isdigit():
+            search_q |= Q(nro_adjudicatario=int(search)) | Q(dni=int(search))
+        qs = qs.filter(search_q)
 
     records_filtered = qs.count()
     qs = qs.order_by(
-        *parse_order_by(order_by, _ADJ3450_ORDER_FIELDS, default_field="adjugisnroadju"),
-        "adjugisnroadju",
+        *parse_order_by(order_by, _ADJ3450_ORDER_FIELDS, default_field="nro_adjudicatario"),
+        "nro_adjudicatario",
     )
     page = qs[start:] if length == -1 else qs[start:start + length]
 

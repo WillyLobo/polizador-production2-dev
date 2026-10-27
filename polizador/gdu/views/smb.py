@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_GET
 
+from gdu.auditoria import registrar_evento
+
 # ej: "20-107-86/subdivision" (tal cual viven en visualizador.viviendas.planos,
 # separados por ", " cuando una vivienda tiene varios). El sufijo "/subdivision"
 # (o cualquier otro texto) después del año se descarta, igual que hacía el
@@ -57,6 +59,8 @@ def plano(request):
         with smbclient.open_file(ruta_completa, mode="rb") as f:
             contenido = f.read()
     except Exception:
+        registrar_evento(request, "descargaPlano", {"success": False, "nro_plano": plano})
         return JsonResponse({"errors": "No se encontró el plano"}, status=404)
 
+    registrar_evento(request, "descargaPlano", {"success": True, "nro_plano": plano})
     return HttpResponse(contenido, content_type="image/jpeg")

@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const maxIdsDetalle = {{ max_ids_detalle }};
   const consultar3450Url = "{% url 'gdu:consultar_3450' %}";
   const actualizarNroAdjBaseUrl = "{% url 'gdu:actualizar_nro_adjudicatario' uf_id=0 %}";
-  const puedeEditarNroAdjudicatario = {{ perms.gdu_piloto.editar_nro_adjudicatario|yesno:"true,false" }};
+  const puedeEditarNroAdjudicatario = {{ perms.gdu.editar_nro_adjudicatario|yesno:"true,false" }};
   const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
 
   // filtros del modal de búsqueda avanzada (Programa/Actuación/Grupo/Plan/Estado de Gestión/Ley/Municipio);
@@ -205,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const capasExtra = []; // [{ layer, source, toggleId }]
 
-  {% if perms.gdu_piloto.ver_expropiaciones %}
+  {% if perms.gdu.ver_expropiaciones %}
   const expropiacionesSource = bboxSource("{% url 'gdu:geojson_expropiaciones' %}", true, "Expropiaciones");
   capasExtra.push({
     layer: capaPoligono(expropiacionesSource, "#6f42c1"),
@@ -216,7 +216,7 @@ document.addEventListener("DOMContentLoaded", function () {
   capasFiltrables.push(expropiacionesSource);
   {% endif %}
 
-  {% if perms.gdu_piloto.ver_viviendas_dispersas %}
+  {% if perms.gdu.ver_viviendas_dispersas %}
   const viviendasDispersasSource = bboxSource("{% url 'gdu:geojson_viviendas_dispersas' %}", true, "Viviendas Dispersas");
   capasExtra.push({
     layer: capaPuntos(viviendasDispersasSource, "#20c997", 12),
@@ -227,7 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
   capasFiltrables.push(viviendasDispersasSource);
   {% endif %}
 
-  {% if perms.gdu_piloto.ver_plano_mensura %}
+  {% if perms.gdu.ver_plano_mensura %}
   const planosMensuraSource = bboxSource("{% url 'gdu:geojson_planos_mensura' %}", false, "Planos de Mensura");
   capasExtra.push({
     layer: capaPoligono(planosMensuraSource, "#6c757d", 13),
@@ -237,7 +237,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   {% endif %}
 
-  {% if perms.gdu_piloto.ver_catastro_urbano %}
+  {% if perms.gdu.ver_catastro_urbano %}
   const catastroUrbanoSource = bboxSource("{% url 'gdu:geojson_catastro_urbano' %}", true, "Catastro Urbano");
   capasExtra.push({
     layer: capaPoligono(catastroUrbanoSource, "#495057", 14),
@@ -248,7 +248,7 @@ document.addEventListener("DOMContentLoaded", function () {
   capasFiltrables.push(catastroUrbanoSource);
   {% endif %}
 
-  {% if perms.gdu_piloto.ver_escriturar %}
+  {% if perms.gdu.ver_escriturar %}
   const paraEscriturarSource = bboxSource("{% url 'gdu:geojson_para_escriturar' %}", true, "Para Escriturar");
   capasExtra.push({
     layer: capaPoligono(paraEscriturarSource, "#198754", 13),
@@ -728,14 +728,14 @@ document.addEventListener("DOMContentLoaded", function () {
       html += `<div class="border rounded p-2 mb-2" data-idx="${idx}"><dl class="mb-0">`;
       for (const key in props) {
         if (key === "geometry" || key === "planos" || key === "obras") continue;
-        html += `<dt>${key}</dt><dd>${props[key] !== null && props[key] !== undefined ? props[key] : "-"}</dd>`;
+        html += `<dt>${key}</dt><dd>${props[key] !== null && props[key] !== undefined ? escapeHtml(String(props[key])) : "-"}</dd>`;
       }
       html += "</dl>";
       if (props.planos) {
         html += '<div class="mt-1">';
         props.planos.split(",").map(function (p) { return p.trim(); }).filter(Boolean).forEach(function (ref) {
           const url = planoUrl + "?plano=" + encodeURIComponent(ref);
-          html += `<a href="${url}" target="_blank" class="badge text-bg-secondary text-decoration-none me-1 mb-1">${ref}</a>`;
+          html += `<a href="${url}" target="_blank" class="badge text-bg-secondary text-decoration-none me-1 mb-1">${escapeHtml(ref)}</a>`;
         });
         html += "</div>";
       }
@@ -743,7 +743,7 @@ document.addEventListener("DOMContentLoaded", function () {
         html += '<div class="mt-1 d-flex flex-column gap-1">';
         props.obras.forEach(function (obra) {
           const url = estadoObraBaseUrl.replace(/\/0$/, "/" + obra.id);
-          html += `<a href="${url}" target="_blank" class="btn btn-sm btn-outline-primary">Ver obra${obra.nombre ? ": " + obra.nombre : ""}</a>`;
+          html += `<a href="${url}" target="_blank" class="btn btn-sm btn-outline-primary">Ver obra${obra.nombre ? ": " + escapeHtml(obra.nombre) : ""}</a>`;
         });
         html += "</div>";
       }
@@ -1044,7 +1044,7 @@ document.addEventListener("DOMContentLoaded", function () {
       <i class="bi bi-eraser"></i> Borrar mediciones
     </button>
 
-    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalDescargarQgis" title="Descarga gdu.qgz reconectado a tu usuario para abrir en QGIS Desktop">
+    <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modalDescargarQgis" title="Descarga el proyecto de QGIS Desktop con las capas de GDU">
       <i class="bi bi-download"></i> Proyecto QGIS
     </button>
 
@@ -1093,31 +1093,31 @@ document.addEventListener("DOMContentLoaded", function () {
           <input class="form-check-input" type="checkbox" id="toggle-viviendas" checked style="accent-color: #dc3545;">
           <label class="form-check-label" for="toggle-viviendas"><span class="gdu-legend-swatch" style="background: #dc3545;"></span>Viviendas</label>
         </div>
-        {% if perms.gdu_piloto.ver_expropiaciones %}
+        {% if perms.gdu.ver_expropiaciones %}
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="toggle-expropiaciones" style="accent-color: #6f42c1;">
           <label class="form-check-label" for="toggle-expropiaciones"><span class="gdu-legend-swatch" style="background: #6f42c1;"></span>Expropiaciones</label>
         </div>
         {% endif %}
-        {% if perms.gdu_piloto.ver_viviendas_dispersas %}
+        {% if perms.gdu.ver_viviendas_dispersas %}
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="toggle-viviendas-dispersas" style="accent-color: #20c997;">
           <label class="form-check-label" for="toggle-viviendas-dispersas"><span class="gdu-legend-swatch" style="background: #20c997;"></span>Viviendas Dispersas</label>
         </div>
         {% endif %}
-        {% if perms.gdu_piloto.ver_plano_mensura %}
+        {% if perms.gdu.ver_plano_mensura %}
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="toggle-planos-mensura" style="accent-color: #6c757d;">
           <label class="form-check-label" for="toggle-planos-mensura"><span class="gdu-legend-swatch" style="background: #6c757d;"></span>Planos de Mensura</label>
         </div>
         {% endif %}
-        {% if perms.gdu_piloto.ver_catastro_urbano %}
+        {% if perms.gdu.ver_catastro_urbano %}
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="toggle-catastro-urbano" style="accent-color: #495057;">
           <label class="form-check-label" for="toggle-catastro-urbano"><span class="gdu-legend-swatch" style="background: #495057;"></span>Catastro Urbano</label>
         </div>
         {% endif %}
-        {% if perms.gdu_piloto.ver_escriturar %}
+        {% if perms.gdu.ver_escriturar %}
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="toggle-para-escriturar" style="accent-color: #198754;">
           <label class="form-check-label" for="toggle-para-escriturar"><span class="gdu-legend-swatch" style="background: #198754;"></span>Para Escriturar</label>
@@ -1200,37 +1200,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
 <div class="modal fade" id="modalDescargarQgis" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog">
-    <form method="get" action="{% url 'gdu:descargar_proyecto_qgis' %}">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Descargar proyecto QGIS</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <p class="small">Descarga un .zip con el proyecto de QGIS Desktop (gdu.qgz + formularios) ya conectado a las capas de GeoServer con tu usuario.</p>
-          <label class="form-label small mb-1" for="ldap-username-descarga-qgis">Usuario de red / LDAP (opcional)</label>
-          <input type="text" class="form-control form-control-sm" id="ldap-username-descarga-qgis" name="ldap_username" placeholder="ej: jperez">
-          <p class="text-muted small mt-2 mb-0">
-            Completá esto solo si iniciaste sesión acá con una cuenta que <strong>no</strong> es tu usuario de
-            red/LDAP (por ejemplo, una cuenta local) -- así el proyecto se conecta a GeoServer con tu usuario de
-            red real en vez del que usaste para entrar. Si iniciaste sesión con tu usuario de red, dejalo vacío.
-          </p>
-          <label class="form-label small mb-1 mt-3" for="authcfg-descarga-qgis">ID de autenticación de QGIS (opcional)</label>
-          <input type="text" class="form-control form-control-sm" id="authcfg-descarga-qgis" name="authcfg" maxlength="7" pattern="[A-Za-z0-9]{7}" placeholder="ej: a1b2c3d">
-          <p class="text-muted small mt-2 mb-0">
-            Si dejás esto vacío, QGIS te va a pedir tu contraseña de red la primera vez que abras cada capa
-            (puede ser lento en las capas más grandes, como Manzana o Calle). Para evitarlo, configurá antes
-            una credencial en QGIS: <strong>Configuración &gt; Opciones &gt; Autenticación</strong>, botón
-            <strong>+</strong>, tipo <strong>Basic</strong>, con tu usuario y contraseña de red, y pegá acá
-            el ID de 7 caracteres que QGIS le asigna. Si cargás esto, el campo de usuario de red de arriba
-            se ignora.
-          </p>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary btn-sm"><i class="bi bi-download"></i> Descargar</button>
-        </div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Descargar proyecto QGIS</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
-    </form>
+      <div class="modal-body small">
+        <p>El proyecto de QGIS Desktop (gdu-oapif.qgz) con las capas de GDU para consultar y editar. Es un solo archivo, sin carpetas al lado.</p>
+        <p class="mb-1">Antes de abrirlo por primera vez, en QGIS:</p>
+        <ol class="mb-2">
+          <li><strong>Configuración &gt; Opciones &gt; Autenticación</strong>, botón <strong>+</strong>.</li>
+          <li>Tipo <strong>Basic</strong>, nombre "GDU OAPIF", tu usuario y contraseña de este sistema.</li>
+          <li>Destrabá el candado del campo <strong>Id</strong> y escribí exactamente <code>gduoapf</code>.</li>
+        </ol>
+        <p class="text-muted mb-0">Para editar hace falta estar en el grupo "GDU: Editores QGIS"; sin él, las capas se abren solo para consulta.</p>
+      </div>
+      <div class="modal-footer">
+        <a href="{% url 'gdu:descargar_proyecto_qgis' %}" class="btn btn-primary btn-sm"><i class="bi bi-download"></i> Descargar</a>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}

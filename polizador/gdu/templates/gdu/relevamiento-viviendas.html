@@ -19,10 +19,10 @@
     <tbody>
       {% for v in viviendas %}
       <tr>
-        <td>{{ v.vivienda }}</td>
-        <td>{{ v.properties.adjudicatario|default:"-" }}</td>
-        <td>{{ v.properties.barrio|default:"-" }}</td>
-        <td>{{ v.properties.mz|default:"-" }} / {{ v.properties.parc|default:"-" }}</td>
+        <td>{{ v.numero }}</td>
+        <td>{{ v.datos.adjudicatario|default:"-" }}</td>
+        <td>{{ v.datos.barrio|default:"-" }}</td>
+        <td>{{ v.datos.mz|default:"-" }} / {{ v.datos.parc|default:"-" }}</td>
         <td>
           {% if v.relevado %}
             <span class="badge bg-success">Relevada</span>
@@ -31,7 +31,7 @@
           {% endif %}
         </td>
         <td>
-          <a href="{% url 'gdu:encuesta_form' relevamiento.id v.vivienda %}" class="btn btn-sm btn-outline-primary">
+          <a href="{% url 'gdu:encuesta_form' relevamiento.id v.numero %}" class="btn btn-sm btn-outline-primary">
             <i class="bi bi-clipboard-check me-1"></i>Encuesta
           </a>
         </td>
