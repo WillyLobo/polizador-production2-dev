@@ -600,3 +600,24 @@ class OapifColeccionesTest(OapifTest):
         respuesta = self.pedir("post", "/collections/intervenciones_ejecutores/items", "editor_qgis", feature)
         self.assertEqual(respuesta.status_code, 422)
         self.assertIn("Intervención y Ejecutor", respuesta.json()["detail"])
+
+    def test_uf_trae_la_nomenclatura_de_su_parcela(self):
+        parcela = Parcela.objects.create(intervencion=self.intervencion, destino=self.destino, geom=CUADRADO, **NOMENCLATURA)
+        uf = Uf.objects.create(parcela=parcela, uf="011", geom=CUADRADO)
+        parcela.refresh_from_db()
+        for coleccion in ("ufs", "viviendas_sin_plan_grupo"):
+            respuesta = self.pedir("get", f"/collections/{coleccion}/items/{uf.pk}", "editor_qgis")
+            self.assertEqual(respuesta.status_code, 200, respuesta.content)
+            self.assertEqual(respuesta.json()["properties"]["parcela_nomenclatura"], parcela.nomenclatura)
+        schema = self.client.get(f"{self.BASE}/collections/ufs/schema", HTTP_AUTHORIZATION=self.auth["editor_qgis"],
+                                 HTTP_ACCEPT="application/schema+json").json()
+        self.assertTrue(schema["properties"]["parcela_nomenclatura"]["readOnly"])
+        # QGIS la manda de vuelta al modificar
+        cambio = self.pedir("put", f"/collections/ufs/items/{uf.pk}", "editor_qgis", {
+            "type": "Feature",
+            "properties": {"parcela": parcela.pk, "uf": "012", "parcela_nomenclatura": "otra cosa"},
+            "geometry": {"type": "Polygon", "coordinates": [[[-58.98, -27.49], [-58.98, -27.4899], [-58.9799, -27.4899], [-58.98, -27.49]]]},
+        })
+        self.assertEqual(cambio.status_code, 200, cambio.content)
+        self.assertEqual(cambio.json()["properties"]["parcela_nomenclatura"], parcela.nomenclatura)
+        self.assertEqual(Uf.objects.get(pk=uf.pk).uf, "012")

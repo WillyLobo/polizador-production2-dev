@@ -75,11 +75,15 @@ MOSTRAR = {
     "resoluciones_costos": "\"nro_largo\" || '/' || \"nro_corto\" || ' - ' || \"ano\" || ' (' || \"tipo\" || ')'",
     "planos_mensura": "\"depto\" || '-' || \"nro\" || '-' || \"ano\"",
     PARCELAS: "coalesce(\"nomenclatura\", 'Parcela ' || \"id\")",
-    "ufs": "'UF ' || \"uf\" || ' (parcela ' || \"parcela\" || ')'",
+    # parcela_nomenclatura la agrega el servidor (la FK parcela es un id interno)
+    "ufs": "'UF ' || \"uf\" || coalesce(' - ' || \"parcela_nomenclatura\", ' (parcela ' || \"parcela\" || ')')",
     "tierras": "coalesce(nullif(\"propietario\", ''), \"nomenclatura\", 'Tierra ' || \"id\")",
     "expropiaciones": "'Ley ' || \"nro_ley\" || coalesce(\"letra_ley\", '') || coalesce('/' || \"ano_ley\", '')",
     "parcelas_expropiadas": "coalesce(\"nomenclatura\", 'Parcela expropiada ' || \"id\")",
     "localidades": "\"localidad_nombre\"",
+    **{coleccion_id: "'UF ' || \"uf\" || coalesce(' - ' || \"parcela_nomenclatura\", '')" for coleccion_id in (
+        "viviendas_sin_plan_grupo", "viviendas_con_plan_grupo_sin_adjudicatario", "viviendas_para_escriturar",
+    )},
     "adjudicatarios_3450": "\"nro_adjudicatario\" || ' - ' || \"apellido_nombre\"",
 }
 # FK que quedan como número: el combo carga la tabla referenciada entera (~70.000 adjudicatarios,

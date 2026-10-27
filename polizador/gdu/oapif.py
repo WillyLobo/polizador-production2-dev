@@ -21,7 +21,7 @@ from django.contrib.auth import authenticate, get_user_model
 from django.contrib.gis.geos import GEOSGeometry
 from django.core.cache import cache
 from django.core.exceptions import NON_FIELD_ERRORS, ValidationError as DjangoValidationError
-from django.db.models import AutoField, BigAutoField, CharField, ProtectedError, Q, RestrictedError, TextField
+from django.db.models import AutoField, BigAutoField, CharField, F, ProtectedError, Q, RestrictedError, TextField
 from django.http import Http404, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django_oapif import OAPIF, OapifCollection
@@ -29,6 +29,7 @@ from django_oapif.auth import BasicAuth, DjangoAuth
 from django_oapif.crs import CRS84
 from ninja.errors import AuthorizationError, HttpError, ValidationError
 from ninja.renderers import JSONRenderer
+from pydantic import create_model
 
 from carga.models import Localidad
 from gdu.models import (
@@ -250,7 +251,33 @@ for _zona in ZONAS_PARCELAS:
     coleccion(Parcela, _zona["id"], _zona["titulo"], ParcelasDeZona, zona=GEOSGeometry(_zona["wkt"], srid=SRID_GDU))
 
 
-class Ufs(ColeccionGdu):
+class ConNomenclaturaDeParcela:
+    """Suma a las UF la nomenclatura de su parcela, de solo lectura: QGIS identifica la UF
+    con ella (la FK parcela es un id interno) y buscarla en la capa de parcelas sería un
+    pedido al servidor por cada UF."""
+    PROPIEDAD = "parcela_nomenclatura"
+
+    def query(self, request, crs, bbox=None, bbox_crs=None):
+        return super().query(request, crs, bbox, bbox_crs).annotate(**{self.PROPIEDAD: F("parcela__nomenclatura")})
+
+    def get_feature_properties_schema(self, request):
+        base = super().get_feature_properties_schema(request)
+        return create_model(base.__name__, __base__=base, **{self.PROPIEDAD: (str | None, None)})
+
+    def get_json_schema(self, request):
+        schema = super().get_json_schema(request)
+        schema["properties"][self.PROPIEDAD] = {
+            "title": "Nomenclatura de la parcela", "type": "string", "readOnly": True,
+            "x-ogc-propertySeq": len(schema["properties"]) + 1,
+        }
+        return schema
+
+    def get_readonly_fields(self, request, obj=None):
+        # QGIS la manda de vuelta en altas y PUT: se descarta como el resto de lo no editable
+        return (*super().get_readonly_fields(request, obj), self.PROPIEDAD)
+
+
+class Ufs(ConNomenclaturaDeParcela, ColeccionGdu):
     def get_readonly_fields(self, request, obj=None):
         # permisos por campo heredados del visualizador
         solo_lectura = set(super().get_readonly_fields(request, obj))
@@ -267,7 +294,7 @@ coleccion(PreAdjudicatarioDispersa, "pre_adjudicatarios_dispersa", "Pre-adjudica
 coleccion(ZonaParcelas, "zonas_parcelas", "Zonificación de Resistencia")
 
 
-class ViviendasFiltradas(ColeccionSoloLectura):
+class ViviendasFiltradas(ConNomenclaturaDeParcela, ColeccionSoloLectura):
     """Reemplazan a las vistas vistas.viviendas_* del proyecto heredado: son UF filtradas;
     los datos del Sistema 3450 se suman en QGIS uniendo con adjudicatarios_3450."""
     filtro = Q()
