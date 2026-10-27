@@ -2,7 +2,7 @@ import requests
 from django.conf import settings
 from django.core.management.base import BaseCommand
 
-from gdu.models import Adjudicatario3450
+from gdu_piloto.models import Adjudicatario3450
 
 PAGE_SIZE = 5000
 MAXIMO = 70000

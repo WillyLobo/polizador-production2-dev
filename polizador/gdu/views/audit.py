@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from gdu.models import AuditLogs
+from gdu_piloto.models import AuditLogs
 
 
 def _client_ip(request):

@@ -9,7 +9,7 @@ from django.http import Http404, HttpResponse, HttpResponseBadRequest, JsonRespo
 from django.shortcuts import render
 
 from gdu.matching import normalizar_expediente
-from gdu.models import (
+from gdu_piloto.models import (
     Barrios,
     Catastrourbano,
     Expropiaciones,
@@ -159,13 +159,13 @@ def _distintos_enteros(queryset, campo):
 
 
 PERMISOS_CAPAS = [
-    "gdu.ver_viviendas",
-    "gdu.ver_barrios",
-    "gdu.ver_expropiaciones",
-    "gdu.ver_viviendas_dispersas",
-    "gdu.ver_plano_mensura",
-    "gdu.ver_catastro_urbano",
-    "gdu.ver_escriturar",
+    "gdu_piloto.ver_viviendas",
+    "gdu_piloto.ver_barrios",
+    "gdu_piloto.ver_expropiaciones",
+    "gdu_piloto.ver_viviendas_dispersas",
+    "gdu_piloto.ver_plano_mensura",
+    "gdu_piloto.ver_catastro_urbano",
+    "gdu_piloto.ver_escriturar",
 ]
 
 
@@ -186,7 +186,7 @@ FILTROS_TEXTO_PROGRAMA_ACTUACION = {"programa": "programa", "actuacion": "actuac
 FILTROS_ENTEROS_GRUPO_PLAN = {"grupo": "grupo", "plan": "plan"}
 
 
-@permission_required("gdu.ver_viviendas", raise_exception=True)
+@permission_required("gdu_piloto.ver_viviendas", raise_exception=True)
 def geojson_viviendas(request):
     filtros = {
         **_filtros_texto(request, FILTROS_TEXTO_PROGRAMA_ACTUACION),
@@ -258,19 +258,19 @@ def buscar_parcela(request):
     return JsonResponse({"results": results})
 
 
-@permission_required("gdu.ver_barrios", raise_exception=True)
+@permission_required("gdu_piloto.ver_barrios", raise_exception=True)
 def geojson_barrios(request):
     filtros = _filtros_texto(request, FILTROS_TEXTO_PROGRAMA_ACTUACION)
     return _geojson_capa(request, Barrios, filtros)
 
 
-@permission_required("gdu.ver_expropiaciones", raise_exception=True)
+@permission_required("gdu_piloto.ver_expropiaciones", raise_exception=True)
 def geojson_expropiaciones(request):
     filtros = _filtros_texto(request, {"ley": "ley", "estado_gestion": "gestion"})
     return _geojson_capa(request, Expropiaciones, filtros)
 
 
-@permission_required("gdu.ver_viviendas_dispersas", raise_exception=True)
+@permission_required("gdu_piloto.ver_viviendas_dispersas", raise_exception=True)
 def geojson_viviendas_dispersas(request):
     filtros = {
         **_filtros_texto(request, FILTROS_TEXTO_PROGRAMA_ACTUACION),
@@ -279,18 +279,18 @@ def geojson_viviendas_dispersas(request):
     return _geojson_capa(request, ViviendaDispersa, filtros)
 
 
-@permission_required("gdu.ver_plano_mensura", raise_exception=True)
+@permission_required("gdu_piloto.ver_plano_mensura", raise_exception=True)
 def geojson_planos_mensura(request):
     return _geojson_capa(request, PlanoMensura)
 
 
-@permission_required("gdu.ver_catastro_urbano", raise_exception=True)
+@permission_required("gdu_piloto.ver_catastro_urbano", raise_exception=True)
 def geojson_catastro_urbano(request):
     filtros = _filtros_texto(request, {"municipio": "municipio"})
     return _geojson_capa(request, Catastrourbano, filtros)
 
 
-@permission_required("gdu.ver_escriturar", raise_exception=True)
+@permission_required("gdu_piloto.ver_escriturar", raise_exception=True)
 def geojson_para_escriturar(request):
     filtros = {
         **_filtros_texto(request, FILTROS_TEXTO_PROGRAMA_ACTUACION),
@@ -375,13 +375,13 @@ def _propiedades_catastro_urbano(c, obras):
 
 # slug de capa (los mismos que gdu:ficha) -> (modelo, permiso, propiedades, usa obras vinculadas)
 CAPAS_DETALLE = {
-    "viviendas": (Viviendas, "gdu.ver_viviendas", _propiedades_vivienda, True),
-    "barrios": (Barrios, "gdu.ver_barrios", _propiedades_barrio, True),
-    "expropiaciones": (Expropiaciones, "gdu.ver_expropiaciones", _propiedades_expropiacion, False),
-    "viviendas-dispersas": (ViviendaDispersa, "gdu.ver_viviendas_dispersas", _propiedades_vivienda_dispersa, True),
-    "planos-mensura": (PlanoMensura, "gdu.ver_plano_mensura", _propiedades_plano_mensura, False),
-    "catastro-urbano": (Catastrourbano, "gdu.ver_catastro_urbano", _propiedades_catastro_urbano, False),
-    "para-escriturar": (ViviendasParaEscriturar, "gdu.ver_escriturar", _propiedades_vivienda, True),
+    "viviendas": (Viviendas, "gdu_piloto.ver_viviendas", _propiedades_vivienda, True),
+    "barrios": (Barrios, "gdu_piloto.ver_barrios", _propiedades_barrio, True),
+    "expropiaciones": (Expropiaciones, "gdu_piloto.ver_expropiaciones", _propiedades_expropiacion, False),
+    "viviendas-dispersas": (ViviendaDispersa, "gdu_piloto.ver_viviendas_dispersas", _propiedades_vivienda_dispersa, True),
+    "planos-mensura": (PlanoMensura, "gdu_piloto.ver_plano_mensura", _propiedades_plano_mensura, False),
+    "catastro-urbano": (Catastrourbano, "gdu_piloto.ver_catastro_urbano", _propiedades_catastro_urbano, False),
+    "para-escriturar": (ViviendasParaEscriturar, "gdu_piloto.ver_escriturar", _propiedades_vivienda, True),
 }
 
 # tope de ids por pedido de detalle; el visor parte selecciones más grandes en varios pedidos

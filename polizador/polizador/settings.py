@@ -162,6 +162,7 @@ INSTALLED_APPS = [
     "personalizador",
     "api",
     "gdu",
+    "gdu_piloto",
 ]
 
 # --- Impersonacion (django-hijack) ---

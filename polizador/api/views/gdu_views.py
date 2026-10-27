@@ -10,7 +10,7 @@ from ninja.decorators import decorate_view
 from api.permissions import require_model_perm
 from api.views.generics import parse_order_by, register_simple_datatable
 from carga.models import Obra
-from gdu.models import (
+from gdu_piloto.models import (
     AdjudicacionBeneficiario,
     Adjudicatario3450,
     Actuacion,
@@ -160,7 +160,7 @@ def _obra_para_vincular_row(o: Obra, user) -> dict:
         "programa": o.obra_programa.programa_nombre if o.obra_programa else "",
         "acciones": "",
     }
-    if user.has_perm("gdu.add_obracontratacion"):
+    if user.has_perm("gdu_piloto.add_obracontratacion"):
         row["acciones"] = (
             f'<button type="button" class="btn btn-sm btn-outline-primary vincular-esta-obra-btn" '
             f'data-obra-id="{o.id}">Vincular esta obra</button>'

@@ -106,7 +106,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const maxIdsDetalle = {{ max_ids_detalle }};
   const consultar3450Url = "{% url 'gdu:consultar_3450' %}";
   const actualizarNroAdjBaseUrl = "{% url 'gdu:actualizar_nro_adjudicatario' uf_id=0 %}";
-  const puedeEditarNroAdjudicatario = {{ perms.gdu.editar_nro_adjudicatario|yesno:"true,false" }};
+  const puedeEditarNroAdjudicatario = {{ perms.gdu_piloto.editar_nro_adjudicatario|yesno:"true,false" }};
   const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]").value;
 
   // filtros del modal de búsqueda avanzada (Programa/Actuación/Grupo/Plan/Estado de Gestión/Ley/Municipio);
@@ -205,7 +205,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const capasExtra = []; // [{ layer, source, toggleId }]
 
-  {% if perms.gdu.ver_expropiaciones %}
+  {% if perms.gdu_piloto.ver_expropiaciones %}
   const expropiacionesSource = bboxSource("{% url 'gdu:geojson_expropiaciones' %}", true, "Expropiaciones");
   capasExtra.push({
     layer: capaPoligono(expropiacionesSource, "#6f42c1"),
@@ -216,7 +216,7 @@ document.addEventListener("DOMContentLoaded", function () {
   capasFiltrables.push(expropiacionesSource);
   {% endif %}
 
-  {% if perms.gdu.ver_viviendas_dispersas %}
+  {% if perms.gdu_piloto.ver_viviendas_dispersas %}
   const viviendasDispersasSource = bboxSource("{% url 'gdu:geojson_viviendas_dispersas' %}", true, "Viviendas Dispersas");
   capasExtra.push({
     layer: capaPuntos(viviendasDispersasSource, "#20c997", 12),
@@ -227,7 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
   capasFiltrables.push(viviendasDispersasSource);
   {% endif %}
 
-  {% if perms.gdu.ver_plano_mensura %}
+  {% if perms.gdu_piloto.ver_plano_mensura %}
   const planosMensuraSource = bboxSource("{% url 'gdu:geojson_planos_mensura' %}", false, "Planos de Mensura");
   capasExtra.push({
     layer: capaPoligono(planosMensuraSource, "#6c757d", 13),
@@ -237,7 +237,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
   {% endif %}
 
-  {% if perms.gdu.ver_catastro_urbano %}
+  {% if perms.gdu_piloto.ver_catastro_urbano %}
   const catastroUrbanoSource = bboxSource("{% url 'gdu:geojson_catastro_urbano' %}", true, "Catastro Urbano");
   capasExtra.push({
     layer: capaPoligono(catastroUrbanoSource, "#495057", 14),
@@ -248,7 +248,7 @@ document.addEventListener("DOMContentLoaded", function () {
   capasFiltrables.push(catastroUrbanoSource);
   {% endif %}
 
-  {% if perms.gdu.ver_escriturar %}
+  {% if perms.gdu_piloto.ver_escriturar %}
   const paraEscriturarSource = bboxSource("{% url 'gdu:geojson_para_escriturar' %}", true, "Para Escriturar");
   capasExtra.push({
     layer: capaPoligono(paraEscriturarSource, "#198754", 13),
@@ -1093,31 +1093,31 @@ document.addEventListener("DOMContentLoaded", function () {
           <input class="form-check-input" type="checkbox" id="toggle-viviendas" checked style="accent-color: #dc3545;">
           <label class="form-check-label" for="toggle-viviendas"><span class="gdu-legend-swatch" style="background: #dc3545;"></span>Viviendas</label>
         </div>
-        {% if perms.gdu.ver_expropiaciones %}
+        {% if perms.gdu_piloto.ver_expropiaciones %}
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="toggle-expropiaciones" style="accent-color: #6f42c1;">
           <label class="form-check-label" for="toggle-expropiaciones"><span class="gdu-legend-swatch" style="background: #6f42c1;"></span>Expropiaciones</label>
         </div>
         {% endif %}
-        {% if perms.gdu.ver_viviendas_dispersas %}
+        {% if perms.gdu_piloto.ver_viviendas_dispersas %}
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="toggle-viviendas-dispersas" style="accent-color: #20c997;">
           <label class="form-check-label" for="toggle-viviendas-dispersas"><span class="gdu-legend-swatch" style="background: #20c997;"></span>Viviendas Dispersas</label>
         </div>
         {% endif %}
-        {% if perms.gdu.ver_plano_mensura %}
+        {% if perms.gdu_piloto.ver_plano_mensura %}
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="toggle-planos-mensura" style="accent-color: #6c757d;">
           <label class="form-check-label" for="toggle-planos-mensura"><span class="gdu-legend-swatch" style="background: #6c757d;"></span>Planos de Mensura</label>
         </div>
         {% endif %}
-        {% if perms.gdu.ver_catastro_urbano %}
+        {% if perms.gdu_piloto.ver_catastro_urbano %}
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="toggle-catastro-urbano" style="accent-color: #495057;">
           <label class="form-check-label" for="toggle-catastro-urbano"><span class="gdu-legend-swatch" style="background: #495057;"></span>Catastro Urbano</label>
         </div>
         {% endif %}
-        {% if perms.gdu.ver_escriturar %}
+        {% if perms.gdu_piloto.ver_escriturar %}
         <div class="form-check">
           <input class="form-check-input" type="checkbox" id="toggle-para-escriturar" style="accent-color: #198754;">
           <label class="form-check-label" for="toggle-para-escriturar"><span class="gdu-legend-swatch" style="background: #198754;"></span>Para Escriturar</label>

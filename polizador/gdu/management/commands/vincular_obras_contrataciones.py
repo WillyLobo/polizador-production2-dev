@@ -6,7 +6,7 @@ from django.db import transaction
 
 from carga.models import Obra
 from gdu.matching import normalizar_expediente
-from gdu.models import Contratacion, ObraContratacion
+from gdu_piloto.models import Contratacion, ObraContratacion
 
 
 class Command(BaseCommand):

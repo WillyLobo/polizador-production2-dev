@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from gdu.matching import normalizar_expediente
-from gdu.models import (
+from gdu_piloto.models import (
     Barrios,
     Catastrourbano,
     Expropiaciones,
@@ -48,7 +48,7 @@ CAMPOS_VIVIENDA = [
 CAPAS = {
     "viviendas": {
         "modelo": Viviendas,
-        "permiso": "gdu.ver_viviendas",
+        "permiso": "gdu_piloto.ver_viviendas",
         "titulo": "Vivienda",
         "nombre_capa": "Viviendas",
         "geojson": "gdu:geojson_viviendas",
@@ -57,7 +57,7 @@ CAPAS = {
     },
     "barrios": {
         "modelo": Barrios,
-        "permiso": "gdu.ver_barrios",
+        "permiso": "gdu_piloto.ver_barrios",
         "titulo": "Barrio",
         "nombre_capa": "Barrios",
         "geojson": "gdu:geojson_barrios",
@@ -71,7 +71,7 @@ CAPAS = {
     },
     "expropiaciones": {
         "modelo": Expropiaciones,
-        "permiso": "gdu.ver_expropiaciones",
+        "permiso": "gdu_piloto.ver_expropiaciones",
         "titulo": "Expropiación",
         "nombre_capa": "Expropiaciones",
         "geojson": "gdu:geojson_expropiaciones",
@@ -87,7 +87,7 @@ CAPAS = {
     },
     "viviendas-dispersas": {
         "modelo": ViviendaDispersa,
-        "permiso": "gdu.ver_viviendas_dispersas",
+        "permiso": "gdu_piloto.ver_viviendas_dispersas",
         "titulo": "Vivienda dispersa",
         "nombre_capa": "Viviendas Dispersas",
         "geojson": "gdu:geojson_viviendas_dispersas",
@@ -102,7 +102,7 @@ CAPAS = {
     },
     "planos-mensura": {
         "modelo": PlanoMensura,
-        "permiso": "gdu.ver_plano_mensura",
+        "permiso": "gdu_piloto.ver_plano_mensura",
         "titulo": "Plano de mensura",
         "nombre_capa": "Planos de Mensura",
         "geojson": "gdu:geojson_planos_mensura",
@@ -117,7 +117,7 @@ CAPAS = {
     },
     "catastro-urbano": {
         "modelo": Catastrourbano,
-        "permiso": "gdu.ver_catastro_urbano",
+        "permiso": "gdu_piloto.ver_catastro_urbano",
         "titulo": "Catastro urbano",
         "nombre_capa": "Catastro Urbano",
         "geojson": "gdu:geojson_catastro_urbano",
@@ -132,7 +132,7 @@ CAPAS = {
     },
     "para-escriturar": {
         "modelo": ViviendasParaEscriturar,
-        "permiso": "gdu.ver_escriturar",
+        "permiso": "gdu_piloto.ver_escriturar",
         "titulo": "Vivienda para escriturar",
         "nombre_capa": "Para Escriturar",
         "geojson": "gdu:geojson_para_escriturar",

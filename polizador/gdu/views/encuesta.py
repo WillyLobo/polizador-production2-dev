@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
 from gdu.forms import build_encuesta_form, guardar_encuesta
-from gdu.models import Encuesta, Relevamiento, Vivienda
+from gdu_piloto.models import Encuesta, Relevamiento, Vivienda
 
 
 def _agrupar_por_seccion(form):
@@ -32,7 +32,7 @@ def _agrupar_por_seccion(form):
     return secciones
 
 
-@permission_required("gdu.view_relevamiento", raise_exception=True)
+@permission_required("gdu_piloto.view_relevamiento", raise_exception=True)
 def relevamientos_list(request):
     relevamientos = (
         Relevamiento.objects
@@ -45,7 +45,7 @@ def relevamientos_list(request):
     return render(request, "gdu/relevamientos-list.html", {"relevamientos": relevamientos})
 
 
-@permission_required("gdu.view_relevamiento", raise_exception=True)
+@permission_required("gdu_piloto.view_relevamiento", raise_exception=True)
 def relevamiento_viviendas(request, relevamiento_id):
     relevamiento = get_object_or_404(Relevamiento, pk=relevamiento_id)
     viviendas = Vivienda.objects.filter(relevamiento_id=relevamiento_id).order_by("vivienda")
@@ -55,7 +55,7 @@ def relevamiento_viviendas(request, relevamiento_id):
     })
 
 
-@permission_required("gdu.encuestar_relevamiento", raise_exception=True)
+@permission_required("gdu_piloto.encuestar_relevamiento", raise_exception=True)
 def encuesta_form(request, relevamiento_id, vivienda_id):
     relevamiento = get_object_or_404(Relevamiento, pk=relevamiento_id)
     vivienda = get_object_or_404(Vivienda, relevamiento_id=relevamiento_id, vivienda=vivienda_id)

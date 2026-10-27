@@ -14,6 +14,8 @@ class ObraContratacion(models.Model):
     )
     contratacion = models.ForeignKey(
         "Contratacion", on_delete=models.PROTECT, related_name="obras_vinculadas",
+        # "catastro"."contratacion" es una tabla heredada que no existe en una base nueva
+        db_constraint=False,
     )
     vinculado_manualmente = models.BooleanField(
         default=False,

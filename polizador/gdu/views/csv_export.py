@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators.http import require_POST
 
-from gdu.models import Encuesta, PreguntaRelevamiento, ResultadosEncuesta
+from gdu_piloto.models import Encuesta, PreguntaRelevamiento, ResultadosEncuesta
 
 TIPO_MULTIPLE_CHOICE_MULTIPLE = 9
 

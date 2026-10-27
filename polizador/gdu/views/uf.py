@@ -3,10 +3,10 @@ from django.http import JsonResponse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from gdu.models import Uf
+from gdu_piloto.models import Uf
 
 
-@permission_required("gdu.editar_nro_adjudicatario", raise_exception=True)
+@permission_required("gdu_piloto.editar_nro_adjudicatario", raise_exception=True)
 @require_POST
 def actualizar_nro_adjudicatario(request, uf_id):
     """

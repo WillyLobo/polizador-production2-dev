@@ -4,11 +4,11 @@ from django.shortcuts import get_object_or_404
 from django.views.decorators.http import require_POST
 
 from carga.models import Obra
-from gdu.models import Contratacion, ObraContratacion
+from gdu_piloto.models import Contratacion, ObraContratacion
 
 
 @login_required
-@permission_required("gdu.add_obracontratacion", raise_exception=True)
+@permission_required("gdu_piloto.add_obracontratacion", raise_exception=True)
 @require_POST
 def vincular_obra(request, contratacion_id):
     """

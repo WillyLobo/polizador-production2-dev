@@ -1,204 +1,164 @@
+from django.conf import settings
 from django.contrib.gis.db import models
+from django.db.models import Exists, OuterRef
+from uuid_utils import compat
 
-# managed=False: tablas/vistas de la base GDU heredada (migrada desde el proyecto hasura),
-# el schema real vive fuera del control de las migraciones de Django.
+from .base import SRID_GDU
 
-
-class Encuesta(models.Model):
-    relevamiento = models.ForeignKey('Relevamiento', models.DO_NOTHING, db_column='relevamiento')
-    # FK compuesta real en Postgres: (vivienda, relevamiento) -> our.vivienda(vivienda, relevamiento).
-    # Django no soporta FK de múltiples columnas, se modela como campo simple.
-    vivienda = models.IntegerField(db_comment='referencia a la vivienda en la tabla UF. Agregar mas adelante la FK')
-    user = models.CharField(blank=True, null=True, db_comment='usuario que cargó la encuesta')
-    tstamp = models.DateTimeField(blank=True, null=True)
-    tipo = models.IntegerField(blank=True, null=True, db_comment='tipo de encuesta (app mobile, presencial, telefónica, otros)')
-
-    def __str__(self):
-        return f"Encuesta #{self.pk} (vivienda {self.vivienda})"
-
-    class Meta:
-        managed = False
-        db_table = '"our"."encuesta"'
+# Constructor de encuestas (modelo EAV): relevamiento -> sección -> pregunta ->
+# respuesta. Las reglas de visibilidad/validez eran expresiones JS guardadas como
+# texto; acá son reglas declarativas (JSON) que se validan del lado del servidor.
 
 
-class GjRegistros(models.Model):
-    gj = models.TextField(primary_key=True)  # This field type is a guess.
+class TipoPregunta(models.Model):
+    # los ids se conservan de la base heredada: el formulario los usa para decidir el widget
+    nombre = models.CharField(max_length=255)
+    tipo = models.CharField(max_length=255, help_text="Tipo de dato de la respuesta")
+    descripcion = models.TextField(blank=True)
 
     def __str__(self):
-        return self.gj
+        return self.nombre
 
     class Meta:
-        managed = False
-        db_table = '"our"."gj_registros"'
-
-
-class Pregunta(models.Model):
-    tipo = models.ForeignKey('TipoPregunta', models.DO_NOTHING, db_column='tipo')
-    texto = models.TextField(db_comment='Texto principal de la pregunta')
-    subtexto = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return self.texto[:60]
-
-    class Meta:
-        managed = False
-        db_table = '"our"."pregunta"'
-
-
-class PreguntaRelevamiento(models.Model):
-    relevamiento = models.ForeignKey('Relevamiento', models.DO_NOTHING, db_column='relevamiento')
-    seccion = models.ForeignKey('Seccion', models.DO_NOTHING, db_column='seccion')
-    pregunta = models.ForeignKey('Pregunta', models.DO_NOTHING, db_column='pregunta')
-    variable = models.CharField(max_length=255, db_comment='indica el nombre de la variable dentro del objeto encuesta para ser referenciado por las reglas')
-    visible = models.TextField(blank=True, null=True, db_comment='regla en JS que indica si la pregunta es visible (recibe como argumento la encuesta)')
-    valido = models.TextField(blank=True, null=True, db_comment='regla en JS que indica si la respuesta a la pregunta es valida (recibe como argumento la encuesta)')
-    required = models.BooleanField()
-
-    def __str__(self):
-        return self.variable
-
-    class Meta:
-        managed = False
-        db_table = '"our"."pregunta_relevamiento"'
-        unique_together = (('relevamiento', 'variable'),)
+        verbose_name = "tipo de pregunta"
+        verbose_name_plural = "tipos de pregunta"
 
 
 class Relevamiento(models.Model):
     nombre = models.CharField(max_length=255)
     fecha = models.DateField()
-    descripcion = models.TextField(blank=True, null=True)
-    objetivo = models.IntegerField(db_comment='cantidad objetivo de encuestas a realizar, para calcular porcentaje de avance')
-    viviendas = models.JSONField(blank=True, null=True, db_comment='(Geo)JSON con la capa de viviendas y sus datos asociados')
-    barrios = models.JSONField(blank=True, null=True, db_comment='(Geo)JSON con la capa de barrios y sus datos asociados')
+    descripcion = models.TextField(blank=True)
+    objetivo = models.IntegerField(help_text="Cantidad objetivo de encuestas, para calcular el avance")
 
     def __str__(self):
         return self.nombre
 
     class Meta:
-        managed = False
-        db_table = '"our"."relevamiento"'
-        db_table_comment = 'Representa a un grupo de encuestas a ser realizadas en alguna campaña'
+        db_table_comment = "Grupo de encuestas a realizar en una campaña"
         permissions = [("encuestar_relevamiento", "Puede cargar encuestas de un relevamiento")]
 
 
+class Seccion(models.Model):
+    relevamiento = models.ForeignKey(Relevamiento, models.CASCADE, related_name="secciones")
+    nombre = models.CharField(max_length=255)
+    texto = models.TextField(blank=True)
+    orden = models.IntegerField()
+    regla_visible = models.JSONField(null=True, blank=True)
+
+    def __str__(self):
+        return self.nombre
+
+    class Meta:
+        verbose_name = "sección"
+        verbose_name_plural = "secciones"
+        ordering = ["relevamiento", "orden"]
+
+
+class Pregunta(models.Model):
+    tipo = models.ForeignKey(TipoPregunta, models.PROTECT, related_name="+")
+    texto = models.TextField()
+    subtexto = models.TextField(blank=True)
+
+    def __str__(self):
+        return self.texto[:60]
+
+
+class PreguntaRelevamiento(models.Model):
+    relevamiento = models.ForeignKey(Relevamiento, models.CASCADE, related_name="preguntas")
+    seccion = models.ForeignKey(Seccion, models.CASCADE, related_name="preguntas")
+    pregunta = models.ForeignKey(Pregunta, models.PROTECT, related_name="usos")
+    variable = models.CharField(max_length=255, help_text="Nombre con el que las reglas referencian la respuesta")
+    regla_visible = models.JSONField(null=True, blank=True)
+    regla_valido = models.JSONField(null=True, blank=True)
+    requerida = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.variable
+
+    class Meta:
+        verbose_name = "pregunta de relevamiento"
+        verbose_name_plural = "preguntas de relevamiento"
+        constraints = [
+            models.UniqueConstraint(fields=["relevamiento", "variable"], name="gdu_pregunta_relevamiento_variable"),
+        ]
+
+
 class Respuesta(models.Model):
-    pregunta = models.ForeignKey('Pregunta', models.DO_NOTHING, db_column='pregunta')
+    """Opción posible de una pregunta (multiple choice)."""
+    pregunta = models.ForeignKey(Pregunta, models.CASCADE, related_name="opciones")
     texto = models.CharField(max_length=255)
-    nro_opcion = models.IntegerField(db_comment='valor numérico a devolver en la variable, sirve para ordenar además')
-    valor = models.TextField(db_comment='valor textual a devolver en la variable')
+    nro_opcion = models.IntegerField(help_text="Valor numérico de la opción, también define el orden")
+    valor = models.TextField()
 
     def __str__(self):
         return self.texto
 
     class Meta:
-        managed = False
-        db_table = '"our"."respuesta"'
-        unique_together = (('pregunta', 'nro_opcion'),)
-        db_table_comment = 'una de las posibles respuestas a una pregunta (especialmente para multiple choice)'
+        ordering = ["pregunta", "nro_opcion"]
+        constraints = [
+            models.UniqueConstraint(fields=["pregunta", "nro_opcion"], name="gdu_respuesta_opcion_unica"),
+        ]
+
+
+class ViviendaRelevamientoQuerySet(models.QuerySet):
+    def con_relevado(self):
+        # reemplaza la columna relevado que mantenía el trigger update_vivienda_relevado()
+        return self.annotate(relevado=Exists(Encuesta.objects.filter(vivienda=OuterRef("pk"))))
+
+
+class ViviendaRelevamiento(models.Model):
+    relevamiento = models.ForeignKey(Relevamiento, models.CASCADE, related_name="viviendas")
+    numero = models.IntegerField(help_text="Identificador de la vivienda dentro del relevamiento")
+    uf = models.ForeignKey("Uf", models.SET_NULL, null=True, blank=True, related_name="viviendas_relevamiento")
+    # foto de los datos de la vivienda (adjudicatario, grupo, manzana, ...) al armar el relevamiento
+    datos = models.JSONField(default=dict, blank=True)
+    geom = models.MultiPolygonField(srid=SRID_GDU)
+
+    objects = ViviendaRelevamientoQuerySet.as_manager()
+
+    def __str__(self):
+        return f"Vivienda {self.numero} ({self.relevamiento})"
+
+    class Meta:
+        verbose_name = "vivienda de relevamiento"
+        verbose_name_plural = "viviendas de relevamiento"
+        constraints = [
+            models.UniqueConstraint(fields=["relevamiento", "numero"], name="gdu_vivienda_relevamiento_unica"),
+        ]
+
+
+class Encuesta(models.Model):
+    class Tipo(models.IntegerChoices):
+        APP_MOBILE = 1, "App mobile"
+        PRESENCIAL = 2, "Presencial"
+        TELEFONICA = 3, "Telefónica"
+        OTROS = 4, "Otros"
+        WEB = 5, "Formulario web"
+
+    # generado en el cliente, para poder reintentar envíos sin duplicar (carga offline)
+    uuid = models.UUIDField(default=compat.uuid7, unique=True, editable=False)
+    relevamiento = models.ForeignKey(Relevamiento, models.PROTECT, related_name="encuestas")
+    vivienda = models.ForeignKey(ViviendaRelevamiento, models.PROTECT, related_name="encuestas")
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, models.SET_NULL, null=True, blank=True, related_name="+")
+    # username de la base heredada cuando no se pudo resolver a un usuario
+    usuario_legacy = models.CharField(max_length=255, blank=True, editable=False)
+    tipo = models.PositiveSmallIntegerField(choices=Tipo.choices, null=True, blank=True)
+    capturada_en = models.DateTimeField(null=True, blank=True, help_text="Momento de la carga en campo")
+    enviada_en = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Encuesta #{self.pk} ({self.vivienda})"
 
 
 class RespuestaEncuesta(models.Model):
-    encuesta = models.ForeignKey('Encuesta', models.DO_NOTHING, db_column='encuesta')
-    pregunta = models.ForeignKey('PreguntaRelevamiento', models.DO_NOTHING, db_column='pregunta')
-    respuesta = models.ForeignKey('Respuesta', models.DO_NOTHING, db_column='respuesta', blank=True, null=True)
+    encuesta = models.ForeignKey(Encuesta, models.CASCADE, related_name="respuestas")
+    pregunta_relevamiento = models.ForeignKey(PreguntaRelevamiento, models.PROTECT, related_name="respuestas")
+    respuesta = models.ForeignKey(Respuesta, models.PROTECT, null=True, blank=True, related_name="+")
     valor = models.TextField()
 
     def __str__(self):
-        return f"Respuesta encuesta #{self.encuesta_id} - pregunta {self.pregunta_id}"
+        return f"Encuesta #{self.encuesta_id} - {self.pregunta_relevamiento}"
 
     class Meta:
-        managed = False
-        db_table = '"our"."respuesta_encuesta"'
-        db_table_comment = 'respuesta a una pregunta puntual de una encuesta'
-
-
-class ResultadosEncuesta(models.Model):
-    id_pregunta = models.IntegerField(primary_key=True)
-    variable = models.CharField(max_length=255, blank=True, null=True)
-    encuesta = models.IntegerField(blank=True, null=True)
-    valor = models.TextField(blank=True, null=True)
-    tipo_dato = models.CharField(max_length=255, blank=True, null=True)
-    tipo_pregunta = models.IntegerField(blank=True, null=True)
-    respuesta = models.CharField(blank=True, null=True)
-
-    def __str__(self):
-        return self.variable or f"Resultado #{self.pk}"
-
-    class Meta:
-        managed = False  # Created from a view. Don't remove.
-        db_table = '"our"."resultados_encuesta"'
-
-
-class ResultadosPregunta(models.Model):
-    pregunta = models.IntegerField(primary_key=True)
-    id_respuesta = models.IntegerField(blank=True, null=True)
-    valor = models.TextField(blank=True, null=True)
-    respuesta = models.TextField(blank=True, null=True)
-    cantidad = models.BigIntegerField(blank=True, null=True)
-
-    def __str__(self):
-        return self.respuesta or f"Resultado pregunta #{self.pk}"
-
-    class Meta:
-        managed = False  # Created from a view. Don't remove.
-        db_table = '"our"."resultados_pregunta"'
-
-
-class Seccion(models.Model):
-    relevamiento = models.ForeignKey('Relevamiento', models.DO_NOTHING, db_column='relevamiento')
-    nombre = models.CharField(max_length=255)
-    texto = models.TextField(blank=True, null=True)
-    orden = models.IntegerField()
-    visible = models.TextField(blank=True, null=True, db_comment='regla en JS que indica si la seccion es visible (recibe como argumento la encuesta)')
-
-    def __str__(self):
-        return self.nombre
-
-    class Meta:
-        managed = False
-        db_table = '"our"."seccion"'
-
-
-class TipoPregunta(models.Model):
-    nombre = models.CharField(max_length=255)
-    tipo = models.CharField(max_length=255, db_comment='indica el tipo de dato de la respuesta')
-    descripcion = models.TextField(blank=True, null=True)
-
-    def __str__(self):
-        return self.nombre
-
-    class Meta:
-        managed = False
-        db_table = '"our"."tipo_pregunta"'
-
-
-class VariablesEncuesta(models.Model):
-    id_pregunta = models.IntegerField(primary_key=True)
-    variable = models.CharField(max_length=255, blank=True, null=True)
-    tipo_dato = models.CharField(max_length=255, blank=True, null=True)
-    tipo_pregunta = models.IntegerField(blank=True, null=True)
-    respuestas = models.TextField(blank=True, null=True)  # This field type is a guess.
-
-    def __str__(self):
-        return self.variable or f"Variable #{self.pk}"
-
-    class Meta:
-        managed = False
-        db_table = '"our"."variables_encuesta"'
-
-
-class Vivienda(models.Model):
-    relevamiento = models.ForeignKey('Relevamiento', models.DO_NOTHING, db_column='relevamiento')
-    vivienda = models.IntegerField()
-    geom = models.MultiPolygonField(srid=3857)
-    properties = models.JSONField()
-    relevado = models.BooleanField()
-
-    def __str__(self):
-        return f"Vivienda {self.vivienda} (relevamiento {self.relevamiento_id})"
-
-    class Meta:
-        managed = False
-        db_table = '"our"."vivienda"'
-        unique_together = (('relevamiento', 'vivienda'),)
-
+        verbose_name = "respuesta de encuesta"
+        verbose_name_plural = "respuestas de encuesta"

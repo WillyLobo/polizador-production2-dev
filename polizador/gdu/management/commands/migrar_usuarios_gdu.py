@@ -7,7 +7,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from django.utils import timezone
 
-from gdu.models import Role, Rolemapping, VisualizadorUser
+from gdu_piloto.models import Role, Rolemapping, VisualizadorUser
 from personalizador.models import Agente
 
 
@@ -77,7 +77,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         User = get_user_model()
         permisos_gdu = {
-            p.codename: p for p in Permission.objects.filter(content_type__app_label="gdu")
+            p.codename: p for p in Permission.objects.filter(content_type__app_label="gdu_piloto")
         }
 
         grupo_por_role_id = {}

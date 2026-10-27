@@ -1,7 +1,7 @@
 from django import forms
 from django.utils import timezone
 
-from .models import Encuesta, PreguntaRelevamiento, Respuesta, RespuestaEncuesta
+from gdu_piloto.models import Encuesta, PreguntaRelevamiento, Respuesta, RespuestaEncuesta
 
 # our.encuesta.tipo no tiene tabla de referencia en la base heredada; los valores
 # históricos (cargados por la app mobile) usan 1. Usamos un valor nuevo acá para
