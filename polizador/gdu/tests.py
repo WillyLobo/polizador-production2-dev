@@ -411,3 +411,21 @@ class OapifTest(TestCase):
     def test_lector_recibe_403_aunque_el_cuerpo_sea_invalido(self):
         respuesta = self.pedir("post", "/collections/barrios/items", "lector", self.feature_barrio(nombre="x" * 300))
         self.assertEqual(respuesta.status_code, 403)
+
+    def test_mensaje_de_unicidad_sin_prefijo_interno_y_sin_escapar(self):
+        from django.contrib.auth.models import Permission
+
+        self.editor.user_permissions.add(*Permission.objects.filter(
+            content_type__app_label="gdu", codename__in=["view_planomensuraintervencion", "add_planomensuraintervencion"],
+        ))
+        plano = PlanoMensura.objects.create(depto="09", nro=78, ano="11")
+        PlanoMensuraIntervencion.objects.create(plano=plano, intervencion=self.intervencion, tipo="perimetral")
+        feature = {
+            "type": "Feature", "geometry": None,
+            "properties": {"plano": plano.pk, "intervencion": self.intervencion.pk, "tipo": "perimetral"},
+        }
+        respuesta = self.pedir("post", "/collections/planos_mensura_intervencion/items", "editor", feature)
+        self.assertEqual(respuesta.status_code, 422)
+        cuerpo = respuesta.content.decode()
+        self.assertIn("Plano de intervención", cuerpo)  # sin \u00f3
+        self.assertNotIn("__all__", cuerpo)

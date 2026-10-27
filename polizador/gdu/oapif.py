@@ -11,7 +11,7 @@ CRS: las geometrías se publican solo en CRS84 (lon, lat) y QGIS las reproyecta.
 no invierte ejes, así que ofrecer EPSG:22175 (cuyo orden EPSG es norte, este) hacía que
 QGIS dibujara todo cruzado y guardara las geometrías corridas sin dar error.
 """
-from django.core.exceptions import ValidationError as DjangoValidationError
+from django.core.exceptions import NON_FIELD_ERRORS, ValidationError as DjangoValidationError
 from django.db.models import AutoField, BigAutoField, CharField, ProtectedError, RestrictedError, TextField
 from django.http import Http404, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -19,14 +19,23 @@ from django_oapif import OAPIF, OapifCollection
 from django_oapif.auth import BasicAuth, DjangoAuth
 from django_oapif.crs import CRS84
 from ninja.errors import AuthorizationError, HttpError, ValidationError
+from ninja.renderers import JSONRenderer
 
 from gdu.models import Barrio, Intervencion, PlanoMensura, PlanoMensuraIntervencion
+
+
+
+class JSONSinEscapar(JSONRenderer):
+    # QGIS muestra literal el cuerpo de los errores: con el escape por defecto se veía "m\u00e1ximo"
+    json_dumps_params = {"ensure_ascii": False}
+
 
 api = OAPIF(
     title="GDU",
     description="Capas de la Gerencia de Desarrollo Urbano (IPDUV)",
     urls_namespace="gdu-oapif",
     auth=[BasicAuth(), DjangoAuth()],
+    renderer=JSONSinEscapar(),
 )
 
 MENSAJES_VALIDACION = {
@@ -36,6 +45,8 @@ MENSAJES_VALIDACION = {
     "float_parsing": lambda e: "tiene que ser un número",
     "bool_parsing": lambda e: "tiene que ser verdadero o falso",
     "extra_forbidden": lambda e: "no es un campo de la capa",
+    "model_attributes_type": lambda e: "falta o no es válida",
+    "model_type": lambda e: "falta o no es válida",
 }
 
 
@@ -106,8 +117,13 @@ class ColeccionGdu(OapifCollection):
             obj.full_clean()
         except DjangoValidationError as e:
             # 422 con el detalle por campo, en vez de un 500
+            # los errores de unicidad o de clean() vienen sin campo (NON_FIELD_ERRORS)
             raise ValidationError([
-                {"loc": ["body", "feature", "properties", campo], "msg": " ".join(mensajes), "type": "value_error"}
+                {
+                    "loc": ["body", "feature", "properties", *([] if campo == NON_FIELD_ERRORS else [campo])],
+                    "msg": " ".join(mensajes),
+                    "type": "value_error",
+                }
                 for campo, mensajes in e.message_dict.items()
             ])
         obj.save()
