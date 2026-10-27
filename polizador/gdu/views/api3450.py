@@ -40,6 +40,14 @@ def _consultar(nro_adjudicatario, token, reintentar=True):
     return resp.json()
 
 
+def consultar(nro_adjudicatario):
+    """Respuesta cruda de la API 3450 para un Nº de adjudicatario; reusa el token cacheado."""
+    token = cache.get(TOKEN_CACHE_KEY)
+    if not token:
+        token = _login()
+    return _consultar(nro_adjudicatario, token)
+
+
 @login_required
 @require_POST
 def consultar_3450(request):
@@ -48,11 +56,8 @@ def consultar_3450(request):
     if not nro_adjudicatario:
         return JsonResponse({"errors": "nro_adjudicatario is not valid"}, status=400)
 
-    token = cache.get(TOKEN_CACHE_KEY)
     try:
-        if not token:
-            token = _login()
-        data = _consultar(nro_adjudicatario, token)
+        data = consultar(nro_adjudicatario)
     except requests.RequestException:
         return JsonResponse({"error": "error desconocido"}, status=500)
 

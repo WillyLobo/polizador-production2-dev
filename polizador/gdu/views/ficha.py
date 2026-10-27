@@ -1,5 +1,6 @@
 import json
 
+import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.gis.db.models.functions import Transform
@@ -19,6 +20,7 @@ from gdu.models import (
     Viviendas,
     ViviendasParaEscriturar,
 )
+from gdu.views import api3450
 from gdu.views.visor import GEOJSON_SRID, _obras_por_expediente
 
 OBRAS_VINCULADAS = "obras_vinculadas"  # marcador de campo: obras de carga resueltas por expediente
@@ -162,6 +164,35 @@ def _filas(obj, campos):
     return filas
 
 
+CAMPOS_3450 = [
+    ("Adjudicatario", "AdjuGISapeynom"),
+    ("DNI", "AdjuGISdni"),
+    ("Dirección", "AdjuGISdireccion"),
+    ("Escriturado", "AdjuGISEscritura"),
+    ("Matrícula", "AdjuGISmatricula"),
+    ("Situación", "AdjuGISsituacion"),
+    ("Motivo", "AdjuGISmotivo"),
+]
+
+
+def _datos_3450(obj):
+    """
+    Datos del Sistema 3450 para el Nº de adjudicatario del objeto, como en "Buscar 3450" del visor.
+    None si la capa no tiene Nº de adjudicatario o está vacío; {"error": ...} si la API falla o no
+    tiene datos (la API devuelve un registro vacío para números desconocidos).
+    """
+    nro = getattr(obj, "nro_adjudicatario", None)
+    if not nro:
+        return None
+    try:
+        datos = api3450.consultar(nro).get("SDTDatosAdjuGIS") or {}
+    except (requests.RequestException, ValueError):
+        return {"error": "No se pudo consultar el Sistema 3450."}
+    if not datos.get("AdjuGISapeynom"):
+        return {"error": "Sin datos en el Sistema 3450."}
+    return {"filas": [(etiqueta, _formatear(datos.get(clave))) for etiqueta, clave in CAMPOS_3450]}
+
+
 @login_required
 def ficha(request, capa, objeto_id):
     """
@@ -197,6 +228,7 @@ def ficha(request, capa, objeto_id):
         "titulo": config["titulo"],
         "objeto": obj,
         "filas": _filas(obj, config["campos"]),
+        "datos_3450": _datos_3450(obj),
         "fecha": timezone.localtime(),
         "config_mapa": {
             "geometria": json.loads(obj.geom_4326.geojson) if obj.geom_4326 else None,

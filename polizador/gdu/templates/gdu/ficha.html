@@ -100,6 +100,18 @@ Google (restringida por referrer) no responda 403 a los tiles. {% endcomment %}
         <dt>{{ etiqueta }}</dt><dd>{{ valor }}</dd>
         {% endfor %}
       </dl>
+      {% if datos_3450 %}
+      <div class="tarjeta-titulo mt-2">Datos Sistema 3450</div>
+      {% if datos_3450.error %}
+      <div class="fst-italic">{{ datos_3450.error }}</div>
+      {% else %}
+      <dl>
+        {% for etiqueta, valor in datos_3450.filas %}
+        <dt>{{ etiqueta }}</dt><dd>{{ valor }}</dd>
+        {% endfor %}
+      </dl>
+      {% endif %}
+      {% endif %}
       {% if not config_mapa.geometria %}
       <div class="mt-1 fst-italic">El elemento no tiene geometría cargada.</div>
       {% endif %}
