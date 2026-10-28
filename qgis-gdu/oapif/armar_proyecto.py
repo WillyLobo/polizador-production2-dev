@@ -35,6 +35,10 @@ AUTHCFG = "gduoapf"
 # patrón para la capa completa de parcelas y las de cada zona (no parcelas_expropiadas)
 PARCELAS = "<parcelas>"
 CRS_PROYECTO = "EPSG:22175"
+# features por pedido. Cada página le cuesta al servidor un COUNT y un OFFSET sobre la tabla
+# entera, más allá de su tamaño: bajar catastro_urbano completo (430.000 filas, lo que hace
+# la tabla de atributos) tardaba 131 s de servidor en páginas de 1000 y 31 s en páginas de 10.000.
+TAMANO_PAGINA = 10000
 
 # grupo del panel de capas -> colecciones, de arriba hacia abajo. "*" toma las colecciones
 # cuyo id empieza así, en el orden del servidor; PARCELAS, las capas de parcelas.
@@ -197,7 +201,7 @@ def armar(args):
     for i, coleccion_id in enumerate(ids):
         uri = (
             f"url='{servidor.url}' typename='{coleccion_id}' authcfg='{args.authcfg}' pagingEnabled='true' "
-            "pageSize='1000' restrictToRequestBBOX='1' preferCoordinatesForWfsT11='false'"
+            f"pageSize='{TAMANO_PAGINA}' restrictToRequestBBOX='1' preferCoordinatesForWfsT11='false'"
         )
         titulo = schemas[coleccion_id].get("title", coleccion_id)
         capa = QgsVectorLayer(uri, titulo, "OAPIF")

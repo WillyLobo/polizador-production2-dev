@@ -21,6 +21,13 @@ el servidor (una colección o un campo nuevo), se vuelve a generar.
    La descarga es este mismo archivo, con las capas apuntando al servidor desde el que se baja
    (`gdu:descargar_proyecto_qgis` le cambia la URL); por eso el versionado puede generarse contra el de desarrollo.
 
+## Tablas de atributos de las capas grandes
+
+La tabla de atributos de QGIS no carga a demanda: al abrirla baja la capa entera (catastro urbano son
+430.000 filas, unos 250 MB). Para trabajar sobre una zona, abrirla con el filtro **Mostrar objetos
+visibles en el mapa**: así QGIS pide solo lo que está en pantalla. Se puede dejar como comportamiento
+por defecto en *Configuración → Opciones → Fuentes de datos → Comportamiento de la tabla de atributos*.
+
 ## Reglas de edición
 
 - **Guardar después de cada alta.** QGIS no guarda en una sola transacción: si falla un guardado con
