@@ -245,13 +245,38 @@ class ImportadorLegacyTest(TestCase):
 
         usuario = get_user_model().objects.get(username="ana.gdu")
         self.assertFalse(usuario.has_usable_password())
-        self.assertEqual(list(usuario.groups.values_list("name", flat=True)), ["GDU: barrios-ver"])
+        # los usuarios del visor también quedan como lectores del proyecto QGIS
+        self.assertEqual(
+            sorted(usuario.groups.values_list("name", flat=True)), ["GDU: Lectores QGIS", "GDU: barrios-ver"],
+        )
         self.assertTrue(usuario.has_perm("gdu.ver_barrios"))
         self.assertEqual(EventoVisor.objects.get().usuario, usuario)
 
         # secuencias reseteadas: el próximo alta no choca con las PKs heredadas
         nueva = Uf.objects.create(parcela_id=1, uf="4", geom=CUADRADO)
         self.assertEqual(nueva.pk, 4)
+
+    def test_editores_qgis_salen_del_mapeo_de_grants(self):
+        from unittest import mock
+
+        from gdu.etl.importador import Importador
+
+        leer = Importador._leer_csv
+        mapeo = {"ANA.GDU": "editor", "fantasma": "editor"}
+        with mock.patch.object(
+            Importador, "_leer_csv",
+            side_effect=lambda nombre, clave, valor: mapeo if nombre == "usuarios_qgis.csv" else leer(nombre, clave, valor),
+        ):
+            reporte = self.correr_etl()
+        usuario = get_user_model().objects.get(username="ana.gdu")
+        self.assertTrue(usuario.groups.filter(name="GDU: Editores QGIS").exists())
+        self.assertTrue(usuario.has_perm("gdu.add_barrio"))
+        # sin cuenta en polizador: no se crea, queda en el reporte
+        self.assertFalse(get_user_model().objects.filter(username="fantasma").exists())
+        self.assertIn(
+            ("descarte", "usuario de QGIS sin cuenta en polizador (darlo de alta y correr configurar_grupos_qgis)"),
+            self.incidencias(reporte, "auth_user_groups"),
+        )
 
     def test_es_repetible(self):
         primera = self.correr_etl()

@@ -345,6 +345,33 @@ class Importador:
             f"{len(grupos)} grupos GDU, {asignaciones} asignaciones usuario-grupo"
         )
         self.log(f"  {creados} usuarios creados, {len(usuarios) - creados} reutilizados, {asignaciones} asignaciones")
+        self._grupos_qgis(usuarios.values(), existentes)
+
+    def _grupos_qgis(self, usuarios_visor, existentes):
+        """Acceso al proyecto QGIS: los usuarios del visor quedan como lectores, y los editores
+        salen de mapeos/usuarios_qgis.csv. En la base heredada QGIS no usaba los roles del
+        visor: cada editor entraba a Postgres con su usuario y lo habilitaban los GRANT de las
+        tablas, que no sobreviven al restaurar el dump sin esos roles; el CSV los conserva.
+        Un usuario del CSV sin cuenta no se crea: queda en el reporte para darlo de alta."""
+        from gdu.grupos_qgis import configurar_grupos
+
+        editores, lectores = configurar_grupos()
+        lectores.user_set.add(*usuarios_visor)
+        self._destino = "auth_user_groups"
+        resumen = self.reporte.tabla("mapeos/usuarios_qgis.csv", self._destino)
+        grupos = {"editor": editores, "lector": lectores}
+        for username, grupo in self._leer_csv("usuarios_qgis.csv", "username", "grupo").items():
+            self._id_actual = username
+            resumen.leidas += 1
+            usuario = existentes.get(username.lower())
+            if grupo not in grupos:
+                self._descartar("grupo QGIS desconocido", grupo)
+            elif usuario is None:
+                self._descartar("usuario de QGIS sin cuenta en polizador (darlo de alta y correr configurar_grupos_qgis)", grupo)
+            else:
+                usuario.groups.add(grupos[grupo])
+                resumen.cargadas += 1
+        self.log(f"  QGIS: {lectores.user_set.count()} lectores, {editores.user_set.count()} editores")
 
     # --- mapeos previos ---
 
