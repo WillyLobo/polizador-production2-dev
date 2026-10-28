@@ -7,7 +7,6 @@ selección del visor y para la ficha.
 El slug de cada capa es el de las URLs gdu:detalle_capa y gdu:ficha, y el `capa` de
 gdu/templates/gdu/mapa.html.
 """
-from collections import defaultdict
 from dataclasses import dataclass, field
 from typing import Callable
 
@@ -42,21 +41,6 @@ def _datos_intervencion(intervencion):
     }
 
 
-def obras_vinculadas(contratacion_ids):
-    """{contratacion_id: [{"id", "nombre"}]} de las obras de carga vinculadas.
-
-    El vínculo vive todavía en gdu_piloto.ObraContratacion: sus contratacion_id son las PK
-    heredadas, que gdu.Contratacion conserva. Se resuelve qué hacer con él en la fase 6."""
-    from gdu_piloto.models import ObraContratacion
-
-    resultado = defaultdict(list)
-    for contratacion_id, obra_id, nombre in ObraContratacion.objects.filter(
-        contratacion_id__in=set(contratacion_ids),
-    ).values_list("contratacion_id", "obra_id", "obra__obra_nombre"):
-        resultado[contratacion_id].append({"id": obra_id, "nombre": nombre})
-    return resultado
-
-
 @dataclass
 class Capa:
     titulo: str  # de un elemento, para la ficha
@@ -65,8 +49,6 @@ class Capa:
     queryset: Callable[[], QuerySet]
     # datos de un elemento para el panel y la ficha: (etiqueta de la ficha, clave, función)
     campos: list
-    # el elemento -> su intervención, para las obras vinculadas (None si la capa no tiene)
-    intervencion: Callable | None = None
     # parámetro de la búsqueda avanzada -> lookup
     filtros: dict = field(default_factory=dict)
     # suma al queryset lo que leen `campos` (select_related/prefetch); el GeoJSON del visor no lo usa
@@ -75,14 +57,11 @@ class Capa:
     def detalle_queryset(self):
         return self.relacionar(self.queryset()).defer("geom")
 
-    def datos(self, obj, obras=None):
-        """{clave: valor} de un elemento; `obras` es el resultado de obras_vinculadas()."""
+    def datos(self, obj):
+        """{clave: valor} de un elemento."""
         datos = {"id": obj.pk}
         for _etiqueta, clave, valor in self.campos:
             datos[clave] = valor(obj)
-        if self.intervencion is not None:
-            intervencion = self.intervencion(obj)
-            datos["obras"] = (obras or {}).get(intervencion.contratacion_id, [])
         return datos
 
 
@@ -146,7 +125,7 @@ def _relacionar_intervencion(qs):
 CAPAS = {
     "viviendas": Capa(
         "Vivienda", "Viviendas", "gdu.ver_viviendas", Uf.objects.all, CAMPOS_VIVIENDA,
-        intervencion=_uf_intervencion, filtros=_filtros_proyecto(_INTERVENCION_UF), relacionar=_ufs_relacionadas,
+        filtros=_filtros_proyecto(_INTERVENCION_UF), relacionar=_ufs_relacionadas,
     ),
     "barrios": Capa(
         "Barrio", "Barrios", "gdu.ver_barrios", Barrio.objects.all,
@@ -155,7 +134,6 @@ CAPAS = {
             ("Localidad", "localidad", lambda b: _datos_intervencion(b.intervencion)["localidad"]),
             ("Programa", "programa", lambda b: _datos_intervencion(b.intervencion)["programa"]),
         ],
-        intervencion=lambda b: b.intervencion,
         filtros={k: v for k, v in _filtros_proyecto("intervencion").items() if k in ("programa", "actuacion")},
         relacionar=_relacionar_intervencion,
     ),
@@ -181,7 +159,7 @@ CAPAS = {
             ("Adjudicación", "adjudicacion", lambda v: _datos_intervencion(v.intervencion)["adjudicacion"]),
             ("Planos", "planos", lambda v: _datos_intervencion(v.intervencion)["planos"]),
         ],
-        intervencion=lambda v: v.intervencion, filtros=_filtros_proyecto("intervencion"),
+        filtros=_filtros_proyecto("intervencion"),
         relacionar=_relacionar_intervencion,
     ),
     "planos-mensura": Capa(
@@ -208,7 +186,7 @@ CAPAS = {
     "para-escriturar": Capa(
         "Vivienda para escriturar", "Para Escriturar", "gdu.ver_escriturar",
         lambda: Uf.objects.filter(Q(adjudicatario__escritura=False)), CAMPOS_VIVIENDA,
-        intervencion=_uf_intervencion, filtros=_filtros_proyecto(_INTERVENCION_UF), relacionar=_ufs_relacionadas,
+        filtros=_filtros_proyecto(_INTERVENCION_UF), relacionar=_ufs_relacionadas,
     ),
 }
 PERMISOS_CAPAS = [capa.permiso for capa in CAPAS.values()]

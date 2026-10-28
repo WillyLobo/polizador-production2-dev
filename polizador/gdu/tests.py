@@ -744,7 +744,6 @@ class VisorYFichaTest(TestCase):
         self.assertEqual(datos["adjudicacion"], "45/2010 - definitiva")
         self.assertEqual(datos["planos"], "20-107-86/subdivision")
         self.assertEqual(datos["nro_adjudicatario"], 12345)
-        self.assertEqual(datos["obras"], [])
 
     def test_busqueda_avanzada(self):
         self.todas()
@@ -796,15 +795,6 @@ class VisorYFichaTest(TestCase):
         self.assertEqual(self.client.get(f"/gdu/ficha/barrios/{self.barrio.pk}/").status_code, 403)
         self.assertEqual(self.client.get(f"/gdu/ficha/parcelas/{self.parcela.pk}/").status_code, 404)
         self.assertEqual(self.client.get("/gdu/ficha/viviendas/999999/").status_code, 404)
-
-    def test_obras_vinculadas_en_la_ficha(self):
-        from unittest import mock
-
-        self.todas()
-        obras = {self.intervencion.contratacion_id: [{"id": 5, "nombre": "Obra Cinco"}, {"id": 6, "nombre": None}]}
-        with mock.patch("gdu.views.ficha.obras_vinculadas", return_value=obras):
-            respuesta = self.client.get(f"/gdu/ficha/viviendas/{self.uf.pk}/")
-        self.assertContains(respuesta, "Obra Cinco, Obra 6")
 
     def test_editar_nro_adjudicatario_queda_en_el_historial(self):
         usuario = self.login("editar_nro_adjudicatario")
@@ -866,7 +856,7 @@ class VisorYFichaTest(TestCase):
         usuario = get_user_model().objects.create_superuser("admin-gdu", password="x")
         self.client.force_login(usuario)
         for slug in (
-            "gdu-actuaciones", "gdu-contrataciones", "gdu-contrataciones-sin-obra", "gdu-intervenciones", "gdu-programas",
+            "gdu-actuaciones", "gdu-contrataciones", "gdu-intervenciones", "gdu-programas",
             "gdu-barrios", "gdu-parcelas", "gdu-ufs", "gdu-localidades", "gdu-expropiaciones", "gdu-planos-mensura",
             "gdu-adjudicaciones-beneficiario", "gdu-resoluciones-costos", "gdu-tipos-contratacion",
             "gdu-tipos-intervencion", "gdu-destinos-parcela", "gdu-estados-gestion-expropiacion", "gdu-adjudicatarios-3450",

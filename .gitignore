@@ -161,3 +161,6 @@ snippets.py
 .claude/
 .playwright-mcp/
 polizador/personalizador/management/commands/fill_data.py
+
+# restos locales del piloto GeoServer (eliminado): .env y salida renderizada con secretos
+geoserver/

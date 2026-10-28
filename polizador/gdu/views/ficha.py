@@ -11,7 +11,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from gdu.auditoria import registrar_evento
-from gdu.capas import CAPAS, obras_vinculadas
+from gdu.capas import CAPAS
 from gdu.views import api3450
 from gdu.views.visor import GEOJSON_SRID
 
@@ -37,11 +37,7 @@ def _formatear(valor):
 
 
 def _filas(capa, datos):
-    filas = [(etiqueta, _formatear(datos[clave])) for etiqueta, clave, _ in capa.campos]
-    if "obras" in datos:
-        obras = ", ".join(o["nombre"] or f"Obra {o['id']}" for o in datos["obras"])
-        filas.append(("Obras vinculadas", _formatear(obras)))
-    return filas
+    return [(etiqueta, _formatear(datos[clave])) for etiqueta, clave, _ in capa.campos]
 
 
 CAMPOS_3450 = [
@@ -92,8 +88,7 @@ def ficha(request, capa, objeto_id):
         config.relacionar(config.queryset()).annotate(geom_4326=Transform("geom", GEOJSON_SRID)),
         pk=objeto_id,
     )
-    obras = obras_vinculadas([config.intervencion(obj).contratacion_id]) if config.intervencion else None
-    datos = config.datos(obj, obras)
+    datos = config.datos(obj)
     registrar_evento(request, "printFeature", {"layer": capa, "id": obj.pk})
 
     capas_contexto = [

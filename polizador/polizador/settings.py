@@ -71,20 +71,10 @@ GDU_SMB_DOMAIN = env("GDU_SMB_DOMAIN")
 GDU_SMB_USERNAME = env("GDU_SMB_USERNAME")
 GDU_SMB_PASSWORD = env("GDU_SMB_PASSWORD")
 
-# qgis-gdu/: proyecto QGIS Desktop (gdu.qgz) reconectado a WFS por usuario, ver
-# gdu/services/qgis_reconnect.py y qgis-gdu/scripts/reconectar_wfs.py.
-QGIS_GDU_DIR = BASE_DIR.parent / "qgis-gdu"
 # Proyecto QGIS sobre OGC API - Features (qgis-gdu/oapif/), el que entrega gdu:descargar_proyecto_qgis
-GDU_QGIS_PROYECTO = Path(env("GDU_QGIS_PROYECTO", default=str(QGIS_GDU_DIR / "oapif" / "gdu-oapif.qgz")))
-# Mismas capas que geoserver/templates/layers.properties publica por WFS-T --
-# actualizar ambos juntos si se suma/saca una capa piloto.
-GDU_WFS_LAYERS = env.list("GDU_WFS_LAYERS", default=[
-    "localidad", "manzana", "calle", "vivienda_punto", "intervencion", "plano_mensura",
-])
-GDU_WFS_SRS = env("GDU_WFS_SRS", default="EPSG:22175")
-# URL de GeoServer alcanzable desde la máquina del usuario (QGIS Desktop), no
-# necesariamente la misma que usa geoserver/deploy_geoserver.sh internamente.
-GDU_GEOSERVER_URL = env("GDU_GEOSERVER_URL")
+GDU_QGIS_PROYECTO = Path(env(
+    "GDU_QGIS_PROYECTO", default=str(BASE_DIR.parent / "qgis-gdu" / "oapif" / "gdu-oapif.qgz"),
+))
 
 # Tiles base (CARTO) del visor de mapa: desde 2026-08 CARTO exige key incluso para el
 # tier gratis (https://carto.com/basemaps/apikey, 5M tiles/mes sin necesidad de cuenta).
@@ -164,7 +154,6 @@ INSTALLED_APPS = [
     "personalizador",
     "api",
     "gdu",
-    "gdu_piloto",
     "django_oapif",
 ]
 

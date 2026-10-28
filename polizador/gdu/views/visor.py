@@ -7,7 +7,7 @@ from django.http import Http404, HttpResponse, HttpResponseBadRequest, JsonRespo
 from django.shortcuts import render
 
 from carga.models import Localidad
-from gdu.capas import CAPAS, PERMISOS_CAPAS, filtros_de, obras_vinculadas
+from gdu.capas import CAPAS, PERMISOS_CAPAS, filtros_de
 from gdu.models import Catastrourbano, Expropiacion, Intervencion, Parcela, Programa, Actuacion
 
 MAP_SRID = 3857  # como la manda ol/loadingstrategy/bbox, para el filtro espacial
@@ -195,8 +195,4 @@ def detalle_capa(request, capa):
     if not ids or len(ids) > MAX_IDS_DETALLE:
         return HttpResponseBadRequest(f"entre 1 y {MAX_IDS_DETALLE} ids")
 
-    objetos = list(config.detalle_queryset().filter(pk__in=ids))
-    obras = None
-    if config.intervencion is not None:
-        obras = obras_vinculadas(config.intervencion(o).contratacion_id for o in objetos)
-    return JsonResponse({obj.pk: config.datos(obj, obras) for obj in objetos})
+    return JsonResponse({obj.pk: config.datos(obj) for obj in config.detalle_queryset().filter(pk__in=ids)})

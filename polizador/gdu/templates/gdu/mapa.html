@@ -100,7 +100,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const buscarParcelaUrl = "{% url 'gdu:buscar_parcela' %}";
   const opcionesBusquedaUrl = "{% url 'gdu:opciones_busqueda' %}";
   const planoUrl = "{% url 'gdu:plano' %}";
-  const estadoObraBaseUrl = "{% url 'carga:estado-obra' pk=0 %}";
   const fichaBaseUrl = "{% url 'gdu:ficha' capa='CAPA' objeto_id=0 %}";
   const detalleBaseUrl = "{% url 'gdu:detalle_capa' capa='CAPA' %}";
   const maxIdsDetalle = {{ max_ids_detalle }};
@@ -727,7 +726,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const esVivienda = capa === "viviendas";
       html += `<div class="border rounded p-2 mb-2" data-idx="${idx}"><dl class="mb-0">`;
       for (const key in props) {
-        if (key === "geometry" || key === "planos" || key === "obras") continue;
+        if (key === "geometry" || key === "planos") continue;
         html += `<dt>${key}</dt><dd>${props[key] !== null && props[key] !== undefined ? escapeHtml(String(props[key])) : "-"}</dd>`;
       }
       html += "</dl>";
@@ -736,14 +735,6 @@ document.addEventListener("DOMContentLoaded", function () {
         props.planos.split(",").map(function (p) { return p.trim(); }).filter(Boolean).forEach(function (ref) {
           const url = planoUrl + "?plano=" + encodeURIComponent(ref);
           html += `<a href="${url}" target="_blank" class="badge text-bg-secondary text-decoration-none me-1 mb-1">${escapeHtml(ref)}</a>`;
-        });
-        html += "</div>";
-      }
-      if (props.obras && props.obras.length) {
-        html += '<div class="mt-1 d-flex flex-column gap-1">';
-        props.obras.forEach(function (obra) {
-          const url = estadoObraBaseUrl.replace(/\/0$/, "/" + obra.id);
-          html += `<a href="${url}" target="_blank" class="btn btn-sm btn-outline-primary">Ver obra${obra.nombre ? ": " + escapeHtml(obra.nombre) : ""}</a>`;
         });
         html += "</div>";
       }
