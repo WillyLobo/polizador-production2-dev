@@ -650,10 +650,12 @@ document.addEventListener("DOMContentLoaded", function () {
   const panelBody = document.getElementById("gdu-panel-body");
 
   // slug de gdu:ficha de la capa a la que pertenece cada elemento seleccionado (el click y el
-  // Ctrl+arrastre lo agregan a la misma colección, así que se resuelve por la fuente que lo tiene)
+  // Ctrl+arrastre lo agregan a la misma colección, así que se resuelve por la fuente que lo tiene).
+  // No sirve source.hasFeature: con features con id compara solo el id, y los ids (pk) se repiten
+  // entre capas, así que la vivienda 101 "estaba" en barrios si el barrio 101 ya se había cargado.
   function capaDeFeature(feature) {
     const fuentes = [["barrios", barriosSource], ["viviendas", viviendasSource], ...capasExtra.map((c) => [c.capa, c.source])];
-    const encontrada = fuentes.find(([, source]) => source.hasFeature(feature));
+    const encontrada = fuentes.find(([, source]) => source.getFeatureById(feature.getId()) === feature);
     return encontrada ? encontrada[0] : null;
   }
 
