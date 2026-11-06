@@ -360,6 +360,22 @@ class OapifTest(TestCase):
         allow_intervencion = self.pedir("options", "/collections/intervenciones/items", "editor")["Allow"]
         self.assertNotIn("POST", allow_intervencion)
 
+    def test_qgis_puede_cachear_metadatos_pero_no_datos(self):
+        # QGIS pide estos metadatos en serie para cada capa al abrir el proyecto (gdu/middleware.py)
+        for ruta in ("/", "/openapi.json", "/conformance", "/collections/barrios",
+                     "/collections/barrios/queryables", "/collections/barrios/schema"):
+            with self.subTest(ruta=ruta):
+                respuesta = self.pedir("get", ruta, "lector")
+                self.assertEqual(respuesta.status_code, 200)
+                self.assertIn("private", respuesta["Cache-Control"])
+                self.assertIn("max-age=", respuesta["Cache-Control"])
+        # los datos y la lista de colecciones (depende de los permisos) no
+        for ruta in ("/collections", "/collections/barrios/items"):
+            with self.subTest(ruta=ruta):
+                self.assertFalse(self.pedir("get", ruta, "lector").has_header("Cache-Control"))
+        # una respuesta de error tampoco
+        self.assertFalse(self.pedir("get", "/collections/intervenciones", "lector").has_header("Cache-Control"))
+
     def test_sin_permiso_no_ve_la_capa(self):
         self.assertIn(self.pedir("get", "/collections/barrios/items").status_code, (401, 403))
 
