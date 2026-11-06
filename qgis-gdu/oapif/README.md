@@ -47,16 +47,21 @@ En la máquina con QGIS (3.44 LTR o más nuevo), sin abrir QGIS:
 
 ```
 "C:\Program Files\QGIS 3.44.14\bin\python-qgis-ltr.bat" armar_proyecto.py ^
-    --url https://<servidor>/gdu/oapif/ --usuario <usuario del grupo Lectores> --salida gdu-oapif.qgz
+    --url https://<servidor>/gdu/oapif/ --usuario <usuario> --salida gdu-oapif.qgz
 ```
 
 La clave se pide por consola (o se pasa en `GDU_OAPIF_CLAVE`). El usuario solo se usa para leer los
-schemas: el proyecto guarda el id `gduoapf`, no la clave.
+schemas: el proyecto guarda el id `gduoapf`, no la clave. Tiene que ver todas las colecciones y tener
+los permisos por campo (`gdu.editar_dominio`, `gdu.editar_nro_adjudicatario`): un campo que el
+schema le marca de solo lectura queda bloqueado en el formulario para todos (el servidor igual
+controla esos permisos al guardar). Con un usuario solo del grupo Lectores, en las UF quedan
+bloqueados `estado_dominial`, `dni` y `adjudicatario`.
 
 En `armar_proyecto.py` se decide lo que el servidor no sabe:
 
 - `GRUPOS`: el panel de capas;
 - `VISIBLES`: qué se ve al abrir;
+- `EXTENSION_INICIAL`: dónde abre el mapa (la provincia);
 - `ESCALAS`: a partir de qué escala se dibujan las capas grandes;
 - `MOSTRAR`: cómo se muestra cada registro en los combos;
 - `LISTAS`: qué listas hijas lleva cada formulario.

@@ -35,6 +35,9 @@ AUTHCFG = "gduoapf"
 # patrón para la capa completa de parcelas y las de cada zona (no parcelas_expropiadas)
 PARCELAS = "<parcelas>"
 CRS_PROYECTO = "EPSG:22175"
+# vista al abrir (lon/lat): la provincia, donde están los datos. Sin esto el proyecto no guarda
+# extensión (se arma sin canvas) y QGIS dibujaba primero alrededor de 0,0, en vacío
+EXTENSION_INICIAL = (-63.5, -28.1, -58.2, -24.2)
 # features por pedido. Cada página le cuesta al servidor un COUNT y un OFFSET sobre la tabla
 # entera, más allá de su tamaño: bajar catastro_urbano completo (430.000 filas, lo que hace
 # la tabla de atributos) tardaba 131 s de servidor en páginas de 1000 y 31 s en páginas de 10.000.
@@ -169,8 +172,8 @@ def ordenar_en_grupos(ids):
 def armar(args):
     from qgis.core import (
         Qgis, QgsApplication, QgsAttributeEditorContainer, QgsAttributeEditorField, QgsAttributeEditorRelation,
-        QgsAuthMethodConfig, QgsCoordinateReferenceSystem, QgsEditorWidgetSetup, QgsProject, QgsRasterLayer,
-        QgsRelation, QgsSymbol, QgsVectorLayer,
+        QgsAuthMethodConfig, QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsEditorWidgetSetup,
+        QgsProject, QgsRasterLayer, QgsRectangle, QgsReferencedRectangle, QgsRelation, QgsSymbol, QgsVectorLayer,
     )
     from qgis.PyQt.QtGui import QColor
 
@@ -196,6 +199,11 @@ def armar(args):
     proyecto = QgsProject.instance()
     proyecto.setTitle("GDU - IPDUV")
     proyecto.setCrs(QgsCoordinateReferenceSystem(CRS_PROYECTO))
+    # sin <mapcanvas> en el proyecto, QGIS abre en la extensión por defecto de la vista
+    lonlat = QgsCoordinateReferenceSystem("OGC:CRS84")
+    a_proyecto = QgsCoordinateTransform(lonlat, proyecto.crs(), proyecto.transformContext())
+    extension = a_proyecto.transformBoundingBox(QgsRectangle(*EXTENSION_INICIAL))
+    proyecto.viewSettings().setDefaultViewExtent(QgsReferencedRectangle(extension, proyecto.crs()))
 
     capas = {}
     for i, coleccion_id in enumerate(ids):
