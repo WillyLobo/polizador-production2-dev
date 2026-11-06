@@ -996,3 +996,13 @@ class Importar3450Test(TestCase):
             ("BRITES MERCEDES", False, 30111222, None, "En trámite"),
         )
         self.assertTrue(Adjudicatario3450.objects.get(pk=81357).escritura)
+
+    def test_numero_repetido_en_la_misma_pagina_gana_el_ultimo(self):
+        from gdu.management.commands.importar_3450 import Command
+
+        registros = [
+            {"AdjuGISNroAdju": 7, "AdjuGISapeynom": "PRIMERO"},
+            {"AdjuGISNroAdju": 7, "AdjuGISapeynom": "SEGUNDO"},
+        ]
+        self.assertEqual(Command()._upsert(registros), 1)
+        self.assertEqual(Adjudicatario3450.objects.get(pk=7).apellido_nombre, "SEGUNDO")

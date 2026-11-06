@@ -68,12 +68,14 @@ class Command(BaseCommand):
 
     def _upsert(self, registros):
         """Alta o actualización en bloque. estado_regularizacion no viene de la API: se conserva."""
-        filas = []
+        # por número de adjudicatario: si la API repite uno en la misma página, gana el último
+        # (Postgres rechaza un ON CONFLICT DO UPDATE que toque dos veces la misma fila)
+        filas = {}
         for r in registros:
             fecha = r.get("AdjuGISResFecha")
             if fecha == "0000-00-00T00:00:00":
                 fecha = None
-            filas.append(Adjudicatario3450(
+            filas[r["AdjuGISNroAdju"]] = Adjudicatario3450(
                 nro_adjudicatario=r["AdjuGISNroAdju"],
                 apellido_nombre=(r.get("AdjuGISapeynom") or "").strip(),
                 dni=r.get("AdjuGISdni") or None,
@@ -85,8 +87,8 @@ class Command(BaseCommand):
                 res_acta=r.get("AdjuGISResActa") or "",
                 motivo=r.get("AdjuGISmotivo") or "",
                 situacion=(r.get("AdjuGISsituacion") or "").strip(),
-            ))
+            )
         Adjudicatario3450.objects.bulk_create(
-            filas, update_conflicts=True, unique_fields=["nro_adjudicatario"], update_fields=[*CAMPOS, "actualizado_en"],
+            filas.values(), update_conflicts=True, unique_fields=["nro_adjudicatario"], update_fields=[*CAMPOS, "actualizado_en"],
         )
         return len(filas)
