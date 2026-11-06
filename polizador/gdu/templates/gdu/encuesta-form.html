@@ -27,7 +27,7 @@
     {% csrf_token %}
     {% for seccion in secciones %}
     <div class="card mb-3">
-      <div class="card-header py-2 bg-light fw-semibold small">{{ seccion.nombre }}</div>
+      <div class="card-header py-2 bg-body-tertiary fw-semibold small">{{ seccion.nombre }}</div>
       <div class="card-body p-2">
         {% for p in seccion.preguntas %}
         <div class="form-group mb-2"
