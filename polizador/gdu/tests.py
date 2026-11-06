@@ -1,4 +1,5 @@
 import base64
+from datetime import date
 from io import StringIO
 
 from django.contrib.auth import authenticate, get_user_model
@@ -987,15 +988,16 @@ class Importar3450Test(TestCase):
         registros = [
             {"AdjuGISNroAdju": 1, "AdjuGISapeynom": "BRITES MERCEDES ", "AdjuGISEscritura": "NO",
              "AdjuGISResFecha": "0000-00-00T00:00:00", "AdjuGISdni": 30111222},
-            {"AdjuGISNroAdju": 81357, "AdjuGISapeynom": "NUEVO", "AdjuGISEscritura": "SI", "AdjuGISResFecha": "2020-05-04"},
+            {"AdjuGISNroAdju": 81357, "AdjuGISapeynom": "NUEVO", "AdjuGISEscritura": "SI", "AdjuGISResFecha": "2015-08-13T00:00:00"},
         ]
-        self.assertEqual(Command()._upsert(registros), 2)
+        self.assertEqual(Command()._upsert(registros), (2, 0))
         uno = Adjudicatario3450.objects.get(pk=1)
         self.assertEqual(
             (uno.apellido_nombre, uno.escritura, uno.dni, uno.res_fecha, uno.estado_regularizacion),
             ("BRITES MERCEDES", False, 30111222, None, "En trámite"),
         )
-        self.assertTrue(Adjudicatario3450.objects.get(pk=81357).escritura)
+        nuevo = Adjudicatario3450.objects.get(pk=81357)
+        self.assertEqual((nuevo.escritura, nuevo.res_fecha), (True, date(2015, 8, 13)))
 
     def test_numero_repetido_en_la_misma_pagina_gana_el_ultimo(self):
         from gdu.management.commands.importar_3450 import Command
@@ -1004,5 +1006,19 @@ class Importar3450Test(TestCase):
             {"AdjuGISNroAdju": 7, "AdjuGISapeynom": "PRIMERO"},
             {"AdjuGISNroAdju": 7, "AdjuGISapeynom": "SEGUNDO"},
         ]
-        self.assertEqual(Command()._upsert(registros), 1)
+        self.assertEqual(Command()._upsert(registros), (1, 0))
         self.assertEqual(Adjudicatario3450.objects.get(pk=7).apellido_nombre, "SEGUNDO")
+
+    def test_registro_invalido_se_descarta_y_el_resto_se_guarda(self):
+        from gdu.management.commands.importar_3450 import Command
+
+        registros = [
+            {"AdjuGISNroAdju": 1, "AdjuGISResFecha": "13/08/2015"},
+            {"AdjuGISNroAdju": 2, "AdjuGISdni": "no es un número"},
+            {"AdjuGISapeynom": "SIN NÚMERO"},
+            {"AdjuGISNroAdju": 3, "AdjuGISapeynom": "BUENO"},
+        ]
+        with self.assertLogs("gdu.management.commands.importar_3450", "WARNING") as logs:
+            self.assertEqual(Command()._upsert(registros), (1, 3))
+        self.assertEqual(len(logs.records), 3)
+        self.assertEqual(list(Adjudicatario3450.objects.values_list("pk", flat=True)), [3])
