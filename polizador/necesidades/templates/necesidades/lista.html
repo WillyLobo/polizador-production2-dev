@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}<title>Necesidades y pedidos</title>{% endblock %}
+
+{% block style %}
+<style>
+  .nec-card { border-left-width: 4px !important; }
+  .nec-card.urg-1 { border-left-color: var(--bs-danger) !important; }
+  .nec-card.urg-2 { border-left-color: var(--bs-warning) !important; }
+  .nec-card.urg-3 { border-left-color: var(--bs-info) !important; }
+  .nec-card.cerrada { opacity: .65; }
+  .nec-detalle { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .nec-contadores b { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+  #nec-form .form-check { padding: .4rem .6rem .4rem 2rem; border: 1px solid var(--bs-border-color); border-radius: .375rem; margin-bottom: .35rem; }
+  #nec-form .form-check:has(input:checked) { border-color: var(--bs-primary); background: var(--bs-primary-bg-subtle); }
+  @media (min-width: 992px) { .nec-sticky { position: sticky; top: 1rem; } }
+  .nec-card:target { box-shadow: 0 0 0 .2rem var(--bs-primary-border-subtle); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="mb-3">
+    <h4 class="mb-1"><i class="bi bi-chat-square-text me-1"></i>Necesidades y pedidos</h4>
+    <p class="text-muted mb-2" style="max-width: 70ch">
+      Anotá lo que te hace falta del sistema: algo que no funciona, algo que te lleva demasiado tiempo o algo nuevo.
+      Todos los pedidos se leen y se conversan en persona con quien los cargó.
+    </p>
+    <div class="d-flex flex-wrap gap-4 nec-contadores">
+      <div><b>{{ totales.total }}</b> <span class="text-muted small">pedidos</span></div>
+      <div><b class="text-danger">{{ totales.bloquean }}</b> <span class="text-muted small">bloquean el trabajo</span></div>
+      <div><b class="text-warning-emphasis">{{ totales.hablar }}</b> <span class="text-muted small">para hablar en persona</span></div>
+      <div><b class="text-success">{{ totales.resueltas }}</b> <span class="text-muted small">resueltos</span></div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="card nec-sticky">
+        <div class="card-body">
+          {% if editando %}
+            <h5 class="card-title">Editar pedido</h5>
+            <form id="nec-form" method="post" action="{% url 'necesidades:editar' editando.pk %}">
+          {% else %}
+            <h5 class="card-title">Nuevo pedido</h5>
+            <p class="small text-muted">Con un ejemplo concreto lo podemos resolver mucho más rápido.</p>
+            <form id="nec-form" method="post" action="{% url 'necesidades:crear' %}">
+          {% endif %}
+            {% csrf_token %}
+            <input type="hidden" name="filtros" value="{{ filtros_qs }}">
+            {% if form.non_field_errors %}<div class="alert alert-danger py-2">{{ form.non_field_errors }}</div>{% endif %}
+            {% for campo in form %}
+              <div class="mb-3">
+                <label class="form-label fw-semibold small" {% if campo.name != "urgencia" %}for="{{ campo.id_for_label }}"{% endif %}>
+                  {{ campo.label }}{% if not campo.field.required %} <span class="fw-normal text-muted">(opcional)</span>{% endif %}
+                </label>
+                {% if campo.name == "urgencia" %}
+                  {% for radio in campo %}
+                    <div class="form-check">
+                      {{ radio.tag }}
+                      <label class="form-check-label small" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                    </div>
+                  {% endfor %}
+                {% else %}
+                  {{ campo }}
+                {% endif %}
+                {% if campo.help_text %}<div class="form-text">{{ campo.help_text }}</div>{% endif %}
+                {% for error in campo.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+              </div>
+            {% endfor %}
+            <div class="d-flex gap-2">
+              <button type="submit" class="btn btn-primary">{% if editando %}Guardar cambios{% else %}Enviar pedido{% endif %}</button>
+              {% if editando %}<a class="btn btn-outline-secondary" href="{% url 'necesidades:lista' %}{% if filtros_qs %}?{{ filtros_qs }}{% endif %}">Cancelar</a>{% endif %}
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <form method="get" class="d-flex flex-wrap gap-2 align-items-center mb-3">
+        <select name="modulo" class="form-select form-select-sm w-auto" aria-label="Parte del sistema" onchange="this.form.submit()">
+          <option value="">Todas las partes</option>
+          {% for valor, etiqueta in modulos %}<option value="{{ valor }}" {% if filtro.modulo == valor %}selected{% endif %}>{{ etiqueta }}</option>{% endfor %}
+        </select>
+        <select name="estado" class="form-select form-select-sm w-auto" aria-label="Estado" onchange="this.form.submit()">
+          <option value="">Todos los estados</option>
+          {% for valor, etiqueta in estados %}<option value="{{ valor }}" {% if filtro.estado == valor %}selected{% endif %}>{{ etiqueta }}</option>{% endfor %}
+        </select>
+        <select name="orden" class="form-select form-select-sm w-auto" aria-label="Orden" onchange="this.form.submit()">
+          <option value="urgencia" {% if filtro.orden == "urgencia" %}selected{% endif %}>Más urgentes primero</option>
+          <option value="apoyos" {% if filtro.orden == "apoyos" %}selected{% endif %}>Más apoyados primero</option>
+          <option value="recientes" {% if filtro.orden == "recientes" %}selected{% endif %}>Más recientes primero</option>
+        </select>
+        <noscript><button class="btn btn-sm btn-outline-secondary">Filtrar</button></noscript>
+        <a class="btn btn-sm btn-outline-secondary ms-auto" href="{% url 'necesidades:resumen' %}" target="_blank">
+          <i class="bi bi-file-text me-1"></i>Resumen para la reunión
+        </a>
+      </form>
+
+      {% for n in necesidades %}
+      <div class="card nec-card urg-{{ n.urgencia }} mb-3 {% if n.cerrada %}cerrada{% endif %}" id="n{{ n.pk }}">
+        <div class="card-body">
+          <div class="d-flex flex-wrap gap-1 mb-2">
+            <span class="badge {% if n.urgencia == 1 %}bg-danger-subtle text-danger-emphasis{% elif n.urgencia == 2 %}bg-warning-subtle text-warning-emphasis{% else %}bg-info-subtle text-info-emphasis{% endif %}">{{ n.get_urgencia_display }}</span>
+            <span class="badge bg-body-secondary text-body-secondary">{{ n.get_modulo_display }}</span>
+            <span class="badge bg-body-secondary text-body-secondary">{{ n.get_tipo_display }}</span>
+            {% if n.estado != "nueva" %}
+            <span class="badge {% if n.estado == 'hablar' %}bg-warning text-dark{% elif n.estado == 'curso' %}bg-primary{% elif n.estado == 'resuelta' %}bg-success{% else %}bg-secondary{% endif %}">{{ n.get_estado_display }}</span>
+            {% endif %}
+          </div>
+          <h5 class="mb-2">{{ n.titulo }}</h5>
+          {% if n.detalle %}<p class="nec-detalle mb-2">{{ n.detalle }}</p>{% endif %}
+          {% if n.ejemplo %}<div class="small bg-body-tertiary rounded px-2 py-1 mb-2"><span class="text-muted text-uppercase" style="font-size:.7rem">Ejemplo</span><br>{{ n.ejemplo }}</div>{% endif %}
+          {% if n.respuesta and not gestor %}
+          <div class="small bg-primary-subtle rounded px-2 py-1 mb-2"><span class="text-primary-emphasis text-uppercase" style="font-size:.7rem">Respuesta</span><br><span class="nec-detalle">{{ n.respuesta }}</span></div>
+          {% endif %}
+          <div class="small text-muted mb-2">
+            <span class="fw-semibold text-body">{{ n.autor_nombre|default:n.autor_username }}</span>{% if n.oficina %} · {{ n.oficina }}{% endif %}
+            · {{ n.creado|date:"d/m/Y" }}{% if n.editado %} (editado){% endif %}
+          </div>
+          <div class="d-flex flex-wrap gap-2 align-items-center border-top pt-2">
+            <form method="post" action="{% url 'necesidades:apoyar' n.pk %}" class="d-inline">
+              {% csrf_token %}<input type="hidden" name="filtros" value="{{ filtros_qs }}">
+              <button type="submit" class="btn btn-sm {% if n.yo_apoyo %}btn-primary{% else %}btn-outline-primary{% endif %}"
+                      {% if n.es_mia %}disabled title="Es tu pedido"{% endif %} aria-pressed="{{ n.yo_apoyo|yesno:'true,false' }}">
+                {% if n.yo_apoyo %}<i class="bi bi-check2 me-1"></i>A mí también{% else %}A mí también me pasa{% endif %}
+                {% if n.n_apoyos %}<span class="badge text-bg-light ms-1">{{ n.n_apoyos }}</span>{% endif %}
+              </button>
+            </form>
+            {% if n.puede_editar %}
+            <a class="btn btn-sm btn-outline-secondary" href="{% url 'necesidades:editar' n.pk %}{% if filtros_qs %}?{{ filtros_qs }}{% endif %}">Editar</a>
+            <form method="post" action="{% url 'necesidades:borrar' n.pk %}" class="d-inline"
+                  onsubmit="return confirm('¿Borrar este pedido?');">
+              {% csrf_token %}<input type="hidden" name="filtros" value="{{ filtros_qs }}">
+              <button type="submit" class="btn btn-sm btn-outline-danger">Borrar</button>
+            </form>
+            {% endif %}
+          </div>
+          {% if gestor %}
+          <form method="post" action="{% url 'necesidades:gestionar' n.pk %}" class="bg-body-tertiary rounded p-2 mt-2">
+            {% csrf_token %}<input type="hidden" name="filtros" value="{{ filtros_qs }}">
+            <div class="d-flex flex-wrap gap-2 align-items-center mb-2">
+              <span class="small fw-semibold">Revisión</span>
+              {{ n.gestion_form.estado }}
+              {% if n.respondido_por %}<span class="small text-muted">última por {{ n.respondido_por }}</span>{% endif %}
+            </div>
+            {{ n.gestion_form.respuesta }}
+            <button type="submit" class="btn btn-sm btn-primary mt-2">Guardar revisión</button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+      {% empty %}
+      <div class="text-center text-muted border border-dashed rounded p-4">
+        {% if totales.total %}
+          Ningún pedido coincide con esos filtros.
+        {% else %}
+          <h6 class="text-body">Todavía no hay pedidos</h6>
+          Usá el formulario para cargar el primero.
+        {% endif %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% endblock %}

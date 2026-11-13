@@ -330,6 +330,13 @@
 
       <!-- User menu (right) -->
       <ul class="navbar-nav ms-auto nav-items" style="--bsnavitem-padding: 0.5rem !important;">
+        {% if request.user.is_authenticated %}
+        <li class="nav-item d-flex align-items-center">
+          <a class="nav-link px-2" href="{% url "necesidades:lista" %}" title="Necesidades y pedidos: contanos qué te hace falta del sistema" aria-label="Necesidades y pedidos">
+            <i class="bi bi-chat-square-text"></i><span class="d-lg-none d-xl-inline ms-1">Pedidos</span>
+          </a>
+        </li>
+        {% endif %}
         <li class="nav-item d-flex align-items-center">
           <button type="button" class="btn btn-link nav-link px-2" id="themeToggle" title="Cambiar tema claro/oscuro" aria-label="Cambiar tema claro/oscuro">
             <i class="bi bi-moon-stars" id="themeToggleIcon"></i>

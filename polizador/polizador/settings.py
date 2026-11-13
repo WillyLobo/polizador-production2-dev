@@ -123,6 +123,7 @@ INSTALLED_APPS = [
 	"secretariador",
     "personalizador",
     "api",
+    "necesidades",
 ]
 SITE_ID = 1
 # Widget template override. Place "widgetX.html" into "templates/django/forms/widgets/"
@@ -305,6 +306,15 @@ DATABASES = {
         "NAME":DBNAME,
     }
 }
+
+# Pedidos de los usuarios (app necesidades) en una base aparte, para que
+# sobrevivan cuando se recrea la base de desarrollo y para que el servidor de
+# prueba y el de producción compartan los mismos pedidos. Si no se define, la app usa
+# "default" como cualquier otra. Ver necesidades/routers.py.
+#   NECESIDADES_DATABASE_URL=postgres://usuario:clave@127.0.0.1:5432/gdu_necesidades
+if env("NECESIDADES_DATABASE_URL", default=""):
+    DATABASES["necesidades"] = env.db_url("NECESIDADES_DATABASE_URL")
+DATABASE_ROUTERS = ["necesidades.routers.NecesidadesRouter"]
 
 # Password validation
 # https://docs.djangoproject.com/en/5.0/ref/settings/#auth-password-validators
