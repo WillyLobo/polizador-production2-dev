@@ -39,6 +39,7 @@ urlpatterns = [
     path("obra/", include("carga.urls")),
     path("viaticos/", include("secretariador.urls")),
     path("personal/", include("personalizador.urls")),
+    path("necesidades/", include("necesidades.urls")),
     # OGC API - Features de gdu (edición desde QGIS), antes del include de gdu/
     path("gdu/oapif/collections/<str:collection_id>/items/unknown_id", opciones_item_desconocido),
     path("gdu/oapif/", gdu_oapif.urls),
