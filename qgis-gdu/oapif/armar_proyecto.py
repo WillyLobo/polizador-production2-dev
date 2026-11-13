@@ -232,19 +232,23 @@ def armar(args):
         proyecto.addMapLayer(capa, False)
         capas[coleccion_id] = capa
 
-    # cómo se muestra cada registro en los combos
-    for coleccion_id, capa in capas.items():
-        nombres = capa.fields().names()
-        expresion = valor_por_patron(MOSTRAR, coleccion_id, '"nombre"' if "nombre" in nombres else '"id"')
-        capa.setDisplayExpression(expresion)
-
-    # una relación por FK, hacia la colección que dice el servidor
-    relaciones = proyecto.relationManager()
-
     def clave(coleccion_id):
         """campo clave de la colección (x-ogc-role: id); "id" salvo, p. ej., adjudicatarios_3450"""
         propiedades = schemas[coleccion_id]["properties"]
         return next((n for n, p in propiedades.items() if p.get("x-ogc-role") == "id"), "id")
+
+    # cómo se muestra cada registro en los combos (y en Identificar). Siempre empieza por la
+    # clave, "1325 - Construcción de ...": los usuarios siguen las relaciones por el id
+    for coleccion_id, capa in capas.items():
+        nombres = capa.fields().names()
+        campo_clave = f'"{clave(coleccion_id)}"'
+        expresion = valor_por_patron(MOSTRAR, coleccion_id, '"nombre"' if "nombre" in nombres else campo_clave)
+        if not expresion.startswith(campo_clave):
+            expresion = f"{campo_clave} || coalesce(' - ' || ({expresion}), '')"
+        capa.setDisplayExpression(expresion)
+
+    # una relación por FK, hacia la colección que dice el servidor
+    relaciones = proyecto.relationManager()
 
     def relacion(hija_id, campo, padre_id):
         rel = QgsRelation()
@@ -306,7 +310,8 @@ def armar(args):
         auditoria = QgsAttributeEditorContainer("Auditoría", raiz)
         auditoria.setType(Qgis.AttributeEditorContainerType.Tab)
         for idx, campo in enumerate(capa.fields()):
-            contenedor = auditoria if campo.name() in AUDITORIA else datos
+            # el id va arriba de todo en Datos, a la vista: con él se siguen las relaciones
+            contenedor = auditoria if campo.name() in AUDITORIA.keys() - {"id"} else datos
             contenedor.addChildElement(QgsAttributeEditorField(campo.name(), idx, contenedor))
             if campo.name() in solo_lectura:
                 form.setReadOnly(idx, True)
