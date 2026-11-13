@@ -172,7 +172,7 @@ def ordenar_en_grupos(ids):
 def armar(args):
     from qgis.core import (
         Qgis, QgsApplication, QgsAttributeEditorContainer, QgsAttributeEditorField, QgsAttributeEditorRelation,
-        QgsAuthMethodConfig, QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsEditorWidgetSetup,
+        QgsAttributeTableConfig, QgsAuthMethodConfig, QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsEditorWidgetSetup,
         QgsProject, QgsRasterLayer, QgsRectangle, QgsReferencedRectangle, QgsRelation, QgsSymbol, QgsVectorLayer,
     )
     from qgis.PyQt.QtGui import QColor
@@ -334,6 +334,19 @@ def armar(args):
             raiz.addChildElement(pestana)
         raiz.addChildElement(auditoria)
         capa.setEditFormConfig(form)
+
+        # columna "Acciones" visible y primera en la tabla de atributos, con botones: ahí QGIS
+        # pone "Duplicar objeto" y "Duplicar y digitalizar" (como en el gdu.qgz heredado)
+        tabla = capa.attributeTableConfig()
+        tabla.update(capa.fields())
+        tabla.setActionWidgetStyle(QgsAttributeTableConfig.ActionWidgetStyle.ButtonList)
+        columnas = tabla.columns()
+        for columna in columnas:
+            if columna.type == QgsAttributeTableConfig.Type.Action:
+                columna.hidden = False
+        columnas.sort(key=lambda columna: columna.type != QgsAttributeTableConfig.Type.Action)
+        tabla.setColumns(columnas)
+        capa.setAttributeTableConfig(tabla)
 
     # panel de capas
     arbol = proyecto.layerTreeRoot()
