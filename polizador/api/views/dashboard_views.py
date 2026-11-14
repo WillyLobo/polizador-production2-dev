@@ -31,8 +31,11 @@ def sentry_health(request):
     health = dashboard_data.sentry_health()
     if health is None:
         return {"configured": False}
+    if health.get("error"):
+        return {"configured": True, "error": True}
     return {
         "configured": True,
         "unresolved_count": health["unresolved_count"],
+        "truncated": health["truncated"],
         "top_issues": health["top_issues"],
     }

@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import requests
 from django.conf import settings
@@ -112,19 +112,43 @@ def changes_feed(app_label, limit=50):
     return entries[:limit]
 
 
+def _month_starts(months):
+    """Primer día (hora local) de cada uno de los últimos `months` meses calendario,
+    del más viejo al actual."""
+    today = timezone.localdate()
+    current = today.year * 12 + today.month - 1
+    return [
+        timezone.make_aware(datetime(index // 12, index % 12 + 1, 1))
+        for index in range(current - months + 1, current + 1)
+    ]
+
+
 def record_throughput(app_label, months=12):
-    since = timezone.now() - timedelta(days=30 * months)
+    """Altas hechas por usuarios, por mes calendario, de cada modelo seguido.
+
+    Solo cuenta las filas "+" con history_user: las que no lo tienen no vienen de un
+    pedido web sino de cargas en bloque (el poblado inicial del historial, importadores,
+    comandos), que meten miles de altas en un día y aplastan la escala del gráfico.
+    Devuelve todos los meses de la ventana, también los que no tuvieron altas (con 0),
+    para que el eje del gráfico no tenga saltos.
+    """
+    month_starts = _month_starts(months)
+    periods = [start.strftime("%Y-%m") for start in month_starts]
+    since = month_starts[0]
     series = {}
     for model, history_attr, label in TRACKED_MODELS[app_label]:
         history_manager = getattr(model, history_attr)
         rows = (
-            history_manager.filter(history_type="+", history_date__gte=since)
+            history_manager.filter(
+                history_type="+", history_user__isnull=False, history_date__gte=since
+            )
             .annotate(month=TruncMonth("history_date"))
             .values("month")
             .annotate(total=Count("pk"))
             .order_by("month")
         )
-        series[label] = [(row["month"].strftime("%Y-%m"), row["total"]) for row in rows]
+        totals = {row["month"].strftime("%Y-%m"): row["total"] for row in rows}
+        series[label] = [(period, totals.get(period, 0)) for period in periods]
     return series
 
 
@@ -137,8 +161,9 @@ def recent_logins(limit=15):
 
 
 def login_summary():
-    now = timezone.now()
-    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    # Medianoche local, no UTC: timezone.now() está en UTC y su medianoche cae a las
+    # 21:00 del día anterior en Argentina.
+    today_start = timezone.localtime().replace(hour=0, minute=0, second=0, microsecond=0)
     week_start = today_start - timedelta(days=7)
     return {
         "today": LoginEvent.objects.filter(timestamp__gte=today_start).count(),
@@ -149,12 +174,16 @@ def login_summary():
 DASHBOARD_CACHE_TIMEOUT = 60  # segundos
 
 
-def sentry_health():
-    """Cantidad de issues sin resolver en los últimos 14 días, vía la API de Sentry.
+SENTRY_ISSUES_LIMIT = 100  # máximo que admite la API por página
 
-    Devuelve None si no está configurado (por ejemplo en desarrollo, donde
-    tampoco se inicializa el SDK de Sentry). El resultado se cachea porque implica
-    una llamada HTTP sincrónica a un servicio externo en cada carga del dashboard.
+
+def sentry_health():
+    """Issues sin resolver vistos en los últimos 14 días, vía la API de Sentry.
+
+    Devuelve None si no está configurado (por ejemplo en desarrollo, donde tampoco se
+    inicializa el SDK de Sentry) y {"error": True} si la consulta falló, para que el
+    dashboard no muestre una falla como "No configurado". El resultado se cachea porque
+    implica una llamada HTTP sincrónica a un servicio externo en cada carga del dashboard.
     """
     return cache.get_or_set("dashboard:sentry_health", _fetch_sentry_health, DASHBOARD_CACHE_TIMEOUT)
 
@@ -165,25 +194,38 @@ def _fetch_sentry_health():
 
     # This account's DSN is on the US data region (o....ingest.us.sentry.io),
     # whose API lives on us.sentry.io rather than the legacy sentry.io host.
-    url = f"https://us.sentry.io/api/0/projects/{settings.SENTRY_ORG}/{settings.SENTRY_PROJECT}/issues/"
+    # Endpoint de organización y no el de proyecto (obsoleto): en el de proyecto
+    # statsPeriod solo elige las estadísticas que acompañan a cada issue, acá es la
+    # ventana de tiempo de la búsqueda.
+    url = f"https://us.sentry.io/api/0/organizations/{settings.SENTRY_ORG}/issues/"
     try:
         response = requests.get(
             url,
-            params={"statsPeriod": "14d", "query": "is:unresolved"},
+            params={
+                "project": settings.SENTRY_PROJECT,
+                "statsPeriod": "14d",
+                "query": "is:unresolved",
+                "sort": "freq",
+                "limit": SENTRY_ISSUES_LIMIT,
+            },
             headers={"Authorization": f"Bearer {settings.SENTRY_AUTH_TOKEN}"},
             timeout=5,
         )
         response.raise_for_status()
         issues = response.json()
-    except requests.RequestException:
-        return None
-    return {
-        "unresolved_count": len(issues),
-        "top_issues": [
-            {"title": issue["title"], "count": issue["count"], "url": issue["permalink"]}
+        top_issues = [
+            {"title": issue["title"], "count": str(issue["count"]), "url": issue["permalink"]}
             for issue in issues[:5]
-        ],
-    }
+        ]
+        # La respuesta trae una sola página. El total real viene en X-Hits; si no viene
+        # y hay otra página, lo contado es un piso ("100+").
+        hits = response.headers.get("X-Hits", "")
+        has_more = response.links.get("next", {}).get("results") == "true"
+    except (requests.RequestException, KeyError, TypeError, ValueError, AttributeError):
+        return {"error": True}
+    if hits.isdigit():
+        return {"unresolved_count": int(hits), "truncated": False, "top_issues": top_issues}
+    return {"unresolved_count": len(issues), "truncated": has_more, "top_issues": top_issues}
 
 
 def db_health():

@@ -29,8 +29,10 @@
       <div class="card h-100">
         <div class="card-body">
           <h6 class="card-subtitle text-muted mb-1"><i class="bi bi-bug me-1"></i>Errores sin resolver (Sentry, 14 días)</h6>
-          {% if sentry_health %}
-          <p class="card-text fs-3 mb-0">{{ sentry_health.unresolved_count }}</p>
+          {% if sentry_health.error %}
+          <p class="card-text text-danger mb-0">No se pudo consultar Sentry</p>
+          {% elif sentry_health %}
+          <p class="card-text fs-3 mb-0">{{ sentry_health.unresolved_count }}{% if sentry_health.truncated %}+{% endif %}</p>
           {% else %}
           <p class="card-text text-muted mb-0">No configurado</p>
           {% endif %}
@@ -176,7 +178,7 @@
     <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="tab-{{ app.app_label }}" role="tabpanel">
       <div class="card mb-3">
         <div class="card-body">
-          <h6 class="card-title">Registros creados por mes</h6>
+          <h6 class="card-title">Registros creados por usuarios, por mes</h6>
           <canvas id="throughput-{{ app.app_label }}" height="80"></canvas>
         </div>
       </div>
