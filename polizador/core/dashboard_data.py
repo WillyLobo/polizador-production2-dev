@@ -40,12 +40,6 @@ TRACKED_MODELS = {
     ],
 }
 
-APP_DISPLAY_NAMES = {
-    "carga": "Obras",
-    "secretariador": "Viáticos",
-    "personalizador": "Personal",
-}
-
 HISTORY_TYPE_LABELS = {"+": "Creado", "~": "Modificado", "-": "Eliminado"}
 
 # FK paths each model's __str__ dereferences, so changes_feed() can resolve them in one

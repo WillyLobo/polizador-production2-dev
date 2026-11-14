@@ -396,7 +396,7 @@ class CEIC(models.Model):
 
 class GrupoCargo(models.Model):
     class Meta:
-        verbose_name = "Grupo Cargos"
+        verbose_name = "Grupo de Cargos"
         verbose_name_plural = "Grupos de Cargos"
 
     grupo_numero = models.DecimalField(max_digits=1, decimal_places=0, unique=True)

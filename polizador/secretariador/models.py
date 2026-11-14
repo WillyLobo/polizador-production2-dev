@@ -95,8 +95,8 @@ class ConcatOp(models.Func):
     
 class InstrumentosLegalesMemorandum(models.Model):
     class Meta:
-        verbose_name = "Instrumento Legal(Memorandum)"
-        verbose_name_plural = "Instrumentos Legales(Memorandums)"
+        verbose_name = "Instrumento Legal (Memorándum)"
+        verbose_name_plural = "Instrumentos Legales (Memorándums)"
         ordering = ["-instrumentolegalmemorandum_ano", "-instrumentolegalmemorandum_numero"]
         constraints = [
             models.UniqueConstraint(
@@ -138,8 +138,8 @@ class InstrumentosLegalesMemorandum(models.Model):
 
 class InstrumentosLegalesResoluciones(models.Model):
     class Meta:
-        verbose_name = "Instrumento Legal(Resolución)"
-        verbose_name_plural = "Instrumentos Legales(Resoluciones)"
+        verbose_name = "Instrumento Legal (Resolución)"
+        verbose_name_plural = "Instrumentos Legales (Resoluciones)"
         ordering = ["-instrumentolegalresoluciones_ano", "-instrumentolegalresoluciones_numero"]
         constraints = [
             models.UniqueConstraint(
@@ -233,8 +233,8 @@ class InstrumentosLegalesResoluciones(models.Model):
 
 class InstrumentosLegalesDecretos(models.Model):
     class Meta:
-        verbose_name = "Instrumento Legal(Decreto)"
-        verbose_name_plural = "Instrumentos Legales(Decretos)"
+        verbose_name = "Instrumento Legal (Decreto)"
+        verbose_name_plural = "Instrumentos Legales (Decretos)"
         ordering = ["-instrumentolegaldecretos_ano", "-instrumentolegaldecretos_numero"]
         constraints = [
             models.UniqueConstraint(
@@ -294,7 +294,7 @@ class InstrumentosLegalesDecretos(models.Model):
 class MontoViaticoDiario(models.Model):
     class Meta:
         verbose_name = "Monto diario de Viático"
-        verbose_name_plural = "Monto diario de Viáticos"
+        verbose_name_plural = "Montos diarios de Viático"
         ordering = ["montoviaticodiario_decreto_reglamentario__instrumentolegaldecretos_ano", "montoviaticodiario_decreto_reglamentario__instrumentolegaldecretos_numero"]
         get_latest_by = ["montoviaticodiario_decreto_reglamentario__instrumentolegaldecretos_ano", "montoviaticodiario_decreto_reglamentario__instrumentolegaldecretos_numero"]
     
@@ -514,8 +514,8 @@ def _con_precision_guardada(campo, valor):
 
 class ComisionadoSolicitud(models.Model):
     class Meta:
-        verbose_name = "Comisionado Solicitud"
-        verbose_name_plural = "Comisionado Solicitudes"
+        verbose_name = "Comisionado de Solicitud"
+        verbose_name_plural = "Comisionados de Solicitud"
         constraints = [
             models.CheckConstraint(
                 condition=(

@@ -82,7 +82,7 @@ class DashboardView(SuperuserRequiredMixin, TemplateView):
         context["apps"] = [
             {
                 "app_label": app_label,
-                "display": dashboard_data.APP_DISPLAY_NAMES[app_label],
+                "display": apps.get_app_config(app_label).verbose_name,
                 "changes": _seccion_dashboard(f"cambios de {app_label}", dashboard_data.changes_feed, app_label),
             }
             for app_label in dashboard_data.TRACKED_MODELS

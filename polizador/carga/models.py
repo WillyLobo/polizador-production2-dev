@@ -110,8 +110,8 @@ class Receptor(models.Model):
 
 class Area(models.Model):
     class Meta:
-        verbose_name  = "Area"
-        verbose_name_plural = "Areas"
+        verbose_name  = "Área"
+        verbose_name_plural = "Áreas"
         ordering = ["area_nombre"]
     
     area_uuid = models.UUIDField(default=compat.uuid7, editable=False)
@@ -263,8 +263,8 @@ class Poliza(models.Model):
 
 class Poliza_Movimiento(models.Model):
     class Meta:
-        verbose_name = "Poliza_Movimiento"
-        verbose_name_plural = "Polizas_Movimiento"
+        verbose_name = "Movimiento de Póliza"
+        verbose_name_plural = "Movimientos de Póliza"
         ordering = ["poliza_movimiento_fecha"]
     
     poliza_movimiento_uuid = models.UUIDField(default=compat.uuid7, editable=False)
@@ -328,7 +328,8 @@ class Provincia(models.Model):
 class Region(models.Model):
     class Meta:
         ordering = ["id"]
-        verbose_name_plural = "Region"
+        verbose_name = "Región"
+        verbose_name_plural = "Regiones"
     
     region_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     region_numero   = models.CharField("Número Región", max_length=10)
@@ -344,6 +345,7 @@ class Region(models.Model):
 class Departamento(models.Model):
     class Meta:
         ordering			= ["departamento_nombre"]
+        verbose_name = "Departamento"
         verbose_name_plural = "Departamentos"
 
     departamento_uuid		= models.UUIDField(default=compat.uuid7, editable=False)
@@ -360,6 +362,7 @@ class Departamento(models.Model):
 class Localidad(models.Model):
     class Meta:
         ordering			= ["localidad_nombre"]
+        verbose_name = "Localidad"
         verbose_name_plural = "Localidades"
 
     localidad_uuid		= models.UUIDField(default=compat.uuid7, editable=False)
@@ -382,6 +385,7 @@ class Localidad(models.Model):
 class Municipio(models.Model):
     class Meta:
         ordering 			= ["municipio_nombre"]
+        verbose_name = "Municipio"
         verbose_name_plural = "Municipios"
 
     municipio_uuid        = models.UUIDField(default=compat.uuid7, editable=False)
@@ -695,6 +699,7 @@ class Prototipo(models.Model):
 
 class CertificadoRubro(models.Model):
     class Meta:
+        verbose_name = "Rubro"
         verbose_name_plural = "Rubros"
         ordering = ["certificadorubro_nombre"]
     
@@ -708,7 +713,8 @@ class CertificadoRubro(models.Model):
 
 class CertificadoFinanciamiento(models.Model):
     class Meta:
-        verbose_name_plural = "Financiamiento"
+        verbose_name = "Financiamiento"
+        verbose_name_plural = "Financiamientos"
         ordering = ["certificadofinanciamiento_nombre"]
     
     certificadofinanciamiento_uuid = models.UUIDField(default=compat.uuid7, editable=False)
@@ -1113,6 +1119,7 @@ class TextoResolucionCertificado(models.Model):
 class ConjuntoLicitado(models.Model):
     class Meta:
         ordering = ["id", "conjunto_nombre"]
+        verbose_name = "Conjunto Licitado"
         verbose_name_plural = "Conjuntos Licitados"
 
     conjunto_uuid = models.UUIDField(default=compat.uuid7, editable=False)
@@ -1147,7 +1154,8 @@ class ConjuntoLicitado(models.Model):
 
 class PlanDeTrabajos(models.Model):
     class Meta:
-        verbose_name_plural = "Plan de Trabajos"
+        verbose_name = "Plan de Trabajos"
+        verbose_name_plural = "Planes de Trabajos"
 
     trabajos_uuid = models.UUIDField(default=compat.uuid7, editable=False)
     trabajos_obra = models.ForeignKey("Obra", on_delete=models.CASCADE)
@@ -1573,6 +1581,7 @@ class FojaDeMedicionFoto(models.Model):
 
 class Contrato(models.Model):
     class Meta:
+        verbose_name = "Contrato"
         verbose_name_plural = "Contratos"
         ordering = ["contrato_fecha"]
 
@@ -1659,6 +1668,7 @@ class ContratoTramoPago(models.Model):
 
 class ContratoMonto(models.Model):
     class Meta:
+        verbose_name = "Monto de Contrato"
         verbose_name_plural = "Montos de Contrato"
         ordering = ["contratomonto_contrato"]
     
@@ -1676,6 +1686,7 @@ class ContratoMonto(models.Model):
     
 class ContratoRubro(models.Model):
     class Meta:
+        verbose_name = "Rubro de Contrato"
         verbose_name_plural = "Rubros de Contrato"
         ordering = ["contratorubro_tipo"]
     
@@ -1688,6 +1699,7 @@ class ContratoRubro(models.Model):
     
 class ContratosDigitales(models.Model):
     class Meta:
+        verbose_name = "Contrato Digital"
         verbose_name_plural = "Contratos Digitales"
         ordering = ["id"]
     
@@ -1704,6 +1716,7 @@ class ContratosDigitales(models.Model):
 
 class Uvi(models.Model):
     class Meta:
+        verbose_name = "UVI"
         verbose_name_plural = "UVI"
         ordering = ["-uvi_fecha",]
         get_latest_by = "-uvi_fecha"
@@ -1728,6 +1741,7 @@ class Uvi(models.Model):
 class INDEC(models.Model):
 
     class Meta:
+        verbose_name = "INDEC"
         verbose_name_plural = "INDEC"
         ordering = ["mes"]
 
