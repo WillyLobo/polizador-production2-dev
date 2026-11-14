@@ -1092,6 +1092,31 @@ class Importar3450Test(TestCase):
         self.assertEqual(list(Adjudicatario3450.objects.values_list("pk", flat=True)), [3])
 
 
+class AuditoriaVisorTest(TestCase):
+    def registrar(self, **meta):
+        from django.contrib.auth.models import AnonymousUser
+        from django.test import RequestFactory
+
+        from gdu.auditoria import registrar_evento
+
+        request = RequestFactory().get("/gdu/", **meta)
+        request.user = AnonymousUser()
+        return registrar_evento(request, "descargaPlano")
+
+    def test_guarda_la_ip_del_cliente(self):
+        self.assertEqual(self.registrar(HTTP_X_FORWARDED_FOR="10.106.16.50, 127.0.0.1").ip, "10.106.16.50")
+        self.assertEqual(self.registrar(REMOTE_ADDR="192.168.0.7").ip, "192.168.0.7")
+
+    def test_una_cabecera_que_no_es_una_ip_no_hace_fallar_el_pedido(self):
+        # sin validar, el INSERT fallaba y con él la descarga o la impresión que se registraba
+        for valor in ("no-es-una-ip", "10.0.0.1:4321", "' OR 1=1"):
+            with self.subTest(valor=valor):
+                evento = self.registrar(HTTP_X_FORWARDED_FOR=valor, REMOTE_ADDR="192.168.0.7")
+                evento.refresh_from_db()
+                self.assertEqual(evento.ip, "192.168.0.7")
+        self.assertIsNone(self.registrar(HTTP_X_FORWARDED_FOR="desconocido", REMOTE_ADDR="").ip)
+
+
 # caché en memoria y Sentry sin configurar, como los tests del dashboard en core: con el caché
 # real quedarían a la vista del servidor de desarrollo los datos de la base de test
 @aislar_dashboard

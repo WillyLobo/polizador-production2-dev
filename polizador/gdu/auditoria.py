@@ -4,12 +4,8 @@ navegador (POST público a /log, con el usuario que decía el cliente); acá los
 vista que atiende el pedido, con request.user. Las acciones conservan los nombres del
 historial importado de audit.audit_logs (descargaPlano, printFeature, ...).
 """
+from core.client_ip import client_ip
 from gdu.models import EventoVisor
-
-
-def _ip(request):
-    reenviada = request.META.get("HTTP_X_FORWARDED_FOR")
-    return reenviada.split(",")[0].strip() if reenviada else request.META.get("REMOTE_ADDR")
 
 
 def registrar_evento(request, accion, metadata=None):
@@ -18,6 +14,6 @@ def registrar_evento(request, accion, metadata=None):
         usuario=usuario,
         username=usuario.get_username() if usuario else "",
         accion=accion,
-        ip=_ip(request),
+        ip=client_ip(request),
         metadata=metadata,
     )
