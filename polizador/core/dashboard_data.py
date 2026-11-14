@@ -154,9 +154,7 @@ def record_throughput(app_label, months=12):
 
 def recent_logins(limit=15):
     return list(
-        LoginEvent.objects.select_related("user")
-        .order_by("-timestamp")[:limit]
-        .values("user__username", "timestamp", "ip_address")
+        LoginEvent.objects.order_by("-timestamp")[:limit].values("user__username", "timestamp")
     )
 
 
@@ -240,18 +238,23 @@ def _fetch_db_health():
         cursor.execute("SELECT pg_size_pretty(pg_database_size(current_database()))")
         db_size = cursor.fetchone()[0]
 
+        # pg_stat_activity lista todas las conexiones a la base, también las ociosas
+        # (y esta misma): "activas" son solo las que están ejecutando algo.
         cursor.execute(
-            "SELECT count(*) FROM pg_stat_activity WHERE datname = current_database()"
+            """
+            SELECT count(*), count(*) FILTER (WHERE state = 'active')
+            FROM pg_stat_activity WHERE datname = current_database()
+            """
         )
-        active_connections = cursor.fetchone()[0]
+        total_connections, active_connections = cursor.fetchone()
 
         cursor.execute(
             """
-            SELECT xact_commit, xact_rollback, deadlocks, blks_hit, blks_read
+            SELECT xact_commit, xact_rollback, deadlocks, blks_hit, blks_read, stats_reset
             FROM pg_stat_database WHERE datname = current_database()
             """
         )
-        xact_commit, xact_rollback, deadlocks, blks_hit, blks_read = cursor.fetchone()
+        xact_commit, xact_rollback, deadlocks, blks_hit, blks_read, stats_reset = cursor.fetchone()
         total_blocks = blks_hit + blks_read
         cache_hit_ratio = round(100 * blks_hit / total_blocks, 1) if total_blocks else None
 
@@ -270,7 +273,10 @@ def _fetch_db_health():
 
     return {
         "size": db_size,
+        "total_connections": total_connections,
         "active_connections": active_connections,
+        # Desde cuándo acumulan commits, rollbacks y deadlocks (None: nunca se reiniciaron).
+        "stats_reset": stats_reset,
         "commits": xact_commit,
         "rollbacks": xact_rollback,
         "deadlocks": deadlocks,
@@ -302,6 +308,9 @@ def _fetch_db_performance(limit):
             SELECT query, calls, round(total_exec_time::numeric, 1), round(mean_exec_time::numeric, 2)
             FROM pg_stat_statements
             WHERE query != '<insufficient privilege>'
+              -- pg_stat_statements es de todo el cluster: sin esto se mezclan las
+              -- consultas de las otras bases del servidor
+              AND dbid = (SELECT oid FROM pg_database WHERE datname = current_database())
             ORDER BY total_exec_time DESC
             LIMIT %s
             """,

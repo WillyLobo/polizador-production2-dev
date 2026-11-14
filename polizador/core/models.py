@@ -147,7 +147,7 @@ class LoginEvent(models.Model):
         ordering = ("-timestamp",)
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="login_events")
-    timestamp = models.DateTimeField(auto_now_add=True)
+    timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
     ip_address = models.GenericIPAddressField(null=True, blank=True)
     # Ruta del backend que autentico (django.contrib.auth la deja en
     # user.backend antes de emitir user_logged_in). Se guarda la ruta entera y

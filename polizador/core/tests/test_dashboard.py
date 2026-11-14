@@ -5,7 +5,9 @@ import requests
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
-from django.test import Client, TestCase, override_settings
+from django.db import DatabaseError, connection
+from django.contrib.auth.signals import user_logged_in
+from django.test import Client, RequestFactory, TestCase, override_settings
 from ninja.testing import TestClient
 
 from api.router import api
@@ -64,23 +66,62 @@ class DashboardViewTest(TestCase):
         self.assertContains(resp, "No configurado")
 
     @sentry_configurado
-    def test_sentry_caido_no_se_muestra_como_no_configurado(self):
+    def test_la_pagina_no_espera_a_sentry(self):
+        # el tile lo completa el navegador pidiéndole el dato a la API
         self.client.login(username="admin_user", password="pass1234!")
-        with mock.patch("core.dashboard_data.requests.get", side_effect=requests.ConnectionError):
+        with mock.patch("core.dashboard_data.requests.get") as get:
             resp = self.client.get("/administracion/dashboard/")
-        self.assertContains(resp, "No se pudo consultar Sentry")
-        self.assertNotContains(resp, "No configurado")
+        get.assert_not_called()
+        self.assertContains(resp, 'getJSON("/v1/api/dashboard/sentry/")')
+        self.assertContains(resp, 'data-url="/v1/api/dashboard/throughput/carga/"')
 
-    @sentry_configurado
-    def test_sentry_muestra_el_total_y_no_el_largo_de_la_pagina(self):
+    def test_una_seccion_que_falla_no_tira_la_pagina(self):
         self.client.login(username="admin_user", password="pass1234!")
-        issue = {"title": "Error de prueba", "count": "7", "permalink": "https://sentry.example/1"}
-        with mock.patch(
-            "core.dashboard_data.requests.get", return_value=respuesta_sentry([issue], headers={"X-Hits": "342"})
+
+        def consulta_rota(limit):
+            # como pg_stat_statements creada pero sin cargar: el SELECT revienta
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM tabla_que_no_existe")
+
+        with mock.patch("core.dashboard_data._fetch_db_performance", consulta_rota), self.assertLogs("core.views", "ERROR"):
+            resp = self.client.get("/administracion/dashboard/")
+        assert resp.status_code == 200
+        assert resp.context["db_performance"] == {"error": True}
+        self.assertContains(resp, "No disponible", count=1)
+        # las secciones que se calculan después siguen andando: el error de SQL no dejó
+        # abortada la transacción
+        assert "size" in resp.context["db_health"] or "size" in dashboard_data.db_health()
+
+    def test_todas_las_secciones_pueden_fallar_a_la_vez(self):
+        self.client.login(username="admin_user", password="pass1234!")
+        rota = mock.Mock(side_effect=RuntimeError("roto"))
+        with (
+            mock.patch.multiple(
+                "core.dashboard_data", changes_feed=rota, login_summary=rota, recent_logins=rota,
+                db_health=rota, db_performance=rota,
+            ),
+            self.assertLogs("core.views", "ERROR"),
         ):
             resp = self.client.get("/administracion/dashboard/")
-        self.assertContains(resp, '<p class="card-text fs-3 mb-0">342</p>', html=True)
-        self.assertContains(resp, "Error de prueba")
+        assert resp.status_code == 200
+        # 2 KPIs de logins + últimos logins + base + consultas + cambios de las 3 apps
+        self.assertContains(resp, "No disponible", count=8)
+
+    def test_estado_de_la_base(self):
+        self.client.login(username="admin_user", password="pass1234!")
+        resp = self.client.get("/administracion/dashboard/")
+        salud = resp.context["db_health"]
+        assert salud["active_connections"] >= 1  # al menos la que hace la consulta
+        assert salud["total_connections"] >= salud["active_connections"]
+        self.assertContains(resp, "Conexiones (activas / total)")
+        self.assertNotContains(resp, "None%")
+
+    def test_cache_hit_ratio_sin_datos(self):
+        self.client.login(username="admin_user", password="pass1234!")
+        salud = {**dashboard_data._fetch_db_health(), "cache_hit_ratio": None}
+        with mock.patch("core.dashboard_data.db_health", return_value=salud):
+            resp = self.client.get("/administracion/dashboard/")
+        self.assertNotContains(resp, "None%")
 
 
 @aislar_dashboard
@@ -313,3 +354,53 @@ class SentryHealthTest(TestCase):
             dashboard_data.sentry_health()
             dashboard_data.sentry_health()
         assert get.call_count == 1
+
+
+class RegistrarLoginTest(TestCase):
+    def setUp(self):
+        self.user = UserModel.objects.create_user(username="plain_user", password="pass1234!")
+
+    def entrar(self, **meta):
+        # Client.login() arma un request pelado, sin cabeceras: se dispara la señal con
+        # uno que las tenga, como hace django.contrib.auth.login().
+        request = RequestFactory().post("/accounts/login/", **meta)
+        user_logged_in.send(sender=UserModel, request=request, user=self.user)
+
+    def test_guarda_la_ip_de_x_forwarded_for(self):
+        self.entrar(HTTP_X_FORWARDED_FOR="10.106.16.50, 127.0.0.1")
+        assert LoginEvent.objects.get().ip_address == "10.106.16.50"
+
+    def test_sin_x_forwarded_for_usa_remote_addr(self):
+        self.entrar(REMOTE_ADDR="192.168.0.7")
+        assert LoginEvent.objects.get().ip_address == "192.168.0.7"
+
+    def test_un_x_forwarded_for_que_no_es_una_ip_no_rompe_el_login(self):
+        for valor in ("no-es-una-ip", "10.0.0.1:4321", "' OR 1=1", ""):
+            with self.subTest(valor=valor):
+                LoginEvent.objects.all().delete()
+                self.entrar(HTTP_X_FORWARDED_FOR=valor, REMOTE_ADDR="192.168.0.7")
+                assert LoginEvent.objects.get().ip_address == "192.168.0.7"
+
+    def test_sin_ninguna_ip_valida_queda_vacia(self):
+        self.entrar(HTTP_X_FORWARDED_FOR="desconocido", REMOTE_ADDR="")
+        assert LoginEvent.objects.get().ip_address is None
+
+    def test_si_no_se_puede_registrar_el_login_sigue(self):
+        cliente = Client()
+        with (
+            mock.patch("core.signals.LoginEvent.objects.create", side_effect=DatabaseError("roto")),
+            self.assertLogs("core.signals", "ERROR"),
+        ):
+            assert cliente.login(username="plain_user", password="pass1234!")
+        assert not LoginEvent.objects.exists()
+        # la sesión quedó abierta
+        assert cliente.get("/administracion/dashboard/").status_code == 403
+
+    def test_un_insert_fallido_no_deja_abortada_la_transaccion(self):
+        def insert_roto(**kwargs):
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM tabla_que_no_existe")
+
+        with mock.patch("core.signals.LoginEvent.objects.create", insert_roto), self.assertLogs("core.signals", "ERROR"):
+            self.entrar()
+        assert UserModel.objects.filter(pk=self.user.pk).exists()

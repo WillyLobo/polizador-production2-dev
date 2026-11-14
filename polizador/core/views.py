@@ -1,3 +1,4 @@
+import logging
 import posixpath
 import re
 
@@ -5,6 +6,7 @@ from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.db import transaction
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
@@ -19,6 +21,9 @@ from core.forms import TodoForm
 from core.history import build_timeline, can_view_history, history_manager, sources_for
 from core.management_commands_registry import COMMAND_REGISTRY
 from core.models import ManagementCommandRun, Todo
+
+
+logger = logging.getLogger(__name__)
 
 
 class SuperuserRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -55,6 +60,20 @@ class FormValidationErrorListView(SuperuserRequiredMixin, TemplateView):
     template_name = "errores_validacion/list.html"
 
 
+def _seccion_dashboard(nombre, funcion, *args):
+    """Calcula una sección del dashboard sin dejar que su falla tire la página entera:
+    si algo sale mal (p. ej. pg_stat_statements creada pero sin cargar en
+    shared_preload_libraries) esa sección se muestra como "No disponible" y el resto
+    sigue. El atomic() es un savepoint: sin él, un error de SQL dejaría abortada la
+    transacción en curso y fallarían también las secciones siguientes."""
+    try:
+        with transaction.atomic():
+            return funcion(*args)
+    except Exception:
+        logger.exception("Dashboard: no se pudo calcular la sección %s", nombre)
+        return {"error": True}
+
+
 class DashboardView(SuperuserRequiredMixin, TemplateView):
     template_name = "dashboard/index.html"
 
@@ -64,16 +83,16 @@ class DashboardView(SuperuserRequiredMixin, TemplateView):
             {
                 "app_label": app_label,
                 "display": dashboard_data.APP_DISPLAY_NAMES[app_label],
-                "model_labels": [label for _, _, label in dashboard_data.TRACKED_MODELS[app_label]],
-                "changes": dashboard_data.changes_feed(app_label),
+                "changes": _seccion_dashboard(f"cambios de {app_label}", dashboard_data.changes_feed, app_label),
             }
             for app_label in dashboard_data.TRACKED_MODELS
         ]
-        context["login_summary"] = dashboard_data.login_summary()
-        context["recent_logins"] = dashboard_data.recent_logins()
-        context["sentry_health"] = dashboard_data.sentry_health()
-        context["db_health"] = dashboard_data.db_health()
-        context["db_performance"] = dashboard_data.db_performance()
+        # Sentry no se consulta acá: el template lo pide a /v1/api/dashboard/sentry/
+        # para que una API externa lenta no demore la página.
+        context["login_summary"] = _seccion_dashboard("resumen de logins", dashboard_data.login_summary)
+        context["recent_logins"] = _seccion_dashboard("últimos logins", dashboard_data.recent_logins)
+        context["db_health"] = _seccion_dashboard("estado de la base", dashboard_data.db_health)
+        context["db_performance"] = _seccion_dashboard("consultas costosas", dashboard_data.db_performance)
         return context
 
 
