@@ -8,6 +8,7 @@ from carga.views.inspeccionviews import InspeccionHomeView
 from django.contrib.auth.decorators import login_required
 from core.views_vincular_ad import PasswordSetBloqueadoView, SinCuentaRedView, VincularADView
 from core.views import (
+    DashboardChangesView,
     DashboardView,
     FormValidationErrorListView,
     HistorialView,
@@ -48,6 +49,7 @@ urlpatterns = [
     path("cuenta/vincular-red/", VincularADView.as_view(), name="vincular_ad"),
     path("cuenta/sin-cuenta-red/", SinCuentaRedView.as_view(), name="vincular_ad_sin_cuenta"),
     path("administracion/dashboard/", DashboardView.as_view(), name="dashboard"),
+    path("administracion/dashboard/cambios/<str:app_label>/", DashboardChangesView.as_view(), name="dashboard_cambios"),
     path("administracion/errores-validacion/", FormValidationErrorListView.as_view(), name="form_validation_errors"),
     path("administracion/schema/", SchemaDocsView.as_view(), name="schema_docs"),
     path("administracion/schema/<path:path>", schema_docs_asset, name="schema_docs_asset"),

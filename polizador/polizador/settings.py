@@ -56,6 +56,9 @@ SENTRY_DSN=env("SENTRY_DSN")
 SENTRY_AUTH_TOKEN=env("SENTRY_AUTH_TOKEN", default=None)
 SENTRY_ORG=env("SENTRY_ORG", default=None)
 SENTRY_PROJECT=env("SENTRY_PROJECT", default=None)
+# El dashboard muestra los cambios de todo modelo con historial (simple_history), sin
+# lista que mantener. Para sacar uno ruidoso, sumarlo acá como "app_label.Modelo".
+DASHBOARD_EXCLUDED_MODELS = []
 MAILGUN_API_KEY=env("MAILGUN_API_KEY")
 MAILGUN_SENDER_DOMAIN=env("MAILGUN_SENDER_DOMAIN")
 # Credenciales del usuario institucional en gobiernodigital.chaco.gob.ar, usadas por

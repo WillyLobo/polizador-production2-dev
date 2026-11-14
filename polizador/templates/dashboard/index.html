@@ -187,6 +187,7 @@
     {% endfor %}
   </ul>
 
+  {# El gráfico y los cambios de cada app se piden recién al abrir su pestaña. #}
   <div class="tab-content">
     {% for app in apps %}
     <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="tab-{{ app.app_label }}" role="tabpanel">
@@ -201,39 +202,16 @@
       <div class="card">
         <div class="card-body">
           <h6 class="card-title">Últimos cambios</h6>
-          {% if app.changes.error %}
-          <p class="text-danger mb-0">No disponible</p>
-          {% else %}
-          <div class="table-responsive">
-            <table class="table table-sm table-hover mb-0">
-              <thead>
-                <tr>
-                  <th>Fecha</th>
-                  <th>Usuario</th>
-                  <th>Acción</th>
-                  <th>Modelo</th>
-                  <th>Objeto</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for entry in app.changes %}
-                <tr>
-                  <td>{{ entry.fecha }}</td>
-                  <td>{{ entry.usuario|default:"—" }}</td>
-                  <td>{{ entry.tipo }}</td>
-                  <td>{{ entry.modelo }}</td>
-                  <td>{{ entry.objeto }}</td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="5" class="text-muted">Sin cambios recientes.</td></tr>
-                {% endfor %}
-              </tbody>
-            </table>
+          <div id="cambios-{{ app.app_label }}" class="dashboard-cambios"
+               hx-get="{% url 'dashboard_cambios' app_label=app.app_label %}"
+               hx-trigger="{% if forloop.first %}load{% else %}shown.bs.tab from:#tab-{{ app.app_label }}-btn once{% endif %}">
+            <p class="text-muted mb-0">Cargando…</p>
           </div>
-          {% endif %}
         </div>
       </div>
     </div>
+    {% empty %}
+    <p class="text-muted">Ningún modelo instalado tiene historial.</p>
     {% endfor %}
   </div>
 </div>
@@ -257,7 +235,9 @@ document.addEventListener("DOMContentLoaded", function () {
     return p;
   }
 
-  document.querySelectorAll("canvas[data-url]").forEach(canvas => {
+  function cargarGrafico(canvas) {
+    if (!canvas || canvas.dataset.cargado) return;
+    canvas.dataset.cargado = "1";
     getJSON(canvas.dataset.url)
       .then(data => {
         // Chart no existe si el CDN no respondió o el archivo no pasó la verificación SRI.
@@ -266,13 +246,19 @@ document.addEventListener("DOMContentLoaded", function () {
         const labels = new Set();
         Object.values(data.series).forEach(points => points.forEach(p => labels.add(p.period)));
         const sortedLabels = Array.from(labels).sort();
+        if (!sortedLabels.length) {
+          canvas.replaceWith(aviso("Ningún usuario creó registros en los últimos 12 meses.", "text-muted"));
+          return;
+        }
 
-        const datasets = Object.entries(data.series).map(([modelLabel, points], i) => {
+        let color = 0;
+        const datasets = Object.entries(data.series).map(([modelLabel, points]) => {
           const byPeriod = Object.fromEntries(points.map(p => [p.period, p.total]));
           return {
             label: modelLabel,
             data: sortedLabels.map(period => byPeriod[period] || 0),
-            backgroundColor: palette[i % palette.length],
+            // "Otros" suma los modelos con menos altas: va en gris, fuera de la paleta
+            backgroundColor: modelLabel === "Otros" ? "#adb5bd" : palette[color++ % palette.length],
           };
         });
 
@@ -286,6 +272,24 @@ document.addEventListener("DOMContentLoaded", function () {
         console.error("Dashboard: no se pudo cargar " + canvas.dataset.url, error);
         canvas.replaceWith(aviso("No se pudo cargar el gráfico.", "text-danger"));
       });
+  }
+
+  // El de la pestaña abierta ahora; los demás cuando se abra la suya.
+  cargarGrafico(document.querySelector(".tab-pane.active canvas[data-url]"));
+  document.querySelectorAll('#dashboardTabs [data-bs-toggle="tab"]').forEach(boton => {
+    boton.addEventListener("shown.bs.tab", () => {
+      cargarGrafico(document.querySelector(boton.dataset.bsTarget + " canvas[data-url]"));
+    });
+  });
+
+  // htmx no reemplaza el contenido si el pedido falla: sin esto quedaría "Cargando…".
+  ["htmx:responseError", "htmx:sendError"].forEach(evento => {
+    document.body.addEventListener(evento, e => {
+      const destino = e.detail.target;
+      if (destino && destino.classList.contains("dashboard-cambios")) {
+        destino.replaceChildren(aviso("No se pudieron cargar los cambios.", "text-danger"));
+      }
+    });
   });
 
   const sentryCount = document.getElementById("sentry-count");

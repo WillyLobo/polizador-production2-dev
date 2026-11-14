@@ -1,19 +1,26 @@
-from datetime import datetime, timezone as dt_timezone
+from datetime import date, datetime, timezone as dt_timezone
+from decimal import Decimal
 from unittest import mock
 
 import requests
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from django.apps import apps
 from django.db import DatabaseError, connection
+from django.test.utils import CaptureQueriesContext
 from django.contrib.auth.signals import user_logged_in
 from django.test import Client, RequestFactory, TestCase, override_settings
 from ninja.testing import TestClient
 
 from api.router import api
+from carga.models import (
+    CertificadoRubro, Empresa, Obra, PlanDeTrabajos, PlanDeTrabajosEtapa, PlanDeTrabajosRubro, Programa,
+)
 from core import dashboard_data
+from core.history import history_manager
 from core.models import LoginEvent
-from personalizador.models import TipoLicenciaPermiso
+from personalizador.models import GeneroAgente, TipoLicenciaPermiso
 
 UserModel = get_user_model()
 
@@ -75,6 +82,18 @@ class DashboardViewTest(TestCase):
         self.assertContains(resp, 'getJSON("/v1/api/dashboard/sentry/")')
         self.assertContains(resp, 'data-url="/v1/api/dashboard/throughput/carga/"')
 
+    def test_una_pestana_por_app_con_historial_y_nada_se_calcula_al_abrir(self):
+        self.client.login(username="admin_user", password="pass1234!")
+        with mock.patch("core.dashboard_data.changes_feed") as feed, mock.patch("core.dashboard_data.record_throughput") as altas:
+            resp = self.client.get("/administracion/dashboard/")
+        feed.assert_not_called()
+        altas.assert_not_called()
+        assert [app["display"] for app in resp.context["apps"]] == ["Obras", "Viáticos", "Personal"]
+        # solo la primera pestaña se pide al cargar; las otras, al abrirlas
+        self.assertContains(resp, 'hx-get="/administracion/dashboard/cambios/carga/"')
+        self.assertContains(resp, 'hx-trigger="load"', count=1)
+        self.assertContains(resp, 'hx-trigger="shown.bs.tab from:#tab-personalizador-btn once"')
+
     def test_una_seccion_que_falla_no_tira_la_pagina(self):
         self.client.login(username="admin_user", password="pass1234!")
 
@@ -97,15 +116,14 @@ class DashboardViewTest(TestCase):
         rota = mock.Mock(side_effect=RuntimeError("roto"))
         with (
             mock.patch.multiple(
-                "core.dashboard_data", changes_feed=rota, login_summary=rota, recent_logins=rota,
-                db_health=rota, db_performance=rota,
+                "core.dashboard_data", login_summary=rota, recent_logins=rota, db_health=rota, db_performance=rota,
             ),
             self.assertLogs("core.views", "ERROR"),
         ):
             resp = self.client.get("/administracion/dashboard/")
         assert resp.status_code == 200
-        # 2 KPIs de logins + últimos logins + base + consultas + cambios de las 3 apps
-        self.assertContains(resp, "No disponible", count=8)
+        # 2 KPIs de logins + últimos logins + base + consultas
+        self.assertContains(resp, "No disponible", count=5)
 
     def test_estado_de_la_base(self):
         self.client.login(username="admin_user", password="pass1234!")
@@ -156,9 +174,11 @@ class DashboardApiTest(TestCase):
         self.client.login(username="admin_user", password="pass1234!")
         resp = self.client.get("/v1/api/dashboard/throughput/carga/")
         assert resp.status_code == 200
-        series = resp.json()["series"]
-        assert set(series) == {"Obras", "Certificados", "Fojas de Medición"}
-        assert all(len(points) == 12 for points in series.values())
+        assert resp.json() == {"series": {}}  # nadie creó nada todavía
+
+    def test_throughput_de_una_app_sin_historial(self):
+        self.client.login(username="admin_user", password="pass1234!")
+        assert self.client.get("/v1/api/dashboard/throughput/core/").status_code == 404
 
     def test_sentry_not_configured(self):
         self.client.login(username="admin_user", password="pass1234!")
@@ -211,17 +231,40 @@ class RecordThroughputTest(TestCase):
         tipo.save()
         tipo.tipolicenciapermiso_history.update(history_date=fecha)
 
-    def serie(self):
+    def altas(self, **kwargs):
         with mock.patch("django.utils.timezone.now", return_value=self.AHORA):
-            return dict(dashboard_data.record_throughput("personalizador")["Tipos de Licencia"])
+            return dashboard_data.record_throughput("personalizador", **kwargs)
+
+    def serie(self):
+        return dict(self.altas()["Tipos de Licencias/Permisos"])
 
     def test_devuelve_los_doce_meses_calendario_aunque_esten_vacios(self):
+        self.alta(utc(2026, 11, 3, 12, 0), self.user)
         serie = self.serie()
         assert list(serie) == [
             "2025-12", "2026-01", "2026-02", "2026-03", "2026-04", "2026-05",
             "2026-06", "2026-07", "2026-08", "2026-09", "2026-10", "2026-11",
         ]
-        assert set(serie.values()) == {0}
+        assert sum(serie.values()) == serie["2026-11"] == 1
+
+    def test_un_modelo_sin_altas_de_usuarios_no_aparece(self):
+        self.alta(utc(2026, 11, 3, 12, 0))  # sin usuario
+        assert self.altas() == {}
+
+    def test_los_modelos_con_mas_altas_van_aparte_y_el_resto_en_otros(self):
+        for _ in range(3):
+            self.alta(utc(2026, 11, 3, 12, 0), self.user)
+        for numero in range(2):
+            genero = GeneroAgente(generoagente_nombre=f"Género {numero}")
+            genero._history_user = self.user
+            genero.save()
+            history_manager(GeneroAgente).filter(id=genero.pk).update(history_date=utc(2026, 10, 3, 12, 0))
+        todos = self.altas()
+        assert list(todos) == ["Tipos de Licencias/Permisos", "Géneros"]  # de más a menos altas
+        agrupado = self.altas(top=1)
+        assert list(agrupado) == ["Tipos de Licencias/Permisos", "Otros"]
+        assert dict(agrupado["Otros"])["2026-10"] == 2
+        assert sum(total for _, total in agrupado["Otros"]) == 2
 
     def test_cuenta_por_mes_local_solo_las_altas_hechas_por_usuarios(self):
         self.alta(utc(2026, 11, 3, 12, 0), self.user)
@@ -252,9 +295,39 @@ class RecordThroughputTest(TestCase):
 
 
 @aislar_dashboard
+class TrackedAppsTest(TestCase):
+    def test_incluye_todo_modelo_con_historial_sin_lista_a_mano(self):
+        esperados = {
+            model for model in apps.get_models() if history_manager(model) is not None
+        }
+        encontrados = {model for models in dashboard_data.tracked_apps().values() for model in models}
+        assert encontrados == esperados
+        assert len(encontrados) > 50
+        assert "core" not in dashboard_data.tracked_apps()  # ningún modelo de core tiene historial
+
+    def test_las_etiquetas_no_se_repiten_dentro_de_una_app(self):
+        # el gráfico arma una serie por etiqueta: dos modelos con el mismo plural se pisarían
+        for app_label, models in dashboard_data.tracked_apps().items():
+            etiquetas = [dashboard_data.model_label(model) for model in models]
+            with self.subTest(app=app_label):
+                assert len(etiquetas) == len(set(etiquetas))
+
+    @override_settings(DASHBOARD_EXCLUDED_MODELS=["personalizador.TipoLicenciaPermiso"])
+    def test_modelos_excluidos(self):
+        assert TipoLicenciaPermiso not in dashboard_data.tracked_apps()["personalizador"]
+        TipoLicenciaPermiso.objects.create(tipolicenciapermiso_categoria="PER", tipolicenciapermiso_nombre="Excluido")
+        cambios, _ = dashboard_data.changes_feed("personalizador")
+        assert "Tipos de Licencias/Permisos" not in {c["modelo"] for c in cambios}
+
+
+@aislar_dashboard
 class ChangesFeedTest(TestCase):
     def setUp(self):
         self.user = UserModel.objects.create_user(username="plain_user", password="pass1234!")
+
+    def tipos(self, cantidad):
+        for numero in range(cantidad):
+            TipoLicenciaPermiso.objects.create(tipolicenciapermiso_categoria="PER", tipolicenciapermiso_nombre=f"Tipo {numero}")
 
     def test_alta_cambio_y_baja_del_mas_nuevo_al_mas_viejo(self):
         tipo = TipoLicenciaPermiso(
@@ -267,18 +340,178 @@ class ChangesFeedTest(TestCase):
         tipo.save()
         tipo.delete()
 
-        cambios = dashboard_data.changes_feed("personalizador")
+        cambios, hay_mas = dashboard_data.changes_feed("personalizador", "tipolicenciapermiso")
+        assert hay_mas is False
         assert [c["tipo"] for c in cambios] == ["Eliminado", "Modificado", "Creado"]
-        assert {c["modelo"] for c in cambios} == {"Tipos de Licencia"}
+        assert {c["modelo"] for c in cambios} == {"Tipos de Licencias/Permisos"}
         assert {c["usuario"] for c in cambios} == {self.user}
         assert cambios[-1]["objeto"] == "Art. 1 - Razones particulares (Permiso)"
         assert cambios[0]["objeto"] == "Art. 1 - Renombrado (Permiso)"
 
-    def test_respeta_el_limite(self):
-        for numero in range(5):
-            TipoLicenciaPermiso.objects.create(tipolicenciapermiso_categoria="PER", tipolicenciapermiso_nombre=f"Tipo {numero}")
-        cambios = dashboard_data.changes_feed("personalizador", limit=3)
-        assert [c["objeto"] for c in cambios] == ["None - Tipo 4 (Permiso)", "None - Tipo 3 (Permiso)", "None - Tipo 2 (Permiso)"]
+    def test_mezcla_los_modelos_de_la_app_por_fecha(self):
+        crear_tipo = lambda nombre: TipoLicenciaPermiso.objects.create(
+            tipolicenciapermiso_categoria="PER", tipolicenciapermiso_nombre=nombre,
+        )
+        crear_tipo("Primero")
+        GeneroAgente.objects.create(generoagente_nombre="Género nuevo")
+        crear_tipo("Último")
+        cambios, _ = dashboard_data.changes_feed("personalizador", limit=3)
+        assert [c["modelo"] for c in cambios] == ["Tipos de Licencias/Permisos", "Géneros", "Tipos de Licencias/Permisos"]
+        fechas = [c["fecha"] for c in cambios]
+        assert fechas == sorted(fechas, reverse=True)
+
+    def test_paginas(self):
+        self.tipos(5)
+        objetos = lambda **kwargs: [c["objeto"] for c in dashboard_data.changes_feed("personalizador", "tipolicenciapermiso", **kwargs)[0]]
+        assert objetos(limit=3) == ["None - Tipo 4 (Permiso)", "None - Tipo 3 (Permiso)", "None - Tipo 2 (Permiso)"]
+        assert objetos(limit=3, offset=3) == ["None - Tipo 1 (Permiso)", "None - Tipo 0 (Permiso)"]
+        assert objetos(limit=3, offset=6) == []
+        hay_mas = lambda **kwargs: dashboard_data.changes_feed("personalizador", "tipolicenciapermiso", **kwargs)[1]
+        assert hay_mas(limit=3) is True
+        assert hay_mas(limit=5) is False  # justo entran: no hay otra página
+        assert hay_mas(limit=3, offset=3) is False
+
+    def test_un_modelo_que_no_es_de_la_app_no_trae_nada(self):
+        self.tipos(1)
+        assert dashboard_data.changes_feed("personalizador", "obra") == ([], False)
+
+    def test_un_str_que_falla_cae_al_texto_de_respaldo(self):
+        self.tipos(2)
+        with mock.patch.object(TipoLicenciaPermiso, "__str__", side_effect=AttributeError("roto")):
+            cambios, _ = dashboard_data.changes_feed("personalizador", "tipolicenciapermiso")
+        pks = sorted(TipoLicenciaPermiso.objects.values_list("pk", flat=True), reverse=True)
+        assert [c["objeto"] for c in cambios] == [f"Tipo de Licencia/Permiso #{pk}" for pk in pks]
+
+
+@aislar_dashboard
+class ChangesFeedRelacionadosTest(TestCase):
+    """Con modelos de carga cuyo __str__ recorre relacionados (etapa -> rubro -> plan ->
+    obra -> empresa) y con el único modelo de main que tiene una geometría (Obra)."""
+
+    def setUp(self):
+        empresa = Empresa.objects.create(empresa_nombre="Empresa Test")
+        programa = Programa.objects.create(programa_nombre="Programa Test")
+        self.obra = Obra.objects.create(
+            obra_nombre="Obra Test", obra_empresa=empresa, obra_programa=programa, obra_expediente="EXP-D1"
+        )
+        plan = PlanDeTrabajos.objects.create(trabajos_obra=self.obra, trabajos_fecha=date(2026, 1, 1))
+        rubro_certificado = CertificadoRubro.objects.create(certificadorubro_nombre="Vivienda", certificadorubro_nombre_corto="V")
+        self.rubro = PlanDeTrabajosRubro.objects.create(
+            rubro_plan=plan, rubro_nombre="Vivienda", rubro_presupuesto=Decimal("1000"),
+            rubro_certificado_rubro=rubro_certificado,
+        )
+
+    def consultas_del_feed(self, modelo):
+        with CaptureQueriesContext(connection) as consultas:
+            cambios, _ = dashboard_data.changes_feed("carga", modelo)
+        return cambios, consultas
+
+    def test_la_cantidad_de_consultas_no_depende_de_la_cantidad_de_filas(self):
+        for _ in range(3):
+            PlanDeTrabajosEtapa.objects.create(etapa_rubro=self.rubro)
+        cambios, con_tres = self.consultas_del_feed("plandetrabajosetapa")
+        assert len(cambios) == 3
+        for _ in range(9):
+            PlanDeTrabajosEtapa.objects.create(etapa_rubro=self.rubro)
+        cambios, con_doce = self.consultas_del_feed("plandetrabajosetapa")
+        assert len(cambios) == 12
+        assert len(con_doce) == len(con_tres)
+        # y el texto es el mismo que daría el __str__ del objeto real
+        assert {c["objeto"] for c in cambios} == {str(etapa) for etapa in PlanDeTrabajosEtapa.objects.all()}
+
+    def test_un_padre_borrado_cae_al_texto_de_respaldo_sin_romper_a_los_demas(self):
+        etapa = PlanDeTrabajosEtapa.objects.create(etapa_rubro=self.rubro)
+        huerfana = PlanDeTrabajosEtapa.objects.create(etapa_rubro=self.rubro)
+        # la fila histórica sobrevive apuntando a un rubro que ya no está
+        history_manager(PlanDeTrabajosEtapa).filter(id=huerfana.pk).update(etapa_rubro_id=999999)
+        cambios, _ = self.consultas_del_feed("plandetrabajosetapa")
+        assert {c["objeto"] for c in cambios} == {str(etapa), f"Etapa Proyectada de Plan de Trabajos #{huerfana.pk}"}
+
+    def test_no_trae_las_geometrias(self):
+        assert dashboard_data._heavy_fields(history_manager(Obra).model) == ["obra_georeferencia"]
+        cambios, consultas = self.consultas_del_feed("obra")
+        assert [c["objeto"] for c in cambios] == [str(self.obra)]
+        assert not any("obra_georeferencia" in consulta["sql"] for consulta in consultas)
+
+
+@aislar_dashboard
+class DashboardChangesViewTest(TestCase):
+    URL = "/administracion/dashboard/cambios/personalizador/"
+
+    def setUp(self):
+        self.client = Client()
+        self.user = UserModel.objects.create_user(username="plain_user", password="pass1234!")
+        self.superuser = UserModel.objects.create_superuser(username="admin_user", password="pass1234!")
+
+    def entrar(self):
+        self.client.login(username="admin_user", password="pass1234!")
+
+    def tipos(self, cantidad):
+        for numero in range(cantidad):
+            TipoLicenciaPermiso.objects.create(tipolicenciapermiso_categoria="PER", tipolicenciapermiso_nombre=f"Tipo {numero:02}")
+
+    def test_solo_superusuarios(self):
+        assert self.client.get(self.URL).status_code == 302
+        self.client.login(username="plain_user", password="pass1234!")
+        assert self.client.get(self.URL).status_code == 403
+
+    def test_app_o_modelo_desconocidos(self):
+        self.entrar()
+        assert self.client.get("/administracion/dashboard/cambios/no-existe/").status_code == 404
+        assert self.client.get("/administracion/dashboard/cambios/core/").status_code == 404  # sin historial
+        assert self.client.get(self.URL, {"modelo": "obra"}).status_code == 404  # es de otra app
+
+    def test_es_un_fragmento_con_el_filtro_de_modelos(self):
+        self.entrar()
+        self.tipos(1)
+        resp = self.client.get(self.URL)
+        assert resp.status_code == 200
+        self.assertNotContains(resp, "<html")
+        self.assertContains(resp, "None - Tipo 00 (Permiso)")
+        self.assertContains(resp, '<option value="tipolicenciapermiso">Tipos de Licencias/Permisos</option>', html=True)
+        assert len(resp.context["models"]) == len(dashboard_data.tracked_apps()["personalizador"])
+
+    def test_filtra_por_modelo(self):
+        self.entrar()
+        self.tipos(1)
+        GeneroAgente.objects.create(generoagente_nombre="Género nuevo")
+        resp = self.client.get(self.URL, {"modelo": "generoagente"})
+        self.assertContains(resp, "Género nuevo")
+        self.assertNotContains(resp, "Tipo 00")
+        self.assertContains(resp, '<option value="generoagente" selected>Géneros</option>', html=True)
+
+    def test_paginas(self):
+        self.entrar()
+        self.tipos(dashboard_data.CHANGES_PAGE_SIZE + 2)
+        filtro = {"modelo": "tipolicenciapermiso"}
+        primera = self.client.get(self.URL, filtro)
+        assert len(primera.context["changes"]) == dashboard_data.CHANGES_PAGE_SIZE
+        assert primera.context["next_page"] == 2
+        self.assertContains(primera, "Tipo 51")
+        self.assertNotContains(primera, "Tipo 01 ")
+        # el botón de la página siguiente conserva el filtro
+        self.assertContains(primera, f'hx-get="{self.URL}?modelo=tipolicenciapermiso&amp;pagina=2"')
+
+        segunda = self.client.get(self.URL, {**filtro, "pagina": 2})
+        assert [c["objeto"] for c in segunda.context["changes"]] == ["None - Tipo 01 (Permiso)", "None - Tipo 00 (Permiso)"]
+        assert segunda.context["next_page"] is None
+        self.assertContains(segunda, f'hx-get="{self.URL}?modelo=tipolicenciapermiso&amp;pagina=1"')
+
+    def test_una_pagina_invalida_es_la_primera(self):
+        self.entrar()
+        for valor in ("abc", "0", "-3"):
+            with self.subTest(valor=valor):
+                assert self.client.get(self.URL, {"pagina": valor}).context["page"] == 1
+
+    def test_si_falla_muestra_no_disponible(self):
+        self.entrar()
+        with (
+            mock.patch("core.dashboard_data.changes_feed", side_effect=RuntimeError("roto")),
+            self.assertLogs("core.views", "ERROR"),
+        ):
+            resp = self.client.get(self.URL)
+        assert resp.status_code == 200
+        self.assertContains(resp, "No disponible")
 
 
 @aislar_dashboard

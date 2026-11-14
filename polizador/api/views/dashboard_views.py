@@ -16,7 +16,7 @@ router = Router(tags=["dashboard"])
 @router.get("/dashboard/throughput/{app_label}/", response=ThroughputResponseSchema)
 @decorate_view(require_superuser)
 def throughput(request, app_label: str):
-    if app_label not in dashboard_data.TRACKED_MODELS:
+    if app_label not in dashboard_data.tracked_apps():
         raise HttpError(404, f"Unknown app_label: {app_label}")
     series = {
         label: [{"period": period, "total": total} for period, total in points]

@@ -1,0 +1,55 @@
+{# Fragmento que el dashboard carga con htmx dentro de #cambios-<app> (ver DashboardChangesView). #}
+{% if error %}
+<p class="text-danger mb-0">No disponible</p>
+{% else %}
+<div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+  <label class="small text-muted" for="cambios-modelo-{{ app_label }}">Modelo</label>
+  {# Cambiar de modelo vuelve a la primera página: el pedido lleva solo "modelo". #}
+  <select class="form-select form-select-sm w-auto" id="cambios-modelo-{{ app_label }}" name="modelo"
+          hx-get="{% url 'dashboard_cambios' app_label=app_label %}" hx-target="#cambios-{{ app_label }}">
+    <option value="">Todos ({{ models|length }})</option>
+    {% for name, label in models %}
+    <option value="{{ name }}"{% if name == model_name %} selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-sm table-hover mb-0">
+    <thead>
+      <tr>
+        <th>Fecha</th>
+        <th>Usuario</th>
+        <th>Acción</th>
+        <th>Modelo</th>
+        <th>Objeto</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for entry in changes %}
+      <tr>
+        <td>{{ entry.fecha }}</td>
+        <td>{{ entry.usuario|default:"—" }}</td>
+        <td>{{ entry.tipo }}</td>
+        <td>{{ entry.modelo }}</td>
+        <td>{{ entry.objeto }}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" class="text-muted">{% if page > 1 %}No hay más cambios.{% else %}Sin cambios registrados.{% endif %}</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if page > 1 or next_page %}
+<div class="d-flex align-items-center gap-2 mt-2">
+  <button type="button" class="btn btn-sm btn-outline-secondary"{% if page == 1 %} disabled{% endif %}
+          hx-get="{% url 'dashboard_cambios' app_label=app_label %}{% querystring pagina=page|add:"-1" %}"
+          hx-target="#cambios-{{ app_label }}">Anteriores</button>
+  <span class="small text-muted">Página {{ page }}</span>
+  <button type="button" class="btn btn-sm btn-outline-secondary"{% if not next_page %} disabled{% endif %}
+          hx-get="{% url 'dashboard_cambios' app_label=app_label %}{% querystring pagina=next_page %}"
+          hx-target="#cambios-{{ app_label }}">Siguientes</button>
+</div>
+{% endif %}
+{% endif %}

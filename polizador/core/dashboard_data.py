@@ -1,62 +1,56 @@
+from collections import defaultdict
 from datetime import datetime, timedelta
 
 import requests
+from django.apps import apps
 from django.conf import settings
+from django.contrib.gis.db.models import GeometryField
 from django.core.cache import cache
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import connection
-from django.db.models import Count, prefetch_related_objects
+from django.db.models import Count, IntegerField, Model, Value, prefetch_related_objects
 from django.db.models.functions import TruncMonth
 from django.utils import timezone
+from django.utils.text import capfirst
 
-from carga.models import Certificado, FojaDeMedicion, Obra
-from personalizador.models import (
-    Agente,
-    CorteLicencia,
-    DevolucionHorasPermiso,
-    LicenciaPermiso,
-    TipoLicenciaPermiso,
-)
-from secretariador.models import Incorporacion, Solicitud
-
+from .history import history_manager
 from .models import LoginEvent
-
-TRACKED_MODELS = {
-    "carga": [
-        (Obra, "obra_history", "Obras"),
-        (Certificado, "certificado_history", "Certificados"),
-        (FojaDeMedicion, "foja_history", "Fojas de Medición"),
-    ],
-    "secretariador": [
-        (Solicitud, "solicitud_history", "Solicitudes"),
-        (Incorporacion, "incorporacion_history", "Incorporaciones"),
-    ],
-    "personalizador": [
-        (Agente, "agente_history", "Agentes"),
-        (TipoLicenciaPermiso, "tipolicenciapermiso_history", "Tipos de Licencia"),
-        (LicenciaPermiso, "licenciapermiso_history", "Licencias/Permisos"),
-        (CorteLicencia, "cortelicencia_history", "Cortes de Licencia"),
-        (DevolucionHorasPermiso, "devolucionhoras_history", "Devoluciones de Horas"),
-    ],
-}
 
 HISTORY_TYPE_LABELS = {"+": "Creado", "~": "Modificado", "-": "Eliminado"}
 
-# FK paths each model's __str__ dereferences, so changes_feed() can resolve them in one
-# bulk query per model instead of one query per row: h.instance rebuilds a bare instance
-# from the historical row with no select_related, so any FK access in __str__ would
-# otherwise hit the DB again for every one of the `limit` rows. Keep in sync with the
-# __str__ methods of the models listed in TRACKED_MODELS.
-STR_RELATED_FIELDS = {
-    Obra: ["obra_empresa"],
-    Certificado: ["certificado_obra__obra_empresa", "certificado_rubro_db"],
-    FojaDeMedicion: ["foja_rubro__rubro_plan__trabajos_obra__obra_empresa"],
-    LicenciaPermiso: ["licenciapermiso_tipo", "licenciapermiso_agente"],
-    CorteLicencia: [
-        "cortelicencia_licencia__licenciapermiso_tipo",
-        "cortelicencia_licencia__licenciapermiso_agente",
-    ],
-}
+CHANGES_PAGE_SIZE = 50
+# Modelos que el gráfico de altas muestra por separado; el resto va sumado en "Otros".
+THROUGHPUT_TOP_MODELS = 5
+THROUGHPUT_OTHERS_LABEL = "Otros"
+
+
+def tracked_apps():
+    """{app_label: [modelos]} con todo modelo instalado que tenga historial
+    (simple_history), en el orden de INSTALLED_APPS y, dentro de cada app, por nombre.
+
+    No hay lista que mantener: una app o un modelo nuevo con HistoricalRecords aparece
+    solo. Para sacar uno ruidoso, sumarlo a settings.DASHBOARD_EXCLUDED_MODELS como
+    "app_label.Modelo".
+    """
+    excluded = {label.lower() for label in getattr(settings, "DASHBOARD_EXCLUDED_MODELS", ())}
+    tracked = {}
+    for config in apps.get_app_configs():
+        models = [
+            model for model in config.get_models()
+            if history_manager(model) is not None and model._meta.label_lower not in excluded
+        ]
+        if models:
+            tracked[config.label] = sorted(models, key=lambda model: model_label(model).lower())
+    return tracked
+
+
+def model_label(model):
+    return capfirst(str(model._meta.verbose_name_plural))
+
+
+def _heavy_fields(historical_model):
+    """Campos que no hace falta traer para mostrar un cambio en el feed y pesan: las
+    geometrías (un polígono de parcela son varios KB por fila)."""
+    return [field.name for field in historical_model._meta.fields if isinstance(field, GeometryField)]
 
 
 def _light_instance(h, model):
@@ -65,10 +59,13 @@ def _light_instance(h, model):
     HistoricalRecords(excluded_fields=...) (Obra, Certificado), that property issues one
     extra query PER ROW to refetch the excluded fields live from the current table, even
     though changes_feed only needs the instance for __str__(), which never reads them.
-    Fields not present on the historical row (i.e. excluded ones) are simply left at
-    their model default."""
+    Fields not present on the historical row (i.e. excluded ones) and the ones the feed
+    deferred (see _heavy_fields) are simply left at their model default."""
+    deferred = h.get_deferred_fields()
     attrs = {}
     for field in model._meta.fields:
+        if field.attname in deferred:
+            continue  # leerlo dispararía una consulta por fila
         try:
             attrs[field.attname] = getattr(h, field.attname)
         except AttributeError:
@@ -76,34 +73,103 @@ def _light_instance(h, model):
     return model(**attrs)
 
 
-def changes_feed(app_label, limit=50):
-    entries = []
-    for model, history_attr, label in TRACKED_MODELS[app_label]:
-        history_manager = getattr(model, history_attr)
+def _related_paths(instance, prefix="", depth=0):
+    """Caminos de relacionados ("fk__otra_fk") que ya se leyeron desde `instance`: Django
+    guarda en fields_cache cada relacionado al que se accede, así que después de un
+    str(instance) esto dice exactamente qué recorrió su __str__."""
+    paths = []
+    if depth > 8:  # un ciclo (A -> B -> A) no debería darse, pero que no cuelgue
+        return paths
+    for name, related in instance._state.fields_cache.items():
+        if isinstance(related, Model):
+            path = prefix + name
+            paths.extend(_related_paths(related, path + "__", depth + 1) or [path])
+    return paths
+
+
+def _describe(instances, model):
+    """str() de cada instancia, sin una consulta por fila.
+
+    Las instancias se arman desde filas históricas, sin select_related, y muchos __str__
+    recorren relacionados (un ítem de etapa nombra su ítem, su rubro, su plan y su obra):
+    con 50 filas eran cientos de consultas. Se describe la primera, se mira qué
+    relacionados usó su __str__ y se precargan esos mismos para las demás, con una
+    consulta por nivel. No hay lista que mantener: sigue a los __str__ tal como estén.
+    """
+    texts = []
+    learned = False
+    for position, instance in enumerate(instances):
+        try:
+            text = str(instance)
+        except Exception:
+            # El __str__ no se pudo armar desde la fila histórica: típicamente un
+            # relacionado que ya no existe (filas "-" de registros borrados en cascada),
+            # o un __str__ que no tolera un campo vacío. Un texto de menos no justifica
+            # perder el feed entero.
+            text = f"{capfirst(str(model._meta.verbose_name))} #{instance.pk}"
+        else:
+            if not learned:
+                learned = True
+                paths = _related_paths(instance)
+                rest = instances[position + 1:]
+                if paths and rest:
+                    prefetch_related_objects(rest, *paths)
+        texts.append(text)
+    return texts
+
+
+def changes_feed(app_label, model_name=None, limit=CHANGES_PAGE_SIZE, offset=0):
+    """Últimos cambios de los modelos con historial de una app (o de uno solo, si se pasa
+    `model_name`), del más nuevo al más viejo. Devuelve (cambios, hay_mas).
+
+    En dos pasos, para que el costo no dependa de cuántos modelos tenga la app:
+    1. una sola consulta (UNION ALL) trae fecha e id de las filas históricas de todos los
+       modelos y se queda con las `limit` de la página;
+    2. solo de esas se cargan las filas completas, agrupadas por modelo.
+    """
+    models = tracked_apps()[app_label]
+    if model_name is not None:
+        models = [model for model in models if model._meta.model_name == model_name]
+
+    keys = [
+        history_manager(model)
+        .order_by()
+        .annotate(model_index=Value(index, output_field=IntegerField()))
+        .values_list("history_date", "history_id", "model_index")
+        for index, model in enumerate(models)
+    ]
+    if not keys:
+        return [], False
+    combined = keys[0].union(*keys[1:], all=True) if len(keys) > 1 else keys[0]
+    # limit + 1: la fila de más solo dice si hay otra página
+    page = list(combined.order_by("-history_date", "-history_id", "model_index")[offset:offset + limit + 1])
+    has_more = len(page) > limit
+    page = page[:limit]
+
+    ids_by_model = defaultdict(list)
+    for _, history_id, model_index in page:
+        ids_by_model[model_index].append(history_id)
+
+    entries = {}
+    for model_index, history_ids in ids_by_model.items():
+        model = models[model_index]
+        label = model_label(model)
+        manager = history_manager(model)
         history_rows = list(
-            history_manager.select_related("history_user").order_by("-history_date")[:limit]
+            manager.filter(history_id__in=history_ids)
+            .select_related("history_user")
+            .defer(*_heavy_fields(manager.model))
         )
         instances = [_light_instance(h, model) for h in history_rows]
-        related_fields = STR_RELATED_FIELDS.get(model)
-        if related_fields and instances:
-            prefetch_related_objects(instances, *related_fields)
-        for h, instance in zip(history_rows, instances):
-            try:
-                objeto = str(instance)
-            except ObjectDoesNotExist:
-                # A related object __str__ depends on (e.g. a cascade-deleted parent) no
-                # longer exists, even though this historical row does. Typically happens
-                # for history_type "-" rows of records deleted via cascade.
-                objeto = f"{label} #{instance.pk}"
-            entries.append({
+        for h, objeto in zip(history_rows, _describe(instances, model)):
+            entries[(model_index, h.history_id)] = {
                 "fecha": h.history_date,
                 "usuario": h.history_user,
                 "tipo": HISTORY_TYPE_LABELS.get(h.history_type, h.history_type),
                 "modelo": label,
                 "objeto": objeto,
-            })
-    entries.sort(key=lambda e: e["fecha"], reverse=True)
-    return entries[:limit]
+            }
+    return [entries[(model_index, history_id)] for _, history_id, model_index in page], has_more
 
 
 def _month_starts(months):
@@ -117,32 +183,47 @@ def _month_starts(months):
     ]
 
 
-def record_throughput(app_label, months=12):
-    """Altas hechas por usuarios, por mes calendario, de cada modelo seguido.
+def record_throughput(app_label, months=12, top=THROUGHPUT_TOP_MODELS):
+    """Altas hechas por usuarios, por mes calendario, de los modelos con historial de la app.
 
     Solo cuenta las filas "+" con history_user: las que no lo tienen no vienen de un
     pedido web sino de cargas en bloque (el poblado inicial del historial, importadores,
     comandos), que meten miles de altas en un día y aplastan la escala del gráfico.
     Devuelve todos los meses de la ventana, también los que no tuvieron altas (con 0),
     para que el eje del gráfico no tenga saltos.
+
+    Con decenas de modelos el gráfico apilado no se lee: van por separado los `top` con
+    más altas en la ventana y el resto sumado en "Otros". Los que no tuvieron ninguna
+    no aparecen.
     """
     month_starts = _month_starts(months)
     periods = [start.strftime("%Y-%m") for start in month_starts]
     since = month_starts[0]
-    series = {}
-    for model, history_attr, label in TRACKED_MODELS[app_label]:
-        history_manager = getattr(model, history_attr)
+    totals_by_label = {}
+    for model in tracked_apps()[app_label]:
         rows = (
-            history_manager.filter(
-                history_type="+", history_user__isnull=False, history_date__gte=since
-            )
+            history_manager(model)
+            .filter(history_type="+", history_user__isnull=False, history_date__gte=since)
+            .order_by()
             .annotate(month=TruncMonth("history_date"))
             .values("month")
             .annotate(total=Count("pk"))
-            .order_by("month")
         )
         totals = {row["month"].strftime("%Y-%m"): row["total"] for row in rows}
-        series[label] = [(period, totals.get(period, 0)) for period in periods]
+        if totals:
+            totals_by_label[model_label(model)] = totals
+
+    # de mayor a menor; a igual cantidad, por nombre, para que el orden sea estable
+    ranked = sorted(totals_by_label, key=lambda label: (-sum(totals_by_label[label].values()), label))
+    series = {
+        label: [(period, totals_by_label[label].get(period, 0)) for period in periods]
+        for label in ranked[:top]
+    }
+    others = ranked[top:]
+    if others:
+        series[THROUGHPUT_OTHERS_LABEL] = [
+            (period, sum(totals_by_label[label].get(period, 0) for label in others)) for period in periods
+        ]
     return series
 
 
