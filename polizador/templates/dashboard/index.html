@@ -2,7 +2,10 @@
 {% load static %}
 {% block title %}<title>Dashboard | Polizador</title>{% endblock title %}
 {% block content %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{# Versión fija + SRI: sin versión, jsDelivr sirve siempre la última y un cambio mayor rompía los gráficos. #}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.6.1/dist/chart.umd.min.js"
+        integrity="sha384-Emf5ZVIUiarAdhkgtqK+5/Z5qIvM6QoVrS+qAVtfyZVuD5lIHrac0me485+Antp0"
+        crossorigin="anonymous"></script>
 
 <div class="container-fluid">
   <h3 class="mb-3"><i class="bi bi-speedometer2 me-2"></i>Dashboard</h3>
@@ -13,7 +16,11 @@
       <div class="card h-100">
         <div class="card-body">
           <h6 class="card-subtitle text-muted mb-1">Inicios de sesión hoy</h6>
+          {% if login_summary.error %}
+          <p class="card-text text-danger mb-0">No disponible</p>
+          {% else %}
           <p class="card-text fs-3 mb-0">{{ login_summary.today }}</p>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -21,7 +28,11 @@
       <div class="card h-100">
         <div class="card-body">
           <h6 class="card-subtitle text-muted mb-1">Inicios de sesión (7 días)</h6>
+          {% if login_summary.error %}
+          <p class="card-text text-danger mb-0">No disponible</p>
+          {% else %}
           <p class="card-text fs-3 mb-0">{{ login_summary.week }}</p>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -29,11 +40,8 @@
       <div class="card h-100">
         <div class="card-body">
           <h6 class="card-subtitle text-muted mb-1"><i class="bi bi-bug me-1"></i>Errores sin resolver (Sentry, 14 días)</h6>
-          {% if sentry_health %}
-          <p class="card-text fs-3 mb-0">{{ sentry_health.unresolved_count }}</p>
-          {% else %}
-          <p class="card-text text-muted mb-0">No configurado</p>
-          {% endif %}
+          {# Lo completa el script del final, que le pide el dato a la API. #}
+          <p class="card-text text-muted mb-0" id="sentry-count">Cargando…</p>
         </div>
       </div>
     </div>
@@ -43,6 +51,9 @@
   <div class="card mb-4">
     <div class="card-body">
       <h6 class="card-title mb-2 small text-muted">Últimos inicios de sesión</h6>
+      {% if recent_logins.error %}
+      <p class="text-danger mb-0">No disponible</p>
+      {% else %}
       <ul class="list-group list-group-flush small" style="max-height: 220px; overflow-y: auto;">
         {% for login in recent_logins %}
         <li class="list-group-item d-flex justify-content-between px-0 py-1">
@@ -53,38 +64,36 @@
         <li class="list-group-item px-0 py-1 text-muted">Sin inicios de sesión registrados.</li>
         {% endfor %}
       </ul>
+      {% endif %}
     </div>
   </div>
 
-  {% if sentry_health.top_issues %}
-  <div class="card mb-4">
+  <div class="card mb-4 d-none" id="sentry-issues">
     <div class="card-body">
       <h6 class="card-title">Principales issues (Sentry)</h6>
-      <ul class="list-unstyled mb-0">
-        {% for issue in sentry_health.top_issues %}
-        <li><a href="{{ issue.url }}" target="_blank" rel="noopener">{{ issue.title }}</a> <span class="text-muted">({{ issue.count }})</span></li>
-        {% endfor %}
-      </ul>
+      <ul class="list-unstyled mb-0"></ul>
     </div>
   </div>
-  {% endif %}
 
   <!-- Database status -->
   <div class="card mb-4">
     <div class="card-body">
       <h6 class="card-title mb-3"><i class="bi bi-hdd-stack me-1"></i>Estado de la base de datos</h6>
+      {% if db_health.error %}
+      <p class="text-danger mb-0">No disponible</p>
+      {% else %}
       <div class="row g-3 mb-3">
         <div class="col-6 col-md-2">
           <div class="text-muted small">Tamaño</div>
           <div class="fs-5">{{ db_health.size }}</div>
         </div>
         <div class="col-6 col-md-2">
-          <div class="text-muted small">Conexiones activas</div>
-          <div class="fs-5">{{ db_health.active_connections }}</div>
+          <div class="text-muted small">Conexiones (activas / total)</div>
+          <div class="fs-5">{{ db_health.active_connections }} / {{ db_health.total_connections }}</div>
         </div>
         <div class="col-6 col-md-2">
           <div class="text-muted small">Cache hit ratio</div>
-          <div class="fs-5">{{ db_health.cache_hit_ratio }}%</div>
+          <div class="fs-5">{% if db_health.cache_hit_ratio is None %}—{% else %}{{ db_health.cache_hit_ratio }}%{% endif %}</div>
         </div>
         <div class="col-6 col-md-2">
           <div class="text-muted small">Commits (acum.)</div>
@@ -99,6 +108,10 @@
           <div class="fs-5">{{ db_health.deadlocks }}</div>
         </div>
       </div>
+      <p class="text-muted small">
+        Commits, rollbacks y deadlocks son acumulados
+        {% if db_health.stats_reset %}desde el {{ db_health.stats_reset|date:"d/m/Y H:i" }}{% else %}desde que se creó la base{% endif %}.
+      </p>
       <div class="table-responsive">
         <table class="table table-sm mb-0">
           <thead>
@@ -121,6 +134,7 @@
           </tbody>
         </table>
       </div>
+      {% endif %}
     </div>
   </div>
 
@@ -128,7 +142,9 @@
   <div class="card mb-4">
     <div class="card-body">
       <h6 class="card-title mb-3"><i class="bi bi-speedometer me-1"></i>Consultas más costosas (pg_stat_statements)</h6>
-      {% if db_performance %}
+      {% if db_performance.error %}
+      <p class="text-danger mb-0">No disponible</p>
+      {% elif db_performance %}
       <div class="table-responsive">
         <table class="table table-sm mb-0">
           <thead>
@@ -171,48 +187,31 @@
     {% endfor %}
   </ul>
 
+  {# El gráfico y los cambios de cada app se piden recién al abrir su pestaña. #}
   <div class="tab-content">
     {% for app in apps %}
     <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="tab-{{ app.app_label }}" role="tabpanel">
       <div class="card mb-3">
         <div class="card-body">
-          <h6 class="card-title">Registros creados por mes</h6>
-          <canvas id="throughput-{{ app.app_label }}" height="80"></canvas>
+          <h6 class="card-title">Registros creados por usuarios, por mes</h6>
+          <canvas id="throughput-{{ app.app_label }}" height="80"
+                  data-url="{% url 'api-1.0:throughput' app_label=app.app_label %}"></canvas>
         </div>
       </div>
 
       <div class="card">
         <div class="card-body">
           <h6 class="card-title">Últimos cambios</h6>
-          <div class="table-responsive">
-            <table class="table table-sm table-hover mb-0">
-              <thead>
-                <tr>
-                  <th>Fecha</th>
-                  <th>Usuario</th>
-                  <th>Acción</th>
-                  <th>Modelo</th>
-                  <th>Objeto</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for entry in app.changes %}
-                <tr>
-                  <td>{{ entry.fecha }}</td>
-                  <td>{{ entry.usuario|default:"—" }}</td>
-                  <td>{{ entry.tipo }}</td>
-                  <td>{{ entry.modelo }}</td>
-                  <td>{{ entry.objeto }}</td>
-                </tr>
-                {% empty %}
-                <tr><td colspan="5" class="text-muted">Sin cambios recientes.</td></tr>
-                {% endfor %}
-              </tbody>
-            </table>
+          <div id="cambios-{{ app.app_label }}" class="dashboard-cambios"
+               hx-get="{% url 'dashboard_cambios' app_label=app.app_label %}"
+               hx-trigger="{% if forloop.first %}load{% else %}shown.bs.tab from:#tab-{{ app.app_label }}-btn once{% endif %}">
+            <p class="text-muted mb-0">Cargando…</p>
           </div>
         </div>
       </div>
     </div>
+    {% empty %}
+    <p class="text-muted">Ningún modelo instalado tiene historial.</p>
     {% endfor %}
   </div>
 </div>
@@ -221,30 +220,114 @@
 document.addEventListener("DOMContentLoaded", function () {
   const palette = ["#0d6efd", "#198754", "#fd7e14", "#6f42c1", "#dc3545"];
 
-  {% for app in apps %}
-  fetch("/v1/api/dashboard/throughput/{{ app.app_label }}/", {credentials: "same-origin"})
-    .then(r => r.json())
-    .then(data => {
-      const labels = new Set();
-      Object.values(data.series).forEach(points => points.forEach(p => labels.add(p.period)));
-      const sortedLabels = Array.from(labels).sort();
-
-      const datasets = Object.entries(data.series).map(([modelLabel, points], i) => {
-        const byPeriod = Object.fromEntries(points.map(p => [p.period, p.total]));
-        return {
-          label: modelLabel,
-          data: sortedLabels.map(period => byPeriod[period] || 0),
-          backgroundColor: palette[i % palette.length],
-        };
-      });
-
-      new Chart(document.getElementById("throughput-{{ app.app_label }}"), {
-        type: "bar",
-        data: {labels: sortedLabels, datasets: datasets},
-        options: {responsive: true, scales: {x: {stacked: true}, y: {stacked: true}}},
-      });
+  // Un 401/403/500 no es un error de red: fetch() lo resuelve igual, hay que mirar r.ok.
+  function getJSON(url) {
+    return fetch(url, {credentials: "same-origin"}).then(r => {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
     });
-  {% endfor %}
+  }
+
+  function aviso(texto, clase) {
+    const p = document.createElement("p");
+    p.className = "mb-0 " + clase;
+    p.textContent = texto;
+    return p;
+  }
+
+  function cargarGrafico(canvas) {
+    if (!canvas || canvas.dataset.cargado) return;
+    canvas.dataset.cargado = "1";
+    getJSON(canvas.dataset.url)
+      .then(data => {
+        // Chart no existe si el CDN no respondió o el archivo no pasó la verificación SRI.
+        if (typeof Chart === "undefined") throw new Error("Chart.js no se cargó");
+
+        const labels = new Set();
+        Object.values(data.series).forEach(points => points.forEach(p => labels.add(p.period)));
+        const sortedLabels = Array.from(labels).sort();
+        if (!sortedLabels.length) {
+          canvas.replaceWith(aviso("Ningún usuario creó registros en los últimos 12 meses.", "text-muted"));
+          return;
+        }
+
+        let color = 0;
+        const datasets = Object.entries(data.series).map(([modelLabel, points]) => {
+          const byPeriod = Object.fromEntries(points.map(p => [p.period, p.total]));
+          return {
+            label: modelLabel,
+            data: sortedLabels.map(period => byPeriod[period] || 0),
+            // "Otros" suma los modelos con menos altas: va en gris, fuera de la paleta
+            backgroundColor: modelLabel === "Otros" ? "#adb5bd" : palette[color++ % palette.length],
+          };
+        });
+
+        new Chart(canvas, {
+          type: "bar",
+          data: {labels: sortedLabels, datasets: datasets},
+          options: {responsive: true, scales: {x: {stacked: true}, y: {stacked: true}}},
+        });
+      })
+      .catch(error => {
+        console.error("Dashboard: no se pudo cargar " + canvas.dataset.url, error);
+        canvas.replaceWith(aviso("No se pudo cargar el gráfico.", "text-danger"));
+      });
+  }
+
+  // El de la pestaña abierta ahora; los demás cuando se abra la suya.
+  cargarGrafico(document.querySelector(".tab-pane.active canvas[data-url]"));
+  document.querySelectorAll('#dashboardTabs [data-bs-toggle="tab"]').forEach(boton => {
+    boton.addEventListener("shown.bs.tab", () => {
+      cargarGrafico(document.querySelector(boton.dataset.bsTarget + " canvas[data-url]"));
+    });
+  });
+
+  // htmx no reemplaza el contenido si el pedido falla: sin esto quedaría "Cargando…".
+  ["htmx:responseError", "htmx:sendError"].forEach(evento => {
+    document.body.addEventListener(evento, e => {
+      const destino = e.detail.target;
+      if (destino && destino.classList.contains("dashboard-cambios")) {
+        destino.replaceChildren(aviso("No se pudieron cargar los cambios.", "text-danger"));
+      }
+    });
+  });
+
+  const sentryCount = document.getElementById("sentry-count");
+  getJSON("{% url 'api-1.0:sentry_health' %}")
+    .then(data => {
+      if (!data.configured) {
+        sentryCount.textContent = "No configurado";
+        return;
+      }
+      if (data.error) throw new Error("Sentry no respondió");
+
+      sentryCount.className = "card-text fs-3 mb-0";
+      sentryCount.textContent = data.unresolved_count + (data.truncated ? "+" : "");
+
+      if (!data.top_issues.length) return;
+      const card = document.getElementById("sentry-issues");
+      const list = card.querySelector("ul");
+      data.top_issues.forEach(issue => {
+        // textContent y no innerHTML: el título de un issue es texto que viene de afuera.
+        const link = document.createElement("a");
+        link.href = issue.url;
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.textContent = issue.title;
+        const count = document.createElement("span");
+        count.className = "text-muted";
+        count.textContent = " (" + issue.count + ")";
+        const item = document.createElement("li");
+        item.append(link, count);
+        list.append(item);
+      });
+      card.classList.remove("d-none");
+    })
+    .catch(error => {
+      console.error("Dashboard: no se pudo consultar Sentry", error);
+      sentryCount.className = "card-text text-danger mb-0";
+      sentryCount.textContent = "No se pudo consultar Sentry";
+    });
 });
 </script>
 {% endblock content %}

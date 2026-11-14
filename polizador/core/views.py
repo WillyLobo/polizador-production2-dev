@@ -1,3 +1,4 @@
+import logging
 import posixpath
 import re
 
@@ -5,6 +6,7 @@ from django.apps import apps
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import PermissionDenied, ValidationError
+from django.db import transaction
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse, reverse_lazy
@@ -19,6 +21,9 @@ from core.forms import TodoForm
 from core.history import build_timeline, can_view_history, history_manager, sources_for
 from core.management_commands_registry import COMMAND_REGISTRY
 from core.models import ManagementCommandRun, Todo
+
+
+logger = logging.getLogger(__name__)
 
 
 class SuperuserRequiredMixin(LoginRequiredMixin, UserPassesTestMixin):
@@ -55,25 +60,77 @@ class FormValidationErrorListView(SuperuserRequiredMixin, TemplateView):
     template_name = "errores_validacion/list.html"
 
 
+def _seccion_dashboard(nombre, funcion, *args):
+    """Calcula una sección del dashboard sin dejar que su falla tire la página entera:
+    si algo sale mal (p. ej. pg_stat_statements creada pero sin cargar en
+    shared_preload_libraries) esa sección se muestra como "No disponible" y el resto
+    sigue. El atomic() es un savepoint: sin él, un error de SQL dejaría abortada la
+    transacción en curso y fallarían también las secciones siguientes."""
+    try:
+        with transaction.atomic():
+            return funcion(*args)
+    except Exception:
+        logger.exception("Dashboard: no se pudo calcular la sección %s", nombre)
+        return {"error": True}
+
+
 class DashboardView(SuperuserRequiredMixin, TemplateView):
     template_name = "dashboard/index.html"
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        # Los cambios y el gráfico de cada app los pide el navegador al abrir su pestaña
+        # (DashboardChangesView y /v1/api/dashboard/throughput/): con todos los modelos
+        # con historial, calcularlos acá para todas las apps demoraría la página.
         context["apps"] = [
-            {
-                "app_label": app_label,
-                "display": dashboard_data.APP_DISPLAY_NAMES[app_label],
-                "model_labels": [label for _, _, label in dashboard_data.TRACKED_MODELS[app_label]],
-                "changes": dashboard_data.changes_feed(app_label),
-            }
-            for app_label in dashboard_data.TRACKED_MODELS
+            {"app_label": app_label, "display": apps.get_app_config(app_label).verbose_name}
+            for app_label in dashboard_data.tracked_apps()
         ]
-        context["login_summary"] = dashboard_data.login_summary()
-        context["recent_logins"] = dashboard_data.recent_logins()
-        context["sentry_health"] = dashboard_data.sentry_health()
-        context["db_health"] = dashboard_data.db_health()
-        context["db_performance"] = dashboard_data.db_performance()
+        # Sentry no se consulta acá: el template lo pide a /v1/api/dashboard/sentry/
+        # para que una API externa lenta no demore la página.
+        context["login_summary"] = _seccion_dashboard("resumen de logins", dashboard_data.login_summary)
+        context["recent_logins"] = _seccion_dashboard("últimos logins", dashboard_data.recent_logins)
+        context["db_health"] = _seccion_dashboard("estado de la base", dashboard_data.db_health)
+        context["db_performance"] = _seccion_dashboard("consultas costosas", dashboard_data.db_performance)
+        return context
+
+
+class DashboardChangesView(SuperuserRequiredMixin, TemplateView):
+    """Fragmento con los últimos cambios de una app, que el dashboard carga con htmx al
+    abrir la pestaña, al filtrar por modelo y al paginar."""
+
+    template_name = "dashboard/_cambios.html"
+    # Tope de páginas: cada página más lejana obliga a la base a ordenar y descartar todas
+    # las anteriores, y nadie busca un cambio puntual hojeando 10.000 filas.
+    MAX_PAGE = 200
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        app_label = kwargs["app_label"]
+        models = dashboard_data.tracked_apps().get(app_label)
+        if models is None:
+            raise Http404
+        model_name = self.request.GET.get("modelo") or None
+        if model_name is not None and model_name not in {model._meta.model_name for model in models}:
+            raise Http404
+        try:
+            page = min(max(int(self.request.GET.get("pagina", 1)), 1), self.MAX_PAGE)
+        except ValueError:
+            page = 1
+
+        size = dashboard_data.CHANGES_PAGE_SIZE
+        result = _seccion_dashboard(
+            f"cambios de {app_label}", dashboard_data.changes_feed, app_label, model_name, size, (page - 1) * size,
+        )
+        context["app_label"] = app_label
+        context["models"] = [(model._meta.model_name, dashboard_data.model_label(model)) for model in models]
+        context["model_name"] = model_name
+        context["page"] = page
+        if isinstance(result, dict):
+            context["error"] = True
+        else:
+            context["changes"], has_more = result
+            context["next_page"] = page + 1 if has_more and page < self.MAX_PAGE else None
         return context
 
 
