@@ -271,7 +271,7 @@ pyarrow==25.0.0
     # via
     #   db-dtypes
     #   pandas-gbq
-pyasn1==0.6.4
+pyasn1==0.6.5
     # via
     #   pyasn1-modules
     #   python-ldap
