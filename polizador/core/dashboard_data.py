@@ -233,14 +233,37 @@ def recent_logins(limit=15):
     )
 
 
-def login_summary():
+def _today_start():
     # Medianoche local, no UTC: timezone.now() está en UTC y su medianoche cae a las
     # 21:00 del día anterior en Argentina.
-    today_start = timezone.localtime().replace(hour=0, minute=0, second=0, microsecond=0)
+    return timezone.localtime().replace(hour=0, minute=0, second=0, microsecond=0)
+
+
+def login_summary():
+    today_start = _today_start()
     week_start = today_start - timedelta(days=7)
     return {
         "today": LoginEvent.objects.filter(timestamp__gte=today_start).count(),
         "week": LoginEvent.objects.filter(timestamp__gte=week_start).count(),
+    }
+
+
+def visor_activity(limit=15):
+    """Actividad en el visor de GDU (descargas de planos, impresión de fichas, descarga
+    del proyecto QGIS), que la app gdu registra en EventoVisor. No son cambios de datos,
+    así que no salen en el feed de cambios: van como una sección aparte.
+
+    Devuelve None si la app gdu no está instalada. Se la busca por nombre para que core
+    no dependa de gdu.
+    """
+    if not apps.is_installed("gdu"):
+        return None
+    eventos = apps.get_model("gdu", "EventoVisor").objects
+    today_start = _today_start()
+    return {
+        "today": eventos.filter(tstamp__gte=today_start).count(),
+        "week": eventos.filter(tstamp__gte=today_start - timedelta(days=7)).count(),
+        "recent": list(eventos.order_by("-tstamp")[:limit].values("username", "accion", "tstamp")),
     }
 
 

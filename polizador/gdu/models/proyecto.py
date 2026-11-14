@@ -21,6 +21,8 @@ class Programa(Auditado):
         return self.nombre
 
     class Meta:
+        verbose_name = "programa"
+        verbose_name_plural = "programas"
         ordering = ["nombre"]
         db_table_comment = "Origen e instrumentación del financiamiento"
 
@@ -144,12 +146,14 @@ class Ejecutor(Auditado):
         return self.nombre
 
     class Meta:
+        verbose_name = "ejecutor"
         verbose_name_plural = "ejecutores"
         ordering = ["nombre"]
 
 
 class Inspector(Lookup):
     class Meta(Lookup.Meta):
+        verbose_name = "inspector"
         verbose_name_plural = "inspectores"
 
 

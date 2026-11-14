@@ -68,6 +68,30 @@
     </div>
   </div>
 
+  {# Solo si la app gdu está instalada. #}
+  {% if visor_activity %}
+  <div class="card mb-4">
+    <div class="card-body">
+      <h6 class="card-title mb-2 small text-muted">Actividad en el visor de GDU</h6>
+      {% if visor_activity.error %}
+      <p class="text-danger mb-0">No disponible</p>
+      {% else %}
+      <p class="small mb-2">Hoy: <strong>{{ visor_activity.today }}</strong> · Últimos 7 días: <strong>{{ visor_activity.week }}</strong></p>
+      <ul class="list-group list-group-flush small" style="max-height: 220px; overflow-y: auto;">
+        {% for evento in visor_activity.recent %}
+        <li class="list-group-item d-flex justify-content-between px-0 py-1">
+          <span>{{ evento.username|default:"—" }} · {{ evento.accion }}</span>
+          <span class="text-muted">{{ evento.tstamp }}</span>
+        </li>
+        {% empty %}
+        <li class="list-group-item px-0 py-1 text-muted">Sin actividad registrada.</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
   <div class="card mb-4 d-none" id="sentry-issues">
     <div class="card-body">
       <h6 class="card-title">Principales issues (Sentry)</h6>

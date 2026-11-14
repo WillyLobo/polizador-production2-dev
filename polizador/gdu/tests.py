@@ -1,5 +1,5 @@
 import base64
-from datetime import date
+from datetime import date, timedelta
 from io import StringIO
 
 from django.contrib.auth import authenticate, get_user_model
@@ -9,6 +9,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from carga.models import Departamento, Localidad, Municipio
+from core.tests.test_dashboard import aislar_dashboard
 from gdu.models import (
     Actuacion, Adjudicatario3450, Contratacion, DestinoParcela, Encuesta, EventoVisor, Intervencion,
     IntervencionEjecutor, Ejecutor, Parcela, PlanoMensura, PlanoMensuraIntervencion, PreAdjudicatarioDispersa,
@@ -401,6 +402,39 @@ class OapifTest(TestCase):
         self.assertEqual(self.pedir("delete", f"/collections/barrios/items/{barrio.pk}", "lector").status_code, 403)
         self.assertEqual(self.pedir("delete", f"/collections/barrios/items/{barrio.pk}", "editor").status_code, 200)
         self.assertFalse(Barrio.objects.filter(pk=barrio.pk).exists())
+
+    def test_cada_escritura_por_oapif_deja_historial_con_su_usuario(self):
+        """Lo que se edita desde QGIS pasa por el ORM: alta, PATCH, PUT y borrado dejan cada
+        uno su fila en simple_history, a nombre de quien se autenticó por Basic Auth (que no
+        abre sesión: el usuario lo pone BasicAuthCacheada en el request)."""
+        ruta = "/collections/barrios/items"
+        alta = self.pedir("post", ruta, "editor", self.feature_barrio())
+        self.assertEqual(alta.status_code, 201, alta.content)
+        barrio = Barrio.objects.get(nombre="Barrio nuevo")
+        ruta = f"{ruta}/{barrio.pk}"
+
+        parcial = self.pedir("patch", ruta, "editor", {"type": "Feature", "properties": {"nombre": "Con PATCH"}})
+        self.assertEqual(parcial.status_code, 200, parcial.content)
+        # el PUT como lo manda QGIS al guardar: el feature entero
+        completo = self.pedir("put", ruta, "editor", self.feature_barrio(nombre="Con PUT"))
+        self.assertEqual(completo.status_code, 200, completo.content)
+        # un pedido rechazado no deja rastro
+        self.assertEqual(self.pedir("delete", ruta, "lector").status_code, 403)
+        self.assertEqual(self.pedir("delete", ruta, "editor").status_code, 200)
+
+        # el barrio ya no existe: su historial se lee desde el modelo histórico
+        historial = Barrio.history.filter(id=barrio.pk).order_by("history_date", "history_id")
+        self.assertEqual(
+            [(h.history_type, h.nombre, h.history_user) for h in historial],
+            [
+                ("+", "Barrio nuevo", self.editor),
+                ("~", "Con PATCH", self.editor),
+                ("~", "Con PUT", self.editor),
+                ("-", "Con PUT", self.editor),
+            ],
+        )
+        # y updated_by acompaña a cada versión
+        self.assertEqual({h.updated_by for h in historial}, {self.editor})
 
     def test_validacion_del_modelo_devuelve_422(self):
         feature = self.feature_barrio(nombre="x" * 300)  # max_length=255
@@ -963,6 +997,40 @@ class EncuestaWebTest(TestCase):
             Encuesta.objects.get().respuestas.get(pregunta_relevamiento__variable="relacion_otro").valor, "vecino",
         )
 
+    def test_el_envio_deja_historial_de_la_encuesta_pero_no_de_cada_respuesta(self):
+        from gdu.models import RespuestaEncuesta
+
+        self.client.post(self.url, {"relacion": "1", "servicios": ["1", "2"]})
+        encuesta = Encuesta.objects.get()
+        alta = encuesta.history.get()
+        self.assertEqual((alta.history_type, alta.history_user), ("+", self.usuario))
+        # las respuestas se crean en bloque y no se editan: quedan cubiertas por la encuesta
+        self.assertFalse(hasattr(RespuestaEncuesta, "history"))
+
+        pk = encuesta.pk
+        encuesta.delete()
+        self.assertEqual(
+            list(Encuesta.history.filter(id=pk).order_by("history_date", "history_id").values_list("history_type", flat=True)),
+            ["+", "-"],
+        )
+
+    def test_cambiar_la_definicion_de_un_relevamiento_deja_historial(self):
+        from gdu.models import Pregunta, Respuesta, Seccion, TipoPregunta
+
+        # setUpTestData los creó: cada uno arranca con su fila "+"
+        for modelo in (TipoPregunta, Relevamiento, Seccion, Pregunta, PreguntaRelevamiento, Respuesta, ViviendaRelevamiento):
+            with self.subTest(modelo=modelo.__name__):
+                self.assertTrue(modelo.history.filter(history_type="+").exists())
+
+        # una opción que cambia de texto altera el sentido de las respuestas ya cargadas
+        opcion = self.opciones[2]
+        opcion.texto = "Es familiar directo"
+        opcion.save()
+        self.assertEqual(
+            list(opcion.history.order_by("history_date", "history_id").values_list("history_type", "texto")),
+            [("+", "Es familiar"), ("~", "Es familiar directo")],
+        )
+
     def test_el_navegador_recibe_la_regla_en_json(self):
         respuesta = self.client.get(self.url)
         self.assertContains(respuesta, 'data-visible-rule="{&quot;==&quot;: [{&quot;var&quot;: &quot;relacion&quot;}, 3]}"')
@@ -1022,3 +1090,72 @@ class Importar3450Test(TestCase):
             self.assertEqual(Command()._upsert(registros), (1, 3))
         self.assertEqual(len(logs.records), 3)
         self.assertEqual(list(Adjudicatario3450.objects.values_list("pk", flat=True)), [3])
+
+
+# caché en memoria y Sentry sin configurar, como los tests del dashboard en core: con el caché
+# real quedarían a la vista del servidor de desarrollo los datos de la base de test
+@aislar_dashboard
+class DashboardGduTest(TestCase):
+    """El dashboard (core) descubre solo a los modelos con historial: gdu aparece sin que
+    nadie lo liste, y su actividad del visor va en una sección aparte."""
+
+    @classmethod
+    def setUpTestData(cls):
+        ModelosGduTest.setUpTestData.__func__(cls)
+        cls.admin = get_user_model().objects.create_superuser("admin_dashboard", password="x")
+
+    def setUp(self):
+        from django.core.cache import cache
+
+        cache.clear()
+        self.client.force_login(self.admin)
+
+    def test_los_modelos_de_gdu_aparecen_sin_configuracion(self):
+        from core import dashboard_data
+        from gdu.models import Catastrourbano, RespuestaEncuesta, Uf
+
+        seguidos = dashboard_data.tracked_apps()["gdu"]
+        self.assertLessEqual({Barrio, Parcela, Uf, Intervencion, Encuesta, Relevamiento, ViviendaRelevamiento}, set(seguidos))
+        # los que no llevan historial no están: respuestas, el log del visor, las capas de referencia
+        self.assertFalse({RespuestaEncuesta, EventoVisor, Catastrourbano, Adjudicatario3450} & set(seguidos))
+        etiquetas = [dashboard_data.model_label(modelo) for modelo in seguidos]
+        self.assertEqual(len(etiquetas), len(set(etiquetas)))
+
+    def test_gdu_tiene_su_pestana_y_su_feed(self):
+        respuesta = self.client.get("/administracion/dashboard/")
+        self.assertIn("GDU", [app["display"] for app in respuesta.context["apps"]])
+        self.assertContains(respuesta, 'hx-get="/administracion/dashboard/cambios/gdu/"')
+
+        barrio = Barrio.objects.create(intervencion=self.intervencion, nombre="Barrio del feed", geom=MultiPolygon(CUADRADO))
+        feed = self.client.get("/administracion/dashboard/cambios/gdu/", {"modelo": "barrio"})
+        self.assertEqual([(c["tipo"], c["modelo"], c["objeto"]) for c in feed.context["changes"]], [("Creado", "Barrios", str(barrio))])
+
+    def test_el_feed_no_trae_las_geometrias(self):
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+
+        from core import dashboard_data
+
+        Barrio.objects.create(intervencion=self.intervencion, nombre="Barrio", geom=MultiPolygon(CUADRADO))
+        with CaptureQueriesContext(connection) as consultas:
+            cambios, _ = dashboard_data.changes_feed("gdu", "barrio")
+        self.assertEqual(len(cambios), 1)
+        self.assertFalse([c["sql"] for c in consultas if '"geom"' in c["sql"]])
+
+    def test_actividad_del_visor(self):
+        from core import dashboard_data
+
+        self.assertEqual(dashboard_data.visor_activity(), {"today": 0, "week": 0, "recent": []})
+        EventoVisor.objects.create(usuario=self.admin, username="admin_dashboard", accion="descargaPlano")
+        EventoVisor.objects.create(username="", accion="printFeature")
+        viejo = EventoVisor.objects.create(username="importado", accion="login", importado=True)
+        EventoVisor.objects.filter(pk=viejo.pk).update(tstamp=viejo.tstamp - timedelta(days=30))
+
+        actividad = dashboard_data.visor_activity()
+        self.assertEqual((actividad["today"], actividad["week"]), (2, 2))
+        self.assertEqual([e["accion"] for e in actividad["recent"]], ["printFeature", "descargaPlano", "login"])
+
+        respuesta = self.client.get("/administracion/dashboard/")
+        self.assertContains(respuesta, "Actividad en el visor de GDU")
+        self.assertContains(respuesta, "admin_dashboard · descargaPlano")
+        self.assertContains(respuesta, "— · printFeature")

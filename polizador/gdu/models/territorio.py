@@ -15,6 +15,8 @@ class Barrio(Auditado):
         return self.nombre or f"Barrio {self.pk}"
 
     class Meta:
+        verbose_name = "barrio"
+        verbose_name_plural = "barrios"
         permissions = [("ver_barrios", "Puede ver la capa de Barrios")]
 
 
@@ -26,6 +28,10 @@ class Manzana(Auditado):
     def __str__(self):
         return self.nombre
 
+    class Meta:
+        verbose_name = "manzana"
+        verbose_name_plural = "manzanas"
+
 
 class Calle(Auditado):
     intervencion = models.ForeignKey("Intervencion", models.PROTECT, related_name="calles", verbose_name="intervención")
@@ -34,6 +40,10 @@ class Calle(Auditado):
 
     def __str__(self):
         return self.nombre or f"Calle {self.pk}"
+
+    class Meta:
+        verbose_name = "calle"
+        verbose_name_plural = "calles"
 
 
 class DestinoParcela(Lookup):
@@ -63,6 +73,8 @@ class Parcela(NomenclaturaCatastral, Auditado):
         return self.nomenclatura or f"Parcela {self.pk}"
 
     class Meta:
+        verbose_name = "parcela"
+        verbose_name_plural = "parcelas"
         indexes = [models.Index(fields=["nomenclatura"], name="gdu_parcela_nomenclatura")]
         # nomenclatura tiene duplicados en la base heredada: la UniqueConstraint se
         # agrega cuando el área los resuelva

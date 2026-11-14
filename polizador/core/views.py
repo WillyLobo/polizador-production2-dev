@@ -90,6 +90,7 @@ class DashboardView(SuperuserRequiredMixin, TemplateView):
         # para que una API externa lenta no demore la página.
         context["login_summary"] = _seccion_dashboard("resumen de logins", dashboard_data.login_summary)
         context["recent_logins"] = _seccion_dashboard("últimos logins", dashboard_data.recent_logins)
+        context["visor_activity"] = _seccion_dashboard("actividad del visor", dashboard_data.visor_activity)
         context["db_health"] = _seccion_dashboard("estado de la base", dashboard_data.db_health)
         context["db_performance"] = _seccion_dashboard("consultas costosas", dashboard_data.db_performance)
         return context

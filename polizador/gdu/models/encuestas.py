@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.gis.db import models
 from django.db.models import Exists, OuterRef
+from simple_history.models import HistoricalRecords
 from uuid_utils import compat
 
 from .base import SRID_GDU
@@ -8,6 +9,9 @@ from .base import SRID_GDU
 # Constructor de encuestas (modelo EAV): relevamiento -> sección -> pregunta ->
 # respuesta. Las reglas de visibilidad/validez eran expresiones JS guardadas como
 # texto; acá son reglas declarativas (JSON) que se validan del lado del servidor.
+#
+# Todos llevan historial menos RespuestaEncuesta: sus filas se crean en bloque junto con su
+# Encuesta y nunca se editan, así que quedan cubiertas por la fila histórica de la Encuesta.
 
 
 class TipoPregunta(models.Model):
@@ -15,6 +19,8 @@ class TipoPregunta(models.Model):
     nombre = models.CharField(max_length=255)
     tipo = models.CharField(max_length=255, help_text="Tipo de dato de la respuesta")
     descripcion = models.TextField(blank=True)
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.nombre
@@ -30,10 +36,14 @@ class Relevamiento(models.Model):
     descripcion = models.TextField(blank=True)
     objetivo = models.IntegerField(help_text="Cantidad objetivo de encuestas, para calcular el avance")
 
+    history = HistoricalRecords()
+
     def __str__(self):
         return self.nombre
 
     class Meta:
+        verbose_name = "relevamiento"
+        verbose_name_plural = "relevamientos"
         db_table_comment = "Grupo de encuestas a realizar en una campaña"
         permissions = [("encuestar_relevamiento", "Puede cargar encuestas de un relevamiento")]
 
@@ -44,6 +54,8 @@ class Seccion(models.Model):
     texto = models.TextField(blank=True)
     orden = models.IntegerField()
     regla_visible = models.JSONField(null=True, blank=True)
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.nombre
@@ -59,8 +71,14 @@ class Pregunta(models.Model):
     texto = models.TextField()
     subtexto = models.TextField(blank=True)
 
+    history = HistoricalRecords()
+
     def __str__(self):
         return self.texto[:60]
+
+    class Meta:
+        verbose_name = "pregunta"
+        verbose_name_plural = "preguntas"
 
 
 class PreguntaRelevamiento(models.Model):
@@ -71,6 +89,8 @@ class PreguntaRelevamiento(models.Model):
     regla_visible = models.JSONField(null=True, blank=True)
     regla_valido = models.JSONField(null=True, blank=True)
     requerida = models.BooleanField(default=False)
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return self.variable
@@ -90,10 +110,14 @@ class Respuesta(models.Model):
     nro_opcion = models.IntegerField(help_text="Valor numérico de la opción, también define el orden")
     valor = models.TextField()
 
+    history = HistoricalRecords()
+
     def __str__(self):
         return self.texto
 
     class Meta:
+        verbose_name = "opción de respuesta"
+        verbose_name_plural = "opciones de respuesta"
         ordering = ["pregunta", "nro_opcion"]
         constraints = [
             models.UniqueConstraint(fields=["pregunta", "nro_opcion"], name="gdu_respuesta_opcion_unica"),
@@ -115,6 +139,8 @@ class ViviendaRelevamiento(models.Model):
     geom = models.MultiPolygonField(srid=SRID_GDU)
 
     objects = ViviendaRelevamientoQuerySet.as_manager()
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return f"Vivienda {self.numero} ({self.relevamiento})"
@@ -146,8 +172,14 @@ class Encuesta(models.Model):
     capturada_en = models.DateTimeField(null=True, blank=True, help_text="Momento de la carga en campo")
     enviada_en = models.DateTimeField(auto_now_add=True)
 
+    history = HistoricalRecords()
+
     def __str__(self):
         return f"Encuesta #{self.pk} ({self.vivienda})"
+
+    class Meta:
+        verbose_name = "encuesta"
+        verbose_name_plural = "encuestas"
 
 
 class RespuestaEncuesta(models.Model):

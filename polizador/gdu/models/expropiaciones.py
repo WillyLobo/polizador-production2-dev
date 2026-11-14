@@ -53,5 +53,6 @@ class ParcelaExpropiada(NomenclaturaCatastral, Auditado):
         return self.nomenclatura or f"Parcela expropiada {self.pk}"
 
     class Meta:
+        verbose_name = "parcela expropiada"
         verbose_name_plural = "parcelas expropiadas"
         permissions = [("ver_expropiaciones", "Puede ver la capa de Expropiaciones")]

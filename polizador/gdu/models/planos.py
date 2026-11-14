@@ -117,6 +117,7 @@ class Tierra(NomenclaturaCatastral, Auditado):
         return self.propietario or self.nomenclatura or f"Tierra {self.pk}"
 
     class Meta:
+        verbose_name = "tierra"
         verbose_name_plural = "tierras"
 
 

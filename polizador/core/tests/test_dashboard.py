@@ -88,7 +88,9 @@ class DashboardViewTest(TestCase):
             resp = self.client.get("/administracion/dashboard/")
         feed.assert_not_called()
         altas.assert_not_called()
-        assert [app["display"] for app in resp.context["apps"]] == ["Obras", "Viáticos", "Personal"]
+        pestanas = [app["display"] for app in resp.context["apps"]]
+        assert pestanas[:3] == ["Obras", "Viáticos", "Personal"]
+        assert len(pestanas) == len(dashboard_data.tracked_apps())
         # solo la primera pestaña se pide al cargar; las otras, al abrirlas
         self.assertContains(resp, 'hx-get="/administracion/dashboard/cambios/carga/"')
         self.assertContains(resp, 'hx-trigger="load"', count=1)
