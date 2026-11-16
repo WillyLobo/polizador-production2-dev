@@ -96,9 +96,12 @@ MOSTRAR = {
 }
 # FK que quedan como número: el combo carga la tabla referenciada entera (~70.000 adjudicatarios,
 # ~65.000 parcelas; 25-30 s al abrir la tabla de atributos). Las consultas de viviendas son de
-# solo lectura, no necesitan el combo.
+# solo lectura, no necesitan el combo. La parcela de la UF tampoco: identificar una sola UF bajaba
+# la colección parcelas completa (7 páginas, ~38 MB sin comprimir, ~20 s); la UF se crea desde
+# la lista del formulario de la parcela o con "Generar UF", que ya ponen la FK, y la nomenclatura
+# se ve en parcela_nomenclatura.
 VIVIENDAS_CONSULTA = ("viviendas_sin_plan_grupo", "viviendas_con_plan_grupo_sin_adjudicatario", "viviendas_para_escriturar")
-FK_SIN_COMBO = {("ufs", "adjudicatario"), ("viviendas_punto", "adjudicatario")} | {
+FK_SIN_COMBO = {("ufs", "adjudicatario"), ("ufs", "parcela"), ("viviendas_punto", "adjudicatario")} | {
     (coleccion_id, campo) for coleccion_id in VIVIENDAS_CONSULTA for campo in ("adjudicatario", "parcela")
 }
 
