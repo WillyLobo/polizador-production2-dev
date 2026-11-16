@@ -78,6 +78,12 @@ ESCALAS = {
     "catastro_urbano": 10000, PARCELAS: 25000, "ufs": 25000, "viviendas_sin_plan_grupo": 25000,
     "viviendas_con_plan_grupo_sin_adjudicatario": 25000, "viviendas_para_escriturar": 25000,
 }
+# colecciones que además se sirven como teselas vectoriales (gdu/views/teselas.py), con sus zooms
+# (los mismos que allá). Se ven con la capa de teselas, que PostGIS arma solo para lo visible; la
+# OAPIF queda apagada, como "(tabla)", para la tabla de atributos: bajarla entera son ~270 MB.
+TESELAS = {"catastro_urbano": (14, 17)}
+# las teselas se dibujan a partir de 1:25.000 (zoom ~14): con menos zoom QGIS pediría miles
+ESCALA_TESELAS = 25000
 
 # cómo se muestra un registro en los combos de las FK (por defecto "nombre", si existe)
 MOSTRAR = {
@@ -181,9 +187,31 @@ def armar(args):
     from qgis.core import (
         Qgis, QgsApplication, QgsAttributeEditorContainer, QgsAttributeEditorField, QgsAttributeEditorRelation,
         QgsAction, QgsAttributeTableConfig, QgsAuthMethodConfig, QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsEditorWidgetSetup,
-        QgsProject, QgsRasterLayer, QgsRectangle, QgsReferencedRectangle, QgsRelation, QgsSymbol, QgsVectorLayer,
+        QgsDataSourceUri, QgsProject, QgsRasterLayer, QgsRectangle, QgsReferencedRectangle, QgsRelation, QgsSymbol,
+        QgsVectorLayer, QgsVectorTileBasicRenderer, QgsVectorTileBasicRendererStyle, QgsVectorTileLayer,
     )
     from qgis.PyQt.QtGui import QColor
+
+    def capa_de_teselas(coleccion_id, capa_oapif):
+        """Capa de teselas vectoriales de la colección, con el símbolo de su capa OAPIF."""
+        zmin, zmax = TESELAS[coleccion_id]
+        uri = QgsDataSourceUri()
+        uri.setParam("type", "xyz")
+        uri.setParam("url", urljoin(servidor.url, f"../teselas/{coleccion_id}/") + "{z}/{x}/{y}.pbf")
+        uri.setParam("zmin", str(zmin))
+        uri.setParam("zmax", str(zmax))
+        uri.setAuthConfigId(args.authcfg)
+        teselas = QgsVectorTileLayer(bytes(uri.encodedUri()).decode(), capa_oapif.name())
+        if not teselas.isValid():
+            sys.exit(f"No carga la capa de teselas de {coleccion_id}")
+        estilo = QgsVectorTileBasicRendererStyle(capa_oapif.name(), coleccion_id, Qgis.GeometryType.Polygon)
+        estilo.setSymbol(capa_oapif.renderer().symbol().clone())
+        renderer = QgsVectorTileBasicRenderer()
+        renderer.setStyles([estilo])
+        teselas.setRenderer(renderer)
+        teselas.setScaleBasedVisibility(True)
+        teselas.setMinimumScale(ESCALA_TESELAS)
+        return teselas
 
     servidor = Servidor(args.url, args.usuario, args.clave)
     ids = servidor.colecciones()
@@ -380,6 +408,11 @@ def armar(args):
         grupo = arbol.addGroup(nombre)
         grupo.setExpanded(nombre == "Capas")
         for coleccion_id in elegidos:
+            if coleccion_id in TESELAS:
+                teselas = capa_de_teselas(coleccion_id, capas[coleccion_id])
+                proyecto.addMapLayer(teselas, False)
+                grupo.addLayer(teselas).setItemVisibilityChecked(coleccion_id in VISIBLES)
+                capas[coleccion_id].setName(f"{capas[coleccion_id].name()} (tabla)")
             nodo = grupo.addLayer(capas[coleccion_id])
             nodo.setItemVisibilityChecked(coleccion_id in VISIBLES)
             nodo.setExpanded(False)

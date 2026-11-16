@@ -1268,3 +1268,95 @@ class GenerarUfTest(TestCase):
             'action="https://polizador.example/gdu/parcelas/[% coalesce(&quot;id&quot;, 0) %]/generar-uf/"', resultado,
         )
         self.assertNotIn("192.168.0.51", resultado)
+
+
+class TeselasTest(TestCase):
+    """Teselas vectoriales de catastro urbano para QGIS (gdu/views/teselas.py)."""
+
+    # ~50 m en Resistencia, en EPSG:22175 (como VisorYFichaTest)
+    GEOM = Polygon(((5600800, 6959250), (5600800, 6959300), (5600850, 6959300), (5600850, 6959250),
+                    (5600800, 6959250)), srid=SRID_GDU)
+
+    @classmethod
+    def setUpTestData(cls):
+        from django.contrib.auth.models import Permission
+
+        from gdu.models import Catastrourbano
+
+        Catastrourbano.objects.create(id_nomencl="20-II-B-123", municipio="RESISTENCIA", anio=1998, geom=cls.GEOM)
+        User = get_user_model()
+        cls.lector = User.objects.create_user("lector_teselas", password="clave-lector")
+        cls.lector.user_permissions.add(
+            Permission.objects.get(content_type__app_label="gdu", codename="view_catastrourbano"),
+        )
+        cls.sin_permiso = User.objects.create_user("sin_permiso_teselas", password="clave")
+
+    @classmethod
+    def tesela_de_la_parcela(cls, z):
+        import math
+
+        centro = cls.GEOM.centroid.transform(4326, clone=True)
+        n = 2 ** z
+        lat = math.radians(centro.y)
+        return z, int((centro.x + 180) / 360 * n), int((1 - math.asinh(math.tan(lat)) / math.pi) / 2 * n)
+
+    def url(self, z, x, y, capa="catastro_urbano"):
+        return reverse("gdu:tesela", args=[capa, z, x, y])
+
+    def test_tesela_con_la_parcela_y_sus_atributos(self):
+        self.client.force_login(self.lector)
+        respuesta = self.client.get(self.url(*self.tesela_de_la_parcela(16)))
+        self.assertEqual(respuesta.status_code, 200)
+        self.assertEqual(respuesta["Content-Type"], "application/vnd.mapbox-vector-tile")
+        self.assertIn("max-age", respuesta["Cache-Control"])
+        # protobuf: el nombre de la capa y los valores de texto viajan tal cual
+        self.assertIn(b"catastro_urbano", respuesta.content)
+        self.assertIn(b"20-II-B-123", respuesta.content)
+
+    def test_tesela_vacia(self):
+        self.client.force_login(self.lector)
+        z, x, y = self.tesela_de_la_parcela(16)
+        respuesta = self.client.get(self.url(z, x + 5, y))
+        self.assertEqual(respuesta.status_code, 204)
+        self.assertEqual(respuesta.content, b"")
+
+    def test_basic_auth_como_qgis(self):
+        credenciales = base64.b64encode(b"lector_teselas:clave-lector").decode()
+        respuesta = self.client.get(self.url(*self.tesela_de_la_parcela(16)), HTTP_AUTHORIZATION=f"Basic {credenciales}")
+        self.assertEqual(respuesta.status_code, 200)
+
+    def test_sin_credenciales_401_y_sin_permiso_403(self):
+        url = self.url(*self.tesela_de_la_parcela(16))
+        respuesta = self.client.get(url)
+        self.assertEqual(respuesta.status_code, 401)
+        self.assertEqual(respuesta["WWW-Authenticate"], 'Basic realm="GDU"')
+        self.client.force_login(self.sin_permiso)
+        self.assertEqual(self.client.get(url).status_code, 403)
+
+    def test_zoom_fuera_de_rango_o_capa_desconocida(self):
+        self.client.force_login(self.lector)
+        self.assertEqual(self.client.get(self.url(*self.tesela_de_la_parcela(13))).status_code, 404)
+        self.assertEqual(self.client.get(self.url(*self.tesela_de_la_parcela(18))).status_code, 404)
+        self.assertEqual(self.client.get(self.url(14, 2 ** 14, 0)).status_code, 404)
+        self.assertEqual(self.client.get(self.url(*self.tesela_de_la_parcela(16), capa="ufs")).status_code, 404)
+
+    def test_la_descarga_apunta_las_teselas_al_servidor_del_pedido(self):
+        import io
+        import zipfile
+
+        from gdu.views.qgis_project import proyecto_con_url
+
+        qgs = (
+            "<datasource>url='http://127.0.0.1:8000/gdu/oapif/' typename='catastro_urbano'</datasource>"
+            "<datasource>type=xyz&amp;url=http://127.0.0.1:8000/gdu/teselas/catastro_urbano/%7Bz%7D/%7Bx%7D/%7By%7D.pbf"
+            "&amp;zmax=17&amp;zmin=14&amp;authcfg=gduoapf</datasource>"
+        )
+        original = io.BytesIO()
+        with zipfile.ZipFile(original, "w") as z:
+            z.writestr("gdu-oapif.qgs", qgs)
+        nuevo = proyecto_con_url(original.getvalue(), "https://polizador.example/gdu/oapif/")
+        with zipfile.ZipFile(io.BytesIO(nuevo)) as z:
+            resultado = z.read("gdu-oapif.qgs").decode()
+        self.assertIn("url='https://polizador.example/gdu/oapif/'", resultado)
+        self.assertIn("url=https://polizador.example/gdu/teselas/catastro_urbano/%7Bz%7D/", resultado)
+        self.assertNotIn("127.0.0.1", resultado)

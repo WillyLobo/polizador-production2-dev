@@ -17,6 +17,8 @@ _URL_OAPIF = re.compile(r"url='[^']*/gdu/oapif/'")
 # las acciones "Abrir URL" a páginas de gdu (Generar UF en las parcelas), generadas contra el
 # mismo servidor: la base hasta /gdu/ inclusive
 _ACCION_URL_GDU = re.compile(r'action="https?://[^"]*?/gdu/')
+# las capas de teselas vectoriales (gdu/views/teselas.py): "type=xyz&url=http://.../gdu/teselas/..."
+_URL_TESELAS = re.compile(r"url=https?://[^&\"'<]*?/gdu/teselas/")
 
 
 def proyecto_con_url(contenido, url_oapif):
@@ -31,6 +33,7 @@ def proyecto_con_url(contenido, url_oapif):
             datos = entrada.read(item)
             if item.filename.endswith(".qgs"):
                 qgs = _URL_OAPIF.sub(f"url='{url_oapif}'", datos.decode())
+                qgs = _URL_TESELAS.sub(f"url={url_gdu}teselas/", qgs)
                 datos = _ACCION_URL_GDU.sub(f'action="{url_gdu}', qgs).encode()
             nuevo.writestr(item, datos)
     return salida.getvalue()
