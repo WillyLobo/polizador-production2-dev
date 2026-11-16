@@ -346,11 +346,15 @@ def armar(args):
             # reemplaza la acción Python "Generar UF" (UF(|)) del gdu.qgz heredado: la UF la crea
             # el servidor (gdu/views/uf.py) y QGIS solo abre la página en el navegador, así el
             # proyecto sigue sin código Python. Parcela sin guardar: "id" NULL, se manda 0
-            capa.actions().addAction(QgsAction(
+            generar_uf = QgsAction(
                 Qgis.AttributeActionType.OpenUrl, "Generar UF",
                 urljoin(servidor.url, "../parcelas/") + '[% coalesce("id", 0) %]/generar-uf/',
                 "", False, "UF(|)", {"Canvas", "Feature"},
-            ))
+            )
+            capa.actions().addAction(generar_uf)
+            # acción por defecto del botón "Ejecutar acción de objeto": sin esto, tocar el botón
+            # sin elegirla antes en el desplegable no hacía nada al clicar la parcela
+            capa.actions().setDefaultAction("Canvas", generar_uf.id())
 
         # columna "Acciones" visible y primera en la tabla de atributos, con botones: ahí QGIS
         # pone "Duplicar objeto" y "Duplicar y digitalizar" (como en el gdu.qgz heredado), y
