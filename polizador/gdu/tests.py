@@ -1360,3 +1360,128 @@ class TeselasTest(TestCase):
         self.assertIn("url='https://polizador.example/gdu/oapif/'", resultado)
         self.assertIn("url=https://polizador.example/gdu/teselas/catastro_urbano/%7Bz%7D/", resultado)
         self.assertNotIn("127.0.0.1", resultado)
+
+
+class OapifGeojsonPostgisTest(TestCase):
+    """Las páginas GeoJSON armadas por PostGIS (gdu/oapif_geojson.py) son las mismas que arma
+    django-oapif: colección por colección, con OFFSET, fechas, decimales, nulos y anotaciones."""
+
+    @classmethod
+    def setUpTestData(cls):
+        from datetime import datetime, timezone
+        from decimal import Decimal
+
+        from gdu.models import Catastrourbano
+
+        ModelosGduTest.setUpTestData.__func__(cls)
+        cls.admin = get_user_model().objects.create_superuser("admin-geojson", password="x")
+        parcelas = [
+            Parcela.objects.create(intervencion=cls.intervencion, destino=cls.destino, geom=CUADRADO, **{**NOMENCLATURA, "parc": f"0000{i}"})
+            for i in range(3)
+        ]
+        Uf.objects.create(parcela=parcelas[0], uf="1", coefuf=Decimal("100"), poligono="00-01", geom=CUADRADO, dni=12345678)
+        Uf.objects.create(parcela=parcelas[1], uf="2", coefuf=Decimal("0.00001"), geom=CUADRADO, estado_dominial="ipduv")
+        Uf.objects.create(parcela=parcelas[2], uf="3", geom=CUADRADO)  # coeficiente nulo
+        Barrio.objects.create(intervencion=cls.intervencion, nombre="Barrio", geom=MultiPolygon(CUADRADO))
+        ViviendaPunto.objects.create(intervencion=cls.intervencion, estado_dominial="ipduv", geom=Point(5, 5, srid=SRID_GDU))
+        Catastrourbano.objects.create(id_nomencl="01-II", anio=1998, geom=CUADRADO)
+        Catastrourbano.objects.create(id_nomencl="", geom=None)  # sin geometría
+        # fechas con y sin fracción de segundo, y con microsegundos por debajo del milisegundo
+        fechas = [
+            datetime(2023, 6, 14, 0, 59, 48, 900397, tzinfo=timezone.utc),
+            datetime(2024, 1, 2, 3, 4, 5, tzinfo=timezone.utc),
+            datetime(2025, 7, 8, 9, 10, 11, 397, tzinfo=timezone.utc),
+        ]
+        for uf, fecha in zip(Uf.objects.order_by("pk"), fechas):
+            Uf.objects.filter(pk=uf.pk).update(updated_at=fecha)
+
+    def setUp(self):
+        from django.test import RequestFactory
+
+        self.request = RequestFactory().get("/gdu/oapif/")
+        self.request.user = self.admin
+
+    def paginas(self, coleccion, qs):
+        import json
+
+        from django_oapif import OapifCollection
+        from django_oapif.crs import CRS84
+
+        viejo = OapifCollection.queryset_to_featurecollection(coleccion, self.request, qs, number_matched=7, links=[], crs=CRS84)
+        nuevo = coleccion.queryset_to_featurecollection(self.request, qs, number_matched=7, links=[], crs=CRS84)
+        return json.loads(viejo.model_dump_json()), json.loads(nuevo.model_dump_json())
+
+    def test_cada_coleccion_igual_que_django_oapif(self):
+        from django_oapif.crs import CRS84
+
+        from gdu.oapif import api
+
+        for coleccion_id, coleccion in api.collections.items():
+            qs = coleccion.query(self.request, CRS84, None, None)
+            for pagina in (qs, qs[1:3]):
+                with self.subTest(coleccion=coleccion_id, offset=pagina.query.low_mark):
+                    viejo, nuevo = self.paginas(coleccion, pagina)
+                    self.assertEqual(nuevo, viejo)
+
+    def test_formatos_de_fechas_decimales_y_anotaciones(self):
+        from django_oapif.crs import CRS84
+
+        from gdu.oapif import api
+
+        coleccion = api.collections["ufs"]
+        _, nuevo = self.paginas(coleccion, coleccion.query(self.request, CRS84, None, None))
+        propiedades = [f["properties"] for f in nuevo["features"]]
+        self.assertEqual(
+            [p["updated_at"] for p in propiedades],
+            ["2023-06-14T00:59:48.900Z", "2024-01-02T03:04:05Z", "2025-07-08T09:10:11.000Z"],
+        )
+        self.assertEqual([p["coefuf"] for p in propiedades], ["100.00000", "0.00001", None])
+        self.assertTrue(all(p["parcela_nomenclatura"] for p in propiedades))
+        self.assertEqual(nuevo["numberReturned"], 3)
+        self.assertEqual(nuevo["numberMatched"], 7)
+
+    def test_offset_fuera_de_rango_y_orden_que_no_es_la_pk(self):
+        from django_oapif.crs import CRS84
+
+        from gdu.oapif import api
+        from gdu.oapif_geojson import sin_offset
+
+        catastro = api.collections["catastro_urbano"]
+        qs = catastro.query(self.request, CRS84, None, None)
+        self.assertEqual(self.paginas(catastro, qs[50:60])[1]["features"], [])
+        # ordenada por nombre: queda con su OFFSET
+        programas = api.collections["programas"].query(self.request, CRS84, None, None)[1:2]
+        self.assertIs(sin_offset(programas), programas)
+
+    def test_un_campo_sin_formato_equivalente_vuelve_a_django_oapif(self):
+        from unittest import mock
+
+        from django_oapif.crs import CRS84
+
+        from gdu import oapif_geojson
+        from gdu.oapif import api
+
+        coleccion = api.collections["ufs"]
+        qs = coleccion.query(self.request, CRS84, None, None)
+        with mock.patch.object(oapif_geojson, "formato_sql", side_effect=oapif_geojson.SinFormatoEquivalente("x")):
+            viejo, nuevo = self.paginas(coleccion, qs)
+        self.assertEqual(nuevo, viejo)
+
+    def test_items_por_http_con_paginas(self):
+        # como QGIS: Basic Auth y los links "next"
+        import base64
+
+        get_user_model().objects.create_superuser("qgis-geojson", password="clave")
+        auth = "Basic " + base64.b64encode(b"qgis-geojson:clave").decode()
+        url = "/gdu/oapif/collections/ufs/items?limit=2"
+        uf, paginas = [], 0
+        while url:
+            respuesta = self.client.get(url, HTTP_AUTHORIZATION=auth, HTTP_ACCEPT="application/geo+json")
+            self.assertEqual(respuesta.status_code, 200)
+            self.assertEqual(respuesta["Content-Type"], "application/geo+json")
+            self.assertEqual(respuesta["OGC-NumberMatched"], "3")
+            datos = respuesta.json()
+            uf += [f["properties"]["uf"] for f in datos["features"]]
+            paginas += 1
+            url = next((link["href"] for link in datos["links"] if link["rel"] == "next"), None)
+        self.assertEqual((uf, paginas), (["1", "2", "3"], 2))

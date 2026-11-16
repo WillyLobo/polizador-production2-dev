@@ -41,6 +41,7 @@ from gdu.models import (
     TipoIntervencion, Uf, ViviendaPunto, ZonaParcelas,
 )
 from gdu.models.base import SRID_GDU
+from gdu.oapif_geojson import SinFormatoEquivalente, pagina_geojson
 
 
 class JSONSinEscapar(JSONRenderer):
@@ -119,6 +120,20 @@ class ColeccionGdu(OapifCollection):
 
     def storage_crs(self):
         return CRS84 if self.geometry_field else None
+
+    def queryset_to_featurecollection(self, request, qs, *, number_matched=None, links=None, crs=CRS84, profile=None):
+        # GeoJSON común (lo que pide QGIS) armado por PostGIS: ~7 veces más rápido (gdu/oapif_geojson.py).
+        # JSON-FG, la linealización de curvas y otros CRS siguen por django-oapif
+        if profile is not None or self.curved or crs != CRS84:
+            return super().queryset_to_featurecollection(
+                request, qs, number_matched=number_matched, links=links, crs=crs, profile=profile,
+            )
+        try:
+            return pagina_geojson(self, request, qs, number_matched=number_matched, links=links, crs=crs)
+        except SinFormatoEquivalente:
+            return super().queryset_to_featurecollection(
+                request, qs, number_matched=number_matched, links=links, crs=crs, profile=profile,
+            )
 
     def supported_crs(self):
         return (CRS84,) if self.geometry_field else ()
