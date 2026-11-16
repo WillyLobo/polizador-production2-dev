@@ -42,7 +42,11 @@ EXTENSION_INICIAL = (-63.5, -28.1, -58.2, -24.2)
 # features por pedido. Cada página le cuesta al servidor un COUNT y un OFFSET sobre la tabla
 # entera, más allá de su tamaño: bajar catastro_urbano completo (430.000 filas, lo que hace
 # la tabla de atributos) tardaba 131 s de servidor en páginas de 1000 y 31 s en páginas de 10.000.
-TAMANO_PAGINA = 10000
+# Medido de nuevo en el servidor de prueba (2026-11-16): 53 s en 43 páginas de 10.000, 36,6 s
+# en 9 de 50.000 y 34,2 s en 5 de 100.000. No más de 50.000: cada página se arma entera en la
+# memoria del worker de gunicorn, que no la devuelve (una de 100.000, ~60 MB de GeoJSON, lo
+# llevó de 240 a 387 MB) y el servidor tiene 3,6 GB para todos los workers.
+TAMANO_PAGINA = 50000
 
 # grupo del panel de capas -> colecciones, de arriba hacia abajo. "*" toma las colecciones
 # cuyo id empieza así, en el orden del servidor; PARCELAS, las capas de parcelas.
