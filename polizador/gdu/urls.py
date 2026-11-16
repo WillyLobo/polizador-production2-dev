@@ -13,6 +13,7 @@ urlpatterns = [
     path("csv/", csv_export.exportar_csv, name="exportar_csv"),
     path("3450/", api3450.consultar_3450, name="consultar_3450"),
     path("uf/<int:uf_id>/nro-adjudicatario/", uf.actualizar_nro_adjudicatario, name="actualizar_nro_adjudicatario"),
+    path("parcelas/<int:parcela_id>/generar-uf/", uf.generar_uf, name="generar_uf"),
 
     path("mapa/", visor.mapa, name="mapa"),
     path("mapa/viviendas.geojson", visor.geojson_viviendas, name="geojson_viviendas"),

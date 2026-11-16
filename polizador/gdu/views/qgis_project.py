@@ -14,19 +14,24 @@ from gdu.oapif import api
 
 # la raíz OAPIF con la que se generó el proyecto (armar_proyecto.py --url), en cada capa
 _URL_OAPIF = re.compile(r"url='[^']*/gdu/oapif/'")
+# las acciones "Abrir URL" a páginas de gdu (Generar UF en las parcelas), generadas contra el
+# mismo servidor: la base hasta /gdu/ inclusive
+_ACCION_URL_GDU = re.compile(r'action="https?://[^"]*?/gdu/')
 
 
 def proyecto_con_url(contenido, url_oapif):
-    """El .qgz con las capas apuntando a `url_oapif`. El proyecto versionado se genera contra
-    un servidor puntual (el de desarrollo); acá se le cambia la URL sin QGIS, editando el
-    .qgs adentro del zip."""
+    """El .qgz con las capas, y las acciones que abren páginas de gdu, apuntando al servidor de
+    `url_oapif`. El proyecto versionado se genera contra un servidor puntual (el de
+    desarrollo); acá se le cambia la URL sin QGIS, editando el .qgs adentro del zip."""
+    url_gdu = url_oapif.removesuffix("oapif/")
     entrada = zipfile.ZipFile(io.BytesIO(contenido))
     salida = io.BytesIO()
     with zipfile.ZipFile(salida, "w", zipfile.ZIP_DEFLATED) as nuevo:
         for item in entrada.infolist():
             datos = entrada.read(item)
             if item.filename.endswith(".qgs"):
-                datos = _URL_OAPIF.sub(f"url='{url_oapif}'", datos.decode()).encode()
+                qgs = _URL_OAPIF.sub(f"url='{url_oapif}'", datos.decode())
+                datos = _ACCION_URL_GDU.sub(f'action="{url_gdu}', qgs).encode()
             nuevo.writestr(item, datos)
     return salida.getvalue()
 

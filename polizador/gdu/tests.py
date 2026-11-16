@@ -1184,3 +1184,87 @@ class DashboardGduTest(TestCase):
         self.assertContains(respuesta, "Actividad en el visor de GDU")
         self.assertContains(respuesta, "admin_dashboard · descargaPlano")
         self.assertContains(respuesta, "— · printFeature")
+
+
+class GenerarUfTest(TestCase):
+    """Reemplazo de la acción Python "Generar UF" del gdu.qgz heredado (una acción "Abrir URL" en el
+    proyecto OAPIF): crea la UF 1 de una parcela sin UF, con su geometría."""
+
+    @classmethod
+    def setUpTestData(cls):
+        from django.contrib.auth.models import Permission
+
+        ModelosGduTest.setUpTestData.__func__(cls)
+        cls.parcela = Parcela.objects.create(intervencion=cls.intervencion, destino=cls.destino, geom=CUADRADO, **NOMENCLATURA)
+        cls.usuario = get_user_model().objects.create_user("carga_uf", password="clave")
+        # sin gdu.editar_dominio: IPDUV lo pone igual
+        cls.usuario.user_permissions.add(Permission.objects.get(content_type__app_label="gdu", codename="add_uf"))
+        cls.sin_permiso = get_user_model().objects.create_user("sin_permiso", password="clave")
+
+    def url(self, parcela_id=None):
+        return reverse("gdu:generar_uf", args=[self.parcela.pk if parcela_id is None else parcela_id])
+
+    def test_get_no_crea_nada(self):
+        self.client.force_login(self.usuario)
+        respuesta = self.client.get(self.url())
+        self.assertContains(respuesta, "Crear UF 1")
+        self.assertFalse(Uf.objects.exists())
+
+    def test_post_crea_la_uf_1_con_la_geometria_de_la_parcela(self):
+        self.client.force_login(self.usuario)
+        respuesta = self.client.post(self.url())
+        self.assertContains(respuesta, "UF 1 creada con éxito", status_code=201)
+        uf = Uf.objects.get()
+        self.assertEqual(
+            (uf.parcela, uf.uf, uf.coefuf, uf.poligono, uf.estado_dominial, uf.updated_by),
+            (self.parcela, "1", 100, "00-01", "ipduv", self.usuario),
+        )
+        self.assertTrue(uf.geom.equals(self.parcela.geom))
+        self.assertEqual(uf.history.get().history_user, self.usuario)
+
+    def test_no_crea_otra_si_la_parcela_ya_tiene_uf(self):
+        Uf.objects.create(parcela=self.parcela, uf="3", geom=CUADRADO)
+        self.client.force_login(self.usuario)
+        respuesta = self.client.post(self.url())
+        self.assertContains(respuesta, "Ya existe una o más UF para la parcela")
+        self.assertNotContains(respuesta, "Crear UF 1")
+        self.assertEqual(Uf.objects.count(), 1)
+
+    def test_parcela_sin_guardar_o_inexistente(self):
+        self.client.force_login(self.usuario)
+        # QGIS manda 0 cuando la parcela todavía no tiene id
+        self.assertContains(self.client.get(self.url(0)), "Guardá la parcela", status_code=400)
+        self.assertContains(self.client.post(self.url(999999)), "No existe la parcela", status_code=404)
+        self.assertFalse(Uf.objects.exists())
+
+    def test_permisos(self):
+        respuesta = self.client.get(self.url())
+        self.assertEqual(respuesta.status_code, 302)  # al login
+        self.client.force_login(self.sin_permiso)
+        self.assertEqual(self.client.post(self.url()).status_code, 403)
+        self.assertFalse(Uf.objects.exists())
+
+    def test_la_descarga_apunta_la_accion_al_servidor_del_pedido(self):
+        # el .qgz versionado se arma contra un servidor; al bajarlo, la acción tiene que abrir
+        # el mismo servidor que las capas (red interna o túnel, según desde dónde se pidió)
+        import io
+        import zipfile
+
+        from gdu.views.qgis_project import proyecto_con_url
+
+        qgs = (
+            "<datasource>url='http://192.168.0.51:8000/gdu/oapif/' typename='parcelas'</datasource>"
+            '<actionsetting action="http://192.168.0.51:8000/gdu/parcelas/[% coalesce(&quot;id&quot;, 0) %]'
+            '/generar-uf/" type="5" name="Generar UF"/>'
+        )
+        original = io.BytesIO()
+        with zipfile.ZipFile(original, "w") as z:
+            z.writestr("gdu-oapif.qgs", qgs)
+        nuevo = proyecto_con_url(original.getvalue(), "https://polizador.example/gdu/oapif/")
+        with zipfile.ZipFile(io.BytesIO(nuevo)) as z:
+            resultado = z.read("gdu-oapif.qgs").decode()
+        self.assertIn("url='https://polizador.example/gdu/oapif/'", resultado)
+        self.assertIn(
+            'action="https://polizador.example/gdu/parcelas/[% coalesce(&quot;id&quot;, 0) %]/generar-uf/"', resultado,
+        )
+        self.assertNotIn("192.168.0.51", resultado)

@@ -30,6 +30,7 @@ import os
 import sys
 import tempfile
 import urllib.request
+from urllib.parse import urljoin
 
 AUTHCFG = "gduoapf"
 # patrón para la capa completa de parcelas y las de cada zona (no parcelas_expropiadas)
@@ -172,7 +173,7 @@ def ordenar_en_grupos(ids):
 def armar(args):
     from qgis.core import (
         Qgis, QgsApplication, QgsAttributeEditorContainer, QgsAttributeEditorField, QgsAttributeEditorRelation,
-        QgsAttributeTableConfig, QgsAuthMethodConfig, QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsEditorWidgetSetup,
+        QgsAction, QgsAttributeTableConfig, QgsAuthMethodConfig, QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsEditorWidgetSetup,
         QgsProject, QgsRasterLayer, QgsRectangle, QgsReferencedRectangle, QgsRelation, QgsSymbol, QgsVectorLayer,
     )
     from qgis.PyQt.QtGui import QColor
@@ -182,6 +183,9 @@ def armar(args):
     schemas = {coleccion_id: servidor.schema(coleccion_id) for coleccion_id in ids}
     print(f"{len(ids)} colecciones en {servidor.url}")
 
+    # sin ventanas: sin esto, en Linux sin pantalla (ssh, terminal de VS Code) Qt no arranca
+    # ("could not connect to display" con el plugin xcb)
+    os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
     # base de autenticación descartable, con el mismo id que van a tener los usuarios
     os.environ["QGIS_AUTH_DB_DIR_PATH"] = tempfile.mkdtemp(prefix="gdu-auth-")
     app = QgsApplication([], False)
@@ -335,8 +339,19 @@ def armar(args):
         raiz.addChildElement(auditoria)
         capa.setEditFormConfig(form)
 
+        if coincide(PARCELAS, coleccion_id):
+            # reemplaza la acción Python "Generar UF" (UF(|)) del gdu.qgz heredado: la UF la crea
+            # el servidor (gdu/views/uf.py) y QGIS solo abre la página en el navegador, así el
+            # proyecto sigue sin código Python. Parcela sin guardar: "id" NULL, se manda 0
+            capa.actions().addAction(QgsAction(
+                Qgis.AttributeActionType.OpenUrl, "Generar UF",
+                urljoin(servidor.url, "../parcelas/") + '[% coalesce("id", 0) %]/generar-uf/',
+                "", False, "UF(|)", {"Canvas", "Feature"},
+            ))
+
         # columna "Acciones" visible y primera en la tabla de atributos, con botones: ahí QGIS
-        # pone "Duplicar objeto" y "Duplicar y digitalizar" (como en el gdu.qgz heredado)
+        # pone "Duplicar objeto" y "Duplicar y digitalizar" (como en el gdu.qgz heredado), y
+        # en las parcelas, "Generar UF"
         tabla = capa.attributeTableConfig()
         tabla.update(capa.fields())
         tabla.setActionWidgetStyle(QgsAttributeTableConfig.ActionWidgetStyle.ButtonList)

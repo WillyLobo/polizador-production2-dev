@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}<title>GDU - Generar UF</title>{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 40rem;">
+  <h4 class="mb-3">Generar UF</h4>
+  {% if not parcela %}
+    {% if parcela_id %}
+      <div class="alert alert-danger">No existe la parcela {{ parcela_id }}.</div>
+    {% else %}
+      <div class="alert alert-danger">
+        <strong>Registro no guardado.</strong> Guardá la parcela en QGIS antes de generar su UF.
+      </div>
+    {% endif %}
+  {% else %}
+    <dl class="row">
+      <dt class="col-sm-4">Parcela</dt><dd class="col-sm-8">{{ parcela }} (id {{ parcela.pk }})</dd>
+      <dt class="col-sm-4">Intervención</dt><dd class="col-sm-8">{{ parcela.intervencion }}</dd>
+    </dl>
+    {% if creada %}
+      <div class="alert alert-success">
+        UF {{ creada.uf }} creada con éxito. En QGIS, refrescá la capa de unidades funcionales para verla.
+      </div>
+    {% elif ufs %}
+      <div class="alert alert-warning">Ya existe una o más UF para la parcela:</div>
+      <ul>
+        {% for uf in ufs %}<li>UF {{ uf.uf }}{% if uf.poligono %} (polígono {{ uf.poligono }}){% endif %}</li>{% endfor %}
+      </ul>
+    {% else %}
+      <p>Se va a crear la <strong>UF 1</strong> con la geometría de la parcela: coeficiente 100,
+        polígono 00-01, estado dominial IPDUV.</p>
+      <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary"><i class="bi bi-plus-lg me-1"></i>Crear UF 1</button>
+      </form>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}
