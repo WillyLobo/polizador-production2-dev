@@ -322,8 +322,12 @@ def armar(args):
             padre_id = padre_de(propiedad)
             if padre_id in capas and (coleccion_id, nombre) not in FK_SIN_COMBO:
                 rel = relacion(coleccion_id, nombre, padre_id)
+                # AllowNULL siempre: sin él, si el combo no encuentra (o todavía no cargó) el padre
+                # muestra el primer elemento de la lista, y al guardar el formulario lo escribe (en
+                # intervenciones, "1 - EJECUCION DE 70 VIVIENDAS ... C.G.T." en obras de Villa
+                # Berthet). Que la FK sea obligatoria lo valida el servidor (required en el schema).
                 capa.setEditorWidgetSetup(idx, QgsEditorWidgetSetup("RelationReference", {
-                    "Relation": rel.id(), "AllowNULL": nulo, "OrderByValue": True, "ShowForm": False,
+                    "Relation": rel.id(), "AllowNULL": True, "OrderByValue": True, "ShowForm": False,
                     "ShowOpenFormButton": True, "MapIdentification": capas[padre_id].isSpatial(),
                     "AllowAddFeatures": False, "ReadOnly": False,
                 }))
