@@ -178,7 +178,11 @@ class Servidor:
         self.auth = "Basic " + base64.b64encode(f"{usuario}:{clave}".encode()).decode()
 
     def get(self, ruta, accept="application/json"):
-        pedido = urllib.request.Request(self.url + ruta, headers={"Authorization": self.auth, "Accept": accept})
+        # User-Agent propio: Cloudflare rechaza el de urllib ("Python-urllib/3.x") con 403 (error 1010)
+        # cuando el servidor se alcanza por internet y no por la red interna
+        pedido = urllib.request.Request(self.url + ruta, headers={
+            "Authorization": self.auth, "Accept": accept, "User-Agent": "gdu-armar-proyecto/1.0",
+        })
         with urllib.request.urlopen(pedido) as respuesta:
             return json.load(respuesta)
 
