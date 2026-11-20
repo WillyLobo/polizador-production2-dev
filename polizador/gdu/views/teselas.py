@@ -20,8 +20,9 @@ from gdu.models.base import SRID_GDU
 from gdu.oapif import BasicAuthCacheada
 
 CONTENT_TYPE = "application/vnd.mapbox-vector-tile"
-# QGIS guarda las teselas en su caché de red; catastro solo cambia al reimportarlo
-DURACION_CACHE = 60 * 60 * 24
+# QGIS guarda las teselas en su caché de red. Catastro se edita (subdivisiones pegadas por
+# OAPIF): una edición tarda a lo sumo esto en verse en la vista general de teselas
+DURACION_CACHE = 5 * 60
 
 # capa -> modelo, campos que viajan en la tesela (los que muestra "Identificar") y zooms.
 # Debajo de zmin una tesela tiene demasiadas parcelas (zoom 13 en Resistencia: ~30.000,

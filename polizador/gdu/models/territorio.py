@@ -170,9 +170,10 @@ class PreAdjudicatarioDispersa(NomenclaturaCatastralOpcional, Auditado):
         verbose_name_plural = "pre-adjudicatarios de vivienda dispersa"
 
 
-class Catastrourbano(models.Model):
-    """Catastro urbano provincial: capa de referencia de solo lectura (no se edita
-    desde QGIS ni desde Django), se importa tal cual desde la fuente."""
+class Catastrourbano(Auditado):
+    """Catastro urbano provincial. Se edita desde QGIS: el área exporta una parcela, le dibuja
+    las subdivisiones en AutoCAD y las vuelve a pegar en esta capa (como en el proyecto heredado,
+    que la tenía editable por conexión directa a Postgres). De ahí la auditoría y el historial."""
     id_nomencl = models.CharField(max_length=29, blank=True)
     plano_apro = models.CharField(max_length=11, blank=True)
     dpto = models.CharField(max_length=2, blank=True)

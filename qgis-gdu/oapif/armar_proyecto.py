@@ -59,7 +59,7 @@ GRUPOS = [
     ("Viviendas (consultas)", [
         "viviendas_sin_plan_grupo", "viviendas_con_plan_grupo_sin_adjudicatario", "viviendas_para_escriturar",
     ]),
-    ("Referencia", ["catastro_urbano"]),
+    ("Catastro", ["catastro_urbano"]),
     ("Tablas", [
         "programas", "actuaciones", "contrataciones", "intervenciones", "ejecutores", "inspectores",
         "expropiaciones", "adjudicaciones_beneficiario", "resoluciones_costos", "tierras_consultas",
@@ -79,8 +79,10 @@ ESCALAS = {
     "viviendas_con_plan_grupo_sin_adjudicatario": 25000, "viviendas_para_escriturar": 25000,
 }
 # colecciones que además se sirven como teselas vectoriales (gdu/views/teselas.py), con sus zooms
-# (los mismos que allá). Se ven con la capa de teselas, que PostGIS arma solo para lo visible; la
-# OAPIF queda apagada, como "(tabla)", para la tabla de atributos: bajarla entera son ~270 MB.
+# (los mismos que allá). Van juntas en un subgrupo con la capa OAPIF: las teselas son la vista
+# general (de ESCALA_TESELAS hasta la escala de la OAPIF en ESCALAS) y la OAPIF, que se edita
+# (catastro: el área pega ahí las subdivisiones), se ve con más zoom, donde baja solo lo visible.
+# Nunca se ven las dos a la vez: una tesela en caché no queda debajo de una edición reciente.
 TESELAS = {"catastro_urbano": (14, 17)}
 # las teselas se dibujan a partir de 1:25.000 (zoom ~14): con menos zoom QGIS pediría miles
 ESCALA_TESELAS = 25000
@@ -201,7 +203,7 @@ def armar(args):
         uri.setParam("zmin", str(zmin))
         uri.setParam("zmax", str(zmax))
         uri.setAuthConfigId(args.authcfg)
-        teselas = QgsVectorTileLayer(bytes(uri.encodedUri()).decode(), capa_oapif.name())
+        teselas = QgsVectorTileLayer(bytes(uri.encodedUri()).decode(), f"{capa_oapif.name()} (vista general)")
         if not teselas.isValid():
             sys.exit(f"No carga la capa de teselas de {coleccion_id}")
         estilo = QgsVectorTileBasicRendererStyle(capa_oapif.name(), coleccion_id, Qgis.GeometryType.Polygon)
@@ -211,6 +213,8 @@ def armar(args):
         teselas.setRenderer(renderer)
         teselas.setScaleBasedVisibility(True)
         teselas.setMinimumScale(ESCALA_TESELAS)
+        # con más zoom que la escala de la capa OAPIF se ve esa, la editable
+        teselas.setMaximumScale(capa_oapif.minimumScale())
         return teselas
 
     servidor = Servidor(args.url, args.usuario, args.clave)
@@ -412,13 +416,17 @@ def armar(args):
         grupo = arbol.addGroup(nombre)
         grupo.setExpanded(nombre == "Capas")
         for coleccion_id in elegidos:
+            destino = grupo
             if coleccion_id in TESELAS:
+                # un subgrupo con las dos capas: un solo tilde las prende, cada una a su escala
+                destino = grupo.addGroup(capas[coleccion_id].name())
+                destino.setItemVisibilityChecked(coleccion_id in VISIBLES)
+                destino.setExpanded(False)
                 teselas = capa_de_teselas(coleccion_id, capas[coleccion_id])
                 proyecto.addMapLayer(teselas, False)
-                grupo.addLayer(teselas).setItemVisibilityChecked(coleccion_id in VISIBLES)
-                capas[coleccion_id].setName(f"{capas[coleccion_id].name()} (tabla)")
-            nodo = grupo.addLayer(capas[coleccion_id])
-            nodo.setItemVisibilityChecked(coleccion_id in VISIBLES)
+                destino.addLayer(teselas)
+            nodo = destino.addLayer(capas[coleccion_id])
+            nodo.setItemVisibilityChecked(destino is not grupo or coleccion_id in VISIBLES)
             nodo.setExpanded(False)
     base = QgsRasterLayer(OSM, "OpenStreetMap", "wms")
     proyecto.addMapLayer(base, False)

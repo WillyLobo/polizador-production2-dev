@@ -38,6 +38,21 @@ por defecto en *Configuración → Opciones → Fuentes de datos → Comportamie
   está en *Ver → Paneles → Registro de mensajes*, pestaña OAPIF.
 - Las parcelas están partidas por departamento (y Resistencia en cuatro) para no bajar la provincia
   entera. Una parcela se puede editar desde la capa de su zona o desde "Parcelas (completa)".
+
+## Catastro urbano (subdivisiones)
+
+El grupo **Catastro urbano** tiene dos capas que se prenden con el mismo tilde:
+
+- **Catastro urbano (vista general)**: teselas, entre 1:25.000 y 1:10.000. Solo para ver; no se edita
+  ni tiene tabla de atributos. Puede tardar hasta 5 minutos en mostrar una edición.
+- **Catastro urbano**: la capa que se edita, con más zoom que 1:10.000. Baja solo lo que está en pantalla.
+
+Para subdividir: acercarse a menos de 1:10.000, seleccionar la parcela en **Catastro urbano**, exportarla
+(*Exportar → Guardar objetos seleccionados como…*, DXF), dibujar las subdivisiones en AutoCAD, abrir el
+DXF en QGIS, copiar los polígonos y pegarlos en **Catastro urbano** con la capa en edición. Cada polígono
+tiene que ser uno solo (no multiparte). Como en el resto de las capas, si el guardado de varias
+subdivisiones juntas falla, *Descartar cambios*, recargar la capa y revisar qué quedó guardado antes de
+volver a pegar. Cada alta, cambio o borrado queda en el historial con el usuario.
 - Las listas del formulario (ejecutores e inspectores de una intervención, planos, UF de una parcela,
   etc.) guardan en la tabla intermedia, que también hay que guardar.
 

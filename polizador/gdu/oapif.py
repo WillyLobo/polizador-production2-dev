@@ -345,8 +345,10 @@ coleccion(ObjetoExpropiacion, "objetos_expropiacion", "Objetos de expropiación"
 coleccion(Expropiacion, "expropiaciones", "Expropiaciones")
 coleccion(ParcelaExpropiada, "parcelas_expropiadas", "Parcelas expropiadas")
 
+# el área la edita: subdivide parcelas en AutoCAD y las pega acá (ver Catastrourbano)
+coleccion(Catastrourbano, "catastro_urbano", "Catastro urbano")
+
 # Referencia, sin edición desde QGIS
-coleccion(Catastrourbano, "catastro_urbano", "Catastro urbano", ColeccionSoloLectura)
 # las mantiene importar_3450; las UF las referencian por FK
 coleccion(Adjudicatario3450, "adjudicatarios_3450", "Adjudicatarios (Sistema 3450)", ColeccionSoloLectura)
 # compartidas con carga, que es quien las edita

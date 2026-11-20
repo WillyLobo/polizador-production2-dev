@@ -551,8 +551,31 @@ class OapifColeccionesTest(OapifTest):
         )
         self.assertIn("POST", allow("tierras", "editor_qgis"))
         self.assertNotIn("POST", allow("tierras", "lector_qgis"))
-        for coleccion in ("catastro_urbano", "localidades", "adjudicatarios_3450", "viviendas_para_escriturar"):
+        for coleccion in ("localidades", "adjudicatarios_3450", "viviendas_para_escriturar"):
             self.assertNotIn("POST", allow(coleccion, "editor_qgis"), coleccion)
+        # catastro urbano se edita: el área pega ahí las subdivisiones
+        self.assertIn("POST", allow("catastro_urbano", "editor_qgis"))
+        self.assertNotIn("POST", allow("catastro_urbano", "lector_qgis"))
+
+    def test_subdivision_pegada_en_catastro_queda_en_el_historial(self):
+        from gdu.models import Catastrourbano
+
+        # un polígono como los que vienen del DXF, en lon/lat (Resistencia)
+        lon, lat, d = -58.9794, -27.4930, 0.0002
+        feature = {
+            "type": "Feature",
+            "properties": {"id_nomencl": "20-II-B-123-A", "municipio": "RESISTENCIA"},
+            "geometry": {"type": "Polygon", "coordinates": [[[lon, lat], [lon, lat + d], [lon + d, lat + d], [lon + d, lat], [lon, lat]]]},
+        }
+        respuesta = self.pedir("post", "/collections/catastro_urbano/items", "editor_qgis", feature)
+        self.assertEqual(respuesta.status_code, 201, respuesta.content)
+        parcela = Catastrourbano.objects.get(id_nomencl="20-II-B-123-A")
+        self.assertEqual(parcela.updated_by.username, "editor_qgis")
+        self.assertEqual(parcela.geom.srid, SRID_GDU)
+        self.assertEqual(parcela.history.get().history_user.username, "editor_qgis")
+        borrado = self.pedir("delete", f"/collections/catastro_urbano/items/{parcela.pk}", "editor_qgis")
+        self.assertEqual(borrado.status_code, 200)
+        self.assertEqual(Catastrourbano.history.filter(id=parcela.pk, history_type="-").count(), 1)
 
     def test_configurar_grupos_es_repetible(self):
         from django.contrib.auth.models import Group
@@ -1140,9 +1163,11 @@ class DashboardGduTest(TestCase):
         from gdu.models import Catastrourbano, RespuestaEncuesta, Uf
 
         seguidos = dashboard_data.tracked_apps()["gdu"]
-        self.assertLessEqual({Barrio, Parcela, Uf, Intervencion, Encuesta, Relevamiento, ViviendaRelevamiento}, set(seguidos))
-        # los que no llevan historial no están: respuestas, el log del visor, las capas de referencia
-        self.assertFalse({RespuestaEncuesta, EventoVisor, Catastrourbano, Adjudicatario3450} & set(seguidos))
+        self.assertLessEqual(
+            {Barrio, Parcela, Uf, Intervencion, Encuesta, Relevamiento, ViviendaRelevamiento, Catastrourbano}, set(seguidos),
+        )
+        # los que no llevan historial no están: respuestas, el log del visor, la caché del Sistema 3450
+        self.assertFalse({RespuestaEncuesta, EventoVisor, Adjudicatario3450} & set(seguidos))
         etiquetas = [dashboard_data.model_label(modelo) for modelo in seguidos]
         self.assertEqual(len(etiquetas), len(set(etiquetas)))
 

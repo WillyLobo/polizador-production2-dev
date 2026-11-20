@@ -775,7 +775,7 @@ class Importador:
         def catastro(f):
             return m.Catastrourbano(
                 id=f["id"], geom=self._geom(f, obligatoria=False), tomo=f["tomo"], folio=f["folio"],
-                finca=f["finca"], anio=f["anio"],
+                finca=f["finca"], anio=f["anio"], **self._auditoria(f),
                 **{c: _texto(f[c]) for c in (
                     "id_nomencl", "plano_apro", "dpto", "circ", "secc", "ch", "qta", "fracc", "mz", "parc", "matric",
                     "municipio",
