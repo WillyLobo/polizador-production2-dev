@@ -157,6 +157,9 @@ class PreAdjudicatarioDispersa(NomenclaturaCatastralOpcional, Auditado):
     )
     # texto libre original, cuando el ETL no pudo resolverlo a un PlanoMensura
     plano_mensura_legacy = models.CharField(max_length=255, blank=True, editable=False)
+    # la nomenclatura escrita a mano ("Dpto.21-Circ.5-Pc.198"), columna "Nomencl" heredada. Es lo
+    # que muestra la etiqueta en QGIS; en ~90 registros es lo único que hay (sin las partes)
+    nomenclatura_texto = models.CharField("nomenclatura (texto)", max_length=255, blank=True)
     propietario = models.CharField(max_length=255, blank=True)
     apto_dominial = models.CharField(max_length=255, blank=True)
     observaciones = models.TextField(blank=True)

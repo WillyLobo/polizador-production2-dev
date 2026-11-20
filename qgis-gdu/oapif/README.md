@@ -21,6 +21,15 @@ el servidor (una colección o un campo nuevo), se vuelve a generar.
    La descarga es este mismo archivo, con las capas apuntando al servidor desde el que se baja
    (`gdu:descargar_proyecto_qgis` le cambia la URL); por eso el versionado puede generarse contra el de desarrollo.
 
+## Etiquetas y capas propias
+
+El proyecto trae etiquetas en las parcelas (el número de parcela, desde 1:5.000), en los
+pre-adjudicatarios (nomenclatura, latitud y longitud) y en la zonificación de Resistencia. Cada uno
+puede sumar sus propias capas (shapefiles, etc.) y etiquetas (*Propiedades de la capa → Etiquetas*),
+pero el `.qgz` que se descarga del visor es siempre el original: para no perder esos cambios, guardar
+el proyecto con otro nombre (*Proyecto → Guardar como…*) y abrir esa copia las veces siguientes.
+Volver a descargar solo cuando se anuncie una versión nueva del proyecto.
+
 ## Tablas de atributos de las capas grandes
 
 La tabla de atributos de QGIS no carga a demanda: al abrirla baja la capa entera (catastro urbano son
@@ -79,6 +88,7 @@ En `armar_proyecto.py` se decide lo que el servidor no sabe:
 - `EXTENSION_INICIAL`: dónde abre el mapa (la provincia);
 - `ESCALAS`: a partir de qué escala se dibujan las capas grandes;
 - `MOSTRAR`: cómo se muestra cada registro en los combos;
+- `ETIQUETAS`: el texto que se ve en el mapa sobre cada capa (las del `gdu.qgz` heredado);
 - `LISTAS`: qué listas hijas lleva cada formulario.
 
 `polizador/gdu/tests.py` verifica que toda colección que use el `.qgz` exista en el servidor.

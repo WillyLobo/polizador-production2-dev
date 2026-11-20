@@ -680,6 +680,7 @@ class Importador:
                 id=f["id"], apellido=f["apellido"], nombre=f["nombre"], genero=_texto(f["genero"]),
                 documento=f["documento"], cantidad_personas=f["cantidad_personas"],
                 inscripcion=_texto(f["inscripcion"]), plano_mensura_id=plano_id, plano_mensura_legacy=plano_legacy,
+                nomenclatura_texto=_texto(f["Nomencl"]),
                 propietario=_texto(f["propietario"]), apto_dominial=_texto(f["apto_dominial"]),
                 observaciones=_texto(f["observaciones"]), geom=geom, **self._nomenclatura(f),
                 updated_at=self.ahora,

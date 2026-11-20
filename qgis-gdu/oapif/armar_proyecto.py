@@ -6,7 +6,8 @@ GeoServer y necesitaba forms/*.ui + nn.py al lado.
 Todo sale de los schemas del servidor: los campos, los alias (verbose_name), los combos de
 las choices (x-gdu-etiquetas) y las relaciones (x-ogc-collectionId de cada FK). Acá solo
 se decide lo que el servidor no sabe: grupos del panel de capas, cómo se muestra cada
-registro en los combos, qué listas hijas lleva cada formulario y a qué escala se dibuja.
+registro en los combos, qué listas hijas lleva cada formulario, a qué escala se dibuja y
+qué etiquetas lleva cada capa en el mapa.
 Una colección nueva en el servidor aparece sola, en el grupo "Otras".
 
 Los formularios son los nativos de QGIS (arrastrar y soltar): no hay código Python en el
@@ -106,6 +107,24 @@ MOSTRAR = {
     )},
     "adjudicatarios_3450": "\"nro_adjudicatario\" || ' - ' || \"apellido_nombre\"",
 }
+
+# etiquetas en el mapa, las mismas que tenía el gdu.qgz heredado. Coordenadas en grados decimales,
+# calculadas del punto (la tabla heredada las guardaba en latitud/longitud con un trigger)
+_GRADOS = "to_string(round({}(transform(@geometry, @layer_crs, 'EPSG:4326')), 6))"
+ETIQUETAS = {
+    # solo el número de parcela, sin los ceros de relleno ("00008" -> "8")
+    PARCELAS: {"expresion": "regexp_replace(\"parc\", '^0+(?=.)', '')", "escala": 5000},
+    # nomenclatura escrita a mano (la columna "Nomencl" heredada) o, si no hay, la armada con las partes;
+    # los saltos de línea van literales dentro de la expresión
+    "pre_adjudicatarios_dispersa": {
+        "expresion": (
+            "concat(coalesce(coalesce(nullif(\"nomenclatura_texto\", ''), \"nomenclatura\") || '\n', ''),"
+            f" 'Lat: ' || {_GRADOS.format('y')}, '\nLong: ' || {_GRADOS.format('x')})"
+        ),
+        "negrita": True, "fondo": True,
+    },
+    "zonas_parcelas": {"expresion": "\"nombre\"", "tamano": 9},
+}
 # FK que quedan como número: el combo carga la tabla referenciada entera (~70.000 adjudicatarios,
 # ~65.000 parcelas; 25-30 s al abrir la tabla de atributos). Las consultas de viviendas son de
 # solo lectura, no necesitan el combo. La parcela de la UF tampoco: identificar una sola UF bajaba
@@ -189,10 +208,48 @@ def armar(args):
     from qgis.core import (
         Qgis, QgsApplication, QgsAttributeEditorContainer, QgsAttributeEditorField, QgsAttributeEditorRelation,
         QgsAction, QgsAttributeTableConfig, QgsAuthMethodConfig, QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsEditorWidgetSetup,
-        QgsDataSourceUri, QgsProject, QgsRasterLayer, QgsRectangle, QgsReferencedRectangle, QgsRelation, QgsSymbol,
-        QgsVectorLayer, QgsVectorTileBasicRenderer, QgsVectorTileBasicRendererStyle, QgsVectorTileLayer,
+        QgsDataSourceUri, QgsPalLayerSettings, QgsProject, QgsRasterLayer, QgsRectangle, QgsReferencedRectangle,
+        QgsRelation, QgsSymbol, QgsTextBackgroundSettings, QgsTextBufferSettings, QgsTextFormat, QgsVectorLayer,
+        QgsVectorLayerSimpleLabeling, QgsVectorTileBasicRenderer, QgsVectorTileBasicRendererStyle, QgsVectorTileLayer,
     )
     from qgis.PyQt.QtGui import QColor
+
+    def etiquetar(capa, expresion, tamano=10, negrita=False, fondo=False, escala=None):
+        """Etiqueta de texto negro con borde blanco (se lee sobre el satélite); `escala`: desde qué 1:N se ve."""
+        formato = QgsTextFormat()
+        formato.setSize(tamano)
+        formato.setSizeUnit(Qgis.RenderUnit.Points)
+        formato.setColor(QColor("black"))
+        if negrita:
+            # solo si hace falta: setForcedBold(False) igual marca la negrita como "forzada"
+            formato.setForcedBold(True)
+        borde = QgsTextBufferSettings()
+        borde.setEnabled(True)
+        borde.setSize(0.8)
+        borde.setColor(QColor("white"))
+        formato.setBuffer(borde)
+        if fondo:
+            # el recuadro blanco semitransparente de los pre-adjudicatarios en el proyecto heredado
+            recuadro = QgsTextBackgroundSettings()
+            recuadro.setEnabled(True)
+            recuadro.setFillColor(QColor(255, 255, 255, 110))
+            recuadro.setStrokeWidth(0)
+            formato.setBackground(recuadro)
+        ajustes = QgsPalLayerSettings()
+        ajustes.fieldName = expresion
+        ajustes.isExpression = True
+        ajustes.setFormat(formato)
+        ajustes.multilineAlign = Qgis.LabelMultiLineAlignment.Left
+        # polígonos: en el centro; puntos: alrededor, sin taparlo
+        ajustes.placement = (
+            Qgis.LabelPlacement.AroundPoint if capa.geometryType() == Qgis.GeometryType.Point
+            else Qgis.LabelPlacement.OverPoint
+        )
+        if escala:
+            ajustes.scaleVisibility = True
+            ajustes.minimumScale = escala  # "mínima" = la más alejada
+        capa.setLabeling(QgsVectorLayerSimpleLabeling(ajustes))
+        capa.setLabelsEnabled(True)
 
     def capa_de_teselas(coleccion_id, capa_oapif):
         """Capa de teselas vectoriales de la colección, con el símbolo de su capa OAPIF."""
@@ -272,6 +329,8 @@ def armar(args):
             if escala := valor_por_patron(ESCALAS, coleccion_id):
                 capa.setScaleBasedVisibility(True)
                 capa.setMinimumScale(escala)
+            if etiqueta := valor_por_patron(ETIQUETAS, coleccion_id):
+                etiquetar(capa, **etiqueta)
         proyecto.addMapLayer(capa, False)
         capas[coleccion_id] = capa
 
