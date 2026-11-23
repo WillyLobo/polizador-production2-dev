@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% block title %}<title>Licencias disponibles por Oficina</title>{% endblock title %}
+
+{{ form.media.css }}
+<div class="min-vh-100 p-4">
+
+  <div class="card mb-3 d-print-none">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small">Filtros</div>
+    <div class="card-body p-3">
+      <form action="{% url "personalizador:reporte-licencias-por-oficina" %}" method="get">
+        <div class="row g-2 mb-2 align-items-end">
+          <div class="col-md-6">
+            {{ form.oficina.as_field_group }}
+          </div>
+          <div class="col-md-3">
+            {{ form.anio.as_field_group }}
+          </div>
+          <div class="col-md-3">
+            <div class="form-check">
+              {{ form.incluir_dependientes }}
+              <label class="form-check-label small" for="{{ form.incluir_dependientes.auto_id }}">{{ form.incluir_dependientes.label }}</label>
+            </div>
+            <div class="form-check" title="{{ form.incluir_designados.help_text }}">
+              {{ form.incluir_designados }}
+              <label class="form-check-label small" for="{{ form.incluir_designados.auto_id }}">{{ form.incluir_designados.label }}</label>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center">
+          <div class="form-text small">Período {{ form.anio.value|default:form.fields.anio.initial }}: la Licencia Anual de ese año abre el 15/12 y se goza mayormente al año siguiente.</div>
+          <input type="submit" value="Buscar" class="btn btn-primary btn-sm">
+        </div>
+      </form>
+    </div>
+  </div>
+
+  {% if oficina %}
+  <div class="card">
+    <div class="card-header py-2 bg-body-tertiary fw-semibold small d-flex justify-content-between align-items-center">
+      <span>{{ oficina }} — Período {{ anio }} — {{ filas|length }} agente{{ filas|length|pluralize }} activo{{ filas|length|pluralize }}</span>
+      <button type="button" class="btn btn-sm btn-outline-secondary d-print-none" onclick="window.print()"><i class="bi bi-printer"></i> Imprimir</button>
+    </div>
+    <div class="card-body p-2">
+      {% if filas %}
+      <div class="table-responsive">
+        <table class="table table-sm table-bordered table-hover align-middle mb-0">
+          <thead class="bg-body-tertiary">
+            <tr>
+              <th class="small" rowspan="2">Agente</th>
+              <th class="small" rowspan="2">DNI</th>
+              <th class="small" rowspan="2">Legajo</th>
+              {% if varias_oficinas %}<th class="small" rowspan="2">Oficina</th>{% endif %}
+              <th class="small text-center" colspan="3">Licencia Anual {{ anio }}</th>
+              {% if hay_invierno %}<th class="small text-center" colspan="3">Invierno {{ anio }}</th>{% endif %}
+              <th class="small text-end" rowspan="2" title="Días restantes de licencias cortadas, todavía no vencidos">Saldo de cortes</th>
+            </tr>
+            <tr>
+              <th class="small text-end">Corresp.</th>
+              <th class="small text-end">Usados</th>
+              <th class="small text-end">Disponibles</th>
+              {% if hay_invierno %}
+              <th class="small text-end">Corresp.</th>
+              <th class="small text-end">Usados</th>
+              <th class="small text-end">Disponibles</th>
+              {% endif %}
+            </tr>
+          </thead>
+          <tbody>
+            {% for fila in filas %}
+            <tr>
+              <td class="small"><a href="{% url "personalizador:ficha-agente" fila.agente.pk %}">{{ fila.agente.agente_apellidoynombre_coma }}</a>{% if fila.agente.designado %} <span class="badge text-bg-info" title="Designación Temporal en {{ fila.agente.cargo_interno }}">Designación temporal</span>{% endif %}</td>
+              <td class="small">{{ fila.agente.dni }}</td>
+              <td class="small">{{ fila.agente.n_legajo|default_if_none:"—" }}</td>
+              {% if varias_oficinas %}<td class="small">{% if fila.agente.designado %}{{ fila.agente.cargo_interno }}<div class="text-muted">Habitual: {{ fila.agente.oficina|default:"—" }}</div>{% else %}{{ fila.agente.oficina }}{% endif %}</td>{% endif %}
+              {% include "reportes/partials/balance-licencia-celdas.html" with b=fila.anual %}
+              {% if hay_invierno %}{% include "reportes/partials/balance-licencia-celdas.html" with b=fila.invierno %}{% endif %}
+              <td class="small text-end">{{ fila.saldo_cortes }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <div class="small text-muted">La oficina no tiene agentes activos.</div>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{{ form.media.js }}
+{% endblock %}

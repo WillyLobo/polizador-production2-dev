@@ -210,7 +210,7 @@
         </li>
         {% endif %}
         <!-- Reportes (Mega-menu justificado por la cantidad de links) -->
-        {% if perms.carga.view_obra or perms.secretariador.view_comisionadosolicitud %}
+        {% if perms.carga.view_obra or perms.secretariador.view_comisionadosolicitud or perms.personalizador.view_licenciapermiso %}
         <li class="nav-item dropdown position-static">
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
             <i class="bi bi-bar-chart me-1"></i>Reportes
@@ -280,6 +280,17 @@
                     <h6 class="card-title mb-1"><i class="bi bi-duplicate me-1"></i>Duplicados</h6>
                     <p class="card-subtitle mb-2 text-muted" style="font-size:0.78rem;">Comisiones con solapamiento.</p>
                     <a href="{% url 'secretariador:crear-reporte-duplicados' %}" class="btn btn-sm btn-primary">Ir</a>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+              {% if perms.personalizador.view_licenciapermiso %}
+              <div class="col-sm-6 col-md-4 col-lg-3">
+                <div class="card h-full card-hover">
+                  <div class="card-body py-2">
+                    <h6 class="card-title mb-1"><i class="bi bi-calendar-check me-1"></i>Licencias por Oficina</h6>
+                    <p class="card-subtitle mb-2 text-muted" style="font-size:0.78rem;">Días de licencia disponibles de los agentes de una oficina.</p>
+                    <a href="{% url 'personalizador:reporte-licencias-por-oficina' %}" class="btn btn-sm btn-primary">Ir</a>
                   </div>
                 </div>
               </div>

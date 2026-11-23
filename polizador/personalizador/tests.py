@@ -760,3 +760,95 @@ class SituacionAgenteTest(TestCase):
         self.assertEqual(ids({}), {activo.pk, jubilado.pk, fallecido.pk, inactivo.pk})
         self.assertEqual(ids({"situacion_columna": "inactivo"}), {inactivo.pk})
         self.assertEqual(ids({"situacion_columna": "fallecido"}), {fallecido.pk})
+
+
+class ReporteLicenciasPorOficinaTest(TestCase):
+    """Reportes > Licencias por Oficina (personalizador/views/reportesviews.py)."""
+
+    def setUp(self):
+        from personalizador.models import Directorio, Gerencia, Oficina
+        genero = GeneroAgente.objects.create(generoagente_nombre="Test")
+        directorio = Directorio.objects.create(directorio_nombre="Directorio", directorio_cuof="1")
+        gerencia = Gerencia.objects.create(gerencia_directorio=directorio, gerencia_nombre="Gerencia Test")
+        self.oficina_directorio = Oficina.objects.create(cargo_directorio=directorio)
+        self.oficina_gerencia = Oficina.objects.create(cargo_directorio=directorio, cargo_gerencia=gerencia)
+        self.tipo_anual = TipoLicenciaPermiso.objects.create(
+            tipolicenciapermiso_categoria="LOR", tipolicenciapermiso_nombre="Anual",
+            tipolicenciapermiso_unidad="DC", tipolicenciapermiso_tope_periodo="VAR",
+        )
+        PeriodoLicencia.objects.create(
+            periodolicencia_categoria="LOR_ANUAL", periodolicencia_anio=2024,
+            periodolicencia_apertura=date(2024, 12, 15), periodolicencia_fecha_limite_solicitud=date(2025, 3, 31),
+        )
+        self.ana = Agente.objects.create(
+            agente_nombres="Ana", agente_apellidos="Gomez", sexo=genero, dni=30222333, cuil="27302223334",
+            fecha_ingreso=date(2000, 1, 1), oficina=self.oficina_directorio,
+        )
+        self.juan = Agente.objects.create(
+            agente_nombres="Juan", agente_apellidos="Perez", sexo=genero, dni=30111222, cuil="20301112223",
+            fecha_ingreso=date(2000, 1, 1), oficina=self.oficina_gerencia,
+        )
+        Agente.objects.create(
+            agente_nombres="Inactivo", agente_apellidos="Baja", sexo=genero, dni=30333444, cuil="20303334445",
+            fecha_ingreso=date(2000, 1, 1), oficina=self.oficina_directorio, activo=False,
+        )
+        licencia = LicenciaPermiso(
+            licenciapermiso_agente=self.ana, licenciapermiso_tipo=self.tipo_anual,
+            licenciapermiso_fecha_desde=date(2024, 12, 20), licenciapermiso_cantidad=10,
+        )
+        licencia.full_clean()
+        licencia.save()
+        self.url = reverse("personalizador:reporte-licencias-por-oficina")
+
+    def _login(self, *codenames):
+        usuario = UserModel.objects.create_user("rrhh", "rrhh@example.com", "x")
+        for codename in codenames:
+            usuario.user_permissions.add(Permission.objects.get(codename=codename, content_type__app_label="personalizador"))
+        self.client.force_login(usuario)
+
+    def test_requiere_permiso_de_licencias(self):
+        self._login("view_agente")
+        self.assertEqual(self.client.get(self.url).status_code, 403)
+
+    def test_lista_agentes_activos_de_la_oficina_con_disponibles(self):
+        self._login("view_licenciapermiso")
+        respuesta = self.client.get(self.url, {"oficina": self.oficina_directorio.pk, "anio": 2024})
+        self.assertEqual(respuesta.status_code, 200)
+        filas = respuesta.context["filas"]
+        self.assertEqual([fila["agente"] for fila in filas], [self.ana])
+        self.assertEqual(filas[0]["anual"]["correspondientes"], 49)
+        self.assertEqual(filas[0]["anual"]["disponibles"], 39)
+        self.assertContains(respuesta, "Gomez, Ana")
+
+        # Con dependientes: la oficina de Directorio incluye la Gerencia que cuelga de el.
+        respuesta = self.client.get(self.url, {"oficina": self.oficina_directorio.pk, "anio": 2024, "incluir_dependientes": "on"})
+        self.assertEqual([fila["agente"] for fila in respuesta.context["filas"]], [self.ana, self.juan])
+        self.assertTrue(respuesta.context["varias_oficinas"])
+
+    def test_incluir_designados_temporalmente(self):
+        self._login("view_licenciapermiso")
+        self.juan.cargo_interno = self.oficina_directorio
+        self.juan.save()
+        sin_oficina = Agente.objects.create(
+            agente_nombres="Luis", agente_apellidos="Sosa", sexo=self.ana.sexo, dni=30444555, cuil="20304445556",
+            fecha_ingreso=date(2000, 1, 1), cargo_interno=self.oficina_directorio,
+        )
+        parametros = {"oficina": self.oficina_directorio.pk, "anio": 2024}
+        respuesta = self.client.get(self.url, parametros)
+        self.assertEqual([fila["agente"] for fila in respuesta.context["filas"]], [self.ana])
+
+        respuesta = self.client.get(self.url, {**parametros, "incluir_designados": "on"})
+        filas = respuesta.context["filas"]
+        self.assertEqual([fila["agente"] for fila in filas], [self.ana, self.juan, sin_oficina])
+        self.assertEqual([fila["agente"].designado for fila in filas], [False, True, True])
+        self.assertTrue(respuesta.context["varias_oficinas"])
+        self.assertContains(respuesta, "Designación temporal")
+
+    def test_sin_filtro_solo_muestra_el_formulario(self):
+        self._login("view_licenciapermiso")
+        respuesta = self.client.get(self.url)
+        self.assertEqual(respuesta.status_code, 200)
+        self.assertNotIn("filas", respuesta.context)
+        self.assertContains(respuesta, 'name="oficina"')
+        # La tarjeta del menu Reportes aparece para quien tiene el permiso.
+        self.assertContains(respuesta, f'href="{self.url}"')

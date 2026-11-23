@@ -21,11 +21,13 @@ from personalizador.views.cortelicenciaviews import *
 from personalizador.views.tipolicenciapermisoviews import *
 from personalizador.views.periodolicenciaviews import *
 from personalizador.views.organigramaviews import *
+from personalizador.views.reportesviews import *
 
 app_name = "personalizador"
 
 urlpatterns = [
 	path("organigrama/", OrganigramaView, name="organigrama"),
+	path("reportes/licencias-por-oficina/", ReporteLicenciasPorOficina.as_view(), name="reporte-licencias-por-oficina"),
 ]
 
 generoagente_patterns = [

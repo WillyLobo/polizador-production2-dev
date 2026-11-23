@@ -282,3 +282,40 @@ def resumen_agente(agente, anio):
     """Balance de todos los tipos activos para el agente, en el año dado."""
     tipos = TipoLicenciaPermiso.objects.filter(tipolicenciapermiso_activo=True)
     return [balance_tipo(agente, tipo, anio) for tipo in tipos]
+
+
+def periodo_anual_vigente(hoy=None):
+    """Año del período de Licencia Anual Ordinaria que se está gozando a la fecha `hoy`:
+    el último PeriodoLicencia LOR_ANUAL ya abierto (apertura <= hoy). Si no hay ninguno
+    cargado, aplica la regla de la ley (el período <año> abre el 15/12/<año>)."""
+    hoy = hoy or date.today()
+    periodo = PeriodoLicencia.objects.filter(
+        periodolicencia_categoria="LOR_ANUAL", periodolicencia_apertura__lte=hoy,
+    ).order_by("-periodolicencia_anio").first()
+    if periodo:
+        return periodo.periodolicencia_anio
+    return hoy.year if hoy >= date(hoy.year, 12, 15) else hoy.year - 1
+
+
+def disponibles_agente(agente, anio, tipo_anual=None, tipo_invierno=None):
+    """Días de licencia disponibles del agente para el reporte por oficina:
+    {"anual", "invierno"} (balances de balance_tipo del período `anio`, o None si el tipo
+    no existe) y "saldo_cortes" (días restantes de cortes aún no vencidos)."""
+    hoy = date.today()
+    saldo_cortes = sum(
+        corte.dias_restantes for corte in saldos_pendientes_agente(agente)
+        if corte.cortelicencia_fecha_vencimiento >= hoy
+    )
+    return {
+        "anual": balance_tipo(agente, tipo_anual, anio) if tipo_anual else None,
+        "invierno": balance_tipo(agente, tipo_invierno, anio) if tipo_invierno else None,
+        "saldo_cortes": saldo_cortes,
+    }
+
+
+def tipo_anual_invierno():
+    """(tipo Anual Ordinaria, tipo Anual de Invierno); cualquiera puede ser None."""
+    invierno = TipoLicenciaPermiso.objects.filter(
+        tipolicenciapermiso_categoria="LOR", tipolicenciapermiso_nombre=LICENCIA_ANUAL_INVIERNO_NOMBRE,
+    ).first()
+    return _tipo_anual_ordinaria(), invierno

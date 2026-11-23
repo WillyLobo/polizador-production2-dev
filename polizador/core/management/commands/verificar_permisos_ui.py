@@ -81,10 +81,10 @@ EQUIVALENCIAS = [
     {
         "ubicacion": "templates/navbar.html:193",
         "gate": "Menu Reportes",
-        "grupos": ["gciaoperativa_usuarios", "dirgral_usuarios"],
+        "grupos": ["gciaoperativa_usuarios", "dirgral_usuarios", "rrhh_usuarios"],
         "modo": "alguno",
         "superuser_en_grupos": True,
-        "permisos": ["carga.view_obra", "secretariador.view_comisionadosolicitud"],
+        "permisos": ["carga.view_obra", "secretariador.view_comisionadosolicitud", "personalizador.view_licenciapermiso"],
     },
     {
         "ubicacion": "templates/navbar.html:200",
@@ -101,6 +101,15 @@ EQUIVALENCIAS = [
         "modo": "alguno",
         "superuser_en_grupos": True,
         "permisos": ["secretariador.view_comisionadosolicitud"],
+    },
+    {
+        "ubicacion": "templates/navbar.html:287",
+        "gate": "Reportes > tarjeta de licencias",
+        "grupos": ["rrhh_usuarios"],
+        "modo": "alguno",
+        "superuser_en_grupos": True,
+        # view_licenciapermiso es de rrhh_usuarios en exclusiva.
+        "permisos": ["personalizador.view_licenciapermiso"],
     },
     {
         "ubicacion": "templates/index.html:21",

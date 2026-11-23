@@ -1,0 +1,8 @@
+{% comment %}Celdas correspondientes/usados/disponibles de un balance (licencias.balance_tipo).{% endcomment %}
+{% if b %}
+<td class="small text-end">{{ b.correspondientes|default_if_none:"—" }}</td>
+<td class="small text-end">{{ b.usados }}</td>
+<td class="small text-end fw-semibold {% if b.disponibles is not None and b.disponibles < 0 %}text-danger{% endif %}">{{ b.disponibles|default_if_none:"—" }}</td>
+{% else %}
+<td class="small text-end">—</td><td class="small text-end">—</td><td class="small text-end">—</td>
+{% endif %}
