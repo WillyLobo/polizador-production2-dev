@@ -2,8 +2,9 @@
 IPDUV que les corresponde.
 
 Recorre los conceptos de personalizador/instrumentos.py::CONCEPTOS: si el texto heredado
-matchea exactamente un instrumento (ver instrumentos.buscar), setea la FK y vacia el texto
-y su tipo. Lo que no matchea queda como dato heredado y se lista en el reporte.
+matchea exactamente un instrumento (ver instrumentos.buscar), lo agrega a los instrumentos
+del agente (AgenteInstrumento) y vacia el texto y su tipo. Lo que no matchea queda como
+dato heredado y se lista en el reporte.
 
 Se puede correr las veces que haga falta (ej. despues de cada sync_resoluciones_sgt /
 sync_decretos_sgt, que van cargando instrumentos que antes no estaban).

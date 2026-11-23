@@ -1,12 +1,13 @@
 """Instrumentos legales de un Agente: tabla de conceptos y matcher de texto heredado.
 
 Antes cada instrumento del Agente (pase a planta, bonificacion, contrato de servicio, ...)
-se cargaba como texto libre "Numero/Año" + un `_tipo` RES/DEC/DIS. Ahora cada concepto
-apunta por FK a InstrumentosLegalesResoluciones / InstrumentosLegalesDecretos
-(secretariador) o a InstrumentoAgente (instrumentos de otros organismos). Los textos que
-no se pudieron vincular quedan en las columnas viejas ("dato heredado") hasta que alguien
-los vincule; `buscar` es el matcher que usan el comando vincular_instrumentos_agente, el
-importador importar_informe_ipduv y la data migration de aportes.
+se cargaba como texto libre "Numero/Año" + un `_tipo` RES/DEC/DIS. Ahora cada instrumento
+es una fila de AgenteInstrumento (un agente puede tener varios por concepto) que apunta por
+FK a InstrumentosLegalesResoluciones / InstrumentosLegalesDecretos (secretariador) o a
+InstrumentoAgente (instrumentos de otros organismos). Los textos que no se pudieron vincular
+quedan en las columnas viejas del Agente ("dato heredado") hasta que alguien los vincule;
+`buscar` es el matcher que usan el comando vincular_instrumentos_agente, el importador
+importar_informe_ipduv y la data migration de aportes.
 
 No importa personalizador.models a nivel modulo (models.py importa este archivo).
 """
@@ -19,40 +20,31 @@ RES, DEC, EXT = "RES", "DEC", "EXT"
 
 TIPO_LABELS = {RES: "Resolución", DEC: "Decreto", EXT: "Externo"}
 
-Concepto = namedtuple("Concepto", "clave label heredado heredado_tipo tipo_fijo fks")
+CAMPO_POR_TIPO = {RES: "resolucion", DEC: "decreto", EXT: "externo"}
+"""Campo FK de AgenteInstrumento que corresponde a cada tipo de instrumento."""
+
+Concepto = namedtuple("Concepto", "clave label heredado heredado_tipo tipo_fijo tipos con_tiempo")
 """
-- clave: sufijo usado en los nombres de campo (`instrumento_<clave>_<resolucion|decreto|externo>`).
-- heredado / heredado_tipo: columnas de texto viejas (heredado_tipo None si el concepto
-  nunca tuvo `_tipo`: en ese caso se asume `tipo_fijo`).
-- fks: {RES|DEC|EXT: nombre del campo FK}, en el orden en que se ofrecen en el form.
+- clave: valor de AgenteInstrumento.concepto.
+- heredado / heredado_tipo: columnas de texto viejas del Agente (heredado_tipo None si el
+  concepto nunca tuvo `_tipo`: en ese caso se asume `tipo_fijo`).
+- tipos: tipos de instrumento (RES/DEC/EXT) admitidos, en el orden en que se ofrecen en el form.
+- con_tiempo: cada instrumento reconoce años/meses/dias de antigüedad (aportes).
 """
 
 CONCEPTOS = (
-    Concepto("pase_planta", "Pase a planta permanente", "n_decreto", None, DEC,
-             {DEC: "instrumento_pase_planta_decreto"}),
-    Concepto("bonificacion", "Bonificación por título", "instrumento_bonificacion", "instrumento_bonificacion_tipo", None,
-             {RES: "instrumento_bonificacion_resolucion", DEC: "instrumento_bonificacion_decreto"}),
-    Concepto("contrato_servicio", "Contrato de servicio", "instrumento_contrato_de_servicio", "instrumento_contrato_de_servicio_tipo", None,
-             {RES: "instrumento_contrato_servicio_resolucion", DEC: "instrumento_contrato_servicio_decreto"}),
-    Concepto("cargo_interno", "Designación temporal", "instrumento_cargo_interno", "instrumento_cargo_interno_tipo", None,
-             {RES: "instrumento_cargo_interno_resolucion", DEC: "instrumento_cargo_interno_decreto"}),
-    Concepto("transferencia_definitiva", "Transferencia definitiva", "n_decreto_transferencia_definitiva", None, DEC,
-             {DEC: "instrumento_transferencia_definitiva_decreto", EXT: "instrumento_transferencia_definitiva_externo"}),
-    Concepto("aportes_ley", "Aportes (Ley/Resolución)", "aportes_ley_resolucion", "aportes_ley_resolucion_tipo", None,
-             {RES: "instrumento_aportes_ley_resolucion", DEC: "instrumento_aportes_ley_decreto", EXT: "instrumento_aportes_ley_externo"}),
-    Concepto("aportes_anses", "Aportes (ANSES)", "aportes_anses", None, EXT,
-             {EXT: "instrumento_aportes_anses_externo"}),
+    Concepto("pase_planta", "Pase a planta permanente", "n_decreto", None, DEC, (DEC,), False),
+    Concepto("bonificacion", "Bonificación por título", "instrumento_bonificacion", "instrumento_bonificacion_tipo", None, (RES, DEC), False),
+    Concepto("contrato_servicio", "Contrato de servicio", "instrumento_contrato_de_servicio", "instrumento_contrato_de_servicio_tipo", None, (RES, DEC), False),
+    Concepto("cargo_interno", "Designación temporal", "instrumento_cargo_interno", "instrumento_cargo_interno_tipo", None, (RES, DEC), False),
+    Concepto("transferencia_definitiva", "Transferencia definitiva", "n_decreto_transferencia_definitiva", None, DEC, (DEC, EXT), False),
+    Concepto("aportes_ley", "Aportes (Ley/Resolución)", "aportes_ley_resolucion", "aportes_ley_resolucion_tipo", None, (RES, DEC, EXT), True),
+    Concepto("aportes_anses", "Aportes (ANSES)", "aportes_anses", None, EXT, (EXT,), True),
 )
 
 CONCEPTOS_POR_CLAVE = {c.clave: c for c in CONCEPTOS}
 
-
-def instrumento_vinculado(agente, concepto):
-    """(tipo, instancia) de la FK cargada del concepto, o (None, None)."""
-    for tipo, campo in concepto.fks.items():
-        if getattr(agente, f"{campo}_id"):
-            return tipo, getattr(agente, campo)
-    return None, None
+CONCEPTO_CHOICES = [(c.clave, c.label) for c in CONCEPTOS]
 
 
 def url_documento(instrumento):
@@ -78,6 +70,27 @@ def limpiar_heredado(agente, concepto):
         setattr(agente, concepto.heredado_tipo, None)
         campos.append(concepto.heredado_tipo)
     return campos
+
+
+def asignar(agente, concepto, tipo, instrumento):
+    """Agrega `instrumento` (de tipo RES/DEC/EXT) a los instrumentos del concepto del agente
+    (ya guardado) y devuelve la fila de AgenteInstrumento.
+
+    Si ya estaba, devuelve esa fila. En los conceptos con tiempo (aportes), si hay una fila
+    sin instrumento (años reconocidos que todavia no tenian respaldo) se completa esa en vez
+    de crear otra, para no separar el tiempo del instrumento que lo reconoce."""
+    campo = CAMPO_POR_TIPO[tipo]
+    filas = agente.instrumentos_legales.filter(concepto=concepto.clave)
+    existente = filas.filter(**{campo: instrumento}).first()
+    if existente:
+        return existente
+    if concepto.con_tiempo:
+        sin_instrumento = filas.filter(resolucion__isnull=True, decreto__isnull=True, externo__isnull=True).first()
+        if sin_instrumento:
+            setattr(sin_instrumento, campo, instrumento)
+            sin_instrumento.save()
+            return sin_instrumento
+    return agente.instrumentos_legales.create(concepto=concepto.clave, **{campo: instrumento})
 
 
 # --- Matcher -------------------------------------------------------------------------
@@ -169,16 +182,16 @@ def buscar(tipo, texto, Resolucion=None, Decreto=None):
 
 
 def vincular(agente, concepto, Resolucion=None, Decreto=None):
-    """Intenta vincular el texto heredado del concepto. Si encuentra el instrumento, setea
-    la FK y vacia el heredado (sin guardar). Devuelve (Resultado, campos_tocados)."""
+    """Intenta vincular el texto heredado del concepto. Si encuentra el instrumento lo agrega
+    a los instrumentos del agente (ver `asignar`, escribe en la base) y vacia el heredado
+    (sin guardar el agente). Devuelve (Resultado, campos del agente tocados)."""
     texto = getattr(agente, concepto.heredado)
-    if not texto or not (RES in concepto.fks or DEC in concepto.fks):
+    if not texto or not (RES in concepto.tipos or DEC in concepto.tipos):
         return None, []
     resultado = buscar(tipo_heredado(agente, concepto), texto, Resolucion, Decreto)
-    if resultado.instrumento is None or resultado.tipo not in concepto.fks:
+    if resultado.instrumento is None or resultado.tipo not in concepto.tipos:
         if resultado.instrumento is not None:
             resultado = Resultado(None, None, SIN_MATCH)
         return resultado, []
-    campo = concepto.fks[resultado.tipo]
-    setattr(agente, campo, resultado.instrumento)
-    return resultado, [campo, *limpiar_heredado(agente, concepto)]
+    asignar(agente, concepto, resultado.tipo, resultado.instrumento)
+    return resultado, limpiar_heredado(agente, concepto)

@@ -26,7 +26,7 @@ from personalizador.models import (
     Oficina,
     TituloProfesional,
 )
-from personalizador.instrumentos import AMBIGUO, CONCEPTOS, EXT, buscar, instrumento_vinculado
+from personalizador.instrumentos import AMBIGUO, CONCEPTOS, CONCEPTOS_POR_CLAVE, EXT, asignar, buscar
 
 logger = logging.getLogger(__name__)
 
@@ -61,9 +61,11 @@ SHEET_NAME = "PERSONAL"
 #
 # Los numeros de instrumento (pase a planta, bonificacion, contrato de servicio,
 # transferencia, aportes de ley) se leen como texto y despues
-# _vincular_instrumentos los cambia por la FK a la Resolucion/Decreto (o
-# InstrumentoAgente) que les corresponde; los que no matchean quedan en las
-# columnas de texto como dato heredado (ver personalizador/instrumentos.py).
+# _vincular_instrumentos los agrega como AgenteInstrumento apuntando a la
+# Resolucion/Decreto (o InstrumentoAgente) que les corresponde; los que no
+# matchean quedan en las columnas de texto como dato heredado (ver
+# personalizador/instrumentos.py). Los años/meses/dias de aportes van a la fila
+# de AgenteInstrumento del concepto (ver _aplicar_instrumentos).
 #
 # Los bloques "ANTIGÜEDAD BONIFICABLE" (AÑOS/MES/DIAS/FECHA DE SISTEMA) y
 # "AÑOS TOTALES" son totales ya calculados (equivalentes a la property
@@ -369,8 +371,8 @@ class Command(BaseCommand):
 
                 avisos_antes = len(avisos)
 
-                updates = self._resolver_campos(row, dni, fila_excel, avisos)
-                self._vincular_instrumentos(agente, updates, dni, fila_excel, avisos)
+                updates, tiempos = self._resolver_campos(row, dni, fila_excel, avisos)
+                asignaciones = self._vincular_instrumentos(agente, updates, dni, fila_excel, avisos)
                 if agente.bajas:
                     # Activo es excluyente con retirado/jubilado/fallecido: no se pisa la baja
                     # cargada a mano, se avisa para que alguien revise cual de los dos esta mal.
@@ -394,6 +396,11 @@ class Command(BaseCommand):
 
                 if titulo_nuevo:
                     changed_fields.append("titulo_profesional")
+
+                # Se aplica tambien en dry-run (la transaccion se descarta al final) para que
+                # el resumen cuente bien a los agentes que solo cambian de instrumentos.
+                if self._aplicar_instrumentos(agente, asignaciones, tiempos):
+                    changed_fields.append("instrumentos_legales")
 
                 if changed_fields:
                     stats["actualizados"] += 1
@@ -695,18 +702,20 @@ class Command(BaseCommand):
                     f"DNI {dni}: no existe Localidad '{nombre_localidad}', se salteo el campo.",
                 )
 
-        for col, field, label in (
-            (COL_APORTES_LEY_ANIOS, "aportes_ley_resolucion_anios", "años de aportes de ley 6039"),
-            (COL_APORTES_LEY_MESES, "aportes_ley_resolucion_meses", "meses de aportes de ley 6039"),
-            (COL_APORTES_LEY_DIAS, "aportes_ley_resolucion_dias", "dias de aportes de ley 6039"),
-            (COL_APORTES_ANSES_ANIOS, "aportes_anses_anios", "años de aportes ANSES"),
-            (COL_APORTES_ANSES_MESES, "aportes_anses_meses", "meses de aportes ANSES"),
-            (COL_APORTES_ANSES_DIAS, "aportes_anses_dias", "dias de aportes ANSES"),
+        # {concepto: {"anios"|"meses"|"dias": valor}}: van a AgenteInstrumento, no al Agente.
+        tiempos = {}
+        for col, clave, field, label in (
+            (COL_APORTES_LEY_ANIOS, "aportes_ley", "anios", "años de aportes de ley 6039"),
+            (COL_APORTES_LEY_MESES, "aportes_ley", "meses", "meses de aportes de ley 6039"),
+            (COL_APORTES_LEY_DIAS, "aportes_ley", "dias", "dias de aportes de ley 6039"),
+            (COL_APORTES_ANSES_ANIOS, "aportes_anses", "anios", "años de aportes ANSES"),
+            (COL_APORTES_ANSES_MESES, "aportes_anses", "meses", "meses de aportes ANSES"),
+            (COL_APORTES_ANSES_DIAS, "aportes_anses", "dias", "dias de aportes ANSES"),
         ):
             if not _blank(row[col]):
                 valor = _parse_positive_int(row[col])
                 if valor is not None:
-                    updates[field] = valor
+                    tiempos.setdefault(clave, {})[field] = valor
                 else:
                     _registrar_aviso(
                         avisos, fila_excel, dni, col,
@@ -743,18 +752,21 @@ class Command(BaseCommand):
                     f"DNI {dni}: resolucion de aportes de ley 6039 demasiado larga ({row[COL_APORTES_LEY_RESOLUCION]!r}), se salteo el campo.",
                 )
 
-        return updates
+        return updates, tiempos
 
     def _vincular_instrumentos(self, agente, updates, dni, fila_excel, avisos):
-        """Reemplaza en `updates` los textos de instrumentos leidos del xlsx por la FK al
-        instrumento que les corresponde (ver personalizador/instrumentos.py).
+        """Vincula los textos de instrumentos leidos del xlsx al instrumento que les
+        corresponde (ver personalizador/instrumentos.py). Devuelve la lista de
+        (concepto, tipo, instrumento) a agregar como AgenteInstrumento (ver
+        _aplicar_instrumentos) y ajusta en `updates` los textos heredados.
 
         - Si matchea una Resolucion/Decreto: se vincula y se vacia el texto heredado.
         - Disposiciones de aportes (y aportes sin tipo que no matchean): InstrumentoAgente.
-        - Si no matchea y el agente ya tiene un instrumento vinculado para ese concepto, se
-          conserva el vinculado y se descarta el texto.
+        - Si no matchea y el agente ya tiene algun instrumento vinculado para ese concepto,
+          se conservan los vinculados y se descarta el texto.
         - Si no matchea y no hay nada vinculado: queda como texto heredado + aviso.
         """
+        asignaciones = []
         for concepto in CONCEPTOS:
             if concepto.clave not in COL_INSTRUMENTO_POR_CONCEPTO:
                 continue
@@ -768,18 +780,20 @@ class Command(BaseCommand):
             tipo = updates.get(concepto.heredado_tipo) if concepto.heredado_tipo else concepto.tipo_fijo
 
             resultado = buscar(tipo, texto)
-            if resultado.instrumento is not None and resultado.tipo in concepto.fks:
-                destino, instrumento = concepto.fks[resultado.tipo], resultado.instrumento
-            elif EXT in concepto.fks and (tipo == "DIS" or (tipo is None and resultado.motivo != AMBIGUO)):
-                destino = concepto.fks[EXT]
+            if resultado.instrumento is not None and resultado.tipo in concepto.tipos:
+                asignaciones.append((concepto, resultado.tipo, resultado.instrumento))
+            elif EXT in concepto.tipos and (tipo == "DIS" or (tipo is None and resultado.motivo != AMBIGUO)):
                 instrumento, _ = InstrumentoAgente.objects.get_or_create(
                     instrumentoagente_tipo="DIS" if tipo == "DIS" else "OTR",
                     instrumentoagente_organismo="",
                     instrumentoagente_numero=texto,
                 )
+                asignaciones.append((concepto, EXT, instrumento))
             else:
-                vinculado_tipo, _ = instrumento_vinculado(agente, concepto)
-                if vinculado_tipo:
+                ya_vinculado = agente.instrumentos_legales.filter(concepto=concepto.clave).exclude(
+                    resolucion__isnull=True, decreto__isnull=True, externo__isnull=True,
+                ).exists()
+                if ya_vinculado:
                     del updates[concepto.heredado]
                     updates.pop(concepto.heredado_tipo, None)
                 else:
@@ -790,11 +804,42 @@ class Command(BaseCommand):
                     )
                 continue
 
-            for campo in concepto.fks.values():
-                updates[campo] = instrumento if campo == destino else None
             updates[concepto.heredado] = None
             if concepto.heredado_tipo:
                 updates[concepto.heredado_tipo] = None
+        return asignaciones
+
+    def _aplicar_instrumentos(self, agente, asignaciones, tiempos):
+        """Agrega los instrumentos vinculados y carga los años/meses/dias de aportes en la
+        fila de AgenteInstrumento que corresponde: la del instrumento importado en esta
+        fila del xlsx; si no hubo, la unica fila del concepto; si hay varias o ninguna, una
+        fila sin instrumento. Devuelve True si cambio algo."""
+        cambio = False
+        filas_importadas = {}
+        for concepto, tipo, instrumento in asignaciones:
+            antes = agente.instrumentos_legales.count()
+            filas_importadas[concepto.clave] = asignar(agente, concepto, tipo, instrumento)
+            cambio |= agente.instrumentos_legales.count() != antes
+        for clave, valores in tiempos.items():
+            concepto = CONCEPTOS_POR_CLAVE[clave]
+            fila = filas_importadas.get(clave)
+            if fila is None:
+                filas = list(agente.instrumentos_legales.filter(concepto=clave))
+                if len(filas) == 1:
+                    fila = filas[0]
+                else:
+                    fila = next((f for f in filas if f.instrumento is None), None)
+            if fila is None:
+                if not any(valores.values()):
+                    continue
+                fila = agente.instrumentos_legales.model(agente=agente, concepto=concepto.clave)
+            nuevos = {campo: valor for campo, valor in valores.items() if getattr(fila, campo) != valor}
+            if nuevos or fila.pk is None:
+                for campo, valor in nuevos.items():
+                    setattr(fila, campo, valor)
+                fila.save()
+                cambio = True
+        return cambio
 
     def _resolver_titulo(self, row, dni, fila_excel, avisos):
         grado_raw, nombre_raw = row[COL_TITULO_GRADO], row[COL_TITULO_NOMBRE]

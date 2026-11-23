@@ -1,0 +1,28 @@
+{% comment %}Una fila (AgenteInstrumentoForm) de los instrumentos de un concepto del Agente.{% endcomment %}
+<div class="instrumento-fila border rounded px-2 pt-2 mb-2">
+    {% for hidden in f.hidden_fields %}{{hidden}}{% endfor %}
+    <span class="d-none">{{f.DELETE}}</span>
+    <div class="row g-2">
+        {% if f.selector %}
+        <div class="col-md-3">
+            {{f.selector.as_field_group}}
+        </div>
+        {% endif %}
+        <div class="col">
+            {% for c in f.campos_instrumento %}
+            <div class="instrumento-campo" data-tipo="{{c.tipo}}">
+                {{c.campo.as_field_group}}
+            </div>
+            {% endfor %}
+        </div>
+        {% for campo in f.campos_tiempo %}
+        <div class="col-4 col-md-1">
+            {{campo.as_field_group}}
+        </div>
+        {% endfor %}
+        <div class="col-auto d-flex align-items-start pt-4">
+            <button type="button" class="btn btn-sm btn-outline-danger instrumento-quitar" title="Quitar instrumento"><i class="bi bi-trash"></i></button>
+        </div>
+    </div>
+    {% if f.non_field_errors %}<div class="text-danger small mb-2">{{f.non_field_errors}}</div>{% endif %}
+</div>

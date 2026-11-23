@@ -365,9 +365,7 @@ register_simple_datatable(
     row_builder=_instrumentoagente_datatable_row,
     default_order="instrumentoagente_tipo",
     queryset=InstrumentoAgente.objects.annotate(
-        cantidad_agentes=Count("agentes_aportes_ley", distinct=True)
-        + Count("agentes_aportes_anses", distinct=True)
-        + Count("agentes_transferencia_definitiva", distinct=True),
+        cantidad_agentes=Count("agentes_instrumentos__agente", distinct=True),
     ),
 )
 
@@ -814,7 +812,7 @@ register_simple_datatable(
     queryset=Agente.objects.select_related(
         "denominacion_cargo", "oficina__cargo_directorio", "oficina__cargo_gerencia",
         "oficina__cargo_direccion", "oficina__cargo_departamento",
-    ).annotate(
+    ).prefetch_related("instrumentos_legales").annotate(
         edad_calculada=_EdadCalculada(F("fecha_nacimiento")),
         instrumentos_sin_vincular_calc=Case(
             When(Agente.q_instrumentos_sin_vincular(), then=Value(True)),

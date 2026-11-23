@@ -125,47 +125,18 @@
 <div class="card mb-3">
     <div class="card-header py-2 bg-body-tertiary fw-semibold small">Instrumentos Legales y Bonificaciones</div>
     <div class="card-body p-2">
-    <div class="small fw-semibold text-muted">Pase a planta permanente</div>
-    {% include "partials/agente-instrumento-campos.html" with g=form.instrumentos.pase_planta %}
-    <div class="small fw-semibold text-muted border-top pt-2">Bonificación por título</div>
+    {% include "partials/agente-instrumento-campos.html" with g=form.instrumentos.pase_planta primero=True %}
     {% include "partials/agente-instrumento-campos.html" with g=form.instrumentos.bonificacion %}
     <div class="row">
         <div class="col-md-4">
             {{form.porcentaje_bonificacion.as_field_group}}
         </div>
     </div>
-    <div class="small fw-semibold text-muted border-top pt-2">Contrato de servicio</div>
     {% include "partials/agente-instrumento-campos.html" with g=form.instrumentos.contrato_servicio %}
-    <div class="small fw-semibold text-muted border-top pt-2">Designación temporal</div>
     {% include "partials/agente-instrumento-campos.html" with g=form.instrumentos.cargo_interno %}
-    <div class="small fw-semibold text-muted border-top pt-2">Transferencia definitiva</div>
     {% include "partials/agente-instrumento-campos.html" with g=form.instrumentos.transferencia_definitiva %}
-    <div class="small fw-semibold text-muted border-top pt-2">Aportes (Ley/Resolución)</div>
     {% include "partials/agente-instrumento-campos.html" with g=form.instrumentos.aportes_ley %}
-    <div class="row">
-        <div class="col-md-4">
-            {{form.aportes_ley_resolucion_anios.as_field_group}}
-        </div>
-        <div class="col-md-4">
-            {{form.aportes_ley_resolucion_meses.as_field_group}}
-        </div>
-        <div class="col-md-4">
-            {{form.aportes_ley_resolucion_dias.as_field_group}}
-        </div>
-    </div>
-    <div class="small fw-semibold text-muted border-top pt-2">Aportes (ANSES)</div>
     {% include "partials/agente-instrumento-campos.html" with g=form.instrumentos.aportes_anses %}
-    <div class="row">
-        <div class="col-md-4">
-            {{form.aportes_anses_anios.as_field_group}}
-        </div>
-        <div class="col-md-4">
-            {{form.aportes_anses_meses.as_field_group}}
-        </div>
-        <div class="col-md-4">
-            {{form.aportes_anses_dias.as_field_group}}
-        </div>
-    </div>
     </div>
 </div>
 
@@ -177,15 +148,47 @@
 </style>
 
 <script>
-  // Muestra solo el select de la FK del tipo elegido en cada concepto con selector.
+  // Instrumentos legales: varios por concepto (un formset por concepto).
   $(function () {
+    // Muestra solo el select del tipo elegido en cada fila con selector.
     function mostrarInstrumento($selector) {
-      var $grupo = $selector.closest(".instrumento-grupo");
-      $grupo.find(".instrumento-campo").each(function () {
+      var $fila = $selector.closest(".instrumento-fila");
+      $fila.find(".instrumento-campo").each(function () {
         $(this).toggleClass("d-none", $(this).data("tipo") !== $selector.val());
       });
     }
-    $(document).on("change", ".instrumento-tipo-selector", function () { mostrarInstrumento($(this)); });
+    function actualizarVacio($concepto) {
+      var visibles = $concepto.find(".instrumento-filas .instrumento-fila:not(.d-none)").length;
+      $concepto.find(".instrumento-vacio").toggleClass("d-none", visibles > 0);
+    }
+    // .off antes de .on: este partial tambien se carga en el modal de alta (popup), que
+    // puede abrirse varias veces en la misma pagina.
+    $(document).off(".instrumentos");
+    $(document).on("change.instrumentos", ".instrumento-tipo-selector", function () { mostrarInstrumento($(this)); });
+
+    $(document).on("click.instrumentos", ".instrumento-agregar", function () {
+      var $concepto = $(this).closest(".instrumento-concepto");
+      var $total = $concepto.find("input[name='" + $concepto.data("prefix") + "-TOTAL_FORMS']");
+      var indice = parseInt($total.val(), 10);
+      var html = $concepto.find("template.instrumento-molde").html().replace(/__prefix__/g, indice);
+      var $fila = $(html).appendTo($concepto.find(".instrumento-filas"));
+      $total.val(indice + 1);
+      $fila.find(".django-select2").djangoSelect2();
+      $fila.find(".instrumento-tipo-selector").each(function () { mostrarInstrumento($(this)); });
+      actualizarVacio($concepto);
+    });
+
+    // Quitar: se marca DELETE y se oculta (el formset descarta la fila al guardar).
+    $(document).on("click.instrumentos", ".instrumento-quitar", function () {
+      var $fila = $(this).closest(".instrumento-fila");
+      $fila.find("input[name$='-DELETE']").prop("checked", true);
+      $fila.addClass("d-none");
+      actualizarVacio($fila.closest(".instrumento-concepto"));
+    });
+
+    $(".instrumento-filas input[name$='-DELETE']:checked").closest(".instrumento-fila").addClass("d-none");
+    $(".instrumento-filas .instrumento-tipo-selector").each(function () { mostrarInstrumento($(this)); });
+    $(".instrumento-concepto").each(function () { actualizarVacio($(this)); });
 
     // Activo es excluyente con retirado/jubilado/fallecido (que si pueden combinarse).
     $(document).on("change", "#{{form.activo.auto_id}}", function () {
@@ -194,7 +197,6 @@
     $(document).on("change", ".agente-baja", function () {
       if (this.checked) { $("#{{form.activo.auto_id}}").prop("checked", false); }
     });
-    $(".instrumento-tipo-selector").each(function () { mostrarInstrumento($(this)); });
   });
 </script>
 

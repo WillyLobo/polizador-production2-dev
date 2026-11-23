@@ -1,25 +1,31 @@
 {% comment %}
-Campos de un concepto de instrumento legal del Agente (ver AgenteForm.instrumentos).
-Si hay selector de tipo, solo se muestra el select de la FK elegida (JS en agente-form-partial.html).
+Instrumentos de un concepto del Agente (ver AgenteForm.instrumentos): un formset de
+AgenteInstrumento, con boton para agregar filas (molde en <template>) y quitarlas.
+JS en agente-form-partial.html.
 {% endcomment %}
-<div class="instrumento-grupo">
-    <div class="row">
-        {% if g.selector %}
-        <div class="col-md-4">
-            {{g.selector.as_field_group}}
-        </div>
-        {% endif %}
-        <div class="{% if g.selector %}col-md-8{% else %}col-md-12{% endif %}">
-            {% for c in g.campos %}
-            <div class="instrumento-campo" data-tipo="{{c.tipo}}">
-                {{c.campo.as_field_group}}
-            </div>
-            {% endfor %}
-        </div>
+{% with fs=g.formset %}
+<div class="instrumento-concepto" data-prefix="{{fs.prefix}}">
+    {{fs.management_form}}
+    <div class="d-flex justify-content-between align-items-center {% if not primero %}border-top{% endif %} pt-2 mb-1">
+        <span class="small fw-semibold text-muted">{{g.label}}</span>
+        <button type="button" class="btn btn-sm btn-outline-success py-0 instrumento-agregar" title="Agregar instrumento">
+            <i class="bi bi-plus-lg"></i> Agregar
+        </button>
     </div>
+    {% if fs.non_form_errors %}<div class="text-danger small mb-1">{{fs.non_form_errors}}</div>{% endif %}
+    <div class="instrumento-filas">
+        {% for f in fs %}
+        {% include "partials/agente-instrumento-fila.html" %}
+        {% endfor %}
+    </div>
+    <div class="instrumento-vacio form-text mb-2{% if fs.forms %} d-none{% endif %}">Sin instrumentos cargados.</div>
+    <template class="instrumento-molde">
+        {% include "partials/agente-instrumento-fila.html" with f=fs.empty_form %}
+    </template>
     {% if g.heredado %}
     <div class="form-text text-warning-emphasis mb-2">
         <i class="bi bi-exclamation-triangle"></i> Dato heredado sin vincular: <strong>{{g.heredado}}</strong>. Buscá o cargá el instrumento para vincularlo.
     </div>
     {% endif %}
 </div>
+{% endwith %}

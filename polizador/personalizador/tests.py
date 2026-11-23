@@ -545,33 +545,83 @@ class InstrumentosAgenteTest(TestCase):
         )
         self.assertEqual(buscar(None, "38/2021").motivo, AMBIGUO)
 
-    def test_clean_rechaza_dos_instrumentos_del_mismo_concepto(self):
-        agente = self._agente(
-            instrumento_bonificacion_resolucion=self.res_presidencia,
-            instrumento_bonificacion_decreto=self.decreto,
-        )
+    def test_clean_rechaza_dos_instrumentos_en_una_fila_y_tipo_no_admitido(self):
+        from personalizador.models import AgenteInstrumento
+        agente = self._agente()
+        fila = AgenteInstrumento(agente=agente, concepto="bonificacion", resolucion=self.res_presidencia, decreto=self.decreto)
         with self.assertRaises(ValidationError):
-            agente.clean()
+            fila.clean()
+        fila = AgenteInstrumento(agente=agente, concepto="pase_planta", resolucion=self.res_presidencia)
+        with self.assertRaises(ValidationError):
+            fila.clean()
+        # Aportes: sin instrumento vale si reconoce tiempo; los demas conceptos necesitan instrumento.
+        AgenteInstrumento(agente=agente, concepto="aportes_anses", anios=2).clean()
+        with self.assertRaises(ValidationError):
+            AgenteInstrumento(agente=agente, concepto="bonificacion").clean()
 
-    def test_form_descarta_la_fk_del_tipo_no_elegido_y_limpia_heredado(self):
+    def _data_form(self, **extra):
         from core.validators import get_cuil
-        from personalizador.forms.agenteforms import AgenteForm
-        agente = self._agente(instrumento_bonificacion="1458/2012", instrumento_bonificacion_tipo="DEC")
+        from personalizador.instrumentos import CONCEPTOS
         data = {
             "agente_nombres": "Juan", "agente_apellidos": "Perez", "sexo": self.genero.pk,
             "dni": 30111222, "cuil": get_cuil("30111222", "M"), "activdad_central": "1",
-            "tipo_instrumento_bonificacion": "DEC",
-            "instrumento_bonificacion_resolucion": self.res_presidencia.pk,
-            "instrumento_bonificacion_decreto": self.decreto.pk,
         }
+        for concepto in CONCEPTOS:
+            prefijo = f"instrumentos_{concepto.clave}"
+            data.update({f"{prefijo}-TOTAL_FORMS": "0", f"{prefijo}-INITIAL_FORMS": "0"})
+        data.update(extra)
+        return data
+
+    def test_form_varios_instrumentos_por_concepto_y_limpia_heredado(self):
+        from personalizador.forms.agenteforms import AgenteForm
+        agente = self._agente(instrumento_bonificacion="1458/2012", instrumento_bonificacion_tipo="DEC")
+        p = "instrumentos_bonificacion"
+        data = self._data_form(**{
+            f"{p}-TOTAL_FORMS": "2",
+            # Fila 0: tipo Decreto; la resolucion que quedo en el select oculto se descarta.
+            f"{p}-0-tipo": "DEC", f"{p}-0-decreto": self.decreto.pk, f"{p}-0-resolucion": self.res_presidencia.pk,
+            f"{p}-1-tipo": "RES", f"{p}-1-resolucion": self.res_directorio.pk,
+        })
         form = AgenteForm(data, instance=agente)
-        self.assertTrue(form.is_valid(), form.errors)
+        self.assertTrue(form.is_valid(), [form.errors, *(fs.errors for fs in form.formsets.values())])
         form.save()
         agente.refresh_from_db()
-        self.assertEqual(agente.instrumento_bonificacion_decreto, self.decreto)
-        self.assertIsNone(agente.instrumento_bonificacion_resolucion)
+        filas = list(agente.instrumentos_legales.filter(concepto="bonificacion").order_by("id"))
+        self.assertEqual([(f.decreto, f.resolucion) for f in filas], [(self.decreto, None), (None, self.res_directorio)])
         self.assertIsNone(agente.instrumento_bonificacion)
         self.assertIsNone(agente.instrumento_bonificacion_tipo)
+
+        # Quitar una fila y repetir un instrumento.
+        data = self._data_form(**{
+            f"{p}-TOTAL_FORMS": "2", f"{p}-INITIAL_FORMS": "2",
+            f"{p}-0-id": filas[0].pk, f"{p}-0-tipo": "DEC", f"{p}-0-decreto": self.decreto.pk, f"{p}-0-DELETE": "on",
+            f"{p}-1-id": filas[1].pk, f"{p}-1-tipo": "RES", f"{p}-1-resolucion": self.res_directorio.pk,
+        })
+        form = AgenteForm(data, instance=agente)
+        self.assertTrue(form.is_valid())
+        form.save()
+        self.assertEqual(list(agente.instrumentos_legales.values_list("resolucion", flat=True)), [self.res_directorio.pk])
+
+        data = self._data_form(**{
+            f"{p}-TOTAL_FORMS": "2", f"{p}-INITIAL_FORMS": "1",
+            f"{p}-0-id": filas[1].pk, f"{p}-0-tipo": "RES", f"{p}-0-resolucion": self.res_directorio.pk,
+            f"{p}-1-tipo": "RES", f"{p}-1-resolucion": self.res_directorio.pk,
+        })
+        form = AgenteForm(data, instance=agente)
+        self.assertFalse(form.is_valid())
+        self.assertTrue(form.formsets["bonificacion"].non_form_errors())
+
+    def test_antiguedad_suma_todos_los_aportes(self):
+        from datetime import date
+        from unittest import mock
+        from personalizador.models import InstrumentoAgente
+        agente = self._agente(fecha_ingreso=date(2020, 1, 1))
+        externo = InstrumentoAgente.objects.create(instrumentoagente_tipo="DIS", instrumentoagente_numero="1/20")
+        agente.instrumentos_legales.create(concepto="aportes_ley", resolucion=self.res_presidencia, anios=1, meses=6, dias=20)
+        agente.instrumentos_legales.create(concepto="aportes_ley", externo=externo, anios=0, meses=6, dias=15)
+        agente.instrumentos_legales.create(concepto="aportes_anses", anios=2)
+        with mock.patch("personalizador.models.timezone.localdate", return_value=date(2026, 1, 1)):
+            self.assertEqual(Agente.objects.get(pk=agente.pk).antiguedad, {"anios": 10, "meses": 1, "dias": 5})
 
     def test_comando_vincular(self):
         from io import StringIO
@@ -582,16 +632,22 @@ class InstrumentosAgenteTest(TestCase):
             instrumento_bonificacion="9999/2020", instrumento_bonificacion_tipo="RES",
         )
 
+        # Un instrumento ya cargado del mismo concepto no impide agregar el heredado.
+        agente.instrumentos_legales.create(concepto="contrato_servicio", resolucion=self.res_presidencia)
+
         call_command("vincular_instrumentos_agente", "--dry-run", stdout=StringIO())
         agente.refresh_from_db()
-        self.assertIsNone(agente.instrumento_pase_planta_decreto)
+        self.assertFalse(agente.instrumentos_legales.filter(concepto="pase_planta").exists())
         self.assertEqual(agente.n_decreto, "1458/2012")
 
         call_command("vincular_instrumentos_agente", stdout=StringIO())
         agente.refresh_from_db()
-        self.assertEqual(agente.instrumento_pase_planta_decreto, self.decreto)
+        self.assertEqual(agente.instrumentos_legales.get(concepto="pase_planta").decreto, self.decreto)
         self.assertIsNone(agente.n_decreto)
-        self.assertEqual(agente.instrumento_contrato_servicio_resolucion, self.res_directorio)
+        self.assertEqual(
+            set(agente.instrumentos_legales.filter(concepto="contrato_servicio").values_list("resolucion", flat=True)),
+            {self.res_presidencia.pk, self.res_directorio.pk},
+        )
         self.assertIsNone(agente.instrumento_contrato_de_servicio_tipo)
         # Sin coincidencia: queda como dato heredado.
         self.assertEqual(agente.instrumento_bonificacion, "9999/2020")
@@ -618,7 +674,8 @@ class InstrumentosAgenteTest(TestCase):
         import json
         usuario = UserModel.objects.create_superuser("admin", "admin@example.com", "x")
         self.client.force_login(usuario)
-        vinculado = self._agente(instrumento_pase_planta_decreto=self.decreto)
+        vinculado = self._agente()
+        vinculado.instrumentos_legales.create(concepto="pase_planta", decreto=self.decreto)
         heredado = Agente.objects.create(
             agente_nombres="Ana", agente_apellidos="Gomez", sexo=self.genero,
             dni=30111333, cuil="27301113334", instrumento_bonificacion="0074/05/2014", instrumento_bonificacion_tipo="RES",
@@ -626,7 +683,8 @@ class InstrumentosAgenteTest(TestCase):
 
         respuesta = self.client.get(reverse("personalizador:update-agente", args=[heredado.pk]))
         self.assertContains(respuesta, "Dato heredado sin vincular")
-        self.assertContains(respuesta, 'name="tipo_instrumento_bonificacion"')
+        self.assertContains(respuesta, 'name="instrumentos_bonificacion-TOTAL_FORMS"')
+        self.assertContains(respuesta, 'name="instrumentos_bonificacion-__prefix__-tipo"')
 
         respuesta = self.client.get(reverse("personalizador:ficha-agente", args=[vinculado.pk]))
         self.assertContains(respuesta, reverse("secretariador:update-decreto", args=[self.decreto.pk]))

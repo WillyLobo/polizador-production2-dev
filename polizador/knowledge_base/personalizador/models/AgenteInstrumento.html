@@ -1,0 +1,20 @@
+<h1>AgenteInstrumento</h1>
+<p><strong>Módulo:</strong> <code>personalizador/models.py</code> (líneas 264-346)</p>
+<h2>Propósito</h2>
+<p><em>(pendiente de autoría)</em></p>
+<h2>Firma</h2>
+<pre><code class="language-python">class AgenteInstrumento(models.Model):
+</code></pre>
+<h2>Uso real</h2>
+<p><em>(pendiente de autoría — candidatos detectados automáticamente:)</em></p>
+<ul>
+<li><code>personalizador/models.py:126</code> — <code># Instrumentos legales: filas de AgenteInstrumento (varias por concepto), ver</code></li>
+<li><code>personalizador/models.py:157</code> — <code># esta en cada AgenteInstrumento de aportes.</code></li>
+<li><code>personalizador/models.py:218</code> — <code>filas son los AgenteInstrumento del concepto (con link al PDF o a la edicion de cada</code></li>
+<li><code>personalizador/views/agenteviews.py:9</code> — <code>from personalizador.models import Agente, AgenteInstrumento</code></li>
+<li><code>personalizador/views/agenteviews.py:72</code> — <code>Prefetch("instrumentos_legales", queryset=AgenteInstrumento.objects.select_related("resolucion", "decreto", "externo")),</code></li>
+</ul>
+<h2>Flujo de datos</h2>
+<p><em>(pendiente de autoría)</em></p>
+<h2>Ver también</h2>
+<p><em>(pendiente de autoría)</em></p>

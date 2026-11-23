@@ -125,7 +125,7 @@
                 </div>
                 <div class="row g-1 mb-1">
                     <div class="col-5 text-muted small fw-semibold">Fecha de Pase a Planta</div>
-                    <div class="col-7 small">{{object.fecha_pase_a_planta|default_if_none:"—"}}{% if object.instrumentos.pase_planta.instrumento or object.instrumentos.pase_planta.heredado %} ({% include "partials/agente-instrumento-ficha.html" with i=object.instrumentos.pase_planta %}){% endif %}</div>
+                    <div class="col-7 small">{{object.fecha_pase_a_planta|default_if_none:"—"}}{% if object.instrumentos.pase_planta.filas or object.instrumentos.pase_planta.heredado %}{% include "partials/agente-instrumento-ficha.html" with i=object.instrumentos.pase_planta %}{% endif %}</div>
                 </div>
                 <div class="row g-1 mb-1">
                     <div class="col-5 text-muted small fw-semibold">Categoría</div>
@@ -139,10 +139,10 @@
                     <div class="col-5 text-muted small fw-semibold">Oficina</div>
                     <div class="col-7 small">{{object.oficina|default_if_none:"—"}}</div>
                 </div>
-                {% if object.cargo_interno %}
+                {% if object.cargo_interno or object.instrumentos.cargo_interno.filas or object.instrumentos.cargo_interno.heredado %}
                 <div class="row g-1 mb-1">
                     <div class="col-5 text-muted small fw-semibold">Designación Temporal</div>
-                    <div class="col-7 small">{{object.cargo_interno}}{% if object.instrumentos.cargo_interno.instrumento or object.instrumentos.cargo_interno.heredado %} ({% include "partials/agente-instrumento-ficha.html" with i=object.instrumentos.cargo_interno %}){% endif %}</div>
+                    <div class="col-7 small">{{object.cargo_interno|default_if_none:"—"}}{% if object.instrumentos.cargo_interno.filas or object.instrumentos.cargo_interno.heredado %}{% include "partials/agente-instrumento-ficha.html" with i=object.instrumentos.cargo_interno %}{% endif %}</div>
                 </div>
                 {% endif %}
                 <div class="row g-1 mb-1">
@@ -188,15 +188,13 @@
                 <div class="row g-1 mb-1 pt-1 border-top">
                     <div class="col-5 text-muted small fw-semibold">Aportes (Ley/Resolución)</div>
                     <div class="col-7 small">
-                        {% if object.instrumentos.aportes_ley.instrumento or object.instrumentos.aportes_ley.heredado %}{% include "partials/agente-instrumento-ficha.html" with i=object.instrumentos.aportes_ley %} — {% endif %}
-                        {{object.aportes_ley_resolucion_anios}}a {{object.aportes_ley_resolucion_meses}}m {{object.aportes_ley_resolucion_dias}}d
+                        {% include "partials/agente-instrumento-ficha.html" with i=object.instrumentos.aportes_ley con_tiempo=True %}
                     </div>
                 </div>
                 <div class="row g-1">
                     <div class="col-5 text-muted small fw-semibold">Aportes (ANSES)</div>
                     <div class="col-7 small">
-                        {% if object.instrumentos.aportes_anses.instrumento or object.instrumentos.aportes_anses.heredado %}{% include "partials/agente-instrumento-ficha.html" with i=object.instrumentos.aportes_anses %} — {% endif %}
-                        {{object.aportes_anses_anios}}a {{object.aportes_anses_meses}}m {{object.aportes_anses_dias}}d
+                        {% include "partials/agente-instrumento-ficha.html" with i=object.instrumentos.aportes_anses con_tiempo=True %}
                     </div>
                 </div>
             </div>

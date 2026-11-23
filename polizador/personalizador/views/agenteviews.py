@@ -5,11 +5,11 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.views import generic
 from django.urls import reverse_lazy
-from personalizador.models import Agente
+from django.db.models import Prefetch
+from personalizador.models import Agente, AgenteInstrumento
 from personalizador.forms.agenteforms import *
 from personalizador.licencias import resumen_agente, saldos_pendientes_agente
 from core.mixins import DeleteRelatedObjectsMixin, PopupCreateMixin, UserKwargsMixin
-from personalizador.instrumentos import CONCEPTOS
 
 @method_decorator(login_required, name="dispatch")
 class EliminarAgente(PermissionRequiredMixin, DeleteRelatedObjectsMixin, generic.DeleteView):
@@ -67,9 +67,9 @@ class FichaAgente(PermissionRequiredMixin, generic.DetailView):
 			"oficina__cargo_direccion", "oficina__cargo_departamento",
 			"cargo_interno__cargo_directorio", "cargo_interno__cargo_gerencia",
 			"cargo_interno__cargo_direccion", "cargo_interno__cargo_departamento",
-			*(campo for concepto in CONCEPTOS for campo in concepto.fks.values()),
 		).prefetch_related(
 			"titulo_profesional",
+			Prefetch("instrumentos_legales", queryset=AgenteInstrumento.objects.select_related("resolucion", "decreto", "externo")),
 			"licenciapermiso_set__licenciapermiso_tipo",
 		)
 

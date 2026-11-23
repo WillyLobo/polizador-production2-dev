@@ -12,7 +12,7 @@ from django.utils.functional import cached_property
 from core.validators import FileValidator, CuitValidator
 from dateutil.relativedelta import relativedelta
 from uuid_utils import compat
-from personalizador.instrumentos import CONCEPTOS, TIPO_LABELS, instrumento_vinculado, tipo_heredado, url_documento
+from personalizador.instrumentos import CAMPO_POR_TIPO, CONCEPTO_CHOICES, CONCEPTOS, CONCEPTOS_POR_CLAVE, TIPO_LABELS, tipo_heredado, url_documento
 
 class ConcatOp(models.Func):
     arg_joiner = " || "
@@ -123,22 +123,16 @@ class Agente(models.Model):
     # Datos Dependencia
     fecha_ingreso = models.DateField("Fecha de Ingreso", blank=True, null=True)
     fecha_pase_a_planta = models.DateField("Fecha de pase a planta permanente", blank=True, null=True) # fecha utilizada para el computo de antiguedad.
-    # Instrumentos legales: cada concepto apunta por FK a una Resolucion/Decreto del IPDUV o a un
-    # InstrumentoAgente (otros organismos); ver personalizador/instrumentos.py::CONCEPTOS. Las
-    # columnas de texto (n_decreto, instrumento_*, ...) son datos heredados que todavia no se
-    # pudieron vincular: no se editan desde el form y se vacian al vincularlas
-    # (comando vincular_instrumentos_agente).
+    # Instrumentos legales: filas de AgenteInstrumento (varias por concepto), ver
+    # personalizador/instrumentos.py::CONCEPTOS. Las columnas de texto (n_decreto,
+    # instrumento_*, ...) son datos heredados que todavia no se pudieron vincular: no se
+    # editan desde el form y se vacian al vincularlas (comando vincular_instrumentos_agente).
     n_decreto = models.CharField(max_length=10, blank=True, null=True, editable=False, help_text="Dato heredado sin vincular: instrumento de pase a planta permanente")
-    instrumento_pase_planta_decreto = models.ForeignKey("secretariador.InstrumentosLegalesDecretos", verbose_name="Decreto de pase a planta permanente", related_name="agentes_pase_planta", on_delete=models.PROTECT, blank=True, null=True)
     instrumento_bonificacion_tipo = models.CharField("Tipo de instrumento", max_length=3, choices=INSTRUMENTO_TIPO, blank=True, null=True, editable=False)
     instrumento_bonificacion = models.CharField(max_length=13, blank=True, null=True, editable=False, help_text="Dato heredado sin vincular: instrumento que aprueba la bonificacion por titulo")
-    instrumento_bonificacion_resolucion = models.ForeignKey("secretariador.InstrumentosLegalesResoluciones", verbose_name="Resolución de bonificación por título", related_name="agentes_bonificacion", on_delete=models.PROTECT, blank=True, null=True)
-    instrumento_bonificacion_decreto = models.ForeignKey("secretariador.InstrumentosLegalesDecretos", verbose_name="Decreto de bonificación por título", related_name="agentes_bonificacion", on_delete=models.PROTECT, blank=True, null=True)
     porcentaje_bonificacion = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
     instrumento_contrato_de_servicio_tipo = models.CharField("Tipo de instrumento", max_length=3, choices=INSTRUMENTO_TIPO, blank=True, null=True, editable=False)
     instrumento_contrato_de_servicio = models.CharField(max_length=13, blank=True, null=True, editable=False, help_text="Dato heredado sin vincular: instrumento que aprueba el contrato de servicio")
-    instrumento_contrato_servicio_resolucion = models.ForeignKey("secretariador.InstrumentosLegalesResoluciones", verbose_name="Resolución de contrato de servicio", related_name="agentes_contrato_servicio", on_delete=models.PROTECT, blank=True, null=True)
-    instrumento_contrato_servicio_decreto = models.ForeignKey("secretariador.InstrumentosLegalesDecretos", verbose_name="Decreto de contrato de servicio", related_name="agentes_contrato_servicio", on_delete=models.PROTECT, blank=True, null=True)
     categoria = models.ForeignKey("Categoria", on_delete=models.CASCADE, blank=True, null=True)
     denominacion_cargo = models.ForeignKey("DenominacionCargo", related_name="agente_denominacion_cargo", on_delete=models.CASCADE, blank=True, null=True)
     cargo_interno = models.ForeignKey(
@@ -148,8 +142,6 @@ class Agente(models.Model):
     )
     instrumento_cargo_interno_tipo = models.CharField("Tipo de instrumento", max_length=3, choices=INSTRUMENTO_TIPO, blank=True, null=True, editable=False)
     instrumento_cargo_interno = models.CharField("Instrumento de designación temporal", max_length=13, blank=True, null=True, editable=False, help_text="Dato heredado sin vincular: instrumento de designación temporal")
-    instrumento_cargo_interno_resolucion = models.ForeignKey("secretariador.InstrumentosLegalesResoluciones", verbose_name="Resolución de designación temporal", related_name="agentes_cargo_interno", on_delete=models.PROTECT, blank=True, null=True)
-    instrumento_cargo_interno_decreto = models.ForeignKey("secretariador.InstrumentosLegalesDecretos", verbose_name="Decreto de designación temporal", related_name="agentes_cargo_interno", on_delete=models.PROTECT, blank=True, null=True)
     apartado = models.ForeignKey("ApartadoCargo", on_delete=models.CASCADE, blank=True, null=True)
     ceic = models.ForeignKey("CEIC", on_delete=models.CASCADE, blank=True, null=True)
     grupo = models.ForeignKey("GrupoCargo", on_delete=models.CASCADE, blank=True, null=True)
@@ -157,26 +149,15 @@ class Agente(models.Model):
     actividad_especifica = models.ForeignKey("ActividadEspecifica", on_delete=models.CASCADE, blank=True, null=True)
     oficina = models.ForeignKey("Oficina", on_delete=models.CASCADE, blank=True, null=True)
     n_decreto_transferencia_definitiva = models.CharField(max_length=10, blank=True, null=True, editable=False, help_text="Dato heredado sin vincular: decreto de transferencia definitiva")
-    instrumento_transferencia_definitiva_decreto = models.ForeignKey("secretariador.InstrumentosLegalesDecretos", verbose_name="Decreto de transferencia definitiva", related_name="agentes_transferencia_definitiva", on_delete=models.PROTECT, blank=True, null=True)
-    instrumento_transferencia_definitiva_externo = models.ForeignKey("InstrumentoAgente", verbose_name="Instrumento externo de transferencia definitiva", related_name="agentes_transferencia_definitiva", on_delete=models.PROTECT, blank=True, null=True)
     domicilio_direccion = models.CharField("Dirección", max_length=500, blank=True, null=True)
     domicilio_barrio = models.CharField("Barrio", max_length=300, blank=True, null=True)
     domicilio_localidad = models.ForeignKey("carga.Localidad", on_delete=models.CASCADE, blank=True, null=True)
     domicilio_provincia = models.ForeignKey("carga.Provincia", on_delete=models.CASCADE, blank=True, null=True)
-    # Antigüedad reconocida por instrumentos legales, adicional a la que surge de fecha_ingreso.
+    # Instrumentos de aportes heredados (texto). La antigüedad reconocida (años/meses/dias)
+    # esta en cada AgenteInstrumento de aportes.
     aportes_ley_resolucion_tipo = models.CharField("Tipo de instrumento", max_length=3, choices=INSTRUMENTO_TIPO, blank=True, null=True, editable=False)
     aportes_ley_resolucion = models.CharField(max_length=13, blank=True, null=True, editable=False, help_text="Dato heredado sin vincular: instrumento que establece los aportes")
-    instrumento_aportes_ley_resolucion = models.ForeignKey("secretariador.InstrumentosLegalesResoluciones", verbose_name="Resolución de aportes", related_name="agentes_aportes_ley", on_delete=models.PROTECT, blank=True, null=True)
-    instrumento_aportes_ley_decreto = models.ForeignKey("secretariador.InstrumentosLegalesDecretos", verbose_name="Decreto de aportes", related_name="agentes_aportes_ley", on_delete=models.PROTECT, blank=True, null=True)
-    instrumento_aportes_ley_externo = models.ForeignKey("InstrumentoAgente", verbose_name="Instrumento externo de aportes", related_name="agentes_aportes_ley", on_delete=models.PROTECT, blank=True, null=True)
-    aportes_ley_resolucion_anios = models.PositiveIntegerField("Años reconocidos (Resolución)", default=0, blank=True)
-    aportes_ley_resolucion_meses = models.PositiveIntegerField("Meses reconocidos (Resolución)", default=0, blank=True)
-    aportes_ley_resolucion_dias = models.PositiveIntegerField("Días reconocidos (Resolución)", default=0, blank=True)
     aportes_anses = models.CharField(max_length=13, blank=True, null=True, editable=False, help_text="Dato heredado sin vincular: instrumento que establece los aportes")
-    instrumento_aportes_anses_externo = models.ForeignKey("InstrumentoAgente", verbose_name="Instrumento de aportes ANSES", related_name="agentes_aportes_anses", on_delete=models.PROTECT, blank=True, null=True)
-    aportes_anses_anios = models.PositiveIntegerField("Años reconocidos (ANSES)", default=0, blank=True)
-    aportes_anses_meses = models.PositiveIntegerField("Meses reconocidos (ANSES)", default=0, blank=True)
-    aportes_anses_dias = models.PositiveIntegerField("Días reconocidos (ANSES)", default=0, blank=True)
     # FLAGS
     activo = models.BooleanField("Activo", default=True)
     retirado = models.BooleanField("Retirado", default=False, help_text="Excluyente con Activo")
@@ -210,15 +191,19 @@ class Agente(models.Model):
     @property
     def antiguedad(self):
         """Antigüedad total: años/meses/días desde fecha_ingreso hasta hoy, más los
-        reconocidos por aportes_ley_resolucion y aportes_anses. Convención de cómputo
-        de aportes: 30 días = 1 mes, 12 meses = 1 año."""
+        reconocidos por cada instrumento de aportes (Ley/Resolución y ANSES). Convención de
+        cómputo de aportes: 30 días = 1 mes, 12 meses = 1 año.
+
+        Usa instrumentos_legales.all() para aprovechar un prefetch_related (listados)."""
         if not self.fecha_ingreso:
             return None
 
         delta = relativedelta(timezone.localdate(), self.fecha_ingreso)
-        anios = delta.years + self.aportes_ley_resolucion_anios + self.aportes_anses_anios
-        meses = delta.months + self.aportes_ley_resolucion_meses + self.aportes_anses_meses
-        dias = delta.days + self.aportes_ley_resolucion_dias + self.aportes_anses_dias
+        anios, meses, dias = delta.years, delta.months, delta.days
+        for fila in self.instrumentos_legales.all():
+            anios += fila.anios
+            meses += fila.meses
+            dias += fila.dias
 
         meses += dias // 30
         dias %= 30
@@ -229,23 +214,21 @@ class Agente(models.Model):
 
     @cached_property
     def instrumentos(self):
-        """{clave de concepto: {"label", "tipo", "instrumento", "url", "es_pdf", "heredado",
-        "heredado_tipo"}} para la ficha: el instrumento vinculado (con link al PDF o a su
-        edicion) y, si no hay, el texto heredado."""
-        datos = {}
-        for concepto in CONCEPTOS:
-            tipo, instrumento = instrumento_vinculado(self, concepto)
-            url, es_pdf = url_documento(instrumento) if instrumento else (None, False)
-            datos[concepto.clave] = {
+        """{clave de concepto: {"label", "filas", "heredado", "heredado_tipo"}} para la ficha:
+        filas son los AgenteInstrumento del concepto (con link al PDF o a la edicion de cada
+        instrumento) y heredado, el texto viejo todavia sin vincular."""
+        filas = {}
+        for fila in self.instrumentos_legales.all():
+            filas.setdefault(fila.concepto, []).append(fila)
+        return {
+            concepto.clave: {
                 "label": concepto.label,
-                "tipo": TIPO_LABELS.get(tipo),
-                "instrumento": instrumento,
-                "url": url,
-                "es_pdf": es_pdf,
+                "filas": filas.get(concepto.clave, []),
                 "heredado": getattr(self, concepto.heredado),
                 "heredado_tipo": dict(INSTRUMENTO_TIPO).get(tipo_heredado(self, concepto)),
             }
-        return datos
+            for concepto in CONCEPTOS
+        }
 
     @staticmethod
     def q_instrumentos_sin_vincular():
@@ -266,10 +249,6 @@ class Agente(models.Model):
         super().clean()
         if self.activo and self.bajas:
             raise ValidationError({"activo": f"Un agente activo no puede estar marcado como {', '.join(self.bajas).lower()}."})
-        for concepto in CONCEPTOS:
-            cargados = [campo for campo in concepto.fks.values() if getattr(self, f"{campo}_id")]
-            if len(cargados) > 1:
-                raise ValidationError(f"{concepto.label}: solo se puede vincular un instrumento legal.")
 
     def __str__(self):
         if self.agente_personal_transitorio:
@@ -281,6 +260,90 @@ class Agente(models.Model):
         if not self.abreviatura:
             self.abreviatura = abreviatura_default_por_sexo(self.sexo)
         super().save(*args, **kwargs)
+
+class AgenteInstrumento(models.Model):
+    """Instrumento legal de un Agente para un concepto (pase a planta, bonificacion, aportes...,
+    ver personalizador/instrumentos.py::CONCEPTOS). Un agente puede tener varios por concepto.
+
+    Apunta a lo sumo a un instrumento: Resolucion/Decreto del IPDUV (secretariador) o
+    InstrumentoAgente (otros organismos). En los conceptos de aportes cada fila reconoce
+    años/meses/dias de antigüedad, y puede no tener instrumento (tiempo reconocido cuyo
+    respaldo todavia no se cargo)."""
+    class Meta:
+        verbose_name = "Instrumento legal del agente"
+        verbose_name_plural = "Instrumentos legales del agente"
+        ordering = ("agente", "concepto", "id")
+        constraints = [
+            models.CheckConstraint(
+                condition=(
+                    Q(resolucion__isnull=True, decreto__isnull=True)
+                    | Q(resolucion__isnull=True, externo__isnull=True)
+                    | Q(decreto__isnull=True, externo__isnull=True)
+                ),
+                name="agenteinstrumento_un_solo_instrumento",
+            ),
+        ]
+
+    agente = models.ForeignKey(Agente, on_delete=models.CASCADE, related_name="instrumentos_legales")
+    concepto = models.CharField("Concepto", max_length=30, choices=CONCEPTO_CHOICES)
+    resolucion = models.ForeignKey("secretariador.InstrumentosLegalesResoluciones", verbose_name="Resolución", related_name="agentes_instrumentos", on_delete=models.PROTECT, blank=True, null=True)
+    decreto = models.ForeignKey("secretariador.InstrumentosLegalesDecretos", verbose_name="Decreto", related_name="agentes_instrumentos", on_delete=models.PROTECT, blank=True, null=True)
+    externo = models.ForeignKey("InstrumentoAgente", verbose_name="Instrumento externo", related_name="agentes_instrumentos", on_delete=models.PROTECT, blank=True, null=True)
+    anios = models.PositiveIntegerField("Años reconocidos", default=0, blank=True)
+    meses = models.PositiveIntegerField("Meses reconocidos", default=0, blank=True)
+    dias = models.PositiveIntegerField("Días reconocidos", default=0, blank=True)
+    agenteinstrumento_history = HistoricalRecords()
+
+    @property
+    def concepto_def(self):
+        return CONCEPTOS_POR_CLAVE[self.concepto]
+
+    @property
+    def tipo(self):
+        """RES/DEC/EXT del instrumento cargado, o None."""
+        for tipo, campo in CAMPO_POR_TIPO.items():
+            if getattr(self, f"{campo}_id"):
+                return tipo
+        return None
+
+    @property
+    def tipo_label(self):
+        return TIPO_LABELS.get(self.tipo)
+
+    @property
+    def instrumento(self):
+        tipo = self.tipo
+        return getattr(self, CAMPO_POR_TIPO[tipo]) if tipo else None
+
+    @cached_property
+    def documento(self):
+        """(url, es_pdf) del instrumento (ver instrumentos.url_documento), o (None, False)."""
+        instrumento = self.instrumento
+        return url_documento(instrumento) if instrumento else (None, False)
+
+    @property
+    def tiene_tiempo(self):
+        return bool(self.anios or self.meses or self.dias)
+
+    def clean(self):
+        super().clean()
+        concepto = CONCEPTOS_POR_CLAVE.get(self.concepto)
+        if concepto is None:
+            return
+        cargados = [tipo for tipo, campo in CAMPO_POR_TIPO.items() if getattr(self, f"{campo}_id")]
+        if len(cargados) > 1:
+            raise ValidationError("Solo se puede vincular un instrumento legal por fila.")
+        if cargados and cargados[0] not in concepto.tipos:
+            raise ValidationError(f"{concepto.label}: no admite instrumentos de tipo {TIPO_LABELS[cargados[0]].lower()}.")
+        if not concepto.con_tiempo:
+            self.anios = self.meses = self.dias = 0
+        if not cargados and not self.tiene_tiempo:
+            mensaje = "Cargá el instrumento o los años/meses/días reconocidos." if concepto.con_tiempo else "Cargá el instrumento."
+            raise ValidationError(mensaje)
+
+    def __str__(self):
+        instrumento = self.instrumento
+        return f"{self.get_concepto_display()}: {instrumento if instrumento else 'sin instrumento'}"
 
 def generate_name_instrumentoagente(instance, filename):
     numero = "".join(c if c.isalnum() else "-" for c in instance.instrumentoagente_numero)
